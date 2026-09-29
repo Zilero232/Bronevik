@@ -3,6 +3,8 @@ import type { VehicleSummary } from '@otmetki/schemas';
 import type { TankEconomyAggregate, TankLearningCurve, TankServerStats } from '../../../../../generated';
 import type { CatalogEntry } from '../../../reference';
 
+import { readSpecTraits, toTankRole } from '../../../reference';
+
 export const vehicle = (overrides: Partial<VehicleSummary> & Pick<VehicleSummary, 'tankId'>): VehicleSummary => ({
   name: `Tank ${overrides.tankId}`,
   shortName: `T${overrides.tankId}`,
@@ -12,16 +14,16 @@ export const vehicle = (overrides: Partial<VehicleSummary> & Pick<VehicleSummary
   tier: 8,
   isPremium: false,
   isCollectible: false,
+  status: overrides.isCollectible ? 'collector' : overrides.isPremium ? 'premium' : 'researchable',
   images: { small: null, contour: null, big: null },
   ...overrides
 });
 
-export const catalogEntry = (summary: VehicleSummary, specs: CatalogEntry['specs'] = null): CatalogEntry => ({
-  summary,
-  dbType: 'mediumTank',
-  specs,
-  description: null
-});
+export const catalogEntry = (summary: VehicleSummary, specs: CatalogEntry['specs'] = null): CatalogEntry => {
+  const spec = readSpecTraits(specs);
+
+  return { summary, dbType: 'mediumTank', specs, description: null, role: toTankRole(spec.role), spec, hasOffers: false };
+};
 
 export const catalogOf = (...entries: CatalogEntry[]): Map<number, CatalogEntry> => new Map(entries.map((entry) => [entry.summary.tankId, entry]));
 

@@ -1,1 +1,1 @@
-export type { VehicleFilterValues, VehicleKind } from '../../../lib';
+export type { VehicleFilterValues } from '../../../lib';

@@ -20,6 +20,7 @@ export { useServerFigures } from './use-server-figures';
 export type { ServerFigure } from './use-server-figures';
 export { useSimilarTanks } from './use-similar-tanks';
 export { useTankDetail } from './use-tank-detail';
+export { useTankMaps } from './use-tank-maps';
 export { useTankParams } from './use-tank-params';
 export type { ParamRow, ParamTab } from './use-tank-params';
 export { useTankPatches } from './use-tank-patches';

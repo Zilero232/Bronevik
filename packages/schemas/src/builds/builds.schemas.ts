@@ -4,7 +4,7 @@ import { countSchema, isoDateTimeSchema, percentSchema, ratioSchema, tankIdSchem
 import { listParam } from '../common/query/query.schemas';
 import { loadoutSchema } from '../community/community.schemas';
 import { learningDifficultySchema } from '../tanks/insights/insights.schemas';
-import { nationSchema, tierSchema, vehicleSummarySchema, vehicleTypeSchema } from '../vehicles/vehicles.schemas';
+import { vehicleFilterSchema, vehicleSummarySchema } from '../vehicles/vehicles.schemas';
 import { BUILD_OPTIONS, BUILD_USAGE, POPULAR_BUILDS } from './builds.constants';
 
 export const vehicleProfileIdSchema = z.enum(BUILD_OPTIONS.profiles);
@@ -273,9 +273,7 @@ export const buildHistorySchema = z.object({
 });
 
 export const buildsCatalogQuerySchema = z.object({
-  tiers: listParam(tierSchema).optional(),
-  types: listParam(vehicleTypeSchema).optional(),
-  nations: listParam(nationSchema).optional(),
+  ...vehicleFilterSchema.shape,
   mode: buildModeSchema.default(BUILD_USAGE.defaultMode),
   difficulties: listParam(learningDifficultySchema).optional().describe('Only tanks whose learning curve puts them in one of these difficulties')
 });

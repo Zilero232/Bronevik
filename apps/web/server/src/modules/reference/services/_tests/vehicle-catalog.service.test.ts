@@ -27,6 +27,7 @@ const createService = (rows: Vehicle[]) => {
   const prisma = mockDeep<PrismaService>();
 
   prisma.vehicle.findMany.mockResolvedValue(rows);
+  prisma.$queryRaw.mockResolvedValue([]);
 
   return { service: new VehicleCatalogService(prisma), prisma };
 };
@@ -82,5 +83,25 @@ describe('VehicleCatalogService', () => {
     const entries = await service.filter({ tiers: [8] });
 
     expect(entries.map((entry) => entry.summary.tankId)).toEqual([2]);
+  });
+
+  it('classifies a hidden premium as a shop premium once our offer history saw it, and as a reward otherwise', async () => {
+    const hidden = { isPremium: true, specs: { tags: [], role: 'role_HT_break', notInShop: true } };
+    const { service, prisma } = createService([vehicle(1, hidden), vehicle(2, hidden)]);
+
+    prisma.$queryRaw.mockResolvedValue([{ tank_id: 1 }]);
+
+    const entries = await service.all();
+
+    expect(entries.get(1)?.summary.status).toBe('premium');
+    expect(entries.get(2)?.summary.status).toBe('reward');
+    expect(entries.get(2)?.role).toBe('HT_break');
+  });
+
+  it('filters by status and role', async () => {
+    const { service } = createService([vehicle(1), vehicle(2, { isCollectible: true, specs: { role: 'role_MT_sniper' } })]);
+
+    expect((await service.filter({ statuses: ['collector'] })).map((entry) => entry.summary.tankId)).toEqual([2]);
+    expect((await service.filter({ roles: ['MT_sniper'] })).map((entry) => entry.summary.tankId)).toEqual([2]);
   });
 });

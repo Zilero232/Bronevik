@@ -17,7 +17,7 @@ import { useTanksState } from '../use-tanks-state';
 
 export const useStatsTable = () => {
   const query = useTankStats();
-  const [{ statuses, difficulties, top, pinned }, setState] = useTanksState();
+  const [{ difficulties, top, pinned }, setState] = useTanksState();
   const { reset, isActive } = useVehicleFilters();
   const { pinnedIds } = usePinnedRows('tanks');
   const isHydrated = useHydrated();
@@ -30,7 +30,7 @@ export const useStatsTable = () => {
 
   const onReset = () => {
     void reset();
-    void setState({ statuses: null, difficulties: null, top: null, pinned: null });
+    void setState({ difficulties: null, top: null, pinned: null });
   };
 
   return {
@@ -39,7 +39,7 @@ export const useStatsTable = () => {
     rows,
     pinnedIds,
     visibleColumns: TANKS_TABLE.optionalColumns.filter((id) => !hidden.includes(id)),
-    isFiltered: isActive || statuses.length > 0 || difficulties.length > 0 || top || pinned,
+    isFiltered: isActive || difficulties.length > 0 || top || pinned,
     onReset,
     onColumnsChange: (visible: OptionalTankColumn[]) => setHidden(TANKS_TABLE.optionalColumns.filter((id) => !visible.includes(id))),
     onExport: () => downloadFile({ name: TANKS_TABLE.csvName, content: toCsv(tanksCsvRows(rows)), type: DATA_FILE.csvType })

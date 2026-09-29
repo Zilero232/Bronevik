@@ -19,6 +19,7 @@ const vehicle = ({ tankId, tier, isPremium = false }: { tankId: number; tier: nu
   nation: 'ussr',
   type: 'heavyTank',
   isCollectible: false,
+  status: 'researchable',
   images: { small: null, contour: null, big: null }
 });
 

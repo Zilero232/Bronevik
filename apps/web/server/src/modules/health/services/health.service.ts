@@ -1,12 +1,16 @@
+import type { Health } from '@otmetki/schemas';
+
 import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { HealthCheckService, PrismaHealthIndicator } from '@nestjs/terminus';
 
-import type { Health } from '../health.types';
+import type { HealthReport } from '../health.types';
 
 import { PrismaService } from '../../../core';
+import { OPENAPI } from '../../../openapi';
 import { HEALTH } from '../config';
-import { healthSchema } from '../dto';
+import { healthReportSchema } from '../dto';
 import { CollectorStateIndicator, RedisIndicator } from '../indicators';
+import { CollectorStatusService } from './collector-status.service';
 
 @Injectable()
 export class HealthService {
@@ -15,10 +19,17 @@ export class HealthService {
     private readonly prismaIndicator: PrismaHealthIndicator,
     private readonly prisma: PrismaService,
     private readonly redis: RedisIndicator,
-    private readonly collector: CollectorStateIndicator
+    private readonly collector: CollectorStateIndicator,
+    private readonly collectorStatus: CollectorStatusService
   ) {}
 
   async check(): Promise<Health> {
+    const [checked, collector] = await Promise.all([this.indicators(), this.collectorStatus.status()]);
+
+    return { ...checked, collector, build: { version: OPENAPI.version, commit: null } };
+  }
+
+  private async indicators(): Promise<HealthReport> {
     return this.health
       .check([
         () => this.prismaIndicator.pingCheck(HEALTH.key.database, this.prisma),
@@ -27,10 +38,10 @@ export class HealthService {
         () => this.collector.lestaCircuit()
       ])
       .then(
-        (result) => healthSchema.parse(result),
+        (result) => healthReportSchema.parse(result),
         (error: unknown) => {
           if (error instanceof ServiceUnavailableException) {
-            return healthSchema.parse(error.getResponse());
+            return healthReportSchema.parse(error.getResponse());
           }
 
           throw error;

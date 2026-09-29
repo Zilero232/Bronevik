@@ -20,7 +20,10 @@ const entry = (tankId: number, tier: number): CatalogEntry => ({
   summary: { ...unknownVehicle(tankId), tier },
   dbType: 'heavyTank',
   specs: null,
-  description: null
+  description: null,
+  role: null,
+  spec: { tags: [], role: null, notInShop: false },
+  hasOffers: false
 });
 
 const tank = (tankId: number, overrides: Partial<PlayerTank> = {}): PlayerTank =>

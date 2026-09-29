@@ -306,11 +306,19 @@
     "builds": "Build",
     "math": "Tank math",
     "players": "Players",
-    "patches": "Changes"
+    "patches": "Changes",
+    "maps": "Maps"
   },
   "similar": {
     "title": "Similar tanks",
     "tree": "Show in the tree",
     "empty": "No other tanks of this tier and class."
+  },
+  "maps": {
+    "title": "Maps",
+    "meta": "Win rate and average damage of this tank on each map in random battles, from players running the Three Marks mod and uploaded replays",
+    "map": "Map",
+    "emptyTitle": "No battles yet",
+    "emptyDescription": "Random battles on this tank will show up here from players running the Three Marks mod and from uploaded replays."
   }
 }

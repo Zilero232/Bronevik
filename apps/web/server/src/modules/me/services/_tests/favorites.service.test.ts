@@ -28,7 +28,20 @@ const createService = (rows: Follow[] = []) => {
   prisma.clan.findMany.mockResolvedValue([]);
 
   catalog.all.mockResolvedValue(
-    new Map([[1, { summary: { ...unknownVehicle(1), name: 'IS-7' }, dbType: 'heavyTank', specs: null, description: null }]])
+    new Map([
+      [
+        1,
+        {
+          summary: { ...unknownVehicle(1), name: 'IS-7' },
+          dbType: 'heavyTank',
+          specs: null,
+          description: null,
+          role: null,
+          spec: { tags: [], role: null, notInShop: false },
+          hasOffers: false
+        }
+      ]
+    ])
   );
 
   return { service: new FavoritesService(prisma, catalog, collector), prisma, collector };

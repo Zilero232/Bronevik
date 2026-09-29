@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { countSchema, isoDateSchema, isoDateTimeSchema, percentSchema, tankIdSchema } from '../common/primitives/primitives.schemas';
 import { listParam, paginatedSchema, paginationQuerySchema, sortQuery } from '../common/query/query.schemas';
 import { vehicleFilterSchema, vehicleSummarySchema } from '../vehicles/vehicles.schemas';
-import { MOE_HISTORY, SWEAT_LEVELS } from './marks.constants';
+import { MOE_CURVE, MOE_HISTORY, SWEAT_LEVELS } from './marks.constants';
 
 export const thresholdSourceSchema = z.enum(['otmetki', 'poliroid', 'kttc', 'lesta', 'manual']);
 
@@ -114,4 +114,24 @@ export const moeHistoryPointSchema = z.object({
 export const moeHistoryBatchSchema = z.object({
   days: countSchema,
   series: z.array(z.object({ tankId: tankIdSchema, points: z.array(moeHistoryPointSchema) }))
+});
+
+export const moeCurveParamsSchema = z.object({
+  tankId: tankIdSchema
+});
+
+export const moeCurvePointSchema = z.object({
+  percent: percentSchema,
+  damage: countSchema.describe('Median moving-average combined damage of the players whose gun sat at this percent'),
+  players: countSchema,
+  battles: countSchema
+});
+
+export const moeCurveSchema = z.object({
+  tankId: tankIdSchema,
+  windowDays: countSchema,
+  bandPercent: z.number().positive().describe('A point collects battles whose percent is within this many points of it'),
+  minPlayers: countSchema.describe('Fewest distinct players a point needs before it is shown'),
+  thresholds: moeThresholdSchema.nullable().describe(`The ${MOE_CURVE.officialPercents.join('/')}% thresholds, when known`),
+  points: z.array(moeCurvePointSchema).describe('Only the percents that enough mod players reported; nothing is interpolated')
 });

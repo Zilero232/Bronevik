@@ -17,6 +17,7 @@ export type ReplayRow = Pick<
   | 'result'
   | 'status'
   | 'summary'
+  | 'tags'
   | 'uploaderUserId'
   | 'views'
   | 'visibility'

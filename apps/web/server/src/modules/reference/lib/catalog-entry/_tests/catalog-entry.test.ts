@@ -6,10 +6,13 @@ import { unknownVehicle } from '../../../mappers';
 import { matchesFilter } from '../catalog-entry';
 
 const ENTRY: CatalogEntry = {
-  summary: { ...unknownVehicle(1), tier: 8, nation: 'ussr', type: 'AT-SPG', isPremium: true, isCollectible: false },
+  summary: { ...unknownVehicle(1), tier: 8, nation: 'ussr', type: 'AT-SPG', isPremium: true, isCollectible: false, status: 'premium' },
   dbType: 'atSpg',
   specs: null,
-  description: null
+  description: null,
+  role: 'ATSPG_sniper',
+  spec: { tags: [], role: 'role_ATSPG_sniper', notInShop: false },
+  hasOffers: false
 };
 
 describe('matchesFilter', () => {
@@ -41,6 +44,17 @@ describe('matchesFilter', () => {
   it('distinguishes collectible false from an unset collectible filter', () => {
     expect(matchesFilter({ entry: ENTRY, filter: { collectible: false } })).toBe(true);
     expect(matchesFilter({ entry: ENTRY, filter: { collectible: true } })).toBe(false);
+  });
+
+  it('filters by status', () => {
+    expect(matchesFilter({ entry: ENTRY, filter: { statuses: ['premium', 'reward'] } })).toBe(true);
+    expect(matchesFilter({ entry: ENTRY, filter: { statuses: ['researchable'] } })).toBe(false);
+  });
+
+  it('filters by role and drops a vehicle without one once a role is chosen', () => {
+    expect(matchesFilter({ entry: ENTRY, filter: { roles: ['ATSPG_sniper'] } })).toBe(true);
+    expect(matchesFilter({ entry: ENTRY, filter: { roles: ['HT_break'] } })).toBe(false);
+    expect(matchesFilter({ entry: { ...ENTRY, role: null }, filter: { roles: ['ATSPG_sniper'] } })).toBe(false);
   });
 
   it('requires every set criterion to match', () => {

@@ -8,14 +8,14 @@ import { DataSourceNote, PageHero, SectionHeader, Skeleton } from '@/ui-kit';
 
 import { STATUS_PAGE } from '../config';
 import { useStatusPage } from '../model/hooks';
-import { StatusComponent, StatusVerdict } from './components';
+import { CollectorJobs, QueueBacklog, StatusComponent, StatusVerdict } from './components';
 
 import s from './StatusPage.module.scss';
 
 export const StatusPage = () => {
   const t = useTranslations('status.page');
   const tCommon = useTranslations('common');
-  const { summary, isPending, isFetching, checkedAt, onRefresh } = useStatusPage();
+  const { summary, collector, build, isPending, isFetching, checkedAt, onRefresh } = useStatusPage();
 
   return (
     <div className={s.root}>
@@ -39,6 +39,14 @@ export const StatusPage = () => {
             ))}
           </ul>
         </section>
+        {collector && (
+          <section className={s.section}>
+            <SectionHeader as='h2' description={t('collector.lead')} title={t('collector.title')} />
+            <CollectorJobs jobs={collector.jobs} lastModBattleAt={collector.lastModBattleAt} />
+            <SectionHeader as='h3' title={t('collector.queuesTitle')} />
+            <QueueBacklog collectedAt={collector.queuesCollectedAt} queues={collector.queues} />
+          </section>
+        )}
         <section className={s.section}>
           <SectionHeader as='h2' title={t('sourcesTitle')} />
           <ul className={s.sources}>
@@ -48,6 +56,11 @@ export const StatusPage = () => {
             <li>{t('sources.files')}</li>
           </ul>
         </section>
+        {build && (
+          <p className={s.build}>
+            {build.commit ? t('buildWithCommit', { version: build.version, commit: build.commit }) : t('build', { version: build.version })}
+          </p>
+        )}
         <DataSourceNote />
       </div>
     </div>

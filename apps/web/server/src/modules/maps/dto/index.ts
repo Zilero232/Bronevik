@@ -1,1 +1,1 @@
-export { MapDetailDto, MapListDto, MapParamsDto, MapsQueryDto } from './maps.dto';
+export { MapDetailDto, MapListDto, MapParamsDto, MapsQueryDto, MapTanksDto, TankMapParamsDto, TankMapsDto } from './maps.dto';

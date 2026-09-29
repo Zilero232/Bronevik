@@ -1,0 +1,1 @@
+export { MapTanks } from './MapTanks';

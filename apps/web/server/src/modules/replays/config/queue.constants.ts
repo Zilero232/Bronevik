@@ -1,6 +1,6 @@
 export const REPLAYS_QUEUE = {
   name: 'replays',
-  jobs: { parse: 'parse', bestOfWeek: 'best-of-week', overflowCleanup: 'overflow-cleanup' },
+  jobs: { parse: 'parse', bestOfWeek: 'best-of-week', overflowCleanup: 'overflow-cleanup', tagBackfill: 'tag-backfill' },
   concurrency: 1,
   parseAttempts: 3,
   parseBackoffMs: 10_000
@@ -18,5 +18,11 @@ export const REPLAYS_SCHEDULES = [
     queue: REPLAYS_QUEUE.name,
     name: REPLAYS_QUEUE.jobs.overflowCleanup,
     repeat: { pattern: '30 4 * * *' }
+  },
+  {
+    id: 'replays-tag-backfill',
+    queue: REPLAYS_QUEUE.name,
+    name: REPLAYS_QUEUE.jobs.tagBackfill,
+    repeat: { pattern: '*/10 * * * *' }
   }
 ] as const;

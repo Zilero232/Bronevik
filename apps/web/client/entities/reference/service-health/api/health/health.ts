@@ -1,16 +1,13 @@
+import type { Health } from '@otmetki/schemas';
+
 import { isIncludedIn } from 'remeda';
 
-import { api } from '@/shared/api/http';
-import { fromServer } from '@/shared/api/source';
+import { healthControllerCheck } from '@/shared/api/generated';
+import { fromSdk } from '@/shared/api/source';
 
-import type { Health, HealthInput } from './health.types';
+import type { HealthInput } from './health.types';
 
 import { HEALTH_REQUEST } from '../../config';
-import { healthSchema } from './health.schemas';
 
 export const getHealth = ({ signal }: HealthInput = {}): Promise<Health> =>
-  fromServer(async () =>
-    healthSchema.parse(
-      (await api.get(HEALTH_REQUEST.path, { signal, validateStatus: (status) => isIncludedIn(status, HEALTH_REQUEST.answeredStatuses) })).data
-    )
-  );
+  fromSdk(() => healthControllerCheck({ signal, validateStatus: (status) => isIncludedIn(status, HEALTH_REQUEST.answeredStatuses) }));

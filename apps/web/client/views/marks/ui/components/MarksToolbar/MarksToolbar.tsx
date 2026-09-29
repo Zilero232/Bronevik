@@ -22,7 +22,7 @@ export const MarksToolbar = () => {
 
   return (
     <div className={s.root}>
-      <VehicleFilters withPremium />
+      <VehicleFilters />
       <MarksPresets />
       <div className={s.row}>
         <Input

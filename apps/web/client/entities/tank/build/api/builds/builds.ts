@@ -37,10 +37,31 @@ export const getRecommendedBuild = ({ signal, tankId, mode, cohort }: Recommende
 export const getBuildHistory = ({ signal, tankId, mode, cohort }: BuildHistoryInput): Promise<BuildHistory> =>
   fromSdk(() => buildsControllerHistory({ path: { id: tankId }, query: { mode, cohort }, signal }));
 
-export const listBuildsCatalog = ({ signal, tiers, types, nations, difficulties, mode }: BuildsCatalogInput): Promise<BuildsCatalog> =>
+export const listBuildsCatalog = ({
+  signal,
+  tiers,
+  types,
+  nations,
+  statuses,
+  roles,
+  difficulties,
+  premium,
+  collectible,
+  mode
+}: BuildsCatalogInput): Promise<BuildsCatalog> =>
   fromSdk(() =>
     buildsCatalogControllerList({
-      query: { mode, tiers: listParam(tiers), types: listParam(types), nations: listParam(nations), difficulties: listParam(difficulties) },
+      query: {
+        mode,
+        tiers: listParam(tiers),
+        types: listParam(types),
+        nations: listParam(nations),
+        statuses: listParam(statuses),
+        roles: listParam(roles),
+        difficulties: listParam(difficulties),
+        premium,
+        collectible
+      },
       signal
     })
   );

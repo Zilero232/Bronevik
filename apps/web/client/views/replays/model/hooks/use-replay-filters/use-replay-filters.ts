@@ -2,6 +2,7 @@
 
 import { useDebounceValue } from '@siberiacancode/reactuse';
 import { useQueryStates } from 'nuqs';
+import { mapValues, omit } from 'remeda';
 
 import type { ReplayFilters } from '../../../lib/replay-query';
 import type { ReplayFiltersPatch } from './use-replay-filters.types';
@@ -11,26 +12,22 @@ import { REPLAY_LIST, REPLAYS_URL_PARSERS } from '../../../config';
 export const useReplayFilters = () => {
   const [state, setState] = useQueryStates(REPLAYS_URL_PARSERS, { history: 'replace' });
   const player = useDebounceValue(state.player, REPLAY_LIST.playerDebounceMs);
+  const clan = useDebounceValue(state.clan, REPLAY_LIST.playerDebounceMs);
 
-  const filters: ReplayFilters = {
-    tank: state.tank,
-    map: state.map,
-    mode: state.mode,
-    player,
-    result: state.result,
-    sort: state.sort,
-    offset: state.offset
-  };
+  const { tab, player: playerDraft, clan: clanDraft, ...rest } = state;
+
+  const filters: ReplayFilters = { ...rest, player, clan };
 
   const update = (patch: ReplayFiltersPatch) => void setState({ ...patch, offset: null });
 
   return {
-    tab: state.tab,
-    playerDraft: state.player,
+    tab,
+    playerDraft,
+    clanDraft,
     filters,
     update,
-    setTab: (tab: typeof state.tab) => void setState({ tab, offset: null }),
+    setTab: (next: typeof tab) => void setState({ tab: next, offset: null }),
     setOffset: (offset: number) => void setState({ offset: offset > 0 ? offset : null }),
-    reset: () => void setState({ tank: null, map: null, mode: null, player: null, result: null, offset: null })
+    reset: () => void setState(mapValues(omit(REPLAYS_URL_PARSERS, ['tab', 'sort']), () => null))
   };
 };

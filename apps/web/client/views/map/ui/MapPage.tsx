@@ -4,16 +4,17 @@ import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
 import { useRouteParam } from '@/shared/lib';
-import { DataSourceNote } from '@/ui-kit';
+import { DataSourceNote, Tabs } from '@/ui-kit';
 import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import { useMapDetail } from '../model/hooks';
-import { MapHeader, MapNav, MapSkeleton, MapStats } from './components';
+import { MapHeader, MapNav, MapSkeleton, MapStats, MapTanks } from './components';
 
 import s from './MapPage.module.scss';
 
 export const MapPage = () => {
   const t = useTranslations('maps.missing');
+  const tTabs = useTranslations('maps.map.tabs');
   const mapId = useRouteParam('id');
   const query = useMapDetail(mapId);
 
@@ -29,7 +30,14 @@ export const MapPage = () => {
         {(map) => (
           <>
             <MapHeader map={map} />
-            <MapStats stats={map.stats} />
+            <Tabs
+              items={[
+                { value: 'overview', label: tTabs('overview'), content: <MapStats stats={map.stats} /> },
+                { value: 'tanks', label: tTabs('tanks'), content: <MapTanks arenaId={map.arenaId} /> }
+              ]}
+              aria-label={tTabs('label')}
+              variant='panel'
+            />
             <MapNav arenaId={map.arenaId} />
             <DataSourceNote />
           </>

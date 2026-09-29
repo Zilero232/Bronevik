@@ -4,6 +4,7 @@ export { useMarksPage } from './use-marks-page';
 export { useMarksPresets } from './use-marks-presets';
 export type { MarksPresetId } from './use-marks-presets';
 export { useMarksUrlState } from './use-marks-url-state';
+export { useMoeCurve } from './use-moe-curve';
 export { useMoeHistory } from './use-moe-history';
 export { usePlayerLookup } from './use-player-lookup';
 export { usePlayerMarks } from './use-player-marks';

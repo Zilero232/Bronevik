@@ -1,5 +1,5 @@
 export type VehicleFiltersProps = {
-  withPremium?: boolean;
+  withStatuses?: boolean;
   withRoles?: boolean;
   className?: string;
 };

@@ -12,7 +12,7 @@ import type { MoeDrawerProps } from './MoeDrawer.types';
 
 import { DRAWER_THRESHOLDS } from '../../../config';
 import { thresholdVerdict } from '../../../lib/moe-thresholds';
-import { MasteryLadder, MoeHistoryChart } from './components';
+import { MasteryLadder, MoeCurve, MoeHistoryChart } from './components';
 
 import s from './MoeDrawer.module.scss';
 
@@ -49,6 +49,10 @@ export const MoeDrawer = ({ row, isOpen, onOpenChange }: MoeDrawerProps) => {
               <span>{t('delta30')}</span>
               <DeltaValue value={row.trend.p95Delta30d ?? 0} verdict={thresholdVerdict(row.trend.p95Delta30d)} />
             </div>
+          </section>
+          <section className={s.block}>
+            <h3 className={s.heading}>{t('curveTitle')}</h3>
+            <MoeCurve tankId={row.vehicle.tankId} />
           </section>
           <section className={s.block}>
             <h3 className={s.heading}>{t('history')}</h3>

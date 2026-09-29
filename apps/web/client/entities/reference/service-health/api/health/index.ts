@@ -1,2 +1,2 @@
 export { getHealth } from './health';
-export type { Health, HealthIndicator, HealthInput } from './health.types';
+export type { HealthInput } from './health.types';

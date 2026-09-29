@@ -1,2 +1,1 @@
-export { classifyVehicle, matchesTraits, readSpecTraits, researchXp, tankSources, toTankRole, toTankTraits } from './vehicle-traits';
-export type { SpecTraits } from './vehicle-traits.types';
+export { matchesTraits, researchXp, tankSources } from './vehicle-traits';

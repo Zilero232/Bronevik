@@ -2,6 +2,8 @@ import type { z } from 'zod';
 
 import type {
   masteryThresholdSchema,
+  moeCurvePointSchema,
+  moeCurveSchema,
   moeHistoryBatchQuerySchema,
   moeHistoryBatchSchema,
   moeHistoryFiltersSchema,
@@ -40,3 +42,5 @@ export type MoeHistoryBatch = z.infer<typeof moeHistoryBatchSchema>;
 export type MoeProjection = z.infer<typeof moeProjectionSchema>;
 export type SweatLevel = z.infer<typeof sweatLevelSchema>;
 export type SweatIndex = z.infer<typeof sweatIndexSchema>;
+export type MoeCurve = z.infer<typeof moeCurveSchema>;
+export type MoeCurvePoint = z.infer<typeof moeCurvePointSchema>;

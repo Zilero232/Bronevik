@@ -1,10 +1,22 @@
-import { describe, expect, it } from 'vitest';
+import type { Health } from '@otmetki/schemas';
 
-import type { Health } from '../../../api/health';
+import { COLLECTOR_JOBS } from '@otmetki/schemas';
+import { describe, expect, it } from 'vitest';
 
 import { summarizeHealth } from '../health-summary';
 
+const REPORT: Omit<Health, 'details' | 'status'> = {
+  collector: {
+    jobs: COLLECTOR_JOBS.map((job) => ({ job, lastSuccessAt: null, version: null })),
+    queues: [],
+    queuesCollectedAt: null,
+    lastModBattleAt: null
+  },
+  build: { version: '0.1.0', commit: null }
+};
+
 const HEALTHY: Health = {
+  ...REPORT,
   status: 'ok',
   details: {
     database: { status: 'up' },
@@ -29,6 +41,7 @@ describe('summarizeHealth', () => {
 
   it('reports the missing Lesta key as its own degraded state', () => {
     const health: Health = {
+      ...HEALTHY,
       status: 'degraded',
       details: {
         ...HEALTHY.details,
@@ -43,23 +56,32 @@ describe('summarizeHealth', () => {
 
   it('lets a down component outrank the missing key', () => {
     const health: Health = {
+      ...HEALTHY,
       status: 'error',
-      details: { ...HEALTHY.details, redis: { status: 'down', message: 'ECONNREFUSED' }, worker: { status: 'up', mode: 'no_lesta_key' } }
+      details: { ...HEALTHY.details, redis: { status: 'down', message: 'ECONNREFUSED' }, worker: { status: 'up', state: 'ok', mode: 'no_lesta_key' } }
     };
 
     expect(summarizeHealth({ health, isError: false }).verdict).toBe('down');
   });
 
   it('marks a stale collector heartbeat', () => {
-    const health: Health = { status: 'degraded', details: { ...HEALTHY.details, worker: { status: 'degraded', state: 'stale' } } };
+    const health: Health = { ...HEALTHY, status: 'degraded', details: { ...HEALTHY.details, worker: { status: 'degraded', state: 'stale' } } };
 
     expect(summarizeHealth({ health, isError: false }).verdict).toBe('degraded');
     expect(noteOf(health, 'worker')).toBe('stale');
   });
 
   it('keeps an indicator the API did not send as unknown', () => {
-    const health: Health = { status: 'ok', details: { database: { status: 'up' } } };
+    const health: Health = { ...REPORT, status: 'ok', details: { database: { status: 'up' } } };
 
     expect(noteOf(health, 'worker')).toBe('unknown');
+    expect(noteOf(health, 'redis')).toBe('unknown');
+  });
+
+  it('shows the heartbeat time only on the collector', () => {
+    const components = summarizeHealth({ health: HEALTHY, isError: false }).components;
+
+    expect(components.find(({ key }) => key === 'worker')?.checkedAt).toBe(HEALTHY.details.worker?.collectedAt);
+    expect(components.find(({ key }) => key === 'database')?.checkedAt).toBeNull();
   });
 });

@@ -21,11 +21,11 @@ export class BuildsCatalogService {
     private readonly difficulty: TankDifficultyService
   ) {}
 
-  async catalog({ mode, tiers, types, nations, difficulties }: BuildsCatalogInput): Promise<BuildsCatalog> {
+  async catalog({ mode, difficulties, ...filter }: BuildsCatalogInput): Promise<BuildsCatalog> {
     const cohort = BUILD_USAGE.catalogCohort;
 
     const [catalogVehicles, rows, allowed] = await Promise.all([
-      this.vehicles.filter({ tiers, types, nations }),
+      this.vehicles.filter(filter),
       this.prisma.$queryRaw<CatalogUsageRow[]>`
         SELECT DISTINCT ON (tank_id)
           tank_id AS "tankId", battles, players, win_rate AS "winRate", avg_damage AS "avgDamage", usage, computed_at AS "computedAt"

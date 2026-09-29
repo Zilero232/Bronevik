@@ -1,4 +1,6 @@
 import {
+  moeCurveParamsSchema,
+  moeCurveSchema,
   moeHistoryBatchQuerySchema,
   moeHistoryBatchSchema,
   moeHistoryFiltersSchema,
@@ -22,3 +24,5 @@ export class MoeProjectionInputDto extends createZodDto(moeProjectionSchema.omit
 export class MoeProjectionDto extends createZodDto(moeProjectionSchema) {}
 export class ModMoeParamsDto extends createZodDto(modMoeParamsSchema) {}
 export class ModMoeThresholdsDto extends createZodDto(modMoeThresholdsSchema) {}
+export class MoeCurveParamsDto extends createZodDto(moeCurveParamsSchema) {}
+export class MoeCurveDto extends createZodDto(moeCurveSchema) {}

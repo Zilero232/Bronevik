@@ -1,1 +1,1 @@
-export { toMapDetail, toMapSummary } from './map-detail';
+export { toMapDetail, toMapRef, toMapSummary } from './map-detail';

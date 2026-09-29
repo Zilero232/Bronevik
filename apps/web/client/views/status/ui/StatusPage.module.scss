@@ -35,3 +35,10 @@
   color: var(--color-text-muted);
   list-style: disc;
 }
+
+.build {
+  @include numeric;
+
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+}

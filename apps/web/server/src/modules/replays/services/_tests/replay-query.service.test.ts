@@ -4,6 +4,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 import type { Player, Replay } from '../../../../../generated';
 import type { AppConfigService } from '../../../../config';
 import type { ObjectStorage, PrismaService } from '../../../../core';
+import type { VehicleCatalogService } from '../../../reference';
 import type { ReplaySearchQuery } from '../../replays.types';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
@@ -39,6 +40,11 @@ const replayRow = (overrides: Partial<Replay>): Replay => ({
   xp: null,
   medals: [],
   summary: null,
+  clanTag: null,
+  damageBlocked: null,
+  markOfMastery: null,
+  tags: [],
+  tagsVersion: 0,
   playerAccountIds: [],
   hasTracks: false,
   heatmapAppliedAt: null,
@@ -57,9 +63,11 @@ const createService = () => {
   const storage = mock<ObjectStorage>();
   const config = mock<AppConfigService>();
 
+  const catalog = mock<VehicleCatalogService>();
+
   config.get.mockReturnValue('http://localhost:4000');
 
-  return { service: new ReplayQueryService(prisma, storage, config), prisma, storage };
+  return { service: new ReplayQueryService(prisma, storage, config, catalog), prisma, storage, catalog };
 };
 
 describe('ReplayQueryService.get', () => {

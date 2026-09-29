@@ -19,11 +19,15 @@ const entry: CatalogEntry = {
     tier: 1,
     isPremium: false,
     isCollectible: false,
+    status: 'researchable',
     images: { small: null, contour: null, big: null }
   },
   dbType: 'lightTank',
   specs: null,
-  description: null
+  description: null,
+  role: null,
+  spec: { tags: [], role: null, notInShop: false },
+  hasOffers: false
 };
 
 const createService = (vehicles: Vehicle[]) => {

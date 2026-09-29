@@ -10,7 +10,15 @@ import { unknownVehicle } from '../../../reference/mappers';
 import { PLAYER_STATS } from '../../config';
 import { PlayerInsightsService } from '../player-insights.service';
 
-const entry = (tankId: number): CatalogEntry => ({ summary: unknownVehicle(tankId), dbType: 'mediumTank', specs: null, description: null });
+const entry = (tankId: number): CatalogEntry => ({
+  summary: unknownVehicle(tankId),
+  dbType: 'mediumTank',
+  specs: null,
+  description: null,
+  role: null,
+  spec: { tags: [], role: null, notInShop: false },
+  hasOffers: false
+});
 
 const rating = (tankId: number, battles: number): AccountTankRating => mock<AccountTankRating>({ tankId, battles, winRate: 50, avgDamage: 1500 });
 

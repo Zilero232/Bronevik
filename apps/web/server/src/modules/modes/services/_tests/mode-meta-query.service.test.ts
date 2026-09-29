@@ -22,10 +22,19 @@ const summary = (tankId: number): VehicleSummary => ({
   tier: 8,
   isPremium: false,
   isCollectible: false,
+  status: 'researchable',
   images: { small: null, contour: null, big: null }
 });
 
-const entry = (tankId: number): CatalogEntry => ({ summary: summary(tankId), dbType: 'mediumTank', specs: null, description: null });
+const entry = (tankId: number): CatalogEntry => ({
+  summary: summary(tankId),
+  dbType: 'mediumTank',
+  specs: null,
+  description: null,
+  role: null,
+  spec: { tags: [], role: null, notInShop: false },
+  hasOffers: false
+});
 
 const aggregate = (overrides: Pick<ModeTankAggregate, 'tankId'> & Partial<ModeTankAggregate>): ModeTankAggregate => ({
   mode: 'onslaught',

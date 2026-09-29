@@ -17,3 +17,10 @@ export const MASTERY_LEVELS = [
 ] as const satisfies readonly { level: MasteryLevel; key: 'class1' | 'class2' | 'class3' | 'master' }[];
 
 export const NUMERIC_COLUMN = { align: 'end', isNumeric: true } as const;
+
+export const CURVE_THRESHOLDS = [
+  { key: 'p65', percent: 65 },
+  { key: 'p85', percent: 85 },
+  { key: 'p95', percent: 95 },
+  { key: 'p100', percent: 100 }
+] as const satisfies readonly { key: (typeof MOE_THRESHOLD_KEYS)[number]; percent: number }[];

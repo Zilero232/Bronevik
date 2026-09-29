@@ -1,4 +1,4 @@
-import { ECONOMY_ACCOUNTS, LEARNING_DIFFICULTIES, serverPeriodSchema, skillCohortSchema, statsModeSchema, TANK_STATUSES } from '@otmetki/schemas';
+import { ECONOMY_ACCOUNTS, LEARNING_DIFFICULTIES, serverPeriodSchema, skillCohortSchema, statsModeSchema } from '@otmetki/schemas';
 import { parseAsArrayOf, parseAsBoolean, parseAsInteger, parseAsStringLiteral } from 'nuqs/server';
 
 export const TANKS_VIEWS = ['table', 'tierlist', 'economy'] as const;
@@ -21,7 +21,6 @@ export const TANKS_QUERY_PARSERS = {
   mode: parseAsStringLiteral(statsModeSchema.options).withDefault('all'),
   view: parseAsStringLiteral(TANKS_VIEWS).withDefault('table'),
   tier: parseAsInteger.withDefault(TANKS_VIEW.defaultTier),
-  statuses: parseAsArrayOf(parseAsStringLiteral(TANK_STATUSES)).withDefault([]),
   difficulties: parseAsArrayOf(parseAsStringLiteral(LEARNING_DIFFICULTIES)).withDefault([]),
   top: parseAsBoolean.withDefault(false),
   pinned: parseAsBoolean.withDefault(false),

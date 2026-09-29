@@ -3,8 +3,18 @@ import { z } from 'zod';
 import { accountIdSchema, countSchema, isoDateTimeSchema, tankIdSchema, uuidSchema } from '../common/primitives/primitives.schemas';
 import { visibilitySchema } from '../community/community.schemas';
 import { battleResultSchema } from '../sessions/sessions.schemas';
+import { REPLAY_MASTERY_LEVELS, REPLAY_TAGS } from './replays.constants';
 
 export const replayStatusSchema = z.enum(['uploaded', 'parsing', 'parsed', 'failed']);
+
+export const replayTagSchema = z.enum(REPLAY_TAGS).describe('Automatic battle tag computed from the replay; the rules are in REPLAY_TAG_RULES');
+
+export const replayMasterySchema = z.coerce
+  .number()
+  .int()
+  .min(REPLAY_MASTERY_LEVELS[0])
+  .max(REPLAY_MASTERY_LEVELS[REPLAY_MASTERY_LEVELS.length - 1])
+  .describe('Mastery badge the recorder earned: 4 is Ace Tanker, 3 to 1 are the first to third class');
 
 export const replayPlayerSchema = z.object({
   accountId: accountIdSchema,
@@ -50,6 +60,7 @@ export const replaySummarySchema = z.object({
   frags: countSchema.nullable(),
   xp: countSchema.nullable(),
   medals: z.array(z.string()),
+  tags: z.array(replayTagSchema),
   players: z.array(replayPlayerSchema),
   durationSec: countSchema.nullable(),
   views: countSchema,

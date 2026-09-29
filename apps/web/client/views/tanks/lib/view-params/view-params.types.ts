@@ -12,7 +12,7 @@ export type TierListParamsInput = {
 };
 
 export type EconomyParamsInput = {
-  state: Pick<TanksState, 'account' | 'difficulties' | 'statuses'>;
+  state: Pick<TanksState, 'account' | 'difficulties'>;
   filters: VehicleFilterValues;
 };
 

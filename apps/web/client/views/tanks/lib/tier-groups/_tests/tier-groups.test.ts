@@ -15,6 +15,7 @@ const entry = (rank: TierListRank, tankId: number): TierListEntry => ({
     tier: 10,
     isPremium: false,
     isCollectible: false,
+    status: 'researchable',
     images: { small: null, contour: null, big: null }
   },
   rank,

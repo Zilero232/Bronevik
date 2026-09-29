@@ -55,8 +55,13 @@ export class VehicleCatalogService {
   }
 
   private async load(): Promise<Map<number, CatalogEntry> | undefined> {
-    const rows = await this.prisma.vehicle.findMany({ where: { isActive: true } });
+    const [rows, offered] = await Promise.all([
+      this.prisma.vehicle.findMany({ where: { isActive: true } }),
+      this.prisma.$queryRaw<{ tank_id: number }[]>`SELECT DISTINCT unnest(tank_ids) AS tank_id FROM premium_offer`
+    ]);
 
-    return rows.length > 0 ? new Map(rows.map((row) => [row.tankId, toCatalogEntry(row)])) : undefined;
+    const withOffers = new Set(offered.map((row) => row.tank_id));
+
+    return rows.length > 0 ? new Map(rows.map((row) => [row.tankId, toCatalogEntry({ row, hasOffers: withOffers.has(row.tankId) })])) : undefined;
   }
 }

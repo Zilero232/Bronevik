@@ -4,13 +4,19 @@ import {
   countSchema,
   isoDateSchema,
   isoDateTimeSchema,
+  listParam,
+  nationSchema,
   nicknameSchema,
   paginatedSchema,
   paginationQuerySchema,
+  replayMasterySchema,
   replayStatusSchema,
   replaySummarySchema,
+  replayTagSchema,
   tankIdSchema,
+  tierSchema,
   uuidSchema,
+  vehicleTypeSchema,
   visibilitySchema
 } from '@otmetki/schemas';
 import { z } from 'zod';
@@ -33,8 +39,22 @@ export const replaySearchQuerySchema = paginationQuerySchema.extend({
   accountId: accountIdSchema.optional(),
   player: nicknameSchema.optional(),
   minDamage: z.coerce.number().int().min(0).optional(),
+  minAssist: z.coerce.number().int().min(0).optional().describe('Minimum damage the recorder assisted with: spotting, tracking and stun'),
+  minBlocked: z.coerce.number().int().min(0).optional().describe('Minimum damage the recorder blocked with armour'),
+  minFrags: z.coerce.number().int().min(0).optional(),
   result: battleResultSchema.optional(),
+  clan: z.string().trim().min(1).max(5).optional().describe('Clan tag of the recorder, case-insensitive'),
+  tiers: listParam(tierSchema).optional(),
+  types: listParam(vehicleTypeSchema).optional(),
+  nations: listParam(nationSchema).optional(),
+  mastery: replayMasterySchema.optional(),
+  version: z.string().trim().min(1).max(32).optional().describe('Exact game version the replay was recorded on'),
+  tags: listParam(replayTagSchema).optional().describe('Only replays carrying every one of these automatic tags'),
   sort: replaySortSchema.default('recent')
+});
+
+export const replayVersionsSchema = z.object({
+  versions: z.array(z.string()).describe('Game versions of public replays, the most recently played first')
 });
 
 export const replayPageSchema = paginatedSchema(replaySummarySchema);

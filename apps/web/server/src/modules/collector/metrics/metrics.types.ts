@@ -16,7 +16,7 @@ export type MetricCounters = {
 };
 
 export type TrackJobInput<T> = {
-  job: Pick<Job, 'attemptsMade' | 'queueName'>;
+  job: Pick<Job, 'attemptsMade' | 'name' | 'queueName'>;
   run: () => Promise<T>;
 };
 

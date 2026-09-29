@@ -15,6 +15,7 @@ Design specs, one per initiative, dated.
 - [specs/2026-09-26-streamer-settings.md](specs/2026-09-26-streamer-settings.md) — the streamer directory and streamer settings.
 - [specs/2026-09-28-plus-free-tiers.md](specs/2026-09-28-plus-free-tiers.md) — free tiers and monthly meters for Plus features (3D armor, battle analysis), the before/after feature matrix.
 - [specs/2026-09-28-manager-runtime-dependencies.md](specs/2026-09-28-manager-runtime-dependencies.md) — the manager installs OpenWG Gameface and GUIFlash as pinned runtime dependencies; the catalogue entries requested from the modpack owner.
+- [specs/2026-09-29-derived-data-rules.md](specs/2026-09-29-derived-data-rules.md) — the rules behind automatic replay tags, tank × map win rates and the fine mark curve, and where each hides thin data.
 
 ## Architecture
 

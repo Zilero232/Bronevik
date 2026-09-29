@@ -15,6 +15,7 @@ const row = (name: string, slug: string, updatedAt: string | null): MoeRow => ({
     tier: 10,
     isPremium: false,
     isCollectible: false,
+    status: 'researchable',
     images: { small: null, contour: null, big: null }
   },
   moe: null,

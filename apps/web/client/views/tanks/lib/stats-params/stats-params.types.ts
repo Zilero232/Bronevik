@@ -5,6 +5,6 @@ import type { VehicleFilterValues } from '@/features/tank/filter-vehicles';
 import type { TANKS_QUERY_PARSERS } from '../../config';
 
 export type StatsParamsInput = {
-  state: Pick<inferParserType<typeof TANKS_QUERY_PARSERS>, 'cohort' | 'difficulties' | 'mode' | 'period' | 'statuses' | 'top'>;
+  state: Pick<inferParserType<typeof TANKS_QUERY_PARSERS>, 'cohort' | 'difficulties' | 'mode' | 'period' | 'top'>;
   filters: VehicleFilterValues;
 };

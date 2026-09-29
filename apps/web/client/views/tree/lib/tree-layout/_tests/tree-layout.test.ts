@@ -16,6 +16,7 @@ const node = (tankId: number, tier: number): TechTreeNode => ({
     type: 'mediumTank',
     isPremium: false,
     isCollectible: false,
+    status: 'researchable',
     images: { small: null, contour: null, big: null }
   } satisfies VehicleSummary,
   xp: tier * 100,

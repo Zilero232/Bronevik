@@ -89,7 +89,29 @@
       "damage": "By damage",
       "xp": "By XP",
       "views": "By views"
-    }
+    },
+    "advanced": "Advanced search",
+    "tier": "Tier",
+    "type": "Class",
+    "nation": "Nation",
+    "clan": "Clan",
+    "clanPlaceholder": "Clan tag",
+    "minimums": {
+      "minDamage": "Damage from",
+      "minAssist": "Assist from",
+      "minBlocked": "Blocked from",
+      "minFrags": "Kills from"
+    },
+    "masteryLabel": "Mastery badge",
+    "mastery": {
+      "1": "Third class",
+      "2": "Second class",
+      "3": "First class",
+      "4": "Ace Tanker"
+    },
+    "version": "Game version",
+    "tags": "Battle tags",
+    "tagsHint": "Tags are set automatically from the battle results in the replay. Hover a tag to see its rule. A replay must carry every tag you pick."
   },
   "upload": {
     "title": "Upload a replay",
@@ -245,5 +267,27 @@
     "empty": "No data for this selection yet",
     "low": "less",
     "high": "more"
+  },
+  "tags": {
+    "kolobanov": {
+      "label": "Kolobanov",
+      "rule": "A win where the recorder was the last one alive on the team, with at least {minEnemiesAlive} enemies alive when the last ally fell."
+    },
+    "comeback": {
+      "label": "Comeback",
+      "rule": "A win after the recorder's team was down by {minDeficit} or more vehicles alive."
+    },
+    "raider": {
+      "label": "Raider",
+      "rule": "A win by capturing the enemy base, with at least {minCapturePoints} capture points from the recorder."
+    },
+    "highCaliber": {
+      "label": "High Caliber",
+      "rule": "The recorder dealt the most damage in the battle and at least {minShareOfEnemyHealth, number, percent} of the enemy team's total hit points."
+    },
+    "warrior": {
+      "label": "Warrior",
+      "rule": "The recorder destroyed at least {minFrags} vehicles and no ally destroyed more."
+    }
   }
 }

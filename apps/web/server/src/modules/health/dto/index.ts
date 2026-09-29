@@ -1,2 +1,2 @@
 export { HealthDto } from './health.dto';
-export { circuitSchema, healthSchema, heartbeatSchema } from './health.schemas';
+export { circuitSchema, healthReportSchema, heartbeatSchema, queuesSnapshotSchema } from './health.schemas';

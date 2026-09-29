@@ -15,6 +15,7 @@ const vehicle = (tankId: number, isPremium: boolean, withImages = true): Vehicle
   tier: 10,
   isPremium,
   isCollectible: false,
+  status: 'researchable',
   images: withImages ? { small: 's.png', contour: 'c.png', big: 'b.png' } : { small: null, contour: null, big: null },
   role: null
 });

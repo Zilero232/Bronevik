@@ -21,5 +21,13 @@ export const matchesFilter = ({ entry, filter }: MatchesFilterInput): boolean =>
     return false;
   }
 
-  return filter.collectible === undefined || summary.isCollectible === filter.collectible;
+  if (filter.collectible !== undefined && summary.isCollectible !== filter.collectible) {
+    return false;
+  }
+
+  if (filter.statuses?.length && !filter.statuses.includes(summary.status)) {
+    return false;
+  }
+
+  return !filter.roles?.length || (entry.role !== null && filter.roles.includes(entry.role));
 };

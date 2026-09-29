@@ -10,6 +10,7 @@ import type {
   replayPageSchema,
   replaySearchQuerySchema,
   replayTracksSchema,
+  replayVersionsSchema,
   uploadedReplaySchema
 } from './dto/replays.schemas';
 import type { ReplayExtension } from './lib/replay-file';
@@ -45,6 +46,13 @@ export type UploadFromModInput = {
 };
 
 export type ReplaySearchQuery = z.output<typeof replaySearchQuerySchema>;
+
+export type ReplayVersions = z.infer<typeof replayVersionsSchema>;
+
+export type TagBackfillOutcome = {
+  tagged: number;
+  skipped: number;
+};
 
 export type UploadedReplay = z.infer<typeof uploadedReplaySchema>;
 

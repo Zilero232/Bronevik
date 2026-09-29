@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 
 import { MarksController } from './marks.controller';
 import { MoePublicController } from './moe-public.controller';
-import { MoeTableService, ProjectionService, SweatIndexService } from './services';
+import { MoeCurveService, MoeTableService, ProjectionService, SweatIndexService } from './services';
 
 @Module({
   controllers: [MarksController, MoePublicController],
-  providers: [MoeTableService, ProjectionService, SweatIndexService],
+  providers: [MoeTableService, MoeCurveService, ProjectionService, SweatIndexService],
   exports: [MoeTableService, SweatIndexService]
 })
 export class MarksModule {}

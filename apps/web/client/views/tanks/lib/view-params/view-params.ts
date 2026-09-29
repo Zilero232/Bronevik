@@ -1,6 +1,6 @@
 import { match } from 'ts-pattern';
 
-import { vehicleQuery, vehicleTraitQuery } from '@/features/tank/filter-vehicles';
+import { vehicleQuery } from '@/features/tank/filter-vehicles';
 
 import type { EconomyTableQueryInput, TierListQueryInput } from '../../api';
 import type { ActiveViewParamsInput, EconomyParamsInput, TierListParamsInput } from './view-params.types';
@@ -14,10 +14,8 @@ export const tierListParams = ({ state: { period, tier, mode }, filters: { types
   type: types.length === 1 ? types[0] : undefined
 });
 
-export const economyParams = ({ state: { statuses, difficulties, account }, filters }: EconomyParamsInput): EconomyTableQueryInput => ({
+export const economyParams = ({ state: { difficulties, account }, filters }: EconomyParamsInput): EconomyTableQueryInput => ({
   ...vehicleQuery(filters),
-  ...vehicleTraitQuery(filters),
-  statuses,
   difficulties,
   account,
   limit: TANKS_ECONOMY.limit

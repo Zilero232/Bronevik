@@ -8,14 +8,17 @@ import type { LestaOutcomeRecorder, RecordLestaInput } from '../../../core';
 import type { MetricCounters, RecordJobInput, TrackJobInput } from './metrics.types';
 
 import { PrismaService } from '../../../core';
+import { COLLECTOR_STATE_KEY } from '../config';
 import { CircuitBreakerService } from './circuit-breaker.service';
 import { EMPTY_COUNTERS, METRICS } from './config';
 import { jobContext } from './job-context';
+import { jobSuccessKey } from './lib';
 
 @Injectable()
 export class MetricsService implements LestaOutcomeRecorder, OnApplicationShutdown {
   private readonly logger = new Logger(MetricsService.name);
   private counters = new Map<string, MetricCounters>();
+  private succeeded = new Map<string, string>();
 
   constructor(
     private readonly prisma: PrismaService,
@@ -31,6 +34,7 @@ export class MetricsService implements LestaOutcomeRecorder, OnApplicationShutdo
       const result = await jobContext.run({ queue }, run);
 
       this.recordJob({ queue, durationMs: performance.now() - startedAt, ok: true, retried });
+      this.succeeded.set(jobSuccessKey({ queue, name: job.name }), new Date().toISOString());
 
       return result;
     } catch (error) {
@@ -88,10 +92,32 @@ export class MetricsService implements LestaOutcomeRecorder, OnApplicationShutdo
         this.logger.warn(`metrics flush for ${queue} failed: ${String(error)}`);
       }
     }
+
+    await this.flushSuccesses();
   }
 
   async onApplicationShutdown() {
     await this.flush();
+  }
+
+  private async flushSuccesses() {
+    if (this.succeeded.size === 0) {
+      return;
+    }
+
+    const value = JSON.stringify(Object.fromEntries(this.succeeded));
+
+    this.succeeded = new Map();
+
+    try {
+      await this.prisma.$executeRaw`
+        INSERT INTO collector_state (key, value, updated_at)
+        VALUES (${COLLECTOR_STATE_KEY.jobSuccess}, ${value}::jsonb, now())
+        ON CONFLICT (key) DO UPDATE SET value = collector_state.value || EXCLUDED.value, updated_at = now()
+      `;
+    } catch (error) {
+      this.logger.warn(`job success flush failed: ${String(error)}`);
+    }
   }
 
   private recordJob({ queue, durationMs, ok, retried }: RecordJobInput) {

@@ -9,7 +9,7 @@ import { errorMessage, toJsonValue } from '../../../common/lib';
 import { ObjectStorage, PrismaService } from '../../../core';
 import { parsePackets, parseReplay, ReplayFormatError } from '../../../lib/replay';
 import { REPLAY_PARSE, REPLAY_UPLOAD } from '../config';
-import { buildTracks, replayColumns, replayMedals, tracksStorageKey } from '../lib';
+import { buildTracks, replayColumns, replayMedals, replayTagColumns, tracksStorageKey } from '../lib';
 import { HeatmapService } from './heatmap.service';
 
 @Injectable()
@@ -92,6 +92,7 @@ export class ReplayParseService {
       where: { id: replayId },
       data: {
         ...columns,
+        ...replayTagColumns(parsed.summary),
         vehicleType: vehicle?.type ?? null,
         battleId: battle?.id ?? null,
         medals: replayMedals({ markOfMastery: parsed.summary.recorder.markOfMastery, battleAchievements: battle?.achievements ?? [] }),

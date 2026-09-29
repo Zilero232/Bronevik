@@ -1,6 +1,7 @@
+import type { Health, HealthDetails } from '@otmetki/schemas';
+
 import type { ServiceStatusValue } from '@/ui-kit';
 
-import type { Health, HealthIndicator } from '../../api/health';
 import type { HEALTH_COMPONENTS } from '../../config';
 
 export type HealthComponent = (typeof HEALTH_COMPONENTS)[number];
@@ -29,5 +30,5 @@ export type SummarizeHealthInput = {
 
 export type HealthNoteInput = {
   key: HealthComponent;
-  indicator: HealthIndicator | undefined;
+  details: HealthDetails | undefined;
 };

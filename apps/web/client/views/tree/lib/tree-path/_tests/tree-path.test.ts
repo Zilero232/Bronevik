@@ -16,6 +16,7 @@ const node = ({ tankId, tier, xp }: { tankId: number; tier: number; xp: number |
     type: 'heavyTank',
     isPremium: false,
     isCollectible: false,
+    status: 'researchable',
     images: { small: null, contour: null, big: null }
   } satisfies VehicleSummary,
   xp,

@@ -27,6 +27,7 @@ const row = (fields: Partial<ReplayRow> = {}): ReplayRow => ({
   frags: null,
   xp: null,
   medals: [],
+  tags: [],
   views: 0,
   summary,
   createdAt: new Date('2026-09-20T18:00:00Z'),

@@ -13,12 +13,26 @@ export const vehicle = (overrides: Partial<VehicleSummary> & Pick<VehicleSummary
   tier: 8,
   isPremium: false,
   isCollectible: false,
+  status: 'researchable',
   images: { small: null, contour: null, big: null },
   ...overrides
 });
 
 export const catalogOf = (...summaries: VehicleSummary[]): Map<number, CatalogEntry> =>
-  new Map(summaries.map((summary) => [summary.tankId, { summary, dbType: 'mediumTank', specs: null, description: null }]));
+  new Map(
+    summaries.map((summary) => [
+      summary.tankId,
+      {
+        summary,
+        dbType: 'mediumTank',
+        specs: null,
+        description: null,
+        role: null,
+        spec: { tags: [], role: null, notInShop: false },
+        hasOffers: false
+      }
+    ])
+  );
 
 export const rawRow = (overrides: Partial<RawTankRow> & Pick<RawTankRow, 'battles' | 'tank_id' | 'wins'>): RawTankRow => ({
   damage: overrides.battles * 1_000,

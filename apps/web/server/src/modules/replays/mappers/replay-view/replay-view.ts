@@ -1,5 +1,8 @@
 import type { ReplayPlayer as ReplayPlayerView, ReplaySummary as ReplayView } from '@otmetki/schemas';
 
+import { REPLAY_TAGS } from '@otmetki/schemas';
+import { isIncludedIn } from 'remeda';
+
 import type { ReplayPlayer } from '../../../../lib/replay';
 import type { ToReplayViewInput } from './replay-view.types';
 
@@ -75,6 +78,7 @@ export const toReplayView = ({ replay, apiUrl, viewerUserId = null }: ToReplayVi
     frags: replay.frags,
     xp: replay.xp,
     medals: replay.medals,
+    tags: replay.tags.filter((tag) => isIncludedIn(tag, REPLAY_TAGS)),
     players: players.map((player) => player.view),
     durationSec: summary?.durationSeconds === null || summary?.durationSeconds === undefined ? null : Math.round(summary.durationSeconds),
     views: replay.views,

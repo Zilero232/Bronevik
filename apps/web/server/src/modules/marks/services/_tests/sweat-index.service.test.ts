@@ -20,11 +20,25 @@ const summary = (tankId: number): VehicleSummary => ({
   tier: 10,
   isPremium: false,
   isCollectible: false,
+  status: 'researchable',
   images: { small: null, contour: null, big: null }
 });
 
 const catalogOf = (...tankIds: number[]): Map<number, CatalogEntry> =>
-  new Map(tankIds.map((tankId) => [tankId, { summary: summary(tankId), dbType: 'heavyTank', specs: null, description: null }]));
+  new Map(
+    tankIds.map((tankId) => [
+      tankId,
+      {
+        summary: summary(tankId),
+        dbType: 'heavyTank',
+        specs: null,
+        description: null,
+        role: null,
+        spec: { tags: [], role: null, notInShop: false },
+        hasOffers: false
+      }
+    ])
+  );
 
 const moe = (tankId: number, p95: number): MoeThresholdRecord => ({
   tankId,

@@ -2,7 +2,7 @@ import type { VehicleSummary } from '@otmetki/schemas';
 
 import { isObjectType, isString } from 'remeda';
 
-import type { ReadUrlInput, VehicleRow } from './vehicle-summary.types';
+import type { ReadUrlInput, ToVehicleSummaryInput } from './vehicle-summary.types';
 
 import { VEHICLE_TYPE_FROM_DB } from '../../../../common/lib';
 import { vehicleRenderUrl } from '../../../gamedata';
@@ -24,7 +24,7 @@ const readUrl = ({ images, keys }: ReadUrlInput): string | null => {
   return null;
 };
 
-export const toVehicleSummary = (row: VehicleRow): VehicleSummary => ({
+export const toVehicleSummary = ({ row, status }: ToVehicleSummaryInput): VehicleSummary => ({
   tankId: row.tankId,
   name: row.name,
   shortName: row.shortName,
@@ -34,6 +34,7 @@ export const toVehicleSummary = (row: VehicleRow): VehicleSummary => ({
   tier: row.tier,
   isPremium: row.isPremium,
   isCollectible: row.isCollectible,
+  status,
   images: {
     small: readUrl({ images: row.images, keys: IMAGE_KEYS.small }),
     contour: readUrl({ images: row.images, keys: IMAGE_KEYS.contour }),
@@ -52,5 +53,6 @@ export const unknownVehicle = (tankId: number): VehicleSummary => ({
   tier: 1,
   isPremium: false,
   isCollectible: false,
+  status: 'researchable',
   images: { small: null, contour: null, big: null, large: null }
 });

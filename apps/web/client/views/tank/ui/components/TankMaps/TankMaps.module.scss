@@ -1,0 +1,13 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  scroll-margin-top: calc(var(--header-offset) + var(--space-4));
+}
+
+.header {
+  padding: 0 var(--space-4);
+}
+
+.body {
+  padding: var(--space-2) var(--space-4) var(--space-4);
+}

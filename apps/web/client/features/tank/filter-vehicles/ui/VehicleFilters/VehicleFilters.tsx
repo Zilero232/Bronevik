@@ -1,13 +1,15 @@
 'use client';
 
+import type { TankStatus } from '@otmetki/schemas';
+
 import { NATIONS, TANK_CLASSES } from '@otmetki/icons';
 import { clsx } from 'clsx';
 import { RotateCcw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Button, IconFilter, SegmentedControl, Select } from '@/ui-kit';
+import { Button, IconFilter, Select, ToggleChips } from '@/ui-kit';
 
-import type { RoleChoice, VehicleKind } from '../../model/hooks';
+import type { RoleChoice } from '../../model/hooks';
 import type { VehicleFiltersProps } from './VehicleFilters.types';
 
 import { VEHICLE_FILTER_ICON, VEHICLE_TIERS } from '../../config';
@@ -15,10 +17,10 @@ import { useVehicleFiltersView } from '../../model/hooks';
 
 import s from './VehicleFilters.module.scss';
 
-export const VehicleFilters = ({ withPremium = true, withRoles = true, className }: VehicleFiltersProps) => {
+export const VehicleFilters = ({ withStatuses = true, withRoles = true, className }: VehicleFiltersProps) => {
   const t = useTranslations('tanks.filters');
   const tTraits = useTranslations('tankTraits');
-  const { filters, isActive, kindOptions, roleItems, role, setFilters, reset, onRoleChange } = useVehicleFiltersView();
+  const { filters, isActive, statusOptions, roleItems, role, setFilters, reset, onStatusesChange, onRoleChange } = useVehicleFiltersView();
 
   return (
     <div className={clsx(s.root, className)}>
@@ -46,13 +48,13 @@ export const VehicleFilters = ({ withPremium = true, withRoles = true, className
         value={filters.nations}
         onChange={(nations) => setFilters({ nations })}
       />
-      {withPremium && (
-        <SegmentedControl<VehicleKind>
-          aria-label={t('premium')}
-          options={kindOptions}
+      {withStatuses && (
+        <ToggleChips<TankStatus>
+          aria-label={tTraits('status.label')}
+          options={statusOptions}
           size='sm'
-          value={filters.premium}
-          onChange={(premium) => setFilters({ premium })}
+          value={filters.statuses}
+          onChange={onStatusesChange}
         />
       )}
       {withRoles && (

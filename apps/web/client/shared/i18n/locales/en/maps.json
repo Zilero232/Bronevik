@@ -75,6 +75,18 @@
       "label": "Neighbouring maps",
       "prev": "Previous",
       "next": "Next"
+    },
+    "tabs": {
+      "label": "Map sections",
+      "overview": "Overview",
+      "tanks": "Vehicles"
+    },
+    "tanks": {
+      "title": "Vehicles on this map",
+      "meta": "Win rate and average damage of tanks on this map in random battles, from players running the Three Marks mod and uploaded replays",
+      "tank": "Tank",
+      "emptyTitle": "No battles yet",
+      "emptyDescription": "Random battles on this map will show up here from players running the Three Marks mod and from uploaded replays."
     }
   },
   "unnamed": "Unknown map",
@@ -85,5 +97,12 @@
     "medium": "Medium",
     "large": "Large, 1200 m and up",
     "pinned": "Pinned"
+  },
+  "samples": {
+    "window": "Random battles over the last {days} days. Win rate and damage appear once there are at least {min} battles.",
+    "battles": "Battles",
+    "winRate": "Win rate",
+    "avgDamage": "Avg damage",
+    "fewBattles": "Too few battles — {min} needed"
   }
 }

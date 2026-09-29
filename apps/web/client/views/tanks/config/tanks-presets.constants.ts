@@ -15,8 +15,8 @@ export const TANKS_PRESETS: QuickPreset<inferParserType<typeof TANKS_PRESET_PARS
   { id: 'tier10', patch: { tiers: [10] } },
   { id: 'tier8', patch: { tiers: [8] } },
   { id: 'tiers6to8', patch: { tiers: [6, 7, 8] } },
-  { id: 'premium', patch: { premium: 'premium' } },
+  { id: 'premium', patch: { statuses: ['premium'] } },
   { id: 'researchable', patch: { statuses: ['researchable'] } },
-  { id: 'collector', patch: { premium: 'collector' } },
+  { id: 'collector', patch: { statuses: ['collector'] } },
   { id: 'pinned', patch: { pinned: true } }
 ];

@@ -18,6 +18,7 @@ const row = (slug: string, moePercent: number | null, damageToNextMark: number |
     tier: 10,
     isPremium: false,
     isCollectible: false,
+    status: 'researchable',
     images: { small: null, contour: null, big: null }
   },
   battles: 100,

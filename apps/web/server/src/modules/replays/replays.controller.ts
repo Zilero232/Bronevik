@@ -38,6 +38,7 @@ import {
   ReplayPageDto,
   ReplaySearchQueryDto,
   ReplayTracksDto,
+  ReplayVersionsDto,
   UpdateReplayDto,
   UploadedReplayDto,
   UploadReplayDto
@@ -88,6 +89,13 @@ export class ReplaysController {
   @ZodResponse({ type: BestOfWeekDto })
   best(@Query() { week }: BestOfWeekQueryDto) {
     return this.queries.bestOfWeek(week);
+  }
+
+  @AllowAnonymous()
+  @Get('versions')
+  @ZodResponse({ type: ReplayVersionsDto })
+  versions() {
+    return this.queries.versions();
   }
 
   @Get('mine')

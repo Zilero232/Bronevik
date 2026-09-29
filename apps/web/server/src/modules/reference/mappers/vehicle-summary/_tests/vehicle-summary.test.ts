@@ -18,13 +18,19 @@ const ROW: VehicleRow = {
   images: null
 };
 
+const summaryOf = (row: VehicleRow) => toVehicleSummary({ row, status: 'researchable' });
+
 describe('toVehicleSummary', () => {
+  it('carries the status it is given', () => {
+    expect(toVehicleSummary({ row: ROW, status: 'reward' }).status).toBe('reward');
+  });
+
   it('maps the database vehicle type to the public one', () => {
-    expect(toVehicleSummary(ROW).type).toBe('AT-SPG');
+    expect(summaryOf(ROW).type).toBe('AT-SPG');
   });
 
   it('reads images under their primary or fallback key', () => {
-    const summary = toVehicleSummary({
+    const summary = summaryOf({
       ...ROW,
       images: { small: 'https://cdn.example/small.png', contour_icon: 'https://cdn.example/contour.png', preview: 'https://cdn.example/big.png' }
     });
@@ -38,17 +44,17 @@ describe('toVehicleSummary', () => {
   });
 
   it('skips values that are not valid URLs and tries the next key', () => {
-    const summary = toVehicleSummary({ ...ROW, images: { small: 'not a url', small_icon: 'https://cdn.example/s.png', big: 42 } });
+    const summary = summaryOf({ ...ROW, images: { small: 'not a url', small_icon: 'https://cdn.example/s.png', big: 42 } });
 
     expect(summary.images).toMatchObject({ small: 'https://cdn.example/s.png', contour: null, big: null });
   });
 
   it('returns empty images when the stored value is not an object', () => {
-    expect(toVehicleSummary({ ...ROW, images: 'https://cdn.example/x.png' }).images).toMatchObject({ small: null, contour: null, big: null });
+    expect(summaryOf({ ...ROW, images: 'https://cdn.example/x.png' }).images).toMatchObject({ small: null, contour: null, big: null });
   });
 
   it('has no large render for a vehicle without a client tag', () => {
-    expect(toVehicleSummary({ ...ROW, tag: null }).images.large).toBeNull();
+    expect(summaryOf({ ...ROW, tag: null }).images.large).toBeNull();
   });
 });
 

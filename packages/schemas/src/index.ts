@@ -490,6 +490,26 @@ export { API_ERROR_CODES, apiErrorCodeSchema, apiErrorDetailsSchema, apiErrorIss
 export type { ApiError, ApiErrorCode, ApiErrorDetails, ApiErrorIssue } from './errors';
 export { createFollowSchema, followKindSchema, followListSchema, followParamsSchema, followSchema } from './follows';
 export type { CreateFollowInput, Follow, FollowKind, FollowList } from './follows';
+export {
+  buildInfoSchema,
+  COLLECTOR_JOBS,
+  collectorHealthSchema,
+  collectorJobSchema,
+  connectionIndicatorSchema,
+  HEALTH_CIRCUIT_STATES,
+  HEALTH_INDICATOR_STATUSES,
+  HEALTH_STATUSES,
+  HEALTH_WORKER_MODES,
+  HEALTH_WORKER_STATES,
+  healthDetailsSchema,
+  healthIndicatorStatusSchema,
+  healthSchema,
+  healthStatusSchema,
+  lestaCircuitIndicatorSchema,
+  queueBacklogSchema,
+  workerIndicatorSchema
+} from './health';
+export type { BuildInfo, CollectorHealth, CollectorJob, CollectorJobName, Health, HealthDetails, QueueBacklog } from './health';
 export { leaderboardEntrySchema, leaderboardQuerySchema, leaderboardSchema, leaderboardScopeSchema } from './leaderboards';
 export type { Leaderboard, LeaderboardEntry, LeaderboardQuery, LeaderboardScope } from './leaderboards';
 export {
@@ -497,15 +517,42 @@ export {
   mapListSchema,
   mapModeSchema,
   mapParamsSchema,
+  mapRefSchema,
   mapsQuerySchema,
   mapStatsSchema,
   mapSummarySchema,
-  mapTeamStatsSchema
+  mapTankRowSchema,
+  mapTanksSchema,
+  mapTeamStatsSchema,
+  TANK_MAPS,
+  tankMapParamsSchema,
+  tankMapRowSchema,
+  tankMapSampleSchema,
+  tankMapsSchema
 } from './maps';
-export type { MapDetail, MapList, MapMode, MapParams, MapsQuery, MapStats, MapSummary, MapTeamStats } from './maps';
+export type {
+  MapDetail,
+  MapList,
+  MapMode,
+  MapParams,
+  MapRef,
+  MapsQuery,
+  MapStats,
+  MapSummary,
+  MapTankRow,
+  MapTanks,
+  MapTeamStats,
+  TankMapRow,
+  TankMaps,
+  TankMapSample
+} from './maps';
 export {
   masteryThresholdSchema,
+  MOE_CURVE,
   MOE_HISTORY,
+  moeCurveParamsSchema,
+  moeCurvePointSchema,
+  moeCurveSchema,
   moeHistoryBatchQuerySchema,
   moeHistoryBatchSchema,
   moeHistoryFiltersSchema,
@@ -526,6 +573,8 @@ export {
 } from './marks';
 export type {
   MasteryThreshold,
+  MoeCurve,
+  MoeCurvePoint,
   MoeHistory,
   MoeHistoryBatch,
   MoeHistoryBatchQuery,
@@ -979,8 +1028,17 @@ export type {
 } from './progression';
 export { gameVersionSchema, serverOnlineSchema, serversOnlineSchema } from './reference';
 export type { GameVersion, ServerOnline, ServersOnline } from './reference';
-export { replayPlayerSchema, replayStatusSchema, replaySummarySchema } from './replays';
-export type { ReplayPlayer, ReplayStatus, ReplaySummary } from './replays';
+export {
+  REPLAY_MASTERY_LEVELS,
+  REPLAY_TAG_RULES,
+  REPLAY_TAGS,
+  replayMasterySchema,
+  replayPlayerSchema,
+  replayStatusSchema,
+  replaySummarySchema,
+  replayTagSchema
+} from './replays';
+export type { ReplayMastery, ReplayPlayer, ReplayStatus, ReplaySummary, ReplayTag } from './replays';
 export {
   clanSearchResultSchema,
   mapSearchResultSchema,

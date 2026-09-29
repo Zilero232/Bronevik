@@ -13,8 +13,20 @@ export const REPLAY_LIST = {
   anyValue: 'any',
   playerDebounceMs: 400,
   slugPattern: /^[\w-]{1,64}$/,
-  hiddenModes: ['bootcamp', 'maps_training']
+  hiddenModes: ['bootcamp', 'maps_training'],
+  clanPattern: /^[\w-]{1,5}$/
 } as const;
+
+export const REPLAY_TIERS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] as const;
+
+export const REPLAY_MINIMUMS = ['minDamage', 'minAssist', 'minBlocked', 'minFrags'] as const;
+
+export const REPLAY_MINIMUM_STEP = {
+  minDamage: 500,
+  minAssist: 500,
+  minBlocked: 500,
+  minFrags: 1
+} as const satisfies Record<(typeof REPLAY_MINIMUMS)[number], number>;
 
 export const REPLAY_CARD = {
   figures: [

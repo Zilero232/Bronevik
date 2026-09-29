@@ -42,6 +42,7 @@ const TANK: TankSearchResult = {
     tier: 10,
     isPremium: false,
     isCollectible: false,
+    status: 'researchable',
     images: { small: null, contour: null, big: null }
   }
 };

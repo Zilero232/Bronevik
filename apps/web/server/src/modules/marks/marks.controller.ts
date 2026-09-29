@@ -7,6 +7,8 @@ import { ZodResponse } from 'nestjs-zod';
 import { CACHE_TTL } from '../../common/cache';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
 import {
+  MoeCurveDto,
+  MoeCurveParamsDto,
   MoeHistoryBatchDto,
   MoeHistoryBatchQueryDto,
   MoeHistoryDto,
@@ -17,7 +19,7 @@ import {
   MoeProjectionInputDto,
   MoeQueryDto
 } from './dto';
-import { MoeTableService, ProjectionService } from './services';
+import { MoeCurveService, MoeTableService, ProjectionService } from './services';
 
 @ApiTags('marks')
 @AllowAnonymous()
@@ -25,7 +27,8 @@ import { MoeTableService, ProjectionService } from './services';
 export class MarksController {
   constructor(
     private readonly table: MoeTableService,
-    private readonly projection: ProjectionService
+    private readonly projection: ProjectionService,
+    private readonly curves: MoeCurveService
   ) {}
 
   @Get()
@@ -50,6 +53,14 @@ export class MarksController {
   @ZodResponse({ type: MoeHistoryDto })
   history(@Param() { tankId }: MoeHistoryParamsDto, @Query() filters: MoeHistoryFiltersDto) {
     return this.table.history({ tankId, ...filters });
+  }
+
+  @Get(':tankId/curve')
+  @UseInterceptors(ViewerCacheInterceptor)
+  @CacheTTL(CACHE_TTL.server)
+  @ZodResponse({ type: MoeCurveDto })
+  curve(@Param() { tankId }: MoeCurveParamsDto) {
+    return this.curves.curve(tankId);
   }
 
   @Post('projection')

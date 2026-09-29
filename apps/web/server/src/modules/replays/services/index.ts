@@ -5,4 +5,5 @@ export { ReplayOwnerService } from './replay-owner.service';
 export { ReplayParseService } from './replay-parse.service';
 export { ReplayQueryService } from './replay-query.service';
 export { ReplayStatusService } from './replay-status.service';
+export { ReplayTagBackfillService } from './replay-tag-backfill.service';
 export { ReplayUploadService } from './replay-upload.service';

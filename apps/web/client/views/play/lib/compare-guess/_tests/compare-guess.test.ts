@@ -24,6 +24,7 @@ const subject = ({ vehicle = {}, avgDamage = 2_000, winRate = 50 }: SubjectInput
     nation: 'ussr',
     type: 'heavyTank',
     isCollectible: false,
+    status: 'researchable',
     images: { small: null, contour: null, big: null },
     ...vehicle
   },

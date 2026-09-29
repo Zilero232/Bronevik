@@ -48,6 +48,11 @@ model Replay {
   xp             Int?
   medals         String[]
   summary        Json?
+  clanTag        String?       @map("clan_tag")
+  damageBlocked  Int?          @map("damage_blocked")
+  markOfMastery  Int?          @map("mark_of_mastery") @db.SmallInt
+  tags           String[]      @default([])
+  tagsVersion    Int           @default(0) @map("tags_version") @db.SmallInt
 
   playerAccountIds BigInt[]  @map("player_account_ids")
   hasTracks        Boolean   @default(false) @map("has_tracks")
@@ -73,6 +78,8 @@ model Replay {
   @@index([gameplayMode, playedAt(sort: Desc)])
   @@index([battleType, playedAt(sort: Desc)])
   @@index([visibility, status, playedAt(sort: Desc)])
+  @@index([tags], type: Gin)
+  @@index([status, tagsVersion])
   @@map("replay")
 }
 

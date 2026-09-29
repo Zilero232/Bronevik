@@ -5,7 +5,26 @@ import type { ReplayFilters } from '../replay-query.types';
 import { REPLAY_LIST } from '../../../config';
 import { fromSelectValue, hasActiveFilters, pageWindow, toSearchQuery, toSelectValue } from '../replay-query';
 
-const EMPTY: ReplayFilters = { tank: null, map: null, mode: null, player: '', result: null, sort: 'recent', offset: 0 };
+const EMPTY: ReplayFilters = {
+  tank: null,
+  map: null,
+  mode: null,
+  player: '',
+  clan: '',
+  result: null,
+  tiers: [],
+  types: [],
+  nations: [],
+  minDamage: null,
+  minAssist: null,
+  minBlocked: null,
+  minFrags: null,
+  mastery: null,
+  version: null,
+  tags: [],
+  sort: 'recent',
+  offset: 0
+};
 
 describe('toSearchQuery', () => {
   it('sends only the sort and the page when no filter is set', () => {
@@ -14,7 +33,7 @@ describe('toSearchQuery', () => {
 
   it('maps every URL filter onto its server query field', () => {
     const query = toSearchQuery({
-      filters: { tank: 1, map: '01_karelia', mode: 'ctf', player: 'Straik', result: 'win', sort: 'damage', offset: 50 },
+      filters: { ...EMPTY, tank: 1, map: '01_karelia', mode: 'ctf', player: 'Straik', result: 'win', sort: 'damage', offset: 50 },
       limit: 25
     });
 
@@ -45,7 +64,61 @@ describe('toSearchQuery', () => {
   });
 });
 
+describe('toSearchQuery extended filters', () => {
+  it('sends the vehicle, minimum, mastery, version and tag filters', () => {
+    const query = toSearchQuery({
+      filters: {
+        ...EMPTY,
+        clan: ' ABC ',
+        tiers: [10],
+        types: ['heavyTank'],
+        nations: ['ussr'],
+        minDamage: 5000,
+        minFrags: 0,
+        mastery: 4,
+        version: '2.1.0',
+        tags: ['kolobanov']
+      },
+      limit: 25
+    });
+
+    expect(query).toMatchObject({
+      clan: 'ABC',
+      tiers: [10],
+      types: ['heavyTank'],
+      nations: ['ussr'],
+      minDamage: 5000,
+      minFrags: 0,
+      mastery: 4,
+      version: '2.1.0',
+      tags: ['kolobanov']
+    });
+  });
+
+  it('drops values the server would reject', () => {
+    const query = toSearchQuery({ filters: { ...EMPTY, clan: 'TOO_LONG_TAG', mastery: 7, minAssist: -1, version: '  ' }, limit: 25 });
+
+    expect(query.clan).toBeUndefined();
+    expect(query.mastery).toBeUndefined();
+    expect(query.minAssist).toBeUndefined();
+    expect(query.version).toBeUndefined();
+  });
+
+  it('sends no empty lists', () => {
+    const query = toSearchQuery({ filters: EMPTY, limit: 25 });
+
+    expect(query.tiers).toBeUndefined();
+    expect(query.tags).toBeUndefined();
+  });
+});
+
 describe('hasActiveFilters', () => {
+  it('reports every extended filter as active', () => {
+    expect(hasActiveFilters({ ...EMPTY, minFrags: 0 })).toBe(true);
+    expect(hasActiveFilters({ ...EMPTY, tags: ['warrior'] })).toBe(true);
+    expect(hasActiveFilters({ ...EMPTY, clan: 'ABC' })).toBe(true);
+  });
+
   it('treats the sort and the page as not being filters', () => {
     expect(hasActiveFilters({ ...EMPTY, sort: 'xp', offset: 25 })).toBe(false);
   });

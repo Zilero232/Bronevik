@@ -7,6 +7,8 @@ export const useStatusPage = () => {
 
   return {
     summary,
+    collector: query.data?.collector ?? null,
+    build: query.data?.build ?? null,
     isPending: query.isPending,
     isFetching: query.isFetching,
     checkedAt: query.dataUpdatedAt > 0 ? query.dataUpdatedAt : null,

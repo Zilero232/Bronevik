@@ -6,16 +6,33 @@ import type { SearchWhereInput } from './replay-search.types';
 
 export const publicReplayWhere = { visibility: 'public', status: 'parsed' } as const satisfies Prisma.ReplayWhereInput;
 
-export const searchWhere = ({ query, playerAccountId }: SearchWhereInput): Prisma.ReplayWhereInput => {
+const atLeast = (value: number | undefined) => (value === undefined ? undefined : { gte: value });
+
+const tankCondition = ({ query: { tankId }, tankIds }: Pick<SearchWhereInput, 'query' | 'tankIds'>) => {
+  if (tankIds === null) {
+    return tankId;
+  }
+
+  return { in: tankId === undefined ? [...tankIds] : tankIds.filter((id) => id === tankId) };
+};
+
+export const searchWhere = ({ query, playerAccountId, tankIds }: SearchWhereInput): Prisma.ReplayWhereInput => {
   const participant = query.accountId === undefined ? playerAccountId : BigInt(query.accountId);
 
   return {
     ...publicReplayWhere,
-    ...(query.tankId === undefined ? {} : { tankId: query.tankId }),
+    tankId: tankCondition({ query, tankIds }),
     ...(query.arenaId === undefined ? {} : { arenaId: query.arenaId }),
     ...(query.mode === undefined ? {} : { gameplayMode: query.mode }),
     ...(query.result === undefined ? {} : { result: query.result }),
-    ...(query.minDamage === undefined ? {} : { damageDealt: { gte: query.minDamage } }),
+    ...(query.clan === undefined ? {} : { clanTag: { equals: query.clan, mode: 'insensitive' } }),
+    ...(query.version === undefined ? {} : { gameVersion: query.version }),
+    ...(query.mastery === undefined ? {} : { markOfMastery: query.mastery }),
+    ...(query.tags?.length ? { tags: { hasEvery: query.tags } } : {}),
+    damageDealt: atLeast(query.minDamage),
+    damageAssisted: atLeast(query.minAssist),
+    damageBlocked: atLeast(query.minBlocked),
+    frags: atLeast(query.minFrags),
     ...(participant === null ? {} : { playerAccountIds: { has: participant } })
   };
 };

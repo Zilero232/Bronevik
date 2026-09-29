@@ -49,7 +49,7 @@ export class TankObtainService {
     return {
       status,
       role: entry?.traits.role ?? null,
-      sources: tankSources({ status, spec, hasOffers: total > 0, summary: await this.catalog.summary(tankId) }),
+      sources: tankSources({ status, spec, hasOffers: total > 0 }),
       priceCredits: vehicle?.priceCredit ?? null,
       priceGold: vehicle?.priceGold ?? null,
       researchFrom,

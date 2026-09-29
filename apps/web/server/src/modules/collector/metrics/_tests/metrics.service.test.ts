@@ -16,7 +16,7 @@ const createMetrics = () => {
   return { prisma, breaker, metrics: new MetricsService(prisma, breaker) };
 };
 
-const job = (attemptsMade = 0) => mock<Job>({ queueName: 'collector.poll', attemptsMade });
+const job = (attemptsMade = 0) => mock<Job>({ queueName: 'collector.poll', name: 'batch', attemptsMade });
 
 const flushed = async (setup: ReturnType<typeof createMetrics>) => {
   await setup.metrics.flush();
@@ -70,6 +70,35 @@ describe('MetricsService.track', () => {
     const [row] = await flushed(setup);
 
     expect(row?.queue).toBe(METRICS.unscopedQueue);
+  });
+});
+
+describe('MetricsService.flush', () => {
+  it('stores when each job last succeeded', async () => {
+    const setup = createMetrics();
+
+    await setup.metrics.track({ job: job(), run: async () => 'done' });
+    await setup.metrics.flush();
+
+    expect(setup.prisma.$executeRaw).toHaveBeenCalledOnce();
+    expect(JSON.stringify(setup.prisma.$executeRaw.mock.calls[0])).toContain('collector.poll:batch');
+  });
+
+  it('records no success for a failed job', async () => {
+    const setup = createMetrics();
+
+    await setup.metrics
+      .track({
+        job: job(),
+        run: async () => {
+          throw new Error('boom');
+        }
+      })
+      .catch(() => null);
+
+    await setup.metrics.flush();
+
+    expect(setup.prisma.$executeRaw).not.toHaveBeenCalled();
   });
 });
 

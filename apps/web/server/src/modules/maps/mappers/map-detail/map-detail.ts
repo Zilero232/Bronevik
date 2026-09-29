@@ -1,6 +1,6 @@
-import type { MapDetail, MapSummary } from '@otmetki/schemas';
+import type { MapDetail, MapRef, MapSummary } from '@otmetki/schemas';
 
-import type { ArenaRow, MinimapUrlInput, ToMapDetailInput } from './map-detail.types';
+import type { ArenaRow, MinimapUrlInput, ToMapDetailInput, ToMapRefInput } from './map-detail.types';
 
 import { MINIMAP } from '../../config';
 import { arenaDataSchema } from './map-detail.schemas';
@@ -51,3 +51,8 @@ export const toMapDetail = ({ arena, stats }: ToMapDetailInput): MapDetail => {
     stats
   };
 };
+
+export const toMapRef = ({ arena, arenaId }: ToMapRefInput): MapRef =>
+  arena
+    ? { arenaId: arena.arenaId, slug: arena.slug, name: arena.name, nameEn: arena.nameEn, image: validUrl(arena.image) }
+    : { arenaId, slug: arenaId, name: arenaId, nameEn: null, image: null };

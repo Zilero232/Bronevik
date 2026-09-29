@@ -22,10 +22,19 @@ const vehicle = (tankId: number, name: string): VehicleSummary => ({
   tier: MOE_TABLE.minTier + 5,
   isPremium: false,
   isCollectible: false,
+  status: 'researchable',
   images: { small: null, contour: null, big: null }
 });
 
-const entry = (summary: VehicleSummary): CatalogEntry => ({ summary, dbType: 'heavyTank', specs: null, description: null });
+const entry = (summary: VehicleSummary): CatalogEntry => ({
+  summary,
+  dbType: 'heavyTank',
+  specs: null,
+  description: null,
+  role: null,
+  spec: { tags: [], role: null, notInShop: false },
+  hasOffers: false
+});
 
 const threshold = (overrides: Partial<TankThreshold>): TankThreshold => ({
   kind: 'moe',

@@ -2,6 +2,7 @@ import type { HealthCheckResult } from '@nestjs/terminus';
 
 import { ServiceUnavailableException } from '@nestjs/common';
 import { HealthCheckService, PrismaHealthIndicator } from '@nestjs/terminus';
+import { COLLECTOR_JOBS } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
@@ -9,6 +10,7 @@ import type { PrismaService } from '../../../../core';
 
 import { HEALTH } from '../../config';
 import { CollectorStateIndicator, RedisIndicator } from '../../indicators';
+import { CollectorStatusService } from '../collector-status.service';
 import { HealthService } from '../health.service';
 
 const healthy: HealthCheckResult = {
@@ -31,9 +33,25 @@ const createHealth = () => {
   const redis = mock<RedisIndicator>();
   const collector = mock<CollectorStateIndicator>();
 
+  const collectorStatus = mock<CollectorStatusService>();
   const prisma = mockDeep<PrismaService>();
 
-  return { health, prismaIndicator, prisma, redis, collector, service: new HealthService(health, prismaIndicator, prisma, redis, collector) };
+  collectorStatus.status.mockResolvedValue({
+    jobs: COLLECTOR_JOBS.map((job) => ({ job, lastSuccessAt: null, version: null })),
+    queues: [],
+    queuesCollectedAt: null,
+    lastModBattleAt: null
+  });
+
+  return {
+    health,
+    prismaIndicator,
+    prisma,
+    redis,
+    collector,
+    collectorStatus,
+    service: new HealthService(health, prismaIndicator, prisma, redis, collector, collectorStatus)
+  };
 };
 
 describe('HealthService.check', () => {
@@ -59,6 +77,17 @@ describe('HealthService.check', () => {
     health.check.mockRejectedValue(new ServiceUnavailableException(failing));
 
     expect(await service.check()).toMatchObject({ status: 'error', details: { [HEALTH.key.redis]: { status: 'down' } } });
+  });
+
+  it('adds the collector status and the API build to the report', async () => {
+    const { health, service } = createHealth();
+
+    health.check.mockResolvedValue(healthy);
+
+    const report = await service.check();
+
+    expect(report.collector.jobs.map(({ job }) => job)).toEqual([...COLLECTOR_JOBS]);
+    expect(report.build.version.length).toBeGreaterThan(0);
   });
 
   it('rethrows an unexpected failure of the health check itself', async () => {

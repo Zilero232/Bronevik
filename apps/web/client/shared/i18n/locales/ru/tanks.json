@@ -82,13 +82,6 @@
     "tier": "Уровень",
     "type": "Класс",
     "nation": "Нация",
-    "premium": "Тип техники",
-    "premiumOptions": {
-      "all": "Все",
-      "regular": "Прокачиваемые",
-      "premium": "Премиум",
-      "collector": "Коллекционные"
-    },
     "reset": "Сбросить"
   },
   "picker": {

@@ -34,6 +34,7 @@ const VEHICLE: VehicleSummary = {
   nation: 'ussr',
   type: 'heavyTank',
   isCollectible: false,
+  status: 'researchable',
   images: { small: null, contour: null, big: null }
 };
 

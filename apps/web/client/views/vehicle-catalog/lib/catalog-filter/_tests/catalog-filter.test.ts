@@ -14,6 +14,7 @@ const vehicle = (overrides: Partial<VehicleCatalogItem> & Pick<VehicleCatalogIte
   tier: 10,
   isPremium: false,
   isCollectible: false,
+  status: 'researchable',
   images: { small: null, contour: null, big: null },
   role: null,
   ...overrides
@@ -22,19 +23,20 @@ const vehicle = (overrides: Partial<VehicleCatalogItem> & Pick<VehicleCatalogIte
 const CATALOG = [
   vehicle({ tankId: 1, name: 'ИС-7', role: 'HT_break' }),
   vehicle({ tankId: 2, name: 'Т-34', type: 'mediumTank', tier: 5 }),
-  vehicle({ tankId: 3, name: 'Löwe', nation: 'germany', tier: 8, isPremium: true }),
+  vehicle({ tankId: 3, name: 'Löwe', nation: 'germany', tier: 8, isPremium: true, status: 'premium' }),
   vehicle({ tankId: 4, name: 'Объект 140', type: 'mediumTank' }),
   vehicle({ tankId: 5, name: 'Ёж', type: 'lightTank', tier: 5 }),
-  vehicle({ tankId: 6, name: 'Коллекционный', tier: 8, isCollectible: true })
+  vehicle({ tankId: 6, name: 'Коллекционный', tier: 8, isCollectible: true, status: 'collector' }),
+  vehicle({ tankId: 7, name: 'Наградной', tier: 8, isPremium: true, status: 'reward' })
 ];
 
-const NO_FILTERS: VehicleFilterValues = { tiers: [], types: [], nations: [], premium: 'all', roles: [] };
+const NO_FILTERS: VehicleFilterValues = { tiers: [], types: [], nations: [], statuses: [], roles: [] };
 
 const ids = (vehicles: VehicleCatalogItem[]) => vehicles.map(({ tankId }) => tankId);
 
 describe('filterCatalog', () => {
   it('keeps everything without filters', () => {
-    expect(ids(filterCatalog({ catalog: CATALOG, filters: NO_FILTERS, search: '' }))).toEqual([1, 2, 3, 4, 5, 6]);
+    expect(ids(filterCatalog({ catalog: CATALOG, filters: NO_FILTERS, search: '' }))).toEqual([1, 2, 3, 4, 5, 6, 7]);
   });
 
   it('matches names ignoring case, dashes, spaces and ё', () => {
@@ -43,13 +45,13 @@ describe('filterCatalog', () => {
     expect(ids(filterCatalog({ catalog: CATALOG, filters: NO_FILTERS, search: 'еж' }))).toEqual([5]);
   });
 
-  it('combines tier, type, nation and premium filters', () => {
+  it('combines tier, type, nation and status filters', () => {
     expect(ids(filterCatalog({ catalog: CATALOG, filters: { ...NO_FILTERS, tiers: [5] }, search: '' }))).toEqual([2, 5]);
     expect(ids(filterCatalog({ catalog: CATALOG, filters: { ...NO_FILTERS, types: ['mediumTank'], tiers: [10] }, search: '' }))).toEqual([4]);
     expect(ids(filterCatalog({ catalog: CATALOG, filters: { ...NO_FILTERS, nations: ['germany'] }, search: '' }))).toEqual([3]);
-    expect(ids(filterCatalog({ catalog: CATALOG, filters: { ...NO_FILTERS, premium: 'premium' }, search: '' }))).toEqual([3]);
-    expect(ids(filterCatalog({ catalog: CATALOG, filters: { ...NO_FILTERS, premium: 'regular' }, search: '' }))).toEqual([1, 2, 4, 5]);
-    expect(ids(filterCatalog({ catalog: CATALOG, filters: { ...NO_FILTERS, premium: 'collector' }, search: '' }))).toEqual([6]);
+    expect(ids(filterCatalog({ catalog: CATALOG, filters: { ...NO_FILTERS, statuses: ['premium'] }, search: '' }))).toEqual([3]);
+    expect(ids(filterCatalog({ catalog: CATALOG, filters: { ...NO_FILTERS, statuses: ['researchable'] }, search: '' }))).toEqual([1, 2, 4, 5]);
+    expect(ids(filterCatalog({ catalog: CATALOG, filters: { ...NO_FILTERS, statuses: ['collector', 'reward'] }, search: '' }))).toEqual([6, 7]);
   });
 
   it('keeps only vehicles of the chosen role', () => {

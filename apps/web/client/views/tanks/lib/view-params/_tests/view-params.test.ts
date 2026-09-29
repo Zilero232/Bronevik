@@ -12,7 +12,6 @@ const state: ActiveViewParamsInput['state'] = {
   mode: 'all',
   view: 'table',
   tier: 10,
-  statuses: [],
   difficulties: [],
   top: false,
   pinned: false,

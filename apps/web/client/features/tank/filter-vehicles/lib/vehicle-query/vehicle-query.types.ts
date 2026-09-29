@@ -1,7 +1,7 @@
 import type { inferParserType } from 'nuqs/server';
 
-import type { VEHICLE_FILTER_PARSERS, VEHICLE_KINDS } from '../../config';
-
-export type VehicleKind = (typeof VEHICLE_KINDS)[number];
+import type { VEHICLE_FILTER_PARSERS } from '../../config';
 
 export type VehicleFilterValues = inferParserType<typeof VEHICLE_FILTER_PARSERS>;
+
+export type VehicleQuery = Pick<VehicleFilterValues, 'nations' | 'roles' | 'statuses' | 'tiers' | 'types'>;

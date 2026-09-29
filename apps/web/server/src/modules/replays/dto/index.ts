@@ -12,6 +12,7 @@ export {
   ReplayPageDto,
   ReplaySearchQueryDto,
   ReplayTracksDto,
+  ReplayVersionsDto,
   UpdateReplayDto,
   UploadedReplayDto,
   UploadReplayDto

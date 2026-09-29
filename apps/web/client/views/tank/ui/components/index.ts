@@ -11,6 +11,7 @@ export { SectionNav } from './SectionNav';
 export { ServerStats } from './ServerStats';
 export { SimilarTanks } from './SimilarTanks';
 export { TankGarage } from './TankGarage';
+export { TankMaps } from './TankMaps';
 export { TankProvider } from './TankProvider';
 export { TankSkeleton } from './TankSkeleton';
 export { TopPlayers } from './TopPlayers';

@@ -8,11 +8,31 @@ import type { ModeMetaInput, MyModeStatsInput, SignalInput } from './modes.types
 
 export const getModesHub = ({ signal }: SignalInput): Promise<ModesHub> => fromSdk(() => modesControllerHub({ signal }));
 
-export const getModeMeta = ({ mode, tiers, types, nations, premium, collectible, minBattles, signal }: ModeMetaInput): Promise<ModeMeta> =>
+export const getModeMeta = ({
+  mode,
+  tiers,
+  types,
+  nations,
+  statuses,
+  roles,
+  premium,
+  collectible,
+  minBattles,
+  signal
+}: ModeMetaInput): Promise<ModeMeta> =>
   fromSdk(() =>
     modesControllerModeMeta({
       path: { mode },
-      query: { tiers: listParam(tiers), types: listParam(types), nations: listParam(nations), premium, collectible, minBattles },
+      query: {
+        tiers: listParam(tiers),
+        types: listParam(types),
+        nations: listParam(nations),
+        statuses: listParam(statuses),
+        roles: listParam(roles),
+        premium,
+        collectible,
+        minBattles
+      },
       signal
     })
   );

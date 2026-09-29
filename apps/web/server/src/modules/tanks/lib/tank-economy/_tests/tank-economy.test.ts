@@ -17,6 +17,7 @@ const vehicle = (tankId: number): VehicleSummary => ({
   tier: 8,
   isPremium: false,
   isCollectible: false,
+  status: 'researchable',
   images: { small: null, contour: null, big: null }
 });
 

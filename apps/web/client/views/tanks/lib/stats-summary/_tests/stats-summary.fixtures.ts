@@ -12,6 +12,7 @@ export const statsRowsFixture = (seeds: Pick<TankServerStatsRow, 'battles' | 'wi
       tier: 10,
       isPremium: false,
       isCollectible: false,
+      status: 'researchable',
       images: { small: null, contour: null, big: null }
     },
     period: '7d',

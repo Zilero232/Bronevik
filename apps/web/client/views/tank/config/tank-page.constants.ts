@@ -23,10 +23,11 @@ export const TANK_SECTIONS = {
   economy: 'economy',
   learning: 'learning',
   obtain: 'obtain',
-  math: 'math'
+  math: 'math',
+  maps: 'maps'
 } as const;
 
-export const SECTION_NAV = ['overview', 'stats', 'marks', 'builds', 'math', 'players', 'patches'] as const;
+export const SECTION_NAV = ['overview', 'stats', 'marks', 'builds', 'maps', 'math', 'players', 'patches'] as const;
 
 export const HERO_FIGURES = ['winRate', 'avgDamage', 'mark3'] as const;
 

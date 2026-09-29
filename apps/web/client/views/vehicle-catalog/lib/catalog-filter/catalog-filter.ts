@@ -3,8 +3,6 @@ import type { VehicleCatalogItem } from '@otmetki/schemas';
 import { NATIONS, TANK_CLASSES } from '@otmetki/icons';
 import { groupBy, isIncludedIn, sortBy } from 'remeda';
 
-import { matchesKind, matchesRoles } from '@/features/tank/filter-vehicles';
-
 import type { CatalogTierGroup, FilterCatalogInput } from './catalog-filter.types';
 
 const normalizeName = (value: string) =>
@@ -19,18 +17,19 @@ const rankOf = (list: readonly string[], value: string) => {
   return index === -1 ? list.length : index;
 };
 
-export const filterCatalog = ({ catalog, filters: { tiers, types, nations, premium, roles }, search }: FilterCatalogInput): VehicleCatalogItem[] => {
+export const filterCatalog = ({ catalog, filters: { tiers, types, nations, statuses, roles }, search }: FilterCatalogInput): VehicleCatalogItem[] => {
   const needle = normalizeName(search);
 
   return catalog.filter((vehicle) => {
-    const { name, shortName, slug, tier, type, nation, role } = vehicle;
+    const { name, shortName, slug, tier, type, nation, status, role } = vehicle;
     const isNameMatch = needle.length === 0 || [name, shortName, slug].some((value) => normalizeName(value).includes(needle));
     const isTierMatch = tiers.length === 0 || tiers.includes(tier);
     const isTypeMatch = types.length === 0 || types.includes(type);
     const isNationMatch = nations.length === 0 || isIncludedIn(nation, nations);
-    const isTraitMatch = matchesKind({ kind: premium, vehicle }) && matchesRoles({ role, roles });
+    const isStatusMatch = statuses.length === 0 || statuses.includes(status);
+    const isRoleMatch = roles.length === 0 || (role !== null && roles.includes(role));
 
-    return isNameMatch && isTierMatch && isTypeMatch && isNationMatch && isTraitMatch;
+    return isNameMatch && isTierMatch && isTypeMatch && isNationMatch && isStatusMatch && isRoleMatch;
   });
 };
 

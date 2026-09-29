@@ -10,6 +10,7 @@ import type {
   ReplayPage,
   ReplaySearchQuery,
   ReplayTracks,
+  ReplayVersions,
   ReplayViewInput,
   ViewReplayInput
 } from '../replays.types';
@@ -18,7 +19,8 @@ import { AppNotFoundException } from '../../../common/exceptions';
 import { insensitiveEquals, toIsoDate, weekWindow } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { ObjectStorage, PrismaService } from '../../../core';
-import { BEST_OF_WEEK } from '../config';
+import { VehicleCatalogService } from '../../reference';
+import { BEST_OF_WEEK, REPLAY_SEARCH } from '../config';
 import { replayTracksSchema } from '../dto';
 import { publicReplayWhere, searchOrder, searchWhere } from '../lib';
 import { toReplayView } from '../mappers';
@@ -28,7 +30,8 @@ export class ReplayQueryService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly storage: ObjectStorage,
-    private readonly config: AppConfigService
+    private readonly config: AppConfigService,
+    private readonly catalog: VehicleCatalogService
   ) {}
 
   async get({ id, viewerUserId }: ViewReplayInput): Promise<ReplayView> {
@@ -53,13 +56,25 @@ export class ReplayQueryService {
       return { items: [], total: 0, limit: query.limit, offset: query.offset };
     }
 
-    const where = searchWhere({ query, playerAccountId: player?.accountId ?? null });
+    const where = searchWhere({ query, playerAccountId: player?.accountId ?? null, tankIds: await this.tankIdsOf(query) });
     const [rows, total] = await Promise.all([
       this.prisma.replay.findMany({ where, orderBy: searchOrder(query.sort), take: query.limit, skip: query.offset }),
       this.prisma.replay.count({ where })
     ]);
 
     return { items: rows.map((row) => this.view({ replay: row })), total, limit: query.limit, offset: query.offset };
+  }
+
+  async versions(): Promise<ReplayVersions> {
+    const rows = await this.prisma.replay.groupBy({
+      by: ['gameVersion'],
+      where: { ...publicReplayWhere, gameVersion: { not: null } },
+      _max: { playedAt: true },
+      orderBy: { _max: { playedAt: 'desc' } },
+      take: REPLAY_SEARCH.versionsLimit
+    });
+
+    return { versions: rows.flatMap((row) => (row.gameVersion === null ? [] : [row.gameVersion])) };
   }
 
   async mine({ userId, limit, offset }: MineInput): Promise<ReplayPage> {
@@ -110,6 +125,16 @@ export class ReplayQueryService {
     const parsed = replayTracksSchema.safeParse(JSON.parse(new TextDecoder().decode(bytes)));
 
     return parsed.success ? parsed.data : { tracks: [] };
+  }
+
+  private async tankIdsOf({ tiers, types, nations }: ReplaySearchQuery): Promise<number[] | null> {
+    if (!tiers?.length && !types?.length && !nations?.length) {
+      return null;
+    }
+
+    const entries = await this.catalog.filter({ tiers, types, nations });
+
+    return entries.map((entry) => entry.summary.tankId);
   }
 
   private async visible({ id, viewerUserId }: ViewReplayInput): Promise<Replay> {

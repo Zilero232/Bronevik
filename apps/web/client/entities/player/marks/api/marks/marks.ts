@@ -8,10 +8,18 @@ import type { MoeHistoryInput, MoeListInput } from './marks.types';
 
 import { MOE_REQUEST } from './marks.constants';
 
-export const listMoe = ({ signal, tiers, types, nations, ...rest }: MoeListInput): Promise<MoePage> =>
+export const listMoe = ({ signal, tiers, types, nations, statuses, roles, ...rest }: MoeListInput): Promise<MoePage> =>
   fromSdk(() =>
     marksControllerList({
-      query: { limit: MOE_REQUEST.pageLimit, ...rest, tiers: listParam(tiers), types: listParam(types), nations: listParam(nations) },
+      query: {
+        limit: MOE_REQUEST.pageLimit,
+        ...rest,
+        tiers: listParam(tiers),
+        types: listParam(types),
+        nations: listParam(nations),
+        statuses: listParam(statuses),
+        roles: listParam(roles)
+      },
       signal
     })
   );

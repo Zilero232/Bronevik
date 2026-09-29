@@ -1,14 +1,18 @@
-import type { MoeHistoryQuery, vehicleFilterSchema, VehicleSummary } from '@otmetki/schemas';
+import type { MoeHistoryQuery, TankRole, vehicleFilterSchema, VehicleSummary } from '@otmetki/schemas';
 import type { z } from 'zod';
 
 import type { Prisma, TankThreshold, ThresholdKind, ThresholdSource, VehicleType } from '../../../generated';
 import type { THRESHOLD_LEVELS } from './config';
+import type { SpecTraits } from './lib';
 
 export type CatalogEntry = {
   summary: VehicleSummary;
   dbType: VehicleType;
   specs: Prisma.JsonValue;
   description: string | null;
+  role: TankRole | null;
+  spec: SpecTraits;
+  hasOffers: boolean;
 };
 
 export type VehicleFilter = z.infer<typeof vehicleFilterSchema>;

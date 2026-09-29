@@ -42,6 +42,7 @@ export const QUERY_KEYS = {
     topPlayers: (params: object) => ['tanks', 'top-players', params] as const,
     trend: (tankId: number) => ['tanks', tankId, 'trend'] as const,
     patches: (tankId: number) => ['tanks', tankId, 'patches'] as const,
+    maps: (tankId: number) => ['tanks', tankId, 'maps'] as const,
     armor: (idOrSlug: string) => ['tanks', 'armor', idOrSlug] as const,
     economy: (params: object) => ['tanks', 'economy', params] as const,
     tankEconomy: (tankId: number) => ['tanks', tankId, 'economy'] as const,
@@ -52,6 +53,7 @@ export const QUERY_KEYS = {
     list: (params: object) => ['marks', 'list', params] as const,
     feed: (params: object) => ['marks', 'feed', params] as const,
     history: (tankId: number) => ['marks', tankId, 'history'] as const,
+    curve: (tankId: number) => ['marks', tankId, 'curve'] as const,
     player: (accountId: number) => ['marks', 'player', accountId] as const
   },
   builds: {
@@ -90,7 +92,8 @@ export const QUERY_KEYS = {
   },
   maps: {
     list: ['maps', 'list'] as const,
-    detail: (id: string) => ['maps', 'detail', id] as const
+    detail: (id: string) => ['maps', 'detail', id] as const,
+    tanks: (id: string) => ['maps', 'tanks', id] as const
   },
   userScoped: [['me'], ['replays', 'mine'], ['tactics', 'board'], ['coaching', 'orders'], ['streamers', 'claim']] as const,
   auth: {
@@ -171,7 +174,8 @@ export const QUERY_KEYS = {
     mine: (params: object) => ['replays', 'mine', params] as const,
     detail: (id: string) => ['replays', 'detail', id] as const,
     tracks: (id: string) => ['replays', 'tracks', id] as const,
-    heatmap: (params: object) => ['replays', 'heatmap', params] as const
+    heatmap: (params: object) => ['replays', 'heatmap', params] as const,
+    versions: ['replays', 'versions'] as const
   },
   tactics: {
     all: ['tactics'] as const,

@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { tankIdSchema } from '../common/primitives/primitives.schemas';
 import { booleanParam, listParam } from '../common/query/query.schemas';
-import { TANK_ROLES } from '../tanks/insights/insights.constants';
+import { TANK_ROLES, TANK_STATUSES } from '../tanks/insights/insights.constants';
 
 export const vehicleTypeSchema = z.enum(['lightTank', 'mediumTank', 'heavyTank', 'AT-SPG', 'SPG']);
 
@@ -11,6 +11,8 @@ export const tierSchema = z.coerce.number().int().min(1).max(11);
 export const nationSchema = z.string().min(1).max(32);
 
 export const tankRoleSchema = z.enum(TANK_ROLES);
+
+export const tankStatusSchema = z.enum(TANK_STATUSES);
 
 export const vehicleImagesSchema = z.object({
   small: z.url().nullable(),
@@ -33,6 +35,9 @@ export const vehicleSummarySchema = z.object({
   tier: tierSchema,
   isPremium: z.boolean(),
   isCollectible: z.boolean(),
+  status: tankStatusSchema.describe(
+    'How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable'
+  ),
   images: vehicleImagesSchema
 });
 
@@ -41,7 +46,9 @@ export const vehicleFilterSchema = z.object({
   types: listParam(vehicleTypeSchema).optional(),
   nations: listParam(nationSchema).optional(),
   premium: booleanParam.optional(),
-  collectible: booleanParam.optional()
+  collectible: booleanParam.optional(),
+  statuses: listParam(tankStatusSchema).optional().describe('Only vehicles with one of these statuses'),
+  roles: listParam(tankRoleSchema).optional().describe('Only vehicles with one of these battle roles')
 });
 
 export const vehicleCatalogItemSchema = vehicleSummarySchema.extend({

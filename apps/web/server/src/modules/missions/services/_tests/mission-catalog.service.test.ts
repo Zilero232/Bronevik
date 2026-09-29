@@ -23,10 +23,19 @@ const summary: VehicleSummary = {
   tier: 10,
   isPremium: false,
   isCollectible: false,
+  status: 'researchable',
   images: { small: null, contour: null, big: null }
 };
 
-const entry: CatalogEntry = { summary, dbType: 'heavyTank', specs: null, description: null };
+const entry: CatalogEntry = {
+  summary,
+  dbType: 'heavyTank',
+  specs: null,
+  description: null,
+  role: null,
+  spec: { tags: [], role: null, notInShop: false },
+  hasOffers: false
+};
 
 const campaign = (campaignId: number, rewardTankId: number | null = null): MissionCampaign => ({
   gameVersionId: version.id,

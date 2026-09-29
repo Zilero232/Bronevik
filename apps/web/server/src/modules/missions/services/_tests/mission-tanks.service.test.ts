@@ -55,11 +55,15 @@ const entry = (tankId: number): CatalogEntry => ({
     tier: 8,
     isPremium: false,
     isCollectible: false,
+    status: 'researchable',
     images: { small: null, contour: null, big: null }
   },
   dbType: 'lightTank',
   specs: null,
-  description: null
+  description: null,
+  role: null,
+  spec: { tags: [], role: null, notInShop: false },
+  hasOffers: false
 });
 
 const stats = (tankId: number, avgFrags: number): TankServerStats => ({

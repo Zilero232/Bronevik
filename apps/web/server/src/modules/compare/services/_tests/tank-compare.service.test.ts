@@ -11,7 +11,15 @@ import { unknownVehicle } from '../../../reference/mappers';
 import { COMPARE_PROFILE } from '../../config';
 import { TankCompareService } from '../tank-compare.service';
 
-const entry = (tankId: number): CatalogEntry => ({ summary: unknownVehicle(tankId), dbType: 'heavyTank', specs: null, description: null });
+const entry = (tankId: number): CatalogEntry => ({
+  summary: unknownVehicle(tankId),
+  dbType: 'heavyTank',
+  specs: null,
+  description: null,
+  role: null,
+  spec: { tags: [], role: null, notInShop: false },
+  hasOffers: false
+});
 
 const profile = (tankId: number, profileId: string, overrides: Partial<VehicleProfile> = {}): VehicleProfile =>
   mock<VehicleProfile>({ tankId, profileId, isDefault: false, data: { hp: tankId * 100 }, ...overrides });

@@ -11,6 +11,7 @@ import {
   replayPageSchema,
   replaySearchQuerySchema,
   replayTracksSchema,
+  replayVersionsSchema,
   updateReplaySchema,
   uploadedReplaySchema,
   uploadReplaySchema
@@ -29,6 +30,7 @@ export class HeatmapParamsDto extends createZodDto(heatmapParamsSchema) {}
 export class HeatmapQueryDto extends createZodDto(heatmapQuerySchema) {}
 export class HeatmapDto extends createZodDto(heatmapSchema) {}
 export class ReplayTracksDto extends createZodDto(replayTracksSchema) {}
+export class ReplayVersionsDto extends createZodDto(replayVersionsSchema) {}
 export class PaginationQueryDto extends createZodDto(paginationQuerySchema) {}
 export class ModReplayStatusRequestDto extends createZodDto(modReplayStatusRequestSchema) {}
 export class ModReplayStatusesDto extends createZodDto(modReplayStatusesSchema) {}

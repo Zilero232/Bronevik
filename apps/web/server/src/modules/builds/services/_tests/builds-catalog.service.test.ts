@@ -21,12 +21,16 @@ const entry = (summary: Pick<VehicleSummary, 'name' | 'tankId' | 'tier'>): Catal
     type: 'mediumTank',
     isPremium: false,
     isCollectible: false,
+    status: 'researchable',
     images: { small: null, contour: null, big: null },
     ...summary
   },
   dbType: 'mediumTank',
   specs: null,
-  description: null
+  description: null,
+  role: null,
+  spec: { tags: [], role: null, notInShop: false },
+  hasOffers: false
 });
 
 const provision = (provisionId: number): Provision => ({

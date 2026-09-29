@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { mock, mockDeep } from 'vitest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
-import type { PrismaService } from '../../../../core';
 import type { VehicleCatalogService } from '../../../reference';
 import type { TankDifficultyService } from '../tank-difficulty.service';
 
@@ -10,53 +9,46 @@ import { catalogEntry, catalogOf, vehicle } from './tanks.fixtures';
 
 const researchable = catalogEntry(vehicle({ tankId: 1 }), { tags: [], role: 'role_HT_break', notInShop: false });
 const collector = catalogEntry(vehicle({ tankId: 2, isPremium: true, isCollectible: true }));
-const withdrawn = catalogEntry(vehicle({ tankId: 3, isPremium: true, tier: 8 }), { tags: [], role: null, notInShop: true });
-const reward = catalogEntry(vehicle({ tankId: 4, isPremium: true, tier: 10 }), { tags: [], role: 'role_HT_assault', notInShop: true });
+const shopPremium = { ...catalogEntry(vehicle({ tankId: 3, isPremium: true, tier: 8 }), { tags: [], role: null, notInShop: true }), hasOffers: true };
+const reward = catalogEntry(vehicle({ tankId: 4, isPremium: true, tier: 10, status: 'reward' }), {
+  tags: [],
+  role: 'role_HT_assault',
+  notInShop: true
+});
 
-const entries = [researchable, collector, withdrawn, reward];
+const entries = [researchable, collector, shopPremium, reward];
 
 const createService = () => {
-  const prisma = mockDeep<PrismaService>();
   const catalog = mock<VehicleCatalogService>();
   const difficulty = mock<TankDifficultyService>();
 
   catalog.all.mockResolvedValue(catalogOf(...entries));
-  prisma.$queryRaw.mockResolvedValue([{ tank_id: 3 }]);
 
-  return { service: new TankTraitsService(prisma, catalog, difficulty), prisma, catalog, difficulty };
+  return { service: new TankTraitsService(catalog, difficulty), catalog, difficulty };
 };
 
 describe('TankTraitsService.of', () => {
-  it('classifies every catalog tank by how it is obtained', async () => {
+  it('reads the status and role the catalog classified', async () => {
     const { service } = createService();
 
     expect((await service.of(1))?.traits).toEqual({ status: 'researchable', role: 'HT_break' });
     expect((await service.of(2))?.traits.status).toBe('collector');
-    expect((await service.of(4))?.traits.status).toBe('reward');
+    expect((await service.of(4))?.traits).toEqual({ status: 'reward', role: 'HT_assault' });
   });
 
-  it('treats a withdrawn premium that still appears in shop offers as a premium', async () => {
+  it('keeps the shop-offer flag and the spec the sources are derived from', async () => {
     const { service } = createService();
 
     const found = await service.of(3);
 
     expect(found?.hasOffers).toBe(true);
-    expect(found?.traits.status).toBe('premium');
+    expect(found?.spec.notInShop).toBe(true);
   });
 
   it('returns null for a tank outside the catalog', async () => {
     const { service } = createService();
 
     await expect(service.of(999)).resolves.toBeNull();
-  });
-
-  it('reads the catalog once for repeated lookups', async () => {
-    const { service, catalog } = createService();
-
-    await service.of(1);
-    await service.traits(2);
-
-    expect(catalog.all).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -70,13 +62,12 @@ describe('TankTraitsService.traits', () => {
 
 describe('TankTraitsService.filter', () => {
   it('passes every entry through when no trait filter is set', async () => {
-    const { service, catalog } = createService();
+    const { service } = createService();
 
     const filtered = await service.filter({ entries, filter: {} });
 
     expect(filtered).toEqual(entries);
     expect(filtered).not.toBe(entries);
-    expect(catalog.all).not.toHaveBeenCalled();
   });
 
   it('keeps only tanks of the requested statuses', async () => {
@@ -93,14 +84,6 @@ describe('TankTraitsService.filter', () => {
     const filtered = await service.filter({ entries, filter: { roles: ['HT_assault'] } });
 
     expect(filtered.map((entry) => entry.summary.tankId)).toEqual([4]);
-  });
-
-  it('drops entries the traits index does not know', async () => {
-    const { service } = createService();
-
-    const stray = catalogEntry(vehicle({ tankId: 50 }));
-
-    expect(await service.filter({ entries: [stray], filter: { statuses: ['researchable'] } })).toEqual([]);
   });
 
   it('narrows by difficulty before applying the trait filter', async () => {

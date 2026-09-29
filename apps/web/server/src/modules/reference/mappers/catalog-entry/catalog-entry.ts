@@ -1,11 +1,20 @@
-import type { Vehicle } from '../../../../../generated';
 import type { CatalogEntry } from '../../reference.types';
+import type { ToCatalogEntryInput } from './catalog-entry.types';
 
+import { classifyVehicle, readSpecTraits, toTankRole } from '../../lib';
 import { toVehicleSummary } from '../vehicle-summary';
 
-export const toCatalogEntry = (row: Vehicle): CatalogEntry => ({
-  summary: toVehicleSummary(row),
-  dbType: row.type,
-  specs: row.specs,
-  description: row.description
-});
+export const toCatalogEntry = ({ row, hasOffers }: ToCatalogEntryInput): CatalogEntry => {
+  const spec = readSpecTraits(row.specs);
+  const status = classifyVehicle({ summary: row, spec, hasOffers });
+
+  return {
+    summary: toVehicleSummary({ row, status }),
+    dbType: row.type,
+    specs: row.specs,
+    description: row.description,
+    role: toTankRole(spec.role),
+    spec,
+    hasOffers
+  };
+};

@@ -82,7 +82,20 @@
       "first": "1st class",
       "master": "Ace Tanker"
     },
-    "xp": "{xp} XP"
+    "xp": "{xp} XP",
+    "curveTitle": "Damage per percent",
+    "curve": {
+      "target": "Mark percent",
+      "damageCaption": "combined damage moving average",
+      "fromThreshold": "Mark threshold from the thresholds source.",
+      "fromMod": "Median of {players} players running the mod over {days} days, {battles} battles.",
+      "sourceThreshold": "threshold",
+      "sourceMod": "mod, players: {players}",
+      "modNote": "In-between percents are the median moving average of players running the mod whose mark sat within ±{band} points of that percent over the last {days} days. Missing percents are never filled in.",
+      "onlyThresholds": "Only the 65, 85, 95 and 100% thresholds are backed by data. In-between steps appear once at least {minPlayers} players running the mod reach each percent on this tank within {days} days.",
+      "emptyTitle": "Nothing to calculate yet",
+      "emptyDescription": "This tank has neither mark thresholds nor data from players running the mod yet."
+    }
   },
   "closest": {
     "title": "Closest to a mark",

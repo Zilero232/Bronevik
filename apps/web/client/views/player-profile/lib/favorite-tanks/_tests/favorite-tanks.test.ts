@@ -15,6 +15,7 @@ const row = ({ tankId, battles }: { tankId: number; battles: number }): PlayerTa
     tier: 10,
     isPremium: false,
     isCollectible: false,
+    status: 'researchable',
     images: { small: null, contour: null, big: null }
   },
   battles,

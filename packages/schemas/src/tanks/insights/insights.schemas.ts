@@ -10,11 +10,11 @@ import {
   tankIdSchema
 } from '../../common/primitives/primitives.schemas';
 import { listParam, paginatedSchema, paginationQuerySchema, sortQuery } from '../../common/query/query.schemas';
-import { tankRoleSchema, vehicleFilterSchema, vehicleSummarySchema } from '../../vehicles/vehicles.schemas';
+import { tankRoleSchema, tankStatusSchema, vehicleFilterSchema, vehicleSummarySchema } from '../../vehicles/vehicles.schemas';
 import { vehicleSourceMissionSchema, vehicleSourceSchema } from '../vehicle-sources/vehicle-sources.schemas';
-import { ECONOMY_ACCOUNTS, LEARNING_DIFFICULTIES, TANK_ECONOMY, TANK_SOURCES, TANK_STATUSES } from './insights.constants';
+import { ECONOMY_ACCOUNTS, LEARNING_DIFFICULTIES, TANK_ECONOMY, TANK_SOURCES } from './insights.constants';
 
-export const tankStatusSchema = z.enum(TANK_STATUSES);
+export { tankStatusSchema } from '../../vehicles/vehicles.schemas';
 
 export const tankSourceSchema = z.enum(TANK_SOURCES);
 
@@ -25,9 +25,7 @@ export const tankTraitsSchema = z.object({
 
 export const learningDifficultySchema = z.enum(LEARNING_DIFFICULTIES);
 
-export const tankTraitsFilterSchema = z.object({
-  statuses: listParam(tankStatusSchema).optional(),
-  roles: listParam(tankRoleSchema).optional(),
+export const tankTraitsFilterSchema = vehicleFilterSchema.pick({ statuses: true, roles: true }).extend({
   difficulties: listParam(learningDifficultySchema).optional().describe('Only tanks whose learning curve puts them in one of these difficulties')
 });
 

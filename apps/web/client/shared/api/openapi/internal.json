@@ -252,6 +252,50 @@
             }
           },
           {
+            "name": "statuses",
+            "required": false,
+            "in": "query",
+            "description": "Only vehicles with one of these statuses",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["researchable", "premium", "collector", "reward", "removed"]
+              }
+            }
+          },
+          {
+            "name": "roles",
+            "required": false,
+            "in": "query",
+            "description": "Only vehicles with one of these battle roles",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "HT_assault",
+                  "HT_break",
+                  "HT_universal",
+                  "HT_support",
+                  "MT_universal",
+                  "MT_sniper",
+                  "MT_assault",
+                  "MT_support",
+                  "LT_universal",
+                  "LT_wheeled",
+                  "ATSPG_sniper",
+                  "ATSPG_assault",
+                  "ATSPG_support",
+                  "ATSPG_universal",
+                  "SPG",
+                  "SPG_assault",
+                  "SPG_flame"
+                ]
+              }
+            }
+          },
+          {
             "name": "sort",
             "required": false,
             "in": "query",
@@ -851,6 +895,7 @@
             "name": "statuses",
             "required": false,
             "in": "query",
+            "description": "Only vehicles with one of these statuses",
             "schema": {
               "type": "array",
               "items": {
@@ -863,6 +908,7 @@
             "name": "roles",
             "required": false,
             "in": "query",
+            "description": "Only vehicles with one of these battle roles",
             "schema": {
               "type": "array",
               "items": {
@@ -1131,6 +1177,7 @@
             "name": "statuses",
             "required": false,
             "in": "query",
+            "description": "Only vehicles with one of these statuses",
             "schema": {
               "type": "array",
               "items": {
@@ -1143,6 +1190,7 @@
             "name": "roles",
             "required": false,
             "in": "query",
+            "description": "Only vehicles with one of these battle roles",
             "schema": {
               "type": "array",
               "items": {
@@ -1641,6 +1689,50 @@
             "schema": {
               "type": "boolean"
             }
+          },
+          {
+            "name": "statuses",
+            "required": false,
+            "in": "query",
+            "description": "Only vehicles with one of these statuses",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["researchable", "premium", "collector", "reward", "removed"]
+              }
+            }
+          },
+          {
+            "name": "roles",
+            "required": false,
+            "in": "query",
+            "description": "Only vehicles with one of these battle roles",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "HT_assault",
+                  "HT_break",
+                  "HT_universal",
+                  "HT_support",
+                  "MT_universal",
+                  "MT_sniper",
+                  "MT_assault",
+                  "MT_support",
+                  "LT_universal",
+                  "LT_wheeled",
+                  "ATSPG_sniper",
+                  "ATSPG_assault",
+                  "ATSPG_support",
+                  "ATSPG_universal",
+                  "SPG",
+                  "SPG_assault",
+                  "SPG_flame"
+                ]
+              }
+            }
           }
         ],
         "responses": {
@@ -1766,6 +1858,50 @@
             "in": "query",
             "schema": {
               "type": "boolean"
+            }
+          },
+          {
+            "name": "statuses",
+            "required": false,
+            "in": "query",
+            "description": "Only vehicles with one of these statuses",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["researchable", "premium", "collector", "reward", "removed"]
+              }
+            }
+          },
+          {
+            "name": "roles",
+            "required": false,
+            "in": "query",
+            "description": "Only vehicles with one of these battle roles",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "HT_assault",
+                  "HT_break",
+                  "HT_universal",
+                  "HT_support",
+                  "MT_universal",
+                  "MT_sniper",
+                  "MT_assault",
+                  "MT_support",
+                  "LT_universal",
+                  "LT_wheeled",
+                  "ATSPG_sniper",
+                  "ATSPG_assault",
+                  "ATSPG_support",
+                  "ATSPG_universal",
+                  "SPG",
+                  "SPG_assault",
+                  "SPG_flame"
+                ]
+              }
             }
           },
           {
@@ -1949,6 +2085,36 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/MoeHistoryDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["marks"]
+      }
+    },
+    "/marks/{tankId}/curve": {
+      "get": {
+        "operationId": "MarksController_curve",
+        "parameters": [
+          {
+            "name": "tankId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "maximum": 9007199254740991,
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoeCurveDto_Output"
                 }
               }
             }
@@ -2304,6 +2470,66 @@
             }
           },
           {
+            "name": "premium",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "collectible",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "statuses",
+            "required": false,
+            "in": "query",
+            "description": "Only vehicles with one of these statuses",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["researchable", "premium", "collector", "reward", "removed"]
+              }
+            }
+          },
+          {
+            "name": "roles",
+            "required": false,
+            "in": "query",
+            "description": "Only vehicles with one of these battle roles",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "HT_assault",
+                  "HT_break",
+                  "HT_universal",
+                  "HT_support",
+                  "MT_universal",
+                  "MT_sniper",
+                  "MT_assault",
+                  "MT_support",
+                  "LT_universal",
+                  "LT_wheeled",
+                  "ATSPG_sniper",
+                  "ATSPG_assault",
+                  "ATSPG_support",
+                  "ATSPG_universal",
+                  "SPG",
+                  "SPG_assault",
+                  "SPG_flame"
+                ]
+              }
+            }
+          },
+          {
             "name": "mode",
             "required": false,
             "in": "query",
@@ -2413,6 +2639,36 @@
         "tags": ["maps"]
       }
     },
+    "/maps/{idOrSlug}/tanks": {
+      "get": {
+        "operationId": "MapsController_tanks",
+        "parameters": [
+          {
+            "name": "idOrSlug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minLength": 1,
+              "maxLength": 64,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MapTanksDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["maps"]
+      }
+    },
     "/maps/{idOrSlug}": {
       "get": {
         "operationId": "MapsController_detail",
@@ -2435,6 +2691,36 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/MapDetailDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["maps"]
+      }
+    },
+    "/tanks/{id}/maps": {
+      "get": {
+        "operationId": "TankMapsController_maps",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "maximum": 9007199254740991,
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TankMapsDto_Output"
                 }
               }
             }
@@ -4986,6 +5272,50 @@
             }
           },
           {
+            "name": "statuses",
+            "required": false,
+            "in": "query",
+            "description": "Only vehicles with one of these statuses",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["researchable", "premium", "collector", "reward", "removed"]
+              }
+            }
+          },
+          {
+            "name": "roles",
+            "required": false,
+            "in": "query",
+            "description": "Only vehicles with one of these battle roles",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "HT_assault",
+                  "HT_break",
+                  "HT_universal",
+                  "HT_support",
+                  "MT_universal",
+                  "MT_sniper",
+                  "MT_assault",
+                  "MT_support",
+                  "LT_universal",
+                  "LT_wheeled",
+                  "ATSPG_sniper",
+                  "ATSPG_assault",
+                  "ATSPG_support",
+                  "ATSPG_universal",
+                  "SPG",
+                  "SPG_assault",
+                  "SPG_flame"
+                ]
+              }
+            }
+          },
+          {
             "name": "sort",
             "required": false,
             "in": "query",
@@ -5554,6 +5884,7 @@
             "name": "statuses",
             "required": false,
             "in": "query",
+            "description": "Only vehicles with one of these statuses",
             "schema": {
               "type": "array",
               "items": {
@@ -5566,6 +5897,7 @@
             "name": "roles",
             "required": false,
             "in": "query",
+            "description": "Only vehicles with one of these battle roles",
             "schema": {
               "type": "array",
               "items": {
@@ -6016,6 +6348,50 @@
             "in": "query",
             "schema": {
               "type": "boolean"
+            }
+          },
+          {
+            "name": "statuses",
+            "required": false,
+            "in": "query",
+            "description": "Only vehicles with one of these statuses",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["researchable", "premium", "collector", "reward", "removed"]
+              }
+            }
+          },
+          {
+            "name": "roles",
+            "required": false,
+            "in": "query",
+            "description": "Only vehicles with one of these battle roles",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "HT_assault",
+                  "HT_break",
+                  "HT_universal",
+                  "HT_support",
+                  "MT_universal",
+                  "MT_sniper",
+                  "MT_assault",
+                  "MT_support",
+                  "LT_universal",
+                  "LT_wheeled",
+                  "ATSPG_sniper",
+                  "ATSPG_assault",
+                  "ATSPG_support",
+                  "ATSPG_universal",
+                  "SPG",
+                  "SPG_assault",
+                  "SPG_flame"
+                ]
+              }
             }
           },
           {
@@ -8901,12 +9277,129 @@
             }
           },
           {
+            "name": "minAssist",
+            "required": false,
+            "in": "query",
+            "description": "Minimum damage the recorder assisted with: spotting, tracking and stun",
+            "schema": {
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "minBlocked",
+            "required": false,
+            "in": "query",
+            "description": "Minimum damage the recorder blocked with armour",
+            "schema": {
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "minFrags",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            }
+          },
+          {
             "name": "result",
             "required": false,
             "in": "query",
             "schema": {
               "type": "string",
               "enum": ["win", "loss", "draw"]
+            }
+          },
+          {
+            "name": "clan",
+            "required": false,
+            "in": "query",
+            "description": "Clan tag of the recorder, case-insensitive",
+            "schema": {
+              "minLength": 1,
+              "maxLength": 5,
+              "type": "string"
+            }
+          },
+          {
+            "name": "tiers",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 11
+              }
+            }
+          },
+          {
+            "name": "types",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["lightTank", "mediumTank", "heavyTank", "AT-SPG", "SPG"]
+              }
+            }
+          },
+          {
+            "name": "nations",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 32
+              }
+            }
+          },
+          {
+            "name": "mastery",
+            "required": false,
+            "in": "query",
+            "description": "Mastery badge the recorder earned: 4 is Ace Tanker, 3 to 1 are the first to third class",
+            "schema": {
+              "minimum": 1,
+              "maximum": 4,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "version",
+            "required": false,
+            "in": "query",
+            "description": "Exact game version the replay was recorded on",
+            "schema": {
+              "minLength": 1,
+              "maxLength": 32,
+              "type": "string"
+            }
+          },
+          {
+            "name": "tags",
+            "required": false,
+            "in": "query",
+            "description": "Only replays carrying every one of these automatic tags",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["kolobanov", "comeback", "raider", "highCaliber", "warrior"],
+                "description": "Automatic battle tag computed from the replay; the rules are in REPLAY_TAG_RULES"
+              }
             }
           },
           {
@@ -8976,6 +9469,25 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/BestOfWeekDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["replays"]
+      }
+    },
+    "/replays/versions": {
+      "get": {
+        "operationId": "ReplaysController_versions",
+        "parameters": [],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplayVersionsDto_Output"
                 }
               }
             }
@@ -11601,6 +12113,50 @@
             }
           },
           {
+            "name": "statuses",
+            "required": false,
+            "in": "query",
+            "description": "Only vehicles with one of these statuses",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["researchable", "premium", "collector", "reward", "removed"]
+              }
+            }
+          },
+          {
+            "name": "roles",
+            "required": false,
+            "in": "query",
+            "description": "Only vehicles with one of these battle roles",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "HT_assault",
+                  "HT_break",
+                  "HT_universal",
+                  "HT_support",
+                  "MT_universal",
+                  "MT_sniper",
+                  "MT_assault",
+                  "MT_support",
+                  "LT_universal",
+                  "LT_wheeled",
+                  "ATSPG_sniper",
+                  "ATSPG_assault",
+                  "ATSPG_support",
+                  "ATSPG_universal",
+                  "SPG",
+                  "SPG_assault",
+                  "SPG_flame"
+                ]
+              }
+            }
+          },
+          {
             "name": "minBattles",
             "required": false,
             "in": "query",
@@ -13680,57 +14236,360 @@
           },
           "info": {
             "type": "object",
-            "propertyNames": {
-              "type": "string"
-            },
-            "additionalProperties": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "enum": ["up", "degraded", "down"]
-                }
+            "properties": {
+              "database": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": ["up", "degraded", "down"]
+                  },
+                  "message": {
+                    "description": "Why the connection check failed",
+                    "type": "string"
+                  }
+                },
+                "required": ["status"],
+                "additionalProperties": false
               },
-              "required": ["status"],
-              "additionalProperties": {}
-            }
+              "redis": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": ["up", "degraded", "down"]
+                  },
+                  "message": {
+                    "description": "Why the connection check failed",
+                    "type": "string"
+                  }
+                },
+                "required": ["status"],
+                "additionalProperties": false
+              },
+              "worker": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": ["up", "degraded", "down"]
+                  },
+                  "state": {
+                    "type": "string",
+                    "enum": ["ok", "stale", "unknown"],
+                    "description": "Freshness of the collector heartbeat: ok, stale or never seen"
+                  },
+                  "mode": {
+                    "description": "Set while the collector runs without a Lesta application id",
+                    "type": "string",
+                    "enum": ["no_lesta_key"]
+                  },
+                  "collectedAt": {
+                    "description": "When the collector last wrote its heartbeat",
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                  }
+                },
+                "required": ["status", "state"],
+                "additionalProperties": false
+              },
+              "lestaCircuit": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": ["up", "degraded", "down"]
+                  },
+                  "state": {
+                    "type": "string",
+                    "enum": ["closed", "open", "half-open", "not_configured", "unknown"],
+                    "description": "Circuit breaker in front of the Lesta API"
+                  }
+                },
+                "required": ["status", "state"],
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
           },
           "error": {
             "type": "object",
-            "propertyNames": {
-              "type": "string"
-            },
-            "additionalProperties": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "enum": ["up", "degraded", "down"]
-                }
+            "properties": {
+              "database": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": ["up", "degraded", "down"]
+                  },
+                  "message": {
+                    "description": "Why the connection check failed",
+                    "type": "string"
+                  }
+                },
+                "required": ["status"],
+                "additionalProperties": false
               },
-              "required": ["status"],
-              "additionalProperties": {}
-            }
+              "redis": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": ["up", "degraded", "down"]
+                  },
+                  "message": {
+                    "description": "Why the connection check failed",
+                    "type": "string"
+                  }
+                },
+                "required": ["status"],
+                "additionalProperties": false
+              },
+              "worker": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": ["up", "degraded", "down"]
+                  },
+                  "state": {
+                    "type": "string",
+                    "enum": ["ok", "stale", "unknown"],
+                    "description": "Freshness of the collector heartbeat: ok, stale or never seen"
+                  },
+                  "mode": {
+                    "description": "Set while the collector runs without a Lesta application id",
+                    "type": "string",
+                    "enum": ["no_lesta_key"]
+                  },
+                  "collectedAt": {
+                    "description": "When the collector last wrote its heartbeat",
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                  }
+                },
+                "required": ["status", "state"],
+                "additionalProperties": false
+              },
+              "lestaCircuit": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": ["up", "degraded", "down"]
+                  },
+                  "state": {
+                    "type": "string",
+                    "enum": ["closed", "open", "half-open", "not_configured", "unknown"],
+                    "description": "Circuit breaker in front of the Lesta API"
+                  }
+                },
+                "required": ["status", "state"],
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
           },
           "details": {
             "type": "object",
-            "propertyNames": {
-              "type": "string"
+            "properties": {
+              "database": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": ["up", "degraded", "down"]
+                  },
+                  "message": {
+                    "description": "Why the connection check failed",
+                    "type": "string"
+                  }
+                },
+                "required": ["status"],
+                "additionalProperties": false
+              },
+              "redis": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": ["up", "degraded", "down"]
+                  },
+                  "message": {
+                    "description": "Why the connection check failed",
+                    "type": "string"
+                  }
+                },
+                "required": ["status"],
+                "additionalProperties": false
+              },
+              "worker": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": ["up", "degraded", "down"]
+                  },
+                  "state": {
+                    "type": "string",
+                    "enum": ["ok", "stale", "unknown"],
+                    "description": "Freshness of the collector heartbeat: ok, stale or never seen"
+                  },
+                  "mode": {
+                    "description": "Set while the collector runs without a Lesta application id",
+                    "type": "string",
+                    "enum": ["no_lesta_key"]
+                  },
+                  "collectedAt": {
+                    "description": "When the collector last wrote its heartbeat",
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                  }
+                },
+                "required": ["status", "state"],
+                "additionalProperties": false
+              },
+              "lestaCircuit": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": ["up", "degraded", "down"]
+                  },
+                  "state": {
+                    "type": "string",
+                    "enum": ["closed", "open", "half-open", "not_configured", "unknown"],
+                    "description": "Circuit breaker in front of the Lesta API"
+                  }
+                },
+                "required": ["status", "state"],
+                "additionalProperties": false
+              }
             },
-            "additionalProperties": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "enum": ["up", "degraded", "down"]
+            "additionalProperties": false
+          },
+          "collector": {
+            "type": "object",
+            "properties": {
+              "jobs": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "job": {
+                      "type": "string",
+                      "enum": ["lestaSync", "tankStats", "moeImport", "xvmExpected", "gameFiles"]
+                    },
+                    "lastSuccessAt": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "description": "When the job last finished without an error; null when it never has"
+                    },
+                    "version": {
+                      "description": "Version of the data the job last loaded, when the source has one",
+                      "type": ["string", "null"]
+                    }
+                  },
+                  "required": ["job", "lastSuccessAt", "version"],
+                  "additionalProperties": false
                 }
               },
-              "required": ["status"],
-              "additionalProperties": {}
-            }
+              "queues": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "queue": {
+                      "type": "string"
+                    },
+                    "waiting": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "active": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "delayed": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "failed": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "lagSeconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991,
+                      "description": "Age of the oldest waiting job"
+                    }
+                  },
+                  "required": ["queue", "waiting", "active", "delayed", "failed", "lagSeconds"],
+                  "additionalProperties": false
+                }
+              },
+              "queuesCollectedAt": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "When the worker last counted its queues"
+              },
+              "lastModBattleAt": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "When the latest battle from the game mod arrived"
+              }
+            },
+            "required": ["jobs", "queues", "queuesCollectedAt", "lastModBattleAt"],
+            "additionalProperties": false
+          },
+          "build": {
+            "type": "object",
+            "properties": {
+              "version": {
+                "type": "string"
+              },
+              "commit": {
+                "description": "Commit the API was built from; null when the build did not record it",
+                "type": ["string", "null"]
+              }
+            },
+            "required": ["version", "commit"],
+            "additionalProperties": false
           }
         },
-        "required": ["status", "details"],
+        "required": ["status", "details", "collector", "build"],
         "additionalProperties": false
       },
       "SearchResponseDto_Output": {
@@ -13893,6 +14752,11 @@
                         "isCollectible": {
                           "type": "boolean"
                         },
+                        "status": {
+                          "type": "string",
+                          "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                          "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                        },
                         "images": {
                           "type": "object",
                           "properties": {
@@ -13946,7 +14810,7 @@
                           "additionalProperties": false
                         }
                       },
-                      "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                      "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                       "additionalProperties": false
                     }
                   },
@@ -14694,6 +15558,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -14747,7 +15616,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "battles": {
@@ -15919,6 +16788,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -15972,7 +16846,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "stats": {
@@ -16239,6 +17113,11 @@
                         "isCollectible": {
                           "type": "boolean"
                         },
+                        "status": {
+                          "type": "string",
+                          "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                          "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                        },
                         "images": {
                           "type": "object",
                           "properties": {
@@ -16292,7 +17171,7 @@
                           "additionalProperties": false
                         }
                       },
-                      "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                      "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                       "additionalProperties": false
                     },
                     "arenaId": {
@@ -16507,6 +17386,11 @@
                       "isCollectible": {
                         "type": "boolean"
                       },
+                      "status": {
+                        "type": "string",
+                        "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                        "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                      },
                       "images": {
                         "type": "object",
                         "properties": {
@@ -16560,7 +17444,7 @@
                         "additionalProperties": false
                       }
                     },
-                    "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                    "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                     "additionalProperties": false
                   },
                   "stats": {
@@ -16821,6 +17705,11 @@
                       "isCollectible": {
                         "type": "boolean"
                       },
+                      "status": {
+                        "type": "string",
+                        "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                        "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                      },
                       "images": {
                         "type": "object",
                         "properties": {
@@ -16874,7 +17763,7 @@
                         "additionalProperties": false
                       }
                     },
-                    "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                    "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                     "additionalProperties": false
                   },
                   "stats": {
@@ -17189,6 +18078,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -17242,7 +18136,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "battles": {
@@ -17584,6 +18478,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -17637,7 +18536,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "battles": {
@@ -17733,6 +18632,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -17786,7 +18690,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "battles": {
@@ -18059,6 +18963,11 @@
                               "isCollectible": {
                                 "type": "boolean"
                               },
+                              "status": {
+                                "type": "string",
+                                "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                                "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                              },
                               "images": {
                                 "type": "object",
                                 "properties": {
@@ -18112,7 +19021,19 @@
                                 "additionalProperties": false
                               }
                             },
-                            "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                            "required": [
+                              "tankId",
+                              "name",
+                              "shortName",
+                              "slug",
+                              "nation",
+                              "type",
+                              "tier",
+                              "isPremium",
+                              "isCollectible",
+                              "status",
+                              "images"
+                            ],
                             "additionalProperties": false
                           },
                           {
@@ -18191,6 +19112,11 @@
                               "isCollectible": {
                                 "type": "boolean"
                               },
+                              "status": {
+                                "type": "string",
+                                "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                                "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                              },
                               "images": {
                                 "type": "object",
                                 "properties": {
@@ -18244,7 +19170,19 @@
                                 "additionalProperties": false
                               }
                             },
-                            "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                            "required": [
+                              "tankId",
+                              "name",
+                              "shortName",
+                              "slug",
+                              "nation",
+                              "type",
+                              "tier",
+                              "isPremium",
+                              "isCollectible",
+                              "status",
+                              "images"
+                            ],
                             "additionalProperties": false
                           },
                           {
@@ -18323,6 +19261,11 @@
                               "isCollectible": {
                                 "type": "boolean"
                               },
+                              "status": {
+                                "type": "string",
+                                "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                                "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                              },
                               "images": {
                                 "type": "object",
                                 "properties": {
@@ -18376,7 +19319,19 @@
                                 "additionalProperties": false
                               }
                             },
-                            "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                            "required": [
+                              "tankId",
+                              "name",
+                              "shortName",
+                              "slug",
+                              "nation",
+                              "type",
+                              "tier",
+                              "isPremium",
+                              "isCollectible",
+                              "status",
+                              "images"
+                            ],
                             "additionalProperties": false
                           },
                           {
@@ -18652,6 +19607,11 @@
                           "isCollectible": {
                             "type": "boolean"
                           },
+                          "status": {
+                            "type": "string",
+                            "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                            "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                          },
                           "images": {
                             "type": "object",
                             "properties": {
@@ -18705,7 +19665,19 @@
                             "additionalProperties": false
                           }
                         },
-                        "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                        "required": [
+                          "tankId",
+                          "name",
+                          "shortName",
+                          "slug",
+                          "nation",
+                          "type",
+                          "tier",
+                          "isPremium",
+                          "isCollectible",
+                          "status",
+                          "images"
+                        ],
                         "additionalProperties": false
                       },
                       "battles": {
@@ -18926,6 +19898,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -18979,7 +19956,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "period": {
@@ -19172,6 +20149,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -19225,7 +20207,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "rank": {
@@ -19311,6 +20293,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -19364,7 +20351,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "traits": {
@@ -20137,6 +21124,11 @@
               "isCollectible": {
                 "type": "boolean"
               },
+              "status": {
+                "type": "string",
+                "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+              },
               "images": {
                 "type": "object",
                 "properties": {
@@ -20190,7 +21182,7 @@
                 "additionalProperties": false
               }
             },
-            "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+            "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
             "additionalProperties": false
           },
           "description": {
@@ -20867,6 +21859,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -20920,7 +21917,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "period": {
@@ -21320,6 +22317,11 @@
                         "isCollectible": {
                           "type": "boolean"
                         },
+                        "status": {
+                          "type": "string",
+                          "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                          "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                        },
                         "images": {
                           "type": "object",
                           "properties": {
@@ -21373,7 +22375,7 @@
                           "additionalProperties": false
                         }
                       },
-                      "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                      "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                       "additionalProperties": false
                     },
                     "xp": {
@@ -22135,6 +23137,11 @@
               "isCollectible": {
                 "type": "boolean"
               },
+              "status": {
+                "type": "string",
+                "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+              },
               "images": {
                 "type": "object",
                 "properties": {
@@ -22188,7 +23195,7 @@
                 "additionalProperties": false
               }
             },
-            "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+            "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
             "additionalProperties": false
           },
           "gameVersion": {
@@ -22561,6 +23568,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -22614,7 +23626,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "battles": {
@@ -22745,6 +23757,11 @@
             "isCollectible": {
               "type": "boolean"
             },
+            "status": {
+              "type": "string",
+              "enum": ["researchable", "premium", "collector", "reward", "removed"],
+              "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+            },
             "images": {
               "type": "object",
               "properties": {
@@ -22828,7 +23845,7 @@
               "description": "Battle role from the game client, null when the vehicle has none"
             }
           },
-          "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images", "role"],
+          "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images", "role"],
           "additionalProperties": false
         }
       },
@@ -23065,6 +24082,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -23118,7 +24140,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "moe": {
@@ -23463,6 +24485,123 @@
           "required": ["tankId", "date", "source", "p65", "p85", "p95", "p100"],
           "additionalProperties": false
         }
+      },
+      "MoeCurveDto_Output": {
+        "type": "object",
+        "properties": {
+          "tankId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "windowDays": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "bandPercent": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "A point collects battles whose percent is within this many points of it"
+          },
+          "minPlayers": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991,
+            "description": "Fewest distinct players a point needs before it is shown"
+          },
+          "thresholds": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "tankId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "date": {
+                    "type": "string",
+                    "format": "date",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                  },
+                  "source": {
+                    "type": "string",
+                    "enum": ["otmetki", "poliroid", "kttc", "lesta", "manual"]
+                  },
+                  "p65": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "p85": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "p95": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "p100": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": ["tankId", "date", "source", "p65", "p85", "p95", "p100"],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The 65/85/95/100% thresholds, when known"
+          },
+          "points": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "percent": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100,
+                  "description": "Percent, 0–100"
+                },
+                "damage": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "Median moving-average combined damage of the players whose gun sat at this percent"
+                },
+                "players": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "battles": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": ["percent", "damage", "players", "battles"],
+              "additionalProperties": false
+            },
+            "description": "Only the percents that enough mod players reported; nothing is interpolated"
+          }
+        },
+        "required": ["tankId", "windowDays", "bandPercent", "minPlayers", "thresholds", "points"],
+        "additionalProperties": false
       },
       "MoeProjectionInputDto": {
         "type": "object",
@@ -26985,6 +28124,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -27038,7 +28182,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "battles": {
@@ -27409,6 +28553,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -27462,7 +28611,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "xp": {
@@ -27613,6 +28762,173 @@
           "required": ["arenaId", "slug", "name", "nameEn", "image", "sizeMeters", "camouflage", "modes"],
           "additionalProperties": false
         }
+      },
+      "MapTanksDto_Output": {
+        "type": "object",
+        "properties": {
+          "windowDays": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "minBattles": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "battles": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "arenaId": {
+            "type": "string"
+          },
+          "tanks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "battles": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "Random battles of this tank on this map from the game mod and uploaded replays, one per player and battle"
+                },
+                "isEnough": {
+                  "type": "boolean",
+                  "description": "Whether the sample reaches the minimum; below it the rates stay hidden"
+                },
+                "winRate": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100,
+                      "description": "Percent, 0–100"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "avgDamage": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "vehicle": {
+                  "type": "object",
+                  "properties": {
+                    "tankId": {
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "shortName": {
+                      "type": "string"
+                    },
+                    "slug": {
+                      "type": "string"
+                    },
+                    "nation": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 32
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": ["lightTank", "mediumTank", "heavyTank", "AT-SPG", "SPG"]
+                    },
+                    "tier": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 11
+                    },
+                    "isPremium": {
+                      "type": "boolean"
+                    },
+                    "isCollectible": {
+                      "type": "boolean"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
+                    "images": {
+                      "type": "object",
+                      "properties": {
+                        "small": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "contour": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "big": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": ["small", "contour", "big"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["battles", "isEnough", "winRate", "avgDamage", "vehicle"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": ["windowDays", "minBattles", "battles", "arenaId", "tanks"],
+        "additionalProperties": false
       },
       "MapDetailDto_Output": {
         "type": "object",
@@ -27924,6 +29240,108 @@
           "gameModes",
           "stats"
         ],
+        "additionalProperties": false
+      },
+      "TankMapsDto_Output": {
+        "type": "object",
+        "properties": {
+          "windowDays": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "minBattles": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "battles": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "tankId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "maps": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "battles": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "Random battles of this tank on this map from the game mod and uploaded replays, one per player and battle"
+                },
+                "isEnough": {
+                  "type": "boolean",
+                  "description": "Whether the sample reaches the minimum; below it the rates stay hidden"
+                },
+                "winRate": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100,
+                      "description": "Percent, 0–100"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "avgDamage": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "map": {
+                  "type": "object",
+                  "properties": {
+                    "arenaId": {
+                      "type": "string"
+                    },
+                    "slug": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "nameEn": {
+                      "description": "English name from the Lesta encyclopedia; null until it is synced",
+                      "type": ["string", "null"]
+                    },
+                    "image": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "format": "uri"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": ["arenaId", "slug", "name", "nameEn", "image"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["battles", "isEnough", "winRate", "avgDamage", "map"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": ["windowDays", "minBattles", "battles", "tankId", "maps"],
         "additionalProperties": false
       },
       "LeaderboardDto_Output": {
@@ -29987,6 +31405,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -30040,7 +31463,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "profileId": {
@@ -30644,6 +32067,11 @@
                   "isCollectible": {
                     "type": "boolean"
                   },
+                  "status": {
+                    "type": "string",
+                    "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                    "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                  },
                   "images": {
                     "type": "object",
                     "properties": {
@@ -30697,7 +32125,7 @@
                     "additionalProperties": false
                   }
                 },
-                "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                 "additionalProperties": false
               },
               {
@@ -31479,6 +32907,11 @@
                         "isCollectible": {
                           "type": "boolean"
                         },
+                        "status": {
+                          "type": "string",
+                          "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                          "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                        },
                         "images": {
                           "type": "object",
                           "properties": {
@@ -31532,7 +32965,7 @@
                           "additionalProperties": false
                         }
                       },
-                      "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                      "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                       "additionalProperties": false
                     },
                     {
@@ -31756,6 +33189,11 @@
                   "isCollectible": {
                     "type": "boolean"
                   },
+                  "status": {
+                    "type": "string",
+                    "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                    "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                  },
                   "images": {
                     "type": "object",
                     "properties": {
@@ -31809,7 +33247,7 @@
                     "additionalProperties": false
                   }
                 },
-                "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                 "additionalProperties": false
               },
               {
@@ -32037,6 +33475,11 @@
                       "isCollectible": {
                         "type": "boolean"
                       },
+                      "status": {
+                        "type": "string",
+                        "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                        "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                      },
                       "images": {
                         "type": "object",
                         "properties": {
@@ -32090,7 +33533,7 @@
                         "additionalProperties": false
                       }
                     },
-                    "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                    "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                     "additionalProperties": false
                   },
                   {
@@ -32565,6 +34008,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -32618,7 +34066,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "reasons": {
@@ -32770,6 +34218,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -32823,7 +34276,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "isTaken": {
@@ -32921,6 +34374,11 @@
                         "isCollectible": {
                           "type": "boolean"
                         },
+                        "status": {
+                          "type": "string",
+                          "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                          "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                        },
                         "images": {
                           "type": "object",
                           "properties": {
@@ -32974,7 +34432,7 @@
                           "additionalProperties": false
                         }
                       },
-                      "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                      "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                       "additionalProperties": false
                     },
                     {
@@ -33042,6 +34500,11 @@
                               "isCollectible": {
                                 "type": "boolean"
                               },
+                              "status": {
+                                "type": "string",
+                                "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                                "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                              },
                               "images": {
                                 "type": "object",
                                 "properties": {
@@ -33095,7 +34558,19 @@
                                 "additionalProperties": false
                               }
                             },
-                            "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                            "required": [
+                              "tankId",
+                              "name",
+                              "shortName",
+                              "slug",
+                              "nation",
+                              "type",
+                              "tier",
+                              "isPremium",
+                              "isCollectible",
+                              "status",
+                              "images"
+                            ],
                             "additionalProperties": false
                           },
                           {
@@ -33243,6 +34718,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -33296,7 +34776,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "value": {
@@ -33383,6 +34863,11 @@
                       "isCollectible": {
                         "type": "boolean"
                       },
+                      "status": {
+                        "type": "string",
+                        "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                        "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                      },
                       "images": {
                         "type": "object",
                         "properties": {
@@ -33436,7 +34921,7 @@
                         "additionalProperties": false
                       }
                     },
-                    "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                    "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                     "additionalProperties": false
                   },
                   {
@@ -33506,6 +34991,11 @@
                       "isCollectible": {
                         "type": "boolean"
                       },
+                      "status": {
+                        "type": "string",
+                        "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                        "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                      },
                       "images": {
                         "type": "object",
                         "properties": {
@@ -33559,7 +35049,7 @@
                         "additionalProperties": false
                       }
                     },
-                    "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                    "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                     "additionalProperties": false
                   },
                   {
@@ -33979,6 +35469,11 @@
                         "isCollectible": {
                           "type": "boolean"
                         },
+                        "status": {
+                          "type": "string",
+                          "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                          "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                        },
                         "images": {
                           "type": "object",
                           "properties": {
@@ -34032,7 +35527,7 @@
                           "additionalProperties": false
                         }
                       },
-                      "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                      "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                       "additionalProperties": false
                     },
                     {
@@ -34107,6 +35602,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -34160,7 +35660,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "value": {
@@ -34273,6 +35773,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -34326,7 +35831,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "battles": {
@@ -38622,6 +40127,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -38675,7 +40185,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "battles": {
@@ -39276,6 +40786,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -39329,7 +40844,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "battles": {
@@ -40095,6 +41610,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -40148,7 +41668,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "stats": {
@@ -40415,6 +41935,11 @@
                         "isCollectible": {
                           "type": "boolean"
                         },
+                        "status": {
+                          "type": "string",
+                          "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                          "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                        },
                         "images": {
                           "type": "object",
                           "properties": {
@@ -40468,7 +41993,7 @@
                           "additionalProperties": false
                         }
                       },
-                      "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                      "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                       "additionalProperties": false
                     },
                     "arenaId": {
@@ -40683,6 +42208,11 @@
                       "isCollectible": {
                         "type": "boolean"
                       },
+                      "status": {
+                        "type": "string",
+                        "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                        "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                      },
                       "images": {
                         "type": "object",
                         "properties": {
@@ -40736,7 +42266,7 @@
                         "additionalProperties": false
                       }
                     },
-                    "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                    "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                     "additionalProperties": false
                   },
                   "stats": {
@@ -40997,6 +42527,11 @@
                       "isCollectible": {
                         "type": "boolean"
                       },
+                      "status": {
+                        "type": "string",
+                        "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                        "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                      },
                       "images": {
                         "type": "object",
                         "properties": {
@@ -41050,7 +42585,7 @@
                         "additionalProperties": false
                       }
                     },
-                    "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                    "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                     "additionalProperties": false
                   },
                   "stats": {
@@ -41333,6 +42868,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -41386,7 +42926,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "period": {
@@ -41579,6 +43119,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -41632,7 +43177,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "rank": {
@@ -41713,6 +43258,11 @@
               "isCollectible": {
                 "type": "boolean"
               },
+              "status": {
+                "type": "string",
+                "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+              },
               "images": {
                 "type": "object",
                 "properties": {
@@ -41766,7 +43316,7 @@
                 "additionalProperties": false
               }
             },
-            "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+            "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
             "additionalProperties": false
           },
           "description": {
@@ -42443,6 +43993,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -42496,7 +44051,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "period": {
@@ -42896,6 +44451,11 @@
                         "isCollectible": {
                           "type": "boolean"
                         },
+                        "status": {
+                          "type": "string",
+                          "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                          "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                        },
                         "images": {
                           "type": "object",
                           "properties": {
@@ -42949,7 +44509,7 @@
                           "additionalProperties": false
                         }
                       },
-                      "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                      "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                       "additionalProperties": false
                     },
                     "xp": {
@@ -43716,6 +45276,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -43769,7 +45334,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "moe": {
@@ -51648,6 +53213,14 @@
                     "type": "string"
                   }
                 },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": ["kolobanov", "comeback", "raider", "highCaliber", "warrior"],
+                    "description": "Automatic battle tag computed from the replay; the rules are in REPLAY_TAG_RULES"
+                  }
+                },
                 "players": {
                   "type": "array",
                   "items": {
@@ -51971,6 +53544,7 @@
                 "frags",
                 "xp",
                 "medals",
+                "tags",
                 "players",
                 "durationSec",
                 "views",
@@ -52389,6 +53963,14 @@
                     "type": "string"
                   }
                 },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": ["kolobanov", "comeback", "raider", "highCaliber", "warrior"],
+                    "description": "Automatic battle tag computed from the replay; the rules are in REPLAY_TAG_RULES"
+                  }
+                },
                 "players": {
                   "type": "array",
                   "items": {
@@ -52712,6 +54294,7 @@
                 "frags",
                 "xp",
                 "medals",
+                "tags",
                 "players",
                 "durationSec",
                 "views",
@@ -52724,6 +54307,20 @@
           }
         },
         "required": ["weekStart", "items"],
+        "additionalProperties": false
+      },
+      "ReplayVersionsDto_Output": {
+        "type": "object",
+        "properties": {
+          "versions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Game versions of public replays, the most recently played first"
+          }
+        },
+        "required": ["versions"],
         "additionalProperties": false
       },
       "HeatmapDto_Output": {
@@ -53178,6 +54775,14 @@
               "type": "string"
             }
           },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["kolobanov", "comeback", "raider", "highCaliber", "warrior"],
+              "description": "Automatic battle tag computed from the replay; the rules are in REPLAY_TAG_RULES"
+            }
+          },
           "players": {
             "type": "array",
             "items": {
@@ -53501,6 +55106,7 @@
           "frags",
           "xp",
           "medals",
+          "tags",
           "players",
           "durationSec",
           "views",
@@ -59124,6 +60730,11 @@
                           "isCollectible": {
                             "type": "boolean"
                           },
+                          "status": {
+                            "type": "string",
+                            "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                            "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                          },
                           "images": {
                             "type": "object",
                             "properties": {
@@ -59177,7 +60788,19 @@
                             "additionalProperties": false
                           }
                         },
-                        "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                        "required": [
+                          "tankId",
+                          "name",
+                          "shortName",
+                          "slug",
+                          "nation",
+                          "type",
+                          "tier",
+                          "isPremium",
+                          "isCollectible",
+                          "status",
+                          "images"
+                        ],
                         "additionalProperties": false
                       },
                       "rank": {
@@ -59424,6 +61047,11 @@
                           "isCollectible": {
                             "type": "boolean"
                           },
+                          "status": {
+                            "type": "string",
+                            "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                            "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                          },
                           "images": {
                             "type": "object",
                             "properties": {
@@ -59477,7 +61105,19 @@
                             "additionalProperties": false
                           }
                         },
-                        "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                        "required": [
+                          "tankId",
+                          "name",
+                          "shortName",
+                          "slug",
+                          "nation",
+                          "type",
+                          "tier",
+                          "isPremium",
+                          "isCollectible",
+                          "status",
+                          "images"
+                        ],
                         "additionalProperties": false
                       },
                       "battles": {
@@ -59652,6 +61292,11 @@
                           "isCollectible": {
                             "type": "boolean"
                           },
+                          "status": {
+                            "type": "string",
+                            "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                            "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                          },
                           "images": {
                             "type": "object",
                             "properties": {
@@ -59705,7 +61350,19 @@
                             "additionalProperties": false
                           }
                         },
-                        "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                        "required": [
+                          "tankId",
+                          "name",
+                          "shortName",
+                          "slug",
+                          "nation",
+                          "type",
+                          "tier",
+                          "isPremium",
+                          "isCollectible",
+                          "status",
+                          "images"
+                        ],
                         "additionalProperties": false
                       },
                       "battles": {
@@ -59884,6 +61541,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -59937,7 +61599,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "rank": {
@@ -62783,6 +64445,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -62836,7 +64503,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "arena": {
@@ -63110,6 +64777,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -63163,7 +64835,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "battles": {
@@ -64593,6 +66265,11 @@
                     "isCollectible": {
                       "type": "boolean"
                     },
+                    "status": {
+                      "type": "string",
+                      "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                      "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                    },
                     "images": {
                       "type": "object",
                       "properties": {
@@ -64646,7 +66323,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                   "additionalProperties": false
                 },
                 "owners": {
@@ -65173,6 +66850,11 @@
                               "isCollectible": {
                                 "type": "boolean"
                               },
+                              "status": {
+                                "type": "string",
+                                "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                                "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                              },
                               "images": {
                                 "type": "object",
                                 "properties": {
@@ -65226,7 +66908,19 @@
                                 "additionalProperties": false
                               }
                             },
-                            "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                            "required": [
+                              "tankId",
+                              "name",
+                              "shortName",
+                              "slug",
+                              "nation",
+                              "type",
+                              "tier",
+                              "isPremium",
+                              "isCollectible",
+                              "status",
+                              "images"
+                            ],
                             "additionalProperties": false
                           },
                           {
@@ -65463,6 +67157,11 @@
                               "isCollectible": {
                                 "type": "boolean"
                               },
+                              "status": {
+                                "type": "string",
+                                "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                                "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                              },
                               "images": {
                                 "type": "object",
                                 "properties": {
@@ -65516,7 +67215,19 @@
                                 "additionalProperties": false
                               }
                             },
-                            "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                            "required": [
+                              "tankId",
+                              "name",
+                              "shortName",
+                              "slug",
+                              "nation",
+                              "type",
+                              "tier",
+                              "isPremium",
+                              "isCollectible",
+                              "status",
+                              "images"
+                            ],
                             "additionalProperties": false
                           },
                           {
@@ -65746,6 +67457,11 @@
                         "isCollectible": {
                           "type": "boolean"
                         },
+                        "status": {
+                          "type": "string",
+                          "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                          "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+                        },
                         "images": {
                           "type": "object",
                           "properties": {
@@ -65799,7 +67515,7 @@
                           "additionalProperties": false
                         }
                       },
-                      "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                      "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
                       "additionalProperties": false
                     },
                     {

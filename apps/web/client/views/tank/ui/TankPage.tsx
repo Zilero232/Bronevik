@@ -21,6 +21,7 @@ import {
   ServerStats,
   SimilarTanks,
   TankGarage,
+  TankMaps,
   TankProvider,
   TankSkeleton,
   TopPlayers
@@ -60,6 +61,7 @@ export const TankPage = () => {
               </div>
               <LearningSection />
               <HowToBuild />
+              <TankMaps />
               <MathSection />
             </div>
             <TopPlayers />

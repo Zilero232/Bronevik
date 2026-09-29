@@ -1,5 +1,6 @@
-export { THRESHOLD_SOURCE_PRIORITY } from './config';
-export { BRONYA_REFERENCE, bronyaReferencePayload, parseBronyaReference } from './lib';
+export { THRESHOLD_SOURCE_PRIORITY, VEHICLE_STATUS } from './config';
+export { BRONYA_REFERENCE, bronyaReferencePayload, parseBronyaReference, readSpecTraits, toTankRole } from './lib';
+export type { SpecTraits } from './lib';
 export {
   masteryThresholdLevels,
   moeThresholdLevels,

@@ -5,7 +5,6 @@ import type { ServiceStatusValue } from '@/ui-kit';
 import type { HealthVerdict } from '../lib/health-summary';
 
 export const HEALTH_REQUEST = {
-  path: '/health',
   answeredStatuses: [200, 503],
   staleMs: secondsToMilliseconds(30),
   refetchMs: minutesToMilliseconds(1)

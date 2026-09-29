@@ -10,9 +10,8 @@ import type {
   TopPlayersQuery
 } from '@otmetki/schemas';
 
-import type { CatalogEntry } from '../reference';
+import type { CatalogEntry, SpecTraits } from '../reference';
 import type { UsageActor } from '../usage';
-import type { SpecTraits } from './lib/vehicle-traits';
 
 export type TankStatsListInput = TankServerStatsQuery;
 

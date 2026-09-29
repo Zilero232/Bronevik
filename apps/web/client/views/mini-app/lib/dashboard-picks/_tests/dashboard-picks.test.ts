@@ -28,6 +28,7 @@ const row = (tankId: number, moePercent: number | null, nextMarkPercent: number 
     tier: 10,
     isPremium: false,
     isCollectible: false,
+    status: 'researchable',
     images: { small: null, contour: null, big: null }
   },
   battles: 100,

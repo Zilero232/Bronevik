@@ -3,5 +3,6 @@ export const COLLECTOR_STATE_KEY = {
   lestaBudget: 'lesta-budget',
   queues: 'queues',
   gameVersion: 'game-version',
-  seed: 'seed'
+  seed: 'seed',
+  jobSuccess: 'job-success'
 } as const;

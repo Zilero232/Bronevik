@@ -1,62 +1,17 @@
-import type { TankRole, TankSource, TankStatus, TankTraits } from '@otmetki/schemas';
+import type { TankSource } from '@otmetki/schemas';
 
-import { TANK_ROLES } from '@otmetki/schemas';
-import { isIncludedIn } from 'remeda';
 import { z } from 'zod';
 
-import type { ClassifyVehicleInput, MatchesTraitsInput, ResearchXpInput, SpecTraits, TankSourcesInput } from './vehicle-traits.types';
+import type { MatchesTraitsInput, ResearchXpInput, TankSourcesInput } from './vehicle-traits.types';
 
-import { TANK_TRAITS } from '../../config';
-
-const specTraitsSchema = z.object({
-  tags: z.array(z.string()).catch([]),
-  role: z.string().nullish().catch(null),
-  notInShop: z.boolean().catch(false)
-});
+import { VEHICLE_STATUS } from '../../../reference';
 
 const nextTanksSchema = z.union([
   z.array(z.object({ tankId: z.number().int(), xp: z.number().nonnegative().nullish() })),
   z.record(z.string(), z.number().nonnegative().nullable())
 ]);
 
-const SOURCE_TAGS: ReadonlyArray<[string, TankSource]> = Object.entries(TANK_TRAITS.sourceTags);
-
-export const readSpecTraits = (specs: unknown): SpecTraits => {
-  const parsed = specTraitsSchema.safeParse(specs);
-
-  return parsed.success
-    ? { tags: parsed.data.tags, role: parsed.data.role ?? null, notInShop: parsed.data.notInShop }
-    : { tags: [], role: null, notInShop: false };
-};
-
-export const toTankRole = (role: string | null): TankRole | null => {
-  if (!role?.startsWith(TANK_TRAITS.rolePrefix)) {
-    return null;
-  }
-
-  const name = role.slice(TANK_TRAITS.rolePrefix.length);
-
-  return isIncludedIn(name, TANK_ROLES) ? name : null;
-};
-
-const hasRewardTag = (tags: readonly string[]): boolean =>
-  tags.some((tag) => isIncludedIn(tag, TANK_TRAITS.rewardTags) || SOURCE_TAGS.some(([sourceTag]) => sourceTag === tag));
-
-export const classifyVehicle = ({ summary, spec, hasOffers }: ClassifyVehicleInput): TankStatus => {
-  if (summary.isCollectible) {
-    return 'collector';
-  }
-
-  if (!summary.isPremium) {
-    return spec.notInShop ? 'removed' : 'researchable';
-  }
-
-  if (!spec.notInShop || hasOffers) {
-    return 'premium';
-  }
-
-  return summary.tier >= TANK_TRAITS.rewardMinTier || hasRewardTag(spec.tags) ? 'reward' : 'premium';
-};
+const SOURCE_TAGS: ReadonlyArray<[string, TankSource]> = Object.entries(VEHICLE_STATUS.sourceTags);
 
 export const tankSources = ({ status, spec, hasOffers }: TankSourcesInput): TankSource[] => {
   if (status === 'collector') {
@@ -77,11 +32,6 @@ export const tankSources = ({ status, spec, hasOffers }: TankSourcesInput): Tank
 
   return status === 'reward' && sources.length === 0 ? ['reward'] : sources;
 };
-
-export const toTankTraits = (input: ClassifyVehicleInput): TankTraits => ({
-  status: classifyVehicle(input),
-  role: toTankRole(input.spec.role)
-});
 
 export const matchesTraits = ({ traits, filter }: MatchesTraitsInput): boolean =>
   (!filter.statuses?.length || filter.statuses.includes(traits.status)) &&

@@ -1,0 +1,74 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-3));
+}
+
+.calculator {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-4);
+}
+
+.select {
+  min-width: 120px;
+}
+
+.result {
+  @include stack(var(--space-1));
+}
+
+.damage {
+  @include numeric(var(--num-md));
+
+  color: var(--color-text);
+}
+
+.caption {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+.steps {
+  @include stack(0);
+
+  margin: 0;
+}
+
+.step {
+  display: grid;
+  align-items: baseline;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  gap: var(--space-3);
+  grid-template-columns: 4rem 5rem minmax(0, 1fr);
+
+  &[data-selected='true'] {
+    background-color: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  }
+}
+
+.percent {
+  @include label;
+}
+
+.value {
+  @include numeric;
+
+  margin: 0;
+  color: var(--color-text);
+}
+
+.source {
+  margin: 0;
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+}
+
+.note {
+  max-width: 60ch;
+  margin: 0;
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+}

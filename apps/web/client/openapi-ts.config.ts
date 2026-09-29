@@ -5,7 +5,7 @@ export default defineConfig({
   output: { path: './shared/api/generated', clean: true },
   parser: {
     filters: {
-      operations: { exclude: ['/^[A-Z]+ \/v1\//', 'GET /health'] }
+      operations: { exclude: ['/^[A-Z]+ \/v1\//'] }
     },
     transforms: {
       schemaName: (name) => name.replace(/Dto(?:_(?:Output|Input))?$/, '')

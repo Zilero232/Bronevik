@@ -14,8 +14,8 @@ export const MARKS_PRESETS: QuickPreset<inferParserType<typeof MARKS_PRESET_PARS
   { id: 'tier10', patch: { tiers: [10] } },
   { id: 'tier8', patch: { tiers: [8] } },
   { id: 'tiers6to8', patch: { tiers: [6, 7, 8] } },
-  { id: 'premium', patch: { premium: 'premium' } },
-  { id: 'regular', patch: { premium: 'regular' } },
+  { id: 'premium', patch: { statuses: ['premium'] } },
+  { id: 'regular', patch: { statuses: ['researchable'] } },
   { id: 'easiest', patch: { sort: 'p95', order: 'asc' } },
   { id: 'rising', patch: { sort: 'p95Change30d', order: 'desc' } },
   { id: 'pinned', patch: { pinned: true } }

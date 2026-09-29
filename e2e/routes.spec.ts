@@ -65,7 +65,7 @@ test.describe('every page without the API', () => {
 
       expect(response?.status()).toBe(200);
       await expect(page.locator('main')).toBeVisible();
-      await expect(page.locator('footer')).toContainText(LESTA_COPYRIGHT);
+      await expect(page.getByRole('contentinfo')).toContainText(LESTA_COPYRIGHT);
       expect(errors).toEqual([]);
     });
   }
@@ -76,7 +76,7 @@ test.describe('every page without the API', () => {
       const response = await page.goto(localized(pattern));
 
       expect(response?.status()).toBeLessThan(500);
-      await expect(page.locator('footer')).toContainText(LESTA_COPYRIGHT);
+      await expect(page.getByRole('contentinfo')).toContainText(LESTA_COPYRIGHT);
       expect(errors).toEqual([]);
     });
   }

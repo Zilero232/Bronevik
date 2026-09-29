@@ -53,7 +53,7 @@ for (const locale of LOCALES) {
     test('the footer carries the Lesta attribution', async ({ page }) => {
       await page.goto(locale.home);
 
-      const footer = page.locator('footer');
+      const footer = page.getByRole('contentinfo');
 
       await expect(footer).toContainText(locale.lestaCopyright);
       await expect(footer.getByRole('link', { name: 'tanki.su', exact: true })).toHaveAttribute('href', /tanki\.su/);
@@ -65,7 +65,7 @@ test('an unknown route renders the not-found page', async ({ page }) => {
   const response = await page.goto('/en/definitely-not-a-real-route');
 
   expect(response?.status()).toBe(404);
-  await expect(page.locator('footer')).toBeVisible();
+  await expect(page.getByRole('contentinfo')).toBeVisible();
 });
 
 test.describe('without the API', () => {
@@ -80,7 +80,7 @@ test.describe('without the API', () => {
       expect(response?.status()).toBe(200);
       await expect(page.locator('main')).toBeVisible();
       await expect(page.getByRole('button', { name: 'Retry' }).first()).toBeVisible();
-      await expect(page.locator('footer')).toBeVisible();
+      await expect(page.getByRole('contentinfo')).toBeVisible();
     });
   }
 

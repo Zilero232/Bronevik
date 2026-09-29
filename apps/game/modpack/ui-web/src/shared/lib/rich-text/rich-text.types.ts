@@ -6,12 +6,14 @@ export type RichStyle = {
   underline?: boolean;
 };
 
-export type RichTextRun = { kind: 'text'; text: string; style: RichStyle };
+export type RichTextRun = { key: string; kind: 'text'; text: string; style: RichStyle };
 
-export type RichImageRun = { kind: 'image'; src: string; width?: number; height?: number };
+export type RichImageRun = { key: string; kind: 'image'; src: string; width?: number; height?: number };
 
 export type RichRun = RichImageRun | RichTextRun;
 
-export type RichLine = RichRun[];
+export type RichLine = { key: string; runs: RichRun[] };
+
+export type PushTextInput = { raw: string; start: number };
 
 export type OpenTag = { tag: string; style: RichStyle };

@@ -1,3 +1,5 @@
+import type { BlogTocItem } from '@otmetki/schemas';
+
 import rehypeExtractToc from '@stefanprobst/rehype-extract-toc';
 import readingTime from 'reading-time';
 import rehypeSlug from 'rehype-slug';
@@ -8,7 +10,6 @@ import { isIncludedIn } from 'remeda';
 import { unified } from 'unified';
 import { VFile } from 'vfile';
 
-import type { BlogTocItem } from '../../blog.types';
 import type { ArticleOutline, TocEntry } from './article-outline.types';
 
 import { BLOG } from '../../config';

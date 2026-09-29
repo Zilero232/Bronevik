@@ -3,7 +3,7 @@ export type { OrderedCrewRole } from './build-usage';
 export { cohortBreakdown, cohortRow } from './cohort-breakdown';
 export type { CohortBar } from './cohort-breakdown';
 export { bucketLabel } from './learning-labels';
-export { moeDelta, moeSeries, thresholdVerdict } from './moe-deltas';
+export { moeDelta, moeSeries } from './moe-deltas';
 export type { MoeKey } from './moe-deltas';
 export { obtainEditorial, obtainMission } from './obtain-sources';
 export type { ObtainEditorial, ObtainMission } from './obtain-sources';

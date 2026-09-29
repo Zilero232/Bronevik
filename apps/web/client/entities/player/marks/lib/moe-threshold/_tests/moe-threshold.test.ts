@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import { thresholdVerdict } from '../moe-thresholds';
+import { thresholdVerdict } from '../moe-threshold';
 
 describe('thresholdVerdict', () => {
   it('calls a falling threshold good news for the player', () => {
     expect(thresholdVerdict(-40)).toBe('better');
   });
 
-  it('calls a rising threshold bad news for the player', () => {
+  it('calls a rising threshold bad news, since the mark gets harder', () => {
     expect(thresholdVerdict(40)).toBe('worse');
   });
 

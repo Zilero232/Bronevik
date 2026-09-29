@@ -10,9 +10,8 @@ const byKind = new Map(WIDGET_ENTRIES.map((entry) => [entry.kind, entry]));
 
 export const resolveWidget = (widget: HudWidget | null | undefined): ResolvedWidget | null => {
   const entry = widget && widget.v === HUD_PROTOCOL.widgetVersion ? byKind.get(widget.kind) : undefined;
-  const data = entry && widget ? entry.parse(widget.data) : undefined;
 
-  return entry && data !== undefined ? { entry, data } : null;
+  return (entry && widget ? entry.parse(widget.data) : undefined) ?? null;
 };
 
 const countRows = (value: unknown, depth: number): number => {

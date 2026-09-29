@@ -3,6 +3,7 @@
 import { MarkOfExcellenceIcon } from '@otmetki/icons';
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { thresholdVerdict } from '@/entities/player/marks';
 import { TankIdentity, vehicleIdentity } from '@/entities/tank/tank';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
@@ -11,7 +12,6 @@ import { buttonVariants, DeltaValue, Drawer } from '@/ui-kit';
 import type { MoeDrawerProps } from './MoeDrawer.types';
 
 import { DRAWER_THRESHOLDS } from '../../../config';
-import { thresholdVerdict } from '../../../lib/moe-thresholds';
 import { MasteryLadder, MoeCurve, MoeHistoryChart } from './components';
 
 import s from './MoeDrawer.module.scss';

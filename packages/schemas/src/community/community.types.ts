@@ -1,7 +1,8 @@
 import type { z } from 'zod';
 
-import type { buildSchema, createBuildSchema, loadoutSchema, visibilitySchema } from './community.schemas';
+import type { authorSchema, buildSchema, createBuildSchema, loadoutSchema, visibilitySchema } from './community.schemas';
 
+export type Author = z.infer<typeof authorSchema>;
 export type Loadout = z.infer<typeof loadoutSchema>;
 export type Visibility = z.infer<typeof visibilitySchema>;
 export type Build = z.infer<typeof buildSchema>;

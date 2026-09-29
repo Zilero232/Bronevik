@@ -5,7 +5,8 @@ import { useMediaSource } from '../use-media-source';
 
 describe('useMediaSource', () => {
   it('drops a source that failed and retries a new one', () => {
-    const { result, rerender } = renderHook(({ src }) => useMediaSource(src), { initialProps: { src: 'asset://a.png' as string | null } });
+    const initialProps: { src: string | null } = { src: 'asset://a.png' };
+    const { result, rerender } = renderHook(({ src }) => useMediaSource(src), { initialProps });
 
     act(() => result.current.onError());
 

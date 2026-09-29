@@ -1,15 +1,6 @@
 export { CommunityCoreModule } from './community-core.module';
 export type { ById, IdViewer, LikeInput, LikeResult, Owned, OwnedById, Viewer } from './community-core.types';
-export {
-  arenaIdSchema,
-  authorSchema,
-  IdParamsDto,
-  LikeResultDto,
-  moderationStatusSchema,
-  playerStatsSchema,
-  postStatusSchema,
-  SlugParamsDto
-} from './dto';
+export { arenaIdSchema, IdParamsDto, LikeResultDto, moderationStatusSchema, playerStatsSchema, postStatusSchema, SlugParamsDto } from './dto';
 export { readRequirements, statRequirementsSchema, titleSlug, unmetRequirements } from './lib';
 export type { PlayerStats } from './lib';
 export { toAuthorView } from './mappers';

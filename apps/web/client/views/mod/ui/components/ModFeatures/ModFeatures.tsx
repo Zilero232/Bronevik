@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl';
 
+import { ROUTE_ANCHORS } from '@/shared/constants';
 import { SectionHeader } from '@/ui-kit';
 
 import { MOD_FEATURES, MOD_PAGE } from '../../../config';
@@ -10,7 +11,7 @@ export const ModFeatures = () => {
   const t = useTranslations('mod.features');
 
   return (
-    <section className={s.root} id={MOD_PAGE.featuresAnchor}>
+    <section className={s.root} id={ROUTE_ANCHORS.modFeatures}>
       <SectionHeader title={t('title')} variant='display' />
       <ul className={s.grid}>
         {MOD_FEATURES.map(({ key, icon: Icon, tone }) => (

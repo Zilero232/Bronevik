@@ -2,5 +2,6 @@ import type { PreviewLook } from './preview-look.types';
 
 import { PREVIEW } from '../../config';
 
-export const previewLook = (category: string): PreviewLook =>
-  Object.hasOwn(PREVIEW.categories, category) ? PREVIEW.categories[category as keyof typeof PREVIEW.categories] : PREVIEW.fallback;
+const isPreviewCategory = (category: string): category is keyof typeof PREVIEW.categories => Object.hasOwn(PREVIEW.categories, category);
+
+export const previewLook = (category: string): PreviewLook => (isPreviewCategory(category) ? PREVIEW.categories[category] : PREVIEW.fallback);

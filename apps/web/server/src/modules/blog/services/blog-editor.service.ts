@@ -1,8 +1,10 @@
+import type { BlogEditorAccess, BlogEditorPost } from '@otmetki/schemas';
+
 import { Injectable } from '@nestjs/common';
 import { randomBytes } from 'node:crypto';
 import { isIncludedIn } from 'remeda';
 
-import type { BlogEditorAccess, BlogEditorPostView, CreateBlogPostRequest, SlugWriteInput, UpdateBlogPostRequest } from '../blog.types';
+import type { CreateBlogPostRequest, SlugWriteInput, UpdateBlogPostRequest } from '../blog.types';
 import type { BlogPostRow } from '../selects';
 
 import { AppBadRequestException, AppConflictException, AppNotFoundException } from '../../../common/exceptions';
@@ -28,17 +30,17 @@ export class BlogEditorService {
     return { canEdit: user !== null && isIncludedIn(user.role, BLOG.editorRoles) };
   }
 
-  async list(): Promise<BlogEditorPostView[]> {
+  async list(): Promise<BlogEditorPost[]> {
     const rows = await this.prisma.blogPost.findMany({ orderBy: { updatedAt: 'desc' }, take: BLOG.editorLimit, include: BLOG_POST_INCLUDE });
 
     return rows.map((post) => this.view(post));
   }
 
-  async byId(id: string): Promise<BlogEditorPostView> {
+  async byId(id: string): Promise<BlogEditorPost> {
     return this.view(await this.find(id));
   }
 
-  async create({ userId, slug, title, body, status, coverKey, coverUrl, ...fields }: CreateBlogPostRequest): Promise<BlogEditorPostView> {
+  async create({ userId, slug, title, body, status, coverKey, coverUrl, ...fields }: CreateBlogPostRequest): Promise<BlogEditorPost> {
     this.assertOneCover({ coverKey, coverUrl });
 
     const base = blogSlug({ title, slug });
@@ -73,7 +75,7 @@ export class BlogEditorService {
     return this.view(post);
   }
 
-  async update({ id, ...changes }: UpdateBlogPostRequest): Promise<BlogEditorPostView> {
+  async update({ id, ...changes }: UpdateBlogPostRequest): Promise<BlogEditorPost> {
     const current = await this.find(id);
     const slug = changes.slug === undefined ? undefined : blogSlug({ title: current.title, slug: changes.slug });
     const fields = { ...changes, ...(slug === undefined ? {} : { slug }) };
@@ -149,7 +151,7 @@ export class BlogEditorService {
     }
   }
 
-  private view(post: BlogPostRow): BlogEditorPostView {
+  private view(post: BlogPostRow): BlogEditorPost {
     return toBlogEditorPostView({ post, apiUrl: this.config.get('API_URL') });
   }
 }

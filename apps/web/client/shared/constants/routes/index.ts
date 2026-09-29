@@ -1,2 +1,2 @@
 export { ROUTES } from './routes';
-export { ROUTE_PARAMS } from './routes.constants';
+export { ROUTE_ANCHORS, ROUTE_PARAMS } from './routes.constants';

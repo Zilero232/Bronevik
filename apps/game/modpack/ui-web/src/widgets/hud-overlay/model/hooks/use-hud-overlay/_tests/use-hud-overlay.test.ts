@@ -2,6 +2,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import * as z from 'zod/mini';
 
 import { GAMEFACE } from '../../../../../../shared/api/gameface';
 import { createGamefaceMock, installGamefaceMock } from '../../../../../../shared/api/gameface/mock';
@@ -13,8 +14,10 @@ const sample = readFileSync(
   'utf8'
 );
 
+const sampleSchema = z.looseObject({ panels: z.array(z.record(z.string(), z.unknown())) });
+
 const withState = (patch: Record<string, unknown>, panel: Record<string, unknown> = {}): string => {
-  const state = JSON.parse(sample) as { panels: Record<string, unknown>[] };
+  const state = sampleSchema.parse(JSON.parse(sample));
 
   return JSON.stringify({ ...state, ...patch, panels: state.panels.map((item) => ({ ...item, ...panel })) });
 };
@@ -27,7 +30,7 @@ const install = (state: string) => {
   return mock;
 };
 
-const sent = (mock: ReturnType<typeof install>) => mock.sent().map((message) => JSON.parse(message) as Record<string, unknown>);
+const sent = (mock: ReturnType<typeof install>): unknown[] => mock.sent().map((message): unknown => JSON.parse(message));
 
 const mount = async (state: string) => {
   const mock = install(state);
@@ -54,7 +57,7 @@ describe(useHudOverlay, () => {
     const [label] = hook.current().labels;
 
     expect(label?.style).toEqual({ left: '20rem', top: '940rem', opacity: 0 });
-    expect(label?.lines[0]?.[0]).toMatchObject({ kind: 'text', style: { color: '#F2EAD3' } });
+    expect(label?.lines[0]?.runs[0]).toMatchObject({ kind: 'text', style: { color: '#F2EAD3' } });
     expect(hook.current().style).toEqual({ width: '1920rem', height: '1080rem' });
   });
 
@@ -123,7 +126,7 @@ describe(useHudOverlay, () => {
     const widget = { kind: 'battle_clock', v: 1, data: { time: '21:47', date: '', timer: '', big_timer: false, icon: 'otmetki:clock' } };
     const { hook } = await mount(withState({}, { widget }));
 
-    expect(hook.current().labels[0]?.widget?.entry.kind).toBe('battle_clock');
+    expect(hook.current().labels[0]?.widget?.kind).toBe('battle_clock');
 
     const unknown = await mount(withState({}, { widget: { kind: 'nope', v: 1, data: {} } }));
 

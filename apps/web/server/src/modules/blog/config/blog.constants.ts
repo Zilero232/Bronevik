@@ -1,6 +1,8 @@
+import { BLOG_CONTRACT } from '@otmetki/schemas';
+
 export const BLOG = {
   editorRoles: ['admin', 'moderator'],
-  locales: ['ru', 'en'],
+  locales: BLOG_CONTRACT.locales,
   defaultLocale: 'ru',
   relatedLimit: 3,
   tagsLimit: 30,

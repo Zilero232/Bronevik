@@ -1,7 +1,9 @@
+import type { BlogArticle, BlogPostPage, BlogPostSummary, BlogTagCount } from '@otmetki/schemas';
+
 import { Injectable } from '@nestjs/common';
 
 import type { Prisma } from '../../../../generated';
-import type { BlogArticleView, BlogPostPage, BlogPostsQuery, BlogPostSummaryView, BlogTagCount } from '../blog.types';
+import type { BlogPostsQuery } from '../blog.types';
 import type { BlogPostRow } from '../selects';
 
 import { AppNotFoundException } from '../../../common/exceptions';
@@ -42,7 +44,7 @@ export class BlogQueryService {
     return { items: rows.map((post) => this.summary(post)), total, limit, offset };
   }
 
-  async article(slug: string): Promise<BlogArticleView> {
+  async article(slug: string): Promise<BlogArticle> {
     const post = await this.prisma.blogPost.findFirst({ where: { slug, status: 'published' }, include: BLOG_POST_INCLUDE });
 
     if (!post) {
@@ -67,7 +69,7 @@ export class BlogQueryService {
     return this.prisma.$queryRaw<BlogTagCount[]>(blogTagsSql(BLOG.tagsLimit));
   }
 
-  private summary(post: BlogPostRow): BlogPostSummaryView {
+  private summary(post: BlogPostRow): BlogPostSummary {
     return toBlogPostSummary({ post, apiUrl: this.apiUrl() });
   }
 

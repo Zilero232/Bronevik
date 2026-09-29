@@ -147,6 +147,36 @@ export type {
   ReferralInput,
   SubscriptionStatus
 } from './billing';
+export {
+  BLOG_CONTRACT,
+  blogArticleSchema,
+  blogCategorySchema,
+  blogEditorAccessSchema,
+  blogEditorPostListSchema,
+  blogEditorPostSchema,
+  blogImageFileSchema,
+  blogImageKeySchema,
+  blogImageUploadSchema,
+  blogLocaleSchema,
+  blogPostPageSchema,
+  blogPostSchema,
+  blogPostSummarySchema,
+  blogStatusSchema,
+  blogTagCountSchema,
+  blogTagsSchema,
+  blogTocItemSchema
+} from './blog';
+export type {
+  BlogArticle,
+  BlogEditorAccess,
+  BlogEditorPost,
+  BlogImageUpload,
+  BlogPostPage,
+  BlogPostSummary,
+  BlogPostView,
+  BlogTagCount,
+  BlogTocItem
+} from './blog';
 export { discordStatusSchema, vkStatusSchema } from './bots';
 export type { DiscordStatus, VkStatus } from './bots';
 export {
@@ -319,8 +349,8 @@ export type {
   StatsMode,
   TankId
 } from './common';
-export { buildSchema, createBuildSchema, LOADOUT, loadoutSchema, visibilitySchema } from './community';
-export type { Build, CreateBuildInput, Loadout, Visibility } from './community';
+export { authorSchema, buildSchema, createBuildSchema, LOADOUT, loadoutSchema, visibilitySchema } from './community';
+export type { Author, Build, CreateBuildInput, Loadout, Visibility } from './community';
 export { COMPARE, playerComparisonQuerySchema, playerComparisonSchema, tankComparisonQuerySchema, tankComparisonSchema } from './compare';
 export type { PlayerComparison, PlayerComparisonQuery, TankComparison, TankComparisonQuery } from './compare';
 export {

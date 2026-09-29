@@ -12,7 +12,12 @@
       "entry": ["e2e/screens.{setup,teardown}.ts"]
     },
     "apps/web/client": {
-      "entry": ["shared/i18n/request/request.ts", "app/sw.ts", "views/twitch-panel/lib/panel-script/panel-entry.ts"],
+      "entry": [
+        "shared/i18n/request/request.ts",
+        "app/sw.ts",
+        "views/twitch-panel/lib/panel-script/panel-entry.ts",
+        "shared/api/http/client-config/index.ts"
+      ],
       "project": ["**/*.{ts,tsx,scss}"],
       "ignoreDependencies": ["@otmetki/design-tokens"]
     },

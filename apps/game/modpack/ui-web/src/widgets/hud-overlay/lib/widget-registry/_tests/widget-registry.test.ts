@@ -17,7 +17,7 @@ describe(resolveWidget, () => {
   it.each(readdirSync(FIXTURES).map((file) => file.replace('.sample.json', '')))('accepts the %s fixture', (kind) => {
     const resolved = resolveWidget(readWidget(kind));
 
-    expect(resolved?.entry.kind).toBe(kind);
+    expect(resolved?.kind).toBe(kind);
     expect(resolved && widgetLines(resolved)).toBeGreaterThanOrEqual(1000);
   });
 

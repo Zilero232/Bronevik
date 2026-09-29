@@ -1,3 +1,3 @@
-import type { HudWidgetEntry } from '../../../../shared/lib/hud-widget';
+import type { ParsedHudWidget } from '../../../../shared/lib/hud-widget';
 
-export type ResolvedWidget = { entry: HudWidgetEntry; data: unknown };
+export type ResolvedWidget = ParsedHudWidget;

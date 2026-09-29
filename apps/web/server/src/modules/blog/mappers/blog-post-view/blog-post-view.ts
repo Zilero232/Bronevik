@@ -1,6 +1,7 @@
+import type { BlogEditorPost, BlogPostSummary, BlogPostView } from '@otmetki/schemas';
+
 import { isIncludedIn } from 'remeda';
 
-import type { BlogEditorPostView, BlogPostSummaryView, BlogPostView } from '../../blog.types';
 import type { ToBlogPostViewInput } from './blog-post-view.types';
 
 import { toIso } from '../../../../common/lib';
@@ -8,7 +9,7 @@ import { toAuthorView } from '../../../community-core';
 import { BLOG } from '../../config';
 import { blogCoverUrl, outlineArticle } from '../../lib';
 
-export const toBlogPostSummary = ({ post, apiUrl }: ToBlogPostViewInput): BlogPostSummaryView => ({
+export const toBlogPostSummary = ({ post, apiUrl }: ToBlogPostViewInput): BlogPostSummary => ({
   id: post.id,
   slug: post.slug,
   locale: isIncludedIn(post.locale, BLOG.locales) ? post.locale : BLOG.defaultLocale,
@@ -34,7 +35,7 @@ export const toBlogPostView = ({ post, apiUrl }: ToBlogPostViewInput): BlogPostV
   createdAt: post.createdAt.toISOString()
 });
 
-export const toBlogEditorPostView = ({ post, apiUrl }: ToBlogPostViewInput): BlogEditorPostView => ({
+export const toBlogEditorPostView = ({ post, apiUrl }: ToBlogPostViewInput): BlogEditorPost => ({
   ...toBlogPostView({ post, apiUrl }),
   coverKey: post.coverKey,
   coverUrl: post.coverUrl

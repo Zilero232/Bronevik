@@ -19,7 +19,7 @@ export const HOME_FIGURES = {
 
 export const HOME_MODPACK = {
   href: ROUTES.mod,
-  details: `${ROUTES.mod}#features`,
+  details: ROUTES.modFeatures,
   props: [
     { key: 'marks', icon: Mark3Icon, tone: 'gold' },
     { key: 'results', icon: ScrollText, tone: 'sky' },

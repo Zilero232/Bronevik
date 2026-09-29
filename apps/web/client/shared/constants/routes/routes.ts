@@ -1,6 +1,6 @@
 import type { MissionOperationRouteInput, PlayerSessionRouteInput, PlayerWrappedRouteInput, TreeTankRouteInput } from './routes.types';
 
-import { ROUTE_PARAMS } from './routes.constants';
+import { ROUTE_ANCHORS, ROUTE_PARAMS } from './routes.constants';
 
 export const ROUTES = {
   home: '/',
@@ -89,6 +89,7 @@ export const ROUTES = {
     refund: '/terms#refund'
   },
   mod: '/mod',
+  modFeatures: `/mod#${ROUTE_ANCHORS.modFeatures}`,
   modProfile: '/mod/profile',
   plus: '/plus',
   replays: {

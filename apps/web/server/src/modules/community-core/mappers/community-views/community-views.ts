@@ -1,8 +1,10 @@
+import type { Author } from '@otmetki/schemas';
+
 import type { AccountRating } from '../../../../../generated';
 import type { PlayerStats } from '../../lib/requirements';
-import type { AuthorUser, AuthorView } from './community-views.types';
+import type { AuthorUser } from './community-views.types';
 
-export const toAuthorView = (user: AuthorUser): AuthorView => ({
+export const toAuthorView = (user: AuthorUser): Author => ({
   id: user.id,
   name: user.name,
   image: user.image && /^https?:\/\//.test(user.image) ? user.image : null

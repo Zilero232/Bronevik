@@ -1,4 +1,4 @@
-import type { FunctionComponent } from 'preact';
+import type { FunctionComponent, VNode } from 'preact';
 import type * as z from 'zod/mini';
 
 export type HudWidgetProps<Data> = { data: Data };
@@ -9,8 +9,13 @@ export type DefineHudWidgetInput<Data> = {
   Component: FunctionComponent<HudWidgetProps<Data>>;
 };
 
+export type ParsedHudWidget = {
+  kind: string;
+  data: unknown;
+  node: VNode;
+};
+
 export type HudWidgetEntry = {
   kind: string;
-  parse: (data: unknown) => unknown;
-  Component: FunctionComponent<HudWidgetProps<unknown>>;
+  parse: (data: unknown) => ParsedHudWidget | undefined;
 };

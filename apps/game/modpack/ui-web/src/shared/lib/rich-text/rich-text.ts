@@ -1,4 +1,4 @@
-import type { OpenTag, RichLine, RichStyle } from './rich-text.types';
+import type { OpenTag, PushTextInput, RichLine, RichStyle } from './rich-text.types';
 
 import { RICH_TEXT } from './rich-text.constants';
 
@@ -76,21 +76,23 @@ const tagStyle = (tag: string, attributes: Record<string, string>): RichStyle | 
 };
 
 export const parseRichText = (html: string): RichLine[] => {
-  const lines: RichLine[] = [[]];
+  const lines: RichLine[] = [{ key: '0', runs: [] }];
   const open: OpenTag[] = [];
   const current = (): RichStyle => open.reduce<RichStyle>((merged, { style }) => ({ ...merged, ...style }), {});
-  const lastLine = (): RichLine => lines[lines.length - 1] ?? [];
+  const lastRuns = (): RichLine['runs'] => lines[lines.length - 1]?.runs ?? [];
 
-  const pushText = (raw: string): void => {
+  const pushText = ({ raw, start }: PushTextInput): void => {
     decodeEntities(raw)
       .split(RICH_TEXT.newline)
       .forEach((part, index) => {
+        const key = `${start}.${index}`;
+
         if (index > 0) {
-          lines.push([]);
+          lines.push({ key, runs: [] });
         }
 
         if (part) {
-          lastLine().push({ kind: 'text', text: part, style: current() });
+          lastRuns().push({ key, kind: 'text', text: part, style: current() });
         }
       });
   };
@@ -102,13 +104,19 @@ export const parseRichText = (html: string): RichLine[] => {
     const tag = name.toLowerCase();
     const attributes = attributesOf(rawAttributes);
 
-    pushText(html.slice(last, match.index));
+    pushText({ raw: html.slice(last, match.index), start: last });
     last = match.index + whole.length;
 
     if (LINE_BREAK_TAGS.has(tag)) {
-      lines.push([]);
+      lines.push({ key: String(last), runs: [] });
     } else if (tag === 'img' && !closing && attributes.src?.startsWith(RICH_TEXT.imageScheme)) {
-      lastLine().push({ kind: 'image', src: attributes.src, width: positive(attributes.width), height: positive(attributes.height) });
+      lastRuns().push({
+        key: String(match.index),
+        kind: 'image',
+        src: attributes.src,
+        width: positive(attributes.width),
+        height: positive(attributes.height)
+      });
     } else if (closing) {
       const index = open.map((item) => item.tag).lastIndexOf(tag);
 
@@ -124,7 +132,7 @@ export const parseRichText = (html: string): RichLine[] => {
     }
   }
 
-  pushText(html.slice(last));
+  pushText({ raw: html.slice(last), start: last });
 
   return lines;
 };

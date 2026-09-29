@@ -1,2 +1,2 @@
 export { IdParamsDto, LikeResultDto, SlugParamsDto } from './community-core.dto';
-export { arenaIdSchema, authorSchema, moderationStatusSchema, playerStatsSchema, postStatusSchema } from './community-core.schemas';
+export { arenaIdSchema, moderationStatusSchema, playerStatsSchema, postStatusSchema } from './community-core.schemas';

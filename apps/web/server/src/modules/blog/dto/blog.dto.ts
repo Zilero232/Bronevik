@@ -1,19 +1,15 @@
-import { createZodDto } from 'nestjs-zod';
-
 import {
   blogArticleSchema,
   blogEditorAccessSchema,
   blogEditorPostListSchema,
   blogEditorPostSchema,
-  blogImageParamsSchema,
   blogImageUploadSchema,
   blogPostPageSchema,
-  blogPostsQuerySchema,
-  blogSlugParamsSchema,
-  blogTagsSchema,
-  createBlogPostSchema,
-  updateBlogPostSchema
-} from './blog.schemas';
+  blogTagsSchema
+} from '@otmetki/schemas';
+import { createZodDto } from 'nestjs-zod';
+
+import { blogImageParamsSchema, blogPostsQuerySchema, blogSlugParamsSchema, createBlogPostSchema, updateBlogPostSchema } from './blog.schemas';
 
 export class BlogArticleDto extends createZodDto(blogArticleSchema) {}
 export class BlogPostPageDto extends createZodDto(blogPostPageSchema) {}

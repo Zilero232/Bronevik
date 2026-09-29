@@ -1,6 +1,10 @@
+import { BLOG_CONTRACT } from '@otmetki/schemas';
+
+type BlogImageExtension = (typeof BLOG_CONTRACT.imageExtensions)[number];
+
 export const BLOG_IMAGES = {
   root: '.data/blog',
-  prefix: 'images',
+  prefix: BLOG_CONTRACT.imagePrefix,
   field: 'file',
   maxBytes: 4 * 1024 * 1024,
   throttle: { limit: 20, ttl: 60_000 },
@@ -11,5 +15,5 @@ export const BLOG_IMAGES = {
     jpg: 'image/jpeg',
     webp: 'image/webp',
     avif: 'image/avif'
-  }
+  } satisfies Record<BlogImageExtension, string>
 } as const;

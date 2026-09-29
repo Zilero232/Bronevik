@@ -1,15 +1,17 @@
-import { booleanParam, countSchema, httpsUrlSchema, isoDateTimeSchema, paginatedSchema, paginationQuerySchema, uuidSchema } from '@otmetki/schemas';
+import {
+  blogCategorySchema,
+  blogImageFileSchema,
+  blogImageKeySchema,
+  blogLocaleSchema,
+  blogStatusSchema,
+  booleanParam,
+  httpsUrlSchema,
+  paginationQuerySchema
+} from '@otmetki/schemas';
 import { z } from 'zod';
 
-import { BlogCategory, BlogPostStatus } from '../../../../generated';
-import { authorSchema } from '../../community-core';
-import { BLOG, BLOG_IMAGES, BLOG_POST_LIMITS } from '../config';
-
-const blogCategorySchema = z.enum(BlogCategory);
-
-const blogStatusSchema = z.enum(BlogPostStatus);
-
-const blogLocaleSchema = z.enum(BLOG.locales);
+import { BlogPostStatus } from '../../../../generated';
+import { BLOG, BLOG_POST_LIMITS } from '../config';
 
 const blogTagSchema = z
   .string()
@@ -27,47 +29,6 @@ const blogSlugSchema = z
   .max(BLOG.slugMaxLength)
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
 
-const imageFilePattern = `[0-9a-f-]{36}\\.(?:${Object.keys(BLOG_IMAGES.types).join('|')})`;
-
-const blogImageFileSchema = z.string().regex(new RegExp(`^${imageFilePattern}$`));
-
-const blogImageKeySchema = z.string().regex(new RegExp(`^${BLOG_IMAGES.prefix}/${imageFilePattern}$`));
-
-export const blogTocItemSchema = z.object({ id: z.string(), text: z.string(), depth: z.number().int().min(1).max(6) });
-
-export const blogPostSummarySchema = z.object({
-  id: uuidSchema,
-  slug: z.string(),
-  locale: blogLocaleSchema,
-  title: z.string(),
-  excerpt: z.string(),
-  cover: z.url().nullable(),
-  category: blogCategorySchema,
-  tags: z.array(z.string()),
-  author: authorSchema.nullable(),
-  readingMinutes: z.number().int().positive(),
-  isFeatured: z.boolean(),
-  publishedAt: isoDateTimeSchema.nullable(),
-  updatedAt: isoDateTimeSchema
-});
-
-export const blogPostSchema = blogPostSummarySchema.extend({
-  body: z.string(),
-  toc: z.array(blogTocItemSchema),
-  seoTitle: z.string().nullable(),
-  seoDescription: z.string().nullable(),
-  status: blogStatusSchema,
-  createdAt: isoDateTimeSchema
-});
-
-export const blogArticleSchema = z.object({ post: blogPostSchema, related: z.array(blogPostSummarySchema) });
-
-export const blogEditorPostSchema = blogPostSchema.extend({ coverKey: z.string().nullable(), coverUrl: z.string().nullable() });
-
-export const blogEditorPostListSchema = z.array(blogEditorPostSchema);
-
-export const blogPostPageSchema = paginatedSchema(blogPostSummarySchema);
-
 export const blogPostsQuerySchema = paginationQuerySchema.extend({
   category: blogCategorySchema.optional(),
   tag: blogTagSchema.optional(),
@@ -75,17 +36,9 @@ export const blogPostsQuerySchema = paginationQuerySchema.extend({
   isFeatured: booleanParam.optional()
 });
 
-export const blogTagCountSchema = z.object({ tag: z.string(), count: countSchema });
-
-export const blogTagsSchema = z.array(blogTagCountSchema);
-
 export const blogSlugParamsSchema = z.object({ slug: z.string().trim().min(1).max(BLOG.slugMaxLength) });
 
 export const blogImageParamsSchema = z.object({ file: blogImageFileSchema });
-
-export const blogEditorAccessSchema = z.object({ canEdit: z.boolean() });
-
-export const blogImageUploadSchema = z.object({ key: blogImageKeySchema, url: z.url() });
 
 const blogPostFieldsSchema = z.object({
   slug: blogSlugSchema.optional(),

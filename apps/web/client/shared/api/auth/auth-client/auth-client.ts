@@ -1,7 +1,7 @@
 import { magicLinkClient } from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
 
-import { env } from '@/shared/config/client-env';
+import { env } from '@/shared/config';
 
 import { bearerToken } from '../../http';
 import { AUTH_CLIENT } from '../auth.constants';

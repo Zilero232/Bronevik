@@ -1,7 +1,7 @@
-import { countSchema, isoDateTimeSchema, paginatedSchema, paginationQuerySchema, tankIdSchema, uuidSchema } from '@otmetki/schemas';
+import { authorSchema, countSchema, isoDateTimeSchema, paginatedSchema, paginationQuerySchema, tankIdSchema, uuidSchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
-import { arenaIdSchema, authorSchema, moderationStatusSchema } from '../../community-core';
+import { arenaIdSchema, moderationStatusSchema } from '../../community-core';
 import { COMMENTS, GUIDES } from '../config';
 
 const guideKindSchema = z.enum(['tank', 'map', 'general']);

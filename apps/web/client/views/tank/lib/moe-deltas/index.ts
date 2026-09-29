@@ -1,3 +1,3 @@
-export { moeDelta, moeSeries, thresholdVerdict } from './moe-deltas';
+export { moeDelta, moeSeries } from './moe-deltas';
 
 export type { MoeKey } from './moe-deltas.types';

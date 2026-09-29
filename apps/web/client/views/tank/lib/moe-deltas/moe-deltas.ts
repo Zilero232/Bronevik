@@ -1,7 +1,5 @@
 import type { MoeThreshold } from '@otmetki/schemas';
 
-import type { SpecVerdict } from '@/entities/tank/tank';
-
 import { daysBetween } from '@/shared/lib';
 
 import type { MoeDeltaInput, MoeSeries } from './moe-deltas.types';
@@ -33,11 +31,3 @@ export const moeSeries = (history: readonly MoeThreshold[]): MoeSeries => ({
     values: history.map((point) => point[key] ?? 0)
   }))
 });
-
-export const thresholdVerdict = (delta: number): SpecVerdict => {
-  if (delta === 0) {
-    return 'same';
-  }
-
-  return delta > 0 ? 'worse' : 'better';
-};

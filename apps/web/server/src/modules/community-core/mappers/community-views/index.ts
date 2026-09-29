@@ -1,2 +1,2 @@
 export { toAuthorView, toPlayerStats } from './community-views';
-export type { AuthorUser, AuthorView, NamesById, StatsByAccount } from './community-views.types';
+export type { AuthorUser, NamesById, StatsByAccount } from './community-views.types';

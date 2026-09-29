@@ -18,6 +18,8 @@ export const loadoutSchema = z.object({
   fieldModifications: z.array(z.string()).default([])
 });
 
+export const authorSchema = z.object({ id: uuidSchema, name: z.string(), image: z.url().nullable() });
+
 export const visibilitySchema = z.enum(['public', 'unlisted', 'private']);
 
 export const buildSchema = z.object({
@@ -27,7 +29,7 @@ export const buildSchema = z.object({
   description: z.string().nullable(),
   loadout: loadoutSchema,
   stats: z.record(z.string(), z.number().nullable()).nullable(),
-  author: z.object({ id: uuidSchema, name: z.string(), image: z.url().nullable() }),
+  author: authorSchema,
   visibility: visibilitySchema,
   likesCount: countSchema,
   likedByMe: z.boolean(),

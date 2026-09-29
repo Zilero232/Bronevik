@@ -8,6 +8,7 @@ import type { PrismaService } from '../../../../core';
 import type { NotificationService } from '../../../notifications';
 
 import { weekWindow } from '../../../../common/lib';
+import { TANK_CHALLENGE_POOL } from '../../config';
 import { ProgressionRunService } from '../progression-run.service';
 import { SeasonService } from '../season.service';
 import { ShellLedgerService } from '../shell-ledger.service';
@@ -48,7 +49,7 @@ const setup = () => {
   prisma.battle.count.mockResolvedValue(0);
   prisma.vehicle.findMany.mockResolvedValue([Object.assign(mock<Vehicle>(), { tankId, tier: 8, name: 'Object 140', shortName: 'Об. 140' })]);
   prisma.playerTank.findMany.mockResolvedValue([]);
-  prisma.tankChallengeProgress.findUnique.mockResolvedValue(null);
+  prisma.tankChallengeProgress.findMany.mockResolvedValue([]);
   ledger.grant.mockResolvedValue(true);
   seasons.claimRewards.mockResolvedValue(0);
 
@@ -220,12 +221,34 @@ describe('ProgressionRunService.run', () => {
     const completedAt = new Date('2026-09-22T10:00:00Z');
 
     prisma.battle.findMany.mockResolvedValue(range(0, 20).map(() => modBattle()));
-    prisma.tankChallengeProgress.findUnique.mockResolvedValue(Object.assign(mock<TankChallengeProgress>(), { completedAt }));
+
+    prisma.tankChallengeProgress.findMany.mockResolvedValue(
+      TANK_CHALLENGE_POOL.map(({ metric }) => Object.assign(mock<TankChallengeProgress>(), { tankId, code: metric, completedAt }))
+    );
 
     await service.run(now);
 
     expect(grantsFor(ledger, 'challenge')).toEqual([]);
     expect(prisma.tankChallengeProgress.upsert.mock.calls.every(([args]) => !('completedAt' in args.update))).toBe(true);
+  });
+
+  it('reads the completed challenges of the week in one query for every tank', async () => {
+    const { prisma, service } = setup();
+
+    prisma.battle.findMany.mockResolvedValue(range(0, 20).map(() => modBattle()));
+
+    await service.run(now);
+
+    expect(prisma.tankChallengeProgress.upsert.mock.calls.length).toBeGreaterThan(1);
+    expect(prisma.tankChallengeProgress.findMany).toHaveBeenCalledTimes(1);
+
+    expect(prisma.tankChallengeProgress.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { accountId: 7n, weekStart: weekWindow(now).weekStart, tankId: { in: [tankId] }, completedAt: { not: null } }
+      })
+    );
+
+    expect(prisma.tankChallengeProgress.findUnique).not.toHaveBeenCalled();
   });
 
   it('keeps going when one account fails and claims season rewards once per user', async () => {

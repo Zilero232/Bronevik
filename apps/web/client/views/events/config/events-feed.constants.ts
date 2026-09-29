@@ -1,4 +1,4 @@
-import { env } from '@/shared/config/client-env';
+import { env } from '@/shared/config';
 
 const icsUrl = `${env.NEXT_PUBLIC_API_URL}/events/calendar.ics`;
 

@@ -146,14 +146,20 @@ export class ProgressionRunService {
     const hasModData =
       (await this.prisma.battle.count({ where: { accountId, startedAt: { gte: subDays(now, PROGRESSION_RUN.modLookbackDays) } } })) > 0;
 
+    const completedRows = await this.prisma.tankChallengeProgress.findMany({
+      where: { accountId, weekStart, tankId: { in: tanks.map(([tankId]) => tankId) }, completedAt: { not: null } },
+      select: { tankId: true, code: true }
+    });
+
+    const completed = new Set(completedRows.map((row) => `${row.tankId}:${row.code}`));
+
     for (const [tankId, rows] of tanks) {
       const challenges = weeklyTankChallenges({ seed: `${accountId}:${tankId}:${weekKey}`, tier: vehicles.get(tankId)?.tier ?? 1, hasModData });
 
       for (const challenge of challenges) {
         const key = { accountId_tankId_weekStart_code: { accountId, tankId, weekStart, code: challenge.code } };
         const progress = challengeProgress({ challenge, samples: rows });
-        const existing = await this.prisma.tankChallengeProgress.findUnique({ where: key, select: { completedAt: true } });
-        const justCompleted = progress >= challenge.target && !existing?.completedAt;
+        const justCompleted = progress >= challenge.target && !completed.has(`${tankId}:${challenge.code}`);
         const completion = justCompleted ? { completedAt: now } : {};
 
         await this.prisma.tankChallengeProgress.upsert({

@@ -8,8 +8,6 @@ export const arenaIdSchema = z
   .max(64)
   .regex(/^[\w-]+$/);
 
-export const authorSchema = z.object({ id: uuidSchema, name: z.string(), image: z.url().nullable() });
-
 export const playerStatsSchema = z.object({
   battles: countSchema,
   wn8: z.number().nullable(),

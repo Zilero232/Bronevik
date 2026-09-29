@@ -32,12 +32,12 @@ export const HudLabel = ({ label }: HudLabelProps) => (
     {label.button ? (
       <LogoMark size={HUD_OVERLAY.logoSize} />
     ) : label.widget ? (
-      <label.widget.entry.Component data={label.widget.data} />
+      label.widget.node
     ) : (
-      label.lines.map((line, index) => (
-        <span key={index} className={s.line}>
-          {line.map((run, position) => (
-            <HudRun key={position} run={run} />
+      label.lines.map((line) => (
+        <span key={line.key} className={s.line}>
+          {line.runs.map((run) => (
+            <HudRun key={run.key} run={run} />
           ))}
         </span>
       ))

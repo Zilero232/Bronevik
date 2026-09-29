@@ -1,9 +1,11 @@
 'use client';
 
+import { thresholdVerdict } from '@/entities/player/marks';
+
 import type { MoePlate } from './use-moe-plates.types';
 
 import { MOE_DELTA_DAYS, MOE_PLATES } from '../../../config';
-import { moeDelta, thresholdVerdict } from '../../../lib';
+import { moeDelta } from '../../../lib';
 import { useTank } from '../../context';
 import { useMoeHistory } from '../use-moe-history';
 
@@ -22,7 +24,7 @@ export const useMoePlates = () => {
         deltas: MOE_DELTA_DAYS.map((days) => {
           const delta = history ? moeDelta({ history, key, days }) : null;
 
-          return { days, value: delta, verdict: delta === null ? 'same' : thresholdVerdict(delta) };
+          return { days, value: delta, verdict: thresholdVerdict(delta) };
         })
       }))
     : [];

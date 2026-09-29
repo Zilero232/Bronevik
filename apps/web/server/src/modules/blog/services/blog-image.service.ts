@@ -1,7 +1,9 @@
+import type { BlogImageUpload } from '@otmetki/schemas';
+
 import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 
-import type { BlogImageFile, BlogImageUpload, UploadedBlogImage } from '../blog.types';
+import type { BlogImageFile, UploadedBlogImage } from '../blog.types';
 
 import { AppBadRequestException, AppNotFoundException } from '../../../common/exceptions';
 import { AppConfigService } from '../../../config';

@@ -1,5 +1,5 @@
 import { AUTH_CLIENT } from '@/shared/api/auth';
-import { env } from '@/shared/config/client-env';
+import { env } from '@/shared/config';
 
 import type { LestaStartInput } from './auth.types';
 

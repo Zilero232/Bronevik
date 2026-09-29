@@ -13,15 +13,18 @@ members = [
     "otmetki-feature-auto-resupply",
     "otmetki-feature-battle-clock",
     "otmetki-feature-battle-efficiency",
+    "otmetki-feature-battle-hits",
     "otmetki-feature-battle-loadout",
     "otmetki-feature-battle-results",
     "otmetki-feature-battle-sounds",
+    "otmetki-feature-bush-circle",
     "otmetki-feature-camera",
     "otmetki-feature-chat-filter",
     "otmetki-feature-consumables",
     "otmetki-feature-crosshair",
     "otmetki-feature-damage-log",
     "otmetki-feature-death-card",
+    "otmetki-feature-gun-arc",
     "otmetki-feature-hangar-cleaner",
     "otmetki-feature-hangar-info",
     "otmetki-feature-hangar-marks",
@@ -179,6 +182,21 @@ requires-dist = [
 ]
 
 [[package]]
+name = "otmetki-feature-battle-hits"
+version = "0.1.0"
+source = { virtual = "features/battle_hits" }
+dependencies = [
+    { name = "otmetki-companion" },
+    { name = "otmetki-core" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "otmetki-companion", virtual = "packages/companion" },
+    { name = "otmetki-core", virtual = "packages/core" },
+]
+
+[[package]]
 name = "otmetki-feature-battle-loadout"
 version = "0.1.0"
 source = { virtual = "features/battle_loadout" }
@@ -224,6 +242,21 @@ requires-dist = [
 ]
 
 [[package]]
+name = "otmetki-feature-bush-circle"
+version = "0.1.0"
+source = { virtual = "features/bush_circle" }
+dependencies = [
+    { name = "otmetki-companion" },
+    { name = "otmetki-core" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "otmetki-companion", virtual = "packages/companion" },
+    { name = "otmetki-core", virtual = "packages/core" },
+]
+
+[[package]]
 name = "otmetki-feature-camera"
 version = "0.1.0"
 source = { virtual = "features/camera" }
@@ -255,7 +288,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-consumables"
-version = "0.1.0"
+version = "0.2.0"
 source = { virtual = "features/consumables" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -314,6 +347,21 @@ requires-dist = [
 ]
 
 [[package]]
+name = "otmetki-feature-gun-arc"
+version = "0.1.0"
+source = { virtual = "features/gun_arc" }
+dependencies = [
+    { name = "otmetki-companion" },
+    { name = "otmetki-core" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "otmetki-companion", virtual = "packages/companion" },
+    { name = "otmetki-core", virtual = "packages/core" },
+]
+
+[[package]]
 name = "otmetki-feature-hangar-cleaner"
 version = "0.1.0"
 source = { virtual = "features/hangar_cleaner" }
@@ -330,7 +378,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-hangar-info"
-version = "0.2.0"
+version = "0.3.0"
 source = { virtual = "features/hangar_info" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -683,15 +731,18 @@ dependencies = [
     { name = "otmetki-feature-auto-resupply" },
     { name = "otmetki-feature-battle-clock" },
     { name = "otmetki-feature-battle-efficiency" },
+    { name = "otmetki-feature-battle-hits" },
     { name = "otmetki-feature-battle-loadout" },
     { name = "otmetki-feature-battle-results" },
     { name = "otmetki-feature-battle-sounds" },
+    { name = "otmetki-feature-bush-circle" },
     { name = "otmetki-feature-camera" },
     { name = "otmetki-feature-chat-filter" },
     { name = "otmetki-feature-consumables" },
     { name = "otmetki-feature-crosshair" },
     { name = "otmetki-feature-damage-log" },
     { name = "otmetki-feature-death-card" },
+    { name = "otmetki-feature-gun-arc" },
     { name = "otmetki-feature-hangar-cleaner" },
     { name = "otmetki-feature-hangar-info" },
     { name = "otmetki-feature-hangar-marks" },
@@ -736,15 +787,18 @@ requires-dist = [
     { name = "otmetki-feature-auto-resupply", virtual = "features/auto_resupply" },
     { name = "otmetki-feature-battle-clock", virtual = "features/battle_clock" },
     { name = "otmetki-feature-battle-efficiency", virtual = "features/battle_efficiency" },
+    { name = "otmetki-feature-battle-hits", virtual = "features/battle_hits" },
     { name = "otmetki-feature-battle-loadout", virtual = "features/battle_loadout" },
     { name = "otmetki-feature-battle-results", virtual = "features/battle_results" },
     { name = "otmetki-feature-battle-sounds", virtual = "features/battle_sounds" },
+    { name = "otmetki-feature-bush-circle", virtual = "features/bush_circle" },
     { name = "otmetki-feature-camera", virtual = "features/camera" },
     { name = "otmetki-feature-chat-filter", virtual = "features/chat_filter" },
     { name = "otmetki-feature-consumables", virtual = "features/consumables" },
     { name = "otmetki-feature-crosshair", virtual = "features/crosshair" },
     { name = "otmetki-feature-damage-log", virtual = "features/damage_log" },
     { name = "otmetki-feature-death-card", virtual = "features/death_card" },
+    { name = "otmetki-feature-gun-arc", virtual = "features/gun_arc" },
     { name = "otmetki-feature-hangar-cleaner", virtual = "features/hangar_cleaner" },
     { name = "otmetki-feature-hangar-info", virtual = "features/hangar_info" },
     { name = "otmetki-feature-hangar-marks", virtual = "features/hangar_marks" },

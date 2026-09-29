@@ -7,7 +7,7 @@ import { z } from 'zod';
 
 import type { CollectedArmorModels } from '../src/modules/gamedata';
 
-import { ARMOR_VIEWER, envSchema, isRealLestaApplicationId, LESTA } from '../src/config';
+import { ARMOR_VIEWER, envSchema, LESTA } from '../src/config';
 import { createLestaClients } from '../src/core/lesta';
 import { createPrismaClient } from '../src/core/prisma';
 import {
@@ -80,10 +80,8 @@ const data = await buildGameData({ reader, nations, vehicleLimit: options.limit,
 const checkEncyclopediaVersion = async (): Promise<void> => {
   const applicationId = process.env.LESTA_APPLICATION_ID;
 
-  if (!isRealLestaApplicationId(applicationId) || source.isTest || !data.version) {
-    console.warn(
-      `  ! ${MT_CLIENT.product} encyclopedia version not checked (${isRealLestaApplicationId(applicationId) ? 'test-server source' : 'no real LESTA_APPLICATION_ID'})`
-    );
+  if (!applicationId || source.isTest || !data.version) {
+    console.warn(`  ! ${MT_CLIENT.product} encyclopedia version not checked (${applicationId ? 'test-server source' : 'no LESTA_APPLICATION_ID'})`);
 
     return;
   }

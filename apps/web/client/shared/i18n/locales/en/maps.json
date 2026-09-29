@@ -40,7 +40,7 @@
   "grid": {
     "errorTitle": "Maps failed to load",
     "noMatchTitle": "No such maps",
-    "emptyTitle": "The map list is empty",
+    "emptyTitle": "Maps are not loaded yet",
     "errorDescription": "The server is not responding.",
     "caption": "Map statistics"
   },
@@ -77,5 +77,13 @@
       "next": "Next"
     }
   },
-  "unnamed": "Unknown map"
+  "unnamed": "Unknown map",
+  "presets": {
+    "label": "Quick filters",
+    "standard": "Standard battle only",
+    "small": "Small, up to 800 m",
+    "medium": "Medium",
+    "large": "Large, 1200 m and up",
+    "pinned": "Pinned"
+  }
 }

@@ -92,8 +92,6 @@
   "states": {
     "loading": "Preparing today's puzzle",
     "errorTitle": "Couldn't load the vehicle catalog",
-    "errorDescription": "The puzzle needs the catalog. Refresh the page a bit later.",
-    "emptyTitle": "The catalog is empty",
-    "emptyDescription": "There are no vehicles in the catalog to pick a puzzle from."
+    "errorDescription": "The puzzle needs the catalog. Refresh the page a bit later."
   }
 }

@@ -70,22 +70,19 @@ Requires [Bun](https://bun.sh) ≥ 1.3, Docker, and Python 3 for the mod's tests
 
 ```bash
 bun install
-cp .env.example .env     # LESTA_APPLICATION_ID empty: the server serves a generated Lesta API (dev only)
+cp .env.example .env     # LESTA_APPLICATION_ID empty: no Lesta, the worker runs degraded, pages show empty states
 bun run dev:infra        # TimescaleDB on :5434, Redis on :6380, Mailpit on :1025/:8025
 bun run db:push
-bun run gamedata:import  # vehicles, modules, equipment — the mock world is built on them
-bun run dev:seed         # optional: 600 tracked players with 90 days of history, clans, mod battles, aggregates
+bun run gamedata:import  # optional: vehicles, modules, equipment, maps from the public client-data repos (no Lesta key needed)
 bun run dev              # server :4000 + client :3000 (no worker)
 bun run dev:all          # + worker (collector jobs)
 ```
 
 The client has no mocks: it always talks to the API at `NEXT_PUBLIC_API_URL`. Without the server running, `bun run dev:client` still renders every page, with its empty or error states.
 
-### Lesta API mock (until the key exists)
+### Without a Lesta key
 
-With `LESTA_APPLICATION_ID` empty and `NODE_ENV=development`, the server and the worker answer every Lesta call from a deterministic generated world: ~12k players with «Мир танков»-style nicknames, ~260 clans, skill, win rate and WN8 distributions that match XVM, per-tank stats derived from the real imported vehicles, and stats that keep advancing in real time (evening sessions, marks, mastery, clan changes, server online). The real Lesta client, schemas, rate limiter and collector run unchanged — MSW intercepts their HTTP. Lesta ID login opens a dev page where you sign in as any generated player. `LESTA_MOCK=auto|on|off` overrides the switch; setting the real key turns the mock off, and it never runs in production. Details: [apps/web/server/CLAUDE.md](apps/web/server/CLAUDE.md#lesta-api-mock).
-
-`bun run dev:seed` (`--reset`, `--accounts N`, `--days N`, `--mod-players N`, `--mod-days N`) enrols a realistic sample of the generated players, backfills their snapshots through the collector's own poll pipeline, syncs their clans, writes mod-style battles with loadouts and economy, and runs the nightly aggregate jobs once. It is idempotent; `--reset` starts over.
+There is no mock and no generated data anywhere. With `LESTA_APPLICATION_ID` empty the server boots, the worker starts degraded (no tracking, clan or other Lesta jobs), Lesta ID sign-in answers `lesta_not_connected`, and every page shows its empty state. `NEXT_PUBLIC_LESTA_NOTICE=true` (required, `true` or `false`, build time) adds the site-wide «data not connected yet» notice and disables the Lesta ID button. `bun run gamedata:import` still fills the vehicle catalog, maps and missions from the public client-data repositories.
 
 ### Dev server troubleshooting
 
@@ -121,7 +118,6 @@ With `LESTA_APPLICATION_ID` empty and `NODE_ENV=development`, the server and the
 | `bun run dev:infra` / `dev:infra:down`                                                 | Local TimescaleDB + Redis + Mailpit                                                             |
 | `bun run db:push` / `db:studio` / `db:timescale`                                       | Schema sync (`prisma db push`, no migrations before production), studio and the Timescale layer |
 | `bun run gamedata:import`                                                              | Import the game client's data into the database                                                 |
-| `bun run dev:seed`                                                                     | Seed the local database from the Lesta mock (history, clans, mod battles, aggregates)           |
 | `bun run verify`                                                                       | typecheck + lint + format:check + lint:css — what CI runs                                       |
 | `bun run fix`                                                                          | Auto-fix lint, formatting, styles and the Prisma schema                                         |
 | `bun run test`                                                                         | Vitest across the monorepo (never `bun test`)                                                   |

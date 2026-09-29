@@ -13,6 +13,7 @@ import {
   leaderboardsControllerOfficialNeighborsOptions,
   leaderboardsControllerOfficialTopOptions
 } from '@/shared/api/query-options';
+import { isNotFoundError } from '@/shared/api/source';
 import { percentText } from '@/shared/lib';
 
 import { HALL_OF_FAME } from '../../../config';
@@ -45,6 +46,7 @@ export const useHallOfFame = () => {
   const withLinks = <T extends { accountId: number; nickname: string | null }>(items: readonly T[]) =>
     items.map((item) => ({ ...item, link: officialEntryLink(item), isViewer: item.accountId === accountId }));
 
+  const isTopMissing = isNotFoundError(top.error);
   const ranks = (history.data?.points ?? []).flatMap((point) => (point.rank === null ? [] : [point.rank]));
   const isPercent = percentFields.has(field);
 
@@ -57,7 +59,12 @@ export const useHallOfFame = () => {
     periodOptions: OFFICIAL_RATING_PERIODS.map((value) => ({ value, label: t(`periods.${value}`) })),
     fieldItems: HALL_OF_FAME.fields.map((value) => ({ value, label: t(`fields.${value}`) })),
     valueText,
-    top,
+    top: {
+      data: isTopMissing ? { items: [] } : top.data,
+      isError: top.isError && !isTopMissing,
+      isRefetching: top.isRefetching,
+      refetch: top.refetch
+    },
     topItems: withLinks(top.data?.items ?? []),
     neighbors: withLinks(neighbors.data?.items ?? []),
     rankTrend: ranks.map((rank) => -rank),

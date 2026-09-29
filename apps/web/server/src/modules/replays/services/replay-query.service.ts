@@ -15,7 +15,7 @@ import type {
 } from '../replays.types';
 
 import { AppNotFoundException } from '../../../common/exceptions';
-import { toIsoDate, weekWindow } from '../../../common/lib';
+import { insensitiveEquals, toIsoDate, weekWindow } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { ObjectStorage, PrismaService } from '../../../core';
 import { BEST_OF_WEEK } from '../config';
@@ -46,7 +46,7 @@ export class ReplayQueryService {
   async search(query: ReplaySearchQuery): Promise<ReplayPage> {
     const byNickname = query.accountId === undefined ? query.player : undefined;
     const player = byNickname
-      ? await this.prisma.player.findFirst({ where: { nickname: { equals: query.player, mode: 'insensitive' } }, select: { accountId: true } })
+      ? await this.prisma.player.findFirst({ where: { nickname: insensitiveEquals(byNickname) }, select: { accountId: true } })
       : null;
 
     if (byNickname && !player) {

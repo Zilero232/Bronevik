@@ -7,11 +7,21 @@ import type { UseDataTableInput } from './use-data-table.types';
 
 import { columnMax } from '../column-max';
 import { dataTableLayout } from '../data-table-layout';
+import { pinnedFirst } from '../pinned-first';
 import { useDataTableState } from '../use-data-table-state';
 import { useHydrated } from '../use-hydrated';
 import { DATA_TABLE_LAYOUT } from './use-data-table.constants';
 
-export const useDataTable = <T>({ data, columns, getRowId, initialSorting, virtualizeAfter, isLoading, hasCards }: UseDataTableInput<T>) => {
+export const useDataTable = <T>({
+  data,
+  columns,
+  getRowId,
+  pinnedRowIds,
+  initialSorting,
+  virtualizeAfter,
+  isLoading,
+  hasCards
+}: UseDataTableInput<T>) => {
   'use no memo';
 
   const { scrollNode, setScrollNode, sorting, setSorting } = useDataTableState({ initialSorting });
@@ -27,7 +37,7 @@ export const useDataTable = <T>({ data, columns, getRowId, initialSorting, virtu
     getSortedRowModel: getSortedRowModel()
   });
 
-  const { rows } = table.getRowModel();
+  const rows = pinnedFirst({ rows: table.getRowModel().rows, pinnedIds: pinnedRowIds });
   const visibleColumns = table.getVisibleLeafColumns();
   const barMax = Object.fromEntries(
     visibleColumns.flatMap((column) =>

@@ -4,7 +4,8 @@ export const MOE_LIST = {
   pageLimit: 100,
   historyStaleMs: minutesToMilliseconds(10),
   historyChartHeight: 200,
-  rowHeight: 44
+  rowHeight: 44,
+  pinWidth: 40
 } as const;
 
 export const PLAYER_LOOKUP = {

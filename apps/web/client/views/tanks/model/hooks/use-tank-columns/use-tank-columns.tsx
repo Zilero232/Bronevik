@@ -8,6 +8,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import type { TableColumn } from '@/ui-kit';
 
 import { TankCell, TierCell, WinRateCell } from '@/entities/tank/tank';
+import { PinToggle } from '@/features/app/pin-rows';
 import { percentText } from '@/shared/lib';
 import { DeltaValue } from '@/ui-kit';
 
@@ -19,12 +20,19 @@ const column = createColumnHelper<TankServerStatsRow>();
 
 export const useTankColumns = ({ hidden }: UseTankColumnsInput): TableColumn<TankServerStatsRow>[] => {
   const t = useTranslations('tanks.table');
+  const tPin = useTranslations('common.pin');
   const format = useFormatter();
 
   const decimal = (value: number) => format.number(value, { maximumFractionDigits: 2 });
   const integer = (value: number) => format.number(value, { maximumFractionDigits: 0 });
 
   const columns: TableColumn<TankServerStatsRow>[] = [
+    column.display({
+      id: 'pin',
+      header: tPin('column'),
+      cell: ({ row: { original } }) => <PinToggle id={String(original.vehicle.tankId)} name={original.vehicle.name} scope='tanks' />,
+      meta: { width: TANKS_TABLE.pinWidth }
+    }),
     column.accessor((row) => row.popularityRank ?? undefined, {
       id: 'rank',
       header: '#',

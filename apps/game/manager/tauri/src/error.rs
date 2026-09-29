@@ -30,6 +30,11 @@ pub enum ErrorCode {
     FileLocked,
     NotEnoughSpace,
     RollbackFailed,
+    NothingToRestore,
+    SetLimit,
+    SetName,
+    SetMissing,
+    SetCode,
 }
 
 pub const SHARING_VIOLATION: i32 = 32;

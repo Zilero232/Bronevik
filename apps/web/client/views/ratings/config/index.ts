@@ -1,0 +1,1 @@
+export { METHOD_SECTIONS, RATING_SCALE_COLUMNS, RATINGS_PAGE, RATINGS_SOURCES } from './ratings-page.constants';

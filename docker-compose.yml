@@ -17,9 +17,6 @@
 # Everything reads the root .env. The URLs in it point at localhost for dev;
 # inside compose the services reach each other by name, so the overrides below
 # win for DATABASE_URL, DIRECT_URL and REDIS_URL.
-#
-# The keyless demo (generated data, no Lesta key) is the override
-# docker-compose.demo.yml; docs/ops/deploy.md «Демо-деплой без ключей».
 
 x-healthcheck: &healthcheck
   interval: 30s
@@ -74,7 +71,7 @@ services:
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:?}
         NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?}
-        NEXT_PUBLIC_DEMO_MODE: ${NEXT_PUBLIC_DEMO_MODE:-false}
+        NEXT_PUBLIC_LESTA_NOTICE: ${NEXT_PUBLIC_LESTA_NOTICE:?}
         GIT_COMMIT_SHA: ${GIT_COMMIT_SHA:-}
     image: ghcr.io/zilero232/otmetki-client:latest
     container_name: otmetki-client

@@ -42,6 +42,7 @@ export type LestaAccountStore = {
 };
 
 export type LestaIdOptions = {
+  isConnected: boolean;
   lesta: LestaClient;
   store: LestaAccountStore;
   apiUrl: string;

@@ -5,6 +5,7 @@ import type { BattleResult } from '../../../../../generated';
 export type BattleSideRow = {
   team: number | null;
   result: BattleResult;
+  battles: number;
 };
 
 export type WinnerRow = {
@@ -14,5 +15,5 @@ export type WinnerRow = {
 
 export type ToStatsInput = {
   source: MapStats['source'];
-  winners: readonly (number | null)[];
+  winners: readonly WinnerRow[];
 };

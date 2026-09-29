@@ -1,0 +1,105 @@
+{
+  "meta": {
+    "title": "How WN8, EFF, Bronya Index and marks are computed",
+    "description": "The WN8, efficiency rating and Bronya Index formulas, how the mark of excellence percentage and mastery badges work, the rating colour scale and the data sources behind Three Marks."
+  },
+  "head": {
+    "title": "Rating methodology",
+    "lead": "Every formula below comes straight from the code the site computes ratings with: if a coefficient changes, this page changes too.",
+    "toc": "Methodology sections",
+    "scale": "Colour scale"
+  },
+  "link": {
+    "label": "How ratings are computed",
+    "text": "How it works"
+  },
+  "sections": {
+    "wn8": {
+      "title": "WN8",
+      "lead": "WN8 compares your average damage, spotting, kills, base defence and win rate with the expected values for each tank. A ratio of 1 is what an average player does on that tank.",
+      "lines": {
+        "ratios": "rDAMAGE = average damage ÷ expected damage; rSPOT, rFRAG, rDEF and rWIN work the same way",
+        "win": "rWINc = max(0; (rWIN − {floor}) ÷ (1 − {floor}))",
+        "damage": "rDAMAGEc = max(0; (rDAMAGE − {floor}) ÷ (1 − {floor}))",
+        "frag": "rFRAGc = min(rDAMAGEc + {cap}; max(0; (rFRAG − {floor}) ÷ (1 − {floor})))",
+        "spot": "rSPOTc = min(rDAMAGEc + {cap}; max(0; (rSPOT − {floor}) ÷ (1 − {floor})))",
+        "def": "rDEFc = min(rDAMAGEc + {cap}; max(0; (rDEF − {floor}) ÷ (1 − {floor})))",
+        "total": "WN8 = {damage}·rDAMAGEc + {damageFrag}·rDAMAGEc·rFRAGc + {fragSpot}·rFRAGc·rSPOTc + {defFrag}·rDEFc·rFRAGc + {win}·min({winCap}; rWINc)"
+      },
+      "notes": {
+        "account": "For an account the expected values are multiplied by the battles on each tank and summed, and the formula runs once over the totals. Tanks without expected values are left out.",
+        "expected": "Expected values come from the open XVM table for the Lesta servers; the link is in the sources section."
+      }
+    },
+    "eff": {
+      "title": "EFF (efficiency rating)",
+      "lead": "The classic formula that rewards damage adjusted for the average tier played, kills, spotting, capture and base defence.",
+      "lines": {
+        "total": "EFF = damage·({numerator} ÷ (tier + {offset}))·({base} + {slope}·tier ÷ 100) + kills·{frag} + spotted·{spot} + ln(capture + 1) ÷ ln({logBase})·{capture} + defence·{defence}"
+      },
+      "notes": {
+        "tier": "Every value is a per-battle average; “tier” is the average vehicle tier weighted by the battles on each tank."
+      }
+    },
+    "bronyaIndex": {
+      "title": "Bronya Index",
+      "lead": "Our own rating. It does not lean on anyone else’s tables: it shows what share of the players in our database you beat on each of your tanks.",
+      "lines": {
+        "percentiles": "For each tank we build the distribution of average damage, win rate, kills, spotting and base defence across every player in our database (percentiles at {levels}%) and find your place in it from 0 to 1.",
+        "score": "Tank score = {damage}% × damage + {winRate}% × wins + {frags}% × kills + {spotted}% × spotting + {defence}% × defence",
+        "shrink": "While battles are few the score is pulled to the middle: (battles × score + {prior} × {neutral}) ÷ (battles + {prior})",
+        "account": "Account Bronya Index = battle-weighted average tank score × {scale}"
+      },
+      "notes": {
+        "confidence": "Index confidence = battles ÷ (battles + {prior}): it starts cautious and firms up as you play."
+      }
+    },
+    "marks": {
+      "title": "Marks of excellence",
+      "lead": "The mark percentage is a moving average of your “combined damage” over recent battles, compared with other players on the same tank.",
+      "lines": {
+        "combined": "Combined damage per battle = own damage + max(spotting assist, tracking assist, stun assist)",
+        "ema": "After every battle: average = average + α × (battle damage − average), where α = 2 ÷ ({battles} + 1) ≈ {alpha}",
+        "thresholds": "Marks are awarded at {one}%, {two}% and {three}%: the share of players on the tank whose average is below yours.",
+        "interpolation": "Between thresholds the percentage grows linearly; when the data has no {max}% threshold it is extended along the slope between {two}% and {three}%."
+      },
+      "notes": {
+        "sources": "The damage thresholds in the marks table come from our mod data and open sources; every tank shows its source."
+      }
+    },
+    "mastery": {
+      "title": "Mastery badges",
+      "lead": "Ace Tanker and the classes are awarded for battle experience compared with other players on that tank.",
+      "lines": {
+        "levels": "3rd class beats {third}% of players; 2nd — {second}%; 1st — {first}%; Ace Tanker — {ace}%."
+      },
+      "notes": {
+        "window": "The experience thresholds are recomputed from recent battles, so they drift over time."
+      }
+    },
+    "scale": {
+      "title": "Colour scale",
+      "lead": "Every rating uses the same nine tiers, folded into six colours on the site. The display settings can switch the palette to the XVM colours.",
+      "caption": "Lower bound of each tier for every rating",
+      "columns": {
+        "tier": "Tier",
+        "wn8": "WN8",
+        "eff": "EFF",
+        "winRate": "Win rate, %",
+        "bronyaIndex": "Bronya Index"
+      },
+      "from": "from {value}",
+      "palette": "A tier applies once the value reaches its lower bound; the next bound starts the next tier."
+    }
+  },
+  "sources": {
+    "title": "Sources and licences",
+    "xvm": "The XVM project publishes the WN8 expected values for the Lesta servers and refreshes them daily:",
+    "xvmSite": "XVM website",
+    "xvmData": "expected values table",
+    "noCopy": "We do not republish that table on the site: no licence is stated for it anywhere, so please read it at the source.",
+    "wn8Formula": "The WN8 formula is the community’s open formula; we compute it unchanged.",
+    "eff": "EFF is the classic public efficiency rating formula.",
+    "own": "The Bronya Index, the colour scale and the mark thresholds in our table are Three Marks’ own computations from mod, replay and Lesta API data."
+  }
+}

@@ -1,16 +1,17 @@
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { CacheTTL } from '@nestjs/cache-manager';
 import { Controller, Get, Query, UseInterceptors } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
+import { ViewerCacheInterceptor } from '../../common/interceptors';
 import { BEST_BATTLES } from './config';
 import { BestBattlesFacetsDto, BestBattlesFacetsQueryDto, BestBattlesPageDto, BestBattlesQueryDto } from './dto';
 import { BestBattlesFacetsService, BestBattlesFeedService } from './services';
 
 @ApiTags('best-battles')
 @AllowAnonymous()
-@UseInterceptors(CacheInterceptor)
+@UseInterceptors(ViewerCacheInterceptor)
 @Controller('best-battles')
 export class BestBattlesController {
   constructor(

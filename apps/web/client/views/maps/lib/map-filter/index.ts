@@ -1,3 +1,3 @@
 export { filterMaps } from './map-filter';
 
-export type { FilterMapsInput } from './map-filter.types';
+export type { FilterMapsInput, MapSize } from './map-filter.types';

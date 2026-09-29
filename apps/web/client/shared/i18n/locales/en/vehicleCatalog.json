@@ -19,9 +19,7 @@
   "tierCount": "{count, plural, one {# vehicle} other {# vehicles}}",
   "empty": {
     "title": "No vehicles found",
-    "description": "Try another name or loosen the filters.",
-    "noDataTitle": "The catalog is empty for now",
-    "noDataDescription": "The vehicle list has not been loaded from the game server yet. Check back a little later."
+    "description": "Try another name or loosen the filters."
   },
   "error": {
     "title": "Could not load the catalog",

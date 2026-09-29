@@ -4,6 +4,7 @@ import type { PutObjectInput, S3Sender, S3StorageOptions } from './storage.types
 
 import { StorageObjectMissingError } from './errors';
 import { ObjectStorage } from './object-storage';
+import { S3_REQUEST } from './storage.constants';
 
 export class S3Storage extends ObjectStorage {
   private readonly client: S3Sender;
@@ -20,7 +21,8 @@ export class S3Storage extends ObjectStorage {
       new S3Client({
         region,
         ...(endpoint ? { endpoint, forcePathStyle: true } : {}),
-        credentials: { accessKeyId, secretAccessKey }
+        credentials: { accessKeyId, secretAccessKey },
+        requestHandler: { connectionTimeout: S3_REQUEST.connectionTimeoutMs, requestTimeout: S3_REQUEST.requestTimeoutMs }
       });
   }
 

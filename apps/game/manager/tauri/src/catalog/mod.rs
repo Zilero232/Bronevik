@@ -42,6 +42,27 @@ pub struct Preset {
 pub struct Preview {
     pub image: Option<String>,
     pub video: Option<String>,
+    #[serde(default)]
+    pub audio: Option<String>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Perf {
+    Low,
+    Medium,
+    High,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ConflictRule {
+    pub id: String,
+    pub title: Localized,
+    pub patterns: Vec<String>,
+    pub components: Vec<String>,
+    #[serde(default)]
+    pub note: Localized,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -73,6 +94,8 @@ pub struct CatalogComponent {
     pub sha256: Option<String>,
     #[serde(default)]
     pub size: Option<u64>,
+    #[serde(default)]
+    pub perf: Option<Perf>,
 }
 
 fn catalogued_default() -> bool {
@@ -143,6 +166,10 @@ struct RawCatalog {
     dependencies: Vec<DependencyComponent>,
     #[serde(default)]
     owned_patterns: Vec<String>,
+    #[serde(default)]
+    owned_paths: Vec<String>,
+    #[serde(default)]
+    conflicts: Vec<ConflictRule>,
 }
 
 impl TryFrom<RawCatalog> for Catalog {
@@ -170,6 +197,8 @@ impl TryFrom<RawCatalog> for Catalog {
             components,
             dependencies,
             owned_patterns: raw.owned_patterns,
+            owned_paths: raw.owned_paths,
+            conflicts: raw.conflicts,
         })
     }
 }
@@ -193,6 +222,10 @@ pub struct Catalog {
     pub dependencies: Vec<DependencyComponent>,
     #[serde(default)]
     pub owned_patterns: Vec<String>,
+    #[serde(default)]
+    pub owned_paths: Vec<String>,
+    #[serde(default)]
+    pub conflicts: Vec<ConflictRule>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
@@ -230,6 +263,13 @@ pub fn parse(text: &str) -> AppResult<Catalog> {
     }
 
     catalog.owned_patterns.retain(|pattern| is_our_name(pattern));
+    catalog.owned_paths.retain(|path| !path.is_empty() && !path.contains("..") && !path.starts_with(['/', '\\']));
+
+    for rule in &mut catalog.conflicts {
+        rule.patterns.retain(|pattern| !pattern.trim_matches(['*', '?']).is_empty() && !is_our_name(pattern.trim_start_matches('*')));
+    }
+
+    catalog.conflicts.retain(|rule| !rule.patterns.is_empty() && !rule.components.is_empty());
     catalog.dependencies.retain(|dependency| {
         let valid = is_valid_dependency(dependency);
 

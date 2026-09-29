@@ -4,6 +4,7 @@ import { uniqueBy } from 'remeda';
 import type { AccountListItem, LestaClient } from '../../../lib/lesta';
 
 import { LESTA_CLIENT, PrismaService } from '../../../core';
+import { LestaNotConfiguredError } from '../../../lib/lesta';
 import { CollectorProducerService } from '../../collector';
 import { SEARCH_LOOKUP } from '../config';
 
@@ -33,7 +34,7 @@ export class PlayerDiscoveryService {
       (item) => item.account_id
     );
 
-    const failed = settled.filter((result) => result.status === 'rejected');
+    const failed = settled.filter((result) => result.status === 'rejected' && !(result.reason instanceof LestaNotConfiguredError));
 
     if (failed.length > 0) {
       this.logger.warn(`Lesta account/list failed for ${failed.length} term(s)`);

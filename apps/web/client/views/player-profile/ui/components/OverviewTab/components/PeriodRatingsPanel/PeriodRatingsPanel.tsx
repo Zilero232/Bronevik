@@ -2,7 +2,7 @@
 
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { RatingValue } from '@/entities/player/stats';
+import { RatingsMethodLink, RatingValue } from '@/entities/player/stats';
 import { WinRateCell } from '@/entities/tank/tank';
 import { EmptyState } from '@/ui-kit';
 
@@ -18,7 +18,7 @@ export const PeriodRatingsPanel = () => {
   const rows = usePeriodRatings();
 
   return (
-    <ProfilePanel isFlush title={t('periodsTitle')}>
+    <ProfilePanel isFlush action={<RatingsMethodLink section='scale' />} title={t('periodsTitle')}>
       {rows.length === 0 ? (
         <EmptyState isCompact title={t('periodsEmpty')} />
       ) : (

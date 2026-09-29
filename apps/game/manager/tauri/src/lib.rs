@@ -1,7 +1,9 @@
 mod background;
+mod cache;
 mod catalog;
 mod commands;
 mod components;
+mod conflicts;
 mod deep_link;
 mod dependencies;
 mod detect;
@@ -17,6 +19,7 @@ mod process;
 mod profiles;
 mod releases;
 mod service;
+mod sets;
 mod settings;
 mod snapshots;
 mod state;
@@ -175,6 +178,20 @@ pub fn run() {
             commands::uninstall_modpack,
             commands::read_installer_profile,
             commands::take_deep_link,
+            commands::get_conflicts,
+            commands::restore_missing,
+            commands::list_sets,
+            commands::save_set,
+            commands::rename_set,
+            commands::duplicate_set,
+            commands::delete_set,
+            commands::export_set,
+            commands::import_set,
+            commands::export_set_file,
+            commands::export_sets_library,
+            commands::import_set_file,
+            commands::scan_cache,
+            commands::clear_cache,
         ])
         .run(tauri::generate_context!())
         .expect("error while running the Three Marks manager");

@@ -27,3 +27,7 @@ export const LIMIT_LOCK_SCOPE = {
   replays: 'limit:replays',
   linkedAccounts: 'limit:linked-accounts'
 } as const;
+
+export const PRISMA_TIMEOUT = {
+  apiStatementMs: 30_000
+} as const;

@@ -1,6 +1,5 @@
 export const SUPERTEST_SOURCES = {
-  official: 'tanki.su',
-  dev: 'dev-seed'
+  official: 'tanki.su'
 } as const;
 
 export const SUPERTEST_SCRAPE = {

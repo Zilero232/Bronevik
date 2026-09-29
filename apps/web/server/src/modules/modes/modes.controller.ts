@@ -1,4 +1,4 @@
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { CacheTTL } from '@nestjs/cache-manager';
 import { Controller, Get, Param, Query, UseInterceptors } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
@@ -6,6 +6,7 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
 import { CurrentUserId } from '../../common/decorators';
+import { ViewerCacheInterceptor } from '../../common/interceptors';
 import { RequiresPlus } from '../billing';
 import { ModeMetaDto, ModeMetaQueryDto, ModeParamsDto, ModesHubDto, MyModeStatsDto, MyModeStatsQueryDto } from './dto';
 import { ModeMetaQueryService, MyModeStatsService } from './services';
@@ -20,7 +21,7 @@ export class ModesController {
 
   @AllowAnonymous()
   @Get()
-  @UseInterceptors(CacheInterceptor)
+  @UseInterceptors(ViewerCacheInterceptor)
   @CacheTTL(CACHE_TTL.server)
   @ZodResponse({ type: ModesHubDto })
   hub() {
@@ -36,7 +37,7 @@ export class ModesController {
 
   @AllowAnonymous()
   @Get(':mode')
-  @UseInterceptors(CacheInterceptor)
+  @UseInterceptors(ViewerCacheInterceptor)
   @CacheTTL(CACHE_TTL.server)
   @ZodResponse({ type: ModeMetaDto })
   modeMeta(@Param() { mode }: ModeParamsDto, @Query() query: ModeMetaQueryDto) {

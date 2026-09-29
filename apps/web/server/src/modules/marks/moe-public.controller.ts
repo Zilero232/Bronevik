@@ -1,16 +1,17 @@
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { CacheTTL } from '@nestjs/cache-manager';
 import { Controller, Get, HttpStatus, Param, UseInterceptors } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
+import { ViewerCacheInterceptor } from '../../common/interceptors';
 import { ModMoeParamsDto, ModMoeThresholdsDto } from './dto';
 import { MoeTableService } from './services';
 
 @ApiTags('v1-mod')
 @AllowAnonymous()
-@UseInterceptors(CacheInterceptor)
+@UseInterceptors(ViewerCacheInterceptor)
 @Controller('v1/moe')
 export class MoePublicController {
   constructor(private readonly table: MoeTableService) {}

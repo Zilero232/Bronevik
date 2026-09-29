@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { HealthIndicatorService } from '@nestjs/terminus';
 import { differenceInMilliseconds } from 'date-fns';
 
+import { AppConfigService } from '../../../config';
 import { PrismaService } from '../../../core';
 import { COLLECTOR_STATE_KEY } from '../../collector';
 import { HEALTH } from '../config';
@@ -13,7 +14,8 @@ import { circuitSchema, heartbeatSchema } from '../dto';
 export class CollectorStateIndicator {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly indicators: HealthIndicatorService
+    private readonly indicators: HealthIndicatorService,
+    private readonly config: AppConfigService
   ) {}
 
   async worker(): Promise<HealthIndicatorResult> {
@@ -26,13 +28,20 @@ export class CollectorStateIndicator {
 
     const fresh = differenceInMilliseconds(new Date(), new Date(heartbeat.data.collectedAt)) < HEALTH.workerStaleMs;
 
+    const mode = this.hasLesta() ? {} : { mode: HEALTH.lestaOff.worker };
+
     return fresh
-      ? indicator.up({ state: 'ok', collectedAt: heartbeat.data.collectedAt })
+      ? indicator.up({ state: 'ok', ...mode, collectedAt: heartbeat.data.collectedAt })
       : indicator.degraded({ state: 'stale', collectedAt: heartbeat.data.collectedAt });
   }
 
   async lestaCircuit(): Promise<HealthIndicatorResult> {
     const indicator = this.indicators.check(HEALTH.key.lestaCircuit);
+
+    if (!this.hasLesta()) {
+      return indicator.degraded({ state: HEALTH.lestaOff.circuit });
+    }
+
     const circuit = circuitSchema.safeParse(await this.state(COLLECTOR_STATE_KEY.circuitBreaker));
 
     if (!circuit.success) {
@@ -40,6 +49,10 @@ export class CollectorStateIndicator {
     }
 
     return circuit.data.state === 'closed' ? indicator.up({ state: circuit.data.state }) : indicator.degraded({ state: circuit.data.state });
+  }
+
+  private hasLesta(): boolean {
+    return this.config.get('LESTA_APPLICATION_ID') !== '';
   }
 
   private async state(key: string): Promise<unknown> {

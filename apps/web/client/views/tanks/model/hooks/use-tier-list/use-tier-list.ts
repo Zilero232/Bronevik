@@ -10,11 +10,11 @@ import { tierListParams } from '../../../lib/view-params';
 import { useTanksState } from '../use-tanks-state';
 
 export const useTierList = () => {
-  const [{ period, tier }, setState] = useTanksState();
+  const [{ period, tier, mode }, setState] = useTanksState();
   const { filters } = useVehicleFilters();
 
   const query = useQuery({
-    ...tanksQueries.tierList(tierListParams({ state: { period, tier }, filters })),
+    ...tanksQueries.tierList(tierListParams({ state: { period, tier, mode }, filters })),
     placeholderData: keepPreviousData,
     select: ({ entries }) => groupByRank(entries)
   });

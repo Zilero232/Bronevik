@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { TankSnapshotTotals } from '../account-ratings.types';
 
-import { buildAccountRatings, periodCutoff, tankPeriodTotals } from '../account-ratings';
+import { buildAccountRatings, earliestCutoff, periodCutoff, tankPeriodTotals } from '../account-ratings';
 
 const now = new Date('2026-09-24T12:00:00Z');
 const baselineAt = subDays(now, 10);
@@ -114,5 +114,56 @@ describe('buildAccountRatings', () => {
 
   it('leaves WN8 empty without expected values', () => {
     expect(byPeriod.get('overall')?.wn8).toBeNull();
+  });
+});
+
+describe('earliestCutoff', () => {
+  const history = [
+    { capturedAt: subDays(now, 90), battles: 100 },
+    { capturedAt: subDays(now, 40), battles: 1_300 },
+    { capturedAt: subDays(now, 2), battles: 1_400 },
+    { capturedAt: recentAt, battles: 1_410 }
+  ];
+
+  it('is the oldest baseline any rating period needs, so older history can stay in the database', () => {
+    const cutoff = earliestCutoff({ accountSnapshots: history, now });
+    const periods = [1, 7, 30, 60].map((days) => periodCutoff({ window: { kind: 'duration', days }, accountSnapshots: history, now })?.cutoff);
+
+    expect(cutoff).toEqual(new Date(Math.min(...periods.flatMap((date) => (date ? [date.getTime()] : [])))));
+  });
+
+  it('is null without two account snapshots, when no recent period can be rated', () => {
+    expect(earliestCutoff({ accountSnapshots: history.slice(0, 1), now })).toBeNull();
+    expect(earliestCutoff({ accountSnapshots: [], now })).toBeNull();
+  });
+
+  it('rates the same from the history past the cutoff plus the last row before it as from the whole history', () => {
+    const tanks = [
+      tankRow({ tankId: 1, capturedAt: subDays(now, 150), battles: 4 }),
+      tankRow({ tankId: 1, capturedAt: subDays(now, 120), battles: 10 }),
+      tankRow({ tankId: 2, capturedAt: subDays(now, 300), battles: 20 }),
+      tankRow({ tankId: 1, capturedAt: subDays(now, 80), battles: 60 }),
+      tankRow({ tankId: 1, capturedAt: subDays(now, 20), battles: 900 }),
+      tankRow({ tankId: 1, capturedAt: subDays(now, 1), battles: 950 }),
+      tankRow({ tankId: 2, capturedAt: subDays(now, 200), battles: 30 }),
+      tankRow({ tankId: 3, capturedAt: subDays(now, 3), battles: 12 })
+    ];
+
+    const cutoff = earliestCutoff({ accountSnapshots: history, now }) ?? now;
+    const lastBefore = [1, 2, 3].flatMap((tankId) => tanks.filter((row) => row.tankId === tankId && row.capturedAt <= cutoff).slice(-1));
+    const trimmed = [...lastBefore, ...tanks.filter((row) => row.capturedAt > cutoff)];
+    const rate = (tankSnapshots: TankSnapshotTotals[]) =>
+      buildAccountRatings({
+        accountId: 1n,
+        accountSnapshots: history,
+        tankSnapshots,
+        expected: new Map(),
+        tiers: new Map(),
+        references: new Map(),
+        now
+      });
+
+    expect(trimmed.length).toBeLessThan(tanks.length);
+    expect(rate(trimmed)).toEqual(rate(tanks));
   });
 });

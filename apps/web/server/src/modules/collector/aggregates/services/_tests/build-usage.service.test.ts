@@ -1,10 +1,12 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Battle } from '../../../../../../generated';
 import type { PrismaService } from '../../../../../core';
 
 import { BuildUsageService } from '../build-usage.service';
+
+type TankGroup = Awaited<ReturnType<PrismaService['battle']['groupBy']>>[number];
 
 const loadout = {
   optionalDevices: [1, 2, null],
@@ -39,14 +41,14 @@ describe('BuildUsageService', () => {
   it('writes one row per mode and cohort of every tank and drops the stale ones', async () => {
     const { prisma, service } = createService();
 
-    prisma.battle.findMany
-      .mockResolvedValueOnce([mock<Battle>({ tankId: 7 })])
-      .mockResolvedValueOnce([
-        battle({ accountId: 1n, battleType: '1', result: 'win' }),
-        battle({ accountId: 2n, battleType: '1', result: 'loss' }),
-        battle({ accountId: 2n, battleType: '43', result: 'win' }),
-        battle({ accountId: 3n, battleType: '2', result: 'win' })
-      ]);
+    vi.mocked(prisma.battle.groupBy).mockResolvedValueOnce([mock<TankGroup>({ tankId: 7 })]);
+
+    prisma.battle.findMany.mockResolvedValueOnce([
+      battle({ accountId: 1n, battleType: '1', result: 'win' }),
+      battle({ accountId: 2n, battleType: '1', result: 'loss' }),
+      battle({ accountId: 2n, battleType: '43', result: 'win' }),
+      battle({ accountId: 3n, battleType: '2', result: 'win' })
+    ]);
 
     const result = await service.compute();
 
@@ -64,9 +66,8 @@ describe('BuildUsageService', () => {
   it('ranks the cohorts of every tank with one query', async () => {
     const { prisma, service } = createService();
 
-    prisma.battle.findMany
-      .mockResolvedValueOnce([mock<Battle>({ tankId: 7 }), mock<Battle>({ tankId: 8 })])
-      .mockResolvedValue([battle({ accountId: 2n, battleType: '1', result: 'win' })]);
+    vi.mocked(prisma.battle.groupBy).mockResolvedValueOnce([mock<TankGroup>({ tankId: 7 }), mock<TankGroup>({ tankId: 8 })]);
+    prisma.battle.findMany.mockResolvedValue([battle({ accountId: 2n, battleType: '1', result: 'win' })]);
 
     await service.compute();
 

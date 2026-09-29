@@ -19,7 +19,7 @@ export const CatalogControls = () => {
   return (
     <div className={s.root}>
       <SegmentedControl<BuildMode> aria-label={t('modeLabel')} options={modeOptions} size='sm' value={mode} onChange={onModeChange} />
-      <VehicleFilters withPremium={false} />
+      <VehicleFilters />
       <ToggleChips<LearningDifficulty>
         aria-label={tTraits('difficulty.label')}
         options={difficultyOptions}

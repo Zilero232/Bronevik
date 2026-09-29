@@ -12,7 +12,7 @@ import { TableTools } from './components';
 
 export const StatsTable = () => {
   const t = useTranslations('tanks.table');
-  const { columns, query, visibleColumns, isFiltered, onReset, onColumnsChange, onExport } = useStatsTable();
+  const { columns, query, rows, pinnedIds, visibleColumns, isFiltered, onReset, onColumnsChange, onExport } = useStatsTable();
 
   return (
     <QueryState
@@ -21,15 +21,16 @@ export const StatsTable = () => {
       query={query}
       skeleton={<DataTable isLoading caption={t('caption', { count: 0 })} columns={columns} data={[]} rowHeight={TANKS_VIEW.rowHeight} />}
     >
-      {({ items, total }) => (
+      {({ total }) => (
         <DataTable
           caption={t('caption', { count: total })}
           columns={columns}
-          data={items}
+          data={rows}
           emptyState={<FilteredEmptyState isFiltered={isFiltered} title={isFiltered ? t('emptyTitle') : t('noStatsTitle')} onReset={onReset} />}
           getRowId={(row) => String(row.vehicle.tankId)}
           getRowLink={(row) => ({ href: ROUTES.tanks.detail(row.vehicle.slug), label: row.vehicle.name })}
           initialSorting={[{ id: 'battles', desc: true }]}
+          pinnedRowIds={pinnedIds}
           renderCard={(row) => <TankCard row={row} />}
           rowHeight={TANKS_VIEW.rowHeight}
           toolbar={<TableTools visible={visibleColumns} onExport={onExport} onVisibleChange={onColumnsChange} />}

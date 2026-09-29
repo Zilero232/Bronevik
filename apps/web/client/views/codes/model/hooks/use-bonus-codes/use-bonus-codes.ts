@@ -20,6 +20,7 @@ export const useBonusCodes = () => {
   return {
     tab,
     query,
+    figures: query.data && query.data.active.length + query.data.expired.length > 0 ? query.data : null,
     expiringCount: expiringCount({ codes: query.data?.active ?? [], now, expiringDays: CODES.expiringDays }),
     setTab: (next: CodesTab) => void setTab(next)
   };

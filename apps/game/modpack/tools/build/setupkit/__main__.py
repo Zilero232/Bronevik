@@ -19,6 +19,7 @@ if BUILD_DIR not in sys.path:
 
 import layout  # noqa: E402
 from setupkit import ASSETS_DIR, CATALOG_PATH, MODPACK_DIR  # noqa: E402
+from setupkit.audio import copy_audio  # noqa: E402
 from setupkit.manifest import catalog as catalog_module  # noqa: E402
 from setupkit.manifest.generate import ManifestError, build_manifest  # noqa: E402
 
@@ -49,6 +50,7 @@ def generate(args):
         print('WARNING: %s' % warning)
     write_text(os.path.join(args.out, 'components.json'), json.dumps(manifest.to_json(), ensure_ascii=False, indent=2) + '\n')
     print('Wrote %s (%d components, %d dependencies)' % (os.path.join(args.out, 'components.json'), len(manifest.components), len(manifest.dependencies)))
+    print('Copied %d audio previews' % len(copy_audio(manifest, catalog, MODPACK_DIR, args.out)))
     if not args.skip_artwork:
         from setupkit.artwork.render import render_previews
         print('Rendered %d previews' % len(render_previews(manifest, catalog, ASSETS_DIR, args.out)))

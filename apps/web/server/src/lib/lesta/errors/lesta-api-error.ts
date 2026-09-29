@@ -1,7 +1,13 @@
-import type { LestaApiErrorInput, LestaHttpErrorInput, LestaNetworkErrorInput, LestaQueueFullErrorInput } from './errors.types';
+import type {
+  LestaApiErrorInput,
+  LestaHttpErrorInput,
+  LestaNetworkErrorInput,
+  LestaNotConfiguredErrorInput,
+  LestaQueueFullErrorInput
+} from './errors.types';
 
 import { errorMessage } from '../../../common/lib';
-import { EXTRA_REJECTION, RETRYABLE_HTTP_STATUS, RETRYABLE_LESTA_CODES } from './errors.constants';
+import { EXTRA_REJECTION, RETRYABLE_HTTP_STATUS, RETRYABLE_LESTA_CODES, SEARCH_REJECTION } from './errors.constants';
 
 export class LestaApiError extends Error {
   readonly code: string;
@@ -45,6 +51,16 @@ export class LestaNetworkError extends Error {
   }
 }
 
+export class LestaNotConfiguredError extends Error {
+  readonly method: string;
+
+  constructor({ method }: LestaNotConfiguredErrorInput) {
+    super(`Lesta API ${method} skipped: LESTA_APPLICATION_ID is empty`);
+    this.name = 'LestaNotConfiguredError';
+    this.method = method;
+  }
+}
+
 export class LestaQueueFullError extends Error {
   readonly key: string;
 
@@ -69,3 +85,6 @@ export const isRetryableLestaError = (error: unknown): boolean => {
 
 export const isExtraRejected = (error: unknown): boolean =>
   error instanceof LestaApiError && (error.field === EXTRA_REJECTION.field || EXTRA_REJECTION.codePattern.test(error.code));
+
+export const isSearchRejected = (error: unknown): boolean =>
+  error instanceof LestaApiError && (error.field === SEARCH_REJECTION.field || SEARCH_REJECTION.codes.has(error.code));

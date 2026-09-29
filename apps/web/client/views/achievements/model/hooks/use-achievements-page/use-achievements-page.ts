@@ -15,7 +15,7 @@ export const useAchievementsPage = () => {
 
   return {
     tab,
-    catalog: data ?? null,
+    catalog: data && data.sample > 0 && data.catalogSize > 0 ? data : null,
     onTabChange: (next: AchievementsTab) => void setParams({ tab: next })
   };
 };

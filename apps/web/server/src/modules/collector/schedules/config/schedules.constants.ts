@@ -43,8 +43,7 @@ export const SCHEDULES: readonly ScheduleDefinition[] = [
     name: JOB.reference.encyclopedia,
     repeat: { pattern: '0 2 * * *' },
     data: { force: true },
-    needsLesta: true,
-    realLestaOnly: true
+    needsLesta: true
   },
   { id: 'wn8-expected-daily', queue: QUEUE.reference, name: JOB.reference.wn8Expected, repeat: { pattern: '0 6 * * *' } },
   {

@@ -22,7 +22,7 @@
   },
   "empty": {
     "title": "No publications yet",
-    "description": "News appears after the next tanki.su crawl."
+    "description": "News, patch notes and the developer blog show up here as soon as they are published on tanki.su."
   },
   "emptyTank": {
     "title": "No posts about this tank",

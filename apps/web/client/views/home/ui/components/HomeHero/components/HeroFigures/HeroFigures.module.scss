@@ -41,6 +41,20 @@
   }
 }
 
-.error {
+.wide {
   grid-column: 1 / -1;
+}
+
+.notice {
+  display: grid;
+  min-width: 0;
+  grid-column: span 2;
+
+  @include below(md) {
+    grid-column: 1 / -1;
+
+    & + .figure {
+      grid-column: 1 / -1;
+    }
+  }
 }

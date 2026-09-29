@@ -86,7 +86,8 @@
     "premiumOptions": {
       "all": "All",
       "regular": "Tech tree",
-      "premium": "Premium"
+      "premium": "Premium",
+      "collector": "Collector"
     },
     "reset": "Reset"
   },
@@ -111,6 +112,15 @@
       "average": "Average",
       "good": "Good",
       "elite": "Top 10%"
+    },
+    "mode": "Battle mode",
+    "modes": {
+      "all": "All modes",
+      "random": "Random battles",
+      "ranked": "Ranked battles",
+      "epic": "Front Line",
+      "clan": "Clan battles",
+      "stronghold": "Stronghold"
     }
   },
   "table": {
@@ -182,5 +192,16 @@
       "emptyTitle": "No battles from the mod",
       "emptyDescription": "Install the mod and link your account to see the economy of your random battles."
     }
+  },
+  "presets": {
+    "label": "Quick filters",
+    "top10": "Top 10 by wins",
+    "tier10": "Tier X",
+    "tier8": "Tier VIII",
+    "tiers6to8": "Tiers VI–VIII",
+    "premium": "Premium",
+    "researchable": "Researchable",
+    "collector": "Collector",
+    "pinned": "Pinned"
   }
 }

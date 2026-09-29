@@ -10,7 +10,7 @@ import { mock } from 'vitest-mock-extended';
 import { z } from 'zod';
 
 import { Prisma } from '../../../../../generated';
-import { LestaHttpError, LestaNetworkError } from '../../../../lib/lesta';
+import { LestaHttpError, LestaNetworkError, LestaNotConfiguredError, LestaQueueFullError } from '../../../../lib/lesta';
 import { AppNotFoundException, ModException } from '../../../exceptions';
 import { MOD_CONTRACT_PATHS, MOD_REPLY } from '../all-exceptions.constants';
 import { AllExceptionsFilter } from '../all-exceptions.filter';
@@ -103,12 +103,20 @@ describe('AllExceptionsFilter on the API', () => {
 
   it.each([
     ['HTTP', new LestaHttpError({ method: 'account/info', status: 404 })],
-    ['network', new LestaNetworkError({ method: 'account/info', cause: new Error('ETIMEDOUT') })]
+    ['network', new LestaNetworkError({ method: 'account/info', cause: new Error('ETIMEDOUT') })],
+    ['queue-full', new LestaQueueFullError({ key: 'global', cause: new Error('queue is full') })]
   ])('reports a Lesta %s failure as Lesta being unavailable, not as its own status', (_, error) => {
     const { status, body } = reply(error);
 
     expect(status).toBe(HttpStatus.SERVICE_UNAVAILABLE);
     expect(body).toMatchObject({ code: 'LESTA_UNAVAILABLE' });
+  });
+
+  it('answers not found, not unavailable, while no Lesta application id is set', () => {
+    const { status, body } = reply(new LestaNotConfiguredError({ method: 'account/list' }));
+
+    expect(status).toBe(HttpStatus.NOT_FOUND);
+    expect(body).toEqual({ error: 'Lesta API is not connected', code: 'NOT_FOUND' });
   });
 
   it('keeps the client error status set by a middleware', () => {

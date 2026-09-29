@@ -1,0 +1,22 @@
+{
+  "title": "Mods folder check",
+  "description": "Third-party mods that duplicate our components or overwrite their files, and modpack files that went missing or were replaced.",
+  "recheck": "Check",
+  "clean": "No conflicts: no third-party copies of our components and no missing files.",
+  "components": "Overlaps: {list}",
+  "kind": {
+    "missing": "Modpack files are missing ({count}): a cleaner or МОСТ removed them",
+    "replaced": "Modpack files were replaced by another build ({count})",
+    "duplicate": "Two copies of one mod: {subject}",
+    "duplicateOurs": "Two versions of a Three Marks component: {subject}",
+    "foreign": "Third-party mod: {subject}",
+    "override": "{subject} overwrites modpack files ({count})",
+    "overrideResMods": "{subject} has files that override the modpack ({count})"
+  },
+  "restore": "Restore the set ({count})",
+  "restoreTitle": "Restore {count, plural, one {# file} other {# files}} from the latest snapshot?",
+  "restoreDescription": "The manager brings the missing and replaced modpack packages back from a snapshot in «Backups». Settings and other mods do not change.",
+  "restoreConfirm": "Restore",
+  "restored": "The set is restored",
+  "noSnapshot": "No snapshot has them: reinstall the modpack with «Change the set» on the home page."
+}

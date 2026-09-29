@@ -4,8 +4,10 @@ use serde::Serialize;
 use tauri::{AppHandle, State};
 
 use crate::background::{self, apply_autostart};
+use crate::cache::{CachePlan, CacheResult};
 use crate::catalog::LoadedCatalog;
 use crate::components::{read_installation, Installation};
+use crate::conflicts::ConflictReport;
 use crate::deep_link::DeepLink;
 use crate::error::{AppError, AppResult, ErrorCode};
 use crate::install::read_component_profile;
@@ -14,6 +16,7 @@ use crate::patch::PatchReport;
 use crate::profiles::ProfilesView;
 use crate::releases::api_url;
 use crate::service::{ClientsView, InstallPlan, InstallRequest, Manager, UninstallRequest};
+use crate::sets::SetsView;
 use crate::settings::ManagerSettings;
 use crate::snapshots::Snapshot;
 
@@ -232,4 +235,82 @@ pub async fn read_installer_profile(path: PathBuf) -> AppResult<Vec<String>> {
 #[tauri::command]
 pub async fn take_deep_link(manager: State<'_, Manager>) -> AppResult<Option<DeepLink>> {
     Ok(manager.take_pending_link())
+}
+
+#[tauri::command]
+pub async fn get_conflicts(manager: State<'_, Manager>, client_path: Option<PathBuf>) -> AppResult<ConflictReport> {
+    manager.conflicts(client_path.as_deref())
+}
+
+#[tauri::command]
+pub async fn restore_missing(manager: State<'_, Manager>, client_path: Option<PathBuf>) -> AppResult<ConflictReport> {
+    manager.restore_missing(client_path.as_deref()).await
+}
+
+#[tauri::command]
+pub async fn list_sets(manager: State<'_, Manager>) -> AppResult<SetsView> {
+    Ok(manager.sets_view())
+}
+
+#[tauri::command]
+pub async fn save_set(manager: State<'_, Manager>, name: String, components: Vec<String>) -> AppResult<SetsView> {
+    manager.change_sets(|file| file.add(&name, &components).map(drop)).await
+}
+
+#[tauri::command]
+pub async fn rename_set(manager: State<'_, Manager>, id: String, name: String) -> AppResult<SetsView> {
+    manager.change_sets(|file| file.rename(&id, &name)).await
+}
+
+#[tauri::command]
+pub async fn duplicate_set(manager: State<'_, Manager>, id: String, name: String) -> AppResult<SetsView> {
+    manager.change_sets(|file| file.duplicate(&id, &name).map(drop)).await
+}
+
+#[tauri::command]
+pub async fn delete_set(manager: State<'_, Manager>, id: String) -> AppResult<SetsView> {
+    manager.change_sets(|file| file.remove(&id)).await
+}
+
+#[tauri::command]
+pub async fn export_set(manager: State<'_, Manager>, id: String) -> AppResult<String> {
+    manager.set_store().export_code(&id)
+}
+
+#[tauri::command]
+pub async fn import_set(manager: State<'_, Manager>, code: String, name: Option<String>) -> AppResult<SetsView> {
+    let _guard = manager.write_guard().await?;
+
+    manager.set_store().import_code(&code, name.as_deref())?;
+
+    Ok(manager.sets_view())
+}
+
+#[tauri::command]
+pub async fn export_set_file(manager: State<'_, Manager>, id: String, path: PathBuf) -> AppResult<()> {
+    manager.set_store().export_file(&id, &path)
+}
+
+#[tauri::command]
+pub async fn export_sets_library(manager: State<'_, Manager>, path: PathBuf) -> AppResult<()> {
+    manager.set_store().export_library(&path)
+}
+
+#[tauri::command]
+pub async fn import_set_file(manager: State<'_, Manager>, path: PathBuf) -> AppResult<SetsView> {
+    let _guard = manager.write_guard().await?;
+
+    manager.set_store().import_file(&path)?;
+
+    Ok(manager.sets_view())
+}
+
+#[tauri::command]
+pub async fn scan_cache(manager: State<'_, Manager>, client_path: Option<PathBuf>) -> AppResult<CachePlan> {
+    manager.cache_plan(client_path.as_deref())
+}
+
+#[tauri::command]
+pub async fn clear_cache(manager: State<'_, Manager>, client_path: Option<PathBuf>, ids: Vec<String>) -> AppResult<CacheResult> {
+    manager.clear_cache(client_path.as_deref(), &ids).await
 }

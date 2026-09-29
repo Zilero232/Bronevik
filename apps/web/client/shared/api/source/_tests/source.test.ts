@@ -1,7 +1,8 @@
 import { AxiosError, AxiosHeaders } from 'axios';
 import { describe, expect, it } from 'vitest';
 
-import { fromServer, isNotFoundError, isPlusRequiredError, isUnauthorizedError } from '../source';
+import { NotFoundError, UnauthorizedError } from '../errors';
+import { fromServer, httpStatusOf, isNotFoundError, isPlusRequiredError, isUnauthorizedError } from '../source';
 
 const httpError = (status: number, data: unknown = null) =>
   new AxiosError('failed', String(status), undefined, undefined, {
@@ -49,5 +50,32 @@ describe('fromServer', () => {
 
   it('resolves with what the server answered', async () => {
     await expect(fromServer(() => Promise.resolve(2))).resolves.toBe(2);
+  });
+});
+
+describe('httpStatusOf', () => {
+  it('reads the status of a raw response from the generated client', () => {
+    expect(httpStatusOf(httpError(503))).toBe(503);
+  });
+
+  it('maps the normalised errors back to their statuses', () => {
+    expect(httpStatusOf(new NotFoundError())).toBe(404);
+    expect(httpStatusOf(new UnauthorizedError())).toBe(401);
+  });
+
+  it('has no status for a failure that never got a response', () => {
+    expect(httpStatusOf(new AxiosError('offline', AxiosError.ERR_NETWORK))).toBeNull();
+    expect(httpStatusOf(new Error('boom'))).toBeNull();
+  });
+});
+
+describe('isNotFoundError', () => {
+  it('recognises a raw 404 from the generated client as well as the normalised one', () => {
+    expect(isNotFoundError(httpError(404))).toBe(true);
+    expect(isNotFoundError(new NotFoundError())).toBe(true);
+  });
+
+  it('does not take another status for a missing resource', () => {
+    expect(isNotFoundError(httpError(503))).toBe(false);
   });
 });

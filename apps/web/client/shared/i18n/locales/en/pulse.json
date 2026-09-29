@@ -42,5 +42,9 @@
   "error": {
     "title": "Could not load the pulse",
     "description": "The server did not respond. Try again."
+  },
+  "empty": {
+    "title": "The server pulse is not collected yet",
+    "description": "We build the pulse from the players we track. As soon as we start collecting their battles, hourly activity, peak time and the online trend show up here."
   }
 }

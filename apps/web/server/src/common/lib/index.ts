@@ -27,6 +27,8 @@ export { hmacSha256Hex, isSignatureHeader, timingSafeEqual, verifySignatureHeade
 export { isScheduleActive, registerJobSchedules } from './job-schedules';
 export type { JobSchedule, ScheduleEnvironment } from './job-schedules';
 export { parseJsonText, readNumber, readRecord, toJsonValue } from './json';
+export { escapeLike, insensitiveEquals } from './like-pattern';
+export type { InsensitiveEquals } from './like-pattern';
 export {
   ACCOUNT_MODE_SOURCES,
   CAREER_MODE_FROM_DB,

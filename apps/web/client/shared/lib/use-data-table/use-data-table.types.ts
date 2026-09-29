@@ -5,4 +5,5 @@ export type UseDataTableInput<T> = Pick<TableOptions<T>, 'columns' | 'data' | 'g
   virtualizeAfter: number;
   isLoading: boolean;
   hasCards: boolean;
+  pinnedRowIds?: readonly string[];
 };

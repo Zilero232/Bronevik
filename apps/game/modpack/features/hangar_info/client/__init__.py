@@ -8,7 +8,7 @@ from ....core.events import EVENT_COMPONENT_SETTINGS
 from ....core.log import safe
 from .. import FEATURE_ID
 from ..i18n import STRINGS
-from ..model import format_info, layout_of
+from ..model import armor_actions, format_info, layout_of
 from ..settings import SCHEMA, SWITCH
 from .constants import HANGAR_PANEL, PING_REQUEST_S
 from .reads import accelerated_training, battle_tiers, crew_next_skill, online, ping, request_ping, server_name
@@ -58,6 +58,11 @@ class HangarInfo(FeatureComponent):
             'crew_role': crew_role,
             'accelerated': accelerated_training(vehicle) if self.settings.get('show_training') else None,
         }
+
+    def ui_actions(self):
+        if not self.enabled():
+            return []
+        return armor_actions(getattr(selected_vehicle(), 'name', None), self.app.translate)
 
     @safe
     def render(self, now):

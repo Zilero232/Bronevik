@@ -1,0 +1,21 @@
+{
+  "targets": [
+    {
+      "files": 1204,
+      "id": "MirTankov/web_cache",
+      "location": "app_data",
+      "name": "web_cache",
+      "path": "C:\\Users\\Игрок\\AppData\\Roaming\\Lesta\\MirTankov\\web_cache",
+      "sizeBytes": 538968064
+    },
+    {
+      "files": 1,
+      "id": "game/win64/Reports",
+      "location": "game",
+      "name": "win64/Reports",
+      "path": "D:\\Игры\\Мир танков\\win64\\Reports",
+      "sizeBytes": 4096
+    }
+  ],
+  "totalBytes": 538972160
+}

@@ -8,7 +8,7 @@ import { useMapsCatalog, useMapsColumns } from '../../../model/hooks';
 
 export const MapsTable = () => {
   const t = useTranslations('maps.grid');
-  const { query, isFiltered, onReset } = useMapsCatalog();
+  const { query, pinnedIds, isFiltered, onReset } = useMapsCatalog();
   const columns = useMapsColumns();
 
   return (
@@ -28,6 +28,7 @@ export const MapsTable = () => {
           data={maps}
           getRowId={(map) => map.arenaId}
           initialSorting={[{ id: 'name', desc: false }]}
+          pinnedRowIds={pinnedIds}
         />
       )}
     </QueryState>

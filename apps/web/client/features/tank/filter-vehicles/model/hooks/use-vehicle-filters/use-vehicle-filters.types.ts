@@ -1,12 +1,1 @@
-import type { Nation, TankClass } from '@otmetki/icons';
-
-import type { PREMIUM_FILTERS } from '../../../config';
-
-export type PremiumFilter = (typeof PREMIUM_FILTERS)[number];
-
-export type VehicleFilterValues = {
-  tiers: number[];
-  types: TankClass[];
-  nations: Nation[];
-  premium: PremiumFilter;
-};
+export type { VehicleFilterValues, VehicleKind } from '../../../lib';

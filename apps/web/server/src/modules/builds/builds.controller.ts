@@ -1,4 +1,4 @@
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { CacheTTL } from '@nestjs/cache-manager';
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query, UseInterceptors } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
@@ -6,6 +6,7 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
 import { OptionalUserId } from '../../common/decorators';
+import { ViewerCacheInterceptor } from '../../common/interceptors';
 import { RequiresPlus } from '../billing';
 import { TankDetailService } from '../tanks';
 import { RECOMMENDED_BUILD } from './config';
@@ -36,7 +37,7 @@ export class BuildsController {
   ) {}
 
   @Get(':id/build-options')
-  @UseInterceptors(CacheInterceptor)
+  @UseInterceptors(ViewerCacheInterceptor)
   @CacheTTL(CACHE_TTL.reference)
   @ZodResponse({ type: BuildOptionsDto })
   async options(@Param() { id }: BuildTankParamsDto) {
@@ -72,7 +73,7 @@ export class BuildsController {
   }
 
   @Get(':id/builds/popular')
-  @UseInterceptors(CacheInterceptor)
+  @UseInterceptors(ViewerCacheInterceptor)
   @CacheTTL(CACHE_TTL.server)
   @ZodResponse({ type: PopularBuildsDto })
   async popular(@Param() { id }: BuildTankParamsDto, @Query() query: PopularBuildsQueryDto) {

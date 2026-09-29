@@ -1,14 +1,15 @@
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { CacheTTL } from '@nestjs/cache-manager';
 import { Controller, Get, HttpStatus, Query, UseInterceptors } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
+import { ViewerCacheInterceptor } from '../../common/interceptors';
 import { LeaderboardService } from '../leaderboards';
 import { PublicApi } from './decorators/public-api/public-api.decorator';
 import { V1LeaderboardDto, V1LeaderboardQueryDto } from './dto';
 
-@UseInterceptors(CacheInterceptor)
+@UseInterceptors(ViewerCacheInterceptor)
 @PublicApi('leaderboards')
 @Controller('v1/leaderboards')
 export class V1LeaderboardsController {

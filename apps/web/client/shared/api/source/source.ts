@@ -41,7 +41,19 @@ export const fromServer = async <T>(fetch: () => Promise<T>): Promise<T> => {
 
 export const fromSdk = <T>(request: () => Promise<{ data: T }>): Promise<T> => fromServer(async () => (await request()).data);
 
-export const isNotFoundError = (error: unknown): error is NotFoundError => error instanceof NotFoundError;
+export const httpStatusOf = (error: unknown): number | null => {
+  if (error instanceof NotFoundError) {
+    return HTTP_STATUS.notFound;
+  }
+
+  if (error instanceof UnauthorizedError) {
+    return HTTP_STATUS.unauthorized;
+  }
+
+  return isAxiosError(error) ? (error.response?.status ?? null) : null;
+};
+
+export const isNotFoundError = (error: unknown): boolean => httpStatusOf(error) === HTTP_STATUS.notFound;
 
 export const isUnauthorizedError = (error: unknown): error is UnauthorizedError => error instanceof UnauthorizedError;
 

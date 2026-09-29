@@ -39,7 +39,7 @@
   },
   "states": {
     "loading": "Loading the tech tree",
-    "emptyTitle": "No tree for this nation yet",
+    "emptyTitle": "This nation has no vehicles yet",
     "errorTitle": "Couldn't load the tree"
   },
   "head": {

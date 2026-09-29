@@ -15,7 +15,7 @@
   },
   "errorTitle": "The leaderboard did not load",
   "errorDescription": "The ratings server is not responding.",
-  "emptyTitle": "No entries",
+  "emptyTitle": "Nobody has made this top yet",
   "emptyDescription": "Nobody matches these filters.",
   "metrics": {
     "wn8": "WN8",

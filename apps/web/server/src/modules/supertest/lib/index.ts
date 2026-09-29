@@ -1,6 +1,5 @@
 export { changeBaseline, changeVerdict } from './change-verdict';
 export type { ChangeVerdict } from './change-verdict';
-export { devChanges, devNewVehicleChanges } from './dev-changes';
 export { liveValue } from './live-value';
 export type { LiveValueInput } from './live-value';
 export { paramMeta, paramOf, parsedUnit } from './param-key';

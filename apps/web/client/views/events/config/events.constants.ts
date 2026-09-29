@@ -5,6 +5,7 @@ export const EVENTS = {
   dropsSkeleton: 120,
   openEndedDays: 14,
   featured: 2,
+  emptyIconSize: 16,
   kindTone: {
     event: 'accent',
     sale: 'success',

@@ -1,9 +1,10 @@
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { CacheTTL } from '@nestjs/cache-manager';
 import { Controller, Get, HttpStatus, Param, Query, UseInterceptors } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
+import { ViewerCacheInterceptor } from '../../common/interceptors';
 import {
   HISTORY_WINDOW,
   PlayerHistoryService,
@@ -30,7 +31,7 @@ import {
   V1TimeSeriesQueryDto
 } from './dto';
 
-@UseInterceptors(CacheInterceptor)
+@UseInterceptors(ViewerCacheInterceptor)
 @PublicApi('players')
 @Controller('v1/players')
 export class V1PlayersController {

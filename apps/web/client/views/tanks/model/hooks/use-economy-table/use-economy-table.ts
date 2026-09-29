@@ -13,19 +13,19 @@ import { useEconomyColumns } from '../use-economy-columns';
 import { useTanksState } from '../use-tanks-state';
 
 export const useEconomyTable = () => {
-  const [{ statuses, roles, difficulties, account, reserve, clanPayout }, setState] = useTanksState();
-  const { query, reset, isActive } = useVehicleFilters();
+  const [{ statuses, difficulties, account, reserve, clanPayout }, setState] = useTanksState();
+  const { filters, reset, isActive } = useVehicleFilters();
   const view = (row: TankEconomyRow) => economyView({ economy: row.economy, account, withReserve: reserve, withClanPayout: clanPayout });
   const columns = useEconomyColumns({ view });
 
   const economy = useQuery({
-    ...tanksQueries.economy(economyParams({ state: { statuses, roles, difficulties, account }, vehicle: query })),
+    ...tanksQueries.economy(economyParams({ state: { statuses, difficulties, account }, filters })),
     placeholderData: keepPreviousData
   });
 
   const onReset = () => {
     void reset();
-    void setState({ statuses: null, roles: null, difficulties: null });
+    void setState({ statuses: null, difficulties: null });
   };
 
   const onAccountChange = (next: typeof account) => {
@@ -48,7 +48,7 @@ export const useEconomyTable = () => {
     reserve,
     clanPayout,
     clanPayoutPercent: ECONOMY_VIEW.clanPayoutBonus * 100,
-    isFiltered: isActive || statuses.length > 0 || roles.length > 0 || difficulties.length > 0,
+    isFiltered: isActive || statuses.length > 0 || difficulties.length > 0,
     onReset,
     onAccountChange,
     onReserveChange,

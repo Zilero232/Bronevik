@@ -11,7 +11,7 @@ import { useMarksColumns } from '../../../model/hooks';
 
 import s from './MarksTable.module.scss';
 
-export const MarksTable = ({ rows, isLoading, isStale, onSelect }: MarksTableProps) => {
+export const MarksTable = ({ rows, isLoading, isStale, pinnedRowIds, onSelect }: MarksTableProps) => {
   const t = useTranslations('marks.table');
   const columns = useMarksColumns(onSelect);
 
@@ -24,6 +24,7 @@ export const MarksTable = ({ rows, isLoading, isStale, onSelect }: MarksTablePro
         emptyState={<EmptyState description={t('emptyHint')} title={t('empty')} />}
         getRowId={(row) => String(row.vehicle.tankId)}
         isLoading={isLoading}
+        pinnedRowIds={pinnedRowIds}
         rowHeight={MOE_LIST.rowHeight}
         onRowClick={onSelect}
       />

@@ -2,6 +2,7 @@ import { useTranslations } from 'use-intl';
 
 import { useSettings } from '@/entities/settings';
 import { ClientPicker } from '@/features/client/client-picker';
+import { ClearCache } from '@/features/settings/clear-cache';
 import { SettingsForm } from '@/features/settings/settings-form';
 import { Card, PageHeader, QueryState } from '@/ui-kit';
 
@@ -17,6 +18,9 @@ export const SettingsView = () => {
       </QueryState>
       <Card title={t('settings.clientTitle')}>
         <ClientPicker />
+      </Card>
+      <Card title={t('settings.cache.title')}>
+        <ClearCache />
       </Card>
     </>
   );

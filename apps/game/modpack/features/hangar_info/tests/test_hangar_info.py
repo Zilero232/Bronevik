@@ -7,7 +7,7 @@ import unittest
 import _support
 from otmetki.core.settings import Settings
 from otmetki.features.hangar_info.i18n import STRINGS
-from otmetki.features.hangar_info.model import format_info, layout_of, ping_color, valid_ping
+from otmetki.features.hangar_info.model import armor_actions, format_info, layout_of, ping_color, tank_slug, valid_ping
 from otmetki.features.hangar_info.model.constants import PING_BAD_COLOR, PING_GOOD_COLOR
 from otmetki.features.hangar_info.settings import SCHEMA, SETTINGS
 
@@ -20,6 +20,17 @@ def translator(language='ru'):
 
 
 class HangarInfoTest(unittest.TestCase):
+
+    def test_armour_link_uses_the_site_slug_of_the_tag(self):
+        assert tank_slug('ussr:R45_IS-7') == 'r45-is-7'
+        assert tank_slug(u'uk:GB83_FV4005') == 'gb83-fv4005'
+        assert tank_slug('china:Ch41_WZ_111_5A') == 'ch41-wz-111-5a'
+        assert tank_slug("usa:A13_T110E5'") == 'a13-t110e5'
+        assert tank_slug('germany:G_Tiger&Co') == 'g-tiger-and-co'
+        assert tank_slug('') is None and tank_slug(None) is None
+        action = armor_actions('ussr:R04_T-34', translator())[0]
+        assert action == {'id': 'armor', 'label': u'Броня на сайте', 'link': '/t/r04-t-34/armor', 'confirm': None}
+        assert armor_actions(None, translator()) == []
 
     def test_default_panel(self):
         text = format_info(INFO, Settings({}, SCHEMA), translator(), NOW)

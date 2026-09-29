@@ -31,7 +31,7 @@ export const ModeTanks = ({ mode }: ModeTanksProps) => {
   return (
     <section className={s.root}>
       <div className={s.toolbar}>
-        <VehicleFilters withPremium={false} />
+        <VehicleFilters />
         <SegmentedControl
           aria-label={t('view')}
           options={MODE_VIEWS.map((value) => ({ value, label: t(`views.${value}`) }))}

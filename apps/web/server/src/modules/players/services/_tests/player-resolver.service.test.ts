@@ -9,7 +9,8 @@ import type { CollectorProducerService } from '../../../collector';
 import type { LestaPlayerInfo } from '../../players.types';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
-import { LestaApiError } from '../../../../lib/lesta';
+import { insensitiveEquals } from '../../../../common/lib';
+import { LESTA_ERROR_CODE, LestaApiError } from '../../../../lib/lesta';
 import { PLAYER_LOOKUP } from '../../config';
 import { missingPlayerKey } from '../../lib';
 import { PlayerResolverService } from '../player-resolver.service';
@@ -131,6 +132,28 @@ describe('PlayerResolverService.resolve', () => {
     await expect(service.resolve('Nobody')).rejects.toThrow('lesta down');
     await expect(redis.exists(missingPlayerKey({ kind: 'nickname', value: 'Nobody' }))).resolves.toBe(0);
   });
+
+  it('answers 404 and remembers the nickname when Lesta refuses the search itself', async () => {
+    const { service, prisma, lesta, redis } = createService();
+
+    prisma.player.findFirst.mockResolvedValue(null);
+    lesta.account.list.mockRejectedValue(new LestaApiError({ code: LESTA_ERROR_CODE.invalidSearch, method: 'account/list', field: 'search' }));
+
+    await expect(service.resolve('Вася')).rejects.toBeInstanceOf(AppNotFoundException);
+    await expect(redis.exists(missingPlayerKey({ kind: 'nickname', value: 'Вася' }))).resolves.toBe(1);
+  });
+
+  it('matches an underscore in a nickname literally, not as a LIKE wildcard', async () => {
+    const { service, prisma } = createService();
+
+    prisma.player.findFirst.mockResolvedValue(mock<Player>({ accountId: 7n, isHidden: false }));
+    prisma.player.findUnique.mockResolvedValue(mock<Player>({ accountId: 7n, isHidden: false }));
+
+    await service.resolve('Vasya_Pupkin');
+
+    expect(prisma.player.findFirst.mock.calls[0]?.[0]?.where).toEqual({ nickname: insensitiveEquals('Vasya_Pupkin') });
+    expect(prisma.player.findFirst.mock.calls[0]?.[0]?.where).not.toEqual({ nickname: { equals: 'Vasya_Pupkin', mode: 'insensitive' } });
+  });
 });
 
 describe('PlayerResolverService.ensure', () => {
@@ -158,8 +181,33 @@ describe('PlayerResolverService.ensure', () => {
     prisma.player.findUnique.mockResolvedValue(mock<Player>({ accountId: 42n, isHidden: false }));
 
     await expect(service.ensure(42n)).resolves.toBe(42n);
-    expect(prisma.player.update).toHaveBeenCalledWith(expect.objectContaining({ where: { accountId: 42n }, data: { lastViewedAt: NOW } }));
+
+    await vi.waitFor(() => {
+      expect(prisma.player.update).toHaveBeenCalledWith(expect.objectContaining({ where: { accountId: 42n }, data: { lastViewedAt: NOW } }));
+    });
+
     expect(collector.enrol).not.toHaveBeenCalled();
+  });
+
+  it('writes the view of one player at most once per throttle window, however many endpoints resolve it', async () => {
+    const { service, prisma } = createService();
+
+    prisma.player.findUnique.mockResolvedValue(mock<Player>({ accountId: 42n, isHidden: false }));
+
+    await service.ensure(42n);
+
+    await vi.waitFor(() => {
+      expect(prisma.player.update).toHaveBeenCalledTimes(1);
+    });
+
+    await service.ensure(42n);
+    await service.ensure(42n);
+
+    await vi.waitFor(() => {
+      expect(prisma.player.findUnique).toHaveBeenCalledTimes(3);
+    });
+
+    expect(prisma.player.update).toHaveBeenCalledTimes(1);
   });
 
   it('still resolves when recording the view fails', async () => {

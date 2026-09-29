@@ -1,10 +1,11 @@
 import { moeSortFieldSchema, sortOrderSchema } from '@otmetki/schemas';
-import { parseAsString, parseAsStringLiteral } from 'nuqs/server';
+import { parseAsBoolean, parseAsString, parseAsStringLiteral } from 'nuqs/server';
 
 export const MARKS_URL_PARSERS = {
   sort: parseAsStringLiteral(moeSortFieldSchema.options).withDefault('p95'),
   order: parseAsStringLiteral(sortOrderSchema.options).withDefault('desc'),
-  q: parseAsString.withDefault('')
+  q: parseAsString.withDefault(''),
+  pinned: parseAsBoolean.withDefault(false)
 } as const;
 
 export const PLAYER_URL_PARSER = parseAsString.withDefault('');

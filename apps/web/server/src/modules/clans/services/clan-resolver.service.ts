@@ -3,8 +3,9 @@ import { Inject, Injectable } from '@nestjs/common';
 import type { ClanInfo, LestaClient } from '../../../lib/lesta';
 
 import { AppNotFoundException } from '../../../common/exceptions';
-import { clanInfoFields, clanRoleToDb, fromUnixSeconds } from '../../../common/lib';
+import { clanInfoFields, clanRoleToDb, fromUnixSeconds, insensitiveEquals } from '../../../common/lib';
 import { LESTA_CLIENT, PrismaService } from '../../../core';
+import { isSearchRejected } from '../../../lib/lesta';
 import { CollectorProducerService, PurgeGuardService } from '../../collector';
 import { CLAN_PAGE } from '../config';
 
@@ -23,7 +24,7 @@ export class ClanResolverService {
     }
 
     const local = await this.prisma.clan.findFirst({
-      where: { tag: { equals: idOrTag, mode: 'insensitive' }, isDisbanded: false },
+      where: { tag: insensitiveEquals(idOrTag), isDisbanded: false },
       select: { clanId: true }
     });
 
@@ -31,7 +32,14 @@ export class ClanResolverService {
       return local.clanId;
     }
 
-    const found = await this.lesta.clans.list({ search: idOrTag, limit: 10 });
+    const found = await this.lesta.clans.list({ search: idOrTag, limit: CLAN_PAGE.tagSearchLimit }).catch((error: unknown) => {
+      if (isSearchRejected(error)) {
+        return [];
+      }
+
+      throw error;
+    });
+
     const exact = found.find((clan) => clan.tag.toLowerCase() === idOrTag.toLowerCase());
 
     if (!exact) {

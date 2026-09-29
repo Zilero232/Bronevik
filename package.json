@@ -65,7 +65,6 @@
     "dev:infra": "docker compose -f docker-compose.dev.yml up -d --wait",
     "dev:infra:down": "docker compose -f docker-compose.dev.yml down",
     "dev:manager": "bun --filter @otmetki/manager dev",
-    "dev:seed": "bun --filter @otmetki/server dev:seed",
     "dev:server": "bun --filter @otmetki/server dev",
     "dev:worker": "bun --filter @otmetki/server dev:worker",
     "e2e:screens": "playwright test -c playwright.screens.config.ts",

@@ -34,7 +34,9 @@
     "current": "Nothing is on right now",
     "upcoming": "No announcements yet",
     "past": "No past events",
-    "filtered": "No events of the selected types"
+    "filtered": "No events of the selected types",
+    "allTitle": "The calendar is empty for now",
+    "allDescription": "Events, marathons, drops and sales show up here as soon as tanki.su announces them. Subscribe to the calendar and new ones arrive on their own."
   },
   "countdown": {
     "current": "{days, plural, =0 {ends today} one {# day left} other {# days left}}",

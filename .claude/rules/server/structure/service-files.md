@@ -25,7 +25,7 @@ Every item is its own folder (`<name>.ts` + `.types.ts` + `index.ts` + `_tests/`
 segment has an `index.ts` barrel. A file that mixes a mapper with domain logic is split:
 `tanks/lib/vehicle-sources` keeps `rewardMissions`, `tanks/mappers/vehicle-source-view`
 takes `toVehicleSourceView`. The same folder rule holds in `common/`, `config/` and
-`core/` (`config/cors/`, `config/env/`, `config/lesta-mock/`, `core/prisma/lib/advisory-lock/`).
+`core/` (`config/cors/`, `config/env/`, `core/prisma/lib/advisory-lock/`).
 
 Import from a module's barrel across boundaries, never reach into its files.
 Inside a module, relative paths are fine.

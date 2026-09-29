@@ -7,7 +7,7 @@ import { ModuleRef } from '@nestjs/core';
 
 import type { CreateJobSchedulesInput } from './job-schedules.types';
 
-import { AppConfigService, isLestaMock } from '../../config';
+import { AppConfigService } from '../../config';
 import { registerJobSchedules } from '../lib';
 
 export const createJobSchedules = ({ schedules, label }: CreateJobSchedulesInput): Type<OnApplicationBootstrap> => {
@@ -29,8 +29,7 @@ export const createJobSchedules = ({ schedules, label }: CreateJobSchedulesInput
         schedules,
         queueOf: (name) => this.moduleRef.get<Queue>(getQueueToken(name), { strict: false }),
         environment: {
-          hasLesta: this.config.get('LESTA_APPLICATION_ID') !== '',
-          lestaMock: isLestaMock({ LESTA_MOCK: this.config.get('LESTA_MOCK') })
+          hasLesta: this.config.get('LESTA_APPLICATION_ID') !== ''
         }
       });
 

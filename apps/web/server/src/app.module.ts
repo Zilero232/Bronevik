@@ -15,7 +15,7 @@ import { AllExceptionsFilter } from './common/filters';
 import { OriginGuard } from './common/guards';
 import { throttleSubject } from './common/lib';
 import { AppConfigModule, AppConfigService, trustedProxies } from './config';
-import { AppLoggerModule, LestaModule, LOGGER, PrismaModule, QueuesModule, REDIS, RedisModule } from './core';
+import { AppLoggerModule, LestaModule, LOGGER, PRISMA_TIMEOUT, PrismaModule, QueuesModule, REDIS, RedisModule } from './core';
 import { AchievementsRarityModule } from './modules/achievements-rarity';
 import { AnalyticsModule } from './modules/analytics';
 import { AuthModule } from './modules/auth';
@@ -74,7 +74,7 @@ import { WatchlistModule } from './modules/watchlist';
   imports: [
     AppConfigModule,
     AppLoggerModule.forService(LOGGER.service.server),
-    PrismaModule.forRoot(),
+    PrismaModule.forRoot({ statementTimeoutMs: PRISMA_TIMEOUT.apiStatementMs }),
     RedisModule,
     LestaModule,
     QueuesModule,

@@ -1,10 +1,11 @@
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { CacheTTL } from '@nestjs/cache-manager';
 import { Controller, Get, UseInterceptors } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
+import { ViewerCacheInterceptor } from '../../common/interceptors';
 import { GameVersionDto, ServersOnlineDto } from './dto';
 import { GameVersionService, ServersOnlineService } from './services';
 
@@ -18,7 +19,7 @@ export class ReferenceController {
   ) {}
 
   @Get('game-version')
-  @UseInterceptors(CacheInterceptor)
+  @UseInterceptors(ViewerCacheInterceptor)
   @CacheTTL(CACHE_TTL.server)
   @ZodResponse({ type: GameVersionDto })
   version() {
@@ -26,7 +27,7 @@ export class ReferenceController {
   }
 
   @Get('servers')
-  @UseInterceptors(CacheInterceptor)
+  @UseInterceptors(ViewerCacheInterceptor)
   @CacheTTL(CACHE_TTL.short)
   @ZodResponse({ type: ServersOnlineDto })
   servers() {

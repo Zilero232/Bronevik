@@ -2,13 +2,11 @@ import type { DefaultOptions } from '@tanstack/react-query';
 
 import { secondsToMilliseconds } from 'date-fns';
 
-import { isNotFoundError } from '@/shared/api/source';
-
-export const QUERY_RETRY = { attempts: 2 } as const;
+import { shouldRetryQuery } from './retry-policy';
 
 export const QUERY_CLIENT_DEFAULTS = {
   queries: {
-    retry: (failureCount, error) => !isNotFoundError(error) && failureCount < QUERY_RETRY.attempts,
+    retry: (failureCount, error) => shouldRetryQuery({ failureCount, error }),
     staleTime: 60_000,
     refetchOnWindowFocus: false
   }

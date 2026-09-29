@@ -14,6 +14,5 @@ export const TRANSLIT = {
 
 export const PATTERNS = {
   cyrillic: /\p{Script=Cyrillic}/u,
-  nickname: /^\w+$/,
-  likeSpecial: /[\\%_]/g
+  nickname: /^\w+$/
 } as const;

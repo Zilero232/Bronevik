@@ -1,10 +1,12 @@
 'use client';
 
+import { Hourglass } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { match } from 'ts-pattern';
 
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { ErrorState, KeyFigure, RelativeTime } from '@/ui-kit';
+import { EmptyState, ErrorState, KeyFigure, RelativeTime } from '@/ui-kit';
 
 import { HOME_FIGURES, HOME_ICON } from '../../../../../config';
 import { useServerStatus } from '../../../../../model/hooks';
@@ -17,53 +19,62 @@ export const HeroFigures = () => {
 
   return (
     <aside aria-label={t('figures')} className={s.root}>
-      {status.isError ? (
-        <div className={s.error}>
-          <ErrorState isCompact onRetry={status.retry} />
-        </div>
-      ) : (
-        <>
-          <KeyFigure
-            className={s.figure}
-            icon={<HOME_FIGURES.tracked.icon size={HOME_ICON.figure} />}
-            label={t('tracked')}
-            tone={HOME_FIGURES.tracked.tone}
-            trend={status.activity.length > 0 ? status.activity : undefined}
-            value={status.trackedPlayers}
-            variant='tile'
-          />
-          {status.online === null ? (
+      {match(status.state)
+        .with('error', () => (
+          <div className={s.wide}>
+            <ErrorState isCompact isRetrying={status.isRetrying} onRetry={status.retry} />
+          </div>
+        ))
+        .with('empty', () => (
+          <div className={s.notice}>
+            <EmptyState isCompact icon={<Hourglass size={HOME_ICON.figure} />} role='status' title={t('empty')} />
+          </div>
+        ))
+        .otherwise(() => (
+          <>
             <KeyFigure
               className={s.figure}
-              hint={t('estimateHint')}
-              icon={<HOME_FIGURES.online.icon size={HOME_ICON.figure} />}
-              label={t('activeEstimate')}
-              prefix='≈ '
-              tone={HOME_FIGURES.online.tone}
-              value={status.activePlayers}
-              variant='tile'
-            />
-          ) : (
-            <KeyFigure
-              className={s.figure}
-              icon={<HOME_FIGURES.online.icon size={HOME_ICON.figure} />}
-              label={t('online')}
-              tone={HOME_FIGURES.online.tone}
+              icon={<HOME_FIGURES.tracked.icon size={HOME_ICON.figure} />}
+              label={t('tracked')}
+              tone={HOME_FIGURES.tracked.tone}
               trend={status.activity.length > 0 ? status.activity : undefined}
-              value={status.online}
+              value={status.trackedPlayers}
               variant='tile'
             />
-          )}
-          <KeyFigure
-            className={s.figure}
-            hint={status.releasedAt ? <RelativeTime value={status.releasedAt} /> : undefined}
-            icon={<HOME_FIGURES.version.icon size={HOME_ICON.figure} />}
-            label={t('version')}
-            tone={HOME_FIGURES.version.tone}
-            value={status.version}
-            variant='tile'
-          />
-        </>
+            {status.online === null ? (
+              <KeyFigure
+                className={s.figure}
+                hint={t('estimateHint')}
+                icon={<HOME_FIGURES.online.icon size={HOME_ICON.figure} />}
+                label={t('activeEstimate')}
+                prefix='≈ '
+                tone={HOME_FIGURES.online.tone}
+                value={status.activePlayers}
+                variant='tile'
+              />
+            ) : (
+              <KeyFigure
+                className={s.figure}
+                icon={<HOME_FIGURES.online.icon size={HOME_ICON.figure} />}
+                label={t('online')}
+                tone={HOME_FIGURES.online.tone}
+                trend={status.activity.length > 0 ? status.activity : undefined}
+                value={status.online}
+                variant='tile'
+              />
+            )}
+          </>
+        ))}
+      {status.isVersionShown && (
+        <KeyFigure
+          className={s.figure}
+          hint={status.releasedAt ? <RelativeTime value={status.releasedAt} /> : undefined}
+          icon={<HOME_FIGURES.version.icon size={HOME_ICON.figure} />}
+          label={t('version')}
+          tone={HOME_FIGURES.version.tone}
+          value={status.version}
+          variant='tile'
+        />
       )}
       <Link className={s.more} href={ROUTES.pulse}>
         {t('pulse')}

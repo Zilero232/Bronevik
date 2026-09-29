@@ -2,7 +2,8 @@ import path from 'node:path';
 
 export const SCREENS_ENV = {
   baseUrl: (process.env.E2E_BASE_URL ?? 'http://localhost:3000').replace(/\/$/, ''),
-  apiUrl: (process.env.E2E_API_URL ?? 'http://localhost:4000').replace(/\/$/, '')
+  apiUrl: (process.env.E2E_API_URL ?? 'http://localhost:4000').replace(/\/$/, ''),
+  authState: process.env.E2E_AUTH_STATE ?? ''
 } as const;
 
 const ROOT = path.resolve(import.meta.dirname, '..', '..', '..');

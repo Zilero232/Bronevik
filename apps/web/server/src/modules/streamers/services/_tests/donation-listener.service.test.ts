@@ -62,6 +62,7 @@ const createService = (env: Partial<Env> = ENV) => {
   const factory = mock<DonationAlertsSdkService>();
 
   store.byProvider.mockResolvedValue([]);
+  store.storeToken.mockResolvedValue(undefined);
   listener.remove.mockResolvedValue();
   sdk.onDonation.mockResolvedValue(listener);
   stats.text.mockResolvedValue('announcement');

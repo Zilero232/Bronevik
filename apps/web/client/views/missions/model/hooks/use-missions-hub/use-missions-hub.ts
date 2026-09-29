@@ -17,10 +17,11 @@ export const useMissionsHub = () => {
   const { data: hub } = campaigns;
   const isSignedIn = Boolean(session);
   const items = progress?.items ?? [];
+  const operationsCount = sumBy(hub?.campaigns ?? [], (campaign) => campaign.operations.length);
 
   return {
     campaigns,
-    operationsCount: hub ? sumBy(hub.campaigns, (campaign) => campaign.operations.length) : null,
+    operationsCount: operationsCount > 0 ? operationsCount : null,
     progressOf: (questIds: readonly number[]) => (isSignedIn ? operationProgress({ questIds, items }) : null)
   };
 };

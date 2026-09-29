@@ -5,7 +5,7 @@ import { isNonNullish, pickBy } from 'remeda';
 import type { LestaEnvelope } from '../schemas';
 import type { LestaClientOptions, LestaRequester, LestaRequestInput, LestaResponse, ReadEnvelopeInput, SendInput } from './client.types';
 
-import { isRetryableLestaError, LESTA_ERROR_CODE, LestaApiError, LestaHttpError, LestaNetworkError } from '../errors';
+import { isRetryableLestaError, LESTA_ERROR_CODE, LestaApiError, LestaHttpError, LestaNetworkError, LestaNotConfiguredError } from '../errors';
 import { classifyLestaResponse } from '../outcome';
 import { noopRateLimiter } from '../rate-limit';
 import { lestaEnvelopeSchema } from '../schemas';
@@ -50,6 +50,10 @@ export const createRequester = ({
   const api = ky.create({ prefix: root, timeout: timeoutMs, retry: 0, throwHttpErrors: false, fetch, headers: { accept: 'application/json' } });
 
   const send = async ({ method, params = {} }: SendInput): Promise<LestaEnvelope> => {
+    if (applicationId === '') {
+      throw new LestaNotConfiguredError({ method });
+    }
+
     const body = toSearchParams({ application_id: applicationId, language, access_token: accessToken, ...pickBy(params, isNonNullish) });
 
     await rateLimiter.acquire();

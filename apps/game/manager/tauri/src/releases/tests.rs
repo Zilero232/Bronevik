@@ -29,7 +29,7 @@ fn refuses_package_names_windows_cannot_hold() {
 #[test]
 fn reads_the_server_contract() {
     let parsed: LatestRelease = serde_json::from_str(
-        r#"{"game":"1.46.0.0","status":"compatible","release":{"version":"0.2.0","publishedAt":"2026-09-27T12:00:00.000Z","games":["1.46.*"],"notes":{"ru":"Исправления","en":"Fixes"},"catalog":{"url":"https://cdn.triotmetki.ru/c.json","sha256":"ab"},"packages":[{"id":"core","file":"net.triotmetki.core_0.2.0.mtmod","url":"https://cdn.triotmetki.ru/core.mtmod","sha256":"ab","size":10}]}}"#,
+        r#"{"game":"1.46.0.0","status":"compatible","release":{"version":"0.2.0","publishedAt":"2026-09-27T12:00:00.000Z","games":["1.46.*"],"notes":{"ru":"Исправления","en":"Fixes"},"catalog":{"url":"https://triotmetki.ru/downloads/modpack/0.2.0/catalog/components.json","sha256":"ab"},"packages":[{"id":"core","file":"net.triotmetki.core_0.2.0.mtmod","url":"https://triotmetki.ru/downloads/modpack/0.2.0/net.triotmetki.core_0.2.0.mtmod","sha256":"ab","size":10}]}}"#,
     )
     .unwrap();
 
@@ -91,8 +91,10 @@ fn the_release_key_is_the_updater_key() {
 fn downloads_only_from_our_https_hosts() {
     let api = "https://api.triotmetki.ru";
 
+    assert!(is_trusted_url("https://triotmetki.ru/downloads/modpack/0.2.0/net.triotmetki.core_0.2.0.mtmod", api));
+    assert!(is_trusted_url("https://triotmetki.ru/downloads/modpack/0.2.0/catalog/components.json", api));
     assert!(is_trusted_url("https://cdn.triotmetki.ru/modpack/a.mtmod", api));
-    assert!(is_trusted_url("https://triotmetki.ru/a.mtmod", api));
+    assert!(!is_trusted_url("http://triotmetki.ru/downloads/modpack/0.2.0/a.mtmod", api));
     assert!(!is_trusted_url("http://cdn.triotmetki.ru/a.mtmod", api));
     assert!(!is_trusted_url("https://triotmetki.ru.evil.com/a.mtmod", api));
     assert!(!is_trusted_url("https://eviltriotmetki.ru/a.mtmod", api));
@@ -115,7 +117,7 @@ fn downloads_dependencies_only_from_their_pinned_release_paths() {
     assert!(!is_dependency_source("https://user@github.com/CH4MPi/GUIFlash/releases/download/v0.6.6/a.mtmod"));
     assert!(!is_dependency_source("https://github.com.evil.com/CH4MPi/GUIFlash/releases/download/v0.6.6/a.mtmod"));
     assert!(!is_dependency_source("https://gitlab.com/-/project/1/uploads/a/b.mtmod"));
-    assert!(!is_dependency_source("https://cdn.triotmetki.ru/modpack/a.mtmod"));
+    assert!(!is_dependency_source("https://triotmetki.ru/downloads/modpack/0.2.0/a.mtmod"));
     assert!(!is_dependency_source("https://release-assets.githubusercontent.com/github-production-release-asset/278886795/a"));
 }
 

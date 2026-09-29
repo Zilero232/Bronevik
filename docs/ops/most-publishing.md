@@ -132,13 +132,34 @@ Warnings are:
 5. Mod features that need a Три отметки Плюс subscription on the site: allowed or not?
 6. Network access: is HTTPS to our API (after an explicit binding code) acceptable, and do you need the source code?
 7. Configs: МОСТ's config clean-up deletes `mods/configs/otmetki` (the binding). The mod now mirrors it into `%APPDATA%\TriOtmetki` and restores it; is a mod writing there acceptable, or can a mod's config folder be exempted instead?
+8. The grey features (commander camera, zoom beyond x8, a timer of the player's own full aim, no gun flash and shake, white wrecks and tracks, SafeShot): allowed or not, item by item. Sent as the letter below; each stays out of the modpack until a written answer.
+
+### Letter to the curators about the grey features
+
+None of these is in Lesta's ten forbidden categories ([8], [10]); some are in МОСТ already, by the forum's account (the research: [docs/research/competitors/2026-09-29-modpacks-round3.md](../research/competitors/2026-09-29-modpacks-round3.md) §0, §4 P0-4). Our rule is to add nothing beyond the game's own options without a written answer, so we ask for a yes or no per item. Send it in the curators' topic [1] or by private message to MedvedevTD; paste the answer here with the date and a link, and only then open the items (P1-7, P1-8, P2-5, P2-6 of the research backlog).
+
+> Здравствуйте!
+>
+> Мы — «Три отметки» (triotmetki.ru), готовим модпак к публикации в МОСТ. Все наши компоненты работают только с данными своего аккаунта и своей машины, настройки клиента меняют только через штатные опции. Прежде чем добавлять функции ниже, хотим получить письменный ответ «можно» или «нельзя» по каждому пункту: в списке запрещённых категорий (форум, 27.02.2025, и статья поддержки 15152) их нет, но часть из них спорная.
+>
+> 1. **Командирская камера** — отдаление камеры дальше штатного предела (вид сверху на свою машину), без изменения обзора и засвета.
+> 2. **Зум больше x8** — дополнительные кратности снайперского режима (x16, x25) для своего прицела.
+> 3. **Таймер своего сведения** — сколько секунд осталось до полного сведения своего орудия. Ничего не наводит и не читает противника; спорно только по пункту 4 («умные прицелы»).
+> 4. **Без вспышки выстрела и тряски камеры** (как noGunFlash) — убрать эффект вспышки и тряски своего экрана при своём выстреле и попадании. Прозрачность объектов (пункт 5) не меняется.
+> 5. **Белые подбитые танки и гусеницы** — свои текстуры для уничтоженной техники и сбитых гусениц (наш арт, без символики Лесты).
+> 6. **SafeShot** — блокировка своего выстрела по союзнику и по уничтоженной технике. Спорно по пункту 10, если это считается изменением параметров техники.
+>
+> Ответ «да» или «нет» по каждому пункту нам достаточно. Если что-то разрешено с условиями (например, только по клавише или без изменения конфигов камеры), напишите, пожалуйста, какими.
+>
+> Спасибо!
+> Команда «Три отметки», support@triotmetki.ru
 
 ## Conflicts with our own manager
 
 МОСТ empties `mods/<version>/` and `res_mods/<version>/` on every install [1]. A player who uses МОСТ for anything loses packages installed by the modpack manager ([apps/game/manager](../../apps/game/manager/README.md)), and the manager's clean-up only knows our own `ownedPatterns`. Until the curators answer:
 
 - the site's /mod page offers **one channel per player**: the manager (primary), МОСТ once the entry is live, or the packages by hand;
-- after МОСТ has wiped them, the manager's «Изменить набор» wizard installs the packages again;
+- after МОСТ has wiped them, the manager's conflict check (Главная and «Компоненты») reports the missing packages and «Восстановить набор» copies them back from the latest snapshot; without a snapshot the «Изменить набор» wizard installs them again. The same check flags third-party copies of our components, duplicate packages and mods that overwrite our files (manager README «Conflicts»);
 - the mod's binding and settings survive МОСТ's config clean-up: every save is mirrored into `%APPDATA%\TriOtmetki`, and the next client start restores a missing or older `mods/configs/otmetki/` file from there (README «Durable settings»). Only a player who deletes that folder too binds again (the site's device list shows the old device, which can be revoked).
 
 ## Sources

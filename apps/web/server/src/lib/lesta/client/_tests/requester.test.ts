@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { LestaOutcome } from '../../outcome';
 
 import { createFetchMock, FAST_RETRY, lestaError, ok } from '../../_tests/fixtures';
-import { LESTA_ERROR_CODE, LestaApiError, LestaHttpError, LestaNetworkError } from '../../errors';
+import { LESTA_ERROR_CODE, LestaApiError, LestaHttpError, LestaNetworkError, LestaNotConfiguredError } from '../../errors';
 import { createLestaClient } from '../client';
 
 const APPLICATION_ID = 'test-app';
@@ -19,6 +19,14 @@ describe('lesta requester', () => {
     expect(calls).toHaveLength(1);
     expect(calls[0]?.url).toBe('https://api.tanki.su/wot/account/list/');
     expect(calls[0]?.params).toEqual({ application_id: APPLICATION_ID, language: 'en', search: 'Stra', limit: '5' });
+  });
+
+  it('never calls Lesta without an application id', async () => {
+    const { fetch, calls } = createFetchMock(() => ok([]));
+    const client = createLestaClient({ applicationId: '', fetch });
+
+    await expect(client.account.list({ search: 'abc' })).rejects.toBeInstanceOf(LestaNotConfiguredError);
+    expect(calls).toHaveLength(0);
   });
 
   it('lets a call override the default language and access token', async () => {

@@ -157,6 +157,11 @@
     var(--elev-1);
   gap: var(--space-3);
 
+  .label,
+  .hint {
+    white-space: normal;
+  }
+
   .value {
     font-size: var(--num-lg);
   }

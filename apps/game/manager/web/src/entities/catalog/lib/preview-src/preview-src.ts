@@ -2,12 +2,12 @@ import { convertFileSrc } from '@tauri-apps/api/core';
 
 import type { PreviewSrcInput } from './preview-src.types';
 
-export const previewPath = ({ previewsDir, image }: PreviewSrcInput): string | null => {
-  if (!previewsDir || !image || image.includes('..')) {
+export const previewPath = ({ previewsDir, file }: PreviewSrcInput): string | null => {
+  if (!previewsDir || !file || file.includes('..')) {
     return null;
   }
 
-  return `${previewsDir.replace(/[\\/]+$/, '')}\\${image.replaceAll('/', '\\')}`;
+  return `${previewsDir.replace(/[\\/]+$/, '')}\\${file.replaceAll('/', '\\')}`;
 };
 
 export const previewSrc = (input: PreviewSrcInput): string | null => {

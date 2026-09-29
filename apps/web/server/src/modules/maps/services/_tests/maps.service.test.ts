@@ -42,7 +42,7 @@ describe('MapsService', () => {
   it('prefers stats from battles and never reads replays then', async () => {
     const { service, prisma } = createService();
 
-    prisma.$queryRaw.mockResolvedValueOnce([{ team, result: 'win' }]);
+    prisma.$queryRaw.mockResolvedValueOnce([{ team, result: 'win', battles: 1 }]);
 
     const detail = await service.detail(arena.slug);
 

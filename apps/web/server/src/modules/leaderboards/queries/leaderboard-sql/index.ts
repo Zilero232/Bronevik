@@ -1,2 +1,2 @@
 export { clansSql, marksSql, playersSql, risingStarsSql, streamersFilterSql, tankPlayersSql } from './leaderboard-sql';
-export type { LeaderboardSqlInput, PlayersSqlInput, RisingStarsSqlInput } from './leaderboard-sql.types';
+export type { LeaderboardSql, LeaderboardSqlInput, LeaderboardTotalRow, PlayersSqlInput, RisingStarsSqlInput } from './leaderboard-sql.types';

@@ -6,11 +6,6 @@ name: deploy
 # the compose files and infra/caddy are copied on every deploy, keeping their
 # repository paths (docker-compose.yml bind-mounts ./infra/caddy/Caddyfile).
 #
-# `demo` builds the client with the «Демо-данные» banner. It must match the VPS:
-# a demo VPS has COMPOSE_FILE=docker-compose.yml:docker-compose.demo.yml in its
-# .env (docs/ops/deploy.md «Демо-деплой без ключей»), and the run fails before
-# touching the stack when the two disagree.
-#
 # Before production the schema is synced with `prisma db push` (no migrations).
 # A push that would lose data fails instead of running.
 #
@@ -23,6 +18,11 @@ name: deploy
 #   DEPLOY_SSH_PORT           optional, defaults to 22
 #   DEPLOY_PATH               where docker-compose.yml lives, e.g. /opt/otmetki
 #
+# Repository variable — Settings → Secrets and variables → Actions → Variables:
+#   NEXT_PUBLIC_LESTA_NOTICE  true or false, required: the site-wide «Lesta data is
+#                             not connected yet» notice. Baked into the web image, so
+#                             changing it takes effect with the next deploy.
+#
 # Runtime secrets live in the VPS .env, not here (docs/ops/deploy.md §1). The
 # stack refuses to start without INTERNAL_API_TOKEN: the server validates it and
 # docker-compose.yml passes it to the client, so the first `docker compose config`
@@ -30,11 +30,6 @@ name: deploy
 
 on:
   workflow_dispatch:
-    inputs:
-      demo:
-        description: Keyless demo on generated data (the VPS runs docker-compose.demo.yml)
-        type: boolean
-        default: false
 
 concurrency:
   group: deploy
@@ -101,6 +96,7 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: https://api.invalid
           NEXT_PUBLIC_SITE_URL: http://localhost:3000
+          NEXT_PUBLIC_LESTA_NOTICE: 'false'
         run: bun --filter @otmetki/client build
 
       - name: Serve the client
@@ -156,7 +152,7 @@ jobs:
           build-args: |
             NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
             NEXT_PUBLIC_SITE_URL=${{ secrets.NEXT_PUBLIC_SITE_URL }}
-            NEXT_PUBLIC_DEMO_MODE=${{ inputs.demo }}
+            NEXT_PUBLIC_LESTA_NOTICE=${{ vars.NEXT_PUBLIC_LESTA_NOTICE }}
             GIT_COMMIT_SHA=${{ github.sha }}
 
   server:
@@ -189,7 +185,7 @@ jobs:
     environment: production
 
     runs-on: ubuntu-24.04
-    # A demo's first boot imports the game catalog and seeds inside `up -d`.
+    # The first run pulls every image and pushes the whole schema.
     timeout-minutes: 45
 
     steps:
@@ -197,8 +193,7 @@ jobs:
         with:
           persist-credentials: false
 
-      # Paths are kept: compose bind-mounts ./infra/caddy/Caddyfile (and, for the
-      # demo, ./infra/caddy/demo.caddy).
+      # Paths are kept: compose bind-mounts ./infra/caddy/Caddyfile.
       - name: Copy the compose files and the Caddy config
         uses: appleboy/scp-action@ff85246acaad7bdce478db94a363cd2bf7c90345 # v1
         with:
@@ -206,34 +201,31 @@ jobs:
           username: ${{ secrets.DEPLOY_SSH_USER }}
           port: ${{ secrets.DEPLOY_SSH_PORT || 22 }}
           password: ${{ secrets.DEPLOY_SSH_PASSWORD }}
-          source: docker-compose.yml,docker-compose.demo.yml,infra/caddy/Caddyfile,infra/caddy/demo.caddy
+          source: docker-compose.yml,infra/caddy/Caddyfile
           target: ${{ secrets.DEPLOY_PATH }}
 
       - name: Pull, sync the schema, restart
         uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1
         env:
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
-          DEMO: ${{ inputs.demo }}
         with:
           host: ${{ secrets.DEPLOY_SSH_HOST }}
           username: ${{ secrets.DEPLOY_SSH_USER }}
           port: ${{ secrets.DEPLOY_SSH_PORT || 22 }}
           password: ${{ secrets.DEPLOY_SSH_PASSWORD }}
           command_timeout: 40m
-          envs: DEPLOY_PATH,DEMO
+          envs: DEPLOY_PATH
           script: |
             set -euo pipefail
             cd "$DEPLOY_PATH"
 
-            # The banner is baked into the client image, DEMO_MODE comes from the
-            # compose files the VPS .env selects: both must say the same thing.
-            stack=false
-            # Read the list first: `grep -q` exits on the first match, compose then dies of
-            # SIGPIPE, and pipefail turned that into a false "not a demo".
+            # The keyless demo is gone: a VPS whose .env still selects its override
+            # (COMPOSE_FILE) would keep serving generated data from the old files.
+            # Read the list first: `grep -q` exits on the first match, compose then
+            # dies of SIGPIPE, and pipefail would turn that into a false answer.
             services=$(docker compose config --services)
-            if grep -qx demo-seed <<<"$services"; then stack=true; fi
-            if [ "$stack" != "$DEMO" ]; then
-              echo "the run says demo=$DEMO but the VPS stack says demo=$stack (COMPOSE_FILE in $DEPLOY_PATH/.env)" >&2
+            if grep -qx demo-seed <<<"$services"; then
+              echo "the VPS still runs the keyless demo: remove COMPOSE_FILE and DEMO_SEED_ARGS from $DEPLOY_PATH/.env" >&2
               exit 1
             fi
 
@@ -244,8 +236,8 @@ jobs:
             docker compose up -d --wait postgres redis
             docker compose run --rm --no-deps server bun run db:deploy
 
-            # A failed one-shot (demo-seed) or a crashed service only reports "exit 1" from
-            # `up`; print what it said before failing the run.
+            # A crashed service only reports "exit 1" from `up`; print what every
+            # service said before failing the run.
             if ! docker compose up -d; then
               for service in $(docker compose config --services); do
                 echo "::group::logs: $service" >&2

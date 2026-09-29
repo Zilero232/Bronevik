@@ -1,7 +1,7 @@
 import { Layers, Search } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 
-import { EmptyState, QueryState, TextInput, ToggleChips } from '@/ui-kit';
+import { EmptyState, QueryState, Switch, TextInput, ToggleChips } from '@/ui-kit';
 
 import { useComponentCatalog } from '../model/hooks';
 import { ComponentCard } from './components';
@@ -10,8 +10,20 @@ import s from './ComponentCatalog.module.scss';
 
 export const ComponentCatalog = () => {
   const t = useTranslations();
-  const { catalogQuery, clientPath, isInstalled, hasComponents, chips, category, query, rows, onCategoryChange, onQueryChange } =
-    useComponentCatalog();
+  const {
+    catalogQuery,
+    clientPath,
+    isInstalled,
+    hasComponents,
+    chips,
+    category,
+    query,
+    lightOnly,
+    rows,
+    onCategoryChange,
+    onQueryChange,
+    onLightOnlyChange
+  } = useComponentCatalog();
 
   return (
     <QueryState errorTitle={t('common.loadFailed')} loadingLabel={t('common.loading')} query={catalogQuery} retryLabel={t('common.retry')}>
@@ -20,6 +32,12 @@ export const ComponentCatalog = () => {
           <div className={s.root}>
             <div className={s.filters}>
               <ToggleChips chips={chips} label={t('components.categories')} value={category} onChange={onCategoryChange} />
+              <Switch
+                checked={lightOnly}
+                description={t('components.lightOnlyHint')}
+                label={t('components.lightOnly')}
+                onCheckedChange={onLightOnlyChange}
+              />
               <label className={s.search}>
                 <Search aria-hidden className={s.searchIcon} />
                 <span className={s.srOnly}>{t('components.search')}</span>

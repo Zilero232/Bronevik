@@ -2,7 +2,7 @@
 
 [project]
 name = "otmetki-feature-hangar-info"
-version = "0.2.0"
+version = "0.3.0"
 description = "Feature: hangar clock, date, server, ping and online."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }

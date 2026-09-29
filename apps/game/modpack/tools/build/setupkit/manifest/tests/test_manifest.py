@@ -68,6 +68,21 @@ class CatalogTest(unittest.TestCase):
         self.assertIn('id must match', self.problems(lambda raw: self.entry(raw, 'marks_panel').update(id='Marks-Panel')))
         self.assertIn('must come last', self.problems(lambda raw: raw['presets'].reverse()))
         self.assertIn('bare package file mask', self.problems(lambda raw: raw.update(ownedPatterns=['mods/*.mtmod'])))
+        self.assertIn('perf must be one of', self.problems(lambda raw: self.entry(raw, 'marks_panel').update(perf='huge')))
+        self.assertIn('perf must be one of', self.problems(lambda raw: self.entry(raw, 'marks_panel').pop('perf')))
+        self.assertIn('not found in assets/', self.problems(lambda raw: self.entry(raw, 'sixth_sense')['preview'].update(audio='otmetki/none.mp3')))
+        self.assertIn('preview audio must be', self.problems(lambda raw: self.entry(raw, 'sixth_sense')['preview'].update(audio='../x.mp3')))
+        self.assertIn('unknown component', self.problems(lambda raw: raw['conflicts'][0].update(components=['nothing'])))
+        self.assertIn('names our own packages', self.problems(lambda raw: raw['conflicts'][0].update(patterns=['net.triotmetki.*'])))
+        self.assertIn('some fixed text', self.problems(lambda raw: raw['conflicts'][0].update(patterns=['*'])))
+        self.assertIn('without res/', self.problems(lambda raw: raw.update(ownedPaths=['res/scripts/'])))
+
+    def test_every_component_has_a_perf_mark_and_sounds_have_a_preview(self):
+        catalog = catalog_module.load(CATALOG_PATH, ASSETS_DIR)
+        self.assertTrue(all(entry.perf in ('low', 'medium', 'high') for entry in catalog.components))
+        self.assertEqual(set(entry.id for entry in catalog.components if entry.preview.audio), set(['sixth_sense', 'personal_best', 'session_goals']))
+        self.assertIn('scripts/client/gui/mods/otmetki/', catalog.owned_paths)
+        self.assertTrue(any(rule.id == 'xvm' for rule in catalog.conflicts))
 
 
 class ManifestTest(unittest.TestCase):
@@ -101,7 +116,12 @@ class ManifestTest(unittest.TestCase):
         self.assertEqual(data['schemaVersion'], 1)
         component = data['components'][2]
         self.assertEqual(sorted(component), sorted(['id', 'packageId', 'version', 'file', 'category', 'title', 'description', 'fairPlay', 'required',
-                                                    'default', 'presets', 'preview', 'dependencies', 'catalogued', 'sha256', 'size']))
+                                                    'default', 'presets', 'preview', 'dependencies', 'catalogued', 'sha256', 'size', 'perf']))
+        self.assertEqual(component['perf'], 'low')
+        self.assertEqual(data['components'][3]['preview']['audio'], 'previews/sixth_sense.mp3')
+        self.assertEqual([rule['id'] for rule in data['conflicts']], ['xvm', 'battle_observer', 'marks_calculator', 'sixth_sense_lamp'])
+        self.assertEqual(data['conflicts'][0]['components'], ['sixth_sense'])
+        self.assertIn('gui/gameface/mods/triotmetki/', data['ownedPaths'])
         self.assertEqual(component['title'], {'ru': 'Отметка в бою', 'en': 'MoE panel in battle'})
         self.assertEqual(camel('fair_play'), 'fairPlay')
         json.dumps(data)
@@ -163,6 +183,8 @@ class CliTest(unittest.TestCase):
         self.assertEqual(sorted(component['id'] for component in data['components'] if 'kind' not in component), sorted(keys))
         self.assertEqual([component['id'] for component in data['components'] if component.get('kind') == 'dependency'], ['openwg_gameface', 'guiflash'])
         self.assertTrue(cli.DEFAULT_OUT.endswith(os.path.join('dist', 'catalog')))
+        sixth_sense = next(component for component in data['components'] if component['id'] == 'sixth_sense')
+        self.assertTrue(os.path.isfile(os.path.join(folder, *sixth_sense['preview']['audio'].split('/'))))
 
 
 if __name__ == '__main__':

@@ -25,10 +25,9 @@ export class BuildUsageService {
     const gameVersion = await this.gameVersion();
 
     const [tanks, rankRows] = await Promise.all([
-      this.prisma.battle.findMany({
-        where: { startedAt: { gte: since }, battleType: { in: battleTypes }, loadout: { not: Prisma.DbNull } },
-        select: { tankId: true },
-        distinct: ['tankId']
+      this.prisma.battle.groupBy({
+        by: ['tankId'],
+        where: { startedAt: { gte: since }, battleType: { in: battleTypes }, loadout: { not: Prisma.DbNull } }
       }),
       this.prisma.$queryRaw<BuildRankRow[]>(buildRanksSql({ since, battleTypes }))
     ]);

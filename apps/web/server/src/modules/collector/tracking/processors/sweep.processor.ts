@@ -7,6 +7,7 @@ import { match } from 'ts-pattern';
 
 import type { CircuitStateName } from '../../metrics';
 
+import { errorMessage } from '../../../../common/lib';
 import { WORKER_CONCURRENCY } from '../../config';
 import { accountBatchPayloadSchema, JOB, QUEUE } from '../../contracts';
 import { CIRCUIT_BREAKER, CircuitBreakerService, MetricsService } from '../../metrics';
@@ -58,7 +59,10 @@ export class SweepProcessor extends WorkerHost implements OnModuleInit, OnModule
     if (state === 'open' && !this.pausedByBreaker) {
       this.pausedByBreaker = true;
       this.logger.warn('Lesta degraded: pausing tier B');
-      void this.worker.pause(true);
+
+      void this.worker.pause(true).catch((error: unknown) => {
+        this.logger.warn(`tier B not paused: ${errorMessage(error)}`);
+      });
 
       return;
     }

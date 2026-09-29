@@ -48,9 +48,9 @@ export class ClanDispatchService {
 
   private async trackedClanIds(): Promise<number[]> {
     const [follows, workspaces, players] = await Promise.all([
-      this.prisma.follow.findMany({ where: { kind: 'clan' }, select: { targetId: true }, distinct: ['targetId'] }),
+      this.prisma.follow.groupBy({ by: ['targetId'], where: { kind: 'clan' } }),
       this.prisma.clanWorkspace.findMany({ select: { clanId: true } }),
-      this.prisma.player.findMany({ where: { trackingTier: 'active', clanId: { not: null } }, select: { clanId: true }, distinct: ['clanId'] })
+      this.prisma.player.groupBy({ by: ['clanId'], where: { trackingTier: 'active', clanId: { not: null } } })
     ]);
 
     return unique([

@@ -93,6 +93,6 @@
   "sample": {
     "caption": "Live data · {nickname}, top WN8 this week",
     "captionPending": "Live data of this week’s top player",
-    "empty": "No players in the leaderboard yet"
+    "empty": "A live example appears once the leaderboard has players"
   }
 }

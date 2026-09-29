@@ -5,18 +5,20 @@ import { clsx } from 'clsx';
 import { RotateCcw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Button, IconFilter, SegmentedControl } from '@/ui-kit';
+import { Button, IconFilter, SegmentedControl, Select } from '@/ui-kit';
 
+import type { RoleChoice, VehicleKind } from '../../model/hooks';
 import type { VehicleFiltersProps } from './VehicleFilters.types';
 
-import { PREMIUM_FILTERS, VEHICLE_FILTER_ICON, VEHICLE_TIERS } from '../../config';
-import { useVehicleFilters } from '../../model/hooks';
+import { VEHICLE_FILTER_ICON, VEHICLE_TIERS } from '../../config';
+import { useVehicleFiltersView } from '../../model/hooks';
 
 import s from './VehicleFilters.module.scss';
 
-export const VehicleFilters = ({ withPremium = true, className }: VehicleFiltersProps) => {
+export const VehicleFilters = ({ withPremium = true, withRoles = true, className }: VehicleFiltersProps) => {
   const t = useTranslations('tanks.filters');
-  const { filters, isActive, setFilters, reset } = useVehicleFilters();
+  const tTraits = useTranslations('tankTraits');
+  const { filters, isActive, kindOptions, roleItems, role, setFilters, reset, onRoleChange } = useVehicleFiltersView();
 
   return (
     <div className={clsx(s.root, className)}>
@@ -45,13 +47,16 @@ export const VehicleFilters = ({ withPremium = true, className }: VehicleFilters
         onChange={(nations) => setFilters({ nations })}
       />
       {withPremium && (
-        <SegmentedControl
+        <SegmentedControl<VehicleKind>
           aria-label={t('premium')}
-          options={PREMIUM_FILTERS.map((value) => ({ value, label: t(`premiumOptions.${value}`) }))}
+          options={kindOptions}
           size='sm'
           value={filters.premium}
           onChange={(premium) => setFilters({ premium })}
         />
+      )}
+      {withRoles && (
+        <Select<RoleChoice> aria-label={tTraits('role.label')} className={s.role} items={roleItems} value={role} onValueChange={onRoleChange} />
       )}
       {isActive && (
         <Button size='sm' variant='ghost' onClick={reset}>

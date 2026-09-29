@@ -11,7 +11,8 @@ const DELETE = { id: 'delete', label: 'Delete' };
 
 const ROWS: UiRow[] = [
   { id: 'a', title: 'First', details: [{ label: 'Damage', value: '1 200' }], actions: [RENAME, DELETE] },
-  { id: 'b', title: 'Second', actions: [DELETE] }
+  { id: 'b', title: 'Second', actions: [DELETE] },
+  { id: 'c', title: 'Hits', figure: { shapes: [{ x: 0.2, y: 0.1, w: 0.6, h: 0.8 }], marks: [{ x: 0.5, y: 0.2, tone: 'pen' }] }, actions: [] }
 ];
 
 const mount = () => {
@@ -57,7 +58,7 @@ describe(useListPage, () => {
   it('keeps one row of details open at a time', () => {
     const { hook } = mount();
 
-    expect(hook.current().map((row) => row.hasDetails)).toEqual([true, false]);
+    expect(hook.current().map((row) => row.hasDetails)).toEqual([true, false, true]);
 
     hook.run(() => hook.current()[0]?.toggleDetails());
 
@@ -66,5 +67,12 @@ describe(useListPage, () => {
     hook.run(() => hook.current()[0]?.toggleDetails());
 
     expect(hook.current()[0]?.detailsOpen).toBe(false);
+  });
+
+  it('treats a figure as details to open', () => {
+    const { hook } = mount();
+
+    expect(hook.current()[2]?.hasDetails).toBe(true);
+    expect(hook.current()[1]?.hasDetails).toBe(false);
   });
 });

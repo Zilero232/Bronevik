@@ -35,6 +35,11 @@ describe('buildCatalogRows', () => {
     expect(libraries.get('core')).toEqual([]);
   });
 
+  it('carries the FPS cost and the sound preview of each component', () => {
+    expect(rows.find((row) => row.id === 'damage_log')?.perf).toBe('medium');
+    expect(rows.every((row) => row.audio === null)).toBe(true);
+  });
+
   it('treats a missing installation as nothing installed', () => {
     expect(buildCatalogRows({ catalog, installation: null, locale: 'ru' }).every((row) => row.state === 'missing')).toBe(true);
   });
@@ -42,14 +47,21 @@ describe('buildCatalogRows', () => {
 
 describe('filterCatalogRows', () => {
   it('keeps every row for all categories and an empty query', () => {
-    expect(filterCatalogRows({ rows, category: COMPONENT_CATALOG.allCategories, query: '  ' })).toHaveLength(rows.length);
+    expect(filterCatalogRows({ rows, category: COMPONENT_CATALOG.allCategories, query: '  ', lightOnly: false })).toHaveLength(rows.length);
   });
 
   it('filters by category and by a case-insensitive query together', () => {
     const [first] = rows;
-    const found = filterCatalogRows({ rows, category: first?.category ?? '', query: first?.title.toUpperCase() ?? '' });
+    const found = filterCatalogRows({ rows, category: first?.category ?? '', query: first?.title.toUpperCase() ?? '', lightOnly: false });
 
     expect(found.map((row) => row.id)).toContain(first?.id);
     expect(found.every((row) => row.category === first?.category)).toBe(true);
+  });
+
+  it('keeps only the light components when asked', () => {
+    const light = filterCatalogRows({ rows, category: COMPONENT_CATALOG.allCategories, query: '', lightOnly: true });
+
+    expect(light.map((row) => row.id)).not.toContain('damage_log');
+    expect(light.every((row) => row.perf === 'low')).toBe(true);
   });
 });

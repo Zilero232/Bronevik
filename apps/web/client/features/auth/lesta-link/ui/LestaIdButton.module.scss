@@ -1,3 +1,13 @@
 .mark {
   display: inline-flex;
 }
+
+.pending {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.note {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}

@@ -20,5 +20,13 @@
   "noResults": "Ничего не найдено",
   "enabledToast": "{title}: включён",
   "enabledWithLibrariesToast": "{title}: включён, библиотеки на месте ({list})",
-  "disabledToast": "{title}: выключен"
+  "disabledToast": "{title}: выключен",
+  "perf": {
+    "low": "FPS: лёгкий",
+    "medium": "FPS: средний",
+    "high": "FPS: тяжёлый"
+  },
+  "lightOnly": "Только лёгкие",
+  "lightOnlyHint": "Компоненты, которые почти не нагружают FPS",
+  "listen": "Прослушать звук: {title}"
 }

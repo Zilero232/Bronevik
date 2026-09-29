@@ -9,5 +9,11 @@ export const useTanksFigures = () => {
   const { data, isPending } = useTankStats();
   const summary = summarizeStats(data?.items ?? []);
 
-  return { total: data?.total ?? null, summary, heroTanks: summary.leaders.map((row) => vehicleIdentity(row.vehicle)), isPending };
+  return {
+    total: data?.total ?? null,
+    summary,
+    heroTanks: summary.leaders.map((row) => vehicleIdentity(row.vehicle)),
+    isPending,
+    hasFigures: isPending || summary.battles > 0
+  };
 };

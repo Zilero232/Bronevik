@@ -4,7 +4,7 @@ import type { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import type { UserSession } from '@thallesp/nestjs-better-auth';
 
 import { HttpAdapterHost, Reflector } from '@nestjs/core';
-import { of } from 'rxjs';
+import { from, lastValueFrom, of } from 'rxjs';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
@@ -40,7 +40,7 @@ const trackBy = async ({ method = 'GET', byViewer = false, userId }: Setup) => {
 
   const interceptor = Object.assign(new ViewerCacheInterceptor(cache, reflector), { httpAdapterHost: adapterHost });
 
-  await interceptor.intercept(context, next);
+  await lastValueFrom(await interceptor.intercept(context, next));
 
   return cache.get.mock.calls[0]?.[0];
 };
@@ -64,5 +64,56 @@ describe('ViewerCacheInterceptor', () => {
 
   it('never caches a non-GET request', async () => {
     expect(await trackBy({ method: 'POST', byViewer: true, userId: 'u1' })).toBeUndefined();
+  });
+});
+
+const coldRoute = () => {
+  const reflector = mock<Reflector>();
+  const adapterHost = mockDeep<HttpAdapterHost>();
+  const context = mock<ExecutionContext>();
+  const http = mock<HttpArgumentsHost>();
+  const cache = mock<Cache>();
+  const next = mock<CallHandler>();
+  const release = Promise.withResolvers<unknown>();
+
+  reflector.get.mockReturnValue(undefined);
+  adapterHost.httpAdapter.getRequestMethod.mockReturnValue('GET');
+  adapterHost.httpAdapter.getRequestUrl.mockReturnValue(URL);
+  http.getRequest.mockReturnValue({ method: 'GET', session: null });
+  context.switchToHttp.mockReturnValue(http);
+  cache.get.mockResolvedValue(undefined);
+  next.handle.mockImplementation(() => from(release.promise));
+
+  const interceptor = Object.assign(new ViewerCacheInterceptor(cache, reflector), { httpAdapterHost: adapterHost });
+  const request = async () => lastValueFrom(await interceptor.intercept(context, next));
+
+  return { request, release, next, cache };
+};
+
+describe('ViewerCacheInterceptor on a cache miss', () => {
+  it('runs the handler once for concurrent requests of the same key and answers all of them', async () => {
+    const { request, release, next } = coldRoute();
+
+    const pending = [request(), request(), request()];
+
+    release.resolve({ fresh: true });
+
+    await expect(Promise.all(pending)).resolves.toEqual([{ fresh: true }, { fresh: true }, { fresh: true }]);
+    expect(next.handle).toHaveBeenCalledTimes(1);
+  });
+
+  it('fails every waiting request with the handler error and lets the next request try again', async () => {
+    const { request, release, next } = coldRoute();
+
+    const pending = [request(), request()];
+
+    release.reject(new Error('database down'));
+
+    await expect(Promise.all(pending)).rejects.toThrow('database down');
+
+    next.handle.mockReturnValue(of({ fresh: true }));
+
+    await expect(request()).resolves.toEqual({ fresh: true });
+    expect(next.handle).toHaveBeenCalledTimes(2);
   });
 });

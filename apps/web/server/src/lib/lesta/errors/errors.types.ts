@@ -18,6 +18,10 @@ export type LestaNetworkErrorInput = {
   cause: unknown;
 };
 
+export type LestaNotConfiguredErrorInput = {
+  method: string;
+};
+
 export type LestaQueueFullErrorInput = {
   key: string;
   cause: unknown;

@@ -22,10 +22,17 @@ export const CatalogTable = () => {
     >
       {({ entries }) => (
         <DataTable
+          emptyState={
+            <FilteredEmptyState
+              description={isFiltered ? undefined : t('noDataDescription')}
+              isFiltered={isFiltered}
+              title={isFiltered ? t('emptyTitle') : t('noDataTitle')}
+              onReset={onReset}
+            />
+          }
           caption={t('caption', { count: entries.length })}
           columns={columns}
           data={entries}
-          emptyState={<FilteredEmptyState isFiltered={isFiltered} title={t('emptyTitle')} onReset={onReset} />}
           getRowId={(row) => String(row.vehicle.tankId)}
           getRowLink={(row) => ({ href: ROUTES.builds.detail(row.vehicle.slug), label: row.vehicle.name })}
           initialSorting={[{ id: 'battles', desc: true }]}

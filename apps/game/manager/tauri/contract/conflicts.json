@@ -1,0 +1,45 @@
+{
+  "duplicates": [
+    {
+      "files": [
+        "deps/net.openwg.gameface_1.2.0.mtmod",
+        "net.openwg.gameface_1.2.2.mtmod"
+      ],
+      "ours": false,
+      "packageId": "net.openwg.gameface"
+    }
+  ],
+  "foreign": [
+    {
+      "components": [
+        "damage_log"
+      ],
+      "file": "com.modxvm.xfw.native_12.0.0.wotmod",
+      "packageId": "com.modxvm.xfw.native",
+      "rule": "xvm"
+    }
+  ],
+  "missing": [
+    {
+      "id": "marks_panel",
+      "snapshot": "20260927-214705"
+    }
+  ],
+  "overrides": [
+    {
+      "count": 1,
+      "file": "res_mods/1.45.0.0",
+      "location": "res_mods",
+      "paths": [
+        "scripts/client/gui/mods/mod_otmetki_hit_log.pyc"
+      ]
+    }
+  ],
+  "replaced": [
+    {
+      "file": "net.triotmetki.hit_log_0.1.0.mtmod",
+      "id": "hit_log",
+      "snapshot": null
+    }
+  ]
+}

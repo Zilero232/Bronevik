@@ -15,6 +15,16 @@ export const catalogPresetSchema = z.object({
   custom: z.boolean()
 });
 
+export const perfSchema = z.enum(['low', 'medium', 'high']);
+
+export const catalogConflictSchema = z.object({
+  id: z.string(),
+  title: localizedSchema,
+  patterns: z.array(z.string()),
+  components: z.array(z.string()),
+  note: localizedSchema
+});
+
 export const catalogComponentSchema = z.object({
   id: z.string(),
   packageId: z.string(),
@@ -27,11 +37,12 @@ export const catalogComponentSchema = z.object({
   required: z.boolean(),
   default: z.boolean(),
   presets: z.array(z.string()),
-  preview: z.object({ image: z.string().nullable(), video: z.string().nullable() }),
+  preview: z.object({ image: z.string().nullable(), video: z.string().nullable(), audio: z.string().nullable() }),
   dependencies: z.array(z.string()),
   catalogued: z.boolean(),
   sha256: z.string().nullable(),
-  size: z.number().nullable()
+  size: z.number().nullable(),
+  perf: perfSchema.nullable()
 });
 
 export const catalogDependencySchema = z.object({
@@ -61,6 +72,8 @@ export const catalogSchema = z.object({
   components: z.array(catalogComponentSchema),
   dependencies: z.array(catalogDependencySchema),
   ownedPatterns: z.array(z.string()),
+  ownedPaths: z.array(z.string()),
+  conflicts: z.array(catalogConflictSchema),
   source: z.enum(['downloaded', 'bundled']),
   previewsDir: z.string().nullable()
 });

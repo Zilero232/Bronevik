@@ -1,0 +1,78 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include panel;
+  @include stack(var(--space-3));
+
+  padding: var(--space-5);
+  scroll-margin-top: calc(var(--header-offset) + var(--space-5));
+}
+
+.title {
+  @include heading;
+
+  color: var(--color-text);
+}
+
+.lead,
+.note {
+  max-width: 72ch;
+  color: var(--color-text-muted);
+}
+
+.note {
+  font-size: var(--text-sm);
+}
+
+.scroller {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--color-border);
+    text-align: start;
+    white-space: nowrap;
+  }
+
+  thead th {
+    @include label;
+
+    color: var(--color-text-dim);
+  }
+}
+
+.caption {
+  @include sr-only;
+}
+
+.row {
+  @include tone;
+
+  th {
+    display: flex;
+    align-items: center;
+    color: var(--tone);
+    font-weight: 600;
+    gap: var(--space-2);
+  }
+}
+
+.swatch {
+  width: 12px;
+  height: 12px;
+  flex: none;
+  border-radius: var(--radius-sm);
+  background-color: var(--tone);
+}
+
+.value {
+  @include numeric;
+
+  color: var(--tone);
+}

@@ -4,8 +4,8 @@ import type { IsScheduleActiveInput, RegisterJobSchedulesInput } from './job-sch
 
 import { TIME } from '../../../config';
 
-export const isScheduleActive = ({ schedule, hasLesta, lestaMock }: IsScheduleActiveInput): boolean =>
-  (schedule.enabled ?? true) && (hasLesta || !schedule.needsLesta) && !(lestaMock && schedule.realLestaOnly);
+export const isScheduleActive = ({ schedule, hasLesta }: IsScheduleActiveInput): boolean =>
+  (schedule.enabled ?? true) && (hasLesta || !schedule.needsLesta);
 
 export const registerJobSchedules = async ({ schedules, queueOf, environment }: RegisterJobSchedulesInput): Promise<number> => {
   const configured = new Set(schedules.map((schedule) => schedule.id));

@@ -51,13 +51,17 @@ export class TwitchChatService implements ChatAnnouncer, OnApplicationBootstrap,
     this.auth = this.sdk.createAuthProvider({ clientId, clientSecret });
 
     this.auth.onRefresh((externalId, token) => {
-      void this.store.storeToken({
-        provider: 'twitch',
-        externalId,
-        accessToken: token.accessToken,
-        refreshToken: token.refreshToken,
-        expiresAt: token.expiresIn === null ? null : addSeconds(token.obtainmentTimestamp, token.expiresIn)
-      });
+      void this.store
+        .storeToken({
+          provider: 'twitch',
+          externalId,
+          accessToken: token.accessToken,
+          refreshToken: token.refreshToken,
+          expiresAt: token.expiresIn === null ? null : addSeconds(token.obtainmentTimestamp, token.expiresIn)
+        })
+        .catch((error: unknown) => {
+          this.logger.warn(`twitch token of ${externalId} was not stored: ${errorMessage(error)}`);
+        });
     });
 
     void this.sync();

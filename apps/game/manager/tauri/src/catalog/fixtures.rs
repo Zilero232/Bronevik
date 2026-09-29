@@ -17,11 +17,12 @@ fn component(id: &str, package_id: &str, category: &str, required: bool, depende
         "required": required,
         "default": true,
         "presets": ["recommended"],
-        "preview": { "image": format!("previews/{id}.png"), "video": null },
+        "preview": { "image": format!("previews/{id}.png"), "video": null, "audio": null },
         "dependencies": dependencies,
         "catalogued": true,
         "sha256": null,
-        "size": null
+        "size": null,
+        "perf": if id == "damage_log" { "medium" } else { "low" }
     })
 }
 
@@ -97,7 +98,24 @@ pub fn catalog_json() -> serde_json::Value {
             gameface_json(),
             guiflash_json()
         ],
-        "ownedPatterns": ["net.triotmetki.*.mtmod", "otmetki.*.mtmod"]
+        "ownedPatterns": ["net.triotmetki.*.mtmod", "otmetki.*.mtmod"],
+        "ownedPaths": ["scripts/client/gui/mods/otmetki/", "scripts/client/gui/mods/mod_otmetki", "gui/gameface/mods/triotmetki/"],
+        "conflicts": [
+            {
+                "id": "xvm",
+                "title": { "ru": "XVM", "en": "XVM" },
+                "patterns": ["com.modxvm.*", "*xvm*"],
+                "components": ["damage_log", "hit_log"],
+                "note": { "ru": "Свой лог урона", "en": "Its own damage log" }
+            },
+            {
+                "id": "marks_calculator",
+                "title": { "ru": "Калькулятор отметок", "en": "Marks calculator" },
+                "patterns": ["*marksongun*"],
+                "components": ["marks_panel"],
+                "note": { "ru": "Второй калькулятор", "en": "A second calculator" }
+            }
+        ]
     })
 }
 

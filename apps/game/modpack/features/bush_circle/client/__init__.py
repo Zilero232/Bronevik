@@ -1,0 +1,121 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+import BigWorld
+
+from ....core.client.battle import BattleHooks, arena
+from ....core.client.component import FeatureComponent
+from ....core.client.hotkey import Hotkey
+from ....core.events import EVENT_COMPONENT_SETTINGS
+from ....core.log import log_exception, safe
+from .. import FEATURE_ID
+from ..i18n import STRINGS
+from ..model import CircleState, color_of, diameter, hotkey_of
+from ..settings import SCHEMA, SWITCH
+from .constants import CIRCLE_VISUAL, CUT_OFF_DISTANCE, ENTITY_ATTEMPTS, ENTITY_RETRY_S, OVER_TERRAIN_HEIGHT
+
+
+class BushCircle(FeatureComponent):
+    """A 15 m circle on the ground around the player's own tank, always or toggled by a hotkey; gone when the tank is destroyed."""
+
+    def __init__(self, app):
+        FeatureComponent.__init__(self, app, FEATURE_ID, SCHEMA, SWITCH, STRINGS)
+        self.state = None
+        self.vehicle_id = None
+        self.model = None
+        self.hotkey = None
+        self.hooks = BattleHooks()
+        self.generation = 0
+        bus = app.bus
+        bus.on('battle_ready', self._on_battle_ready)
+        bus.on('battle_leave', self._on_battle_leave)
+        bus.on(EVENT_COMPONENT_SETTINGS, self._on_settings)
+
+    def _on_battle_ready(self, battle_player):
+        self._on_battle_leave()
+        if not self.enabled():
+            return
+        self.state = CircleState(self.settings.get('mode'))
+        self.vehicle_id = getattr(battle_player, 'playerVehicleID', None)
+        self.hooks.add(arena, 'onVehicleKilled', self._on_vehicle_killed)
+        self._install_hotkey()
+        self.apply()
+
+    def _on_battle_leave(self):
+        self.generation += 1
+        self.hooks.clear()
+        if self.hotkey is not None:
+            self.hotkey.remove()
+            self.hotkey = None
+        self._remove()
+        self.state = None
+
+    def _on_settings(self, component_id, changed):
+        if component_id == FEATURE_ID and self.state is not None:
+            self.state.mode = self.settings.get('mode')
+            self._remove()
+            self._install_hotkey()
+            self.apply()
+
+    def _install_hotkey(self):
+        if self.hotkey is not None:
+            self.hotkey.remove()
+            self.hotkey = None
+        key, modifiers = hotkey_of(self.settings.get('hotkey'))
+        if key is not None and self.settings.get('mode') == 'hotkey':
+            self.hotkey = Hotkey(key, modifiers, self._on_hotkey)
+            self.hotkey.install()
+
+    @safe
+    def _on_hotkey(self):
+        if self.state is not None and self.state.toggle():
+            self.apply()
+
+    def _on_vehicle_killed(self, victim_id, *args):
+        if self.state is not None and victim_id == self.vehicle_id and self.state.killed():
+            self.apply()
+
+    @safe
+    def apply(self, attempt=0):
+        wanted = self.state is not None and self.state.wanted()
+        if not wanted:
+            self._remove()
+            return
+        if self.model is not None:
+            return
+        entity = BigWorld.entity(self.vehicle_id) if self.vehicle_id else None
+        if entity is None:
+            if attempt + 1 < ENTITY_ATTEMPTS:
+                generation = self.generation
+                BigWorld.callback(ENTITY_RETRY_S, lambda: self._retry(generation, attempt + 1))
+            return
+        self.model = self._create(entity)
+
+    def _retry(self, generation, attempt):
+        if generation == self.generation:
+            self.apply(attempt)
+
+    def _create(self, entity):
+        import Math
+        try:
+            model = BigWorld.Model('')
+            area = BigWorld.PyTerrainSelectedArea()
+            size = diameter()
+            area.setup(CIRCLE_VISUAL, Math.Vector2(size, size), OVER_TERRAIN_HEIGHT, color_of(self.settings.get('color')))
+            area.enableAccurateCollision(True)
+            area.setCutOffDistance(CUT_OFF_DISTANCE)
+            model.node('').attach(area)
+            BigWorld.player().addModel(model)
+            model.addMotor(BigWorld.Servo(entity.matrix))
+            return model
+        except Exception:
+            log_exception('bush circle: create')
+            return None
+
+    def _remove(self):
+        model, self.model = self.model, None
+        if model is None:
+            return
+        try:
+            BigWorld.player().delModel(model)
+        except Exception:
+            log_exception('bush circle: remove')

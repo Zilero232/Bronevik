@@ -50,7 +50,7 @@
       "tier": "Rarity"
     },
     "summary": "Sample of {sample, plural, one {# player} other {# players}}, {total, plural, one {# medal} other {# medals}} in the catalogue",
-    "empty": "No medals",
+    "empty": "Medal rarity has not been computed yet",
     "emptyDescription": "There is no rarity data for this section yet.",
     "error": "Could not load medals",
     "caption": "Medals and their rarity"
@@ -84,7 +84,7 @@
     },
     "summary": "{total, plural, one {# collector} other {# collectors}} on the board",
     "empty": "The board is empty",
-    "emptyDescription": "Collectors appear after the first rarity recount.",
+    "emptyDescription": "Collectors appear once we work out medal rarity across players.",
     "error": "Could not load the collectors board",
     "caption": "Medal collectors"
   }

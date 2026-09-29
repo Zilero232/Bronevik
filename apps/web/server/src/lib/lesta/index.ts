@@ -22,10 +22,12 @@ export type {
 export {
   isExtraRejected,
   isRetryableLestaError,
+  isSearchRejected,
   LESTA_ERROR_CODE,
   LestaApiError,
   LestaHttpError,
   LestaNetworkError,
+  LestaNotConfiguredError,
   LestaQueueFullError,
   RETRYABLE_LESTA_CODES
 } from './errors';

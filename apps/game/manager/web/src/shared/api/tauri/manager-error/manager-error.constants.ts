@@ -25,6 +25,11 @@ export const MANAGER_ERROR_CODES = [
   'file_locked',
   'not_enough_space',
   'rollback_failed',
+  'nothing_to_restore',
+  'set_limit',
+  'set_name',
+  'set_missing',
+  'set_code',
   'contract',
   'unknown'
 ] as const;

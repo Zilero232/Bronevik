@@ -11,7 +11,7 @@ export const InstallView = () => {
   return (
     <>
       <PageHeader description={t('description')} title={t('title')} />
-      <InstallWizard initialPreset={params.preset ?? null} />
+      <InstallWizard initialComponents={params.components ?? null} initialPreset={params.preset ?? null} />
     </>
   );
 };

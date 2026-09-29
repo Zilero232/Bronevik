@@ -32,7 +32,6 @@ export const GuideTable = () => {
           <DataTable
             emptyState={
               <FilteredEmptyState
-                isCompact
                 description={hasFilters ? t('emptyFilteredDescription') : t('emptyDescription')}
                 isFiltered={hasFilters}
                 resetLabel={t('filters.reset')}

@@ -23,7 +23,7 @@ export const CoachingOrders = () => {
         <QueryState
           isCompact
           skeleton={
-            <CardBody>
+            <CardBody className={s.inset}>
               <Skeleton height={64} />
             </CardBody>
           }
@@ -43,7 +43,7 @@ export const CoachingOrders = () => {
           )}
         </QueryState>
       ) : (
-        <CardBody>
+        <CardBody className={s.inset}>
           <CommunityGate requiresLesta={false}>{null}</CommunityGate>
         </CardBody>
       )}

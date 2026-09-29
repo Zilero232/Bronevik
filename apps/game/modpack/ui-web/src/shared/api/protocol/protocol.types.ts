@@ -5,6 +5,7 @@ import type {
   componentSchema,
   detailSchema,
   fieldSchema,
+  figureSchema,
   messageSchema,
   noticeSchema,
   pageSchema,
@@ -24,6 +25,7 @@ export type UiAction = z.infer<typeof actionSchema>;
 export type UiPage = z.infer<typeof pageSchema>;
 export type UiRow = z.infer<typeof rowSchema>;
 export type UiDetail = z.infer<typeof detailSchema>;
+export type UiFigure = z.infer<typeof figureSchema>;
 export type UiPanel = z.infer<typeof panelSchema>;
 export type UiNotice = z.infer<typeof noticeSchema>;
 export type UiProfile = z.infer<typeof profileSchema>;

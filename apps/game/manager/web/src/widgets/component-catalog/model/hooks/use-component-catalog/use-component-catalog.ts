@@ -17,10 +17,11 @@ export const useComponentCatalog = () => {
   const { data: installation } = useInstallation(clientPath);
   const [category, setCategory] = useState<string>(COMPONENT_CATALOG.allCategories);
   const [query, setQuery] = useState('');
+  const [lightOnly, setLightOnly] = useState(false);
 
   const catalog = catalogQuery.data ?? null;
   const rows = catalog ? buildCatalogRows({ catalog, installation: installation ?? null, locale }) : [];
-  const visible = filterCatalogRows({ rows, category, query });
+  const visible = filterCatalogRows({ rows, category, query, lightOnly });
   const chips = [
     { value: COMPONENT_CATALOG.allCategories, label: t('allCategories'), count: rows.length },
     ...(catalog?.categories ?? []).map((item) => ({
@@ -38,8 +39,14 @@ export const useComponentCatalog = () => {
     chips,
     category,
     query,
-    rows: visible.map((row) => ({ ...row, previewSrc: previewSrc({ previewsDir: catalog?.previewsDir ?? null, image: row.image }) })),
+    lightOnly,
+    rows: visible.map((row) => ({
+      ...row,
+      previewSrc: previewSrc({ previewsDir: catalog?.previewsDir ?? null, file: row.image }),
+      audioSrc: previewSrc({ previewsDir: catalog?.previewsDir ?? null, file: row.audio })
+    })),
     onCategoryChange: setCategory,
-    onQueryChange: setQuery
+    onQueryChange: setQuery,
+    onLightOnlyChange: setLightOnly
   };
 };

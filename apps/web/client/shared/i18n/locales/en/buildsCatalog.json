@@ -25,6 +25,8 @@
     "consumables": "Consumables",
     "noData": "not enough data",
     "emptyTitle": "No tanks match these filters",
+    "noDataTitle": "No builds yet",
+    "noDataDescription": "Build statistics appear once players with the Three Marks mod play their first battles.",
     "errorTitle": "Could not load builds",
     "errorDescription": "Check your connection and try again."
   },

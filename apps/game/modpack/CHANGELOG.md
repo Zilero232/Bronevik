@@ -28,6 +28,56 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 - The Gameface settings window with profiles and an on-screen HUD editor; ModsSettingsAPI stays the fallback.
 - Settings survive a wiped `mods/configs`: the binding, config.json, components.json, profiles.json and the app state are mirrored into `%APPDATA%\TriOtmetki` and restored on the next start.
 
+## battle_hits 0.1.0
+
+### ru
+
+- «Боевые раны»: попадания по вашему танку записываются в бою (только своя машина) и показываются в ангаре после боя — итог последнего боя и схема сверху (корпус, башня, орудие, ходовая) с точками попаданий, стороной, исходом, уроном и стрелявшим в окне модпака. Хранятся последние бои (до 30), каждый можно удалить.
+
+### en
+
+- «Battle wounds»: the hits on your tank are recorded in battle (your own vehicle only) and shown in the hangar after it: the last battle's summary and, in the modpack window, a schematic from above (hull, turret, gun, running gear) with the hit points, the side, the outcome, the damage and who fired. The last battles are kept (up to 30), each can be deleted.
+
+## gun_arc 0.1.0
+
+### ru
+
+- УГН своего орудия: сколько градусов осталось до упора влево и вправо, полоса с положением орудия и подсветка у края. Только на машинах с ограниченной горизонтальной наводкой.
+
+### en
+
+- Your gun's traverse limits: the degrees left to each side, a bar with the gun position and a highlight near the edge. Only on vehicles with a limited traverse.
+
+## bush_circle 0.1.0
+
+### ru
+
+- Круг 15 м на земле вокруг вашего танка: постоянно или по клавише (Ctrl+Shift+B, Ctrl+Shift+C, F7, F8), четыре цвета; исчезает, когда танк уничтожен.
+
+### en
+
+- A 15 m circle on the ground around your tank: always on or by a hotkey (Ctrl+Shift+B, Ctrl+Shift+C, F7, F8), four colours; gone when the tank is destroyed.
+
+## consumables 0.2.0
+
+### ru
+
+- ТТХ своих снарядов (выключено по умолчанию): пробитие, урон и скорость заряженного снаряда или всех типов — те же числа, что в подсказке снаряда в бою.
+
+### en
+
+- Your shells' stats (off by default): the penetration, damage and velocity of the loaded shell or of every type, the numbers the shell tooltip shows in battle.
+
+## hangar_info 0.3.0
+
+### ru
+
+- Кнопка «Броня на сайте» в окне модпака: открывает 3D-броню выбранного танка на triotmetki.ru.
+
+### en
+
+- An «Armour on the site» button in the modpack window: opens the selected tank's 3D armour on triotmetki.ru.
+
 ## received_hits 0.1.0
 
 ### ru
@@ -243,12 +293,14 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 - Переключатели новых компонентов: `battle_personal_best`, `hangar_session_goals`, `battle_main_gun`, `battle_efficiency`, `battle_consumables`, `battle_reload_timer`.
 - `share_session_report` (выключен по умолчанию) и `share_session_channel`: отчёт о сессии в свой Telegram или Discord через сайт. Профили и коды его не переносят.
 - Переключатели компонентов четвёртого круга: `battle_received_hits`, `battle_death_card`, `battle_loadout`, `hangar_personal_missions`, `streamer_mode`, `hangar_platoon_helper`, `hangar_tilt_guard`.
+- Переключатели компонентов пятого круга: `hangar_battle_hits`, `battle_gun_arc`, `battle_bush_circle`.
 
 ### en
 
 - Switches of the new components: `battle_personal_best`, `hangar_session_goals`, `battle_main_gun`, `battle_efficiency`, `battle_consumables`, `battle_reload_timer`.
 - `share_session_report` (off by default) and `share_session_channel`: the session report to your own Telegram or Discord through the site. Profiles and codes never carry it.
 - Switches of the round-four components: `battle_received_hits`, `battle_death_card`, `battle_loadout`, `hangar_personal_missions`, `streamer_mode`, `hangar_platoon_helper`, `hangar_tilt_guard`.
+- Switches of the round-five components: `hangar_battle_hits`, `battle_gun_arc`, `battle_bush_circle`.
 
 ## companion 0.2.0
 

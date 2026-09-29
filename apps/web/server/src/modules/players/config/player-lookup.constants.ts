@@ -17,6 +17,9 @@ export const PLAYER_LOOKUP = {
   missingKeyPrefix: 'otmetki:players:missing:',
   missingTtlSeconds: 600,
   missingMarker: '1',
+  viewTouchKeyPrefix: 'otmetki:players:viewed:',
+  viewTouchMarker: '1',
+  viewTouchSeconds: 3600,
   modeFields: [
     'account_id',
     'statistics.stronghold_skirmish',

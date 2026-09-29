@@ -13,13 +13,18 @@ export const CollectorsTab = () => {
   const query = useCollectors();
 
   return (
-    <QueryState errorTitle={t('error')} query={query} skeleton={<DataTable isLoading columns={columns} data={[]} />}>
+    <QueryState
+      empty={<EmptyState description={t('emptyDescription')} title={t('empty')} />}
+      errorTitle={t('error')}
+      isEmpty={({ items }) => items.length === 0}
+      query={query}
+      skeleton={<DataTable isLoading columns={columns} data={[]} />}
+    >
       {(board) => (
         <DataTable
           caption={t('caption')}
           columns={columns}
           data={board.items}
-          emptyState={<EmptyState isCompact description={t('emptyDescription')} title={t('empty')} />}
           getRowId={(row) => String(row.accountId)}
           getRowLink={(row) => ({ href: ROUTES.players.profile(row.nickname), label: row.nickname, hasCellLink: true })}
           summary={t('summary', { total: board.total })}

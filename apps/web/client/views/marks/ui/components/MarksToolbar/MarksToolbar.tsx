@@ -10,6 +10,7 @@ import { VehicleFilters } from '@/features/tank/filter-vehicles';
 import { IconButton, Input, Select } from '@/ui-kit';
 
 import { useMarksUrlState } from '../../../model/hooks';
+import { MarksPresets } from './components';
 
 import s from './MarksToolbar.module.scss';
 
@@ -22,6 +23,7 @@ export const MarksToolbar = () => {
   return (
     <div className={s.root}>
       <VehicleFilters withPremium />
+      <MarksPresets />
       <div className={s.row}>
         <Input
           aria-label={t('search')}

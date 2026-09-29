@@ -28,7 +28,7 @@ export const CatalogFilters = () => {
           wrapperClassName={s.search}
           onChange={(event) => onSearchChange(event.target.value)}
         />
-        {query.data && (
+        {query.data && query.data.total > 0 && (
           <span aria-live='polite' className={s.shown}>
             {t('shown', { shown: query.data.shown, total: query.data.total })}
           </span>

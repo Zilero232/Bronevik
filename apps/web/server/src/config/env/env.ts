@@ -2,8 +2,6 @@ import { z } from 'zod';
 
 import type { Env, UnsafeSettingsInput } from './env.types';
 
-import { isRealLestaApplicationId } from '../lesta-mock/lesta-mock';
-import { LESTA_MOCK } from '../lesta-mock/lesta-mock.constants';
 import { ENV_GUARD } from './env.constants';
 import { envSchema } from './env.schemas';
 
@@ -15,24 +13,8 @@ const isLocalUrl = (url: string): boolean => {
   return localHosts.has(hostname) || hostname.endsWith(ENV_GUARD.localSuffix);
 };
 
-const hasLestaKey = (env: Env): boolean => isRealLestaApplicationId(env.LESTA_APPLICATION_ID);
-
-const wantsLestaMock = (env: Env): boolean =>
-  !hasLestaKey(env) &&
-  (env.DEMO_MODE ||
-    (env.NODE_ENV !== 'production' &&
-      (env.LESTA_MOCK === 'on' || (env.LESTA_MOCK === 'auto' && env.NODE_ENV === 'development' && isLocalUrl(env.API_URL)))));
-
-const demoConflicts = (env: Env): string[] =>
-  env.DEMO_MODE
-    ? ENV_GUARD.demoForbidden
-        .filter((name) => (name === 'LESTA_APPLICATION_ID' ? hasLestaKey(env) : env[name] !== ''))
-        .map((name) => `DEMO_MODE is on while ${name} is set`)
-    : [];
-
 const unsafeSettings = ({ env, nodeEnvSet }: UnsafeSettingsInput): string[] => [
   ...(!nodeEnvSet && !isLocalUrl(env.API_URL) ? ['NODE_ENV must be set explicitly when the API is not on a local host'] : []),
-  ...demoConflicts(env),
   ...(env.NODE_ENV === 'production'
     ? ENV_GUARD.productionSecrets.filter((name) => ENV_GUARD.weakSecret.test(env[name])).map((name) => `${name} is a development placeholder`)
     : [])
@@ -42,9 +24,6 @@ const lestaEgressProblems = (env: Env): string[] =>
   env.LESTA_EGRESS_IP !== '' && env.LESTA_EGRESS_IPS.length > 0 && !env.LESTA_EGRESS_IPS.includes(env.LESTA_EGRESS_IP)
     ? [`LESTA_EGRESS_IP ${env.LESTA_EGRESS_IP} is not one of LESTA_EGRESS_IPS`]
     : [];
-
-const resolveLestaMock = (env: Env): Env =>
-  wantsLestaMock(env) ? { ...env, LESTA_MOCK: 'on', LESTA_APPLICATION_ID: LESTA_MOCK.applicationId } : { ...env, LESTA_MOCK: 'off' };
 
 export const validateEnv = (raw: Record<string, unknown>): Env => {
   const parsed = envSchema.safeParse(raw);
@@ -65,7 +44,7 @@ export const validateEnv = (raw: Record<string, unknown>): Env => {
     throw new Error(`Unsafe environment:\n${problems.join('\n')}`);
   }
 
-  return resolveLestaMock(parsed.data);
+  return parsed.data;
 };
 
 export const isProduction = (env: Pick<Env, 'NODE_ENV'>): boolean => env.NODE_ENV === 'production';

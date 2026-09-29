@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
+import { CatalogPending } from '@/entities/tank/tank';
 import { isNotFoundError } from '@/shared/api/source';
 import { EmptyState, QueryState } from '@/ui-kit';
 
@@ -14,12 +15,10 @@ export const TreeExplorer = () => {
   const t = useTranslations('tree.states');
   const query = useTechTree();
 
-  const empty = <EmptyState isCompact title={t('emptyTitle')} />;
-
   return (
     <QueryState
-      empty={empty}
-      errorState={isNotFoundError(query.error) ? empty : undefined}
+      empty={<EmptyState isCompact title={t('emptyTitle')} />}
+      errorState={isNotFoundError(query.error) ? <CatalogPending /> : undefined}
       errorTitle={t('errorTitle')}
       isEmpty={({ tree, premiums }) => tree.nodes.length === 0 && premiums.length === 0}
       query={query}

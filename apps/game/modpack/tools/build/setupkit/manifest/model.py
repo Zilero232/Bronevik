@@ -12,6 +12,7 @@ SCHEMA_VERSION = 1
 LANGUAGES = ('ru', 'en')
 ID_PATTERN = re.compile(r'^[a-z][a-z0-9_]*$')
 DEPENDENCY_KIND = 'dependency'
+PERF_LEVELS = ('low', 'medium', 'high')
 
 
 @dataclass(frozen=True)
@@ -37,9 +38,10 @@ class Preset:
 
 @dataclass(frozen=True)
 class Preview:
-    """In the catalog `image` is relative to catalog/; in the manifest, to the manifest's folder."""
+    """In the catalog `image` is relative to catalog/ and `audio` to assets/; in the manifest both to the manifest's folder."""
     image: Optional[str] = None
     video: Optional[str] = None
+    audio: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -54,6 +56,18 @@ class CatalogEntry:
     required: bool = False
     preview: Preview = Preview()
     dependencies: Tuple[str, ...] = ()
+    perf: Optional[str] = None
+
+
+@dataclass(frozen=True)
+class ConflictRule:
+    """Third-party mods that duplicate some of our components: `patterns` are case-insensitive masks over a package's
+    file name and its meta.xml id; the manager warns when one is installed next to an enabled component it lists."""
+    id: str
+    title: Localized
+    patterns: Tuple[str, ...]
+    components: Tuple[str, ...]
+    note: Localized
 
 
 @dataclass(frozen=True)
@@ -101,6 +115,8 @@ class Catalog:
     fallback_category: str
     fallback_fair_play: Localized
     dependencies: Tuple[Dependency, ...] = ()
+    owned_paths: Tuple[str, ...] = ()
+    conflicts: Tuple[ConflictRule, ...] = ()
 
     def entry(self, key):
         return next((entry for entry in self.components if entry.id == key), None)
@@ -128,6 +144,7 @@ class Component:
     catalogued: bool
     sha256: Optional[str] = None
     size: Optional[int] = None
+    perf: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -140,6 +157,8 @@ class Manifest:
     components: Tuple[Component, ...]
     owned_patterns: Tuple[str, ...]
     dependencies: Tuple[Dependency, ...] = ()
+    owned_paths: Tuple[str, ...] = ()
+    conflicts: Tuple[ConflictRule, ...] = ()
     schema_version: int = SCHEMA_VERSION
 
     def component(self, component_id):

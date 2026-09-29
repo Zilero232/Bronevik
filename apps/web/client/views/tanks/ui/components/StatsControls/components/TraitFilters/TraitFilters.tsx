@@ -4,9 +4,7 @@ import type { LearningDifficulty, TankStatus } from '@otmetki/schemas';
 
 import { useTranslations } from 'next-intl';
 
-import { Select, ToggleChips } from '@/ui-kit';
-
-import type { RoleChoice } from '../../../../../model/hooks';
+import { ToggleChips } from '@/ui-kit';
 
 import { useTraitFilters } from '../../../../../model/hooks';
 
@@ -14,8 +12,7 @@ import s from './TraitFilters.module.scss';
 
 export const TraitFilters = () => {
   const t = useTranslations('tankTraits');
-  const { statuses, statusOptions, difficulties, difficultyOptions, role, roleItems, onStatusesChange, onDifficultiesChange, onRoleChange } =
-    useTraitFilters();
+  const { statuses, statusOptions, difficulties, difficultyOptions, onStatusesChange, onDifficultiesChange } = useTraitFilters();
 
   return (
     <div className={s.root}>
@@ -27,7 +24,6 @@ export const TraitFilters = () => {
         value={difficulties}
         onChange={onDifficultiesChange}
       />
-      <Select<RoleChoice> className={s.role} items={roleItems} label={t('role.label')} value={role} onValueChange={onRoleChange} />
     </div>
   );
 };

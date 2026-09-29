@@ -2,13 +2,14 @@ import { playerTanksQuerySchema } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { AccountTankRating, PlayerTank } from '../../../../../generated';
+import type { AccountTankRating, PlayerTank, TankSnapshotLatest } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { VehicleCatalogService } from '../../../reference';
 import type { CatalogEntry } from '../../../reference/reference.types';
-import type { LatestTankSnapshot } from '../../players.types';
+import type { LatestTankSnapshot } from '../../selects';
 
 import { unknownVehicle } from '../../../reference/mappers';
+import { PLAYER_STATS } from '../../config';
 import { PlayerTanksService } from '../player-tanks.service';
 
 const entry = (tankId: number, tier = 10): CatalogEntry => ({
@@ -22,15 +23,15 @@ const tank = (tankId: number, overrides: Partial<PlayerTank> = {}): PlayerTank =
   mock<PlayerTank>({ tankId, battles: 100, wins: 50, markOfMastery: 0, marksOnGun: null, moePercent: null, lastBattleAt: null, ...overrides });
 
 const snapshot = (tankId: number, overrides: Partial<LatestTankSnapshot> = {}): LatestTankSnapshot => ({
-  tank_id: tankId,
+  tankId,
   battles: 200,
   wins: 120,
-  damage_dealt: 400_000,
+  damageDealt: 400_000,
   frags: 200,
   xp: 100_000,
-  survived_battles: 50,
-  max_frags: 6,
-  max_xp: 2500,
+  survived: 50,
+  maxFrags: 6,
+  maxXp: 2500,
   ...overrides
 });
 
@@ -47,7 +48,7 @@ const createService = ({
   const vehicles = mock<VehicleCatalogService>();
 
   prisma.playerTank.findMany.mockResolvedValue(tanks);
-  prisma.$queryRaw.mockResolvedValue(snapshots);
+  prisma.tankSnapshotLatest.findMany.mockResolvedValue(snapshots.map((row) => Object.assign(mock<TankSnapshotLatest>(), row)));
   prisma.accountTankRating.findMany.mockResolvedValue([]);
   vehicles.filter.mockResolvedValue(catalog);
 
@@ -78,6 +79,15 @@ describe('PlayerTanksService.list', () => {
     expect(row?.winRate).toBeCloseTo(60);
     expect(row?.avgDamage).toBeCloseTo(2000);
     expect(row?.maxFrags).toBe(6);
+  });
+
+  it('reads the totals from the latest-snapshot table instead of scanning the snapshot history', async () => {
+    const { service, prisma } = createService({ snapshots: [snapshot(1)] });
+
+    await service.list({ accountId: 42n, query: query() });
+
+    expect(prisma.tankSnapshotLatest.findMany.mock.calls[0]?.[0]?.where).toEqual({ accountId: 42n, mode: PLAYER_STATS.snapshotMode });
+    expect(prisma.$queryRaw).not.toHaveBeenCalled();
   });
 
   it('falls back to the rating averages without a snapshot', async () => {

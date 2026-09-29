@@ -8,7 +8,8 @@ export const ACHIEVEMENTS_RARITY_SCHEDULES = [
     id: 'achievements-rarity-fetch',
     queue: ACHIEVEMENTS_RARITY_QUEUE.name,
     name: ACHIEVEMENTS_RARITY_QUEUE.jobs.fetch,
-    repeat: { pattern: '*/20 * * * *' }
+    repeat: { pattern: '*/20 * * * *' },
+    needsLesta: true
   },
   {
     id: 'achievements-rarity-aggregate',

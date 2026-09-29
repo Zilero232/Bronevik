@@ -33,6 +33,8 @@ export const MarksMovement = () => {
             </div>
           </div>
         }
+        empty={<EmptyState isCompact title={t('empty')} />}
+        isEmpty={({ rows }) => rows.length === 0}
         query={query}
       >
         {({ rows, leaders }) => (
@@ -43,7 +45,6 @@ export const MarksMovement = () => {
                 columns={columns}
                 data={rows}
                 density='media'
-                emptyState={<EmptyState isCompact title={t('empty')} />}
                 getRowId={(row) => String(row.vehicle.tankId)}
                 getRowLink={({ vehicle }) => ({ href: ROUTES.tanks.detail(vehicle.slug), label: vehicle.name })}
               />

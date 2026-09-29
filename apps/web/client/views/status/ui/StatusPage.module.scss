@@ -1,0 +1,37 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(0);
+
+  padding-bottom: var(--space-8);
+}
+
+.body {
+  @include shell;
+  @include stack(var(--space-6));
+
+  padding-block: var(--space-7);
+}
+
+.section {
+  @include stack(var(--space-4));
+}
+
+.grid {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  @include below(xl) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sources {
+  @include stack(var(--space-2));
+
+  max-width: 72ch;
+  padding-left: var(--space-5);
+  color: var(--color-text-muted);
+  list-style: disc;
+}

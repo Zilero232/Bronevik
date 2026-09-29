@@ -50,6 +50,9 @@ dependencies = [
   "otmetki-feature-streamer-mode",
   "otmetki-feature-platoon-helper",
   "otmetki-feature-tilt-guard",
+  "otmetki-feature-battle-hits",
+  "otmetki-feature-gun-arc",
+  "otmetki-feature-bush-circle",
 ]
 
 [project.urls]
@@ -117,6 +120,9 @@ otmetki-feature-personal-missions = { workspace = true }
 otmetki-feature-streamer-mode = { workspace = true }
 otmetki-feature-platoon-helper = { workspace = true }
 otmetki-feature-tilt-guard = { workspace = true }
+otmetki-feature-battle-hits = { workspace = true }
+otmetki-feature-gun-arc = { workspace = true }
+otmetki-feature-bush-circle = { workspace = true }
 
 [tool.pytest.ini_options]
 testpaths = ["packages", "features", "tools"]

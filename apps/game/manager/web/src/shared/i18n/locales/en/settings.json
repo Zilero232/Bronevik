@@ -26,5 +26,21 @@
   },
   "clientTitle": "Game client",
   "save": "Save",
-  "saved": "Settings saved"
+  "saved": "Settings saved",
+  "cache": {
+    "title": "Game cache",
+    "hint": "Fixes «mods stopped working after the patch» and frees space. Only the client cache goes: hangar web pages, dossiers, clan and collection pictures, crash reports. Replays, game settings, mods and battle results are never touched. The game must be closed; the client downloads the cache again on start.",
+    "scan": "Find the cache",
+    "clear": "Clear the selected ({size})",
+    "confirm": "Clear",
+    "confirmTitle": "Clear {count, plural, one {# cache folder} other {# cache folders}} ({size})?",
+    "confirmDescription": "The next game start takes a little longer: the client downloads the cache again.",
+    "cleared": "Freed {size}",
+    "partly": "Freed {size}; {count, plural, one {# folder} other {# folders}} could not be cleared: close the game and try again",
+    "empty": "No cache found",
+    "location": {
+      "app_data": "%APPDATA%",
+      "game": "Game folder"
+    }
+  }
 }

@@ -38,10 +38,14 @@ export class MapsService {
 
   private async stats(arenaId: string): Promise<MapStats | null> {
     const battles = await this.prisma.$queryRaw<BattleSideRow[]>`
-      SELECT DISTINCT ON (arena_unique_id) team, result
-      FROM battle
-      WHERE arena_id = ${arenaId} AND team IS NOT NULL
-      ORDER BY arena_unique_id, received_at
+      SELECT team, result, count(*)::float8 AS battles
+      FROM (
+        SELECT DISTINCT ON (arena_unique_id) team, result
+        FROM battle
+        WHERE arena_id = ${arenaId} AND team IS NOT NULL
+        ORDER BY arena_unique_id, received_at
+      ) first_report
+      GROUP BY team, result
     `;
 
     const fromBattles = statsFromBattles(battles);

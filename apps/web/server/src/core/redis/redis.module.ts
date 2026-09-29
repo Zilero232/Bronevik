@@ -15,7 +15,8 @@ import { REDIS, REDIS_OPTIONS } from './redis.constants';
       useFactory: (config: AppConfigService) =>
         new Redis(config.get('REDIS_URL'), {
           maxRetriesPerRequest: REDIS_OPTIONS.maxRetriesPerRequest,
-          connectTimeout: REDIS_OPTIONS.connectTimeoutMs
+          connectTimeout: REDIS_OPTIONS.connectTimeoutMs,
+          commandTimeout: REDIS_OPTIONS.commandTimeoutMs
         })
     }
   ],

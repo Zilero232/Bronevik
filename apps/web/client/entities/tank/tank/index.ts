@@ -38,6 +38,8 @@ export { specKeyOfPath, specPath, specsOfFlat, specsOfStats } from './lib/vehicl
 export { useSpecFormat } from './model/hooks';
 export type { TankSpecGroup, TankSpecMeta, TankSpecUnit } from './model/tank-specs.types';
 export type { TankIdentityData, TankSpecs } from './model/tank.types';
+export { CatalogPending } from './ui/CatalogPending';
+export type { CatalogPendingProps } from './ui/CatalogPending';
 export { LearningBadge } from './ui/LearningBadge';
 export type { LearningBadgeProps } from './ui/LearningBadge';
 export { SweatBadge } from './ui/SweatBadge';

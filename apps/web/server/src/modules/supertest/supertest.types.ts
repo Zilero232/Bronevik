@@ -38,9 +38,4 @@ export type StoreAnnouncementInput = {
   now: Date;
 };
 
-export type DevSeedInput = {
-  apiUrl: string;
-  now: Date;
-};
-
 export type ChangeRowInput = Omit<Prisma.SupertestChangeCreateManyInput, 'announcementId' | 'position'>;

@@ -1,6 +1,7 @@
-import { Lock, PlayCircle, ShieldCheck } from 'lucide-react';
+import { Gauge, Lock, PlayCircle, ShieldCheck } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 
+import { PERF } from '@/entities/catalog';
 import { ComponentToggle } from '@/features/component/component-toggle';
 import { Badge, ExternalLink } from '@/ui-kit';
 
@@ -25,6 +26,11 @@ export const ComponentCard = ({ clientPath, isInstalled, row }: ComponentCardPro
               {t('required')}
             </Badge>
           )}
+          {row.perf && (
+            <Badge icon={<Gauge aria-hidden />} tone={PERF.tones[row.perf]}>
+              {t(`perf.${row.perf}`)}
+            </Badge>
+          )}
         </header>
         <p className={s.description}>{row.description}</p>
         {row.fairPlay && (
@@ -43,6 +49,11 @@ export const ComponentCard = ({ clientPath, isInstalled, row }: ComponentCardPro
               <PlayCircle aria-hidden />
               {t('video')}
             </ExternalLink>
+          )}
+          {row.audioSrc && (
+            <audio controls aria-label={t('listen', { title: row.title })} className={s.audio} preload='none' src={row.audioSrc}>
+              <track kind='captions' />
+            </audio>
           )}
         </footer>
       </div>

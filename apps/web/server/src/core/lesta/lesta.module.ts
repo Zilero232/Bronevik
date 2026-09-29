@@ -3,7 +3,7 @@ import { Redis } from 'ioredis';
 
 import type { LestaClients, LestaOutcomeRecorder } from './lesta.types';
 
-import { AppConfigService, isLestaMock, LESTA, lestaMockBaseUrl } from '../../config';
+import { AppConfigService, LESTA } from '../../config';
 import { REDIS } from '../redis';
 import { LESTA_CLIENT, LESTA_CLIENTS, LESTA_OUTCOME_RECORDER } from './lesta.constants';
 import { createLestaClients } from './lesta.factory';
@@ -17,7 +17,6 @@ import { createLestaClients } from './lesta.factory';
       useFactory: (config: AppConfigService, redis: Redis, recorder?: LestaOutcomeRecorder): LestaClients =>
         createLestaClients({
           applicationId: config.get('LESTA_APPLICATION_ID'),
-          baseUrl: isLestaMock({ LESTA_MOCK: config.get('LESTA_MOCK') }) ? lestaMockBaseUrl(config.get('API_URL')) : undefined,
           redis,
           budget: { requestsPerSecond: config.get('LESTA_RPS'), reserve: LESTA.tierAReserve, egress: config.get('LESTA_EGRESS_IP') || undefined },
           onOutcome: recorder ? (outcome) => recorder.recordLesta({ outcome }) : undefined

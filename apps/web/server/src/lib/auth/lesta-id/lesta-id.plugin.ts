@@ -19,7 +19,7 @@ const stateSchema = z.object({
   linkUserId: z.string().nullable()
 });
 
-export const lestaId = ({ lesta, store, apiUrl, webUrl }: LestaIdOptions) =>
+export const lestaId = ({ isConnected, lesta, store, apiUrl, webUrl }: LestaIdOptions) =>
   ({
     id: 'lesta-id',
     endpoints: {
@@ -30,6 +30,12 @@ export const lestaId = ({ lesta, store, apiUrl, webUrl }: LestaIdOptions) =>
           query: z.object({ callbackURL: z.string().optional(), errorCallbackURL: z.string().optional() }).optional()
         },
         async (ctx) => {
+          if (!isConnected) {
+            const requested = ctx.query?.errorCallbackURL ?? ctx.query?.callbackURL;
+
+            throw ctx.redirect(withError({ url: safeCallbackUrl({ requested, webUrl }), code: LESTA_ID_ERROR.notConnected }));
+          }
+
           const session = await getSessionFromCtx(ctx).catch(() => null);
           const state = randomBytes(LESTA_ID.stateBytes).toString('base64url');
           const value: LestaIdState = {

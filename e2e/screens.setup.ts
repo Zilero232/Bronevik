@@ -1,14 +1,11 @@
 import { test as setup } from '@playwright/test';
-import { rmSync } from 'node:fs';
+import { copyFileSync, existsSync, rmSync } from 'node:fs';
 
 import { discoverPublicParams, discoverSignedInParams } from './support/screens/discover';
 import { saveParams } from './support/screens/report';
 import { SCREENS_ENV, SCREENS_PATHS } from './support/screens/screens.constants';
 
-/** The dev Lesta mock serves its account picker here when no Lesta key is configured. */
-const MOCK_LOGIN_PATH = '/dev/lesta/wot/auth/login/';
-
-setup('discover params and sign in through the Lesta mock', async ({ browser, request }) => {
+setup('discover params and load a saved signed-in session', async ({ browser, request }) => {
   setup.setTimeout(120_000);
   rmSync(SCREENS_PATHS.out, { recursive: true, force: true });
 
@@ -16,32 +13,25 @@ setup('discover params and sign in through the Lesta mock', async ({ browser, re
 
   saveParams(publicParams);
 
-  const context = await browser.newContext({ baseURL: SCREENS_ENV.baseUrl });
-  const page = await context.newPage();
-  const callbackURL = `${SCREENS_ENV.baseUrl}/me`;
+  if (!SCREENS_ENV.authState || !existsSync(SCREENS_ENV.authState)) {
+    console.warn('[screens] no E2E_AUTH_STATE storage state — the signed-in pass is skipped');
+
+    return;
+  }
+
+  const context = await browser.newContext({ baseURL: SCREENS_ENV.baseUrl, storageState: SCREENS_ENV.authState });
 
   try {
-    await page.goto(`${SCREENS_ENV.apiUrl}/auth/lesta/start?callbackURL=${encodeURIComponent(callbackURL)}`);
-
-    if (!page.url().includes(MOCK_LOGIN_PATH)) {
-      console.warn(`[screens] no Lesta mock picker (landed on ${page.url()}) — the signed-in pass is skipped`);
-
-      return;
-    }
-
-    await page.locator('table tbody a').first().click();
-    await page.waitForURL((url) => url.origin === new URL(SCREENS_ENV.baseUrl).origin, { timeout: 60_000 });
-
-    const session = await page.request.get(`${SCREENS_ENV.apiUrl}/me`, { failOnStatusCode: false });
+    const session = await context.request.get(`${SCREENS_ENV.apiUrl}/me`, { failOnStatusCode: false });
 
     if (!session.ok()) {
-      console.warn(`[screens] mock sign-in did not produce a session (GET /me → ${session.status()}) — the signed-in pass is skipped`);
+      console.warn(`[screens] the saved session is not signed in (GET /me → ${session.status()}) — the signed-in pass is skipped`);
 
       return;
     }
 
-    saveParams({ ...publicParams, ...(await discoverSignedInParams(page.request)) });
-    await context.storageState({ path: SCREENS_PATHS.auth });
+    saveParams({ ...publicParams, ...(await discoverSignedInParams(context.request)) });
+    copyFileSync(SCREENS_ENV.authState, SCREENS_PATHS.auth);
   } finally {
     await context.close();
   }

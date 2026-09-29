@@ -12,6 +12,7 @@
     "online": "Server online",
     "activeEstimate": "Active, last hour",
     "estimateHint": "Our estimate from tracked players",
+    "empty": "Server figures will appear once we start collecting player statistics",
     "version": "Game version",
     "pulse": "Server pulse"
   },

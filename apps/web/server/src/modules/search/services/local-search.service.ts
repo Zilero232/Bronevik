@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 
 import type { ClanMatchRow, MapMatchRow, PlayerMatchRow, TankMatchRow, TermsInput } from '../search.types';
 
+import { escapeLike } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { escapeLike } from '../lib';
 
 @Injectable()
 export class LocalSearchService {

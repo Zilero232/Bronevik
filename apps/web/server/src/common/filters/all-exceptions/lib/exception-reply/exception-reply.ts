@@ -5,7 +5,7 @@ import { isNumber, isObjectType, isPlainObject, isString } from 'remeda';
 import type { ModErrorCode } from '../../../../exceptions';
 import type { BodyWithFieldInput } from './exception-reply.types';
 
-import { LestaApiError, LestaHttpError, LestaNetworkError } from '../../../../../lib/lesta';
+import { LestaApiError, LestaHttpError, LestaNetworkError, LestaQueueFullError } from '../../../../../lib/lesta';
 import { STATUS_TO_CODE, STATUS_TO_MOD_ERROR } from '../../all-exceptions.constants';
 
 export const codeForStatus = (status: number): ApiErrorCode => STATUS_TO_CODE[status] ?? 'INTERNAL_ERROR';
@@ -13,7 +13,7 @@ export const codeForStatus = (status: number): ApiErrorCode => STATUS_TO_CODE[st
 export const modErrorForStatus = (status: number): ModErrorCode => STATUS_TO_MOD_ERROR[status] ?? 'server_error';
 
 export const isLestaError = (error: unknown): boolean =>
-  error instanceof LestaApiError || error instanceof LestaHttpError || error instanceof LestaNetworkError;
+  error instanceof LestaApiError || error instanceof LestaHttpError || error instanceof LestaNetworkError || error instanceof LestaQueueFullError;
 
 export const middlewareStatus = (error: unknown): number | null => {
   if (!isObjectType(error)) {

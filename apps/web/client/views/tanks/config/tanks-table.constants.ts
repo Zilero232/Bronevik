@@ -1,6 +1,7 @@
 export const TANKS_TABLE = {
   numeric: { align: 'end', isNumeric: true },
   rankWidth: 48,
+  pinWidth: 40,
   tankWidth: '28%',
   optionalColumns: ['tier', 'winRateDiff', 'avgFrags', 'avgSpotted', 'survivalRate', 'players', 'avgXp', 'avgBlocked', 'accuracy'],
   columnLabels: {

@@ -66,7 +66,8 @@ export const QUERY_KEYS = {
   pulse: ['pulse'] as const,
   reference: {
     version: ['reference', 'version'] as const,
-    servers: ['reference', 'servers'] as const
+    servers: ['reference', 'servers'] as const,
+    health: ['reference', 'health'] as const
   },
   events: {
     calendar: ['events', 'calendar'] as const

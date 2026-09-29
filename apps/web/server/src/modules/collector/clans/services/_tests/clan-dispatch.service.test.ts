@@ -1,21 +1,24 @@
 import type { Queue } from 'bullmq';
 
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { ClanWorkspace, Follow, Player } from '../../../../../../generated';
+import type { ClanWorkspace } from '../../../../../../generated';
 import type { PrismaService } from '../../../../../core';
 
 import { ClanDispatchService } from '../clan-dispatch.service';
+
+type FollowGroup = Awaited<ReturnType<PrismaService['follow']['groupBy']>>[number];
+type ClanGroup = Awaited<ReturnType<PrismaService['player']['groupBy']>>[number];
 
 const createDispatch = () => {
   const prisma = mockDeep<PrismaService>();
   const queue = mock<Queue>();
 
   prisma.$transaction.mockResolvedValue([]);
-  prisma.follow.findMany.mockResolvedValue([mock<Follow>({ targetId: 10n }), mock<Follow>({ targetId: 10n })]);
+  vi.mocked(prisma.follow.groupBy).mockResolvedValue([mock<FollowGroup>({ targetId: 10n })]);
   prisma.clanWorkspace.findMany.mockResolvedValue([mock<ClanWorkspace>({ clanId: 20n })]);
-  prisma.player.findMany.mockResolvedValue([mock<Player>({ clanId: 30n }), mock<Player>({ clanId: null })]);
+  vi.mocked(prisma.player.groupBy).mockResolvedValue([mock<ClanGroup>({ clanId: 30n }), mock<ClanGroup>({ clanId: null })]);
 
   return { prisma, queue, dispatch: new ClanDispatchService(prisma, queue) };
 };

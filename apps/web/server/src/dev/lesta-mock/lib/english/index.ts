@@ -1,1 +1,0 @@
-export { englishName } from './english';

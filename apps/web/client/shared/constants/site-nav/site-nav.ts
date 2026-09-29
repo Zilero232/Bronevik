@@ -15,6 +15,7 @@ import {
   FlaskConical,
   GitCompareArrows,
   GraduationCap,
+  HeartPulse,
   LayoutGrid,
   ListChecks,
   MapIcon,
@@ -24,6 +25,7 @@ import {
   Palette,
   Scale,
   ShoppingCart,
+  Sigma,
   Swords,
   Ticket,
   Trophy,
@@ -115,6 +117,8 @@ export const SITE_FOOTER_GROUPS = [
       { key: 'forStreamers', href: ROUTES.streamers.forStreamers, icon: Clapperboard },
       { key: 'developers', href: ROUTES.developers, icon: Code2 },
       { key: 'pulse', href: ROUTES.pulse, icon: Activity },
+      { key: 'ratings', href: ROUTES.ratings, icon: Sigma },
+      { key: 'status', href: ROUTES.status, icon: HeartPulse },
       { key: 'design', href: ROUTES.design, icon: Palette }
     ]
   }

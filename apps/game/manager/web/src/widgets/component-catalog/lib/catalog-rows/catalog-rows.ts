@@ -1,3 +1,4 @@
+import { PERF } from '@/entities/catalog';
 import { pickLocalized } from '@/shared/lib';
 
 import type { BuildCatalogRowsInput, CatalogRow, FilterCatalogRowsInput, WithDependenciesInput } from './catalog-rows.types';
@@ -44,16 +45,19 @@ export const buildCatalogRows = ({ catalog, installation, locale }: BuildCatalog
     dependencies: component.dependencies.map((id) => titles.get(id) ?? id),
     libraries: librariesOf(component.id),
     image: component.preview.image,
-    video: component.preview.video
+    video: component.preview.video,
+    audio: component.preview.audio,
+    perf: component.perf
   }));
 };
 
-export const filterCatalogRows = ({ rows, category, query }: FilterCatalogRowsInput): CatalogRow[] => {
+export const filterCatalogRows = ({ rows, category, query, lightOnly }: FilterCatalogRowsInput): CatalogRow[] => {
   const needle = query.trim().toLocaleLowerCase();
 
   return rows.filter(
     (row) =>
       (category === COMPONENT_CATALOG.allCategories || row.category === category) &&
+      (!lightOnly || row.perf === PERF.light) &&
       (needle === '' || `${row.title} ${row.description}`.toLocaleLowerCase().includes(needle))
   );
 };

@@ -95,7 +95,7 @@ fn fetched(id: &str, file: &str) -> FetchedPackage {
         package: ReleasePackage {
             id: id.to_owned(),
             file: file.to_owned(),
-            url: format!("https://cdn.triotmetki.ru/{file}"),
+            url: format!("https://triotmetki.ru/downloads/modpack/0.2.0/{file}"),
             sha256: sha256_hex(file.as_bytes()),
             size: file.len() as u64,
         },

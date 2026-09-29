@@ -9,6 +9,7 @@ import { ZodSerializationException, ZodValidationException } from 'nestjs-zod';
 import type { ReplyInput } from './all-exceptions.types';
 
 import { isPrismaRequestError } from '../../../core';
+import { LestaNotConfiguredError } from '../../../lib/lesta';
 import { errorMessage } from '../../lib';
 import { MOD_CONTRACT_PATHS, MOD_REPLY, PRISMA_TO_HTTP } from './all-exceptions.constants';
 import { bodyWithField, codeForStatus, isLestaError, middlewareStatus, modErrorForStatus, retryAfterSeconds, zodIssues } from './lib';
@@ -70,6 +71,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
         modBody !== null && modErrorCodeSchema.safeParse(modBody.error).success ? { ...modBody, code: codeForStatus(status) } : undefined;
 
       response.status(status).json(bodyWithField({ body, field: 'code' }) ?? fallback ?? { error: exception.message, code: codeForStatus(status) });
+
+      return;
+    }
+
+    if (exception instanceof LestaNotConfiguredError) {
+      response.status(HttpStatus.NOT_FOUND).json({ error: 'Lesta API is not connected', code: 'NOT_FOUND' });
 
       return;
     }

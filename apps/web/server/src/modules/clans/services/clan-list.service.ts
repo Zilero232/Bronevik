@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 import type { ClanListRow } from '../clans.types';
 
 import { Prisma } from '../../../../generated';
-import { toNumber } from '../../../common/lib';
+import { escapeLike, toNumber } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { CLAN_LIST_SORT } from '../config';
 import { toClanListItem } from '../mappers';
@@ -15,7 +15,7 @@ export class ClanListService {
   constructor(private readonly prisma: PrismaService) {}
 
   async list(query: ClanListQuery): Promise<ClanListPage> {
-    const pattern = query.search ? `%${query.search.replaceAll(/[%_\\]/g, (char) => `\\${char}`)}%` : null;
+    const pattern = query.search ? `%${escapeLike(query.search)}%` : null;
     const sort = Prisma.raw(CLAN_LIST_SORT[query.sort ?? 'members']);
     const order = Prisma.raw(query.order === 'asc' ? 'ASC' : 'DESC');
 

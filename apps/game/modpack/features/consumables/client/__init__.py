@@ -1,15 +1,17 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.client.battle import call, shared
+from ....core.client.game import client_attr
 from ....core.client.hud.panel import BattlePanel
 from ....core.client.timer import Ticker
 from ....core.log import safe
 from ....core.shells import shell_code
 from ..i18n import STRINGS
-from ..model import Loadout, format_panel
+from ..model import Loadout, format_panel, shot_speed
 from ..model.constants import PREVIEW_SIZE, TICK_S
 from ..model.preview import preview_text
 from ..settings import PANEL_ID, SCHEMA, SWITCH
+from .constants import PROJECTILE_SPEED_FACTOR, VEHICLES_CACHE, VEHICLES_MODULE
 
 
 def equipments():
@@ -18,6 +20,20 @@ def equipments():
 
 def ammo():
     return shared('ammo')
+
+
+def projectile_speed_factor():
+    cache = client_attr(VEHICLES_MODULE, VEHICLES_CACHE)
+    try:
+        return cache.commonConfig['miscParams'][PROJECTILE_SPEED_FACTOR]
+    except Exception:
+        return None
+
+
+def shell_stats(descriptor, gun_settings, int_cd):
+    """(penetration, damage, velocity) of an own shell as the vanilla shell tooltip reads them (RU 1.45 source)."""
+    return (call(gun_settings, 'getPiercingPower', None, int_cd), getattr(descriptor, 'avgDamage', None),
+            shot_speed(call(gun_settings, 'getShotSpeed', None, int_cd), projectile_speed_factor()))
 
 
 def item_name(item):
@@ -38,12 +54,15 @@ class ConsumablesPanel(BattlePanel):
         self.loadout = Loadout()
         for int_cd, item in call(equipments(), 'getOrderedEquipmentsLayout', []) or []:
             self._set_item(int_cd, item)
-        for int_cd, descriptor, quantity, _, _ in call(ammo(), 'getOrderedShellsLayout', []) or []:
+        for int_cd, descriptor, quantity, _, gun_settings in call(ammo(), 'getOrderedShellsLayout', []) or []:
             self.loadout.set_shell(int_cd, shell_code(getattr(descriptor, 'kind', None)), quantity)
+            self.loadout.set_stats(int_cd, *shell_stats(descriptor, gun_settings, int_cd))
+        self.loadout.set_current(call(ammo(), 'getCurrentShellCD'))
         self.hooks.add(equipments, 'onEquipmentAdded', self._on_equipment)
         self.hooks.add(equipments, 'onEquipmentUpdated', self._on_equipment)
         self.hooks.add(ammo, 'onShellsAdded', self._on_shells_added)
         self.hooks.add(ammo, 'onShellsUpdated', self._on_shells_updated)
+        self.hooks.add(ammo, 'onCurrentShellChanged', self._on_current_shell)
         self.ticker.start()
         self.render()
 
@@ -63,7 +82,15 @@ class ConsumablesPanel(BattlePanel):
             self.render()
 
     def _on_shells_added(self, int_cd, descriptor, quantity, *args):
-        if self.loadout is not None and self.loadout.set_shell(int_cd, shell_code(getattr(descriptor, 'kind', None)), quantity):
+        if self.loadout is None:
+            return
+        changed = self.loadout.set_shell(int_cd, shell_code(getattr(descriptor, 'kind', None)), quantity)
+        gun_settings = args[1] if len(args) > 1 else call(ammo(), 'getGunSettings')
+        if self.loadout.set_stats(int_cd, *shell_stats(descriptor, gun_settings, int_cd)) or changed:
+            self.render()
+
+    def _on_current_shell(self, int_cd, *args):
+        if self.loadout is not None and self.loadout.set_current(int_cd):
             self.render()
 
     def _on_shells_updated(self, int_cd, quantity, *args):

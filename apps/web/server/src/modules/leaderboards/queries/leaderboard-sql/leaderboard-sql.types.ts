@@ -14,3 +14,12 @@ export type PlayersSqlInput = LeaderboardSqlInput & {
 export type RisingStarsSqlInput = LeaderboardSqlInput & {
   period: RatingPeriod;
 };
+
+export type LeaderboardSql = {
+  page: Prisma.Sql;
+  total: Prisma.Sql;
+};
+
+export type LeaderboardTotalRow = {
+  total: bigint;
+};

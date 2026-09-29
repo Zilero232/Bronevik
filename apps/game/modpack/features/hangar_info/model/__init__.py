@@ -6,6 +6,7 @@ from ....core.compat import is_int, is_number, to_text
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, COLOR_UP, font, format_moment, format_number
 from ....core.templates import render
 from .constants import PING_BAD_COLOR, PING_GOOD_COLOR, PING_LOW_MS, PING_NORM_COLOR, PING_NORM_MS
+from .site import armor_actions, tank_slug  # noqa: F401
 
 
 def valid_ping(value):

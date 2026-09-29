@@ -54,13 +54,17 @@ export class DonationListenerService implements OnApplicationBootstrap, OnModule
     this.auth = this.sdk.createAuthProvider({ clientId, clientSecret, scopes: [...DONATION_ALERTS.scopes] });
 
     this.auth.onRefresh((externalId, token) => {
-      void this.store.storeToken({
-        provider: 'donationAlerts',
-        externalId: String(externalId),
-        accessToken: token.accessToken,
-        refreshToken: token.refreshToken,
-        expiresAt: getTokenExpiryDate(token)
-      });
+      void this.store
+        .storeToken({
+          provider: 'donationAlerts',
+          externalId: String(externalId),
+          accessToken: token.accessToken,
+          refreshToken: token.refreshToken,
+          expiresAt: getTokenExpiryDate(token)
+        })
+        .catch((error: unknown) => {
+          this.logger.warn(`DonationAlerts token of ${externalId} was not stored: ${errorMessage(error)}`);
+        });
     });
 
     this.events = this.sdk.createEventsClient(this.auth);

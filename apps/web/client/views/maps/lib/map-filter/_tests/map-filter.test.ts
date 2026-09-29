@@ -4,7 +4,8 @@ import { describe, expect, it } from 'vitest';
 
 import { MAP_MODE_PREFIXES } from '@/entities/map/map';
 
-import { filterMaps, normalizeMapName } from '../map-filter';
+import { MAP_SIZE_BOUNDS } from '../../../config';
+import { filterMaps, mapSizeClass, normalizeMapName } from '../map-filter';
 
 const map = (arenaId: string, name: string, camouflage: string | null, modes: string[]): MapSummary => ({
   arenaId,
@@ -66,5 +67,28 @@ describe('filterMaps', () => {
 describe('normalizeMapName', () => {
   it('treats ё and е as the same letter', () => {
     expect(normalizeMapName('Берёзовая')).toBe(normalizeMapName('березовая'));
+  });
+});
+
+describe('mapSizeClass', () => {
+  it('puts the bounds themselves into the outer classes', () => {
+    expect(mapSizeClass(MAP_SIZE_BOUNDS.smallMax)).toBe('small');
+    expect(mapSizeClass(MAP_SIZE_BOUNDS.largeMin)).toBe('large');
+    expect(mapSizeClass(MAP_SIZE_BOUNDS.smallMax + 1)).toBe('medium');
+  });
+
+  it('leaves a map of unknown size unclassified', () => {
+    expect(mapSizeClass(null)).toBeNull();
+  });
+});
+
+describe('filterMaps by size and pins', () => {
+  it('drops maps outside the chosen size classes', () => {
+    expect(filterMaps({ ...ALL, sizes: ['large'] })).toEqual([]);
+    expect(filterMaps({ ...ALL, sizes: ['medium'] })).toHaveLength(MAPS.length);
+  });
+
+  it('keeps only pinned maps when the pin filter is on', () => {
+    expect(ids(filterMaps({ ...ALL, pinnedIds: ['28_desert'] }))).toEqual(['28_desert']);
   });
 });

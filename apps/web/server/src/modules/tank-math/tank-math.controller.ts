@@ -1,10 +1,11 @@
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { CacheTTL } from '@nestjs/cache-manager';
 import { Controller, Get, Param, UseInterceptors } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
+import { ViewerCacheInterceptor } from '../../common/interceptors';
 import { TankDetailService } from '../tanks';
 import { TankMathDto, TankMathParamsDto } from './dto';
 import { TankMathService } from './services';
@@ -19,7 +20,7 @@ export class TankMathController {
   ) {}
 
   @Get(':tankId')
-  @UseInterceptors(CacheInterceptor)
+  @UseInterceptors(ViewerCacheInterceptor)
   @CacheTTL(CACHE_TTL.reference)
   @ZodResponse({ type: TankMathDto })
   async get(@Param() { tankId }: TankMathParamsDto) {

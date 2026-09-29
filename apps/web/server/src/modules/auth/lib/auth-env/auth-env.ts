@@ -7,6 +7,7 @@ export const authEnv = (config: AppConfigService): AuthEnv => ({
   CORS_ORIGINS: config.get('CORS_ORIGINS'),
   DISCORD_APPLICATION_ID: config.get('DISCORD_APPLICATION_ID'),
   DISCORD_CLIENT_SECRET: config.get('DISCORD_CLIENT_SECRET'),
+  LESTA_APPLICATION_ID: config.get('LESTA_APPLICATION_ID'),
   NODE_ENV: config.get('NODE_ENV'),
   TELEGRAM_BOT_TOKEN: config.get('TELEGRAM_BOT_TOKEN'),
   TELEGRAM_BOT_USERNAME: config.get('TELEGRAM_BOT_USERNAME'),

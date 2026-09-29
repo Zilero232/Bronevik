@@ -29,5 +29,19 @@ export const COMMANDS = {
   installModpack: 'install_modpack',
   uninstallModpack: 'uninstall_modpack',
   readInstallerProfile: 'read_installer_profile',
-  takeDeepLink: 'take_deep_link'
+  takeDeepLink: 'take_deep_link',
+  getConflicts: 'get_conflicts',
+  restoreMissing: 'restore_missing',
+  listSets: 'list_sets',
+  saveSet: 'save_set',
+  renameSet: 'rename_set',
+  duplicateSet: 'duplicate_set',
+  deleteSet: 'delete_set',
+  exportSet: 'export_set',
+  importSet: 'import_set',
+  exportSetFile: 'export_set_file',
+  exportSetsLibrary: 'export_sets_library',
+  importSetFile: 'import_set_file',
+  scanCache: 'scan_cache',
+  clearCache: 'clear_cache'
 } as const;

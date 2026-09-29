@@ -1,16 +1,17 @@
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { CacheTTL } from '@nestjs/cache-manager';
 import { Controller, Get, Param, Query, UseInterceptors } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
+import { ViewerCacheInterceptor } from '../../common/interceptors';
 import { MapDetailDto, MapListDto, MapParamsDto, MapsQueryDto } from './dto';
 import { MapsService } from './services';
 
 @ApiTags('maps')
 @AllowAnonymous()
-@UseInterceptors(CacheInterceptor)
+@UseInterceptors(ViewerCacheInterceptor)
 @Controller('maps')
 export class MapsController {
   constructor(private readonly maps: MapsService) {}

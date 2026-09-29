@@ -21,7 +21,7 @@
   },
   "tanks": {
     "title": "Tank levels",
-    "description": "XP from your battles on a tank, from collector and mod data — up to level 25.",
+    "description": "XP from your battles on a tank, from Mir Tankov and mod data — up to level 25.",
     "empty": "No levels yet — they appear after battles with an active Plus.",
     "level": "Lv. {level}",
     "xp": "{xp} / {next}",

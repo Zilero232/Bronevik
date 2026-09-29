@@ -38,12 +38,13 @@ def _component(package, catalog, platform, packages_dir, warnings):
     if entry is None:
         warnings.append('package %s has no catalog entry: shipped unticked in category %s' % (package.key, catalog.fallback_category))
         title, description, fair_play = _fallback(package, catalog)
-        category, presets, required, preview, extra = catalog.fallback_category, (), False, Preview(), ()
+        category, presets, required, preview, extra, perf = catalog.fallback_category, (), False, Preview(), (), None
     else:
         title, description, fair_play = entry.title, entry.description, entry.fair_play
-        category, presets, required, extra = entry.category, entry.presets, entry.required, entry.dependencies
+        category, presets, required, extra, perf = entry.category, entry.presets, entry.required, entry.dependencies, entry.perf
         image = '%s/%s.png' % (PREVIEWS_DIR, package.key) if entry.preview.image else None
-        preview = Preview(image, entry.preview.video)
+        audio = audio_path(package.key, entry.preview.audio) if entry.preview.audio else None
+        preview = Preview(image, entry.preview.video, audio)
     dependencies = []
     for dependency in [depend.key for depend in package.depends] + list(extra):
         if dependency not in dependencies:
@@ -72,7 +73,13 @@ def _component(package, catalog, platform, packages_dir, warnings):
         catalogued=entry is not None,
         sha256=sha256,
         size=size,
+        perf=perf,
     )
+
+
+def audio_path(key, source):
+    """previews/<id>.<ext>: the component's sound, copied next to components.json (setupkit.audio)."""
+    return '%s/%s%s' % (PREVIEWS_DIR, key, os.path.splitext(source)[1].lower())
 
 
 def build_manifest(packages, catalog, platform='lesta', packages_dir=None, strict=False):
@@ -109,8 +116,20 @@ def build_manifest(packages, catalog, platform='lesta', packages_dir=None, stric
         components=tuple(components),
         owned_patterns=catalog.owned_patterns,
         dependencies=dependencies,
+        owned_paths=catalog.owned_paths,
+        conflicts=_conflicts(catalog, keys),
     )
     return manifest, warnings
+
+
+def _conflicts(catalog, keys):
+    """The conflict rules, each with only the components this build ships; a rule left with none is dropped."""
+    rules = []
+    for rule in catalog.conflicts:
+        components = tuple(component_id for component_id in rule.components if component_id in keys)
+        if components:
+            rules.append(dataclasses.replace(rule, components=components))
+    return tuple(rules)
 
 
 def _dependencies(catalog, keys, warnings):

@@ -1,10 +1,11 @@
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { CacheTTL } from '@nestjs/cache-manager';
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query, UseInterceptors } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
+import { ViewerCacheInterceptor } from '../../common/interceptors';
 import {
   MoeHistoryBatchDto,
   MoeHistoryBatchQueryDto,
@@ -28,7 +29,7 @@ export class MarksController {
   ) {}
 
   @Get()
-  @UseInterceptors(CacheInterceptor)
+  @UseInterceptors(ViewerCacheInterceptor)
   @CacheTTL(CACHE_TTL.server)
   @ZodResponse({ type: MoePageDto })
   list(@Query() query: MoeQueryDto) {
@@ -36,7 +37,7 @@ export class MarksController {
   }
 
   @Get('history')
-  @UseInterceptors(CacheInterceptor)
+  @UseInterceptors(ViewerCacheInterceptor)
   @CacheTTL(CACHE_TTL.server)
   @ZodResponse({ type: MoeHistoryBatchDto })
   historyBatch(@Query() query: MoeHistoryBatchQueryDto) {
@@ -44,7 +45,7 @@ export class MarksController {
   }
 
   @Get(':tankId/history')
-  @UseInterceptors(CacheInterceptor)
+  @UseInterceptors(ViewerCacheInterceptor)
   @CacheTTL(CACHE_TTL.server)
   @ZodResponse({ type: MoeHistoryDto })
   history(@Param() { tankId }: MoeHistoryParamsDto, @Query() filters: MoeHistoryFiltersDto) {

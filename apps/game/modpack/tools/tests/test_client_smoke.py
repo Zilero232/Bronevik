@@ -19,7 +19,7 @@ REGISTERED = tuple(_support.feature_ids()) + ('ui',)
 ENTRY_MODULES = ('mod_otmetki',) + tuple('mod_otmetki_' + key for key in REGISTERED)
 STUBBED = ('gui', 'BigWorld', 'BattleReplay', 'CurrentVehicle', 'PlayerEvents', 'BattleFeedbackCommon', 'dossiers2', 'constants', 'SoundGroups',
            'messenger', 'notification', 'account_helpers', 'helpers', 'skeletons', 'frameworks', 'openwg_gameface', 'items', 'WWISE', 'vehicle_outfit',
-           'Keys', 'Avatar')
+           'Keys', 'Avatar', 'Vehicle', 'Math')
 
 
 class Event(object):
@@ -56,6 +56,13 @@ class Player(object):
         self.arenaUniqueID = arena_id
         self.guiSessionProvider = None
         self.name = 'player_%s' % account_id
+        self.models = []
+
+    def addModel(self, model):
+        self.models.append(model)
+
+    def delModel(self, model):
+        self.models.remove(model)
 
 
 class BattleResultsCache(object):
@@ -247,14 +254,17 @@ class Ammo(object):
     # gun settings' clip, the current shell and the reload snapshot.
 
     def __init__(self):
-        self.gun = type('GunSettings', (object,), {'clip': type('Clip', (object,), {'size': 4, 'interval': 2.0})()})()
+        # RU 1.45 ammo_ctrl.GunSettings: getPiercingPower and getShotSpeed per shell, what the vanilla shell tooltip reads.
+        self.gun = type('GunSettings', (object,), {'clip': type('Clip', (object,), {'size': 4, 'interval': 2.0})(),
+                                                   'getPiercingPower': lambda gun, int_cd: (258, 250) if int_cd == 11 else (60, 60),
+                                                   'getShotSpeed': lambda gun, int_cd: 800.0})()
         self.shells = {11: (32, 3), 12: (6, 0)}
         for name in ('onGunReloadTimeSet', 'onGunSettingsSet', 'onShellsAdded', 'onShellsUpdated', 'onCurrentShellChanged'):
             setattr(self, name, Event())
 
     def getOrderedShellsLayout(self):
         kinds = {11: 'ARMOR_PIERCING', 12: 'HIGH_EXPLOSIVE'}
-        return [(int_cd, type('Shell', (object,), {'kind': kinds[int_cd]})(), quantity, in_clip, self.gun)
+        return [(int_cd, type('Shell', (object,), {'kind': kinds[int_cd], 'avgDamage': 390 if int_cd == 11 else 480})(), quantity, in_clip, self.gun)
                 for int_cd, (quantity, in_clip) in sorted(self.shells.items())]
 
     def getGunSettings(self):
@@ -582,7 +592,7 @@ class ClientSmokeTest(unittest.TestCase):
 
         app.bus.emit('hud_describe', collect)
         self.assertEqual(sorted(described), ['battle_clock', 'battle_efficiency', 'battle_loadout', 'consumables', 'crosshair', 'damage_log',
-                                             'death_card', 'hangar_marks', 'hit_log', 'last_hit', 'main_gun', 'marks_panel', 'personal_best',
+                                             'death_card', 'gun_arc', 'hangar_marks', 'hit_log', 'last_hit', 'main_gun', 'marks_panel', 'personal_best',
                                              'personal_missions', 'received_hits', 'reload_timer', 'session_goals', 'sixth_sense', 'team_hp'])
         self.assertFalse(described['team_hp'][2])
         self.assertTrue(described['damage_log'][2])
@@ -590,7 +600,7 @@ class ClientSmokeTest(unittest.TestCase):
         app.bus.emit('hud_edit', True)
         panels = self.hud_components()
         self.assertEqual(sorted(panels), ['battle_clock', 'battle_efficiency', 'battle_loadout', 'consumables', 'damage_log', 'death_card',
-                                          'hangar_marks', 'hit_log', 'last_hit', 'main_gun', 'marks_panel', 'personal_best', 'personal_missions',
+                                          'gun_arc', 'hangar_marks', 'hit_log', 'last_hit', 'main_gun', 'marks_panel', 'personal_best', 'personal_missions',
                                           'received_hits', 'reload_timer', 'session_goals', 'sixth_sense'])
         self.assertTrue(all(props['lobby'] and not props['battle'] for props in panels.values()))
         self.assertIn('Pz. IV', panels['hit_log']['text'])
@@ -854,6 +864,140 @@ class ClientSmokeTest(unittest.TestCase):
         self.assertIn('death_card', self.hud_components())
         self.events.onAvatarBecomeNonPlayer()
         self.assertEqual(self.hud_components(), {})
+
+    def install_round_five_stubs(self):
+        test = self
+        self.key_down = Event()
+        self.shots = []
+        module('Keys', KEY_B=48, KEY_LCONTROL=29, KEY_LSHIFT=42)
+        sys.modules['gui'].InputHandler = type('InputHandler', (object,), {'g_instance': type('Input', (object,), {'onKeyDown': self.key_down})()})
+        big_world = sys.modules['BigWorld']
+        big_world.isKeyDown = lambda key: True
+
+        class Area(object):
+            # RU 1.45 BigWorld.PyTerrainSelectedArea as CombatSelectedArea sets it up.
+
+            def setup(self, visual, size, height, color):
+                self.args = (visual, size, height, color)
+
+            def enableAccurateCollision(self, value):
+                pass
+
+            def setCutOffDistance(self, value):
+                pass
+
+        class Node(object):
+
+            def __init__(self):
+                self.items = []
+
+            def attach(self, item):
+                self.items.append(item)
+
+        class Model(object):
+
+            def __init__(self, path):
+                self.root = Node()
+                self.motors = []
+
+            def node(self, name):
+                return self.root
+
+            def addMotor(self, motor):
+                self.motors.append(motor)
+
+        class Vehicle(object):
+            # RU 1.45 Vehicle.Vehicle: the client draws the effects of every shot on a vehicle through showDamageFromShot.
+
+            def __init__(self, own):
+                self.isPlayerVehicle = own
+                self.matrix = 'own-matrix' if own else 'other-matrix'
+
+            def showDamageFromShot(self, attacker_id, points, effects_index, damage_factor, last_material_is_shield):
+                test.shots.append(attacker_id)
+
+        big_world.Model = Model
+        big_world.PyTerrainSelectedArea = Area
+        big_world.Servo = lambda matrix: ('servo', matrix)
+        self.own_vehicle = Vehicle(True)
+        big_world.entity = lambda vehicle_id: self.own_vehicle if vehicle_id == OWN_VEHICLE else None
+        module('Math', Vector2=lambda x, y: (x, y))
+        module('Vehicle', Vehicle=Vehicle)
+        config = {'miscParams': {'projectileSpeedFactor': 0.8}}
+        package('items', []).vehicles = module('items.vehicles', g_cache=type('Cache', (object,), {'commonConfig': config})())
+        return Vehicle
+
+    def enter_battle_with_gun(self, yaw_limits):
+        session = BattleSession()
+        self.player = Player(ACCOUNT, 4242)
+        self.player.vehicleTypeDescriptor = type('Descriptor', (object,), {'gun': type('Gun', (object,), {'turretYawLimits': yaw_limits})()})()
+        self.player.gunRotator = type('GunRotator', (object,), {'turretYaw': 0.0})()
+        self.player.guiSessionProvider = session
+        self.player.playerVehicleID = OWN_VEHICLE
+        self.player.team = 1
+        self.player.arena = session.arena
+        self.events.onAvatarReady()
+        return session
+
+    def test_round_five_battle_wounds_traverse_circle_and_shell_stats(self):
+        self.install_hud_stubs()
+        vehicle = self.install_round_five_stubs()
+        kinds = sys.modules['BattleFeedbackCommon'].BATTLE_EVENT_TYPE
+        app = self.load(list(ENTRY_MODULES))
+        self.player = Player(ACCOUNT)
+        self.events.onAccountShowGUI()
+        sys.modules['gui.mods.otmetki.core.client.hud'].hud_layer(app).update_settings('consumables', {'show_shell_stats': True})
+        instances = sys.modules['gui.mods.otmetki.core.registry'].registry().instances
+        self.vehicle.item = type('Vehicle', (object,), {'intCD': 1, 'name': 'ussr:R04_T-34'})()
+        self.assertEqual(instances['hangar_info'].ui_actions()[0]['link'], '/t/r04-t-34/armor')
+        self.vehicle.item = None
+
+        session = self.enter_battle_with_gun((-0.26, 0.26))
+        consumables = self.hud_components()['consumables']['text']
+        self.assertIn(u'258 мм', consumables)
+        self.assertIn(u'урон 390', consumables)
+        self.assertIn(u'1 000 м/с', consumables)
+        session.shared.ammo.onCurrentShellChanged(12)
+        self.assertIn(u'480', self.hud_components()['consumables']['text'])
+
+        self.player.gunRotator.turretYaw = 0.2
+        instances['gun_arc'].render()
+        arc = self.hud_components()['gun_arc']['text']
+        self.assertIn(u'УГН', arc)
+        self.assertIn(u'◄ 26°', arc)
+        self.assertIn(u'3° ►', arc)
+
+        self.assertEqual(self.player.models, [])
+        self.key_down(type('KeyEvent', (object,), {'key': 48})())
+        circle = self.player.models[0]
+        self.assertEqual(circle.root.items[0].args, ('content/Interface/CheckPoint/CheckPoint.visual', (30.0, 30.0), 0.5, 0xFFFFFFFF))
+        self.assertEqual(circle.motors, [('servo', 'own-matrix')])
+        self.key_down(type('KeyEvent', (object,), {'key': 48})())
+        self.assertEqual(self.player.models, [])
+        self.key_down(type('KeyEvent', (object,), {'key': 48})())
+        session.arena.onVehicleKilled(OWN_VEHICLE, ENEMY_VEHICLE, 0, 0)
+        self.assertEqual(self.player.models, [])
+
+        front_hull_pen = 4 | (1 << 8) | (120 << 16) | (100 << 24) | (250 << 32) | (130 << 40) | (110 << 48) | (255 << 56)
+        self.own_vehicle.showDamageFromShot(ENEMY_VEHICLE, [front_hull_pen], 0, 1.0, False)
+        vehicle(False).showDamageFromShot(ENEMY_VEHICLE, [front_hull_pen], 0, 1.0, False)
+        session.feedback.onPlayerFeedbackReceived([Feedback(kinds.RECEIVED_DAMAGE, ENEMY_VEHICLE, Extra(390))])
+        self.assertEqual(self.shots, [ENEMY_VEHICLE, ENEMY_VEHICLE])
+        self.assertNotIn('otmetki.battle_hits', self.components)
+        self.events.onAvatarBecomeNonPlayer()
+        self.player = Player(ACCOUNT)
+        self.events.onAccountShowGUI()
+        label = self.components['otmetki.battle_hits']['text']
+        self.assertIn(u'Боевые раны · T-34', label)
+        self.assertIn(u'Попаданий 1', label)
+        rows = instances['battle_hits'].ui_page()['rows']
+        self.assertEqual(rows[0]['id'], '4242')
+        self.assertEqual(rows[0]['details'][1]['value'], u'Корпус, лоб · пробитие · −390 · Pz. IV')
+        self.assertEqual([mark['tone'] for mark in rows[0]['figure']['marks']], ['pen'])
+        self.assertTrue(os.path.isfile(os.path.join(app.config_dir, 'battle_hits_%d.json' % ACCOUNT)))
+        instances['battle_hits'].ui_action('clear', '4242')
+        self.assertEqual(instances['battle_hits'].ui_page()['rows'], [])
+        self.assertNotIn('otmetki.battle_hits', self.components)
 
     def test_round_four_hangar_helpers_and_private_mode(self):
         self.install_hud_stubs()

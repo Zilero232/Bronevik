@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { escapeLike, searchCandidates, switchLayout, transliterate } from '../layout-switch';
+import { searchCandidates, switchLayout, transliterate } from '../layout-switch';
 import { KEYBOARD } from '../layout-switch.constants';
 
 describe('switchLayout', () => {
@@ -70,11 +70,5 @@ describe('searchCandidates', () => {
     const { all } = searchCandidates('neki');
 
     expect(new Set(all).size).toBe(all.length);
-  });
-});
-
-describe('escapeLike', () => {
-  it('escapes every LIKE wildcard so underscores in nicknames match literally', () => {
-    expect(escapeLike('a_b%c\\')).toBe('a\\_b\\%c\\\\');
   });
 });

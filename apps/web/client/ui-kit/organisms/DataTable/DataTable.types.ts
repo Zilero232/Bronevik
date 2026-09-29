@@ -28,6 +28,7 @@ export type DataTableProps<T> = {
   footer?: ReactNode;
   className?: string;
   getRowId?: (row: T) => string;
+  pinnedRowIds?: readonly string[];
   onRowClick?: (row: T) => void;
   rowTint?: (row: T) => DataTableRowTint | null;
   getRowClass?: (row: T) => string | null;

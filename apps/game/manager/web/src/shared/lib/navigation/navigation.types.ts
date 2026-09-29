@@ -5,6 +5,7 @@ export type PageId = (typeof PAGE_IDS)[number];
 export type NavigationParams = {
   preset?: string | null;
   profileCode?: string;
+  components?: string[];
 };
 
 export type NavigationTarget = {

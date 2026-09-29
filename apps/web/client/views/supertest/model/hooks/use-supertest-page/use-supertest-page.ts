@@ -15,7 +15,7 @@ export const useSupertestPage = () => {
 
   return {
     scope,
-    totals: data?.totals ?? null,
+    totals: data && data.totals.tanks > 0 ? data.totals : null,
     onScopeChange: (next: SupertestScope) => void setParams({ scope: next })
   };
 };

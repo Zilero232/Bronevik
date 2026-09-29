@@ -1,7 +1,15 @@
 import { describe, expect, it } from 'vitest';
 
 import { LESTA_ERROR_CODE, RETRYABLE_HTTP_STATUS } from '../errors.constants';
-import { isExtraRejected, isRetryableLestaError, LestaApiError, LestaHttpError, LestaNetworkError, LestaQueueFullError } from '../lesta-api-error';
+import {
+  isExtraRejected,
+  isRetryableLestaError,
+  isSearchRejected,
+  LestaApiError,
+  LestaHttpError,
+  LestaNetworkError,
+  LestaQueueFullError
+} from '../lesta-api-error';
 
 const METHOD = 'account/info';
 
@@ -56,5 +64,18 @@ describe('isExtraRejected', () => {
     expect(isExtraRejected(new LestaApiError({ code: 'INVALID_EXTRA', method: METHOD, field: 'extra' }))).toBe(true);
     expect(isExtraRejected(new LestaApiError({ code: LESTA_ERROR_CODE.sourceNotAvailable, method: METHOD }))).toBe(false);
     expect(isExtraRejected(new Error('boom'))).toBe(false);
+  });
+});
+
+describe('isSearchRejected', () => {
+  it('recognises a search Lesta refuses to run', () => {
+    expect(isSearchRejected(new LestaApiError({ code: LESTA_ERROR_CODE.invalidSearch, method: 'account/list', field: 'search' }))).toBe(true);
+    expect(isSearchRejected(new LestaApiError({ code: LESTA_ERROR_CODE.notEnoughSearchLength, method: 'account/list' }))).toBe(true);
+  });
+
+  it('leaves an outage and an unrelated field to the caller', () => {
+    expect(isSearchRejected(new LestaApiError({ code: LESTA_ERROR_CODE.sourceNotAvailable, method: 'account/list' }))).toBe(false);
+    expect(isSearchRejected(new LestaApiError({ code: 'INVALID_EXTRA', method: 'account/list', field: 'extra' }))).toBe(false);
+    expect(isSearchRejected(new LestaNetworkError({ method: 'account/list', cause: new Error('reset') }))).toBe(false);
   });
 });

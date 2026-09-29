@@ -3,8 +3,9 @@
 import { HeavyTankIcon } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
+import { CatalogPending } from '@/entities/tank/tank';
 import { ROUTES } from '@/shared/constants';
-import { Card, DataSourceNote, EmptyState, FilteredEmptyState, PageHero, QueryState, Skeleton } from '@/ui-kit';
+import { Card, DataSourceNote, FilteredEmptyState, PageHero, QueryState, Skeleton } from '@/ui-kit';
 
 import { VEHICLE_CATALOG_VIEW } from '../config';
 import { useVehicleCatalogPage } from '../model/hooks';
@@ -32,7 +33,7 @@ export const VehicleCatalogPage = () => {
               {isFiltered ? (
                 <FilteredEmptyState isFiltered description={t('empty.description')} title={t('empty.title')} onReset={onReset} />
               ) : (
-                <EmptyState description={t('empty.noDataDescription')} title={t('empty.noDataTitle')} />
+                <CatalogPending />
               )}
             </Card>
           }

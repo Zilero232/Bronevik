@@ -1,0 +1,1 @@
+export { DataNotice } from './DataNotice';

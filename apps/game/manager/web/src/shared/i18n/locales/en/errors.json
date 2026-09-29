@@ -26,5 +26,10 @@
   "not_enough_space": "Not enough disk space for a snapshot",
   "rollback_failed": "The changes could not be rolled back — restore the latest snapshot on the Backups page",
   "contract": "The app returned an unexpected answer",
-  "unknown": "Something went wrong"
+  "unknown": "Something went wrong",
+  "nothing_to_restore": "No snapshot has the missing files: reinstall the modpack with «Change the set»",
+  "set_limit": "The set limit is reached: delete one you no longer need",
+  "set_name": "Enter a name for the set",
+  "set_missing": "The set was not found",
+  "set_code": "This is not a Three Marks set code or file"
 }

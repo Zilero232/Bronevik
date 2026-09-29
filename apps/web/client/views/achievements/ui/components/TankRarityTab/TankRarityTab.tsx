@@ -42,7 +42,7 @@ export const TankRarityTab = () => {
               density='media'
               getRowId={(row) => String(row.vehicle.tankId)}
               getRowLink={(row) => ({ href: ROUTES.tanks.detail(row.vehicle.slug), label: row.vehicle.name })}
-              summary={t('summary', { sample: rarity.sample })}
+              summary={rarity.sample > 0 ? t('summary', { sample: rarity.sample }) : undefined}
             />
             <DataSourceNote updatedAt={rarity.computedAt} />
           </>

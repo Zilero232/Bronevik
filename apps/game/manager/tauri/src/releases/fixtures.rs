@@ -71,7 +71,7 @@ pub fn release(version: &str) -> Release {
             .map(|id| ReleasePackage {
                 id: (*id).to_owned(),
                 file: format!("net.triotmetki.{id}_{version}.mtmod"),
-                url: format!("https://cdn.triotmetki.ru/modpack/{version}/net.triotmetki.{id}_{version}.mtmod"),
+                url: format!("https://triotmetki.ru/downloads/modpack/{version}/net.triotmetki.{id}_{version}.mtmod"),
                 sha256: "0".repeat(64),
                 size: 1,
             })

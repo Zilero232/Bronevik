@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { uniqueBy } from 'remeda';
 
+import type { StatsMode } from '../../../../../generated';
 import type { AccountRatingsPayload } from '../../contracts';
+import type { TankSnapshotTotals } from '../lib/account-ratings';
+import type { TankBoundarySqlInput } from '../queries';
 
 import { PrismaService } from '../../../../core';
 import { AGGREGATES } from '../config';
-import { buildAccountRatings } from '../lib/account-ratings';
+import { buildAccountRatings, earliestCutoff } from '../lib/account-ratings';
+import { tankBoundarySql } from '../queries';
 import { TANK_TOTALS_SELECT } from '../selects';
 import { ReferenceTablesService } from './reference-tables.service';
 
@@ -30,19 +34,23 @@ export class AccountRatingsService {
       return { skipped: true };
     }
 
-    const [accountSnapshots, history, latest, tables] = await Promise.all([
-      this.prisma.accountSnapshot.findMany({
-        where: { accountId: id, mode },
-        select: { capturedAt: true, battles: true },
-        orderBy: { capturedAt: 'asc' }
-      }),
-      this.prisma.tankSnapshot.findMany({ where: { accountId: id, mode }, select: TANK_TOTALS_SELECT }),
+    const now = new Date();
+    const accountSnapshots = await this.prisma.accountSnapshot.findMany({
+      where: { accountId: id, mode },
+      select: { capturedAt: true, battles: true },
+      orderBy: { capturedAt: 'asc' }
+    });
+
+    const cutoff = earliestCutoff({ accountSnapshots, now });
+
+    const [history, latest, tables] = await Promise.all([
+      cutoff ? this.tankHistory({ accountId: id, mode, cutoff }) : Promise.resolve([]),
       this.prisma.tankSnapshotLatest.findMany({ where: { accountId: id, mode }, select: TANK_TOTALS_SELECT }),
       this.tables.tables()
     ]);
 
     const tankSnapshots = uniqueBy([...history, ...latest], (row) => `${row.tankId}:${row.capturedAt.getTime()}`);
-    const { ratings, tankRatings } = buildAccountRatings({ accountId: id, accountSnapshots, tankSnapshots, ...tables, now: new Date() });
+    const { ratings, tankRatings } = buildAccountRatings({ accountId: id, accountSnapshots, tankSnapshots, ...tables, now });
 
     await this.prisma.$transaction([
       this.prisma.accountRating.deleteMany({ where: { accountId: id } }),
@@ -54,7 +62,16 @@ export class AccountRatingsService {
     return { mode, periods: ratings.length, tanks: tankRatings.length };
   }
 
-  private async ratingMode(accountId: bigint) {
+  private async tankHistory({ accountId, mode, cutoff }: TankBoundarySqlInput): Promise<TankSnapshotTotals[]> {
+    const [recent, boundary] = await Promise.all([
+      this.prisma.tankSnapshot.findMany({ where: { accountId, mode, capturedAt: { gt: cutoff } }, select: TANK_TOTALS_SELECT }),
+      this.prisma.$queryRaw<TankSnapshotTotals[]>(tankBoundarySql({ accountId, mode, cutoff }))
+    ]);
+
+    return [...boundary, ...recent];
+  }
+
+  private async ratingMode(accountId: bigint): Promise<StatsMode | null> {
     for (const mode of AGGREGATES.ratingModes) {
       const exists = await this.prisma.tankSnapshotLatest.findFirst({ where: { accountId, mode }, select: { tankId: true } });
 

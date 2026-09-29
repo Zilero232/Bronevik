@@ -11,4 +11,7 @@ DEFAULTS = {
     'align_y': 'bottom',
     'show_consumables': True,
     'show_shells': True,
+    'show_shell_stats': False,
+    'shell_stats': 'current',
 }
+CHOICES = {'shell_stats': ('current', 'all')}

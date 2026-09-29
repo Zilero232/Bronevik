@@ -1,7 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 
-import { DEMO } from '@/shared/config';
-import { DemoBanner } from '@/widgets/site/demo-banner';
+import { LESTA_NOTICE } from '@/shared/config';
+import { DataNotice } from '@/widgets/site/data-notice';
 import { SiteFooter } from '@/widgets/site/site-footer';
 import { SiteHeader } from '@/widgets/site/site-header';
 
@@ -15,7 +15,7 @@ const SiteLayout = async ({ children }: Pick<LayoutProps<'/[locale]'>, 'children
       <a className={s.skip} href='#main'>
         {t('skipToContent')}
       </a>
-      {DEMO.isEnabled && <DemoBanner />}
+      {LESTA_NOTICE.isEnabled && <DataNotice />}
       <SiteHeader />
       <main className={s.main} id='main' tabIndex={-1}>
         {children}

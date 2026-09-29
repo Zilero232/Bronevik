@@ -14,7 +14,7 @@ describe('statsFromBattles', () => {
   });
 
   it('credits a loss to the other team', () => {
-    const stats = statsFromBattles([{ team: first, result: 'loss' }]);
+    const stats = statsFromBattles([{ team: first, result: 'loss', battles: 1 }]);
 
     expect(winRateOf({ stats, team: second })).toBe(100);
     expect(winRateOf({ stats, team: first })).toBe(0);
@@ -22,8 +22,8 @@ describe('statsFromBattles', () => {
 
   it('counts a draw as a battle with no winner', () => {
     const stats = statsFromBattles([
-      { team: first, result: 'win' },
-      { team: second, result: 'draw' }
+      { team: first, result: 'win', battles: 1 },
+      { team: second, result: 'draw', battles: 1 }
     ]);
 
     expect(stats?.battles).toBe(2);
@@ -34,14 +34,25 @@ describe('statsFromBattles', () => {
   it('skips battles without a known team', () => {
     expect(
       statsFromBattles([
-        { team: null, result: 'win' },
-        { team: Math.max(...MAP_TEAMS.teams) + 1, result: 'win' }
+        { team: null, result: 'win', battles: 1 },
+        { team: Math.max(...MAP_TEAMS.teams) + 1, result: 'win', battles: 1 }
       ])
     ).toBeNull();
   });
 
+  it('weights each aggregated side row by its battle count', () => {
+    const stats = statsFromBattles([
+      { team: first, result: 'win', battles: 3 },
+      { team: first, result: 'loss', battles: 1 }
+    ]);
+
+    expect(stats?.battles).toBe(4);
+    expect(winRateOf({ stats, team: first })).toBe((3 * 100) / 4);
+    expect(winRateOf({ stats, team: second })).toBe((1 * 100) / 4);
+  });
+
   it('reports every team with the battle count and the battles source', () => {
-    const stats = statsFromBattles([{ team: first, result: 'win' }]);
+    const stats = statsFromBattles([{ team: first, result: 'win', battles: 1 }]);
 
     expect(stats?.source).toBe('battles');
     expect(stats?.teams.map((team) => team.team)).toEqual([...MAP_TEAMS.teams]);

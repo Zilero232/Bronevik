@@ -44,6 +44,7 @@ export class WebPushService {
       subscriptions.map((subscription) =>
         this.sender.send({ endpoint: subscription.endpoint, keys: { p256dh: subscription.p256dh, auth: subscription.auth } }, payload, {
           TTL: WEB_PUSH.ttlSeconds,
+          timeout: WEB_PUSH.timeoutMs,
           vapidDetails
         })
       )

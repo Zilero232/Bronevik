@@ -18,18 +18,6 @@ export type PlayerTanksInput = {
   query: PlayerTanksQuery;
 };
 
-export type LatestTankSnapshot = {
-  tank_id: number;
-  battles: number;
-  wins: number;
-  damage_dealt: number;
-  frags: number;
-  xp: number;
-  survived_battles: number;
-  max_frags: number | null;
-  max_xp: number | null;
-};
-
 export type HistoryInput = {
   accountId: bigint;
   query: TimeSeriesQuery;

@@ -11,13 +11,13 @@ import { TanksFigures } from '../TanksFigures';
 export const TanksHero = () => {
   const t = useTranslations('tanks.head');
   const tNav = useTranslations('tanks.hero');
-  const { heroTanks } = useTanksFigures();
+  const { heroTanks, hasFigures } = useTanksFigures();
 
   return (
     <PageHero
       art={heroTanks.length > 0 ? { kind: 'tanks', tanks: heroTanks } : undefined}
       breadcrumbs={[{ label: tNav('home'), href: ROUTES.home }, { label: t('title') }]}
-      figures={<TanksFigures />}
+      figures={hasFigures && <TanksFigures />}
       lead={t('description')}
       title={t('title')}
     />

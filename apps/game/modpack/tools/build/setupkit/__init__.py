@@ -2,6 +2,7 @@
 
     manifest/  catalog/catalog.json + tools/build/layout.py -> components.json
     artwork/   the catalog's preview SVGs -> 16:9 PNG previews next to components.json
+    audio/     the catalog's audio previews (sounds the components ship) -> previews/<id>.<ext>
 
 Run it as `python tools/build/setupkit --help` (see __main__.py).
 """

@@ -1,9 +1,10 @@
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { CacheTTL } from '@nestjs/cache-manager';
 import { Controller, Get, HttpStatus, Param, Query, UseInterceptors } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
+import { ViewerCacheInterceptor } from '../../common/interceptors';
 import { TankDetailService, TankStatsService, TierListService } from '../tanks';
 import { PublicApi } from './decorators/public-api/public-api.decorator';
 import {
@@ -16,7 +17,7 @@ import {
   V1TierListQueryDto
 } from './dto';
 
-@UseInterceptors(CacheInterceptor)
+@UseInterceptors(ViewerCacheInterceptor)
 @PublicApi('tanks')
 @Controller('v1/tanks')
 export class V1TanksController {

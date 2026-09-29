@@ -26,7 +26,7 @@
     "errorDescription": "The server did not respond. Try again.",
     "emptyCurrent": "No active offers right now",
     "emptyHistory": "The offer archive is empty so far",
-    "emptyDescription": "Offers appear after the tanki.su shop news is crawled.",
+    "emptyDescription": "Offers show up here as soon as the shop publishes them on tanki.su.",
     "more": "Show more ({shown} of {total})"
   },
   "returns": {

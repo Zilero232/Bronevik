@@ -6,6 +6,8 @@ import type { PrismaService } from '../../../../core';
 import type { ClanInfo, ClanListItem, LestaClient } from '../../../../lib/lesta';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
+import { insensitiveEquals } from '../../../../common/lib';
+import { LESTA_ERROR_CODE, LestaApiError } from '../../../../lib/lesta';
 import { CollectorProducerService, PurgeGuardService } from '../../../collector';
 import { ClanResolverService } from '../clan-resolver.service';
 
@@ -58,6 +60,32 @@ describe('ClanResolverService.resolve', () => {
     expect(await resolver.resolve('brnvk')).toBe(7n);
     expect(prisma.clan.findFirst.mock.calls[0]?.[0]?.where).toMatchObject({ tag: { equals: 'brnvk', mode: 'insensitive' } });
     expect(lesta.clans.list).not.toHaveBeenCalled();
+  });
+
+  it('matches an underscore in a tag literally, not as a LIKE wildcard', async () => {
+    const { prisma, resolver } = createResolver();
+
+    prisma.clan.findFirst.mockResolvedValue(mock<Clan>({ clanId: 7n }));
+
+    await resolver.resolve('A_B');
+
+    expect(prisma.clan.findFirst.mock.calls[0]?.[0]?.where).toMatchObject({ tag: insensitiveEquals('A_B') });
+  });
+
+  it('answers 404 when Lesta refuses the tag as a search', async () => {
+    const { lesta, resolver } = createResolver();
+
+    lesta.clans.list.mockRejectedValue(new LestaApiError({ code: LESTA_ERROR_CODE.invalidSearch, method: 'clans/list', field: 'search' }));
+
+    await expect(resolver.resolve('ТЕГ')).rejects.toBeInstanceOf(AppNotFoundException);
+  });
+
+  it('lets a Lesta outage through instead of answering 404', async () => {
+    const { lesta, resolver } = createResolver();
+
+    lesta.clans.list.mockRejectedValue(new LestaApiError({ code: LESTA_ERROR_CODE.sourceNotAvailable, method: 'clans/list' }));
+
+    await expect(resolver.resolve('TAG')).rejects.toBeInstanceOf(LestaApiError);
   });
 
   it('picks the exact tag from the Lesta search rather than the first fuzzy hit', async () => {

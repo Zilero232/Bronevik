@@ -14,10 +14,10 @@ const schedules: JobSchedule[] = [
   { id: 'nightly', queue: 'billing', name: 'renew', repeat: { pattern: '0 3 * * *' } },
   { id: 'retired', queue: 'billing', name: 'old', repeat: { every: 60_000 }, enabled: false },
   { id: 'lesta', queue: 'collector', name: 'poll', repeat: { every: 60_000 }, needsLesta: true },
-  { id: 'encyclopedia', queue: 'collector', name: 'sync', repeat: { every: 60_000 }, needsLesta: true, realLestaOnly: true }
+  { id: 'encyclopedia', queue: 'collector', name: 'sync', repeat: { every: 60_000 }, needsLesta: true }
 ];
 
-const createSchedules = (env: Pick<Env, 'LESTA_APPLICATION_ID' | 'LESTA_MOCK' | 'NODE_ENV'>) => {
+const createSchedules = (env: Pick<Env, 'LESTA_APPLICATION_ID' | 'NODE_ENV'>) => {
   const config = mock<AppConfigService>();
   const moduleRef = mock<ModuleRef>();
   const queue = mock<Queue>();
@@ -28,7 +28,6 @@ const createSchedules = (env: Pick<Env, 'LESTA_APPLICATION_ID' | 'LESTA_MOCK' | 
   moduleRef.get.mockReturnValue(queue);
   config.get.calledWith('NODE_ENV').mockReturnValue(env.NODE_ENV);
   config.get.calledWith('LESTA_APPLICATION_ID').mockReturnValue(env.LESTA_APPLICATION_ID);
-  config.get.calledWith('LESTA_MOCK').mockReturnValue(env.LESTA_MOCK);
 
   return { queue, service: new Schedules(moduleRef, config) };
 };
@@ -37,7 +36,7 @@ const registered = (queue: Queue) => vi.mocked(queue.upsertJobScheduler).mock.ca
 
 describe('createJobSchedules', () => {
   it('registers nothing under the test environment', async () => {
-    const { queue, service } = createSchedules({ NODE_ENV: 'test', LESTA_APPLICATION_ID: 'app', LESTA_MOCK: 'off' });
+    const { queue, service } = createSchedules({ NODE_ENV: 'test', LESTA_APPLICATION_ID: 'app' });
 
     await service.onApplicationBootstrap();
 
@@ -46,7 +45,7 @@ describe('createJobSchedules', () => {
   });
 
   it('upserts active schedules in the Moscow timezone and removes disabled ones', async () => {
-    const { queue, service } = createSchedules({ NODE_ENV: 'production', LESTA_APPLICATION_ID: 'app', LESTA_MOCK: 'off' });
+    const { queue, service } = createSchedules({ NODE_ENV: 'production', LESTA_APPLICATION_ID: 'app' });
 
     await service.onApplicationBootstrap();
 
@@ -61,18 +60,12 @@ describe('createJobSchedules', () => {
   });
 
   it('drops the Lesta schedules without an application id', async () => {
-    const { queue, service } = createSchedules({ NODE_ENV: 'production', LESTA_APPLICATION_ID: '', LESTA_MOCK: 'off' });
+    const { queue, service } = createSchedules({ NODE_ENV: 'production', LESTA_APPLICATION_ID: '' });
 
     await service.onApplicationBootstrap();
 
     expect(registered(queue)).toEqual(['nightly']);
-  });
-
-  it('keeps the real-Lesta-only schedules off while the mock is on', async () => {
-    const { queue, service } = createSchedules({ NODE_ENV: 'development', LESTA_APPLICATION_ID: 'app', LESTA_MOCK: 'on' });
-
-    await service.onApplicationBootstrap();
-
-    expect(registered(queue)).toEqual(['nightly', 'lesta']);
+    expect(queue.removeJobScheduler).toHaveBeenCalledWith('lesta');
+    expect(queue.removeJobScheduler).toHaveBeenCalledWith('encyclopedia');
   });
 });

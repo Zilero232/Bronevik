@@ -1,7 +1,8 @@
+import { subDays } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
-import type { Player, TankSnapshotLatest } from '../../../../../../generated';
+import type { AccountSnapshot, Player, TankSnapshotLatest } from '../../../../../../generated';
 import type { ReferenceTables } from '../../aggregates.types';
 
 import { AGGREGATES } from '../../config';
@@ -55,7 +56,7 @@ describe('AccountRatingsService.compute', () => {
     const { prisma, service } = createRatings({ modes: [fallbackMode] });
 
     expect(await service.compute({ accountId: 1 })).toMatchObject({ mode: fallbackMode });
-    expect(prisma.tankSnapshot.findMany.mock.calls[0]?.[0]?.where).toMatchObject({ mode: fallbackMode });
+    expect(prisma.tankSnapshotLatest.findMany.mock.calls[0]?.[0]?.where).toMatchObject({ mode: fallbackMode });
   });
 
   it('replaces the stored ratings in one transaction and reports what it wrote', async () => {
@@ -102,5 +103,33 @@ describe('AccountRatingsService.compute retention', () => {
     const overall = (Array.isArray(written) ? written : []).find((row) => row.period === 'overall');
 
     expect(overall?.battles).toBe(100);
+  });
+});
+
+describe('AccountRatingsService.compute history', () => {
+  it('reads the snapshot history only from the oldest baseline a rating period needs', async () => {
+    const { prisma, service } = createRatings({ modes: [preferredMode] });
+    const baseline = subDays(new Date(), 90);
+
+    prisma.accountSnapshot.findMany.mockResolvedValue([
+      Object.assign(mock<AccountSnapshot>(), { capturedAt: baseline, battles: 100 }),
+      Object.assign(mock<AccountSnapshot>(), { capturedAt: subDays(new Date(), 1), battles: 5_000 })
+    ]);
+
+    prisma.$queryRaw.mockResolvedValue([]);
+
+    await service.compute({ accountId: 1 });
+
+    expect(prisma.tankSnapshot.findMany.mock.calls[0]?.[0]?.where).toMatchObject({ capturedAt: { gt: baseline } });
+    expect(prisma.$queryRaw).toHaveBeenCalledOnce();
+  });
+
+  it('skips the snapshot history when no recent period has a baseline', async () => {
+    const { prisma, service } = createRatings({ modes: [preferredMode] });
+
+    await service.compute({ accountId: 1 });
+
+    expect(prisma.tankSnapshot.findMany).not.toHaveBeenCalled();
+    expect(prisma.$queryRaw).not.toHaveBeenCalled();
   });
 });

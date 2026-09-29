@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { match } from 'ts-pattern';
 
 import type { RankedRow } from '../leaderboards.types';
+import type { LeaderboardTotalRow } from '../queries';
 
 import { toNumber } from '../../../common/lib';
 import { PrismaService } from '../../../core';
@@ -29,14 +30,18 @@ export class LeaderboardService {
       .with('streamers', () => playersSql({ query, minBattles, filter: streamersFilterSql }))
       .exhaustive();
 
-    const rows = await this.prisma.$queryRaw<RankedRow[]>(sql);
+    const [rows, [count]] = await Promise.all([
+      this.prisma.$queryRaw<RankedRow[]>(sql.page),
+      this.prisma.$queryRaw<LeaderboardTotalRow[]>(sql.total)
+    ]);
+
     const scale = query.scope === 'clans' || query.scope === 'marks' ? null : query.metric;
 
     return {
       scope: query.scope,
       metric: query.metric,
       period: query.period,
-      total: rows[0] ? toNumber(rows[0].total) : 0,
+      total: count ? toNumber(count.total) : 0,
       minBattles: this.appliedMinBattles(query),
       entries: rows.map((row, index) => toLeaderboardEntry({ row, rank: query.offset + index + 1, scale }))
     };

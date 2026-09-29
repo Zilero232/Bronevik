@@ -1,0 +1,85 @@
+{
+  "meta": {
+    "title": "Data status",
+    "description": "Whether Three Marks data collection works: database, collector queue, the Lesta API link and when data was last refreshed."
+  },
+  "badge": {
+    "label": {
+      "ok": "Data: healthy",
+      "noLestaKey": "Data: no Lesta API",
+      "degraded": "Data: delayed",
+      "down": "Data: outage",
+      "unreachable": "Data: server unreachable",
+      "unknown": "Data: checking"
+    },
+    "hint": {
+      "ok": "All services work. Details on the status page",
+      "noLestaKey": "The Lesta API key is not connected yet: in-game player stats are not collected for now",
+      "degraded": "Some services respond with a delay",
+      "down": "One of the services does not respond",
+      "unreachable": "Could not reach the site server",
+      "unknown": "Checking the services"
+    }
+  },
+  "page": {
+    "title": "Data status",
+    "lead": "See whether data collection works right now and where the numbers on the site come from. The page refreshes itself every minute.",
+    "checked": "Checked",
+    "never": "not checked yet",
+    "refresh": "Check again",
+    "heartbeat": "Last heartbeat",
+    "componentsTitle": "Services",
+    "componentsLead": "Each service is checked on its own.",
+    "sourcesTitle": "Where the data comes from",
+    "sources": {
+      "lesta": "Lesta API — player, clan and vehicle statistics. Without an API key these sections honestly show empty states.",
+      "mod": "The Three Marks mod — battle results of players who run it: damage, marks, economy and loadouts.",
+      "replays": "Replays uploaded by players — battle breakdowns and replay search.",
+      "files": "Game files — vehicle characteristics, armour, maps and roles."
+    },
+    "components": {
+      "database": "Database",
+      "redis": "Queues and cache",
+      "worker": "Data collector",
+      "lestaCircuit": "Lesta API link"
+    },
+    "notes": {
+      "up": "Working.",
+      "down": "Not responding.",
+      "running": "Working and processing jobs.",
+      "noLestaKey": "Working without a Lesta API key: collecting mod, replay and game-file data.",
+      "stale": "Has not reported in a while — data may lag.",
+      "closed": "Requests to Lesta go through normally.",
+      "open": "Lesta answers with errors, requests are paused for now.",
+      "halfOpen": "Trying Lesta again after a failure.",
+      "notConfigured": "The Lesta API key is not connected yet.",
+      "unknown": "No state reported."
+    },
+    "verdict": {
+      "ok": {
+        "title": "All systems go",
+        "text": "Services are healthy and data refreshes on schedule."
+      },
+      "noLestaKey": {
+        "title": "Running without the Lesta API",
+        "text": "The Lesta API key is not connected yet. Mod, replay and game-file data keep updating, while the in-game player statistics sections stay empty for now."
+      },
+      "degraded": {
+        "title": "Delays",
+        "text": "Some services respond slowly — fresh data may arrive later than usual."
+      },
+      "down": {
+        "title": "Outage",
+        "text": "One of the services does not respond. Stored data is still available, new data is not coming in yet."
+      },
+      "unreachable": {
+        "title": "Server unreachable",
+        "text": "Could not reach the site server. Check your connection or try again in a moment."
+      },
+      "unknown": {
+        "title": "Checking",
+        "text": "Asking the services for their state."
+      }
+    }
+  }
+}

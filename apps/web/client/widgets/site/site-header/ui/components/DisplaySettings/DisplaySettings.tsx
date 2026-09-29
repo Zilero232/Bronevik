@@ -3,6 +3,7 @@
 import { SlidersHorizontal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { RatingsMethodLink } from '@/entities/player/stats';
 import { RatingPaletteToggle } from '@/features/app/rating-palette';
 import { RatingPatternsToggle } from '@/features/app/rating-patterns';
 import { RATING_TONES } from '@/shared/lib';
@@ -34,6 +35,7 @@ export const DisplaySettings = ({ className }: DisplaySettingsProps) => {
           <RatingBadge key={tone} size='sm' tone={tone} value={tRating(tone)} withPips={false} />
         ))}
       </div>
+      <RatingsMethodLink section='scale' />
     </Popover>
   );
 };

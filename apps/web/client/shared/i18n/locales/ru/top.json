@@ -15,7 +15,7 @@
   },
   "errorTitle": "Топ не загрузился",
   "errorDescription": "Сервер рейтингов не отвечает.",
-  "emptyTitle": "Нет записей",
+  "emptyTitle": "Пока никто не попал в этот топ",
   "emptyDescription": "Под эти фильтры никто не прошёл.",
   "metrics": {
     "wn8": "WN8",

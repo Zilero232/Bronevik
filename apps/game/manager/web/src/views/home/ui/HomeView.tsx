@@ -2,6 +2,7 @@ import { useTranslations } from 'use-intl';
 
 import { PageHeader } from '@/ui-kit';
 import { ClientOverview } from '@/widgets/client-overview';
+import { ConflictReport } from '@/widgets/conflict-report';
 import { PatchStatus } from '@/widgets/patch-status';
 
 export const HomeView = () => {
@@ -11,6 +12,7 @@ export const HomeView = () => {
     <>
       <PageHeader title={t('title')} />
       <PatchStatus />
+      <ConflictReport hideWhenClean />
       <ClientOverview />
     </>
   );

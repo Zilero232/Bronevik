@@ -6,6 +6,7 @@
   "head": {
     "title": "Marks of excellence",
     "lead": "65/85/95/100 % thresholds for every Мир танков tank · updated {date}",
+    "leadPlain": "65/85/95/100 % thresholds for every Мир танков tank",
     "tracked": "Tanks tracked",
     "updated": "Updated",
     "updatedUnknown": "no data",
@@ -19,6 +20,8 @@
     "error": "Could not load the thresholds",
     "empty": "Nothing found",
     "emptyHint": "Change the filters or the name search.",
+    "untracked": "Mark thresholds are not calculated yet",
+    "untrackedHint": "We calculate thresholds from players' battles. The table fills in as soon as there are enough stats per vehicle.",
     "columns": {
       "tank": "Tank",
       "tier": "Tier",
@@ -106,5 +109,16 @@
     "done": "Three marks earned",
     "next": "Heading for mark {mark}",
     "toNext": "Mark {mark} at {damage} avg damage"
+  },
+  "presets": {
+    "label": "Quick filters",
+    "tier10": "Tier X",
+    "tier8": "Tier VIII",
+    "tiers6to8": "Tiers VI–VIII",
+    "premium": "Premium",
+    "regular": "Researchable",
+    "easiest": "Easiest 3 marks",
+    "rising": "Thresholds rising",
+    "pinned": "Pinned"
   }
 }

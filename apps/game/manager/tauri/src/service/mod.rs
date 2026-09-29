@@ -1,5 +1,7 @@
 mod backups;
 mod check;
+mod maintenance;
+mod sets;
 pub mod setup;
 
 use std::collections::HashMap;

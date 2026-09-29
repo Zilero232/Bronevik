@@ -26,7 +26,13 @@ export const MedalsTab = () => {
           onChange={onSortChange}
         />
       </div>
-      <QueryState errorTitle={t('error')} query={query} skeleton={<DataTable isLoading columns={columns} data={[]} density='media' />}>
+      <QueryState
+        empty={<EmptyState description={t('emptyDescription')} title={t('empty')} />}
+        errorTitle={t('error')}
+        isEmpty={({ items }) => items.length === 0}
+        query={query}
+        skeleton={<DataTable isLoading columns={columns} data={[]} density='media' />}
+      >
         {(catalog) => (
           <>
             <DataTable
@@ -34,9 +40,8 @@ export const MedalsTab = () => {
               columns={columns}
               data={catalog.items}
               density='media'
-              emptyState={<EmptyState isCompact description={t('emptyDescription')} title={t('empty')} />}
               getRowId={(row) => row.name}
-              summary={t('summary', { sample: catalog.sample, total: catalog.catalogSize })}
+              summary={catalog.sample > 0 ? t('summary', { sample: catalog.sample, total: catalog.catalogSize }) : undefined}
             />
             <DataSourceNote updatedAt={catalog.computedAt} />
           </>

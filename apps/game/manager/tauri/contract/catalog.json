@@ -40,10 +40,12 @@
       "file": "net.triotmetki.core_0.1.0.mtmod",
       "id": "core",
       "packageId": "net.triotmetki.core",
+      "perf": "low",
       "presets": [
         "recommended"
       ],
       "preview": {
+        "audio": null,
         "image": "previews/core.png",
         "video": null
       },
@@ -74,10 +76,12 @@
       "file": "otmetki.companion_0.1.0.mtmod",
       "id": "companion",
       "packageId": "otmetki.companion",
+      "perf": "low",
       "presets": [
         "recommended"
       ],
       "preview": {
+        "audio": null,
         "image": "previews/companion.png",
         "video": null
       },
@@ -109,10 +113,12 @@
       "file": "net.triotmetki.marks_panel_0.1.0.mtmod",
       "id": "marks_panel",
       "packageId": "net.triotmetki.marks_panel",
+      "perf": "low",
       "presets": [
         "recommended"
       ],
       "preview": {
+        "audio": null,
         "image": "previews/marks_panel.png",
         "video": null
       },
@@ -144,10 +150,12 @@
       "file": "net.triotmetki.damage_log_0.1.0.mtmod",
       "id": "damage_log",
       "packageId": "net.triotmetki.damage_log",
+      "perf": "medium",
       "presets": [
         "recommended"
       ],
       "preview": {
+        "audio": null,
         "image": "previews/damage_log.png",
         "video": null
       },
@@ -178,10 +186,12 @@
       "file": "net.triotmetki.hit_log_0.1.0.mtmod",
       "id": "hit_log",
       "packageId": "net.triotmetki.hit_log",
+      "perf": "low",
       "presets": [
         "recommended"
       ],
       "preview": {
+        "audio": null,
         "image": "previews/hit_log.png",
         "video": null
       },
@@ -193,6 +203,44 @@
         "ru": "Компонент hit_log"
       },
       "version": "0.1.0"
+    }
+  ],
+  "conflicts": [
+    {
+      "components": [
+        "damage_log",
+        "hit_log"
+      ],
+      "id": "xvm",
+      "note": {
+        "en": "Its own damage log",
+        "ru": "Свой лог урона"
+      },
+      "patterns": [
+        "com.modxvm.*",
+        "*xvm*"
+      ],
+      "title": {
+        "en": "XVM",
+        "ru": "XVM"
+      }
+    },
+    {
+      "components": [
+        "marks_panel"
+      ],
+      "id": "marks_calculator",
+      "note": {
+        "en": "A second calculator",
+        "ru": "Второй калькулятор"
+      },
+      "patterns": [
+        "*marksongun*"
+      ],
+      "title": {
+        "en": "Marks calculator",
+        "ru": "Калькулятор отметок"
+      }
     }
   ],
   "dependencies": [
@@ -262,6 +310,11 @@
   ],
   "extension": "mtmod",
   "modpackVersion": "0.1.0",
+  "ownedPaths": [
+    "scripts/client/gui/mods/otmetki/",
+    "scripts/client/gui/mods/mod_otmetki",
+    "gui/gameface/mods/triotmetki/"
+  ],
   "ownedPatterns": [
     "net.triotmetki.*.mtmod",
     "otmetki.*.mtmod"

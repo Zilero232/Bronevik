@@ -1,6 +1,7 @@
-import { FileInput, PlayCircle, ShieldCheck } from 'lucide-react';
+import { FileInput, Gauge, PlayCircle, ShieldCheck } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 
+import { PERF } from '@/entities/catalog';
 import { useInstallWizard } from '@/features/setup/install-modpack';
 import { Badge, Button, Card, Checkbox, EmptyState, ExternalLink, FormField, Select } from '@/ui-kit';
 
@@ -57,6 +58,11 @@ export const ComponentsStep = () => {
           <aside className={s.preview}>
             <div className={s.image}>{preview.src && <img alt='' src={preview.src} />}</div>
             <h3 className={s.previewTitle}>{preview.title}</h3>
+            {preview.perf && (
+              <Badge icon={<Gauge aria-hidden />} tone={PERF.tones[preview.perf]}>
+                {t(`components.perf.${preview.perf}`)}
+              </Badge>
+            )}
             <p className={s.previewText}>{preview.description}</p>
             {preview.fairPlay && (
               <p className={s.fairPlay}>
@@ -69,6 +75,11 @@ export const ComponentsStep = () => {
                 <PlayCircle aria-hidden />
                 {t('components.video')}
               </ExternalLink>
+            )}
+            {preview.audioSrc && (
+              <audio controls aria-label={t('components.listen', { title: preview.title })} className={s.audio} preload='none' src={preview.audioSrc}>
+                <track kind='captions' />
+              </audio>
             )}
           </aside>
         )}

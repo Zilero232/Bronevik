@@ -34,7 +34,7 @@ export const useBestBattles = () => {
     metric: state.metric,
     battles,
     podium: battles.slice(0, BEST_BATTLES_VIEW.podiumSize),
-    facets: facets ?? null,
+    facets: facets && facets.battles > 0 ? facets : null,
     isFiltered: hasBattleFilters(state),
     feed,
     loadMore: () => void fetchNextPage(),

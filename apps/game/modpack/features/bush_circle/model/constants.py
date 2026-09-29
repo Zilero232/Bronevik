@@ -1,0 +1,23 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+# The bush rule: a bush or a tree hides the tank that fired from it once the tank is more than 15 m away from it. The
+# radius is fixed: it is the game's own rule, not a setting.
+RADIUS_M = 15.0
+MODES = ('hotkey', 'always')
+# The hotkey choices: (Keys name, held modifiers). Ctrl+Shift+B by default: no game command uses it.
+HOTKEYS = {
+    'none': (None, ()),
+    'ctrl_shift_b': ('KEY_B', ('KEY_LCONTROL', 'KEY_LSHIFT')),
+    'ctrl_shift_c': ('KEY_C', ('KEY_LCONTROL', 'KEY_LSHIFT')),
+    'f7': ('KEY_F7', ()),
+    'f8': ('KEY_F8', ()),
+}
+HOTKEY_CHOICES = ('ctrl_shift_b', 'ctrl_shift_c', 'f7', 'f8', 'none')
+# ARGB, the form BigWorld.PyTerrainSelectedArea.setup takes (RU 1.45 CombatSelectedArea.COLOR_WHITE).
+COLORS = {
+    'white': 0xFFFFFFFF,
+    'green': 0xFF7CD35B,
+    'yellow': 0xFFF2B25B,
+    'cyan': 0xFF5BD3F2,
+}
+COLOR_CHOICES = ('white', 'green', 'yellow', 'cyan')

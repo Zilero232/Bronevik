@@ -25,7 +25,7 @@ import {
 } from '../../../lib';
 import { useInstallPlan } from '../use-install-plan';
 
-export const useInstallWizardState = ({ initialPreset }: UseInstallWizardStateInput) => {
+export const useInstallWizardState = ({ initialPreset, initialComponents }: UseInstallWizardStateInput) => {
   const t = useTranslations('install');
   const locale = useLocale();
   const { navigate } = useNavigation();
@@ -50,8 +50,10 @@ export const useInstallWizardState = ({ initialPreset }: UseInstallWizardStateIn
   const presets = catalog?.presets ?? [];
   const defaultPreset = presets.find((preset) => preset.id === initialPreset)?.id ?? presets[0]?.id ?? null;
   const isReinstall = plan?.installed === true && plan.currentComponents.length > 0;
+  const initialSelection = initialComponents ? closeDependencies({ components, ids: initialComponents }) : null;
   const selection =
     chosen ??
+    initialSelection ??
     (isReinstall ? closeDependencies({ components, ids: plan.currentComponents }) : presetSelection({ components, presetId: defaultPreset }));
 
   const presetId = matchingPreset({ components, presets, selection });
@@ -93,7 +95,9 @@ export const useInstallWizardState = ({ initialPreset }: UseInstallWizardStateIn
     description: text(focused.description),
     fairPlay: text(focused.fairPlay),
     video: focused.preview.video,
-    src: previewSrc({ previewsDir: catalog?.previewsDir ?? null, image: focused.preview.image })
+    src: previewSrc({ previewsDir: catalog?.previewsDir ?? null, file: focused.preview.image }),
+    audioSrc: previewSrc({ previewsDir: catalog?.previewsDir ?? null, file: focused.preview.audio }),
+    perf: focused.perf
   };
 
   const step = INSTALL_WIZARD.steps[stepIndex] ?? INSTALL_WIZARD.steps[0];

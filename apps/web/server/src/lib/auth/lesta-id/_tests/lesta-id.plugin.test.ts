@@ -34,7 +34,7 @@ const sessionCookieOf = (response: Response) =>
     .filter((cookie) => cookie.includes('session_token'))
     .join('; ');
 
-const createAuth = () => {
+const createAuth = ({ isConnected = true }: { isConnected?: boolean } = {}) => {
   const lesta = mockDeep<LestaClient>();
   const store = mock<LestaAccountStore>();
   const db: Tables = { user: [], session: [], account: [], verification: [] };
@@ -51,7 +51,7 @@ const createAuth = () => {
     secret: 'test-secret-not-used-outside-tests-000',
     trustedOrigins: [WEB_URL],
     database: memoryAdapter(db),
-    plugins: [lestaId({ lesta, store, apiUrl: API_URL, webUrl: WEB_URL })]
+    plugins: [lestaId({ isConnected, lesta, store, apiUrl: API_URL, webUrl: WEB_URL })]
   });
 
   const get = (path: string, headers?: Record<string, string>) => auth.handler(new Request(`${API_URL}/auth${path}`, { headers }));
@@ -117,6 +117,19 @@ describe('lestaId /lesta/start', () => {
     const response = await callback({ ...LOGIN, state }, flow);
 
     expect(locationOf(response).origin).toBe(WEB_URL);
+  });
+
+  it('sends the visitor back with a clear error while no Lesta application id is set', async () => {
+    const { get, lesta, db } = createAuth({ isConnected: false });
+    const query = new URLSearchParams({ callbackURL: `${WEB_URL}/me`, errorCallbackURL: `${WEB_URL}/login` });
+
+    const response = await get(`/lesta/start?${query.toString()}`);
+
+    expect(response.status).toBe(302);
+    expect(locationOf(response).pathname).toBe('/login');
+    expect(errorOf(response)).toBe(LESTA_ID_ERROR.notConnected);
+    expect(lesta.auth.loginUrl).not.toHaveBeenCalled();
+    expect(db.verification).toHaveLength(0);
   });
 });
 

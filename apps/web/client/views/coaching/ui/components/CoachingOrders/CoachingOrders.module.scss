@@ -1,5 +1,9 @@
 @use '@/shared/styles/mixins' as *;
 
+.inset {
+  padding: var(--space-3) var(--space-4);
+}
+
 .list {
   padding: 0;
   margin: 0;

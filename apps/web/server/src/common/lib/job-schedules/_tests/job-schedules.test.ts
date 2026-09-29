@@ -6,7 +6,7 @@ import { mock } from 'vitest-mock-extended';
 import { TIME } from '../../../../config';
 import { isScheduleActive, registerJobSchedules } from '../job-schedules';
 
-const environment = { hasLesta: true, lestaMock: false };
+const environment = { hasLesta: true };
 
 describe('registerJobSchedules', () => {
   it('upserts active schedules with the Moscow timezone for cron patterns only', async () => {
@@ -64,14 +64,10 @@ describe('isScheduleActive', () => {
   const schedule = { id: 'x', queue: 'q', name: 'job', repeat: { every: 1000 } };
 
   it('keeps a Lesta schedule off without Lesta', () => {
-    expect(isScheduleActive({ schedule: { ...schedule, needsLesta: true }, hasLesta: false, lestaMock: false })).toBe(false);
-  });
-
-  it('keeps a real-Lesta-only schedule off under the mock', () => {
-    expect(isScheduleActive({ schedule: { ...schedule, realLestaOnly: true }, hasLesta: true, lestaMock: true })).toBe(false);
+    expect(isScheduleActive({ schedule: { ...schedule, needsLesta: true }, hasLesta: false })).toBe(false);
   });
 
   it('runs a plain schedule everywhere', () => {
-    expect(isScheduleActive({ schedule, hasLesta: false, lestaMock: true })).toBe(true);
+    expect(isScheduleActive({ schedule, hasLesta: false })).toBe(true);
   });
 });

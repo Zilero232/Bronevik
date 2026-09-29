@@ -11,10 +11,10 @@ import { LeaderboardService } from '../leaderboard.service';
 
 const query = (overrides: Partial<LeaderboardQuery>): LeaderboardQuery => ({ ...leaderboardQuerySchema.parse({}), ...overrides });
 
-const createService = (rows: unknown[] = []) => {
+const createService = (rows: unknown[] = [], total = BigInt(rows.length)) => {
   const prisma = mockDeep<PrismaService>();
 
-  prisma.$queryRaw.mockResolvedValue(rows);
+  prisma.$queryRaw.mockResolvedValueOnce(rows).mockResolvedValueOnce([{ total }]);
 
   return new LeaderboardService(prisma);
 };
@@ -43,9 +43,18 @@ describe('LeaderboardService.leaderboard', () => {
 
   it('passes the clan colour through', async () => {
     const board = await createService([
-      { accountId: null, clanId: 10n, name: 'Три отметки', clanTag: 'BRNVK', color: '#ff0000', value: 1_800, battles: 10, delta: null, total: 1n }
+      { accountId: null, clanId: 10n, name: 'Три отметки', clanTag: 'BRNVK', color: '#ff0000', value: 1_800, battles: 10, delta: null }
     ]).leaderboard(query({ scope: 'clans' }));
 
     expect(board.entries[0]?.color).toBe('#ff0000');
+  });
+
+  it('reports the total of the whole ranking, not the size of the page', async () => {
+    const row = { accountId: 1n, clanId: null, name: 'Tanker', clanTag: null, color: null, value: 2_000, battles: 1_500, delta: null };
+
+    const board = await createService([row], 1_234n).leaderboard(query({ scope: 'players', limit: 1 }));
+
+    expect(board.entries).toHaveLength(1);
+    expect(board.total).toBe(1_234);
   });
 });

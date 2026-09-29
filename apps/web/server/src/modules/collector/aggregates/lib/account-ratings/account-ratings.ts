@@ -1,11 +1,12 @@
 import type { TankTotals } from '@otmetki/ratings';
 
 import { bronyaIndex, computeAverages, percentileOf, periodRatings, pickSnapshotPair, tankWn8 } from '@otmetki/ratings';
-import { findLast, groupBy, sortBy } from 'remeda';
+import { findLast, firstBy, groupBy, sortBy } from 'remeda';
 
 import type {
   AccountRatingsResult,
   BuildAccountRatingsInput,
+  EarliestCutoffInput,
   PeriodCutoff,
   PeriodCutoffInput,
   PeriodRowsInput,
@@ -41,6 +42,12 @@ export const periodCutoff = ({ window, accountSnapshots, now }: PeriodCutoffInpu
 
   return pair ? { cutoff: pair.from.takenAt, isPartial: pair.isPartial } : null;
 };
+
+export const earliestCutoff = ({ accountSnapshots, now }: EarliestCutoffInput): Date | null =>
+  firstBy(
+    RATING_PERIOD_WINDOWS.flatMap(({ window }) => periodCutoff({ window, accountSnapshots, now })?.cutoff ?? []),
+    (cutoff) => cutoff.getTime()
+  ) ?? null;
 
 export const tankPeriodTotals = ({ tankSnapshots, cutoff }: TankPeriodTotalsInput) => {
   const from: TankTotals[] = [];

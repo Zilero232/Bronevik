@@ -5,8 +5,6 @@ export { allowedOrigins, corsOptionsFor, guardedOrigins } from './cors';
 export { envSchema, isProduction, validateEnv } from './env';
 export type { Env } from './env';
 export { FEATURES } from './features.constants';
-export { isLestaMock, isRealLestaApplicationId, lestaMockBaseUrl } from './lesta-mock';
-export { LESTA_MOCK } from './lesta-mock';
 export { LESTA } from './lesta.constants';
 export { expressTrustProxy, trustedProxies } from './proxy';
 export { SOURCES } from './sources.constants';

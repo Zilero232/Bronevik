@@ -13,6 +13,7 @@ export {
   isUniqueViolation,
   LIMIT_LOCK_SCOPE,
   lockedTransaction,
+  PRISMA_TIMEOUT,
   PrismaModule,
   PrismaService
 } from './prisma';

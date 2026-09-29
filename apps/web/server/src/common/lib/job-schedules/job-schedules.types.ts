@@ -10,12 +10,10 @@ export type JobSchedule = {
   data?: Record<string, unknown>;
   enabled?: boolean;
   needsLesta?: boolean;
-  realLestaOnly?: boolean;
 };
 
 export type ScheduleEnvironment = {
   hasLesta: boolean;
-  lestaMock: boolean;
 };
 
 export type IsScheduleActiveInput = ScheduleEnvironment & {

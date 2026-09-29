@@ -1,10 +1,22 @@
 'use client';
 
-import { CalendarDays, CalendarPlus } from 'lucide-react';
+import { CalendarDays, CalendarPlus, CalendarX2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
-import { ActionStrip, buttonVariants, CopyField, DataSourceNote, ErrorState, KeyFigure, PageHero, QueryState, Skeleton, ToggleChips } from '@/ui-kit';
+import {
+  ActionStrip,
+  buttonVariants,
+  CopyField,
+  DataSourceNote,
+  EmptyState,
+  ErrorState,
+  KeyFigure,
+  PageHero,
+  QueryState,
+  Skeleton,
+  ToggleChips
+} from '@/ui-kit';
 
 import { EVENTS_FEED } from '../api';
 import { EVENTS } from '../config';
@@ -48,6 +60,11 @@ export const EventsPage = () => {
         className={s.strip}
       />
       <QueryState
+        empty={
+          <div className={s.section}>
+            <EmptyState description={t('empty.allDescription')} icon={<CalendarX2 size={EVENTS.emptyIconSize} />} title={t('empty.allTitle')} />
+          </div>
+        }
         errorState={
           <div className={s.section}>
             <ErrorState

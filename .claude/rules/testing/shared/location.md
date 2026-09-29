@@ -31,6 +31,6 @@ packages/ratings/src/eff/
 
 Not `__tests__`, not a bare test file beside the source, not a separate `tests/` tree at the workspace root. Browser E2E specs live only in the root [e2e/](../../../../e2e/) with a `.spec.ts` extension. The server's HTTP-level suites — a Nest app built from the real modules with mocked collaborators and driven through `supertest` — are Vitest files named `*.e2e.test.ts` in the module's own `_tests/` (`marks/_tests`, `public-api/_tests`, `replays/_tests`).
 
-Fixtures shared by several suites live in the `_tests/` of the concern they build (`ratings/src/stats/_tests/fixtures.ts`, `lesta-mock/lib/world/_tests/fixtures.ts`), never in a `_tests/` at a source root.
+Fixtures shared by several suites live in the `_tests/` of the concern they build (`ratings/src/stats/_tests/fixtures.ts`, `collector/tracking/lib/poll-pipeline/_tests/poll-pipeline.fixtures.ts`), never in a `_tests/` at a source root.
 
 The one exception is the game modpack — see `modpack/tests.md`.

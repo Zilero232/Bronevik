@@ -20,20 +20,21 @@ const vehicle = (overrides: Partial<VehicleCatalogItem> & Pick<VehicleCatalogIte
 });
 
 const CATALOG = [
-  vehicle({ tankId: 1, name: 'ИС-7' }),
+  vehicle({ tankId: 1, name: 'ИС-7', role: 'HT_break' }),
   vehicle({ tankId: 2, name: 'Т-34', type: 'mediumTank', tier: 5 }),
   vehicle({ tankId: 3, name: 'Löwe', nation: 'germany', tier: 8, isPremium: true }),
   vehicle({ tankId: 4, name: 'Объект 140', type: 'mediumTank' }),
-  vehicle({ tankId: 5, name: 'Ёж', type: 'lightTank', tier: 5 })
+  vehicle({ tankId: 5, name: 'Ёж', type: 'lightTank', tier: 5 }),
+  vehicle({ tankId: 6, name: 'Коллекционный', tier: 8, isCollectible: true })
 ];
 
-const NO_FILTERS: VehicleFilterValues = { tiers: [], types: [], nations: [], premium: 'all' };
+const NO_FILTERS: VehicleFilterValues = { tiers: [], types: [], nations: [], premium: 'all', roles: [] };
 
 const ids = (vehicles: VehicleCatalogItem[]) => vehicles.map(({ tankId }) => tankId);
 
 describe('filterCatalog', () => {
   it('keeps everything without filters', () => {
-    expect(ids(filterCatalog({ catalog: CATALOG, filters: NO_FILTERS, search: '' }))).toEqual([1, 2, 3, 4, 5]);
+    expect(ids(filterCatalog({ catalog: CATALOG, filters: NO_FILTERS, search: '' }))).toEqual([1, 2, 3, 4, 5, 6]);
   });
 
   it('matches names ignoring case, dashes, spaces and ё', () => {
@@ -48,6 +49,11 @@ describe('filterCatalog', () => {
     expect(ids(filterCatalog({ catalog: CATALOG, filters: { ...NO_FILTERS, nations: ['germany'] }, search: '' }))).toEqual([3]);
     expect(ids(filterCatalog({ catalog: CATALOG, filters: { ...NO_FILTERS, premium: 'premium' }, search: '' }))).toEqual([3]);
     expect(ids(filterCatalog({ catalog: CATALOG, filters: { ...NO_FILTERS, premium: 'regular' }, search: '' }))).toEqual([1, 2, 4, 5]);
+    expect(ids(filterCatalog({ catalog: CATALOG, filters: { ...NO_FILTERS, premium: 'collector' }, search: '' }))).toEqual([6]);
+  });
+
+  it('keeps only vehicles of the chosen role', () => {
+    expect(ids(filterCatalog({ catalog: CATALOG, filters: { ...NO_FILTERS, roles: ['HT_break'] }, search: '' }))).toEqual([1]);
   });
 });
 

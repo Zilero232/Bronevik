@@ -20,9 +20,9 @@ export const CodesPage = () => {
     <div className={s.root}>
       <PageHero
         figures={
-          codes.query.data && (
+          codes.figures && (
             <>
-              <KeyFigure label={t('head.activeFigure')} value={codes.query.data.active.length} variant='compact' />
+              <KeyFigure label={t('head.activeFigure')} value={codes.figures.active.length} variant='compact' />
               {codes.expiringCount !== null && <KeyFigure label={t('head.expiringFigure')} value={codes.expiringCount} variant='compact' />}
             </>
           )

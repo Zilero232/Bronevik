@@ -4,7 +4,7 @@ import { cacheLife } from 'next/cache';
 import { createLoader } from 'nuqs/server';
 import { isNonNullish } from 'remeda';
 
-import { loadVehicleFilters, vehicleQuery } from '@/features/tank/filter-vehicles';
+import { loadVehicleFilters } from '@/features/tank/filter-vehicles';
 import { prefetchState } from '@/shared/api/prefetch-state';
 import { PREFETCH_CACHE_LIFE } from '@/shared/api/query-client';
 
@@ -31,7 +31,6 @@ const prefetchTanks = async ({ stats, tierList, economy }: TanksPrefetchInput) =
 export const tanksPageState = async (search: SearchParams) => {
   const state = loadTanksState(search);
   const filters = loadVehicleFilters(search);
-  const vehicle = vehicleQuery(filters);
 
-  return prefetchTanks({ stats: statsParams({ state, vehicle }), ...activeViewParams({ state, filters, vehicle }) });
+  return prefetchTanks({ stats: statsParams({ state, filters }), ...activeViewParams({ state, filters }) });
 };

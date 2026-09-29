@@ -10,10 +10,15 @@ import json
 import os
 import re
 
-from .model import (DEPENDENCY_KIND, ID_PATTERN, LANGUAGES, Author, Catalog, CatalogEntry, Category, Dependency, Licence, Localized, Preset,
-                    Preview)
+from .model import (DEPENDENCY_KIND, ID_PATTERN, LANGUAGES, PERF_LEVELS, Author, Catalog, CatalogEntry, Category, ConflictRule, Dependency,
+                    Licence, Localized, Preset, Preview)
 
 PREVIEW_EXTENSIONS = ('.svg', '.png')
+AUDIO_EXTENSIONS = ('.mp3', '.ogg', '.wav')
+# Audio previews are the sounds a component already ships, so they are read from the modpack's assets/ folder.
+AUDIO_DIR = 'assets'
+MASK_PATTERN = re.compile(r'^[a-z0-9*?._-]+$')
+OWNED_PATH_PATTERN = re.compile(r'^[a-z0-9_./-]+$')
 FORBIDDEN_TEXT = re.compile(r'[\x00-\x09\x0b-\x1f]')
 SHA256_PATTERN = re.compile(r'^[0-9a-f]{64}$')
 PACKAGE_ID_PATTERN = re.compile(r'^[a-z0-9]+(?:[._-][a-z0-9]+)+$')
@@ -71,6 +76,7 @@ class _Reader(object):
             return Preview()
         image = value.get('image')
         video = value.get('video')
+        audio = value.get('audio')
         if image is not None:
             if not image.lower().endswith(PREVIEW_EXTENSIONS):
                 self.fail(where, 'preview image must be %s' % ' or '.join(PREVIEW_EXTENSIONS))
@@ -78,7 +84,37 @@ class _Reader(object):
                 self.fail(where, 'preview image %s not found in catalog/' % image)
         if video is not None and not str(video).startswith('https://'):
             self.fail(where, 'preview video must be an https:// link')
-        return Preview(image, video)
+        if audio is not None:
+            if not str(audio).lower().endswith(AUDIO_EXTENSIONS) or '..' in str(audio):
+                self.fail(where, 'preview audio must be a %s file under assets/' % ' or '.join(AUDIO_EXTENSIONS))
+            elif not os.path.isfile(self.audio_path(audio)):
+                self.fail(where, 'preview audio %s not found in assets/' % audio)
+        return Preview(image, video, audio)
+
+    def audio_path(self, audio):
+        return os.path.join(os.path.dirname(os.path.abspath(self.assets_dir)), AUDIO_DIR, *str(audio).split('/'))
+
+    def perf(self, where, value):
+        if value not in PERF_LEVELS:
+            self.fail(where, 'perf must be one of %s, got %r' % (', '.join(PERF_LEVELS), value))
+            return None
+        return value
+
+    def conflict(self, index, raw):
+        where = 'conflicts[%d]' % index
+        patterns = raw.get('patterns')
+        if not isinstance(patterns, list) or not patterns:
+            self.fail(where + '.patterns', 'list the file name or package id masks')
+            patterns = []
+        for pattern in patterns:
+            if not isinstance(pattern, str) or not MASK_PATTERN.match(pattern) or pattern.strip('*?') == '':
+                self.fail(where + '.patterns', '%r must be a lowercase mask with some fixed text' % (pattern,))
+        components = raw.get('components')
+        if not isinstance(components, list) or not components:
+            self.fail(where + '.components', 'list the ids of our components it duplicates')
+            components = []
+        return ConflictRule(self.ident(where, raw.get('id')), self.localized(where + '.title', raw.get('title')), tuple(patterns),
+                            tuple(str(item) for item in components), self.localized(where + '.note', raw.get('note')))
 
     def category(self, index, raw):
         where = 'categories[%d]' % index
@@ -102,6 +138,7 @@ class _Reader(object):
             required=bool(raw.get('required', False)),
             preview=self.preview(where + '.preview', raw.get('preview')),
             dependencies=tuple(raw.get('dependencies', ())),
+            perf=self.perf(where + '.perf', raw.get('perf')),
         )
 
     def https(self, where, value):
@@ -189,6 +226,8 @@ def parse(raw, assets_dir):
         fallback_category=raw.get('fallbackCategory', ''),
         fallback_fair_play=reader.localized('fallbackFairPlay', raw.get('fallbackFairPlay')),
         dependencies=tuple(dependencies),
+        owned_paths=tuple(raw.get('ownedPaths', ())),
+        conflicts=tuple(reader.conflict(index, item) for index, item in enumerate(raw.get('conflicts', ()))),
     )
     _check(reader, catalog)
     if reader.problems:
@@ -229,6 +268,17 @@ def _check(reader, catalog):
                 reader.fail(where, 'unknown dependency %r' % dependency)
     for dependency in catalog.dependencies:
         _check_dependency(reader, catalog, entry_ids, dependency)
+    for path in catalog.owned_paths:
+        if not isinstance(path, str) or not OWNED_PATH_PATTERN.match(path) or path.startswith(('/', 'res/')) or '..' in path:
+            reader.fail('ownedPaths', '%r must be a lowercase in-game path prefix without res/' % (path,))
+    _unique(reader, 'conflicts', [rule.id for rule in catalog.conflicts])
+    for rule in catalog.conflicts:
+        for component_id in rule.components:
+            if component_id not in entry_ids:
+                reader.fail('conflicts.%s' % rule.id, 'unknown component %r' % component_id)
+        for pattern in rule.patterns:
+            if any(pattern.startswith(prefix.lower()) for prefix in our_prefixes(catalog.owned_patterns)):
+                reader.fail('conflicts.%s' % rule.id, '%r names our own packages' % pattern)
 
 
 def our_prefixes(owned_patterns):

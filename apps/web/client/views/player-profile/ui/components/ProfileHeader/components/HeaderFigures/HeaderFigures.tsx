@@ -2,7 +2,7 @@
 
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { ratingValueTone, winRateTone } from '@/entities/player/stats';
+import { RatingsMethodLink, ratingValueTone, winRateTone } from '@/entities/player/stats';
 import { KeyFigure, ProgressRing } from '@/ui-kit';
 
 import type { HeaderFiguresProps } from './HeaderFigures.types';
@@ -32,6 +32,7 @@ export const HeaderFigures = ({ stats, ring }: HeaderFiguresProps) => {
           <span className={s.ringLabel}>{tCommon('ratings.wn8')}</span>
         </ProgressRing>
         {stats.wn8.tier && <span className={s.tier}>{t(`tiers.${stats.wn8.tier}`)}</span>}
+        <RatingsMethodLink section='wn8' />
       </div>
       <div className={s.figures}>
         <KeyFigure

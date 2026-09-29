@@ -5,6 +5,7 @@ import { readFile } from 'node:fs/promises';
 import type { SignatureFont } from '../lib';
 
 import { AppNotFoundException } from '../../../common/exceptions';
+import { insensitiveEquals } from '../../../common/lib';
 import { PrismaService, REDIS } from '../../../core';
 import { SIGNATURE } from '../config';
 import { renderSignature } from '../lib';
@@ -27,7 +28,7 @@ export class SignatureService {
     }
 
     const player = await this.prisma.player.findFirst({
-      where: { nickname: { equals: nickname, mode: 'insensitive' }, isHidden: false },
+      where: { nickname: insensitiveEquals(nickname), isHidden: false },
       select: { accountId: true, nickname: true, clanId: true }
     });
 

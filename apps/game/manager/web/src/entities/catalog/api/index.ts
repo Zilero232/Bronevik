@@ -1,2 +1,11 @@
-export { catalogCategorySchema, catalogComponentSchema, catalogDependencySchema, catalogPresetSchema, catalogSchema, getCatalog } from './catalog';
-export type { Catalog, CatalogCategory, CatalogComponent, CatalogDependency, CatalogPreset } from './catalog';
+export {
+  catalogCategorySchema,
+  catalogComponentSchema,
+  catalogConflictSchema,
+  catalogDependencySchema,
+  catalogPresetSchema,
+  catalogSchema,
+  getCatalog,
+  perfSchema
+} from './catalog';
+export type { Catalog, CatalogCategory, CatalogComponent, CatalogConflict, CatalogDependency, CatalogPreset, Perf } from './catalog';

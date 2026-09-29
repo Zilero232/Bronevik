@@ -1,4 +1,4 @@
-import type { Catalog } from '@/entities/catalog';
+import type { Catalog, Perf } from '@/entities/catalog';
 import type { ComponentState, Installation } from '@/entities/installation';
 import type { Locale } from '@/shared/i18n';
 
@@ -14,6 +14,8 @@ export type CatalogRow = {
   libraries: string[];
   image: string | null;
   video: string | null;
+  audio: string | null;
+  perf: Perf | null;
 };
 
 export type BuildCatalogRowsInput = {
@@ -31,4 +33,5 @@ export type FilterCatalogRowsInput = {
   rows: readonly CatalogRow[];
   category: string;
   query: string;
+  lightOnly: boolean;
 };

@@ -18,8 +18,17 @@ export const PulsePage = () => {
     <div className={s.root}>
       <PageHeader description={t('head.description')} title={t('head.title')} />
       <QueryState
+        empty={
+          <>
+            <Card>
+              <EmptyState description={t('empty.description')} title={t('empty.title')} />
+            </Card>
+            <QueueNowCard />
+          </>
+        }
         errorDescription={t('error.description')}
         errorTitle={t('error.title')}
+        isEmpty={(pulse) => pulse.trackedPlayers === 0}
         query={view.query}
         skeleton={<Skeleton height={320} shape='block' />}
       >

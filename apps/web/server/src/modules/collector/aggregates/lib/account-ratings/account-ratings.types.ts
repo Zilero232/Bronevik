@@ -26,6 +26,8 @@ type AccountSnapshotPoint = {
   battles: number;
 };
 
+export type EarliestCutoffInput = Omit<PeriodCutoffInput, 'window'>;
+
 export type PeriodCutoffInput = {
   window: PeriodWindow;
   accountSnapshots: readonly AccountSnapshotPoint[];

@@ -10,7 +10,7 @@ import { useTanksState } from '../use-tanks-state';
 
 export const useTankStats = () => {
   const [state] = useTanksState();
-  const { query } = useVehicleFilters();
+  const { filters } = useVehicleFilters();
 
-  return useQuery({ ...tanksQueries.stats(statsParams({ state, vehicle: query })), placeholderData: keepPreviousData });
+  return useQuery({ ...tanksQueries.stats(statsParams({ state, filters })), placeholderData: keepPreviousData });
 };

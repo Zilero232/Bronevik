@@ -7,7 +7,7 @@ import _support
 from otmetki.core.format import COLOR_MUTED
 from otmetki.core.settings import Settings
 from otmetki.features.consumables.i18n import STRINGS
-from otmetki.features.consumables.model import Loadout, format_panel
+from otmetki.features.consumables.model import Loadout, format_panel, shot_speed
 from otmetki.features.consumables.model.preview import preview_loadout, preview_text
 from otmetki.features.consumables.settings import SCHEMA, SETTINGS
 
@@ -56,6 +56,25 @@ class FormatTest(unittest.TestCase):
         shells_only = format_panel(loadout, Settings({'show_consumables': False}, SCHEMA), translator('en'))
         assert 'AP 32' in shells_only and '\n' not in shells_only
         assert format_panel(Loadout(), Settings({}, SCHEMA), translator()) is None
+
+    def test_shell_stats_of_the_loaded_shell_or_every_type(self):
+        loadout = preview_loadout()
+        assert u'258' not in format_panel(loadout, Settings({}, SCHEMA), translator())
+        current = format_panel(loadout, Settings({'show_shell_stats': True}, SCHEMA), translator()).split('\n')
+        assert len(current) == 3 and u'ББ:' in current[2] and u'258 мм' in current[2] and u'урон 390' in current[2] and u'1 000 м/с' in current[2]
+        every = format_panel(loadout, Settings({'show_shell_stats': True, 'shell_stats': 'all'}, SCHEMA), translator('en')).split('\n')
+        assert len(every) == 5 and u'330 mm' in every[3] and u'750 m/s' in every[4]
+        assert loadout.set_current(12) and not loadout.set_current(12)
+        switched = format_panel(loadout, Settings({'show_shell_stats': True}, SCHEMA), translator()).split('\n')
+        assert u'БП:' in switched[2]
+
+    def test_stats_values(self):
+        loadout = Loadout()
+        assert loadout.set_stats(11, (258, 250), 390.4, 1000)
+        assert loadout.stats[11] == {'penetration': 258, 'damage': 390, 'speed': 1000}
+        assert not loadout.set_stats(11, [258], 390, 1000)
+        assert loadout.set_stats(12, None, -1, 'x') and loadout.stats[12] == {'penetration': None, 'damage': None, 'speed': None}
+        assert shot_speed(800.0, 0.8) == 1000 and shot_speed(None, 0.8) is None and shot_speed(800.0, 0) is None
 
     def test_preview_settings_and_strings(self):
         assert u'ББ 32' in preview_text(Settings({}, SCHEMA), translator())

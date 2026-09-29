@@ -1,1 +1,1 @@
-export { escapeLike, searchCandidates } from './layout-switch';
+export { searchCandidates } from './layout-switch';

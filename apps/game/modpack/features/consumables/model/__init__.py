@@ -9,7 +9,21 @@ from ....core.shells import SHELL_CODES
 from .constants import READY_MARK, SEPARATOR
 
 # Fair play: the own vehicle's consumables and shells, exactly what the client's own consumables panel shows. The
-# reload of enemies is on Lesta's forbidden list and is never read.
+# reload of enemies is on Lesta's forbidden list and is never read. The shell stats are the own gun's, the numbers the
+# vanilla shell tooltip shows in battle (consumables_panel._makeShellTooltip, RU 1.45).
+
+
+def shot_speed(raw, factor):
+    """The shell velocity in m/s the game shows: the shot speed divided by the projectile speed factor."""
+    if not is_number(raw) or not is_number(factor) or raw <= 0 or factor <= 0:
+        return None
+    return int(round(raw / factor))
+
+
+def first_value(value):
+    if isinstance(value, (tuple, list)):
+        value = value[0] if value else None
+    return int(round(value)) if is_number(value) and value > 0 else None
 
 
 class Loadout(object):
@@ -20,6 +34,8 @@ class Loadout(object):
         self.item_order = []
         self.shells = {}
         self.shell_order = []
+        self.stats = {}
+        self.current = None
 
     def set_item(self, int_cd, name, quantity, ready, remaining):
         if not is_int(int_cd) or not int_cd:
@@ -44,6 +60,19 @@ class Loadout(object):
             self.shell_order.append(int_cd)
         changed = self.shells.get(int_cd) != shell
         self.shells[int_cd] = shell
+        return changed
+
+    def set_stats(self, int_cd, penetration, damage, speed):
+        if not is_int(int_cd) or not int_cd:
+            return False
+        stats = {'penetration': first_value(penetration), 'damage': first_value(damage), 'speed': speed if is_int(speed) and speed > 0 else None}
+        changed = self.stats.get(int_cd) != stats
+        self.stats[int_cd] = stats
+        return changed
+
+    def set_current(self, int_cd):
+        changed = int_cd != self.current
+        self.current = int_cd if is_int(int_cd) else None
         return changed
 
     def tick(self, seconds):
@@ -72,6 +101,29 @@ def shell_text(shell, translate, size):
     return font(u'%s %s' % (label, format_number(shell['quantity'])), color, size)
 
 
+def stats_text(shell, stats, translate, size, current):
+    label = translate('cons_shell_' + shell['code']) if shell['code'] else u'?'
+    values = []
+    if stats.get('penetration'):
+        values.append(translate('cons_penetration', value=format_number(stats['penetration'])))
+    if stats.get('damage'):
+        values.append(translate('cons_damage', value=format_number(stats['damage'])))
+    if stats.get('speed'):
+        values.append(translate('cons_speed', value=format_number(stats['speed'])))
+    if not values:
+        return None
+    return u'%s %s' % (font(label + u':', COLOR_NEUTRAL if current else COLOR_MUTED, size), font(SEPARATOR.join(values), COLOR_MUTED, size))
+
+
+def stats_lines(loadout, settings, translate, size):
+    if settings.get('shell_stats') == 'all':
+        ids = [int_cd for int_cd in loadout.shell_order if int_cd in loadout.stats]
+    else:
+        ids = [loadout.current] if loadout.current in loadout.stats and loadout.current in loadout.shells else []
+    lines = [stats_text(loadout.shells[int_cd], loadout.stats[int_cd], translate, size, int_cd == loadout.current) for int_cd in ids]
+    return [line for line in lines if line]
+
+
 def format_panel(loadout, settings, translate):
     size = settings.get('font_size')
     lines = []
@@ -79,4 +131,6 @@ def format_panel(loadout, settings, translate):
         lines.append(SEPARATOR.join(item_text(loadout.items[int_cd], translate, size) for int_cd in loadout.item_order))
     if settings.get('show_shells') and loadout.shell_order:
         lines.append(SEPARATOR.join(shell_text(loadout.shells[int_cd], translate, size) for int_cd in loadout.shell_order))
+    if settings.get('show_shell_stats'):
+        lines.extend(stats_lines(loadout, settings, translate, size))
     return u'\n'.join(lines) if lines else None

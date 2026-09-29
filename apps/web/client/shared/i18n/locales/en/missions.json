@@ -18,7 +18,7 @@
     "progress": "{done} of {total} done",
     "honors": "With honors: {count}",
     "emptyTitle": "Missions are not loaded yet",
-    "emptyDescription": "Personal missions appear after the next game data import.",
+    "emptyDescription": "Personal missions show up here as soon as we receive them from the game client.",
     "errorTitle": "Could not load personal missions",
     "errorDescription": "The server did not respond. Try again.",
     "home": "Home",

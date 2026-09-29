@@ -8,17 +8,25 @@ import { useTranslations } from 'next-intl';
 import type { TableColumn } from '@/ui-kit';
 
 import { TierCell } from '@/entities/tank/tank';
+import { PinToggle } from '@/features/app/pin-rows';
 import { DeltaCell } from '@/ui-kit';
 
-import { DRAWER_THRESHOLDS, NUMERIC_COLUMN } from '../../../config';
+import { DRAWER_THRESHOLDS, MOE_LIST, NUMERIC_COLUMN } from '../../../config';
 import { DetailsCell, DetailsHeaderCell, SweatCell, TankLinkCell, ThresholdCell } from '../../../ui/components/MarksTable/components';
 
 const column = createColumnHelper<MoeRow>();
 
 export const useMarksColumns = (onSelect: (row: MoeRow) => void): TableColumn<MoeRow>[] => {
   const t = useTranslations('marks.table.columns');
+  const tPin = useTranslations('common.pin');
 
   return [
+    column.display({
+      id: 'pin',
+      header: tPin('column'),
+      cell: ({ row: { original } }) => <PinToggle id={String(original.vehicle.tankId)} name={original.vehicle.name} scope='tanks' />,
+      meta: { width: MOE_LIST.pinWidth }
+    }),
     column.accessor((row) => row.vehicle.name, {
       id: 'tank',
       header: t('tank'),

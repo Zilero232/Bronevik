@@ -11,7 +11,6 @@ export type RankedRow = {
   value: number | null;
   battles: number;
   delta: number | null;
-  total: bigint;
 };
 
 export type OfficialNeighborsInput = {

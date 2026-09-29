@@ -7,9 +7,9 @@ import type { MissingPlayerLookup } from '../lib';
 import type { LestaPlayerInfo } from '../players.types';
 
 import { AppNotFoundException } from '../../../common/exceptions';
-import { errorMessage, fromUnixSeconds } from '../../../common/lib';
+import { errorMessage, fromUnixSeconds, insensitiveEquals } from '../../../common/lib';
 import { LESTA_CLIENT, PrismaService, REDIS } from '../../../core';
-import { accountInfoSchema, isExtraRejected } from '../../../lib/lesta';
+import { accountInfoSchema, isExtraRejected, isSearchRejected } from '../../../lib/lesta';
 import { CollectorProducerService } from '../../collector';
 import { PLAYER_LOOKUP } from '../config';
 import { missingPlayerKey } from '../lib';
@@ -31,7 +31,7 @@ export class PlayerResolverService {
     }
 
     const local = await this.prisma.player.findFirst({
-      where: { nickname: { equals: idOrNick, mode: 'insensitive' } },
+      where: { nickname: insensitiveEquals(idOrNick) },
       select: { accountId: true, isHidden: true },
       orderBy: { lastBattleAt: { sort: 'desc', nulls: 'last' } }
     });
@@ -46,7 +46,13 @@ export class PlayerResolverService {
       throw new AppNotFoundException('PLAYER_NOT_FOUND', `No player named ${idOrNick}`);
     }
 
-    const [found] = await this.lesta.account.list({ search: idOrNick, type: 'exact', limit: 1 });
+    const [found] = await this.lesta.account.list({ search: idOrNick, type: 'exact', limit: 1 }).catch((error: unknown) => {
+      if (isSearchRejected(error)) {
+        return [];
+      }
+
+      throw error;
+    });
 
     if (!found) {
       await this.rememberMissing(lookup);
@@ -159,8 +165,24 @@ export class PlayerResolverService {
   }
 
   private touch(accountId: bigint) {
-    void this.prisma.player.update({ where: { accountId }, data: { lastViewedAt: new Date() } }).catch((error: unknown) => {
+    void this.recordView(accountId).catch((error: unknown) => {
       this.logger.debug(`lastViewedAt of ${accountId} not updated: ${errorMessage(error)}`);
     });
+  }
+
+  private async recordView(accountId: bigint): Promise<void> {
+    const claimed = await this.redis.set(
+      `${PLAYER_LOOKUP.viewTouchKeyPrefix}${accountId}`,
+      PLAYER_LOOKUP.viewTouchMarker,
+      'EX',
+      PLAYER_LOOKUP.viewTouchSeconds,
+      'NX'
+    );
+
+    if (claimed === null) {
+      return;
+    }
+
+    await this.prisma.player.update({ where: { accountId }, data: { lastViewedAt: new Date() } });
   }
 }

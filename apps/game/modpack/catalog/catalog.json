@@ -6,6 +6,120 @@
     "en": "Uses only your own data and shows nothing about enemies."
   },
   "ownedPatterns": ["net.triotmetki.*.mtmod", "net.triotmetki.*.wotmod", "otmetki.*.mtmod", "otmetki.*.wotmod"],
+  "ownedPaths": [
+    "scripts/client/gui/mods/otmetki/",
+    "scripts/client/gui/mods/mod_otmetki",
+    "gui/gameface/mods/triotmetki/",
+    "gui/maps/icons/otmetki/",
+    "mods/configs/res_map/net.triotmetki.",
+    "audioww/otmetki_"
+  ],
+  "conflicts": [
+    {
+      "id": "xvm",
+      "title": {
+        "ru": "XVM",
+        "en": "XVM"
+      },
+      "patterns": ["com.modxvm.*", "*xvm*"],
+      "components": ["damage_log", "hit_log", "received_hits", "sixth_sense", "minimap"],
+      "note": {
+        "ru": "Свой лог урона, лог попаданий, лампа и миникарта: при включённых наших панелях выйдут две одинаковые.",
+        "en": "Its own damage log, hit log, lamp and minimap: with our panels on you get two of each."
+      }
+    },
+    {
+      "id": "pmod",
+      "title": {
+        "ru": "PMOD",
+        "en": "PMOD"
+      },
+      "patterns": ["*pmod*"],
+      "components": ["damage_log", "team_hp", "camera", "crosshair"],
+      "note": {
+        "ru": "Лог урона, ХП команд и настройки камеры и прицела пересекаются с нашими.",
+        "en": "Its damage log, team HP and camera and crosshair settings overlap ours."
+      }
+    },
+    {
+      "id": "battle_observer",
+      "title": {
+        "ru": "Battle Observer",
+        "en": "Battle Observer"
+      },
+      "patterns": ["*battleobserver*", "*battle_observer*", "armagomen.*"],
+      "components": ["team_hp", "damage_log", "main_gun", "battle_clock", "sixth_sense", "battle_efficiency", "session_stats"],
+      "note": {
+        "ru": "ХП команд, лог урона, «Основной калибр», часы и сессия: две версии одних панелей, известны падения клиента.",
+        "en": "Team HP, damage log, «Основной калибр», clock and session: two copies of the same panels; client crashes are known."
+      }
+    },
+    {
+      "id": "marks_calculator",
+      "title": {
+        "ru": "Калькулятор отметок",
+        "en": "Marks calculator"
+      },
+      "patterns": ["*marksongun*", "*marks_on_gun*", "*marksonguns*", "*gunmarks*", "*markofexcellence*"],
+      "components": ["marks_panel", "hangar_marks"],
+      "note": {
+        "ru": "Второй калькулятор отметок: две панели с процентом в бою и в ангаре.",
+        "en": "A second marks calculator: two MoE panels in battle and in the hangar."
+      }
+    },
+    {
+      "id": "sixth_sense_lamp",
+      "title": {
+        "ru": "Лампа шестого чувства",
+        "en": "Sixth sense lamp"
+      },
+      "patterns": ["*sixthsense*", "*sixth_sense*", "*6thsense*", "*6th_sense*"],
+      "components": ["sixth_sense"],
+      "note": {
+        "ru": "Вторая лампа: два значка и два звука засвета.",
+        "en": "A second lamp: two icons and two spotted sounds."
+      }
+    },
+    {
+      "id": "damage_log_mod",
+      "title": {
+        "ru": "Лог урона",
+        "en": "Damage log"
+      },
+      "patterns": ["*damagelog*", "*damage_log*", "*hitlog*", "*hit_log*"],
+      "components": ["damage_log", "hit_log", "received_hits"],
+      "note": {
+        "ru": "Второй лог урона или попаданий.",
+        "en": "A second damage or hit log."
+      }
+    },
+    {
+      "id": "session_stats_mod",
+      "title": {
+        "ru": "Статистика сессии",
+        "en": "Session stats"
+      },
+      "patterns": ["*sessionstat*", "*session_stat*"],
+      "components": ["session_stats"],
+      "note": {
+        "ru": "Вторая статистика сессии; такие моды у Armagomen и Левши роняли клиент вместе с другими.",
+        "en": "A second session stats mod; the Armagomen and Левша ones crashed the client together with others."
+      }
+    },
+    {
+      "id": "replays_manager_mod",
+      "title": {
+        "ru": "Менеджер реплеев",
+        "en": "Replays manager"
+      },
+      "patterns": ["*replaysmanager*", "*replays_manager*", "*replaymanager*"],
+      "components": ["replay_manager"],
+      "note": {
+        "ru": "Второй менеджер реплеев в ангаре.",
+        "en": "A second replays manager in the hangar."
+      }
+    }
+  ],
   "presets": [
     {
       "id": "recommended",
@@ -127,6 +241,7 @@
         "ru": "Не читает данные боя.",
         "en": "Reads no battle data."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/base.svg"
       }
@@ -147,6 +262,7 @@
         "ru": "Только ваши данные: блок personal итогов боя и ваш досье. Данные других игроков не читаются.",
         "en": "Only your own data: the personal block of battle results and your dossier. Other players' data is never read."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/base.svg"
       }
@@ -167,6 +283,7 @@
         "ru": "Показывает только то, что передают другие компоненты.",
         "en": "Shows only what the other components provide."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/base.svg"
       }
@@ -187,6 +304,7 @@
         "ru": "Считается по вашему урону и засвету, как в итогах боя.",
         "en": "Computed from your own damage and assistance, as in battle results."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/marks_panel.svg"
       }
@@ -207,6 +325,7 @@
         "ru": "Только события, которые игра уже показывает вам.",
         "en": "Only events the game already shows you."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/damage_log.svg"
       }
@@ -227,6 +346,7 @@
         "ru": "Только ваши попадания по видимым целям.",
         "en": "Only your own hits on visible targets."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/hit_log.svg"
       }
@@ -247,6 +367,7 @@
         "ru": "Те же данные, что в ушах команд у стандартного интерфейса.",
         "en": "The same data as the vanilla team panels."
       },
+      "perf": "medium",
       "preview": {
         "image": "previews/team_hp.svg"
       }
@@ -267,8 +388,10 @@
         "ru": "Срабатывает только от навыка экипажа, без поиска ближайшего врага.",
         "en": "Fires only from the crew skill, with no nearest-enemy search."
       },
+      "perf": "low",
       "preview": {
-        "image": "previews/sixth_sense.svg"
+        "image": "previews/sixth_sense.svg",
+        "audio": "otmetki/sounds/sixthSense.mp3"
       }
     },
     {
@@ -287,6 +410,7 @@
         "ru": "Не читает данные боя.",
         "en": "Reads no battle data."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/battle_clock.svg"
       }
@@ -307,8 +431,10 @@
         "ru": "Только ваши рекорды: свои итоги боёв, досье своего танка и их копия на сайте.",
         "en": "Only your own records: your battle results, your tank's dossier and the site's copy of them."
       },
+      "perf": "low",
       "preview": {
-        "image": "previews/personal_best.svg"
+        "image": "previews/personal_best.svg",
+        "audio": "otmetki/sounds/otmetki_record.mp3"
       }
     },
     {
@@ -327,6 +453,7 @@
         "ru": "Ваш урон и ХП противников, которые клиент уже показывает на маркерах и в панелях команд.",
         "en": "Your damage and the enemy HP the client already shows on markers and team panels."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/main_gun.svg"
       }
@@ -347,6 +474,7 @@
         "ru": "Ваши события боя и ваши же средние с сайта; ничего о других игроках.",
         "en": "Your own battle events and your own averages from the site; nothing about other players."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/battle_efficiency.svg"
       }
@@ -367,6 +495,7 @@
         "ru": "Только свой танк: то же, что панель снаряжения игры.",
         "en": "Your own tank only: what the game's consumables panel shows."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/consumables.svg"
       }
@@ -387,8 +516,30 @@
         "ru": "Только своё орудие; перезарядка противников запрещена правилами и не читается.",
         "en": "Your own gun only; the reload of enemies is forbidden and never read."
       },
+      "perf": "medium",
       "preview": {
         "image": "previews/reload_timer.svg"
+      }
+    },
+    {
+      "id": "gun_arc",
+      "category": "battle",
+      "presets": ["recommended", "streamer"],
+      "title": {
+        "ru": "УГН орудия",
+        "en": "Gun traverse limits"
+      },
+      "description": {
+        "ru": "Сколько градусов ваше орудие ещё повернётся влево и вправо до упора: «УГН ◄ 12° ├───●──┤ 8° ►», с подсветкой, когда до упора осталось мало. Появляется только на машинах с ограниченной горизонтальной наводкой — ПТ, САУ и части танков.",
+        "en": "How many degrees your gun can still turn left and right before its limits: «Traverse ◄ 12° ├───●──┤ 8° ►», highlighted when little is left. Shows only on vehicles with a limited traverse: tank destroyers, SPGs and some tanks."
+      },
+      "fairPlay": {
+        "ru": "Только параметры своей машины и положение своей башни; ничего не наводит и не меняет.",
+        "en": "Only your own vehicle's parameters and your own turret position; aims and changes nothing."
+      },
+      "perf": "medium",
+      "preview": {
+        "image": "previews/gun_arc.svg"
       }
     },
     {
@@ -407,6 +558,7 @@
         "ru": "Только попадания по вашему танку из событий, которые игра уже показывает в своём логе урона.",
         "en": "Only the hits on your own tank, from the events the game already shows in its damage log."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/received_hits.svg"
       }
@@ -427,8 +579,30 @@
         "ru": "Только после гибели и только то, что игра уже показала: стрелявший из ленты убийств, сторона как у индикатора попаданий. Ни позиций, ни траекторий.",
         "en": "Only after your death and only what the game already showed: the shooter from the kill feed, the side as the hit indicator drew it. No positions, no trajectories."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/death_card.svg"
+      }
+    },
+    {
+      "id": "bush_circle",
+      "category": "battle",
+      "presets": ["recommended"],
+      "title": {
+        "ru": "Круг 15 м",
+        "en": "15 m circle"
+      },
+      "description": {
+        "ru": "Круг радиусом 15 м на земле вокруг вашего танка: отъедьте от куста дальше — и выстрел вас демаскирует. По клавише (Ctrl+Shift+B) или постоянно, четыре цвета; исчезает, когда танк уничтожен.",
+        "en": "A 15 m circle on the ground around your tank: move farther from the bush and your shot gives you away. By a hotkey (Ctrl+Shift+B) or always, four colours; gone when the tank is destroyed."
+      },
+      "fairPlay": {
+        "ru": "Только позиция своего танка и фиксированный радиус; ничего о противниках.",
+        "en": "Only your own tank's position and a fixed radius; nothing about enemies."
+      },
+      "perf": "medium",
+      "preview": {
+        "image": "previews/bush_circle.svg"
       }
     },
     {
@@ -447,6 +621,7 @@
         "ru": "Только свой танк: чужое оборудование клиент не показывает, и мод его не угадывает.",
         "en": "Your own tank only: the client does not show other vehicles' equipment and the mod does not guess it."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/battle_loadout.svg"
       }
@@ -467,6 +642,7 @@
         "ru": "Без маркеров пропавших из засвета и направлений стволов.",
         "en": "No markers for vehicles that left spotting and no gun directions."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/minimap.svg"
       }
@@ -487,6 +663,7 @@
         "ru": "Только внешний вид: без автоприцела, калькулятора пробития и чужих данных.",
         "en": "Looks only: no aim assist, no penetration calculator, no data about others."
       },
+      "perf": "medium",
       "preview": {
         "image": "previews/crosshair.svg"
       }
@@ -507,6 +684,7 @@
         "ru": "Меняет только вашу камеру в пределах правил Lesta.",
         "en": "Changes only your own camera, within Lesta's rules."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/camera.svg"
       }
@@ -527,6 +705,7 @@
         "ru": "Только скрывает или подписывает сообщения, которые игра уже показала.",
         "en": "Only hides or stamps messages the game already shows."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/chat_filter.svg"
       }
@@ -547,6 +726,7 @@
         "ru": "Только прячет: ничего не читает и не меняет в игре. Ник и клан в интерфейсе игры не скрываются.",
         "en": "Hides only: reads nothing and changes nothing in the game. Your name and clan in the game's interface stay."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/streamer_mode.svg"
       }
@@ -566,6 +746,7 @@
         "ru": "Только события вашего танка и общая лента уничтожений.",
         "en": "Only your own tank's events and the public kill feed."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/battle_sounds.svg"
       }
@@ -586,6 +767,7 @@
         "ru": "Только ваши итоги боёв.",
         "en": "Only your own battle results."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/session_stats.svg"
       }
@@ -606,6 +788,7 @@
         "ru": "Только ваш блок итогов боя.",
         "en": "Only your own block of battle results."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/battle_results.svg"
       }
@@ -626,6 +809,7 @@
         "ru": "Работает только в ангаре.",
         "en": "Works in the hangar only."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/hangar_tweaks.svg"
       }
@@ -646,6 +830,7 @@
         "ru": "Только ваши реплеи из папки клиента.",
         "en": "Only your own replays from the client folder."
       },
+      "perf": "medium",
       "preview": {
         "image": "previews/replay_manager.svg"
       }
@@ -666,8 +851,30 @@
         "ru": "Только ваши итоги боёв и досье, хранится у вас на компьютере.",
         "en": "Only your own battle results and dossier, stored on your computer."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/marks_history.svg"
+      }
+    },
+    {
+      "id": "battle_hits",
+      "category": "hangar",
+      "presets": ["recommended"],
+      "title": {
+        "ru": "Боевые раны",
+        "en": "Battle wounds"
+      },
+      "description": {
+        "ru": "Куда попадали по вашему танку: после боя в ангаре — итог последнего боя, а в окне модпака — схема сверху (корпус, башня, орудие, ходовая) с точками попаданий и список: сторона, исход, урон, кто стрелял. Хранятся последние бои.",
+        "en": "Where your tank was hit: after the battle the hangar shows the last battle's summary, and the modpack window a schematic from above (hull, turret, gun, running gear) with the hit points and a list: side, outcome, damage, who fired. The last battles are kept."
+      },
+      "fairPlay": {
+        "ru": "Только попадания по своему танку и только после боя; где был стрелявший, не записывается.",
+        "en": "Only the hits on your own tank, shown only after the battle; where the shooter was is never recorded."
+      },
+      "perf": "low",
+      "preview": {
+        "image": "previews/battle_hits.svg"
       }
     },
     {
@@ -686,6 +893,7 @@
         "ru": "Только ваши собственные рейтинги с сайта, после привязки мода; ничего о других игроках.",
         "en": "Only your own ratings from the site, once the mod is bound; nothing about other players."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/hangar_ratings.svg"
       }
@@ -706,6 +914,7 @@
         "ru": "Только в ангаре и только по вашим данным: досье танка, ваши бои и пороги отметок с сайта.",
         "en": "Hangar only, from your own data: the tank dossier, your battles and the site's mark thresholds."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/hangar_marks.svg"
       }
@@ -726,8 +935,10 @@
         "ru": "Только ваши цели и ваш прогресс, после привязки мода.",
         "en": "Only your own goals and progress, once the mod is bound."
       },
+      "perf": "low",
       "preview": {
-        "image": "previews/session_goals.svg"
+        "image": "previews/session_goals.svg",
+        "audio": "otmetki/sounds/otmetki_goal.mp3"
       }
     },
     {
@@ -746,6 +957,7 @@
         "ru": "Ваши задачи из экрана ЛБЗ самой игры; ничего о других игроках.",
         "en": "Your own missions from the game's missions screen; nothing about other players."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/personal_missions.svg"
       }
@@ -766,6 +978,7 @@
         "ru": "Только имена и отметки готовности из окна взвода и ваши собственные бои; статистику напарников мод не читает.",
         "en": "Only the names and ready marks of the platoon window and your own battles; the mod reads no statistics of your mates."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/platoon_helper.svg"
       }
@@ -786,6 +999,7 @@
         "ru": "Только ваши случайные бои этой сессии; ничего не блокирует.",
         "en": "Only your own random battles of this session; blocks nothing."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/tilt_guard.svg"
       }
@@ -806,6 +1020,7 @@
         "ru": "Работает только в ангаре и читает только ваше подключение.",
         "en": "Hangar only, reads only your own connection."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/hangar_info.svg"
       }
@@ -826,6 +1041,7 @@
         "ru": "Те же флажки, что в панели снаряжения игры; только в ангаре.",
         "en": "The same flags as the game's ammunition panel; hangar only."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/auto_resupply.svg"
       }
@@ -846,6 +1062,7 @@
         "ru": "Только в ангаре, только скрывает уведомления.",
         "en": "Hangar only, it only hides notifications."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/notification_filter.svg"
       }
@@ -866,6 +1083,7 @@
         "ru": "Только внешний вид ангара.",
         "en": "Only the look of the hangar."
       },
+      "perf": "low",
       "preview": {
         "image": "previews/hangar_cleaner.svg"
       }
@@ -885,6 +1103,7 @@
         "ru": "Только ваши реплеи, после боя и только после привязки. Реплей, как и в игре, содержит данные всех участников боя. Приватны, пока вы не включите публикацию.",
         "en": "Only your own replays, after the battle and only once bound. Like any game replay, the file holds every participant's battle data. Private until you turn publishing on."
       },
+      "perf": "medium",
       "preview": {
         "image": "previews/replay_upload.svg"
       }
@@ -928,6 +1147,7 @@
         "battle_efficiency",
         "consumables",
         "reload_timer",
+        "gun_arc",
         "received_hits",
         "death_card",
         "battle_loadout",
@@ -935,6 +1155,7 @@
         "streamer_mode",
         "session_stats",
         "marks_history",
+        "battle_hits",
         "hangar_ratings",
         "hangar_marks",
         "session_goals",
@@ -982,6 +1203,7 @@
         "battle_efficiency",
         "consumables",
         "reload_timer",
+        "gun_arc",
         "received_hits",
         "death_card",
         "battle_loadout",
@@ -989,6 +1211,7 @@
         "streamer_mode",
         "session_stats",
         "marks_history",
+        "battle_hits",
         "hangar_ratings",
         "hangar_marks",
         "session_goals",

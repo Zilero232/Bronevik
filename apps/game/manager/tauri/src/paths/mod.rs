@@ -58,6 +58,14 @@ impl Layout {
     pub fn durable_dir(&self) -> PathBuf {
         self.roaming_root.clone()
     }
+
+    pub fn sets_file(&self) -> PathBuf {
+        self.roaming_root.join("manager").join(crate::sets::FILE_NAME)
+    }
+
+    pub fn app_data_dir(&self) -> PathBuf {
+        self.roaming_root.parent().map_or_else(|| self.roaming_root.clone(), Path::to_path_buf)
+    }
 }
 
 pub fn configs_dir(client_path: &Path) -> PathBuf {

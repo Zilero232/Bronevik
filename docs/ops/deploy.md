@@ -5,7 +5,7 @@ A checklist for the first rollout of Три отметки to `https://triotmetk
 What runs where:
 
 - **CI and images.** [.github/workflows/deploy.yml](../../.github/workflows/deploy.yml) is started by hand (`workflow_dispatch`). It runs `verify`, `test`, the mod suite and the e2e smoke, builds `ghcr.io/<owner>/otmetki-client` and `otmetki-server`, and then deploys to the VPS.
-- **The VPS** keeps no clone of the repo. Every run copies [docker-compose.yml](../../docker-compose.yml), [docker-compose.demo.yml](../../docker-compose.demo.yml), [infra/caddy/Caddyfile](../../infra/caddy/Caddyfile) and [infra/caddy/demo.caddy](../../infra/caddy/demo.caddy) into `DEPLOY_PATH`. The files keep their repository paths, because compose bind-mounts `./infra/caddy/Caddyfile`. The run then does `docker compose pull`, runs `bun run db:deploy` in a one-off `server` container, runs `docker compose up -d`, and waits for `otmetki-server` and `otmetki-client` to report healthy.
+- **The VPS** keeps no clone of the repo. Every run copies [docker-compose.yml](../../docker-compose.yml) and [infra/caddy/Caddyfile](../../infra/caddy/Caddyfile) into `DEPLOY_PATH`. The files keep their repository paths, because compose bind-mounts `./infra/caddy/Caddyfile`. The run then does `docker compose pull`, runs `bun run db:deploy` in a one-off `server` container, runs `docker compose up -d`, and waits for `otmetki-server` and `otmetki-client` to report healthy.
 - **The stack:** Caddy (80/443, Let's Encrypt), then client (Next standalone, :3000), then server (API, :4000).
   - The worker runs from the same server image.
   - Postgres/TimescaleDB listens on loopback `127.0.0.1:5432` only.
@@ -13,7 +13,7 @@ What runs where:
   - `backup` dumps the database every night (§6).
   - The server and the worker share the `serverdata` volume for local replays and armor models.
   - Every container logs to json-file with rotation (10 MB × 5).
-- **Keyless demo:** until the Lesta key exists, the same stack can run on generated data. See [§7 «Демо-деплой без ключей»](#7-демо-деплой-без-ключей-keyless-demo).
+- **Before the Lesta key:** the same stack runs on an empty database with no mock and no generated data; every page shows its empty state. See [§7 «Запуск без ключа Лесты»](#7-запуск-без-ключа-лесты-before-the-lesta-key).
 
 ## 0. Go-live checklist
 
@@ -28,11 +28,11 @@ This is the status of every area at the last audit. **Ready** means the piece is
 | Caddy: TLS for both hosts, HSTS, security headers, zstd/gzip, SSE excluded, bull-board 404 | Ready | DNS (below) |
 | Client CSP, sitemap, robots, service worker revision (`GIT_COMMIT_SHA`) | Ready | The `NEXT_PUBLIC_SITE_URL` secret |
 | Nightly `pg_dump` with rotation | Ready | An off-host copy (§6) |
-| Keyless demo (`docker-compose.demo.yml`) | Ready | — |
+| Launch without the Lesta key: empty states, degraded worker, `NEXT_PUBLIC_LESTA_NOTICE` | Ready | — |
 | Health: `/health` (database, Redis, worker heartbeat, Lesta breaker) | Ready | An external uptime monitor on `https://api.triotmetki.ru/health` and `https://triotmetki.ru/` (UptimeRobot, Healthchecks.io or similar) |
 | **Lesta application**: `LESTA_APPLICATION_ID`, the VPS IP allow-listed, the OpenID redirect | Blocked | Register at developers.lesta.ru (§1) |
 | **DNS**: `A`/`AAAA` for `triotmetki.ru` and `api.triotmetki.ru`; ports 80, 443/tcp and 443/udp open | Blocked | The registrar and the VPS firewall |
-| **GitHub secrets**: `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_SITE_URL`, `DEPLOY_SSH_HOST`, `DEPLOY_SSH_USER`, `DEPLOY_SSH_PASSWORD`, `DEPLOY_PATH` | Blocked | Settings → Secrets (§1) |
+| **GitHub secrets and variables**: `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_SITE_URL`, `DEPLOY_SSH_HOST`, `DEPLOY_SSH_USER`, `DEPLOY_SSH_PASSWORD`, `DEPLOY_PATH`; variable `NEXT_PUBLIC_LESTA_NOTICE` | Blocked | Settings → Secrets and variables (§1) |
 | **VPS `.env` secrets**: `BETTER_AUTH_SECRET`, `MOD_INGEST_SECRET`, `INTERNAL_API_TOKEN`, `POSTGRES_PASSWORD`, `BULL_BOARD_PASSWORD` | Blocked | Generate them on the VPS (§1) |
 | ghcr access from the VPS | Blocked | Make the packages public, or run `docker login ghcr.io` with a read-only token |
 | **YooKassa**: `YOOKASSA_*`, the webhook | Blocked, not needed for launch | Checkout stays off (`PLUS.checkoutEnabled`) until Lesta confirms the model (§5) |
@@ -53,7 +53,7 @@ This is the status of every area at the last audit. **Ready** means the piece is
   - Never reuse a key from another project or a personal test key. The limits and the terms ([docs/research/data/lesta-api.md](../research/data/lesta-api.md)) apply per application.
   - Allow the Lesta ID (OpenID) redirect to `https://api.triotmetki.ru/auth/lesta/callback`.
   - `LESTA_RPS` is the total across all processes: 20 per registered IP. Raise it only after you add IPs to the application.
-  - Without a key, production does **not** start the mock. The worker starts degraded: it logs a warning and runs no Lesta jobs. The one exception is the explicit demo (`DEMO_MODE=true`, §7).
+  - Without a key the stack still runs (§7): the worker starts degraded, logs a warning and runs no Lesta jobs, and Lesta ID sign-in is off. There is no mock and no generated data in any environment.
 - [ ] **DNS:** `A`/`AAAA` records for `triotmetki.ru` and `api.triotmetki.ru` point at the VPS. Ports 80, 443/tcp and 443/udp are open. Caddy needs port 80 for the HTTP-01 challenge.
 - [ ] **Optional integrations.** Every one of these can stay empty; an empty value switches the feature off:
   - Telegram bot (`TELEGRAM_*`; webhook `https://api.triotmetki.ru/telegram/webhook`);
@@ -81,6 +81,12 @@ Set these under Settings → Secrets and variables → Actions, in the `producti
 | `DEPLOY_SSH_PASSWORD` | SSH password of that user (`PasswordAuthentication yes` in the VPS `sshd_config`) |
 | `DEPLOY_PATH` | directory with the compose file, for example `/opt/otmetki` |
 
+One repository **variable** (Settings → Secrets and variables → Actions → Variables, not a secret):
+
+| Variable | Value |
+|---|---|
+| `NEXT_PUBLIC_LESTA_NOTICE` | `true` or `false`, required. `true` shows the site-wide «Данные «Мира танков» пока не подключены» notice and disables the Lesta ID button; set `false` once `LESTA_APPLICATION_ID` is live. It is baked into the client image at build time, so a change takes effect only with the next deploy. A missing or other value fails the client build. |
+
 The workflow passes `GIT_COMMIT_SHA=${{ github.sha }}` to the client image by itself. With `NEXT_PUBLIC_APP_VERSION` (the root `package.json` version), it forms the service worker's precache revision. A client built without it (for example a local `docker compose build`) keeps the same revision across builds, so returning visitors keep stale precached files. When you build by hand, export `GIT_COMMIT_SHA=$(git rev-parse HEAD)` first. The server image takes no build arguments.
 
 The VPS must be able to pull from ghcr. Make the packages public, or run `docker login ghcr.io` once on the VPS with a read-only token.
@@ -99,7 +105,8 @@ Start from [.env.example](../../.env.example). The server and worker containers 
 - [ ] `TRUSTED_PROXIES`: leave it empty for the stock stack. The only hop is Caddy, which sends a single-entry `X-Forwarded-For`, and the default trusts one hop. Once a CDN or load balancer sits in front of Caddy, list its IPs or CIDRs (comma-separated). If you skip that, rate limits and the better-auth IP checks see the proxy's IP as every client's.
 - [ ] `DATABASE_POOL_MAX`: leave it unset at first. The API then keeps 10 connections and the worker sizes its pool from its queue concurrency (`WORKER_DATABASE.poolMax`). Set it only when Postgres `max_connections` is tight. The variable applies per process, so the API and the worker each take that many.
 - [ ] `POSTGRES_USER`, `POSTGRES_PASSWORD` (strong: use `openssl rand -hex 24`, because the password goes into a connection URL and base64's `/` and `+` break it), `POSTGRES_DB`, `SITE_DOMAIN=triotmetki.ru`, `API_DOMAIN=api.triotmetki.ru`. Compose reads them for Postgres and Caddy.
-- [ ] `LESTA_APPLICATION_ID`, `LESTA_RPS`. `LESTA_MOCK` has no effect in production. `DEMO_MODE` and `COMPOSE_FILE` must be absent, because they belong to the demo (§7).
+- [ ] `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_SITE_URL` and `NEXT_PUBLIC_LESTA_NOTICE` (`true` or `false`, the same value as the repository variable). Compose interpolates the client's build arguments on every command, so `docker compose` refuses to run while any of them is missing.
+- [ ] `LESTA_APPLICATION_ID`, `LESTA_RPS`. An empty key is a supported state (§7). `COMPOSE_FILE` must be absent: the stack is `docker-compose.yml` alone.
 - [ ] `EMAIL_FROM` on our domain (for example `Три отметки <noreply@triotmetki.ru>`), with SPF and DKIM for the SMTP provider. `VAPID_SUBJECT=mailto:admin@triotmetki.ru`.
 - [ ] `BULL_BOARD_PASSWORD`: Caddy returns 404 for `/admin/queues` on the public host anyway. Reach bull-board through an SSH tunnel to the server container.
 - [ ] `REPLAY_STORAGE=s3` and the `S3_*` values, or keep `local`. Local storage lives in `.data` on the `serverdata` volume, which the server and the worker share.
@@ -120,7 +127,7 @@ On the first run, or after an edit to `003_continuous_aggregates.sql`, the full 
 ## 3. After the first successful run
 
 - [ ] `https://api.triotmetki.ru/health` is green: database, Redis, worker heartbeat, and the Lesta breaker closed. The worker log says `registered N of M … job schedulers`, and no "degraded" warning appears.
-- [ ] **Game data.** The API catalog fills from Lesta through the nightly encyclopedia sync. Builds, armor, personal missions and patch diffs need the client files import, `bun run gamedata:import` (`apps/web/server/scripts/gamedata-import.ts`). Run it once against the production database, for example from a checkout through an SSH tunnel to `127.0.0.1:5432`, with `GITHUB_TOKEN` set for the GitHub rate limit. Run it again after every game patch.
+- [ ] **Game data.** The API catalog fills from Lesta through the nightly encyclopedia sync. Builds, armor, personal missions and patch diffs need the client files import (`apps/web/server/scripts/gamedata-import.ts`), which needs no Lesta key. Run it once inside the server image and again after every game patch — see §7 «Каталог техники».
 - [ ] Optional: `bun --filter @otmetki/server streamers:seed` loads the invited streamer list.
 - [ ] Sign in with Lesta ID and with Telegram on the live site. Check that the footer shows the Lesta attribution on every page.
 - [ ] Check `https://triotmetki.ru/sitemap.xml` and `/robots.txt`. The sitemap reads the API at build or request time, so it fills once the collector has data.
@@ -173,86 +180,30 @@ The API accepts only **v2** request signatures (`MOD_REQUEST.version = 'v2'`: HM
 - `db push` has no down-migrations. A schema change that drops a column is caught by the data-loss check above; resolve it by hand before you re-run the deploy.
 - The Timescale retention policies and the `RETENTION` purge jobs are part of the Lesta terms. Do not switch them off to save time on a deploy.
 
-## 7. Демо-деплой без ключей (keyless demo)
+## 7. Запуск без ключа Лесты (before the Lesta key)
 
-Until the Lesta key exists, the site can run publicly on generated data. The override [docker-compose.demo.yml](../../docker-compose.demo.yml) changes four things:
+Until the Lesta application exists, production runs the normal stack on an empty database. There is no mock, no seed and no generated data anywhere.
 
-- **`DEMO_MODE=true` on the server and the worker.** A production build then serves the in-process Lesta mock: generated players, clans and battles, and Lesta ID sign-in through a player picker at `/dev/lesta/…` on the API host. The worker runs every Lesta job against the mock, so the data keeps moving.
-- **`demo-seed`, a one-shot container from the server image.** It runs `db:deploy` and then [scripts/demo-seed.ts](../../apps/web/server/scripts/demo-seed.ts):
-  - while `vehicle` is empty, it imports the game catalog from the public client-data repositories (`gamedata:import`: GitHub, no key);
-  - while `player` is empty, it runs `dev-seed`: WN8 expected values from XVM, 600 accounts × 90 days of history, clans, mod battles and the nightly aggregates.
+- **The server** boots with `LESTA_APPLICATION_ID` empty. Every endpoint answers with empty data, and every page shows its designed empty state (what is missing and why), never an error or a spinner. `/auth/lesta/start` sends the visitor back with `lesta_not_connected` instead of opening Lesta ID.
+- **The worker** starts degraded: it logs `LESTA_APPLICATION_ID is empty: running degraded…`, loads no tracking or clan processors and registers no Lesta schedule. Aggregates, news, purge and the other key-less jobs still run. `/health` stays up and reports the worker's state.
+- **The client** is built with the repository variable `NEXT_PUBLIC_LESTA_NOTICE=true` (§1): every site page shows the informational «Данные «Мира танков» пока не подключены» notice and the Lesta ID button is disabled with the same explanation. The site stays indexable.
 
-  Every later `up` finds the rows and exits in seconds. The server and the worker start only after it succeeds, because the mock builds its world from the catalog once, at boot.
-- **Caddy mounts [infra/caddy/demo.caddy](../../infra/caddy/demo.caddy).** Every response of both hosts carries `X-Robots-Tag: noindex, nofollow, noarchive`, and robots.txt is `Disallow: /`. No page's own metadata can override this.
-- **The client is built with `NEXT_PUBLIC_DEMO_MODE=true`**, so every site page shows the «Демо-данные» banner.
+### Каталог техники (optional, no key needed)
 
-**Guards:**
+The vehicle catalog, modules, equipment, maps and personal missions come from the public client-data repositories on GitHub, not from Lesta. Load them once into the empty database, inside the server image (it runs as the unprivileged `bun` user, so the download cache goes to `/tmp`):
 
-- The server and the worker refuse to boot with `DEMO_MODE=true` while `LESTA_APPLICATION_ID`, `YOOKASSA_SHOP_ID` or `YOOKASSA_SECRET_KEY` is set. The placeholder-secret check still applies.
-- At boot the API and the worker log `DEMO_MODE is on: every player, clan and battle … is generated`.
-- The deploy workflow fails before it touches the stack when its `demo` input disagrees with the compose files that the VPS `.env` selects.
-- Payments stay off: `PLUS.checkoutEnabled = false`, and there are no YooKassa keys. Email, bots and push are off while their keys are empty.
+```sh
+cd /opt/otmetki
+docker compose run --rm server bun scripts/gamedata-import.ts --cache /tmp/otmetki-gamedata
+```
 
-### Commands
+- The container's working directory is `/app/apps/web/server`; compose supplies `DATABASE_URL`. Add `--armor` to also import the armor models into the `serverdata` volume.
+- Set `GITHUB_TOKEN` (no scopes) in `.env` to lift GitHub's anonymous rate limit.
+- Without a key the encyclopedia version check is skipped (`no LESTA_APPLICATION_ID`).
+- `--dry-run` builds the import plan without writing.
 
-1. **DNS and GitHub secrets**, as in §1. The demo needs every secret except the Lesta application.
-2. **The VPS `.env`** in `DEPLOY_PATH`, for example `/opt/otmetki`. This is the whole file; everything else defaults to off:
+### When the key arrives
 
-   ```sh
-   mkdir -p /opt/otmetki && cd /opt/otmetki
-   cat > .env <<EOF
-   COMPOSE_FILE=docker-compose.yml:docker-compose.demo.yml
-   NODE_ENV=production
-   SITE_DOMAIN=triotmetki.ru
-   API_DOMAIN=api.triotmetki.ru
-   API_URL=https://api.triotmetki.ru
-   WEB_URL=https://triotmetki.ru
-   POSTGRES_USER=otmetki
-   POSTGRES_PASSWORD=$(openssl rand -hex 24)
-   POSTGRES_DB=otmetki
-   BETTER_AUTH_SECRET=$(openssl rand -base64 32)
-   MOD_INGEST_SECRET=$(openssl rand -base64 32)
-   INTERNAL_API_TOKEN=$(openssl rand -base64 32)
-   BULL_BOARD_PASSWORD=$(openssl rand -hex 16)
-   # Optional: a GitHub token with no scopes lifts the API limit for the catalog import.
-   GITHUB_TOKEN=
-   # Optional: a quicker first boot.
-   # DEMO_SEED_ARGS=--accounts 300 --days 30
-   EOF
-   chmod 600 .env
-   ```
-
-   `LESTA_APPLICATION_ID` and `YOOKASSA_*` must stay absent or empty. `DATABASE_URL`, `DIRECT_URL` and `REDIS_URL` come from compose.
-3. **Deploy with the demo input.** In Actions → deploy → Run workflow, tick `demo`, or run:
-
-   ```sh
-   gh workflow run deploy.yml -f demo=true
-   ```
-
-   The first `up -d` waits for `demo-seed`. `db:deploy`, the catalog import and the seed take from several minutes to tens of minutes, and the SSH step allows 40. Follow it on the VPS:
-
-   ```sh
-   cd /opt/otmetki && docker compose logs -f demo-seed
-   ```
-
-4. **Check it:**
-
-   ```sh
-   curl -s https://api.triotmetki.ru/health                # database, redis, worker heartbeat: up
-   curl -sI https://triotmetki.ru | grep -i x-robots-tag   # noindex, nofollow, noarchive
-   curl -s https://triotmetki.ru/robots.txt                # Disallow: /
-   docker compose logs server | grep DEMO_MODE
-   ```
-
-   Open the site. The banner is at the top of every page, `/players` and `/tanks` have data, and «Войти через Lesta ID» opens the mock picker.
-
-To re-seed the demo from scratch, run `docker compose run --rm demo-seed sh -c 'bun scripts/dev-seed.ts --reset'`, then `docker compose restart server worker`.
-
-### From the demo to production
-
-Generated players must not mix with real ones, so the switch starts from an empty database:
-
-1. Run `cd /opt/otmetki && docker compose down`, then remove the data volumes: `docker volume rm otmetki_pgdata otmetki_redisdata otmetki_serverdata otmetki_pgbackups`. The prefix is the directory name; check it with `docker volume ls`.
-2. In `.env`, delete `COMPOSE_FILE` and `DEMO_SEED_ARGS`. Then fill in everything from §1, starting with `LESTA_APPLICATION_ID`.
-3. Run the deploy workflow **without** `demo`, then do §3. Run `gamedata:import` again, because the catalog went with the database.
-4. Check that `curl -sI https://triotmetki.ru | grep -i x-robots-tag` prints nothing and that robots.txt lists the sitemap.
+1. Put `LESTA_APPLICATION_ID` (and `LESTA_RPS`) in the VPS `.env`, allow-list the VPS IP and the OpenID redirect (§1).
+2. Set the repository variable `NEXT_PUBLIC_LESTA_NOTICE=false`.
+3. Run the deploy workflow: the notice disappears, Lesta ID sign-in opens, and the restarted worker registers the Lesta schedules. Then do §3.

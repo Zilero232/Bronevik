@@ -1,0 +1,17 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+  gap: var(--space-1);
+
+  &:hover {
+    color: var(--color-text);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}

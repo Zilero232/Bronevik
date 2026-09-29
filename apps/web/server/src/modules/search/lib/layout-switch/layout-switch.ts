@@ -29,8 +29,6 @@ const hasCyrillic = (text: string): boolean => PATTERNS.cyrillic.test(text);
 
 const isNicknameLike = (text: string): boolean => PATTERNS.nickname.test(text);
 
-export const escapeLike = (text: string): string => text.replace(PATTERNS.likeSpecial, (char) => `\\${char}`);
-
 export const searchCandidates = (query: string): SearchCandidates => {
   const original = query.trim();
   const switched = switchLayout(original);

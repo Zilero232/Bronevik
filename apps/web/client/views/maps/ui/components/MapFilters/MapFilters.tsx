@@ -9,7 +9,7 @@ import { MAP_CAMOUFLAGES, MAP_MODE_KINDS } from '@/entities/map/map';
 import { Button, Input, ToggleChips } from '@/ui-kit';
 
 import { useMapFilters } from '../../../model/hooks';
-import { MapsShown } from './components';
+import { MapsPresets, MapsShown } from './components';
 
 import s from './MapFilters.module.scss';
 
@@ -29,6 +29,7 @@ export const MapFilters = () => {
         wrapperClassName={s.search}
         onChange={(event) => onQueryChange(event.target.value)}
       />
+      <MapsPresets />
       <ToggleChips<MapModeKind>
         aria-label={t('filters.modes')}
         options={MAP_MODE_KINDS.map((value) => ({ value, label: t(`modes.${value}`) }))}

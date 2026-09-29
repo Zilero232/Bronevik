@@ -66,7 +66,7 @@ export const createAuth = ({ env, prisma, redis, lesta, lestaStore, telegramStor
         rateLimit: { enabled: false },
         schema: { apikey: { modelName: API_KEY_PLUGIN.modelName } }
       }),
-      lestaId({ lesta, store: lestaStore, apiUrl: env.API_URL, webUrl: env.WEB_URL }),
+      lestaId({ isConnected: env.LESTA_APPLICATION_ID !== '', lesta, store: lestaStore, apiUrl: env.API_URL, webUrl: env.WEB_URL }),
       customSession(async ({ user, session }) => ({ user, session, lestaAccountId: await lestaStore.primaryAccountId(user.id) })),
       telegramLogin({ botToken: env.TELEGRAM_BOT_TOKEN, botUsername: env.TELEGRAM_BOT_USERNAME, store: telegramStore }),
       vkMiniApp({ appId: env.VK_MINI_APP_ID, appSecret: env.VK_MINI_APP_SECRET }),

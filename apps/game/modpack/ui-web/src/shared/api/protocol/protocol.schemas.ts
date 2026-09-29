@@ -38,6 +38,11 @@ export const actionSchema = z.object({
 
 export const detailSchema = z.object({ label: text, value: text });
 
+export const figureSchema = z.object({
+  shapes: z.array(z.object({ x: z.number(), y: z.number(), w: z.number(), h: z.number() })),
+  marks: z.array(z.object({ x: z.number(), y: z.number(), tone: z.enum(PROTOCOL.figureTones) }))
+});
+
 export const rowSchema = z.object({
   id: text,
   title: text,
@@ -46,6 +51,7 @@ export const rowSchema = z.object({
   badge: optionalText,
   link: optionalText,
   details: z.optional(z.array(detailSchema)),
+  figure: z.optional(z.nullable(figureSchema)),
   actions: z.array(actionSchema)
 });
 

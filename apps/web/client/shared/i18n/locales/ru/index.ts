@@ -32,6 +32,7 @@ import maps from './maps.json';
 import mapStats from './mapStats.json';
 import marks from './marks.json';
 import me from './me.json';
+import methodology from './methodology.json';
 import missions from './missions.json';
 import mod from './mod.json';
 import modes from './modes.json';
@@ -58,6 +59,7 @@ import shop from './shop.json';
 import showcase from './showcase.json';
 import social from './social.json';
 import stats from './stats.json';
+import status from './status.json';
 import streamer from './streamer.json';
 import streamers from './streamers.json';
 import streamersDirectory from './streamersDirectory.json';
@@ -111,6 +113,7 @@ export const ru = {
   legal,
   marks,
   me,
+  methodology,
   missions,
   mod,
   modes,
@@ -136,6 +139,7 @@ export const ru = {
   shop,
   showcase,
   stats,
+  status,
   streamer,
   streamers,
   streamersDirectory,

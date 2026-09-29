@@ -20,5 +20,13 @@
   "noResults": "Nothing found",
   "enabledToast": "{title}: on",
   "enabledWithLibrariesToast": "{title}: on, its libraries are in place ({list})",
-  "disabledToast": "{title}: off"
+  "disabledToast": "{title}: off",
+  "perf": {
+    "low": "FPS: light",
+    "medium": "FPS: medium",
+    "high": "FPS: heavy"
+  },
+  "lightOnly": "Light only",
+  "lightOnlyHint": "Components that barely cost any FPS",
+  "listen": "Play the sound: {title}"
 }

@@ -4,10 +4,12 @@ use std::path::{Path, PathBuf};
 use serde::Serialize;
 use serde_json::Value;
 
+use crate::cache::{CacheLocation, CachePlan, CacheResult, CacheTarget};
 use crate::catalog::fixtures::catalog;
 use crate::catalog::{CatalogSource, LoadedCatalog, Localized};
 use crate::commands::AppInfo;
 use crate::components::{ComponentState, Installation, InstalledComponent};
+use crate::conflicts::{ConflictReport, DuplicatePackage, ForeignConflict, MissingComponent, OverridingFiles, ReplacedComponent};
 use crate::deep_link::DeepLink;
 use crate::dependencies::{DependencyState, DependencyStatus};
 use crate::detect::client::{Branch, ClientProblem};
@@ -18,6 +20,7 @@ use crate::patch::{PatchReport, PatchStatus};
 use crate::profiles::{ProfileSummary, ProfilesView, MAX_PROFILES};
 use crate::service::setup::{PackageSource, ReleaseSummary};
 use crate::service::{ClientsView, InstallPlan};
+use crate::sets::{ComponentSet, SetsView, MAX_SETS};
 use crate::settings::ManagerSettings;
 use crate::snapshots::{Snapshot, SnapshotKind, SnapshotPart};
 
@@ -195,6 +198,71 @@ fn samples() -> Vec<(&'static str, Value)> {
                     DependencyStatus { id: "guiflash".into(), state: DependencyState::User, file: Some("gambiter.guiflash_0.6.5.mtmod".into()) },
                 ],
             }),
+        ),
+        (
+            "conflicts",
+            value(&ConflictReport {
+                missing: vec![MissingComponent { id: "marks_panel".into(), snapshot: Some("20260927-214705".into()) }],
+                replaced: vec![ReplacedComponent { id: "hit_log".into(), file: "net.triotmetki.hit_log_0.1.0.mtmod".into(), snapshot: None }],
+                duplicates: vec![DuplicatePackage {
+                    package_id: "net.openwg.gameface".into(),
+                    files: vec!["deps/net.openwg.gameface_1.2.0.mtmod".into(), "net.openwg.gameface_1.2.2.mtmod".into()],
+                    ours: false,
+                }],
+                foreign: vec![ForeignConflict {
+                    rule: "xvm".into(),
+                    file: "com.modxvm.xfw.native_12.0.0.wotmod".into(),
+                    package_id: "com.modxvm.xfw.native".into(),
+                    components: vec!["damage_log".into()],
+                }],
+                overrides: vec![OverridingFiles {
+                    file: "res_mods/1.45.0.0".into(),
+                    location: ForeignLocation::ResMods,
+                    paths: vec!["scripts/client/gui/mods/mod_otmetki_hit_log.pyc".into()],
+                    count: 1,
+                }],
+            }),
+        ),
+        (
+            "sets",
+            value(&SetsView {
+                max: MAX_SETS,
+                sets: vec![ComponentSet {
+                    id: "a1b2c3d4e5f6".into(),
+                    name: "Стрим".into(),
+                    components: vec!["core".into(), "companion".into(), "marks_panel".into()],
+                    created: 1_790_000_000.5,
+                    updated: 1_790_000_100.25,
+                }],
+            }),
+        ),
+        (
+            "cache-plan",
+            value(&CachePlan {
+                targets: vec![
+                    CacheTarget {
+                        id: "MirTankov/web_cache".into(),
+                        name: "web_cache".into(),
+                        location: CacheLocation::AppData,
+                        path: r"C:\Users\Игрок\AppData\Roaming\Lesta\MirTankov\web_cache".into(),
+                        size_bytes: 538_968_064,
+                        files: 1204,
+                    },
+                    CacheTarget {
+                        id: "game/win64/Reports".into(),
+                        name: "win64/Reports".into(),
+                        location: CacheLocation::Game,
+                        path: main.path.join("win64").join("Reports"),
+                        size_bytes: 4096,
+                        files: 1,
+                    },
+                ],
+                total_bytes: 538_972_160,
+            }),
+        ),
+        (
+            "cache-result",
+            value(&CacheResult { freed_bytes: 538_968_064, cleared: vec!["MirTankov/web_cache".into()], failed: vec!["game/win64/Reports".into()] }),
         ),
         (
             "deep-links",

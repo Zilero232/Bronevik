@@ -4,6 +4,7 @@ import { Download } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Suspense } from 'react';
 
+import { DataStatusBadge } from '@/entities/reference/service-health';
 import { LocaleSwitcher } from '@/features/app/switch-locale';
 import { ThemeToggle } from '@/features/app/switch-theme';
 import { ROUTES } from '@/shared/constants';
@@ -22,6 +23,7 @@ export const UtilityBar = () => {
       <div className={s.inner}>
         <section aria-label={t('label')} className={s.status}>
           <GameStatusSlot />
+          <DataStatusBadge />
         </section>
         <div className={s.settings}>
           <Link className={s.link} href={ROUTES.mod}>

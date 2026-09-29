@@ -1,16 +1,17 @@
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { CacheTTL } from '@nestjs/cache-manager';
 import { Controller, Get, Query, UseInterceptors } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
+import { ViewerCacheInterceptor } from '../../common/interceptors';
 import { VehicleCatalogDto, VehicleFilterDto } from './dto';
 import { VehicleListService } from './services';
 
 @ApiTags('tanks')
 @AllowAnonymous()
-@UseInterceptors(CacheInterceptor)
+@UseInterceptors(ViewerCacheInterceptor)
 @Controller('vehicles')
 export class VehiclesController {
   constructor(private readonly vehicles: VehicleListService) {}

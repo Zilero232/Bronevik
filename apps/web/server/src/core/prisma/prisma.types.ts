@@ -19,4 +19,5 @@ export type LockedTransactionInput<T> = {
 
 export type PrismaModuleOptions = {
   poolMax?: number;
+  statementTimeoutMs?: number;
 };

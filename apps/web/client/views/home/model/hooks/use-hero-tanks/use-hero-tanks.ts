@@ -16,10 +16,12 @@ export const useHeroTanks = () => {
     limit: HOME.strongTanks.limit
   } as const;
 
-  const { data } = useQuery({
+  const { data, isPending } = useQuery({
     queryKey: QUERY_KEYS.tanks.stats(params),
     queryFn: ({ signal }) => listTankStats({ ...params, tiers: [...params.tiers], signal })
   });
 
-  return (data?.items ?? []).slice(0, HOME.hero.tanks);
+  const rows = (data?.items ?? []).slice(0, HOME.hero.tanks);
+
+  return { rows, isEmpty: !isPending && rows.length === 0 };
 };

@@ -5,6 +5,7 @@ import type { LestaClients } from '../../../core';
 
 import { errorMessage } from '../../../common/lib';
 import { LESTA_CLIENTS } from '../../../core';
+import { LestaNotConfiguredError } from '../../../lib/lesta';
 import { OFFICIAL_RATING_TYPES } from '../config';
 
 @Injectable()
@@ -27,7 +28,9 @@ export class OfficialRatingTypesService {
     try {
       return Object.keys(await this.clients.priority.ratings.typeList());
     } catch (error) {
-      this.logger.warn(`Lesta rating types unavailable: ${errorMessage(error)}`);
+      if (!(error instanceof LestaNotConfiguredError)) {
+        this.logger.warn(`Lesta rating types unavailable: ${errorMessage(error)}`);
+      }
 
       return undefined;
     }

@@ -47,7 +47,9 @@
     "developers": "Developers",
     "pulse": "Server pulse",
     "design": "Design system",
-    "mod": "Download the mod"
+    "mod": "Download the mod",
+    "ratings": "Rating methodology",
+    "status": "Data status"
   },
   "hints": {
     "players": "Any player's stats by nickname",
@@ -86,7 +88,9 @@
     "developers": "The project's open API",
     "pulse": "Online and server load",
     "design": "Interface components and tokens",
-    "mod": "Companion mod: marks and battle results"
+    "mod": "Companion mod: marks and battle results",
+    "ratings": "How WN8, EFF, Bronya Index and marks are computed",
+    "status": "Whether data collection works right now"
   },
   "featured": {
     "topTank": "Top tank of the week",

@@ -12,7 +12,7 @@ export const MapsShown = () => {
 
   return (
     <span aria-live='polite' className={s.root}>
-      {t('shown', { shown: query.data?.maps.length ?? 0, total: query.data?.total ?? 0 })}
+      {query.data && query.data.total > 0 && t('shown', { shown: query.data.maps.length, total: query.data.total })}
     </span>
   );
 };

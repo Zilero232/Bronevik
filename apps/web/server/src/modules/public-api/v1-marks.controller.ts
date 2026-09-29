@@ -1,9 +1,10 @@
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { CacheTTL } from '@nestjs/cache-manager';
 import { Controller, Get, HttpStatus, Param, Query, UseInterceptors } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
+import { ViewerCacheInterceptor } from '../../common/interceptors';
 import { MoeTableService } from '../marks';
 import { PublicApi } from './decorators/public-api/public-api.decorator';
 import {
@@ -16,7 +17,7 @@ import {
   V1TankParamsDto
 } from './dto';
 
-@UseInterceptors(CacheInterceptor)
+@UseInterceptors(ViewerCacheInterceptor)
 @PublicApi('marks')
 @Controller('v1/marks')
 export class V1MarksController {

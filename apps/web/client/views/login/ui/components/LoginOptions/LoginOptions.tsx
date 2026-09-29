@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 
 import { useAuthSession } from '@/entities/auth/session';
 import { LestaIdButton } from '@/features/auth/lesta-link';
+import { LESTA_NOTICE } from '@/shared/config';
 import { Link } from '@/shared/i18n/navigation';
 import { Card, CardBody } from '@/ui-kit';
 
@@ -38,7 +39,7 @@ export const LoginOptions = ({ error }: LoginOptionsProps) => {
           </Link>
         )}
         <LestaIdButton block callbackPath={returnPath} errorPath={errorPath} label={t('lesta')} size='lg' />
-        <p className={s.hint}>{t('lestaHint')}</p>
+        {!LESTA_NOTICE.isEnabled && <p className={s.hint}>{t('lestaHint')}</p>}
         <div className={s.divider}>
           <span>{t('or')}</span>
         </div>

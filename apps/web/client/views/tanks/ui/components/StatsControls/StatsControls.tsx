@@ -1,26 +1,37 @@
 'use client';
 
-import { serverPeriodSchema, skillCohortSchema } from '@otmetki/schemas';
+import type { StatsMode } from '@otmetki/schemas';
+
+import { serverPeriodSchema, skillCohortSchema, statsModeSchema } from '@otmetki/schemas';
 import { useTranslations } from 'next-intl';
 
-import { SegmentedControl, Tabs } from '@/ui-kit';
+import { SegmentedControl, Select, Tabs } from '@/ui-kit';
 
 import { TANKS_VIEWS } from '../../../config';
 import { useTanksState } from '../../../model/hooks';
-import { TraitFilters } from './components';
+import { QuickFilters, TraitFilters } from './components';
 
 import s from './StatsControls.module.scss';
 
 export const StatsControls = () => {
   const t = useTranslations('tanks.controls');
   const tPeriods = useTranslations('periods');
-  const [{ period, cohort, view }, setState] = useTanksState();
+  const [{ period, cohort, mode, view }, setState] = useTanksState();
 
   return (
     <div className={s.root}>
       <Tabs
         aside={
           <div className={s.row}>
+            {view !== 'economy' && (
+              <Select<StatsMode>
+                aria-label={t('mode')}
+                className={s.mode}
+                items={statsModeSchema.options.map((value) => ({ value, label: t(`modes.${value}`) }))}
+                value={mode}
+                onValueChange={(next) => setState({ mode: next === 'all' ? null : next })}
+              />
+            )}
             <SegmentedControl
               aria-label={t('period')}
               options={serverPeriodSchema.options.map((value) => ({ value, label: tPeriods(value) }))}
@@ -44,6 +55,7 @@ export const StatsControls = () => {
         variant='strip'
         onValueChange={(next) => setState({ view: next })}
       />
+      {view === 'table' && <QuickFilters />}
       <TraitFilters />
     </div>
   );

@@ -1,3 +1,4 @@
+export { CATALOG_PENDING } from './catalog-pending.constants';
 export { ECONOMY_VIEW } from './economy-view.constants';
 export { TANK_IDENTITY } from './tank-identity.constants';
 export { TANK_SPEC_GROUPS, TANK_SPEC_KEYS, TANK_SPECS } from './tank-specs.constants';

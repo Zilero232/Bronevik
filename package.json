@@ -1,6 +1,6 @@
 {
   "name": "otmetki",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Три отметки — the all-in-one companion platform for «Мир танков» (Lesta RU): stats, marks of excellence, tank analytics, builds, replays, clans, streamer tools and a developer API. Bun-workspaces monorepo.",
   "homepage": "https://triotmetki.ru",

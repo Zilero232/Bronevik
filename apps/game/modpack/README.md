@@ -671,7 +671,7 @@ python apps/game/modpack/tools/build/build.py --install-dir "D:\Games\Tanki\mods
 | feature `<id>` | `net.triotmetki.<id>_<v>.mtmod` | `net.triotmetki.<id>`              | core, companion |
 | `--single`     | `otmetki.<v>.mtmod`             | `otmetki.companion`                | —               |
 
-Versions come from `packages/core/version.py`, `packages/companion/version.py` and each `features/<id>/__init__.py`.
+Package versions come from `packages/core/version.py`, `packages/companion/version.py` and each `features/<id>/__init__.py`; `--single` and the catalogue's `modpackVersion` take the release version, `version` in [package.json](package.json).
 
 Each package is a stored (uncompressed) zip with explicit directory entries, `meta.xml` and `res/scripts/client/gui/mods/...`; the ui package also carries `res/gui/gameface/mods/triotmetki/ui/*` and `res/mods/configs/res_map/net.triotmetki.ui.json`, which are never compiled. The split packages never ship the same file, and `--single` is their union. The `<dependencies>` block in `meta.xml` is for installers and people. Whether the client reads it is **unverified**, and the code never relies on it (see [Load order](#load-order)).
 
@@ -687,7 +687,7 @@ Without either, the packages carry `.py` sources and the build prints a warning.
 
 ### Publishing a release
 
-Releases live on our VPS only (no S3, CDN or GitHub Releases), under `https://triotmetki.ru/downloads/`. Bump `VERSION` (the companion's is the release version) and the CHANGELOG, then run [.github/workflows/release.yml](../../../.github/workflows/release.yml) with that `version` and the supported client versions in `games` (`1.46.*`). It builds the release packages and the catalogue with the steps above, the manager installer around that catalogue, signs the release for the manager and publishes `modpack/<version>/` (the split packages, `otmetki.<version>.mtmod`, `catalog/`), `otmetki.mtmod` (the single package behind the /mod page's manual download), the installer and `releases.json`. The manager installs from that index ([manager README «Releases»](../manager/README.md#releases)); first-time setup is [docs/ops/deploy.md §4](../../../docs/ops/deploy.md#4-game-mod-releases-on-the-vps).
+Releases live on our VPS only (no S3, CDN or GitHub Releases), under `https://triotmetki.ru/downloads/`. Bump `version` in [package.json](package.json) (the single source of the release version) with its `## <version>` CHANGELOG entry and the `VERSION`s of the packages that changed, update `otmetki.games` in the same file when the supported clients change, commit, push and run [.github/workflows/release.yml](../../../.github/workflows/release.yml); it takes no typed inputs (`force` re-publishes an existing version, `dry_run` only builds). It builds the release packages and the catalogue with the steps above, the manager installer around that catalogue, signs the release for the manager and publishes `modpack/<version>/` (the split packages, `otmetki.<version>.mtmod`, `catalog/`), `otmetki.mtmod` (the single package behind the /mod page's manual download), the installer and `releases.json`. The manager installs from that index ([manager README «Releases»](../manager/README.md#releases)); first-time setup is [docs/ops/deploy.md §4](../../../docs/ops/deploy.md#4-game-mod-releases-on-the-vps).
 
 ## Tests
 

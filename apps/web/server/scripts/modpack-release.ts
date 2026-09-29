@@ -8,9 +8,12 @@ import { MODPACK_RELEASES_SOURCE } from '../src/modules/modpack-releases/config'
 import {
   buildRelease,
   catalogPackages,
+  isPublished,
   mergeReleaseIndex,
   modpackCatalogSchema,
+  modpackReleaseManifestSchema,
   RELEASE_BUILD,
+  RELEASE_SOURCE,
   releasePayload
 } from '../src/modules/modpack-releases/lib';
 
@@ -28,11 +31,13 @@ const { positionals, values } = parseArgs({
     signature: { type: 'string' },
     'manager-version': { type: 'string' },
     'manager-url': { type: 'string' },
-    'manager-signature': { type: 'string' }
+    'manager-signature': { type: 'string' },
+    manifest: { type: 'string', default: RELEASE_SOURCE.manifestFile },
+    force: { type: 'boolean', default: false }
   }
 });
 
-const required = (name: keyof typeof values): string => {
+const required = (name: Exclude<keyof typeof values, 'force'>): string => {
   const value = values[name]?.trim();
 
   if (!value) {
@@ -58,11 +63,43 @@ const readOptional = (path: string) =>
 
 const unsignedReleaseSchema = modpackReleaseSchema.omit({ signature: true });
 
+const readIndex = async (path: string) => {
+  const current = await readOptional(path);
+
+  return modpackReleaseIndexSchema.parse(current.trim() === '' ? MODPACK_RELEASES_SOURCE.emptyIndex : JSON.parse(current));
+};
+
+// Prints version=… and games=… (the lines release.yml appends to $GITHUB_OUTPUT) from the modpack
+// package.json; with --current, refuses a version that is already published unless --force.
+const source = async () => {
+  const {
+    version,
+    otmetki: { games }
+  } = modpackReleaseManifestSchema.parse(JSON.parse(await readFile(required('manifest'), 'utf8')));
+
+  if (values.current && isPublished({ index: await readIndex(values.current), version })) {
+    if (!values.force) {
+      console.error(`modpack ${version} is already published: bump "version" in ${required('manifest')} or run with force`);
+      process.exit(1);
+    }
+
+    console.error(`modpack ${version} is already published: force replaces it`);
+  }
+
+  console.log(`version=${version}`);
+  console.log(`games=${games.join(',')}`);
+};
+
 const prepare = async () => {
   const version = required('version');
   const out = required('out');
   const catalogBytes = await readFile(required('catalog'));
   const catalog = modpackCatalogSchema.parse(JSON.parse(catalogBytes.toString('utf8')));
+
+  if (catalog.modpackVersion !== version) {
+    console.error(`the catalogue is modpack ${catalog.modpackVersion}, not ${version}`);
+    process.exit(1);
+  }
 
   const packages = await Promise.all(
     catalogPackages(catalog).map(async ({ id, file }) => {
@@ -95,8 +132,7 @@ const prepare = async () => {
 };
 
 const index = async () => {
-  const current = await readOptional(required('current'));
-  const previous = modpackReleaseIndexSchema.parse(current.trim() === '' ? MODPACK_RELEASES_SOURCE.emptyIndex : JSON.parse(current));
+  const previous = await readIndex(required('current'));
   const release = unsignedReleaseSchema.parse(JSON.parse(await readText(required('release'))));
 
   const manager = modpackManagerReleaseSchema.parse({
@@ -115,11 +151,11 @@ const index = async () => {
   console.log(`✓ release index: ${merged.releases.map((item) => item.version).join(', ')}; manager ${manager.version}`);
 };
 
-const commands = { prepare, index };
+const commands = { source, prepare, index };
 const command = positionals[0];
 
-if (command !== 'prepare' && command !== 'index') {
-  console.error('Usage: bun scripts/modpack-release.ts prepare|index [options] (docs/ops/deploy.md «Releases»)');
+if (command !== 'source' && command !== 'prepare' && command !== 'index') {
+  console.error('Usage: bun scripts/modpack-release.ts source|prepare|index [options] (docs/ops/deploy.md §4)');
   process.exit(1);
 }
 

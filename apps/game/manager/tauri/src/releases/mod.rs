@@ -179,7 +179,7 @@ impl ReleasesClient {
                 attempt.error("redirect to an untrusted host")
             }
         });
-        let builder = || reqwest::Client::builder().user_agent(concat!("Three Marks manager/", env!("CARGO_PKG_VERSION"))).timeout(DOWNLOAD_TIMEOUT);
+        let builder = || reqwest::Client::builder().user_agent(concat!("Three Marks manager/", env!("MANAGER_VERSION"))).timeout(DOWNLOAD_TIMEOUT);
         let http = builder().redirect(redirects).build()?;
         let dependency_http = builder().redirect(dependency_redirects).build()?;
 

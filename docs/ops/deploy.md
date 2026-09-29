@@ -15,7 +15,16 @@ What runs where:
   - `backup` dumps the database every night (§6).
   - The server and the worker share the `serverdata` volume for uploaded replays and armor models (`.data/replays`, `.data/armor`; the only storage there is).
   - Every container logs to json-file with rotation (10 MB × 5).
+  - Caddy takes its hosts from `SITE_DOMAIN` and `API_DOMAIN`: with the defaults (`localhost`, `api.localhost`) it issues itself a local certificate, with real domains it gets one from Let's Encrypt over HTTP-01, so port 80 must stay reachable; HTTP/3 needs `443/udp` published.
+  - Everything reads the root `.env`; compose overrides `DATABASE_URL`, `DIRECT_URL` and `REDIS_URL` with the service names. Locally: `docker compose build`, `docker compose up -d`, `docker compose logs -f`.
 - **Before the Lesta key:** the same stack runs on an empty database with no mock and no generated data; every page shows its empty state. See [§7 «Запуск без ключа Лесты»](#7-запуск-без-ключа-лесты-before-the-lesta-key).
+
+### CI workflows
+
+- **deploy.yml**: every check runs before any image is built, so an image is never pushed from a tree that would fail.
+- **modpack.yml**: on pull requests that touch the modpack, on Windows like the players: pytest + the stdlib runner, ruff, vermin (the Python 2.7 syntax guard). Manual runs add a test release build (`.github/actions/modpack-release`: OpenWG `owg_python_compiler` built from source, the packages with compiled `.pyc`, the component catalogue); publishing is `release.yml`, which runs the same action.
+- **manager.yml**: on pull requests that touch the manager or the packages its UI reads, on Windows: the UI typecheck and Vitest, `cargo fmt`, clippy and the Rust tests. The contract test fails when `tauri/contract/*.json` no longer matches the serialised commands; refresh it locally with `OTMETKI_UPDATE_FIXTURES=1` and commit. Manual runs add `tauri build` (NSIS, ru/en, per user, unsigned; the updater archive and its signature only when `TAURI_SIGNING_PRIVATE_KEY` is set), a build to look at.
+- **release.yml**: §4.
 
 ## 0. Go-live checklist
 
@@ -142,7 +151,7 @@ On the first run, or after an edit to `003_continuous_aggregates.sql`, the full 
 
 ## 4. Game mod: releases on the VPS
 
-Modpack releases and the manager are published by [.github/workflows/release.yml](../../.github/workflows/release.yml) (manual run, inputs `version` and `games`) into `DEPLOY_PATH/downloads`, which Caddy serves at `https://triotmetki.ru/downloads/`:
+Modpack releases and the manager are published by [.github/workflows/release.yml](../../.github/workflows/release.yml) (manual run, nothing to type: the version and the supported clients come from the repository) into `DEPLOY_PATH/downloads`, which Caddy serves at `https://triotmetki.ru/downloads/`:
 
 | Path under `/downloads/` | What | Cache |
 |---|---|---|
@@ -152,7 +161,19 @@ Modpack releases and the manager are published by [.github/workflows/release.yml
 | `otmetki.mtmod` | the /mod page's «скачать пакеты вручную» (`MOD_DISTRIBUTION.packagesUrl`) | revalidated |
 | `releases.json` | the release index; the API answers `GET /modpack/releases/latest` and the updater feed from it | revalidated |
 
-There is no directory listing. The run fails before building anything when a secret is missing or an input is malformed, and again when `version` differs from the built catalogue.
+There is no directory listing.
+
+**To release:** bump `version` in `apps/game/modpack/package.json` (+ its `## <version>` CHANGELOG entry and the component `VERSION`s that changed), commit, push, run **release** (Actions → release → Run workflow).
+
+| What | Single source | Read by |
+|---|---|---|
+| modpack release version | `version` in `apps/game/modpack/package.json` | the build (`layout.modpack_version()`: the single package `otmetki.<version>.mtmod`, the catalogue's `modpackVersion`), the CHANGELOG test, `modpack-release.ts source` |
+| supported clients | `otmetki.games` in the same `package.json` (`["1.45.*"]`; patterns `1.46.*`, `1.46.0.0`) | `modpack-release.ts source` (validated with the release schema) |
+| manager version | `version` in `apps/game/manager/package.json` | `tauri.conf.json` (`"version": "../package.json"`), `tauri/build.rs` (`MANAGER_VERSION`), the workflow |
+
+Jobs: `check` (secrets, the version and the clients via `apps/web/server/scripts/modpack-release.ts source`, the published-version guard), `modpack` (`.github/actions/modpack-release`), `manager` (`tauri build` with this release's catalogue in `tauri/resources`, so a fresh install needs no download), `publish` (signs the payload with `bunx tauri signer sign`, merges `releases.json` with `… index`, uploads to `DEPLOY_PATH/.downloads-staging/` and renames into `downloads/`, `releases.json` last so the index never names a missing file).
+
+Component versions (`VERSION` in `packages/*/version.py` and `features/<id>/__init__.py`) stay separate: the Python 2.7 runtime reads its own and the manager compares them per package. Inputs: `force` publishes a version that `releases.json` already lists (replacing it; without it the `check` job stops), `dry_run` builds without publishing (and skips that check). The run also fails before building when a secret is missing, and when the built catalogue's `modpackVersion` differs from that `version`.
 
 ### The signing key
 
@@ -180,15 +201,15 @@ One minisign key signs the manager's self-update and each modpack release (the m
 ### The first release
 
 - [ ] The API accepts only **v2** request signatures (`MOD_REQUEST.version = 'v2'`: HMAC over `v2\n<METHOD>\n<path>\n<timestamp>\n<nonce>\n<body>`, a 5-minute skew window and a one-time nonce), so a package built before v2 signing is rejected. Check that `DEFAULT_SERVER_URL` in `apps/game/modpack/packages/companion/config.py` is `https://api.triotmetki.ru`.
-- [ ] Bump `VERSION` in `apps/game/modpack/packages/companion/version.py` (and in `packages/core/version.py` and `features/<id>/__init__.py` for the packages that changed) with their CHANGELOG entries. The companion's version is the release version.
+- [ ] Bump `VERSION` in `apps/game/modpack/packages/companion/version.py` (and in `packages/core/version.py` and `features/<id>/__init__.py` for the packages that changed) with their CHANGELOG entries, and the release `version` in `apps/game/modpack/package.json` with its `## <version>` entry.
 - [ ] The downloads folder exists (§1), and a deploy ran with this Caddyfile and `docker-compose.yml` (they serve and mount it).
 - [ ] The secrets are set: deploy.yml's `NEXT_PUBLIC_SITE_URL` and `DEPLOY_*`, plus `TAURI_SIGNING_PRIVATE_KEY` (+ `_PASSWORD`).
-- [ ] Run **release** (Actions → release → Run workflow) with `version` (for example `0.2.0`) and `games` (for example `1.46.*`, comma-separated for several).
+- [ ] Set the supported clients in `otmetki.games` of `apps/game/modpack/package.json`, commit, push, then run **release** (Actions → release → Run workflow; no inputs needed).
 - [ ] Check `https://triotmetki.ru/downloads/releases.json`, `https://api.triotmetki.ru/modpack/releases/latest?game=1.46.0.0` (`compatible`) and the /mod page's two downloads.
 - [ ] Publish through МОСТ as well ([most-publishing.md](most-publishing.md)) and set `MOD_DISTRIBUTION.mostUrl` once the entry is live.
 - [ ] Users bind their devices again with a code from `/me`. Devices bound in development do not exist in production.
 
-Later releases: bump the versions and run the workflow again. A re-run of the same `version` replaces its files and its index entry; older releases stay in the index, so clients still on an older game version keep their compatible release. The manager block always points at the installer of the run; bump `version` in `apps/game/manager/package.json` for a manager change, because the self-update only offers a newer version.
+Later releases: bump the versions, commit, push and run the workflow again. A version that is already published stops the run; re-running it with `force` replaces its files and its index entry; older releases stay in the index, so clients still on an older game version keep their compatible release. The manager block always points at the installer of the run; bump `version` in `apps/game/manager/package.json` for a manager change, because the self-update only offers a newer version.
 
 ## 5. Legal pages and Plus: fill before checkout opens
 

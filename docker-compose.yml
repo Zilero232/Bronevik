@@ -1,30 +1,4 @@
-# Three Marks production-like stack, front to back:
-#   caddy → client → server → timescaledb + redis, with worker beside the server.
-#
-# Not deployed anywhere yet — there is no production. The file exists so the
-# stack can be brought up the moment there is one, and so the images are
-# exercised end to end locally:
-#
-#   docker compose build
-#   docker compose up -d
-#   docker compose logs -f
-#
-# `server` and `worker` run the same image (apps/web/server/Dockerfile): the API is
-# src/main.ts, the collector worker is src/worker.ts. The worker has no HTTP
-# port; its heartbeat and the Lesta circuit state show up in the server's
-# /health, and bull-board is served by the server on /admin/queues.
-#
-# Everything reads the root .env. The URLs in it point at localhost for dev;
-# inside compose the services reach each other by name, so the overrides below
-# win for DATABASE_URL, DIRECT_URL and REDIS_URL.
-#
-# Everything is stored on this host: uploaded replays and armor models on the
-# `serverdata` volume, the public downloads (modpack releases, the manager
-# installer, releases.json) in ./downloads next to this file. The release
-# workflow (.github/workflows/release.yml) fills ./downloads over SSH; Caddy
-# serves it at https://<SITE_DOMAIN>/downloads/ and the server reads the
-# release index from it. Both mount it read-only. Create it once:
-#   mkdir -p downloads
+# Production stack (docs/ops/deploy.md «What runs where»).
 
 x-healthcheck: &healthcheck
   interval: 30s
@@ -88,12 +62,9 @@ services:
     depends_on:
       - server
     environment:
-      # Server-only (never NEXT_PUBLIC_): the Next server signs its API calls with it so
-      # the API rate-limits the visitor, not the Next server. Same value the server reads from .env.
+      # Signs the Next server's API calls so the API rate-limits the visitor.
       INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN:?}
-      # Server-only, true or false, no default: the site-wide «Lesta data is not connected yet»
-      # notice and the disabled Lesta ID button. Read per request, so editing it in .env and
-      # `docker compose up -d client` switches it without a rebuild.
+      # Read per request: `docker compose up -d client` applies a change.
       LESTA_NOTICE: ${LESTA_NOTICE:?}
     expose:
       - '3000'
@@ -121,11 +92,9 @@ services:
     expose:
       - '4000'
     volumes:
-      # Uploaded replays and the armor models live under .data; without a
-      # volume they vanish with the container.
+      # Replays and armor models; lost with the container otherwise.
       - serverdata:/app/apps/web/server/.data
-      # The modpack release index (downloads/releases.json, relative to the
-      # working directory) that GET /modpack/releases/latest answers from.
+      # releases.json behind GET /modpack/releases/latest.
       - ./downloads:/app/apps/web/server/downloads:ro
     networks:
       - otmetki
@@ -136,8 +105,7 @@ services:
     restart: always
     logging: *logging
     command: [bun, src/worker.ts]
-    # The image's HEALTHCHECK probes the API port, which the worker never opens;
-    # its liveness shows up as the heartbeat in the server's /health instead.
+    # No API port: the worker's liveness is its heartbeat in the server's /health.
     healthcheck:
       disable: true
     depends_on:
@@ -168,8 +136,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
       POSTGRES_DB: ${POSTGRES_DB:?}
     ports:
-      # Loopback only: Docker's rules sit ahead of UFW, so a published port
-      # would face the internet. Reach it over an ssh tunnel.
+      # Loopback only: Docker's rules bypass UFW; reach it over an ssh tunnel.
       - '127.0.0.1:5432:5432'
     volumes:
       - pgdata:/home/postgres/pgdata/data
@@ -177,8 +144,7 @@ services:
       - otmetki
     healthcheck:
       <<: *healthcheck
-      # Over TCP: on the first boot the image runs initdb on a socket-only
-      # temporary server, which a socket probe would already report ready.
+      # Over TCP: initdb's socket-only first boot would pass a socket probe.
       test: [CMD-SHELL, 'pg_isready -h 127.0.0.1 -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
       retries: 5
       start_period: 30s
@@ -198,9 +164,7 @@ services:
       <<: *healthcheck
       test: [CMD, redis-cli, ping]
 
-  # Nightly pg_dump in the custom format (pg_restore-able), rotated: 7 daily,
-  # 4 weekly, 6 monthly. The dumps stay on this host — copy them off it
-  # (docs/ops/deploy.md «Бэкапы»); a disk failure takes both otherwise.
+  # Nightly pg_dump, 7 daily / 4 weekly / 6 monthly; copy it off the host.
   backup:
     image: prodrigestivill/postgres-backup-local:17
     container_name: otmetki-backup

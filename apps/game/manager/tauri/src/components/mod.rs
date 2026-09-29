@@ -9,7 +9,7 @@ use crate::error::{AppError, AppResult, ErrorCode};
 use crate::fsx::{list_files, move_file};
 use crate::state::{component_id, disabled_dir, inno_name, Manifest};
 
-pub const MANAGER_VERSION: &str = env!("CARGO_PKG_VERSION");
+pub const MANAGER_VERSION: &str = env!("MANAGER_VERSION");
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]

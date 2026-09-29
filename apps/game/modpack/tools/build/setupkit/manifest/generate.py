@@ -10,6 +10,7 @@ import hashlib
 import os
 
 import archive
+import layout
 
 from .model import Component, Localized, Manifest, Preview
 
@@ -106,9 +107,8 @@ def build_manifest(packages, catalog, platform='lesta', packages_dir=None, stric
     catalog_order = dict((entry.id, index) for index, entry in enumerate(catalog.components))
     components.sort(key=lambda component: (category_order[component.category], catalog_order.get(component.id, len(catalog_order)), component.id))
     used = set(component.category for component in components)
-    companion = next((package for package in packages if package.key == 'companion'), packages[0])
     manifest = Manifest(
-        modpack_version=companion.version,
+        modpack_version=layout.modpack_version(),
         platform=platform,
         extension=archive.EXTENSIONS[platform],
         categories=tuple(category for category in catalog.categories if category.id in used),

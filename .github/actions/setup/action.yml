@@ -5,8 +5,7 @@ runs:
   using: composite
 
   steps:
-    # packageManager in the root package.json is the single source of the Bun
-    # version, so CI and a local install never disagree.
+    # packageManager in the root package.json pins the Bun version.
     - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
       with:
         bun-version-file: package.json
@@ -18,9 +17,7 @@ runs:
         key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
         restore-keys: bun-${{ runner.os }}-
 
-    # @otmetki/server runs `prisma generate` on postinstall, and prisma.config.ts
-    # reads DIRECT_URL. `generate` never connects, so a placeholder satisfies it
-    # — the same trick the Dockerfiles use.
+    # postinstall runs prisma generate, which needs DIRECT_URL but never connects.
     - name: Install dependencies
       shell: bash
       env:
@@ -28,9 +25,7 @@ runs:
         DIRECT_URL: postgresql://placeholder
       run: bun install --frozen-lockfile
 
-    # The client's API layer (shared/api/generated) is gitignored: typecheck,
-    # tests and `next build` need it generated from the committed
-    # shared/api/openapi/internal.json. No network, no running API.
+    # shared/api/generated is gitignored; built offline from the committed OpenAPI.
     - name: Generate the client API
       shell: bash
       run: bun --filter @otmetki/client api:build

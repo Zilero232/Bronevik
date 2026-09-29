@@ -14,6 +14,7 @@ asset sets in assets/assets.json (images, sounds), their files, licences and THI
 
 so the split packages never ship the same file, and the single package is their union.
 """
+import json
 import os
 import re
 
@@ -21,6 +22,7 @@ import asset_sets
 
 MODPACK_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PACKAGES_DIR = os.path.join(MODPACK_DIR, 'packages')
+PACKAGE_JSON = os.path.join(MODPACK_DIR, 'package.json')
 FEATURES_DIR = os.path.join(MODPACK_DIR, 'features')
 MODS_ROOT = 'res/scripts/client/gui/mods'
 PACKAGE_ROOT = MODS_ROOT + '/otmetki'
@@ -149,6 +151,12 @@ def feature_package(feature_id, core, companion):
     return Package(feature_id, package_id, name, version, name + ' (triotmetki.ru)', files, [core, companion])
 
 
+def modpack_version():
+    """The modpack release version: "version" in apps/game/modpack/package.json, its single source."""
+    with open(PACKAGE_JSON, encoding='utf-8') as handle:
+        return json.load(handle)['version']
+
+
 def split_packages(root_init):
     core = core_package(root_init)
     companion = companion_package(core)
@@ -157,8 +165,8 @@ def split_packages(root_init):
 
 
 def single_package(root_init):
-    """Everything in one package under the companion's id: the pre-split release format."""
+    """Everything in one package under the companion's id and the modpack version: the pre-split release format."""
     packages = split_packages(root_init)
     companion = packages[1]
     files = [item for package in packages for item in package.files]
-    return Package('single', companion.package_id, companion.name, companion.version, companion.description, files)
+    return Package('single', companion.package_id, companion.name, modpack_version(), companion.description, files)

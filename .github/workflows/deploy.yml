@@ -1,29 +1,6 @@
 name: deploy
 
-# Images go to ghcr, then the VPS pulls them. The web image and the server image
-# (also run as the worker) build in parallel jobs that share
-# .github/actions/docker-image. The VPS holds no clone of the repository, so
-# the compose files and infra/caddy are copied on every deploy, keeping their
-# repository paths (docker-compose.yml bind-mounts ./infra/caddy/Caddyfile).
-#
-# Before production the schema is synced with `prisma db push` (no migrations).
-# A push that would lose data fails instead of running.
-#
-# Repository secrets — Settings → Secrets and variables → Actions:
-#   NEXT_PUBLIC_API_URL       baked into the web image at build time
-#   NEXT_PUBLIC_SITE_URL      public site origin, baked into the web image at build time
-#   DEPLOY_SSH_HOST           VPS
-#   DEPLOY_SSH_USER
-#   DEPLOY_SSH_PASSWORD
-#   DEPLOY_SSH_PORT           optional, defaults to 22
-#   DEPLOY_PATH               where docker-compose.yml lives, e.g. /opt/otmetki
-#
-# Runtime secrets and switches live in the VPS .env, not here (docs/ops/deploy.md §1).
-# The stack refuses to start without INTERNAL_API_TOKEN or LESTA_NOTICE: docker-compose.yml
-# passes both to the client (the server validates the token too), so the first
-# `docker compose` command below already fails when either is missing. LESTA_NOTICE
-# (true or false, the site-wide «Lesta data is not connected yet» notice) is read at
-# request time: change it in the VPS .env and run `docker compose up -d client`.
+# Checks, builds the images to ghcr and rolls them out on the VPS (docs/ops/deploy.md).
 
 on:
   workflow_dispatch:
@@ -35,8 +12,6 @@ concurrency:
 permissions: {}
 
 jobs:
-  # Every check runs here, before any image is built, so an image is never
-  # pushed from a tree that would have failed.
   checks:
     permissions:
       contents: read
@@ -63,11 +38,9 @@ jobs:
         with:
           python-version: '3.12'
 
-      # The game modpack is Python 2.7 in the client; its suites run on Python 3.
       - run: bun run test:modpack
 
-  # Playwright over the public pages. No API runs here: every page must render
-  # its shell and fall back to its error state.
+  # No API here: every page must render its shell or its error state.
   e2e:
     permissions:
       contents: read
@@ -98,10 +71,8 @@ jobs:
       - name: Serve the client
         env:
           PORT: '3000'
-          # Not 127.0.0.1: NextURL turns it into localhost, so the next-intl rewrite of a default-locale
-          # path looks like another origin and loops back through the proxy as a redirect.
+          # Not 127.0.0.1: NextURL makes it localhost and the next-intl rewrite loops.
           HOSTNAME: 0.0.0.0
-          # No API runs here; the Next server still signs its (failing) API calls.
           INTERNAL_API_TOKEN: e2e-internal-token-no-api-behind-it-000
           LESTA_NOTICE: 'false'
         run: |
@@ -217,13 +188,11 @@ jobs:
 
             docker compose pull client server worker
 
-            # --no-deps below starts nothing: on the very first run the database
-            # is not up yet, so bring it (and Redis) up and wait for health first.
+            # --no-deps below starts nothing, so the database must already be up.
             docker compose up -d --wait postgres redis
             docker compose run --rm --no-deps server bun run db:deploy
 
-            # A crashed service only reports "exit 1" from `up`; print what every
-            # service said before failing the run.
+            # `up` only reports "exit 1" on a crash: print every service log.
             if ! docker compose up -d; then
               for service in $(docker compose config --services); do
                 echo "::group::logs: $service" >&2

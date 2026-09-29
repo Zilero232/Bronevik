@@ -134,7 +134,7 @@ pub fn run() {
             }
 
             background::spawn_scheduler(&handle);
-            log::info!("manager {} started", env!("CARGO_PKG_VERSION"));
+            log::info!("manager {} started", env!("MANAGER_VERSION"));
 
             Ok(())
         })

@@ -115,8 +115,6 @@ class BuildTest(unittest.TestCase):
         build.compilers.select = self.saved
         shutil.rmtree(self.out)
 
-    def companion_version(self):
-        return layout.read_constants(os.path.join(layout.PACKAGES_DIR, 'companion', 'version.py'), ('VERSION',))[0]
 
     def run_build(self, *extra):
         with contextlib.redirect_stdout(io.StringIO()):
@@ -136,7 +134,7 @@ class BuildTest(unittest.TestCase):
 
     def test_single_build_and_require_pyc(self):
         outputs = self.run_build('--single', '--wg')
-        self.assertEqual([os.path.basename(path) for path in outputs], ['otmetki.%s.wotmod' % self.companion_version()])
+        self.assertEqual([os.path.basename(path) for path in outputs], ['otmetki.%s.wotmod' % layout.modpack_version()])
         with zipfile.ZipFile(outputs[0]) as package:
             self.assertIn(MODS + 'otmetki/core/registry/__init__.py', package.namelist())
             self.assertIn(MODS + 'otmetki/features/session_stats/client/__init__.py', package.namelist())

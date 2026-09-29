@@ -1,18 +1,6 @@
 name: manager
 
-# The modpack manager (apps/game/manager): a Tauri 2 desktop app, Rust core in tauri/, React UI in web/.
-# It is how players install the modpack (the Inno Setup installer it replaced is gone); its catalogue
-# (components.json + previews) comes from .github/actions/modpack-release (modpack.yml, release.yml).
-#
-# checks  pull requests that touch the manager, the packages its UI reads, or this file; manual runs.
-#         Windows, like the players: the UI typecheck and its Vitest project, then cargo fmt, clippy and
-#         the Rust tests. The Rust contract test fails when tauri/contract/*.json no longer matches the
-#         serialised commands (rerun it locally with OTMETKI_UPDATE_FIXTURES=1 and commit the result).
-# bundle  manual runs only, after checks. `tauri build`: the NSIS installer (ru/en, per user, unsigned),
-#         plus the updater archive and its minisign signature when the TAURI_SIGNING_PRIVATE_KEY secret
-#         is set (without it the updater artifacts are skipped, the installer is still built). Uploaded as
-#         the `modpack-manager` artifact, a build to look at. Publishing to the VPS is release.yml
-#         (README «Releases»), which builds the installer with the release catalogue itself.
+# The modpack manager (Tauri 2) checks and a test build (docs/ops/deploy.md «CI workflows»).
 
 on:
   pull_request:
@@ -96,8 +84,7 @@ jobs:
         with:
           workspaces: apps/game/manager/tauri -> target
 
-      # The updater archive must be signed with the key whose public half is in tauri.conf.json
-      # (plugins.updater.pubkey). Forks and runs without the secret still get the installer.
+      # Without the signing secret (forks) the updater artifacts are skipped.
       - name: Build the installer
         shell: bash
         env:

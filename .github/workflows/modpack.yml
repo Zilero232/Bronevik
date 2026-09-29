@@ -1,14 +1,6 @@
 name: modpack
 
-# The «Мир танков» modpack (apps/game/modpack): Python 2.7 game-client packages with Python 3 host tooling.
-#
-# checks         pull requests that touch the modpack, and manual runs. Windows, like the players:
-#                pytest + the stdlib runner, ruff, vermin (the py2.7 syntax guard is a test).
-# release-build  manual runs only. .github/actions/modpack-release builds OpenWG owg_python_compiler
-#                from source (no Python 2.7 needed), the release packages with compiled .pyc (artifact
-#                `modpack`) and the component catalogue around them (components.json with sha256 +
-#                previews, artifact `modpack-catalog`) for the manager (apps/game/manager). A build to
-#                look at; publishing to the VPS is release.yml, which runs the same action.
+# The modpack checks and a test release build (docs/ops/deploy.md «CI workflows»).
 
 on:
   pull_request:
@@ -51,7 +43,7 @@ jobs:
 
       - run: uv run --locked pytest
 
-      # The same suites through the stdlib runner the pre-commit hook uses.
+      # The stdlib runner the pre-commit hook uses.
       - run: python tools/run_tests.py
 
       - run: uv run --locked ruff check .

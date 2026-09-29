@@ -41,7 +41,7 @@ async fn recheck(app: &AppHandle, manager: &Manager) -> PatchReport {
 #[tauri::command]
 pub async fn app_info(manager: State<'_, Manager>) -> AppResult<AppInfo> {
     Ok(AppInfo {
-        version: env!("CARGO_PKG_VERSION").to_owned(),
+        version: env!("MANAGER_VERSION").to_owned(),
         state_root: manager.layout.state_root.clone(),
         roaming_root: manager.layout.roaming_root.clone(),
         logs_dir: manager.layout.logs_dir(),

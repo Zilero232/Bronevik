@@ -3,7 +3,7 @@
     "title": "Design system",
     "description": "Every Three Marks component, icon and token on a single page."
   },
-  "eyebrow": "«Bronya» design system",
+  "eyebrow": "“Bronya” design system",
   "title": "Steel at dusk",
   "description": "Graphite armour, hot metal and cold steel. Every component, icon and animation on a single page.",
   "colors": {
@@ -30,7 +30,7 @@
     },
     "body": {
       "meta": "Onest · body",
-      "sample": "Three Marks collects «Мир танков» stats and turns them into clear charts, mark thresholds and hints for every battle."
+      "sample": "Three Marks collects Mir Tankov stats and turns them into clear charts, mark thresholds and hints for every battle."
     },
     "mono": {
       "meta": "IBM Plex Mono · HUD",

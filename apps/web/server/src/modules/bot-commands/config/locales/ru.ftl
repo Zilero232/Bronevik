@@ -1,4 +1,4 @@
-not-linked = Сначала привяжите аккаунт Леста на сайте или укажите ник после команды.
+not-linked = Сначала привяжите аккаунт Лесты на сайте или укажите ник после команды.
 player-not-found = Игрок не найден.
 error-generic = Что-то пошло не так. Попробуйте позже.
 open-site = Открыть на сайте
@@ -38,4 +38,8 @@ tank-card =
 tank-no-thresholds = Порогов отметок пока нет.
 top-empty = Рейтинг ещё считается.
 top-header = Топ по WN8:
-top-line = { $place }. { $nickname } — { $wn8 } ({ $battles } боёв)
+top-line = { $place }. { $nickname } — { $wn8 } ({ $battles } { $battles ->
+        [one] бой
+        [few] боя
+       *[many] боёв
+    })

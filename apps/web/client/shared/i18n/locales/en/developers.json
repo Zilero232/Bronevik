@@ -28,7 +28,7 @@
       },
       "request": {
         "title": "Send a request",
-        "text": "A nickname or an account id returns a summary with WN8, EFF, Броня-Индекс and recent periods."
+        "text": "A nickname or an account id returns a summary with WN8, EFF, Bronya Index and recent periods."
       }
     },
     "tabs": {
@@ -60,7 +60,7 @@
     "payload": "Request body",
     "headersTitle": "Headers",
     "headers": {
-      "signature": "Space-separated signatures, each «v1,» followed by base64: HMAC-SHA256 with the webhook secret (base64 after the whsec_ prefix) over «id.timestamp.body», per the Standard Webhooks spec.",
+      "signature": "Space-separated signatures, each “v1,” followed by base64: HMAC-SHA256 with the webhook secret (base64 after the whsec_ prefix) over “id.timestamp.body”, per the Standard Webhooks spec.",
       "timestamp": "Send time in Unix seconds. Part of the signature.",
       "event": "Event name, same as the event field.",
       "delivery": "Delivery id: part of the signature, use it for idempotency."

@@ -106,7 +106,7 @@
     "disconnectDescription": "Three Marks will stop receiving events from {name}. You can reconnect at any time.",
     "predictions": {
       "label": "Auto predictions",
-      "description": "The mod opens an \"over N damage?\" prediction when a battle starts and resolves it from the result. Needs Twitch affiliate or partner.",
+      "description": "The mod opens an “over N damage?” prediction when a battle starts and resolves it from the result. Needs Twitch affiliate or partner.",
       "reconnect": "Reconnect Twitch",
       "reconnectHint": "Reconnect Twitch to grant the new permission predictions need.",
       "panel": "The Twitch panel extension shows viewers your session and marks."
@@ -357,18 +357,18 @@
       "action": "Go to profile"
     },
     "mod": {
-      "title": "Import from the game",
+      "title": "From the game via the mod",
       "description": "The Three Marks mod reads your settings straight from the client and sends them to your profile — no files, no copying.",
       "steps": {
         "bind": "Install the mod and bind it in your account.",
-        "share": "In the hangar, open the mod window and press «Share settings».",
-        "target": "Choose «my profile» — the settings show up here marked «from the game via the mod»."
+        "share": "In the hangar, open the mod window and press “Send game settings to the site”.",
+        "target": "Choose “my profile” — the settings show up here marked “from the game via the mod”."
       },
-      "hint": "The mod never sends your login, tokens or account data.",
+      "hint": "The mod never sends your login, password or account data.",
       "bind": "Install and bind the mod"
     },
     "xml": {
-      "title": "Import preferences.xml",
+      "title": "Upload preferences.xml",
       "description": "Pick the client settings file. It usually lives here:",
       "privacy": "The file is read only in your browser and is never uploaded. We take graphics, camera and sensitivity values only; login, tokens and encoded sections are skipped.",
       "pick": "Choose file",

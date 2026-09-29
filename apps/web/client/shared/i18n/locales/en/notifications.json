@@ -130,7 +130,7 @@
       "unsupported": "Open the site in a recent Chrome, Firefox, Edge or Safari — or install Three Marks as an app.",
       "denied": "Allow notifications for this site in the browser settings (the lock icon by the address bar) and reload the page.",
       "unconfigured": "The server has not issued a push key yet. Other channels work as usual.",
-      "idle": "The browser will ask for permission — press «Allow».",
+      "idle": "The browser will ask for permission — press “Allow”.",
       "subscribed": "This device receives push. You can turn it off at any time."
     },
     "subscribe": "Connect push",

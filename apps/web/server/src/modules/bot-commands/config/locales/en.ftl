@@ -38,4 +38,7 @@ tank-card =
 tank-no-thresholds = No mark thresholds yet.
 top-empty = The rating is still being computed.
 top-header = Top by WN8:
-top-line = { $place }. { $nickname } — { $wn8 } ({ $battles } battles)
+top-line = { $place }. { $nickname } — { $wn8 } ({ $battles } { $battles ->
+        [one] battle
+       *[other] battles
+    })

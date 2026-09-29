@@ -97,7 +97,7 @@
     "sync": "Mark attendance from battles",
     "remove": "Delete",
     "cancel": "Cancel",
-    "removeTitle": "Delete «{title}»?",
+    "removeTitle": "Delete “{title}”?",
     "rsvpSaved": "Answer saved",
     "removed": "Event deleted",
     "synced": "Attendance updated from battles",

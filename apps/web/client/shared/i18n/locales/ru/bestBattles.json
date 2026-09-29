@@ -35,8 +35,7 @@
     "map": "Карта",
     "anyMap": "Любая карта",
     "medals": "Медали",
-    "medalBattles": "{count, plural, one {# бой} few {# боя} many {# боёв} other {# боя}}",
-    "reset": "Сбросить"
+    "medalBattles": "{count, plural, one {# бой} few {# боя} many {# боёв} other {# боя}}"
   },
   "sources": {
     "mod": "Мод",

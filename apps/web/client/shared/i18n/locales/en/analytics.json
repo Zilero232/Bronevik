@@ -13,7 +13,7 @@
   },
   "header": {
     "title": "Analytics",
-    "description": "Your battles, from the «Three Marks» mod and the Lesta API."
+    "description": "Your battles, from the Three Marks mod and Lesta."
   },
   "periods": {
     "label": "Period"
@@ -33,10 +33,10 @@
     "noAccountText": "Link your account with Lesta ID in your dashboard to see analytics.",
     "linkAction": "Link account",
     "modTitle": "No battles from the mod yet",
-    "modText": "This data comes from the «Three Marks» mod: install it, bind it in your dashboard and play a couple of battles.",
+    "modText": "This data comes from the “Three Marks” mod: install it, bind it in your dashboard and play a couple of battles.",
     "modAction": "Set up the mod",
     "noGarageTitle": "Garage not loaded yet",
-    "noGarageText": "The vehicle list comes from the Lesta API once your account is linked. Check back a bit later."
+    "noGarageText": "The vehicle list arrives from the game once your account is linked. Check back a bit later."
   },
   "firstWin": {
     "title": "First win of the day",
@@ -133,7 +133,7 @@
     "matesDescription": "Who you win with more often than solo",
     "matesEmpty": "You have not played in a platoon yet",
     "untrackedTitle": "No platoon data",
-    "untrackedText": "Only a recent version of the «Three Marks» mod records platoon members. Update the mod and play in a platoon."
+    "untrackedText": "Only a recent version of the “Three Marks” mod records platoon members. Update the mod and play in a platoon."
   },
   "rng": {
     "shots": "Shots",
@@ -146,9 +146,9 @@
     "chartSeries": "Share of shots",
     "distanceTitle": "Penetration by distance",
     "distanceEmpty": "No distance data",
-    "distanceEmptyText": "The «Three Marks» mod records the distance of each shot — update it to a recent version.",
+    "distanceEmptyText": "The “Three Marks” mod records the distance of each shot — update it to a recent version.",
     "emptyTitle": "No recorded shots",
-    "emptyText": "Honest RNG is built from the shots the «Three Marks» mod records. Install or update the mod and play a few battles."
+    "emptyText": "Honest RNG is built from the shots the “Three Marks” mod records. Install or update the mod and play a few battles."
   },
   "battles": {
     "title": "My battles",
@@ -280,7 +280,7 @@
   },
   "battlesPage": {
     "title": "Battles",
-    "description": "Battles from the «Three Marks» mod. Click a row to open the review."
+    "description": "Battles from the Three Marks mod. Click a row to open the review."
   },
   "tankMeta": {
     "title": "Tank analytics",

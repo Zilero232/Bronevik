@@ -13,8 +13,7 @@
     "noLeader": "No data"
   },
   "hero": {
-    "home": "Home",
-    "filters": "Vehicle filters"
+    "home": "Home"
   },
   "compare": {
     "meta": {
@@ -67,7 +66,7 @@
       "stats": "Server, 7 days",
       "errorTitle": "Could not load the comparison",
       "notFoundTitle": "No such tanks",
-      "notFoundDescription": "The tanks in the link are not in our database. Clear the comparison and pick vehicles again.",
+      "notFoundDescription": "The tanks in the link were not found. Clear the comparison and pick vehicles again.",
       "clear": "Clear comparison",
       "statsKeys": {
         "winRate": "Win rate",
@@ -82,7 +81,6 @@
     "tier": "Tier",
     "type": "Class",
     "nation": "Nation",
-    "reset": "Reset",
     "label": "Vehicle filters"
   },
   "picker": {
@@ -131,7 +129,7 @@
     "emptyTitle": "Nothing matches the filters",
     "errorTitle": "Statistics did not load",
     "errorDescription": "The statistics server is not responding.",
-    "noStatsTitle": "Server statistics are not collected yet",
+    "noStatsTitle": "No server statistics yet",
     "players": "Players",
     "avgXp": "XP",
     "avgBlocked": "Blocked",

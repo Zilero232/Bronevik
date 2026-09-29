@@ -1,18 +1,18 @@
 {
   "meta": {
     "title": "Mir Tankov statistics — Three Marks",
-    "description": "Mir Tankov players, tanks, marks of excellence, leaderboards and clans from the Lesta Games API."
+    "description": "Mir Tankov players, tanks, marks of excellence, leaderboards and clans from Lesta Games data."
   },
   "hero": {
     "title": "Mir Tankov stats and tools",
-    "description": "Players, tanks, marks and clans from the Lesta Games API",
+    "description": "Players, tanks, marks and clans from Lesta Games data",
     "recent": "Recently viewed",
     "figures": "Server now",
     "tracked": "Tracked players",
     "online": "Server online",
     "activeEstimate": "Active, last hour",
     "estimateHint": "Our estimate from tracked players",
-    "empty": "Server figures will appear once we start collecting player statistics",
+    "empty": "Server figures will appear as soon as player statistics come in",
     "version": "Game version",
     "pulse": "Server pulse"
   },
@@ -140,7 +140,7 @@
     "title": "Streamers and clans",
     "streamers": {
       "title": "Who is live",
-      "description": "Live «Мир танков» streamers and their settings"
+      "description": "Live Mir Tankov streamers and their settings"
     },
     "clans": {
       "title": "Clans",

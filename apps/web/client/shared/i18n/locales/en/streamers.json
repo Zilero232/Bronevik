@@ -16,7 +16,7 @@
   "tools": {
     "eyebrow": "Loadout",
     "title": "Everything you need on air",
-    "description": "Four tools that work together: data from the mod and the API flows straight into your overlay, chat and page.",
+    "description": "Four tools that work together: data from the mod and from Lesta flows straight into your overlay, chat and page.",
     "overlays": {
       "title": "OBS overlays",
       "text": "Session, WN8, gun mark, win streak — pick the metrics and a style, paste the link into OBS. Transparent background, live numbers."

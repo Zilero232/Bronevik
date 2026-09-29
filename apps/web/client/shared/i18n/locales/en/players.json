@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Players — search and stats",
-    "description": "Find any «Мир танков» player: WN8, Bronya Index, marks of excellence, sessions and history."
+    "description": "Find any Mir Tankov player: WN8, Bronya Index, marks of excellence, sessions and history."
   },
   "picker": {
     "empty": "Nobody found. Check the nickname.",
@@ -9,7 +9,7 @@
   },
   "head": {
     "title": "Players",
-    "description": "Find «Мир танков» players by nickname: WN8, Bronya Index, marks of excellence and sessions.",
+    "description": "Find Mir Tankov players by nickname: WN8, Bronya Index, marks of excellence and sessions.",
     "placeholder": "Player nickname",
     "compare": "Compare players",
     "top": "Leaderboards"
@@ -30,6 +30,6 @@
     "emptyTitle": "Nobody viewed yet"
   },
   "og": {
-    "fallback": "«Мир танков» player statistics"
+    "fallback": "Mir Tankov player statistics"
   }
 }

@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "{nickname} — player stats",
-    "description": "{nickname} in «Мир танков»: Bronya Index, WN8, win rate, tanks, marks of excellence and sessions."
+    "description": "{nickname} in Mir Tankov: Bronya Index, WN8, win rate, tanks, marks of excellence and sessions."
   },
   "loading": "Loading the player dossier",
   "stats": {
@@ -24,7 +24,7 @@
   "missing": {
     "search": "Back to player search",
     "notFoundTitle": "Player not found",
-    "notFoundDescription": "There is no «Мир танков» player “{nickname}”, or the nickname has changed.",
+    "notFoundDescription": "There is no Mir Tankov player “{nickname}”, or the nickname has changed.",
     "errorTitle": "The profile did not load",
     "errorDescription": "The stats server did not return data for “{nickname}”."
   },
@@ -78,7 +78,6 @@
   },
   "tanks": {
     "caption": "Player vehicles",
-    "reset": "Reset filters",
     "emptyTitle": "Nothing matches",
     "search": "Search by tank name",
     "allNations": "All nations",
@@ -106,7 +105,7 @@
     "eyebrow": "Session",
     "live": "In progress",
     "source": {
-      "api": "From the API",
+      "api": "From Lesta data",
       "mod": "From the mod"
     },
     "duration": "{minutes, plural, one {# minute} other {# minutes}} in battle",
@@ -226,7 +225,7 @@
     "playtime": {
       "title": "Results by time of day",
       "beta": "Beta",
-      "approximate": "Times are approximate: without the mod we only see battles through API polls.",
+      "approximate": "Times are approximate: without the mod we only see battles through periodic stats updates.",
       "bestHour": "Best time: {from}:00–{to}:00 · {rate}% wins",
       "worstHour": "Worst time: {from}:00–{to}:00 · {rate}% wins",
       "bestWeekday": "Strong day: {day} · {rate}% wins",

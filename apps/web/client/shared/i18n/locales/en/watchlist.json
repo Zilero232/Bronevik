@@ -4,7 +4,7 @@
     "description": "Players you watch: last battles, win rate, average damage, 7-day WN8 and new marks — plus a digest in your notifications."
   },
   "title": "Player watchlist",
-  "description": "Friends, clanmates, rivals — their battles over a day or a week from the Lesta API, and a digest on your schedule.",
+  "description": "Friends, clanmates, rivals — their battles over a day or a week from Lesta data, and a digest on your schedule.",
   "error": "The watchlist did not load. Try again.",
   "period": {
     "label": "Stats period"

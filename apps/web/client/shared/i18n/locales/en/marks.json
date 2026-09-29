@@ -1,12 +1,12 @@
 {
   "meta": {
     "title": "Marks of excellence",
-    "description": "The 65, 85, 95 and 100 % thresholds of every Мир танков tank with 30-day history."
+    "description": "The 65, 85, 95 and 100 % thresholds of every Mir Tankov tank with 30-day history."
   },
   "head": {
     "title": "Marks of excellence",
-    "lead": "65/85/95/100 % thresholds for every Мир танков tank · updated {date}",
-    "leadPlain": "65/85/95/100 % thresholds for every Мир танков tank",
+    "lead": "65/85/95/100 % thresholds for every Mir Tankov tank · updated {date}",
+    "leadPlain": "65/85/95/100 % thresholds for every Mir Tankov tank",
     "tracked": "Tanks tracked",
     "updated": "Updated",
     "updatedUnknown": "no data",
@@ -73,7 +73,7 @@
     "history": "Threshold history",
     "historyAria": "Chart of the 65, 85, 95 and 100 percent thresholds over time",
     "noHistory": "No history yet",
-    "noHistoryHint": "This tank's thresholds have been collected only recently.",
+    "noHistoryHint": "This tank's thresholds have been tracked only recently.",
     "mastery": "Mastery badge",
     "noMastery": "No mastery thresholds for this tank yet.",
     "masteryLevels": {

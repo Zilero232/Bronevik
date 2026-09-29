@@ -62,7 +62,7 @@
     },
     "unknownMap": "Неизвестная карта",
     "status": {
-      "uploaded": "В очереди",
+      "uploaded": "Ждёт разбора",
       "parsing": "Разбираем",
       "parsed": "Готов",
       "failed": "Ошибка разбора"
@@ -78,7 +78,6 @@
     "playerPlaceholder": "Ник",
     "result": "Итог",
     "sort": "Сортировка",
-    "reset": "Сбросить",
     "results": {
       "win": "Победа",
       "loss": "Поражение",

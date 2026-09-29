@@ -124,12 +124,12 @@
     },
     "source": {
       "mod": "Mod",
-      "snapshots": "API",
+      "snapshots": "Lesta",
       "none": "No data"
     },
     "sourceHint": {
       "mod": "Per-battle results from the mod",
-      "snapshots": "Daily Lesta API data scaled to the competition’s battle count",
+      "snapshots": "Daily Lesta data scaled to the competition’s battle count",
       "none": "No battles since the start yet"
     },
     "memberStats": "{battles}/{total} · {score}"
@@ -166,7 +166,7 @@
   "rules": {
     "title": "How points work",
     "points": "A player’s points are the sum of weight × metric over their first {battles, plural, one {# battle} other {# battles}} after the start, or after joining if they joined later. A team’s points are the sum of its members’ points.",
-    "sources": "With the mod, each battle comes from the mod, respecting the mode and the vehicle tier. Without the mod, and for random battles with no tier limit, the result comes from daily Lesta API data scaled to the competition’s battle count.",
+    "sources": "With the mod, each battle comes from the mod, respecting the mode and the vehicle tier. Without the mod, and for random battles with no tier limit, the result comes from daily Lesta data scaled to the competition’s battle count.",
     "fairPlay": "Fair play: only each participant’s own results count. Nothing about opponents is ever used.",
     "refresh": "Standings refresh every 15 minutes; the final result lands 6 hours after the finish. Participants get a notification with the result."
   }

@@ -31,13 +31,13 @@ premium-offer-body = { $tankName }: { $discount ->
     } off
 
 challenge-resolved-title = Challenge finished
-challenge-resolved-body = "{ $title }": { $outcome ->
+challenge-resolved-body = “{ $title }”: { $outcome ->
         [succeeded] completed
        *[failed] failed
     }
 
 clan-event-reminder-title = [{ $clanTag }] Event soon
-clan-event-reminder-body = "{ $title }" starts { $startsAt ->
+clan-event-reminder-body = “{ $title }” starts { $startsAt ->
         [none] { missing }
        *[other] { $startsAt }
     }
@@ -49,7 +49,7 @@ clan-weekly-report-body = Events: { $events }, attendance { $attendance ->
     }, new candidates: { $newCandidates }, inactive members: { $inactiveMembers }
 
 badge-awarded-title = New badge!
-badge-awarded-body = "{ $title }" earned
+badge-awarded-body = “{ $title }” earned
 
 replay-overflow-title = { $daysLeft ->
     [1] Extra replays will be deleted tomorrow

@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "How WN8, EFF, Bronya Index and marks are computed",
-    "description": "The WN8, efficiency rating and Bronya Index formulas, how the mark of excellence percentage and mastery badges work, the rating colour scale and the data sources behind Three Marks."
+    "title": "How WN8, EFF, Bronya Index and marks work",
+    "description": "The WN8, EFF and Bronya Index formulas, the mark of excellence and mastery maths, the rating colour scale and the Three Marks data sources."
   },
   "head": {
     "title": "Rating methodology",
@@ -100,6 +100,6 @@
     "noCopy": "We do not republish that table on the site: no licence is stated for it anywhere, so please read it at the source.",
     "wn8Formula": "The WN8 formula is the community’s open formula; we compute it unchanged.",
     "eff": "EFF is the classic public efficiency rating formula.",
-    "own": "The Bronya Index, the colour scale and the mark thresholds in our table are Three Marks’ own computations from mod, replay and Lesta API data."
+    "own": "The Bronya Index, the colour scale and the mark thresholds in our table are Three Marks’ own computations from mod, replay and public Lesta data."
   }
 }

@@ -67,11 +67,11 @@
     "series": "Series: {goal}",
     "win": "Win the battle.",
     "alive": "Survive the battle.",
-    "generic": "Condition «{id}»"
+    "generic": "Condition “{id}”"
   },
   "tanks": {
     "title": "Best tanks by our data",
-    "description": "Fitting tanks by «{metric}», cohort: {cohort}, period: {period}.",
+    "description": "Fitting tanks by “{metric}”, cohort: {cohort}, period: {period}.",
     "cohort": {
       "all": "all players",
       "beginner": "beginners",
@@ -87,7 +87,7 @@
     "ownBattles": "Your battles",
     "ownWinRate": "Your wins",
     "emptyTitle": "No data for fitting tanks",
-    "emptyDescription": "Server stats for these tanks are not collected yet.",
+    "emptyDescription": "No server stats for these tanks yet.",
     "errorTitle": "Could not load tanks",
     "garageTitle": "From your hangar",
     "garageNoLink": "Link a Lesta account to see your tanks.",

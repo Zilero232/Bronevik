@@ -7,9 +7,7 @@
   "filters": {
     "tier": "Vehicle tier",
     "mode": "Mode",
-    "allTiers": "All tiers",
-    "allShort": "All",
-    "tierItem": "Tier {tier}"
+    "allShort": "All"
   },
   "modes": {
     "random": "Random battles",

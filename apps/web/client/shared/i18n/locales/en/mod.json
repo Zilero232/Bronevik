@@ -1,14 +1,14 @@
 {
   "meta": {
     "title": "Three Marks mod — download",
-    "description": "The «Мир танков» companion mod: an in-battle marks panel, a hangar session panel and every battle on the site. Your own data only, fair play by design."
+    "description": "The Mir Tankov modpack: MoE in battle, damage log, sixth sense lamp, replay manager and every battle on the site. Your own data only, fair play by design."
   },
   "hero": {
     "home": "Home",
     "crumb": "Mod",
     "eyebrow": "Companion mod",
     "title": "Three Marks mod",
-    "lead": "Your marks percentage in battle, your session in the hangar and every battle result on the site — from your own data only.",
+    "lead": "Your marks percentage in battle, a damage log, the sixth sense lamp, a replay manager and dozens more battle and hangar panels, with every battle result on the site. From your own data only.",
     "download": "Download the manager",
     "manual": "Download the packages manually",
     "most": "Open on MOST",
@@ -22,7 +22,7 @@
     "items": {
       "results": {
         "title": "Battle results on the site",
-        "text": "After a battle the mod sends your results: damage, assist, spotting, kills and XP. Sessions and analytics update right away, no API delay."
+        "text": "After a battle the mod sends your results: damage, assist, spotting, kills and XP. Sessions and analytics update right away, without waiting for Lesta's stats update."
       },
       "marks": {
         "title": "Marks progress",
@@ -63,11 +63,11 @@
     "steps": {
       "download": {
         "title": "Download the manager",
-        "text": "Get the installer with the «Download the manager» button at the top of the page. It is not code-signed, so Windows may show a warning: «More info» → «Run anyway»."
+        "text": "Get the installer with the “Download the manager” button at the top of the page. It is not code-signed, so Windows may show a warning: “More info” → “Run anyway”."
       },
       "install": {
         "title": "Install the modpack",
-        "text": "The manager finds your «Мир танков» client, offers a set of components and puts them into mods/'<'client version'>'/. After a game patch it moves the modpack into the new folder itself."
+        "text": "The manager finds your Mir Tankov client, offers a set of components and puts them into mods/'<'client version'>'/. After a game patch it moves the modpack into the new folder itself."
       },
       "launch": {
         "title": "Start the game",
@@ -108,7 +108,7 @@
       },
       "shots": {
         "title": "Your hits",
-        "text": "Damage and outcome of your shots at enemies, without positions or distance — for «Fair RNG»."
+        "text": "Damage and outcome of your shots at enemies, without positions or distance — for “Fair RNG”."
       },
       "moePanel": {
         "title": "In-battle marks panel",
@@ -120,7 +120,7 @@
       },
       "shareSettings": {
         "title": "Settings sharing",
-        "text": "Graphics, camera, reticle and sound — only when you press «Share» yourself. Login, hardware and mods are never sent."
+        "text": "Graphics, camera, reticle and sound — only when you press “Send game settings to the site” yourself. Login, hardware and mods are never sent."
       }
     },
     "tunables": {
@@ -159,7 +159,7 @@
       },
       "replays": {
         "question": "Does the mod upload replays?",
-        "answer": "No. You can upload a replay by hand on the replays page."
+        "answer": "Only if you turn replay auto-upload on in the mod window. It is off by default, and uploaded replays stay visible to you only until you turn publishing on. You can also upload a replay by hand on the replays page."
       },
       "delete": {
         "question": "How do I delete my data?",
@@ -174,7 +174,7 @@
   "profile": {
     "meta": {
       "title": "Three Marks modpack profile",
-      "description": "Open a modpack settings profile in the Three Marks manager or import its code in the game."
+      "description": "Open a modpack settings profile in the Three Marks manager or add it by code in the game."
     },
     "crumbs": {
       "mod": "Mod",
@@ -182,12 +182,12 @@
     },
     "title": "Modpack profile",
     "description": "Someone shared a modpack settings profile with you: which components are on and how they are set up.",
-    "cardTitle": "Import the profile",
+    "cardTitle": "Add the profile",
     "codeLabel": "Profile code",
-    "managerNote": "The manager opens «Profiles» with this code; you only confirm the import.",
-    "gameNote": "Without the manager: copy the code and paste it in the game — the mod window, «Profiles», «Add from code».",
+    "managerNote": "The manager opens “Profiles” with this code; you only confirm the import.",
+    "gameNote": "Without the manager: copy the code and paste it in the game — the mod window, “Profiles”, “Add from code”.",
     "missingTitle": "The link has no profile code",
-    "missingDescription": "The link is cut off or outdated. Ask for a new one, or paste the code into the manager by hand: «Profiles» → «Import a code».",
+    "missingDescription": "The link is cut off or outdated. Ask for a new one, or paste the code into the manager by hand: “Profiles” → “Import a code”.",
     "missingAction": "Download the mod manager"
   }
 }

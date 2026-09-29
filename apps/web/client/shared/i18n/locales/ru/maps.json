@@ -16,8 +16,7 @@
     "searchPlaceholder": "Название карты — например, Прохоровка",
     "modes": "Режим",
     "camouflage": "Камуфляж",
-    "shown": "{shown} из {total}",
-    "reset": "Сбросить"
+    "shown": "{shown} из {total}"
   },
   "modes": {
     "standard": "Стандартный бой",

@@ -7,9 +7,7 @@
   "filters": {
     "tier": "Уровень техники",
     "mode": "Режим",
-    "allTiers": "Все уровни",
-    "allShort": "Все",
-    "tierItem": "{tier} уровень"
+    "allShort": "Все"
   },
   "modes": {
     "random": "Случайные бои",

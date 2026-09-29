@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Maps",
-    "description": "Every «Мир танков» random-battle map: camouflage, size, modes and team stats."
+    "description": "Every Mir Tankov random-battle map: camouflage, size, modes and team stats."
   },
   "mapMeta": {
     "title": "{name} — map",
@@ -9,15 +9,14 @@
   },
   "head": {
     "title": "Maps",
-    "description": "Random-battle maps of «Мир танков»: camouflage, size and modes."
+    "description": "Random-battle maps of Mir Tankov: camouflage, size and modes."
   },
   "filters": {
     "search": "Search maps",
     "searchPlaceholder": "Map name — e.g. Prokhorovka",
     "modes": "Mode",
     "camouflage": "Camouflage",
-    "shown": "{shown} of {total}",
-    "reset": "Reset"
+    "shown": "{shown} of {total}"
   },
   "modes": {
     "standard": "Standard battle",
@@ -49,7 +48,7 @@
     "notFoundTitle": "Map not found",
     "notFoundDescription": "Map “{id}” is not in rotation — it may have been removed from random battles.",
     "errorTitle": "Could not load the map",
-    "errorDescription": "Data for «{id}» is unavailable right now."
+    "errorDescription": "Data for “{id}” is unavailable right now."
   },
   "map": {
     "loading": "Loading map",

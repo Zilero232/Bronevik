@@ -5,7 +5,7 @@
   },
   "head": {
     "title": "{name} build",
-    "lead": "Equipment, consumables, directives, crew and field modification · final Мир танков stats recalculated by the server",
+    "lead": "Equipment, consumables, directives, crew and field modification · final stats by the Mir Tankov formulas",
     "picker": "Switch tank",
     "toTank": "Tank page",
     "share": "Share",
@@ -60,7 +60,7 @@
     },
     "equipment": {
       "title": "Equipment",
-      "description": "Equipment changes the specs — the server recalculates the effect",
+      "description": "Equipment changes the specs — the final stats update at once",
       "pick": "Choose equipment"
     },
     "consumables": {

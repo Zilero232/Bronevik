@@ -62,7 +62,7 @@
     },
     "unknownMap": "Unknown map",
     "status": {
-      "uploaded": "Queued",
+      "uploaded": "Awaiting analysis",
       "parsing": "Parsing",
       "parsed": "Ready",
       "failed": "Parse failed"
@@ -78,7 +78,6 @@
     "playerPlaceholder": "Nickname",
     "result": "Result",
     "sort": "Sort",
-    "reset": "Reset",
     "results": {
       "win": "Victory",
       "loss": "Defeat",

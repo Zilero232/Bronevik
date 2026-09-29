@@ -1,12 +1,12 @@
 {
   "meta": {
     "title": "Data status",
-    "description": "Whether Three Marks data collection works: database, collector queue, the Lesta API link and when data was last refreshed."
+    "description": "Whether Three Marks data is updating: the link to Lesta, the services and when data was last refreshed."
   },
   "badge": {
     "label": {
       "ok": "Data: healthy",
-      "noLestaKey": "Data: no Lesta API",
+      "noLestaKey": "Data: no Lesta",
       "degraded": "Data: delayed",
       "down": "Data: outage",
       "unreachable": "Data: server unreachable",
@@ -14,7 +14,7 @@
     },
     "hint": {
       "ok": "All services work. Details on the status page",
-      "noLestaKey": "The Lesta API key is not connected yet: in-game player stats are not collected for now",
+      "noLestaKey": "Lesta data access is not open yet: in-game player stats are not updating for now",
       "degraded": "Some services respond with a delay",
       "down": "One of the services does not respond",
       "unreachable": "Could not reach the site server",
@@ -23,7 +23,7 @@
   },
   "page": {
     "title": "Data status",
-    "lead": "See whether data collection works right now and where the numbers on the site come from. The page refreshes itself every minute.",
+    "lead": "See whether the data is updating right now and where the numbers on the site come from. The page refreshes itself every minute.",
     "checked": "Checked",
     "never": "not checked yet",
     "refresh": "Check again",
@@ -32,27 +32,27 @@
     "componentsLead": "Each service is checked on its own.",
     "sourcesTitle": "Where the data comes from",
     "sources": {
-      "lesta": "Lesta API — player, clan and vehicle statistics. Without an API key these sections honestly show empty states.",
+      "lesta": "Lesta — player, clan and vehicle statistics. Until access is open, these sections honestly show empty states.",
       "mod": "The Three Marks mod — battle results of players who run it: damage, marks, economy and loadouts.",
       "replays": "Replays uploaded by players — battle breakdowns and replay search.",
       "files": "Game files — vehicle characteristics, armour, maps and roles."
     },
     "components": {
       "database": "Database",
-      "redis": "Queues and cache",
-      "worker": "Data collector",
-      "lestaCircuit": "Lesta API link"
+      "redis": "Background tasks",
+      "worker": "Data updates",
+      "lestaCircuit": "Link to Lesta"
     },
     "notes": {
       "up": "Working.",
       "down": "Not responding.",
       "running": "Working and processing jobs.",
-      "noLestaKey": "Working without a Lesta API key: collecting mod, replay and game-file data.",
+      "noLestaKey": "Working without Lesta access: updating mod, replay and game-file data.",
       "stale": "Has not reported in a while — data may lag.",
       "closed": "Requests to Lesta go through normally.",
       "open": "Lesta answers with errors, requests are paused for now.",
       "halfOpen": "Trying Lesta again after a failure.",
-      "notConfigured": "The Lesta API key is not connected yet.",
+      "notConfigured": "Lesta data access is not open yet.",
       "unknown": "No state reported."
     },
     "verdict": {
@@ -61,8 +61,8 @@
         "text": "Services are healthy and data refreshes on schedule."
       },
       "noLestaKey": {
-        "title": "Running without the Lesta API",
-        "text": "The Lesta API key is not connected yet. Mod, replay and game-file data keep updating, while the in-game player statistics sections stay empty for now."
+        "title": "Running without Lesta data",
+        "text": "Lesta data access is not open yet. Mod, replay and game-file data keep updating, while the in-game player statistics sections stay empty for now."
       },
       "degraded": {
         "title": "Delays",
@@ -82,21 +82,21 @@
       }
     },
     "collector": {
-      "title": "Collector jobs",
+      "title": "Data updates by task",
       "lead": "When each job last finished without an error. “Not yet” means the job has never completed.",
-      "queuesTitle": "Queues",
+      "queuesTitle": "Background tasks",
       "never": "not yet",
       "version": "version {version}",
       "lastModBattle": "Latest battle from the mod",
-      "noQueues": "The collector has not reported its queues yet.",
+      "noQueues": "The background tasks have not reported yet.",
       "queue": "Queue",
       "counted": "Counted",
       "jobs": {
-        "lestaSync": "Lesta API sync",
+        "lestaSync": "Lesta data update",
         "tankStats": "Server tank statistics",
-        "moeImport": "Marks of excellence import",
+        "moeImport": "Mark thresholds update",
         "xvmExpected": "WN8 expected values (XVM)",
-        "gameFiles": "Game files import"
+        "gameFiles": "Game files update"
       },
       "counts": {
         "waiting": "Waiting",
@@ -106,7 +106,7 @@
         "lagSeconds": "Wait, s"
       }
     },
-    "build": "API version {version}",
-    "buildWithCommit": "API version {version}, build {commit}"
+    "build": "Server version {version}",
+    "buildWithCommit": "Server version {version}, build {commit}"
   }
 }

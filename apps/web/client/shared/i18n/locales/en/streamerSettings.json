@@ -230,7 +230,7 @@
     "emptyDescription": "You have not shared your settings yet. Here is how:",
     "steps": {
       "install": "Install our mod and link it to your account.",
-      "hangar": "In the hangar, press “Share settings”.",
+      "hangar": "In the hangar, press “Send game settings to the site” in the mod window.",
       "target": "Choose “compare only” and, if you like, tick “count anonymously in statistics”."
     },
     "updated": "Received {date}",
@@ -255,7 +255,7 @@
     "add": "Add a creator…",
     "remove": "Remove {name}",
     "noShareTitle": "No settings of yours yet",
-    "noShareDescription": "Share them from the mod in the hangar with “Share settings”.",
+    "noShareDescription": "Send them from the mod window in the hangar with “Send game settings to the site”.",
     "emptyTitle": "Pick who to compare",
     "emptyDescription": "You need {min} to {max} columns: creators or your own settings.",
     "noValues": "The selected creators have no settings in common"

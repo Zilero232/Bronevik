@@ -34,7 +34,7 @@
     },
     "basis": {
       "title": "Legal basis",
-      "body": "The consent you give when you sign in and turn on notifications, and performance of the contract (terms of use and public offer), under Russian Federal Law No. 152-FZ «On Personal Data»."
+      "body": "The consent you give when you sign in and turn on notifications, and performance of the contract (terms of use and public offer), under Russian Federal Law No. 152-FZ “On Personal Data”."
     },
     "storage": {
       "title": "Where and how long data is stored",
@@ -46,7 +46,7 @@
     },
     "rights": {
       "title": "Your rights",
-      "body": "You can get a copy of your data, correct it, withdraw consent and delete your account under «My profile». Send requests the interface cannot handle to <mail>{email}</mail>; we reply within 10 business days."
+      "body": "You can get a copy of your data, correct it, withdraw consent and delete your account under “My profile”. Send requests the interface cannot handle to <mail>{email}</mail>; we reply within 10 business days."
     },
     "cookies": {
       "title": "Cookies and local storage",
@@ -66,7 +66,7 @@
     },
     "account": {
       "title": "Account",
-      "body": "You sign in with Lesta ID. We never receive or store your game password. You are responsible for actions taken in your account and can delete it at any time under «My profile»."
+      "body": "You sign in with Lesta ID. We never receive or store your game password. You are responsible for actions taken in your account and can delete it at any time under “My profile”."
     },
     "plus": {
       "title": "The Plus subscription",
@@ -74,7 +74,7 @@
     },
     "payment": {
       "title": "Payment and renewal",
-      "body": "Payments are processed by <todo>payment provider name</todo>. The subscription renews automatically unless you turn auto-renewal off under «Subscription». A fiscal receipt is sent to your email under Russian Federal Law No. 54-FZ."
+      "body": "Payments are processed by <todo>payment provider name</todo>. The subscription renews automatically unless you turn auto-renewal off under “Subscription”. A fiscal receipt is sent to your email under Russian Federal Law No. 54-FZ."
     },
     "refund": {
       "title": "Refunds",
@@ -86,7 +86,7 @@
     },
     "liability": {
       "title": "Liability",
-      "body": "The service is provided «as is». Statistics are computed from the Lesta API and may differ from in-game figures. We are not liable for Lesta API outages or for decisions made based on the statistics."
+      "body": "The service is provided “as is”. Statistics are computed from the Lesta API and may differ from in-game figures. We are not liable for Lesta API outages or for decisions made based on the statistics."
     },
     "termsChanges": {
       "title": "Changes to the terms",

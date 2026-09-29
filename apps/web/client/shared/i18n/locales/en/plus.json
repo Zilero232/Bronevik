@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "{plus} — subscription",
-    "description": "One subscription on top of the free site: priority polling, more overlays and room, personal API limits, and next deep analytics and tank levels. No ads."
+    "description": "One subscription on top of the free site: more frequent stats updates, more overlays and room, deep analytics, API limits. No ads."
   },
   "header": {
     "description": "One subscription on top of free Three Marks: our analytics, more room and conveniences. Core stats stay free for everyone.",
@@ -156,11 +156,11 @@
       },
       "data": {
         "question": "Where does the data come from?",
-        "answer": "Stats come from Lesta's public API and from our mod if you have it installed. Three Marks is a fan project not affiliated with Lesta. We never ask for your game password: sign-in is via Lesta ID only."
+        "answer": "Stats come from Lesta's public data and from our mod if you have it installed. Three Marks is a fan project not affiliated with Lesta. We never ask for your game password: sign-in is via Lesta ID only."
       },
       "promo": {
         "question": "How do I use a promo code?",
-        "answer": "A free-days code is redeemed in your account under «Subscription» — the days are added to your current period. A discount code is entered at checkout on this page."
+        "answer": "A free-days code is redeemed in your account under “Subscription” — the days are added to your current period. A discount code is entered at checkout on this page."
       }
     }
   },
@@ -201,7 +201,7 @@
     },
     "analytics": {
       "title": "Deep analytics",
-      "text": "The full \"why I lose\" breakdown, results by hour and weekday, a tilt detector and the tank learning curve."
+      "text": "The full “why I lose” breakdown, results by hour and weekday, a tilt detector and the tank learning curve."
     },
     "mapAdvisor": {
       "title": "Map advisor",
@@ -217,11 +217,11 @@
     },
     "moeTracker": {
       "title": "Marks tracker Plus",
-      "text": "Per-battle mark percentage history, an \"evening playlist\" of tanks closest to a mark, and the full advisor."
+      "text": "Per-battle mark percentage history, an “evening playlist” of tanks closest to a mark, and the full advisor."
     },
     "priorityPolling": {
       "title": "Priority polling",
-      "text": "Your accounts are polled every 5 minutes instead of 15 and first in the queue."
+      "text": "Your accounts' stats update every 5 minutes instead of 15, and first."
     },
     "progression": {
       "title": "Tank levels and challenges",

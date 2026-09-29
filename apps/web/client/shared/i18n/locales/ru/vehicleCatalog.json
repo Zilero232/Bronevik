@@ -12,8 +12,7 @@
     "label": "Фильтры каталога",
     "search": "Поиск по названию",
     "searchPlaceholder": "Название танка",
-    "shown": "{shown, plural, one {# машина} few {# машины} other {# машин}} из {total, number}",
-    "reset": "Сбросить"
+    "shown": "{shown, plural, one {# машина} few {# машины} other {# машин}} из {total, number}"
   },
   "tier": "{tier} уровень",
   "tierCount": "{count, plural, one {# машина} few {# машины} other {# машин}}",

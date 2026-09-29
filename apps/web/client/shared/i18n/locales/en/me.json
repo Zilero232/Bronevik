@@ -36,7 +36,6 @@
     "favoriteRemoved": "Removed from favorites",
     "goalAdded": "Goal set",
     "goalRemoved": "Goal removed",
-    "settingsSaved": "Settings saved",
     "botUnlinked": "Account unlinked"
   },
   "favorites": {
@@ -56,7 +55,7 @@
     "description": "Sign-in methods and linked game accounts.",
     "lesta": "Lesta ID",
     "primary": "Primary",
-    "tokenUntil": "token until {date}",
+    "tokenUntil": "Lesta ID access until {date}",
     "stale": "Access expired, relink the account",
     "telegram": "Telegram",
     "notLinked": "not linked",
@@ -91,27 +90,7 @@
   "notifications": {
     "title": "Notifications",
     "description": "Where and what to tell you about.",
-    "channels": "Channels",
-    "events": "Events",
-    "reports": "Reports",
-    "channel": {
-      "site": "On the site",
-      "telegram": "Telegram",
-      "email": "Email",
-      "web_push": "Browser push"
-    },
-    "event": {
-      "moe_gained": "New mark of excellence",
-      "moe_threshold_dropped": "A mark threshold dropped",
-      "mastery_gained": "Ace Tanker earned",
-      "session_finished": "Session finished",
-      "goal_reached": "Goal reached",
-      "bonus_code": "New bonus codes"
-    },
-    "sessionReport": "Post-session report",
-    "sessionReportHint": "Your day's summary in Telegram when you stop playing",
-    "weeklyDigest": "Weekly digest",
-    "weeklyDigestHint": "The week, marks and goal progress every Monday"
+    "events": "Events"
   },
   "goals": {
     "title": "Goals",
@@ -176,7 +155,7 @@
     "title": "Data export",
     "description": "Your own stats as JSON or CSV.",
     "raw": "Stats",
-    "rawHint": "Raw API data of your accounts — free.",
+    "rawHint": "The original Lesta data of your accounts — free.",
     "analytics": "Analytics",
     "analyticsHint": "Sessions, mod battles and tank levels.",
     "json": "JSON",

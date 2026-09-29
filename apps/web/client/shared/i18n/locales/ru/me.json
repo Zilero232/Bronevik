@@ -36,7 +36,6 @@
     "favoriteRemoved": "Убрано из избранного",
     "goalAdded": "Цель поставлена",
     "goalRemoved": "Цель удалена",
-    "settingsSaved": "Настройки сохранены",
     "botUnlinked": "Аккаунт отвязан"
   },
   "favorites": {
@@ -56,7 +55,7 @@
     "description": "Входы и привязанные игровые аккаунты.",
     "lesta": "Lesta ID",
     "primary": "Основной",
-    "tokenUntil": "токен до {date}",
+    "tokenUntil": "доступ Lesta ID до {date}",
     "stale": "Доступ истёк, перепривяжите аккаунт",
     "telegram": "Telegram",
     "notLinked": "не привязан",
@@ -91,27 +90,7 @@
   "notifications": {
     "title": "Уведомления",
     "description": "Куда и о чём сообщать.",
-    "channels": "Каналы",
-    "events": "События",
-    "reports": "Отчёты",
-    "channel": {
-      "site": "На сайте",
-      "telegram": "Telegram",
-      "email": "Почта",
-      "web_push": "Push в браузере"
-    },
-    "event": {
-      "moe_gained": "Новая отметка",
-      "moe_threshold_dropped": "Порог отметки упал",
-      "mastery_gained": "Получен «Мастер»",
-      "session_finished": "Сессия завершена",
-      "goal_reached": "Цель достигнута",
-      "bonus_code": "Новые бонус-коды"
-    },
-    "sessionReport": "Отчёт после сессии",
-    "sessionReportHint": "Итоги дня в Telegram, когда вы закончили играть",
-    "weeklyDigest": "Еженедельный дайджест",
-    "weeklyDigestHint": "Неделя, отметки и прогресс целей по понедельникам"
+    "events": "События"
   },
   "goals": {
     "title": "Цели",
@@ -176,7 +155,7 @@
     "title": "Экспорт данных",
     "description": "Ваша собственная статистика в JSON или CSV.",
     "raw": "Статистика",
-    "rawHint": "Сырые данные ваших аккаунтов из API — бесплатно.",
+    "rawHint": "Исходные данные ваших аккаунтов от Лесты — бесплатно.",
     "analytics": "Аналитика",
     "analyticsHint": "Сессии, бои по данным мода и уровни танков.",
     "json": "JSON",

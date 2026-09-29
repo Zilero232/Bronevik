@@ -14,12 +14,12 @@
   "empty": "No data",
   "dataSource": "Data: Lesta Games API",
   "gameVersion": "Update {version}",
-  "gameVersionHint": "Current «Мир танков» version",
+  "gameVersionHint": "Current Mir Tankov version",
   "apiStatus": {
-    "ok": "Lesta API: up",
-    "degraded": "Lesta API: slow",
-    "down": "Lesta API: down",
-    "unknown": "Lesta API: no data"
+    "ok": "Lesta data: fine",
+    "degraded": "Lesta data: delayed",
+    "down": "Lesta data: unavailable",
+    "unknown": "Lesta data: no information"
   },
   "breadcrumbs": "Breadcrumbs",
   "tier": "Tier {tier}",
@@ -28,7 +28,6 @@
   "showMore": "Show more",
   "updated": "updated",
   "home": "Home",
-  "reportError": "Report a data error",
   "chart": {
     "point": "Point",
     "showTable": "Show as table",
@@ -47,7 +46,7 @@
   },
   "dataNotice": {
     "title": "Mir Tankov data is not connected yet.",
-    "description": "We are waiting for an API key from Lesta. Player, clan and vehicle stats will appear as soon as it is connected."
+    "description": "We are waiting for Lesta to open data access. Player, clan and vehicle stats will appear as soon as it is connected."
   },
   "pin": {
     "column": "Pin",

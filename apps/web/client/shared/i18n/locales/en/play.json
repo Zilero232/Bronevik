@@ -5,7 +5,7 @@
   },
   "head": {
     "title": "Guess the tank",
-    "description": "A daily puzzle on «Mir Tankov» vehicles: six tries, a new target at 00:00 MSK.",
+    "description": "A daily puzzle on Mir Tankov vehicles: six tries, a new target at 00:00 MSK.",
     "legendLabel": "Legend",
     "legend": {
       "match": "Direct hit",
@@ -160,13 +160,13 @@
       "errorTitle": "Could not load the maps",
       "errorDescription": "The puzzle needs the map list. Refresh the page a bit later.",
       "unavailableTitle": "Maps are not loaded yet",
-      "unavailableDescription": "The puzzle needs minimaps from the game client data. They appear after the game data import."
+      "unavailableDescription": "The puzzle needs minimaps from the game client data. They appear after the next game data update."
     }
   },
   "hub": {
     "meta": {
       "title": "Mir Tankov mini-games",
-      "description": "Daily Mir Tankov puzzles: guess the tank from its silhouette and stats, and the map from a minimap fragment. A new puzzle every day, win streaks and a result to share."
+      "description": "Daily Mir Tankov puzzles: guess the tank from its silhouette and the map from a minimap fragment. A new puzzle every day and win streaks."
     },
     "head": {
       "title": "Mini-games",

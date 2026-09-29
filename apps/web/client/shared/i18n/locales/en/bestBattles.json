@@ -35,8 +35,7 @@
     "map": "Map",
     "anyMap": "Any map",
     "medals": "Medals",
-    "medalBattles": "{count, plural, one {# battle} other {# battles}}",
-    "reset": "Reset"
+    "medalBattles": "{count, plural, one {# battle} other {# battles}}"
   },
   "sources": {
     "mod": "Mod",

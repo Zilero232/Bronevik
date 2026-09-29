@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Clans",
-    "description": "Rating and search of Mir Tankov clans: roster, activity, stronghold and change history from the Lesta API."
+    "description": "Rating and search of Mir Tankov clans: roster, activity, stronghold and roster change history."
   },
   "clanMeta": {
     "title": "{name} — clan",
@@ -9,14 +9,14 @@
   },
   "head": {
     "title": "Clans",
-    "description": "Rating and search of «Мир танков» clans: average WN8, win rate, Stronghold and Global Map.",
+    "description": "Rating and search of Mir Tankov clans: average WN8, win rate, Stronghold and Global Map.",
     "home": "Home"
   },
   "search": {
     "label": "Search clans",
     "placeholder": "Clan tag or name — e.g. KOPTE",
     "hint": "At least 2 characters · matches tag and name",
-    "empty": "No clans match «{query}».",
+    "empty": "No clans match “{query}”.",
     "members": "{count, plural, one {# member} other {# members}}",
     "loading": "Searching clans…",
     "error": "Search is unavailable right now."
@@ -38,7 +38,7 @@
     "title": "Clan rating",
     "errorDescription": "The server is not responding.",
     "emptyTitle": "No clans yet",
-    "emptyDescription": "Clans have not been collected yet.",
+    "emptyDescription": "Clans appear after the first data update.",
     "columns": {
       "clan": "Clan",
       "name": "Name",
@@ -116,7 +116,6 @@
       "idle": "Not played",
       "idleAll": "All",
       "idleDays": "{days}+ d",
-      "reset": "Reset",
       "roles": {
         "all": "All",
         "command": "Command",
@@ -171,7 +170,7 @@
       "tier": "Tier {tier}",
       "battlesCount": "{count, plural, one {# battle} other {# battles}}",
       "noSkirmishes": "No skirmishes yet.",
-      "noBuildings": "Stronghold buildings have not been collected yet.",
+      "noBuildings": "No stronghold building data yet.",
       "reservesHidden": "Reserves show up only once a clan officer shares access."
     },
     "globalMap": {

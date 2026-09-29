@@ -54,7 +54,11 @@ badge-awarded-body = «{ $title }» получен
 
 replay-overflow-title = { $daysLeft ->
     [1] Завтра удалим лишние реплеи
-   *[other] Лишние реплеи удалим через { $daysLeft } дн.
+   *[other] Лишние реплеи удалим через { $daysLeft } { $daysLeft ->
+        [one] день
+        [few] дня
+       *[many] дней
+    }
 }
 replay-overflow-body = У вас { $stored } реплеев, бесплатно хранится { $keep }. { $deleteAt } оставим { $keep } самых новых, остальные удалим. Оформите Плюс, чтобы сохранить все.
 
@@ -96,7 +100,10 @@ watchlist-digest-body = Играли { $players } { $players ->
 tank-returned-title = Танк вернулся в магазин
 tank-returned-body = { $tankName } снова продаётся{ $absentDays ->
         [none] {""}
-       *[other] {" "}после { $absentDays } дн. перерыва
+       *[other] {" "}после { $absentDays } { $absentDays ->
+            [one] дня
+           *[other] дней
+        } перерыва
     }{ $discount ->
         [none] {""}
        *[other] , скидка { NUMBER($discount, maximumFractionDigits: 0) }%

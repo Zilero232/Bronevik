@@ -1,10 +1,10 @@
 {
   "meta": {
     "title": "Player and clan leaderboards",
-    "description": "«Мир танков» leaderboards: top players, clans, rising stars, marks of excellence and streamers."
+    "description": "Mir Tankov leaderboards: top players, clans, rising stars, marks of excellence and streamers."
   },
   "title": "Leaderboards",
-  "description": "Top «Мир танков» players, clans and streamers by WN8, Bronya Index, win rate and damage.",
+  "description": "Top Mir Tankov players, clans and streamers by WN8, Bronya Index, win rate and damage.",
   "minBattles": "Players with at least {count, plural, one {# battle} other {# battles}} in the period",
   "scopes": {
     "players": "Players",
@@ -24,14 +24,11 @@
     "winRate": "Win rate",
     "avgDamage": "Avg damage"
   },
-  "allTiers": "All tiers",
-  "allTypes": "All classes",
   "metric": "Metric",
   "period": "Period",
   "tier": "Tier",
   "type": "Class",
   "tank": "Tank",
-  "clearTank": "Clear tank",
   "tankPlaceholder": "Any tank",
   "marksLabel": "3 marks",
   "columns": {

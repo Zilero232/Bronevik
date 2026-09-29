@@ -90,9 +90,9 @@
     "developers": "The project's open API",
     "pulse": "Online and server load",
     "design": "Interface components and tokens",
-    "mod": "Companion mod: marks and battle results",
+    "mod": "Modpack: marks, damage log and battle results",
     "ratings": "How WN8, EFF, Bronya Index and marks are computed",
-    "status": "Whether data collection works right now"
+    "status": "Whether the data is updating right now"
   },
   "featured": {
     "topTank": "Top tank of the week",

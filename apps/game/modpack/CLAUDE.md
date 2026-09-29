@@ -57,7 +57,7 @@ cd apps/game/modpack && uv sync && uv run pytest                  # the same tes
 cd apps/game/modpack && uv run ruff check .                       # lint (E, F, W; pyupgrade off; core/vendor excluded)
 python apps/game/modpack/tools/vendor/vendor.py --check           # core/vendor matches the pinned wheels (downloads them)
 python apps/game/modpack/tools/build/build.py                     # dev build -> dist/*.mtmod, one per package
-python apps/game/modpack/tools/build/build.py --single --require-pyc   # release, single package; needs a compiler
+python apps/game/modpack/tools/build/build.py --single --require-pyc   # release, single package -> dist/single/ (never next to the split set)
 python apps/game/modpack/tools/build/build.py --dry-run           # list packages and in-game paths, write nothing
 cd apps/game/modpack && bun run ui:build                          # rebuild packages/ui/gameface from ui-web with Vite (commit the result)
 cd apps/game/modpack && bun run ui:dev                            # the settings window in a browser, with a mock Gameface bridge

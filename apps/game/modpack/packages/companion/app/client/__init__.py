@@ -27,6 +27,7 @@ from CurrentVehicle import g_currentVehicle
 from PlayerEvents import g_playerEvents
 
 from ....core.client.game import client_language, client_version
+from ....core.client.packaging import warn_mixed_install
 from ....core.client.timer import Ticker
 from ....core.client.transport import create_transport
 from ....core.client.ui import Ui
@@ -97,6 +98,7 @@ class OtmetkiApp(object):
         self.settings_ui.register()
         self.ticker.start()
         log('started %s' % VERSION)
+        warn_mixed_install()
         registry().bind(self)
 
     def user_agent(self):

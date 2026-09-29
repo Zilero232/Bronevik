@@ -23,3 +23,13 @@ def cursor_events():
     if show is None or hide is None:
         return None
     return g_eventBus, EVENT_BUS_SCOPE.GLOBAL, show, hide
+
+
+def gui_spaces():
+    """(app loader, its GuiGlobalSpaceID) or (None, None) when the client has neither."""
+    try:
+        from helpers import dependency
+        from skeletons.gui.app_loader import GuiGlobalSpaceID, IAppLoader
+    except ImportError:
+        return None, None
+    return dependency.instance(IAppLoader), GuiGlobalSpaceID

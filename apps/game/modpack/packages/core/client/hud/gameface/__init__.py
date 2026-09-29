@@ -6,9 +6,10 @@ client's wulf `WindowImpl` + `ViewImpl`, the same classes the settings window us
 windows in battle too (RU 1.45 client source: `PopOverWindow(..., WindowLayer.TOP_WINDOW)` in the prebattle
 ammunition panel, the Gameface tooltips of the battle full stats). UNVERIFIED on Lesta 1.45: that a
 non-modal WINDOW over the battle page takes no keyboard focus and passes the mouse through where the page
-has `pointer-events: none`; that it survives the change from the hangar to the battle (a destroyed window is
-opened again on the next label update). Any failure to open marks the backend broken, and the chain moves on
-to GUIFlash.
+has `pointer-events: none`. The window lives only in the hangar and the battle GUI spaces: it is closed when a
+space is left and opened again when the lobby or the battle is entered (a window opened on the login screen,
+before the lobby app, never showed in the 1.45.0.0 live test), and one the client destroyed is replaced on the
+next sync. Any failure to open marks the backend broken, and the chain moves on to GUIFlash.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -16,11 +17,11 @@ from ....hud import HudBackend
 from ....hud.surface import HUD_MESSAGE_ARG, HUD_RES_MAP_ID, HUD_SEND_COMMAND, HUD_STATE_PROPERTY, SPACE_LOBBY, HudSurface
 from ....log import log, log_exception, safe
 from ..modifier import ModifierWatch
-from ..space import current_space, cursor_events
-from .constants import INVALID_RES_ID, WINDOW_LAYER
+from ..space import current_space, cursor_events, gui_spaces
+from .constants import INVALID_RES_ID, READY_SPACES, WINDOW_LAYER
 
 try:
-    from frameworks.wulf import ViewFlags, ViewModel, ViewSettings, WindowFlags, WindowLayer
+    from frameworks.wulf import ViewFlags, ViewModel, ViewSettings, WindowFlags, WindowLayer, WindowStatus
     from gui.impl.pub import ViewImpl, WindowImpl
     import openwg_gameface
     IMPORT_ERROR = None
@@ -111,7 +112,10 @@ class GamefaceBackend(HudBackend):
         self.press_listeners = []
         self.cursor = False
         self.modifier = ModifierWatch(self._on_modifier)
+        self.loader, self.ready_spaces = None, ()
+        self.waiting = False
         self._listen_cursor()
+        self._listen_spaces()
 
     @classmethod
     def usable(cls):
@@ -164,9 +168,27 @@ class GamefaceBackend(HudBackend):
         if not self.surface.aliases(current_space()):
             self.close()
             return True
-        if self.window is None and not self.open():
+        if not self.gui_ready():
+            if not self.waiting:
+                self.waiting = True
+                log('HUD: Gameface window waits for the hangar or the battle (GUI space %s)' % self.loader.getSpaceID())
+            return True
+        if not self.window_alive() and not self.open():
             return False
         self.push_state()
+        return True
+
+    def gui_ready(self):
+        return self.loader is None or self.loader.getSpaceID() in self.ready_spaces
+
+    def window_alive(self):
+        window = self.window
+        if window is None:
+            return False
+        if window.windowStatus in (WindowStatus.DESTROYING, WindowStatus.DESTROYED):
+            log('HUD: Gameface window %s was destroyed by the client, opening a new one' % window.uniqueID)
+            self.window, self.view = None, None
+            return False
         return True
 
     def open(self):
@@ -176,6 +198,7 @@ class GamefaceBackend(HudBackend):
         try:
             self.modifier.install()
             self.window = HudWindow(layout, self)
+            self.window.onStatusChanged += self._on_window_status
             self.window.load()
         except Exception:
             log_exception('HUD: Gameface window')
@@ -183,13 +206,21 @@ class GamefaceBackend(HudBackend):
             self.broken = True
             self.window = None
             return False
+        self.waiting = False
+        log('HUD: Gameface window %s opened in the %s (layout %s)' % (self.window.uniqueID, current_space(), layout))
         return True
 
     @safe
     def close(self):
         window, self.window, self.view = self.window, None, None
         if window is not None:
+            log('HUD: Gameface window %s closed' % window.uniqueID)
             window.destroy()
+
+    @safe
+    def _on_window_status(self, status):
+        window = self.window
+        log('HUD: Gameface window %s status %s' % (window.uniqueID if window is not None else '?', status))
 
     def on_loaded(self, view):
         self.view = view
@@ -207,6 +238,7 @@ class GamefaceBackend(HudBackend):
             return
         command, fields = decoded
         if command == 'ready':
+            log('HUD: Gameface page ready (%d labels)' % len(self.surface.aliases(current_space())))
             self.push_state()
         elif command == 'pressed':
             for listener in list(self.press_listeners):
@@ -215,6 +247,25 @@ class GamefaceBackend(HudBackend):
             props = dict((key, value) for key, value in fields.items() if key != 'id')
             for listener in list(self.listeners):
                 listener(fields['id'], props)
+
+    def _listen_spaces(self):
+        loader, ids = gui_spaces()
+        if loader is None:
+            return
+        self.loader = loader
+        self.ready_spaces = tuple(getattr(ids, name) for name in READY_SPACES)
+        loader.onGUISpaceEntered += self._on_space_entered
+        loader.onGUISpaceLeft += self._on_space_left
+
+    @safe
+    def _on_space_entered(self, space_id):
+        if space_id in self.ready_spaces:
+            self.close()
+            self.sync()
+
+    @safe
+    def _on_space_left(self, space_id):
+        self.close()
 
     def _listen_cursor(self):
         found = cursor_events()

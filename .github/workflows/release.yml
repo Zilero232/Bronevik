@@ -122,7 +122,7 @@ jobs:
             exit 1
           fi
 
-          test -f "dist/modpack/otmetki.$VERSION.mtmod"
+          test -f "dist/modpack/single/otmetki.$VERSION.mtmod"
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
@@ -243,9 +243,9 @@ jobs:
 
           if [ "$MODPACK_NEEDED" = true ]; then
             mkdir -p "$publish/modpack/$VERSION/catalog"
-            cp dist/modpack/modpack/*.mtmod "$publish/modpack/$VERSION/"
+            cp dist/modpack/modpack/*.mtmod dist/modpack/modpack/single/*.mtmod "$publish/modpack/$VERSION/"
             cp -R dist/modpack/catalog/. "$publish/modpack/$VERSION/catalog/"
-            cp "dist/modpack/modpack/otmetki.$VERSION.mtmod" "$publish/otmetki.mtmod"
+            cp "dist/modpack/modpack/single/otmetki.$VERSION.mtmod" "$publish/otmetki.mtmod"
             args+=(--release dist/release/release.json --signature dist/release/release.txt.sig)
           fi
 

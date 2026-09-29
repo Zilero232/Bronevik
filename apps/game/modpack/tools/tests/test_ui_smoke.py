@@ -161,22 +161,41 @@ def gameface_stubs(test):
         def setChildView(self, layout_id, view):
             self.children.append(view)
 
+    class StatusEvent(list):
+
+        def __iadd__(self, handler):
+            self.append(handler)
+            return self
+
     class WindowImpl(object):
 
-        def __init__(self, wndFlags=None, content=None):
+        def __init__(self, wndFlags=None, content=None, layer=None):
             self.content = content
+            self.flags = wndFlags
+            self.layer = layer
+            self.uniqueID = len(test.windows) + 1
+            self.windowStatus = 1
+            self.onStatusChanged = StatusEvent()
+            self.shown = 0
 
         def load(self):
             test.windows.append(self)
+            self.windowStatus = 3
             self.content._onLoading()
 
+        def show(self):
+            self.shown += 1
+
         def destroy(self):
+            self.windowStatus = 5
             self.content._finalize()
             test.windows.remove(self)
 
     package('frameworks')
     module('frameworks.wulf', ViewModel=ViewModel, ViewSettings=ViewSettings, ViewFlags=type(str('ViewFlags'), (object,), {'VIEW': 1}),
-           WindowFlags=type(str('WindowFlags'), (object,), {'WINDOW': 1}))
+           WindowFlags=type(str('WindowFlags'), (object,), {'WINDOW': 1, 'WINDOW_FULLSCREEN': 1024}),
+           WindowLayer=type(str('WindowLayer'), (object,), {'WINDOW': 7, 'OVERLAY': 11}),
+           WindowStatus=type(str('WindowStatus'), (object,), {'LOADED': 3, 'DESTROYING': 4, 'DESTROYED': 5}))
     package('gui.impl')
     module('gui.impl.pub', ViewImpl=ViewImpl, WindowImpl=WindowImpl)
 
@@ -293,7 +312,9 @@ class UiSmokeTest(unittest.TestCase):
             assert len(self.mods_list) == 1 and self.mods_list[0]['id'] == 'otmetki'
 
             self.mods_list[0]['callback']()
-            assert len(self.windows) == 1
+            self.mods_list[0]['callback']()
+            assert len(self.windows) == 1 and self.windows[0].shown == 1
+            assert self.windows[0].flags == 1025 and self.windows[0].layer == 11
             state = self.state()
             ids = [component['id'] for component in state['components']]
             assert ids[0] == 'companion' and 'minimap' in ids and 'replay_manager' in ids, ids

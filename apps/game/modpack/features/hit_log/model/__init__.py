@@ -4,7 +4,15 @@ from ....core.compat import is_int, is_number, to_text
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, font
 from ....core.shells import SHELL_CODES
 from ....core.templates import render
-from .constants import MAX_ENTRIES, MERGE_WINDOW_S, OUTCOME_COLORS, OUTCOMES
+from .constants import DAMAGE_OUTCOMES, MAX_ENTRIES, MERGE_WINDOW_S, OUTCOME_COLORS, OUTCOMES
+
+
+def _awaits_damage(entry):
+    return entry['damage'] is None and entry['outcome'] in DAMAGE_OUTCOMES
+
+
+def _awaits_health(entry):
+    return entry['hp'] is None
 
 
 class HitLog(object):
@@ -15,17 +23,17 @@ class HitLog(object):
         self.damage = 0
         self.crits = 0
 
-    def _latest(self, target_id, now, pending=None):
+    def _latest(self, target_id, now, accepts=None):
         for entry in reversed(self.entries):
             if entry['target'] != target_id:
                 continue
             if now - entry['time'] > MERGE_WINDOW_S:
                 return None
-            if pending is None or entry[pending] is None:
+            if accepts is None or accepts(entry):
                 return entry
         return None
 
-    def _append(self, target_id, outcome, now, vehicle):
+    def _append(self, target_id, outcome, now, vehicle, marked=True):
         entry = {
             'target': target_id,
             'vehicle': to_text(vehicle) if vehicle else None,
@@ -34,6 +42,7 @@ class HitLog(object):
             'shell': None,
             'crits': 0,
             'hp': None,
+            'marked': marked,
             'time': now,
         }
         self.entries.append(entry)
@@ -41,16 +50,27 @@ class HitLog(object):
         del self.entries[:-MAX_ENTRIES]
         return entry
 
+    # The battle event with the damage (batched by the server, BATTLE_EVENTS_PROCESSING_TIMEOUT 0.2 s) may come
+    # before the hit marker of the same shot: the marker then only names the outcome of that entry.
     def add_result(self, target_id, outcome, now, vehicle=None):
         if outcome not in OUTCOMES or not is_int(target_id):
             return False
-        self._append(target_id, outcome, now, vehicle)
+        entry = self._latest(target_id, now)
+        if entry is None or entry['marked']:
+            self._append(target_id, outcome, now, vehicle)
+            return True
+        self.counts[entry['outcome']] -= 1
+        self.counts[outcome] += 1
+        entry['outcome'] = outcome
+        entry['marked'] = True
+        if vehicle and not entry['vehicle']:
+            entry['vehicle'] = to_text(vehicle)
         return True
 
     def add_damage(self, target_id, amount, now, vehicle=None, shell=None):
         if not is_int(target_id) or not is_number(amount) or amount <= 0:
             return False
-        entry = self._latest(target_id, now, pending='damage') or self._append(target_id, 'pen', now, vehicle)
+        entry = self._latest(target_id, now, _awaits_damage) or self._append(target_id, 'pen', now, vehicle, marked=False)
         entry['damage'] = int(amount)
         entry['shell'] = shell if shell in SHELL_CODES else None
         if vehicle and not entry['vehicle']:
@@ -71,7 +91,7 @@ class HitLog(object):
     def set_health(self, target_id, health, now):
         if not is_number(health):
             return False
-        entry = self._latest(target_id, now, pending='hp')
+        entry = self._latest(target_id, now, _awaits_health)
         if entry is None:
             return False
         entry['hp'] = max(0, int(health))

@@ -2,11 +2,12 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.log import safe
 from ...protocol import MESSAGE_ARG, RES_MAP_WINDOW, SEND_COMMAND, STATE_PROPERTY
+from .constants import WINDOW_LAYER
 
 # OpenWG Gameface (openwg_gameface) is a runtime dependency we do not bundle; Lesta needs its Lesta-compatible
 # build. API names follow docs.wotstat.info (Gameface theory) and are UNVERIFIED on Lesta 1.45.
 try:
-    from frameworks.wulf import ViewFlags, ViewModel, ViewSettings, WindowFlags
+    from frameworks.wulf import ViewFlags, ViewModel, ViewSettings, WindowFlags, WindowLayer, WindowStatus
     from gui.impl.pub import ViewImpl, WindowImpl
     from openwg_gameface import ModDynAccessor
     AVAILABLE = True
@@ -67,7 +68,9 @@ if AVAILABLE:
     class SettingsWindow(WindowImpl):
 
         def __init__(self, controller):
-            super(SettingsWindow, self).__init__(wndFlags=WindowFlags.WINDOW, content=SettingsGameView(controller))
+            super(SettingsWindow, self).__init__(wndFlags=WindowFlags.WINDOW | WindowFlags.WINDOW_FULLSCREEN, content=SettingsGameView(controller),
+                                                 layer=getattr(WindowLayer, WINDOW_LAYER))
 
 else:
     SettingsWindow = None
+    WindowStatus = None

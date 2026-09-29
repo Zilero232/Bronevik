@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.log import log, safe
-from .gameface import AVAILABLE, SettingsWindow
+from .gameface import AVAILABLE, SettingsWindow, WindowStatus
 
 
 class WindowController(object):
@@ -18,15 +18,26 @@ class WindowController(object):
 
     @property
     def is_open(self):
-        return self.window is not None
+        window = self.window
+        if window is None:
+            return False
+        if WindowStatus is not None and window.windowStatus in (WindowStatus.DESTROYING, WindowStatus.DESTROYED):
+            self.window, self.view = None, None
+            return False
+        return True
 
     @safe
     def open(self):
         if not AVAILABLE:
             return False
-        if self.window is None:
-            self.window = SettingsWindow(self)
-            self.window.load()
+        if self.is_open:
+            log('ui: settings window %s is already open, brought to the front' % self.window.uniqueID)
+            self.window.show()
+            return True
+        self.window = SettingsWindow(self)
+        self.window.onStatusChanged += self._on_status
+        self.window.load()
+        log('ui: settings window %s created' % self.window.uniqueID)
         return True
 
     @safe
@@ -34,6 +45,7 @@ class WindowController(object):
         window, self.window = self.window, None
         self.view = None
         if window is not None:
+            log('ui: settings window %s closed' % window.uniqueID)
             window.destroy()
 
     @safe
@@ -43,12 +55,18 @@ class WindowController(object):
 
     def on_loaded(self, view):
         self.view = view
+        log('ui: settings page loading')
         self.push(self.current_state())
 
     def on_destroyed(self, view):
-        if self.view is view:
+        if self.view is view or self.view is None:
             self.view = None
             self.window = None
+
+    @safe
+    def _on_status(self, status):
+        window = self.window
+        log('ui: settings window %s status %s' % (window.uniqueID if window is not None else '?', status))
 
     @safe
     def on_message(self, raw):

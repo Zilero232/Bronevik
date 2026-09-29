@@ -59,6 +59,33 @@ class HitLogTest(unittest.TestCase):
         log.add_damage(TIGER, 45, 1.3, shell='he')
         assert (log.entries[0]['outcome'], log.entries[0]['damage']) == ('no_pen', 45)
 
+    def test_marker_after_the_damage_event_names_the_same_hit(self):
+        log = HitLog()
+        log.add_damage(TIGER, 390, 1.0, 'Tiger', 'ap')
+        log.add_result(TIGER, 'crit', 1.2, 'Tiger')
+        assert len(log.entries) == 1
+        assert (log.entries[0]['outcome'], log.entries[0]['damage']) == ('crit', 390)
+        assert (log.values()['hits'], log.values()['pens']) == (1, 1)
+        log.add_result(TIGER, 'ricochet', 1.5)
+        assert log.values()['hits'] == 2
+
+    def test_damage_skips_a_ricochet_of_the_same_target(self):
+        log = HitLog()
+        log.add_result(TIGER, 'ricochet', 1.0)
+        log.add_damage(TIGER, 300, 1.5)
+        assert [(entry['outcome'], entry['damage']) for entry in log.entries] == [('ricochet', None), ('pen', 300)]
+        log.add_result(TIGER, 'pen', 1.6)
+        assert log.values()['hits'] == 2 and log.values()['pens'] == 1
+
+    def test_two_shots_in_one_window_keep_their_damage(self):
+        log = HitLog()
+        log.add_result(TIGER, 'pen', 1.0)
+        log.add_result(TIGER, 'pen', 1.4)
+        log.add_damage(TIGER, 390, 1.5)
+        log.add_damage(TIGER, 400, 1.6)
+        assert sorted(entry['damage'] for entry in log.entries) == [390, 400]
+        assert log.values()['damage'] == 790
+
     def test_health_only_from_the_players_own_shot(self):
         own, ally = VehicleInfo(101), VehicleInfo(303)
         assert own_shot_health((510, own, 0), 101) == 510

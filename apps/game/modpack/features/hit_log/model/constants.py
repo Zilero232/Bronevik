@@ -2,6 +2,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 OUTCOMES = ('pen', 'crit', 'no_pen', 'ricochet', 'spaced', 'tracks', 'missed_armor')
 MERGE_WINDOW_S = 2.0
+# The markers a damaging shot can carry (feedback_adaptor.__getHitResultEventID, RU 1.45 client source): the others
+# (ricochet, spaced armour, tracks, missed armour) come only with damageFactor 0. no_pen takes an HE splash.
+DAMAGE_OUTCOMES = ('pen', 'crit', 'no_pen')
 MAX_ENTRIES = 60
 
 PREVIEW_HITS = (

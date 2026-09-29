@@ -104,6 +104,7 @@ class UiHost(object):
         if self.on_screen_editing or not self.window.is_open:
             self.open()
         else:
+            log('ui: hotkey closes the open settings window')
             self.close()
 
     @safe

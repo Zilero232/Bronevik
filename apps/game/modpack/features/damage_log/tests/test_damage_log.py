@@ -6,7 +6,10 @@ import json
 import os
 import unittest
 
+import _feedback as fb
 import _support
+from otmetki.core.battle_tally import EFFICIENCY_KEYS, efficiency_totals
+from otmetki.core.client.game import values_by_name
 from otmetki.core.settings import Settings
 from otmetki.features.damage_log.i18n import STRINGS
 from otmetki.features.damage_log.model import DamageLog, class_icon, format_damage_log, format_last_hit, kind_color, kind_icon
@@ -32,6 +35,22 @@ def filled_log():
 
 
 class DamageLogTest(unittest.TestCase):
+
+    def test_vanilla_efficiency_totals_are_a_floor(self):
+        log = filled_log()
+        kinds = values_by_name(fb.PERSONAL_EFFICIENCY_TYPE, EFFICIENCY_KEYS)
+        types = fb.PERSONAL_EFFICIENCY_TYPE
+        picked = efficiency_totals({types.DAMAGE: 1250, types.ASSIST_DAMAGE: 600, types.BLOCKED_DAMAGE: 100, types.STUN: 40}, kinds)
+        assert log.apply_summary(picked.get('dealt'), picked.get('assist'), picked.get('blocked'), picked.get('stun'))
+        values = log.values()
+        assert (values['dealt'], values['blocked'], values['assisted']) == (1250, 240, 640)
+        assert not log.apply_summary(None, None, None, None)
+
+    def test_summary_event_shape(self):
+        log = DamageLog()
+        summary = fb.BattleSummaryFeedbackEvent(damage=900, trackAssist=100, radioAssist=200, tankings=300, stunAssist=50)
+        log.apply_summary(summary.getTotalDamage(), summary.getTotalAssistDamage(), summary.getTotalBlockedDamage(), summary.getTotalStunDamage())
+        assert (log.values()['dealt'], log.values()['assisted'], log.values()['blocked']) == (900, 350, 300)
 
     def test_totals(self):
         values = filled_log().values()

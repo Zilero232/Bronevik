@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ...core.compat import string_types, to_text
 from ...core.hud import EVENT_RESET_LAYOUT
+from ...core.log import log
 from ..components import COMPANION_ACTIONS, COMPANION_ID, build_catalog, find
 from ..fields import Labels
 from ..hud_edit import HudEditor, move_values
@@ -85,7 +86,7 @@ class SettingsBridge(object):
             self.context.bus.emit(EVENT_COMPONENT_SETTINGS, component_id, list(changed))
 
     def _on_ready(self, message):
-        pass
+        log('ui: settings page ready')
 
     def _on_close(self, message):
         self.editor.set_editing(False)

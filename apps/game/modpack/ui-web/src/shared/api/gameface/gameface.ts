@@ -54,18 +54,28 @@ export const createGamefaceBridge = (scope: object): GamefaceBridge => {
     return null;
   };
 
+  const clientSize = (): ClientSize | null =>
+    toClientSize(invoke({ target: read(GAMEFACE.globals.viewEnv), method: GAMEFACE.viewEnv.clientSize, args: [] }));
+
+  const resizeView = ({ width, height }: ClientSize): boolean => {
+    const viewEnv = read(GAMEFACE.globals.viewEnv);
+
+    if (typeof viewEnv?.[GAMEFACE.viewEnv.resizeView] !== 'function') {
+      return false;
+    }
+
+    invoke({ target: viewEnv, method: GAMEFACE.viewEnv.resizeView, args: [width, height] });
+
+    return true;
+  };
+
   return {
-    clientSize: () => toClientSize(invoke({ target: read(GAMEFACE.globals.viewEnv), method: GAMEFACE.viewEnv.clientSize, args: [] })),
-    resizeView: ({ width, height }) => {
-      const viewEnv = read(GAMEFACE.globals.viewEnv);
+    clientSize,
+    resizeView,
+    fitView: () => {
+      const client = clientSize();
 
-      if (typeof viewEnv?.[GAMEFACE.viewEnv.resizeView] !== 'function') {
-        return false;
-      }
-
-      invoke({ target: viewEnv, method: GAMEFACE.viewEnv.resizeView, args: [width, height] });
-
-      return true;
+      return client !== null && resizeView(client);
     },
     state: () => {
       const state = read(GAMEFACE.globals.model)?.[GAMEFACE.model.state];

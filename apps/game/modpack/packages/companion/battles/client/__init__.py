@@ -4,6 +4,7 @@ import time
 
 import BattleReplay
 
+from ....core.client.battle.tally import BattleTallyLog
 from ....core.client.game import map_name, player_tank_id, vehicle_info
 from ....core.log import log
 from ...loadout import LoadoutTracker
@@ -26,6 +27,7 @@ class BattleCapture(object):
         self.queue_wait_by_arena = {}
         self.loadouts = LoadoutTracker()
         self.shot_tracker = ShotTracker()
+        self.tally = BattleTallyLog()
         self.shots_by_arena = {}
         self.shot_arena = None
         self.pending_arenas = []
@@ -59,6 +61,7 @@ class BattleCapture(object):
             app.flush_requested = True
 
     def on_battle_ready(self, player):
+        self.tally.start()
         arena_id = getattr(player, 'arenaUniqueID', None)
         wait = self.queue_timer.take_last_wait()
         if not arena_id:
@@ -76,6 +79,7 @@ class BattleCapture(object):
             self.shot_tracker.start()
 
     def on_battle_leave(self):
+        self.tally.stop()
         shots = self.shot_tracker.take()
         if self.shot_arena is not None and shots:
             self.shots_by_arena[self.shot_arena] = shots

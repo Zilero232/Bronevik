@@ -14,6 +14,7 @@ export const useApp = () => {
   const invalid = useStore($invalid);
 
   useEffect(() => {
+    gameface.fitView();
     gameface.onDataChanged(() => receiveState(gameface.state()));
     send({ type: 'ready' });
   }, []);

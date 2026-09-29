@@ -669,7 +669,11 @@ python apps/game/modpack/tools/build/build.py --install-dir "D:\Games\Tanki\mods
 | companion      | `otmetki.companion_<v>.mtmod`   | `otmetki.companion` (kept forever) | core            |
 | ui             | `net.triotmetki.ui_<v>.mtmod`   | `net.triotmetki.ui`                | core, companion |
 | feature `<id>` | `net.triotmetki.<id>_<v>.mtmod` | `net.triotmetki.<id>`              | core, companion |
-| `--single`     | `otmetki.<v>.mtmod`             | `otmetki.companion`                | —               |
+| `--single`     | `single/otmetki.<v>.mtmod`      | `otmetki.companion`                | —               |
+
+### Install by hand
+
+Копируйте в `<игра>/mods/<версия клиента>/` **только один набор**: либо все split-пакеты из `dist/` (`net.triotmetki.*_<v>.mtmod` и `otmetki.companion_<v>.mtmod`), либо один `dist/single/otmetki.<v>.mtmod`, никогда оба. Плюс зависимости: `net.openwg.gameface_*.mtmod` (окно настроек и HUD) и, по желанию, `gambiter.guiflash_*.mtmod` (запасной HUD). `otmetki.companion_<v>.mtmod` — это split-пакет компаньона, а не единый пакет. The single package is the union of the split ones under the companion's id, so both sets together mount every file twice; `core/client/packaging` logs a `WARNING: ... holds both the single package` line at start when it finds that (it cannot unload either set: delete one).
 
 Package versions come from `packages/core/version.py`, `packages/companion/version.py` and each `features/<id>/__init__.py`; `--single` and the catalogue's `modpackVersion` take the release version, `version` in [package.json](package.json).
 
@@ -687,7 +691,7 @@ Without either, the packages carry `.py` sources and the build prints a warning.
 
 ### Publishing a release
 
-Releases live on our VPS only (no S3, CDN or GitHub Releases), under `https://triotmetki.ru/downloads/`. Bump `version` in [package.json](package.json) (the single source of the release version) with its `## <version>` CHANGELOG entry and the `VERSION`s of the packages that changed, update `otmetki.games` in the same file when the supported clients change, commit, push and run [.github/workflows/release.yml](../../../.github/workflows/release.yml); it has no inputs and releases only what has a version `releases.json` does not list yet (the modpack, the manager or both). It builds the release packages and the catalogue with the steps above and the manager installer in parallel, signs the release for the manager and publishes `modpack/<version>/` (the split packages, `otmetki.<version>.mtmod`, `catalog/`), `otmetki.mtmod` (the single package behind the /mod page's manual download), the installer and `releases.json`. The manager installs from that index ([manager README «Releases»](../manager/README.md#releases)); first-time setup is [docs/ops/deploy.md §4](../../../docs/ops/deploy.md#4-game-mod-releases-on-the-vps).
+Releases live on our VPS only (no S3, CDN or GitHub Releases), under `https://triotmetki.ru/downloads/`. Bump `version` in [package.json](package.json) (the single source of the release version) with its `## <version>` CHANGELOG entry and the `VERSION`s of the packages that changed, update `otmetki.games` in the same file when the supported clients change, commit, push and run [.github/workflows/release.yml](../../../.github/workflows/release.yml); it has no inputs and releases only what has a version `releases.json` does not list yet (the modpack, the manager or both). It builds the release packages and the catalogue with the steps above and the manager installer in parallel, signs the release for the manager and publishes `modpack/<version>/` (the split packages, `otmetki.<version>.mtmod` from `dist/modpack/single/`, `catalog/`), `otmetki.mtmod` (the single package behind the /mod page's manual download), the installer and `releases.json`. The manager installs from that index ([manager README «Releases»](../manager/README.md#releases)); first-time setup is [docs/ops/deploy.md §4](../../../docs/ops/deploy.md#4-game-mod-releases-on-the-vps).
 
 ## Tests
 

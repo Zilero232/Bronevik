@@ -24,14 +24,6 @@ const readScreen = (): ClientSize => {
   return designScreen({ client: gameface.clientSize(), scale, fallback });
 };
 
-const fitView = (): void => {
-  const client = gameface.clientSize();
-
-  if (client) {
-    gameface.resizeView(client);
-  }
-};
-
 const liveAt = (drag: OverlayDrag, event: PanelPress): LivePanel => ({
   id: drag.id,
   rect: dragRect({
@@ -60,7 +52,7 @@ export const useHudOverlay = () => {
   const edit = Boolean(state?.edit);
 
   useEffect(() => {
-    fitView();
+    gameface.fitView();
 
     gameface.onDataChanged(() => {
       const next = parseHudState(gameface.state() ?? '');
@@ -84,7 +76,7 @@ export const useHudOverlay = () => {
           return current;
         }
 
-        fitView();
+        gameface.fitView();
 
         return next;
       });

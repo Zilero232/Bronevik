@@ -4,6 +4,26 @@ The modpack's release notes. Every package has its own entry, `## <id> <version>
 
 Add the new entry on top of the component's previous ones when you bump a `VERSION`.
 
+## 0.1.1
+
+### ru
+
+Исправления после первой проверки в клиенте.
+
+- Окно настроек открывается на весь экран поверх ангара; Ctrl+Shift+T открывает его и закрывает, повторное открытие не создаёт второе окно.
+- Боевой интерфейс и кнопка «///» появляются в ангаре и в бою: страница Gameface открывается, только когда клиент уже в ангаре или в бою, и пересоздаётся при смене экрана.
+- Панели двигаются только с зажатым модификатором (по умолчанию Alt), остаются в пределах экрана при любом разрешении и масштабе интерфейса и больше не дёргаются.
+- Сборка кладёт отдельные пакеты и общий пакет в разные папки; мод предупреждает в python.log, если установлены оба набора.
+
+### en
+
+Fixes after the first live test.
+
+- The settings window opens full-screen over the hangar; Ctrl+Shift+T opens and closes it, and opening it again never creates a second window.
+- The HUD and the «///» button appear in the hangar and in battle: the Gameface page opens only once the client is in the hangar or a battle and is recreated when the screen changes.
+- Panels move only while the modifier (Alt by default) is held, stay on screen at any resolution and interface scale, and no longer jitter.
+- The build puts the split packages and the single package into separate folders; the mod warns in python.log when both sets are installed.
+
 ## 0.1.0
 
 ### ru

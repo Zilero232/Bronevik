@@ -1477,23 +1477,35 @@ class ClientSmokeTest(unittest.TestCase):
             def _finalize(self):
                 pass
 
+        class StatusEvent(list):
+
+            def __iadd__(self, handler):
+                self.append(handler)
+                return self
+
         class WindowImpl(object):
 
             def __init__(self, wndFlags=None, content=None, layer=None, **kwargs):
                 self.content = content
                 self.layer = layer
+                self.uniqueID = len(test.windows) + 1
+                self.windowStatus = 1
+                self.onStatusChanged = StatusEvent()
 
             def load(self):
                 test.windows.append(self)
+                self.windowStatus = 3
                 self.content._onLoading()
 
             def destroy(self):
+                self.windowStatus = 5
                 test.windows.remove(self)
                 self.content._finalize()
 
         package('frameworks', [])
         module('frameworks.wulf', ViewModel=ViewModel, ViewSettings=ViewSettings, ViewFlags=type('ViewFlags', (object,), {'VIEW': 1}),
-               WindowFlags=type('WindowFlags', (object,), {'WINDOW': 1}), WindowLayer=type('WindowLayer', (object,), {'WINDOW': 7}))
+               WindowFlags=type('WindowFlags', (object,), {'WINDOW': 1}), WindowLayer=type('WindowLayer', (object,), {'WINDOW': 7}),
+               WindowStatus=type('WindowStatus', (object,), {'LOADED': 3, 'DESTROYING': 4, 'DESTROYED': 5}))
         package('gui.impl', [])
         module('gui.impl.pub', ViewImpl=ViewImpl, WindowImpl=WindowImpl)
         module('openwg_gameface', res_id_by_key=lambda key: test.res_id if key == 'otmetki/ui/hud' else -1,

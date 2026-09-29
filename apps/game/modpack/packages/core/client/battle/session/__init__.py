@@ -28,6 +28,11 @@ def vehicle_state():
     return shared('vehicleState')
 
 
+def personal_efficiency():
+    """The controller behind the vanilla damage log totals (repositories.personalEfficiencyCtrl, RU 1.45 client source)."""
+    return shared('personalEfficiencyCtrl')
+
+
 def arena_dp():
     getter = getattr(session_provider(), 'getArenaDP', None)
     return getter() if getter is not None else None

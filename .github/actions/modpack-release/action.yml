@@ -1,7 +1,7 @@
 name: Build the modpack release
 description: >-
-  The release packages of apps/game/modpack with compiled .pyc (split packages plus the single
-  otmetki.<version>.mtmod) in dist/modpack, and the component catalogue around them
+  The release packages of apps/game/modpack with compiled .pyc (split packages in dist/modpack, the single
+  otmetki.<version>.mtmod in dist/modpack/single), and the component catalogue around them
   (components.json with sha256 + previews) in dist/catalog. Shared by modpack.yml and release.yml.
 
 runs:

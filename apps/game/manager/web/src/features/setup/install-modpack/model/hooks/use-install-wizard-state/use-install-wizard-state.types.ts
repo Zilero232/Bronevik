@@ -6,6 +6,7 @@ export type WizardStep = (typeof INSTALL_WIZARD.steps)[number];
 export type UseInstallWizardStateInput = {
   initialPreset: string | null;
   initialComponents: string[] | null;
+  startAtReview: boolean;
 };
 
 export type ToggleInput = {

@@ -1,12 +1,34 @@
 {
   "title": "Главная",
-  "installTitle": "Модпак",
-  "notInstalled": "Модпак ещё не установлен в этот клиент",
-  "notInstalledHint": "Нажмите «Установить модпак» — менеджер найдёт клиент и предложит набор компонентов.",
-  "modpackVersion": "Версия модпака {version}",
-  "enabledCount": "Включено компонентов: {enabled} из {total}",
-  "installedAt": "Установлен {date}",
   "openComponents": "К компонентам",
   "installCta": "Установить модпак",
-  "changeSelection": "Изменить набор"
+  "changeSelection": "Изменить набор",
+  "description": "Состояние игры и модпака, обновления и проверка папки модов.",
+  "setup": {
+    "title": "Установка в три шага",
+    "description": "Менеджер уже поискал игру. Выберите набор и установите его — перед установкой вы увидите полный список, а снимок позволит всё откатить.",
+    "stepGame": "Игра",
+    "stepPreset": "Набор",
+    "stepInstall": "Установка",
+    "gameFound": "Найден «Мир танков» {version}",
+    "gameMissing": "«Мир танков» не найден",
+    "gameMissingHint": "Если игра стоит не через Lesta Game Center, нажмите «Указать папку…» и выберите папку, где лежит Tanki.exe.",
+    "presetCount": "{count, plural, one {# компонент} few {# компонента} other {# компонентов}}",
+    "presetsLabel": "Готовые наборы",
+    "quickInstall": "Установить «{preset}»",
+    "customize": "Выбрать компоненты вручную",
+    "installHint": "Откроется последний шаг мастера со списком того, что будет установлено. Ничего не ставится без вашего нажатия «Установить».",
+    "chooseGameFirst": "Сначала найдите игру — шаг 1."
+  },
+  "summary": {
+    "game": "Игра",
+    "modpack": "Модпак",
+    "components": "Компоненты",
+    "latest": "Последняя версия {version}",
+    "latestSame": "Последняя версия",
+    "enabled": "{enabled} из {total}",
+    "enabledHint": "включено",
+    "noGame": "Не найдена"
+  },
+  "snapshot": "Бэкапы"
 }

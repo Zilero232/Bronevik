@@ -26,7 +26,7 @@ import {
 } from '../../../lib';
 import { useInstallPlan } from '../use-install-plan';
 
-export const useInstallWizardState = ({ initialPreset, initialComponents }: UseInstallWizardStateInput) => {
+export const useInstallWizardState = ({ initialPreset, initialComponents, startAtReview }: UseInstallWizardStateInput) => {
   const t = useTranslations('install');
   const locale = useLocale();
   const { navigate } = useNavigation();
@@ -34,7 +34,7 @@ export const useInstallWizardState = ({ initialPreset, initialComponents }: UseI
   const showError = useErrorToast();
   const { clientPath } = useSelectedClient();
   const planQuery = useInstallPlan(clientPath);
-  const [stepIndex, setStepIndex] = useState(0);
+  const [stepIndex, setStepIndex] = useState(startAtReview ? INSTALL_WIZARD.steps.length - 1 : 0);
   const [chosenFor, setChosenFor] = useState<ClientScoped | null>(null);
   const [removeOthersFor, setRemoveOthersFor] = useState<ClientScoped | null>(null);
   const [excludedFor, setExcludedFor] = useState<ClientScoped | null>(null);
@@ -114,7 +114,11 @@ export const useInstallWizardState = ({ initialPreset, initialComponents }: UseI
     onSuccess: async (installation) => {
       queryClient.setQueryData(QUERY_KEYS.installation(clientPath), installation);
       await queryClient.invalidateQueries();
-      toast.success(t('installed'));
+
+      toast.success(t('installed'), {
+        description: t('installedHint', { count: installation.components.filter((component) => component.state === 'enabled').length })
+      });
+
       navigate({ page: 'home' });
     },
     onError: showError
@@ -146,6 +150,9 @@ export const useInstallWizardState = ({ initialPreset, initialComponents }: UseI
     presetId,
     presetOptions: presets.map((preset) => ({ value: preset.id, label: text(preset.title) })),
     groups,
+    chosenGroups: groups
+      .map((group) => ({ ...group, components: group.components.filter((component) => component.checked) }))
+      .filter((group) => group.components.length > 0),
     preview,
     selectedCount: selection.size,
     totalCount: components.length,
@@ -160,6 +167,7 @@ export const useInstallWizardState = ({ initialPreset, initialComponents }: UseI
     takeSnapshot,
     isSnapshotForced: removeOthers.size > 0,
     canInstall,
+    blocker,
     isInstalling: install.isPending,
     isLoadingProfile: loadProfile.isPending,
     goTo: setStepIndex,

@@ -2,12 +2,13 @@
 
 .toolbar {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-end;
   justify-content: space-between;
   gap: var(--space-5);
 
   > :first-child {
-    width: 280px;
+    width: min(280px, 100%);
   }
 }
 
@@ -16,6 +17,10 @@
   align-items: start;
   gap: var(--space-6);
   grid-template-columns: minmax(0, 1fr) 300px;
+
+  @media (width <= 860px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .tree {
@@ -53,6 +58,10 @@
   position: sticky;
   top: 0;
   padding: var(--space-4);
+
+  @media (width <= 860px) {
+    position: static;
+  }
 }
 
 .previewTitle {

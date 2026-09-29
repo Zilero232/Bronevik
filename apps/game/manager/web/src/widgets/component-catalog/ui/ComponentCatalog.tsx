@@ -1,7 +1,7 @@
-import { Layers, Search } from 'lucide-react';
+import { Layers, PackagePlus, Search, Sparkles } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 
-import { EmptyState, QueryState, Switch, TextInput, ToggleChips } from '@/ui-kit';
+import { Button, EmptyState, Notice, QueryState, Switch, TextInput, ToggleChips } from '@/ui-kit';
 
 import { useComponentCatalog } from '../model/hooks';
 import { ComponentCard } from './components';
@@ -16,13 +16,16 @@ export const ComponentCatalog = () => {
     isInstalled,
     hasComponents,
     chips,
+    presets,
     category,
     query,
     lightOnly,
     rows,
     onCategoryChange,
     onQueryChange,
-    onLightOnlyChange
+    onLightOnlyChange,
+    onApplyPreset,
+    onInstall
   } = useComponentCatalog();
 
   return (
@@ -30,6 +33,32 @@ export const ComponentCatalog = () => {
       {() =>
         hasComponents ? (
           <div className={s.root}>
+            {!isInstalled && (
+              <Notice
+                actions={
+                  <Button size='sm' onClick={onInstall}>
+                    <PackagePlus aria-hidden />
+                    {t('components.installCta')}
+                  </Button>
+                }
+                tone='warning'
+              >
+                {t('components.notInstalledHint')}
+              </Notice>
+            )}
+            {presets.length > 0 && (
+              <div className={s.presets}>
+                <span className={s.presetsLabel}>
+                  <Sparkles aria-hidden />
+                  {t('components.presetsTitle')}
+                </span>
+                {presets.map((preset) => (
+                  <Button key={preset.id} size='sm' title={t('components.presetsHint')} variant='secondary' onClick={() => onApplyPreset(preset.id)}>
+                    {preset.title}
+                  </Button>
+                ))}
+              </div>
+            )}
             <div className={s.filters}>
               <ToggleChips chips={chips} label={t('components.categories')} value={category} onChange={onCategoryChange} />
               <Switch
@@ -62,7 +91,19 @@ export const ComponentCatalog = () => {
             )}
           </div>
         ) : (
-          <EmptyState hint={t('components.noCatalogHint')} icon={<Layers />} title={t('components.noCatalog')} />
+          <EmptyState
+            action={
+              !isInstalled && (
+                <Button onClick={onInstall}>
+                  <PackagePlus aria-hidden />
+                  {t('components.installCta')}
+                </Button>
+              )
+            }
+            hint={t('components.noCatalogHint')}
+            icon={<Layers />}
+            title={t('components.noCatalog')}
+          />
         )
       }
     </QueryState>

@@ -4,7 +4,7 @@ import { useLocale, useTranslations } from 'use-intl';
 import { previewSrc, useCatalog } from '@/entities/catalog';
 import { useSelectedClient } from '@/entities/client';
 import { useInstallation } from '@/entities/installation';
-import { pickLocalized } from '@/shared/lib';
+import { pickLocalized, useNavigation } from '@/shared/lib';
 
 import { COMPONENT_CATALOG } from '../../../config';
 import { buildCatalogRows, filterCatalogRows } from '../../../lib';
@@ -12,6 +12,7 @@ import { buildCatalogRows, filterCatalogRows } from '../../../lib';
 export const useComponentCatalog = () => {
   const t = useTranslations('components');
   const locale = useLocale();
+  const { navigate } = useNavigation();
   const { clientPath } = useSelectedClient();
   const catalogQuery = useCatalog();
   const { data: installation } = useInstallation(clientPath);
@@ -37,6 +38,9 @@ export const useComponentCatalog = () => {
     isInstalled: installation?.installed ?? false,
     hasComponents: rows.length > 0,
     chips,
+    presets: (catalog?.presets ?? [])
+      .filter((preset) => !preset.custom)
+      .map((preset) => ({ id: preset.id, title: pickLocalized({ text: preset.title, locale }) })),
     category,
     query,
     lightOnly,
@@ -46,6 +50,8 @@ export const useComponentCatalog = () => {
       audioSrc: previewSrc({ previewsDir: catalog?.previewsDir ?? null, file: row.audio })
     })),
     onCategoryChange: setCategory,
+    onApplyPreset: (preset: string) => navigate({ page: 'install', params: { preset } }),
+    onInstall: () => navigate({ page: 'install' }),
     onQueryChange: setQuery,
     onLightOnlyChange: setLightOnly
   };

@@ -6,6 +6,7 @@ export type NavigationParams = {
   preset?: string | null;
   profileCode?: string;
   components?: string[];
+  review?: boolean;
 };
 
 export type NavigationTarget = {

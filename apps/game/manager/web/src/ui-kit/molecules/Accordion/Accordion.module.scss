@@ -1,0 +1,67 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-2));
+}
+
+.item {
+  @include well;
+}
+
+.header {
+  margin: 0;
+}
+
+.trigger {
+  @include reset-button;
+
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  color: var(--color-text);
+  font-weight: 500;
+  gap: var(--space-4);
+  text-align: left;
+
+  &:hover {
+    color: var(--color-accent);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &[data-panel-open] .chevron {
+    transform: rotate(180deg);
+  }
+}
+
+.chevron {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--color-text-dim);
+  transition: transform var(--duration-fast) ease;
+}
+
+.panel {
+  overflow: hidden;
+  height: var(--accordion-panel-height);
+  transition: height var(--duration-base) ease;
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    height: 0;
+  }
+}
+
+.content {
+  padding: 0 var(--space-5) var(--space-5);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  line-height: var(--leading-body);
+  user-select: text;
+  white-space: pre-line;
+}

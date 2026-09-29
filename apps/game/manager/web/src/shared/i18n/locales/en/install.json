@@ -56,5 +56,12 @@
     "licence": "Licence:",
     "author": "Author:",
     "restart": "After the first start with OpenWG Gameface the game restarts itself once to register the modpack's pages."
-  }
+  },
+  "installedHint": "Components on: {count}. A snapshot was taken — if you do not like something, roll back in Backups.",
+  "installing": "Installing",
+  "installingHint": "Downloading the packages, checking their checksums and putting the files in place. Do not start the game until the install finishes.",
+  "reviewWhat": "What will be installed",
+  "reviewWhere": "Where",
+  "edit": "Change",
+  "blocked": "Cannot install right now"
 }

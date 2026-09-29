@@ -1,0 +1,129 @@
+import { CircleCheck, CircleDashed, PackageCheck, SlidersHorizontal } from 'lucide-react';
+import { useTranslations } from 'use-intl';
+
+import { ClientPicker } from '@/features/client/client-picker';
+import { BLOCKER_MESSAGES } from '@/features/setup/install-modpack';
+import { Button, Card, Notice, QueryState } from '@/ui-kit';
+
+import { useFirstRun } from '../model/hooks';
+
+import s from './FirstRun.module.scss';
+
+export const FirstRun = () => {
+  const t = useTranslations();
+  const {
+    clientsQuery,
+    planQuery,
+    client,
+    hasClient,
+    presets,
+    selectedTitle,
+    blocker,
+    canInstall,
+    errorMessage,
+    onSelectPreset,
+    onQuickInstall,
+    onCustomize
+  } = useFirstRun();
+
+  return (
+    <Card description={t('home.setup.description')} title={t('home.setup.title')} tone='accent'>
+      <ol className={s.steps}>
+        <li className={s.step} data-done={hasClient || undefined}>
+          <span aria-hidden className={s.marker}>
+            {hasClient ? <CircleCheck /> : <CircleDashed />}
+          </span>
+          <div className={s.body}>
+            <h3 className={s.title}>{t('home.setup.stepGame')}</h3>
+            <QueryState
+              errorMessage={errorMessage}
+              errorTitle={t('common.loadFailed')}
+              loadingLabel={t('common.loading')}
+              query={clientsQuery}
+              retryLabel={t('common.retry')}
+            >
+              {() => (
+                <>
+                  {client ? (
+                    <p className={s.found}>
+                      {t('home.setup.gameFound', { version: client.version })}
+                      <span className={s.path}>{client.path}</span>
+                    </p>
+                  ) : (
+                    <Notice title={t('home.setup.gameMissing')} tone='warning'>
+                      {t('home.setup.gameMissingHint')}
+                    </Notice>
+                  )}
+                  <ClientPicker />
+                </>
+              )}
+            </QueryState>
+          </div>
+        </li>
+        <li className={s.step}>
+          <span aria-hidden className={s.marker}>
+            <CircleDashed />
+          </span>
+          <div className={s.body}>
+            <h3 className={s.title}>{t('home.setup.stepPreset')}</h3>
+            {hasClient ? (
+              <QueryState
+                errorMessage={errorMessage}
+                errorTitle={t('common.loadFailed')}
+                loadingLabel={t('common.loading')}
+                query={planQuery}
+                retryLabel={t('common.retry')}
+              >
+                {() =>
+                  blocker ? (
+                    <Notice title={t('install.blocked')} tone='danger'>
+                      {t(`install.${BLOCKER_MESSAGES[blocker]}`)}
+                    </Notice>
+                  ) : (
+                    <div aria-label={t('home.setup.presetsLabel')} className={s.presets} role='radiogroup'>
+                      {presets.map((preset) => (
+                        <button
+                          key={preset.id}
+                          aria-checked={preset.isSelected}
+                          className={s.preset}
+                          role='radio'
+                          type='button'
+                          onClick={() => onSelectPreset(preset.id)}
+                        >
+                          <span className={s.presetTitle}>{preset.title}</span>
+                          {preset.description && <span className={s.presetText}>{preset.description}</span>}
+                          <span className={s.presetCount}>{t('home.setup.presetCount', { count: preset.count })}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )
+                }
+              </QueryState>
+            ) : (
+              <p className={s.muted}>{t('home.setup.chooseGameFirst')}</p>
+            )}
+          </div>
+        </li>
+        <li className={s.step}>
+          <span aria-hidden className={s.marker}>
+            <CircleDashed />
+          </span>
+          <div className={s.body}>
+            <h3 className={s.title}>{t('home.setup.stepInstall')}</h3>
+            <div className={s.actions}>
+              <Button disabled={!canInstall} size='lg' onClick={onQuickInstall}>
+                <PackageCheck aria-hidden />
+                {selectedTitle ? t('home.setup.quickInstall', { preset: selectedTitle }) : t('home.installCta')}
+              </Button>
+              <Button disabled={!canInstall} variant='secondary' onClick={onCustomize}>
+                <SlidersHorizontal aria-hidden />
+                {t('home.setup.customize')}
+              </Button>
+            </div>
+            <p className={s.muted}>{t('home.setup.installHint')}</p>
+          </div>
+        </li>
+      </ol>
+    </Card>
+  );
+};

@@ -1,28 +1,38 @@
 import { useTranslations } from 'use-intl';
 
 import { useSelectedClient } from '@/entities/client';
-import { usePatchReport } from '@/entities/patch-report';
-import { NAV_PAGE_IDS } from '@/shared/config';
+import { useInstallation } from '@/entities/installation';
+import { statusView, usePatchReport } from '@/entities/patch-report';
 import { useNavigation } from '@/shared/lib';
 
-import { NAV_ICONS } from '../../../config';
+import { NAV_GROUPS, NAV_ICONS } from '../../../config';
+import { navMarker } from '../../../lib';
 
 export const useAppShell = () => {
   const t = useTranslations('nav');
   const { page, navigate } = useNavigation();
-  const { client } = useSelectedClient();
+  const { client, clientPath } = useSelectedClient();
+  const { data: installation } = useInstallation(clientPath);
   const { data: report } = usePatchReport();
-  const activePage = page === 'install' ? 'home' : page;
+  const isInstalled = installation?.installed ?? false;
+  const view = report ? statusView({ status: report.status, needsMigration: installation?.needsMigration ?? false }) : null;
+  const canInstall = client !== undefined && client.problem === null && !isInstalled;
 
   return {
-    items: NAV_PAGE_IDS.map((id) => ({
-      id,
-      label: t(id),
-      icon: NAV_ICONS[id],
-      isActive: id === activePage,
-      onSelect: () => navigate({ page: id })
+    groups: NAV_GROUPS.map((group) => ({
+      id: group.id,
+      label: t(`groups.${group.id}`),
+      items: group.pages.map((id) => ({
+        id,
+        label: t(id),
+        icon: NAV_ICONS[id],
+        isActive: id === page,
+        marker: navMarker({ page: id, view, canInstall }),
+        onSelect: () => navigate({ page: id })
+      }))
     })),
-    clientVersion: client?.version ?? null,
-    statusKind: report?.status.kind ?? null
+    gameVersion: client?.version ?? null,
+    modpackVersion: isInstalled ? (installation?.modpackVersion ?? null) : null,
+    tone: view?.tone ?? 'neutral'
   };
 };

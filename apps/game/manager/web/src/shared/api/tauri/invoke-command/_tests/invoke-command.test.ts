@@ -24,8 +24,7 @@ describe('invokeCommand', () => {
 
   it('turns a rejected command into a ManagerError with its code', async () => {
     mockIPC(() => {
-      // eslint-disable-next-line no-throw-literal -- Tauri rejects an invoke with the command's serialised error object, not an Error
-      throw { code: 'client_running', message: 'the game is running' };
+      throw Object.assign(new Error('the game is running'), { code: 'client_running' });
     });
 
     await expect(invokeCommand({ command: COMMANDS.checkNow, schema })).rejects.toMatchObject({ code: 'client_running' });

@@ -1,17 +1,21 @@
 import { useTranslations } from 'use-intl';
 
 import { useNavigation } from '@/shared/lib';
-import { PageHeader } from '@/ui-kit';
+import { HelpTip, PageHeader } from '@/ui-kit';
 import { InstallWizard } from '@/widgets/install-wizard';
 
 export const InstallView = () => {
-  const t = useTranslations('install');
+  const t = useTranslations();
   const { params } = useNavigation();
 
   return (
     <>
-      <PageHeader description={t('description')} title={t('title')} />
-      <InstallWizard initialComponents={params.components ?? null} initialPreset={params.preset ?? null} />
+      <PageHeader
+        description={t('install.description')}
+        help={<HelpTip label={t('help.tipLabel')}>{t('help.tips.install')}</HelpTip>}
+        title={t('install.title')}
+      />
+      <InstallWizard initialComponents={params.components ?? null} initialPreset={params.preset ?? null} startAtReview={params.review ?? false} />
     </>
   );
 };

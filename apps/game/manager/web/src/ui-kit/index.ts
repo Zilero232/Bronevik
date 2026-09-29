@@ -12,6 +12,7 @@ export type {
   TextInputProps
 } from './atoms';
 export {
+  Accordion,
   Card,
   ConfirmDialog,
   Dialog,
@@ -25,19 +26,28 @@ export {
   EmptyState,
   ErrorState,
   FormField,
+  HelpTip,
+  Notice,
   PageHeader,
   QueryState,
-  ToggleChips
+  ToggleChips,
+  Tooltip
 } from './molecules';
 export type {
+  AccordionItem,
+  AccordionProps,
   CardProps,
   ConfirmDialogProps,
   EmptyStateProps,
   ErrorStateProps,
   FormFieldControlProps,
   FormFieldProps,
+  HelpTipProps,
+  NoticeProps,
+  NoticeTone,
   PageHeaderProps,
   QueryStateProps,
   ToggleChip,
-  ToggleChipsProps
+  ToggleChipsProps,
+  TooltipProps
 } from './molecules';

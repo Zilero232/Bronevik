@@ -4,7 +4,9 @@ import client from './client.json';
 import common from './common.json';
 import components from './components.json';
 import conflicts from './conflicts.json';
+import errorHelp from './errorHelp.json';
 import errors from './errors.json';
+import help from './help.json';
 import home from './home.json';
 import install from './install.json';
 import nav from './nav.json';
@@ -28,6 +30,8 @@ export const RU_MESSAGES = {
   settings,
   about,
   errors,
+  errorHelp,
+  help,
   install,
   uninstall
 };

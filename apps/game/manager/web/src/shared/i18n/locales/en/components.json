@@ -28,5 +28,9 @@
   },
   "lightOnly": "Light only",
   "lightOnlyHint": "Components that barely cost any FPS",
-  "listen": "Play the sound: {title}"
+  "listen": "Play the sound: {title}",
+  "presetsTitle": "Ready-made sets:",
+  "presetsHint": "Opens the install wizard with this set — you see the changes before installing",
+  "notInstalledHint": "The modpack is not installed yet — the switches work after the install.",
+  "installCta": "Install the modpack"
 }

@@ -7,5 +7,22 @@
   "backups": "Backups",
   "settings": "Settings",
   "about": "About",
-  "install": "Install"
+  "install": "Install",
+  "help": "Help",
+  "groups": {
+    "modpack": "Modpack",
+    "mine": "Mine",
+    "app": "App"
+  },
+  "marker": {
+    "new": "Ready to install",
+    "update": "Update available",
+    "problem": "Needs attention"
+  },
+  "status": {
+    "game": "Game {version}",
+    "noGame": "Game not found",
+    "modpack": "Modpack {version}",
+    "notInstalled": "Modpack not installed"
+  }
 }

@@ -1,0 +1,20 @@
+@use '@/shared/styles/mixins' as *;
+
+.positioner {
+  z-index: var(--z-toast);
+}
+
+.popup {
+  @include popup-surface;
+
+  max-width: 300px;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+  line-height: var(--leading-body);
+  transition: opacity var(--duration-fast) ease;
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+  }
+}

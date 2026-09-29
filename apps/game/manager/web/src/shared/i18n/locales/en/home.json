@@ -1,12 +1,34 @@
 {
   "title": "Home",
-  "installTitle": "Modpack",
-  "notInstalled": "The modpack is not installed in this client yet",
-  "notInstalledHint": "Press “Install the modpack” — the manager finds the client and offers a set of components.",
-  "modpackVersion": "Modpack {version}",
-  "enabledCount": "Components on: {enabled} of {total}",
-  "installedAt": "Installed {date}",
   "openComponents": "Open components",
   "installCta": "Install the modpack",
-  "changeSelection": "Change the selection"
+  "changeSelection": "Change the selection",
+  "description": "Game and modpack state, updates and the mods folder check.",
+  "setup": {
+    "title": "Install in three steps",
+    "description": "The manager has already looked for the game. Pick a set and install it — you see the full list before installing, and a snapshot lets you roll everything back.",
+    "stepGame": "Game",
+    "stepPreset": "Set",
+    "stepInstall": "Install",
+    "gameFound": "Found Mir Tankov {version}",
+    "gameMissing": "Mir Tankov not found",
+    "gameMissingHint": "If the game was not installed through Lesta Game Center, press “Choose a folder…” and pick the folder with Tanki.exe.",
+    "presetCount": "{count, plural, one {# component} other {# components}}",
+    "presetsLabel": "Ready-made sets",
+    "quickInstall": "Install “{preset}”",
+    "customize": "Pick components by hand",
+    "installHint": "The last wizard step opens with the list of what will be installed. Nothing is installed until you press “Install”.",
+    "chooseGameFirst": "Find the game first — step 1."
+  },
+  "summary": {
+    "game": "Game",
+    "modpack": "Modpack",
+    "components": "Components",
+    "latest": "Latest version {version}",
+    "latestSame": "Latest version",
+    "enabled": "{enabled} of {total}",
+    "enabledHint": "turned on",
+    "noGame": "Not found"
+  },
+  "snapshot": "Backups"
 }

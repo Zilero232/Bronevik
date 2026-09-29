@@ -7,5 +7,22 @@
   "backups": "Бэкапы",
   "settings": "Настройки",
   "about": "О программе",
-  "install": "Установка"
+  "install": "Установка",
+  "help": "Помощь",
+  "groups": {
+    "modpack": "Модпак",
+    "mine": "Моё",
+    "app": "Приложение"
+  },
+  "marker": {
+    "new": "Можно установить",
+    "update": "Есть обновление",
+    "problem": "Требует внимания"
+  },
+  "status": {
+    "game": "Игра {version}",
+    "noGame": "Игра не найдена",
+    "modpack": "Модпак {version}",
+    "notInstalled": "Модпак не установлен"
+  }
 }

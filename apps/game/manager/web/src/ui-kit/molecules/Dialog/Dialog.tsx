@@ -5,6 +5,8 @@ import { clsx } from 'clsx';
 import { X } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 
+import type { DialogContentProps } from './Dialog.types';
+
 import s from './Dialog.module.scss';
 
 export const Dialog = BaseDialog.Root;
@@ -13,13 +15,13 @@ export const DialogTrigger = BaseDialog.Trigger;
 
 export const DialogClose = BaseDialog.Close;
 
-export const DialogContent = ({ className, children, ...props }: ComponentProps<typeof BaseDialog.Popup>) => {
+export const DialogContent = ({ className, children, size = 'md', ...props }: DialogContentProps) => {
   const t = useTranslations('common');
 
   return (
     <BaseDialog.Portal>
       <BaseDialog.Backdrop className={s.overlay} />
-      <BaseDialog.Popup className={clsx(s.content, className)} {...props}>
+      <BaseDialog.Popup className={clsx(s.content, className)} data-size={size} {...props}>
         {children}
         <BaseDialog.Close aria-label={t('close')} className={s.close}>
           <X size={16} />

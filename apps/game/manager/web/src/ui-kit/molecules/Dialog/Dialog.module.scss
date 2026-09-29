@@ -24,11 +24,17 @@
   display: flex;
   width: calc(100% - 32px);
   max-width: 460px;
+  max-height: calc(100% - 48px);
   flex-direction: column;
   padding: var(--space-6);
   gap: var(--space-5);
+  overflow-y: auto;
   transform: translate(-50%, -50%);
   transition: opacity var(--duration-fast) ease;
+
+  &[data-size='lg'] {
+    max-width: 720px;
+  }
 
   &[data-starting-style],
   &[data-ending-style] {

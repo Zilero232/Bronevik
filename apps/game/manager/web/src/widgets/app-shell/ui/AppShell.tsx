@@ -11,7 +11,7 @@ import s from './AppShell.module.scss';
 
 export const AppShell = ({ children }: AppShellProps) => {
   const t = useTranslations();
-  const { items, clientVersion, statusKind } = useAppShell();
+  const { groups, gameVersion, modpackVersion, tone } = useAppShell();
 
   return (
     <div className={s.root}>
@@ -24,19 +24,32 @@ export const AppShell = ({ children }: AppShellProps) => {
           </div>
         </div>
         <nav aria-label={t('nav.label')} className={s.nav}>
-          {items.map(({ id, label, icon: Icon, isActive, onSelect }) => (
-            <button key={id} aria-current={isActive ? 'page' : undefined} className={s.navItem} type='button' onClick={onSelect}>
-              <Icon aria-hidden />
-              {label}
-            </button>
+          {groups.map((group) => (
+            <div key={group.id} aria-label={group.label} className={s.group} role='group'>
+              <span aria-hidden className={s.groupLabel}>
+                {group.label}
+              </span>
+              {group.items.map(({ id, label, icon: Icon, isActive, marker, onSelect }) => (
+                <button key={id} aria-current={isActive ? 'page' : undefined} className={s.navItem} title={label} type='button' onClick={onSelect}>
+                  <Icon aria-hidden />
+                  <span className={s.navLabel}>{label}</span>
+                  {marker && (
+                    <span className={s.marker} data-marker={marker}>
+                      <span className={s.srOnly}>{t(`nav.marker.${marker}`)}</span>
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
           ))}
         </nav>
-        {clientVersion && (
-          <div className={s.status} data-kind={statusKind ?? undefined}>
-            <span className={s.statusDot} />
-            {t('client.version', { version: clientVersion })}
-          </div>
-        )}
+        <div className={s.status} data-tone={tone}>
+          <span aria-hidden className={s.statusDot} />
+          <span className={s.statusText}>
+            <span>{gameVersion ? t('nav.status.game', { version: gameVersion }) : t('nav.status.noGame')}</span>
+            {gameVersion && <span>{modpackVersion ? t('nav.status.modpack', { version: modpackVersion }) : t('nav.status.notInstalled')}</span>}
+          </span>
+        </div>
       </aside>
       <main className={s.main}>
         <div className={s.content}>{children}</div>

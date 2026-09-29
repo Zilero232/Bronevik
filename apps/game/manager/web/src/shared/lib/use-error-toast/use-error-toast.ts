@@ -1,12 +1,13 @@
 import { toast } from 'sonner';
-import { useTranslations } from 'use-intl';
 
-import { toManagerError } from '../../api';
+import { useErrorText } from '../use-error-text';
 
 export const useErrorToast = () => {
-  const t = useTranslations('errors');
+  const errorText = useErrorText();
 
   return (error: unknown) => {
-    toast.error(t(toManagerError(error).code));
+    const { title, hint } = errorText(error);
+
+    toast.error(title, { description: hint });
   };
 };

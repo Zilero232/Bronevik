@@ -2,6 +2,7 @@ import { useNavigation } from '@/shared/lib';
 import { AboutView } from '@/views/about';
 import { BackupsView } from '@/views/backups';
 import { ComponentsView } from '@/views/components';
+import { HelpView } from '@/views/help';
 import { HomeView } from '@/views/home';
 import { InstallView } from '@/views/install';
 import { ProfilesView } from '@/views/profiles';
@@ -19,6 +20,7 @@ const VIEWS = {
   profiles: ProfilesView,
   backups: BackupsView,
   settings: SettingsView,
+  help: HelpView,
   about: AboutView
 };
 

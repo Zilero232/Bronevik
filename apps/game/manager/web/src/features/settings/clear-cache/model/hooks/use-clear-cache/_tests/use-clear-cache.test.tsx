@@ -73,7 +73,7 @@ describe('useClearCache', () => {
 
     await waitFor(() => expect(result.current.canScan).toBe(true));
     act(() => result.current.onScan());
-    await waitFor(() => expect(failure).toHaveBeenCalledWith(MESSAGES.ru.errors.busy));
+    await waitFor(() => expect(failure).toHaveBeenCalledWith(MESSAGES.ru.errors.busy, { description: MESSAGES.ru.errorHelp.busy }));
     expect(result.current.isScanned).toBe(false);
   });
 });

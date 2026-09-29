@@ -6,7 +6,7 @@ import { groupBy, sortBy } from 'remeda';
 import type { UserAtInput } from '../progression.types';
 
 import { toIsoDate, weekWindow } from '../../../common/lib';
-import { PrismaService } from '../../../core';
+import { PrismaService, UserLestaAccountsService } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { PROGRESS_LIST } from '../config';
 import { toTankChallengeSet, toTankProgressItem } from '../mappers';
@@ -15,11 +15,12 @@ import { toTankChallengeSet, toTankProgressItem } from '../mappers';
 export class TankProgressService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly entitlements: EntitlementsService
+    private readonly entitlements: EntitlementsService,
+    private readonly lestaAccounts: UserLestaAccountsService
   ) {}
 
   async list(userId: string): Promise<TankProgressList> {
-    const [accountIds, isPlus] = await Promise.all([this.accountIds(userId), this.entitlements.isPlus(userId)]);
+    const [accountIds, isPlus] = await Promise.all([this.lestaAccounts.accountIds(userId), this.entitlements.isPlus(userId)]);
     const rows = await this.prisma.playerTank.findMany({
       where: { accountId: { in: accountIds }, progressXp: { gt: 0 } },
       orderBy: [{ progressXp: 'desc' }, { tankId: 'asc' }],
@@ -36,7 +37,7 @@ export class TankProgressService {
   async challenges({ userId, now }: UserAtInput): Promise<TankChallenges> {
     const { weekStart, end } = weekWindow(now);
     const rows = await this.prisma.tankChallengeProgress.findMany({
-      where: { accountId: { in: await this.accountIds(userId) }, weekStart },
+      where: { accountId: { in: await this.lestaAccounts.accountIds(userId) }, weekStart },
       orderBy: [{ accountId: 'asc' }, { tankId: 'asc' }, { code: 'asc' }]
     });
 
@@ -47,11 +48,5 @@ export class TankProgressService {
       endsAt: end.toISOString(),
       sets: sortBy(sets, [(set) => set.items.filter((item) => item.completedAt === null).length, 'desc'])
     };
-  }
-
-  private async accountIds(userId: string): Promise<bigint[]> {
-    const links = await this.prisma.userLestaAccount.findMany({ where: { userId }, select: { accountId: true } });
-
-    return links.map((link) => link.accountId);
   }
 }

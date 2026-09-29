@@ -1,5 +1,6 @@
 import { STREAMER_SETTINGS_AGGREGATE_FIELDS, zoomMax } from '@otmetki/schemas';
 import { countBy, entries, sortBy } from 'remeda';
+import { median } from 'simple-statistics';
 import { z } from 'zod';
 
 import type { AggregateCohortInput, AggregateRow, BucketOfInput, ReadPathInput, ValueOfInput } from './settings-aggregate.types';
@@ -17,16 +18,7 @@ const zoomStepsOf = (values: ValueOfInput['values']): string[] | undefined => {
 const valueOf = ({ values, field }: ValueOfInput): unknown =>
   field === 'zoom.max' ? zoomMax(zoomStepsOf(values)) : readPath({ source: values, path: field });
 
-const median = (numbers: readonly number[]): number | null => {
-  const sorted = [...numbers].sort((left, right) => left - right);
-  const middle = Math.floor(sorted.length / 2);
-
-  if (sorted.length === 0) {
-    return null;
-  }
-
-  return sorted.length % 2 === 1 ? (sorted[middle] ?? null) : ((sorted[middle - 1] ?? 0) + (sorted[middle] ?? 0)) / 2;
-};
+const medianOf = (numbers: number[]): number | null => (numbers.length === 0 ? null : median(numbers));
 
 const bucketOf = ({ spec, value }: BucketOfInput): string | null => {
   if (spec.kind === 'numeric') {
@@ -55,7 +47,7 @@ export const aggregateCohort = ({ contributions, minCohort, fields = STREAMER_SE
       field: spec.field,
       kind: spec.kind,
       contributors: buckets.length,
-      median: spec.kind === 'numeric' ? median(numbers) : null,
+      median: spec.kind === 'numeric' ? medianOf(numbers) : null,
       buckets: sortBy(
         entries(countBy(buckets, (bucket) => bucket)).map(([bucket, count]) => ({ bucket, count })),
         [(row) => row.count, 'desc']

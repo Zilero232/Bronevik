@@ -3,7 +3,8 @@ import { Injectable } from '@nestjs/common';
 import type { FindLinkedInput, LinkedBotUser } from '../bot-commands.types';
 
 import { PrismaService } from '../../../core';
-import { resolveBotLocale } from '../lib';
+import { toLinkedBotUser } from '../mappers';
+import { BOT_USER_SELECT } from '../selects';
 
 @Injectable()
 export class BotAccountsService {
@@ -12,32 +13,9 @@ export class BotAccountsService {
   async find({ providerId, externalId, languageHint }: FindLinkedInput): Promise<LinkedBotUser | null> {
     const account = await this.prisma.account.findUnique({
       where: { providerId_accountId: { providerId, accountId: externalId } },
-      select: {
-        userId: true,
-        user: {
-          select: {
-            locale: true,
-            lestaAccounts: {
-              orderBy: [{ isPrimary: 'desc' }, { linkedAt: 'asc' }],
-              take: 1,
-              select: { accountId: true, player: { select: { nickname: true } } }
-            }
-          }
-        }
-      }
+      select: { userId: true, user: { select: BOT_USER_SELECT } }
     });
 
-    if (!account) {
-      return null;
-    }
-
-    const [primary] = account.user.lestaAccounts;
-
-    return {
-      userId: account.userId,
-      accountId: primary?.accountId ?? null,
-      nickname: primary?.player.nickname ?? null,
-      locale: resolveBotLocale(account.user.locale || languageHint)
-    };
+    return account ? toLinkedBotUser({ userId: account.userId, user: account.user, languageHint }) : null;
   }
 }

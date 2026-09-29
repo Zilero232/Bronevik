@@ -1,6 +1,7 @@
 import type { TierList, TierListQuery } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
+import { firstBy } from 'remeda';
 
 import { clampPercentDelta, SERVER_PERIOD_TO_DB, STATS_MODE_TO_DB } from '../../../common/lib';
 import { PrismaService } from '../../../core';
@@ -43,7 +44,7 @@ export class TierListService {
         }))
     );
 
-    const generatedAt = rows.reduce((latest, row) => (row.computedAt > latest ? row.computedAt : latest), new Date(0));
+    const generatedAt = firstBy(rows, [(row) => row.computedAt, 'desc'])?.computedAt ?? new Date(0);
 
     return {
       mode: query.mode,

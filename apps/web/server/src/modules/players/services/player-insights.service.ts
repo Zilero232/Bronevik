@@ -1,7 +1,9 @@
 import type { PlayerInsights } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
+import { LRUCache } from 'lru-cache';
 
+import type { TankServerStats } from '../../../../generated';
 import type { InsightsInput } from '../players.types';
 
 import { RATING_PERIOD_TO_DB } from '../../../common/lib';
@@ -12,21 +14,23 @@ import { computeInsights } from '../lib';
 
 @Injectable()
 export class PlayerInsightsService {
+  private readonly serverReference = new LRUCache<string, Map<number, TankServerStats>>({
+    max: 1,
+    ttl: PLAYER_STATS.serverReference.cacheTtlMs,
+    fetchMethod: () => this.loadServerReference()
+  });
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly catalog: VehicleCatalogService
   ) {}
 
   async insights({ accountId, period }: InsightsInput): Promise<PlayerInsights> {
-    const { mode, period: serverPeriod, cohort } = PLAYER_STATS.serverReference;
-
-    const [ratings, server, catalog] = await Promise.all([
+    const [ratings, serverOf, catalog] = await Promise.all([
       this.prisma.accountTankRating.findMany({ where: { accountId, period: RATING_PERIOD_TO_DB[period] } }),
-      this.prisma.tankServerStats.findMany({ where: { mode, period: serverPeriod, cohort } }),
+      this.serverReference.fetch(PLAYER_STATS.serverReference.cacheKey).then((cached) => cached ?? new Map<number, TankServerStats>()),
       this.catalog.all()
     ]);
-
-    const serverOf = new Map(server.map((row) => [row.tankId, row]));
 
     const tanks = ratings.flatMap((rating) => {
       const entry = catalog.get(rating.tankId);
@@ -69,5 +73,12 @@ export class PlayerInsightsService {
       strongTanks: withVehicle(insights.strongTanks),
       tips: insights.tips
     };
+  }
+
+  private async loadServerReference(): Promise<Map<number, TankServerStats> | undefined> {
+    const { mode, period, cohort } = PLAYER_STATS.serverReference;
+    const rows = await this.prisma.tankServerStats.findMany({ where: { mode, period, cohort } });
+
+    return rows.length === 0 ? undefined : new Map(rows.map((row) => [row.tankId, row]));
   }
 }

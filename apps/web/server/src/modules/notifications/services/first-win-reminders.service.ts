@@ -3,7 +3,8 @@ import { subDays } from 'date-fns';
 
 import type { FirstWinRemindInput } from '../notifications.types';
 
-import { PrismaService } from '../../../core';
+import { isoDay } from '../../../common/lib';
+import { PrismaService, USER_LESTA_ACCOUNT_ORDER } from '../../../core';
 import { dailyWindow, FirstWinService } from '../../analytics';
 import { FIRST_WIN_REMINDER } from '../config';
 import { NotificationService } from './notification.service';
@@ -42,7 +43,7 @@ export class FirstWinRemindersService {
   private async remind({ userId, now, resetAt }: FirstWinRemindInput): Promise<number> {
     const link = await this.prisma.userLestaAccount.findFirst({
       where: { userId, player: { lastBattleAt: { gte: subDays(now, FIRST_WIN_REMINDER.activeWithinDays) } } },
-      orderBy: [{ isPrimary: 'desc' }, { linkedAt: 'asc' }],
+      orderBy: USER_LESTA_ACCOUNT_ORDER,
       select: { accountId: true, player: { select: { nickname: true } } }
     });
 
@@ -59,7 +60,7 @@ export class FirstWinRemindersService {
     return this.notifications.notifyMany({
       userIds: [userId],
       notification: { event: 'firstWinAvailable', accountId: Number(link.accountId), nickname: link.player.nickname, available },
-      dedupeKey: `first-win-${link.accountId}-${resetAt.toISOString().slice(0, 10)}`
+      dedupeKey: `first-win-${link.accountId}-${isoDay(resetAt)}`
     });
   }
 }

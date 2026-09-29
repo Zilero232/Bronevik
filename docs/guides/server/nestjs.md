@@ -31,7 +31,7 @@ src/modules/search/
   client and server validate against one definition; a request schema only the server
   validates may live in the module's `dto/<module>.schemas.ts`, and the client gets its
   type from the OpenAPI codegen.
-- Every processor's `process` wraps a private `handle` in `MetricsService.track`
+- Every processor extends `TrackedWorkerHost` and implements only the protected `handle`; its `process` wraps `handle` in `MetricsService.track`
   (`MetricsService` from `modules/collector/metrics`).
 - The collector (`modules/collector`) is a module of sub-modules — `tracking`, `clans`,
   `reference`, `aggregates`, `news`, `purge`, `metrics`, `producer`, `queues`,

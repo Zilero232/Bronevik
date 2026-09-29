@@ -1,3 +1,4 @@
+import { sumBy } from 'remeda';
 import { z } from 'zod';
 
 import type { AccountRollup, AccountRollupInput, ObtainableRow } from './account-rollup.types';
@@ -20,7 +21,7 @@ export const accountRollup = ({ counts, points, obtainable }: AccountRollupInput
 
   return {
     held: held.length,
-    points: held.reduce((sum, name) => sum + (points.get(name) ?? 0), 0),
+    points: sumBy(held, (name) => points.get(name) ?? 0),
     completion: obtainable.size > 0 ? (obtained / obtainable.size) * ACHIEVEMENTS_VIEW.percentScale : 0
   };
 };

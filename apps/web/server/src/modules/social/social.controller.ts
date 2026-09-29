@@ -1,9 +1,12 @@
-import { Body, Controller, Delete, Get, Header, HttpCode, HttpStatus, Param, Post, Query, StreamableFile } from '@nestjs/common';
+import { CacheTTL } from '@nestjs/cache-manager';
+import { Body, Controller, Delete, Get, Header, HttpCode, HttpStatus, Param, Post, Query, StreamableFile, UseInterceptors } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
+import { CACHE_TTL } from '../../common/cache';
 import { CurrentUserId } from '../../common/decorators';
+import { ViewerCacheInterceptor } from '../../common/interceptors';
 import { SIGNATURE } from './config';
 import {
   ChallengesDto,
@@ -79,6 +82,8 @@ export class SocialController {
 
   @AllowAnonymous()
   @Get('players/:id/wrapped')
+  @UseInterceptors(ViewerCacheInterceptor)
+  @CacheTTL(CACHE_TTL.server)
   @ZodResponse({ type: WrappedDto })
   yearWrapped(@Param() { id }: WrappedParamsDto, @Query() { year }: WrappedQueryDto) {
     return this.wrapped.wrapped({ accountId: id, year });

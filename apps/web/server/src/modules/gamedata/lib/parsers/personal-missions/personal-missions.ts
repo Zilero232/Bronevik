@@ -1,3 +1,5 @@
+import { groupBy } from 'remeda';
+
 import type { PyValue } from '../../python-literal';
 import type { XmlNode, XmlValue } from '../../xml';
 import type {
@@ -173,15 +175,9 @@ const branchOf = (missions: PersonalMission[]): Pick<PersonalBranch, 'key' | 'ki
 };
 
 const groupBranches = (missions: PersonalMission[]): PersonalBranch[] => {
-  const groups = new Map<string, PersonalMission[]>();
+  const groups = groupBy(missions, (mission) => `${mission.operationId}:${mission.chainId}`);
 
-  for (const mission of missions) {
-    const key = `${mission.operationId}:${mission.chainId}`;
-
-    groups.set(key, [...(groups.get(key) ?? []), mission]);
-  }
-
-  return [...groups.values()].map((group) => ({
+  return Object.values(groups).map((group) => ({
     operationId: group[0].operationId,
     chainId: group[0].chainId,
     ...branchOf(group),

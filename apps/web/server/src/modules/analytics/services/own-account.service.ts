@@ -3,20 +3,14 @@ import { Injectable } from '@nestjs/common';
 import type { AccountInput } from '../analytics.types';
 
 import { AppNotFoundException } from '../../../common/exceptions';
-import { PrismaService } from '../../../core';
+import { UserLestaAccountsService } from '../../../core';
 
 @Injectable()
 export class OwnAccountService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly lestaAccounts: UserLestaAccountsService) {}
 
   async accountIds(userId: string): Promise<bigint[]> {
-    const links = await this.prisma.userLestaAccount.findMany({
-      where: { userId },
-      orderBy: [{ isPrimary: 'desc' }, { linkedAt: 'asc' }],
-      select: { accountId: true }
-    });
-
-    return links.map((link) => link.accountId);
+    return this.lestaAccounts.accountIds(userId);
   }
 
   async find({ userId, account }: AccountInput): Promise<bigint | null> {

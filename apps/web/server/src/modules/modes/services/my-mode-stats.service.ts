@@ -8,9 +8,8 @@ import { unique } from 'remeda';
 import type { MyModeRow } from '../lib/my-mode-stats';
 import type { MyModeSqlRow, MyModeStatsInput } from '../modes.types';
 
-import { AppNotFoundException } from '../../../common/exceptions';
 import { bonusTypesOfMode, gameModeOfBonusType } from '../../../common/lib';
-import { PrismaService } from '../../../core';
+import { PrismaService, UserLestaAccountsService } from '../../../core';
 import { PlayerCareerService } from '../../players';
 import { VehicleCatalogService } from '../../reference';
 import { foldModeStats } from '../lib/my-mode-stats';
@@ -20,11 +19,12 @@ export class MyModeStatsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly catalog: VehicleCatalogService,
-    private readonly career: PlayerCareerService
+    private readonly career: PlayerCareerService,
+    private readonly lestaAccounts: UserLestaAccountsService
   ) {}
 
   async stats({ userId, query }: MyModeStatsInput): Promise<MyModeStats> {
-    const accountId = await this.primaryAccount(userId);
+    const accountId = await this.lestaAccounts.requirePrimaryAccountId({ userId, message: 'Link a Lesta account to see your own mode stats' });
     const since = subDays(new Date(), query.days);
     const types = PLAY_MODES.flatMap((mode) => bonusTypesOfMode(mode));
 
@@ -95,19 +95,5 @@ export class MyModeStatsService {
       modes: foldModeStats({ rows: modeRows, vehicles, tanksLimit: MODE_META.myTanks }),
       career: career.modes
     };
-  }
-
-  private async primaryAccount(userId: string): Promise<bigint> {
-    const link = await this.prisma.userLestaAccount.findFirst({
-      where: { userId },
-      orderBy: [{ isPrimary: 'desc' }, { linkedAt: 'asc' }],
-      select: { accountId: true }
-    });
-
-    if (!link) {
-      throw new AppNotFoundException('NOT_FOUND', 'Link a Lesta account to see your own mode stats');
-    }
-
-    return link.accountId;
   }
 }

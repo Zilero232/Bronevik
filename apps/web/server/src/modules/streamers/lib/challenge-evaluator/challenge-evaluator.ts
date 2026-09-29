@@ -1,4 +1,4 @@
-import { sortBy, sumBy } from 'remeda';
+import { sortBy, sum } from 'remeda';
 import { match } from 'ts-pattern';
 
 import type { ChallengeVerdict, CompareInput, EligibleInput, EvaluateChallengeInput, MetricOfInput } from './challenge-evaluator.types';
@@ -52,7 +52,7 @@ export const evaluateChallenge = ({ condition, battles }: EvaluateChallengeInput
     return { status: isComplete ? 'failed' : 'active', progress, decidingBattleId: isComplete ? (battleIds.at(-1) ?? null) : null };
   }
 
-  const total = sumBy(values, (value) => value);
+  const total = sum(values);
   const value = condition.aggregate === 'sum' ? total : eligible.length > 0 ? total / eligible.length : 0;
   const progress = { battles: eligible.length, value, battleIds };
   const reachedEarly = condition.aggregate === 'sum' && operator === 'gte' && total >= target;

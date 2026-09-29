@@ -1,3 +1,5 @@
+import { uniqueBy } from 'remeda';
+
 import type { AbsoluteUrlInput, ListingItem, ParseListingInput } from './tanki-listing.types';
 
 import { fromUnixSeconds } from '../../../common/lib';
@@ -14,9 +16,7 @@ export const absoluteUrl = ({ href, baseUrl }: AbsoluteUrlInput): string | null 
 export const httpUrl = (value: string | null): string | null => (value && /^https?:\/\//.test(value) ? value : null);
 
 export const parseTankiListing = ({ $, baseUrl }: ParseListingInput): ListingItem[] => {
-  const seen = new Set<string>();
-
-  return $('.preview_item')
+  const items = $('.preview_item')
     .toArray()
     .flatMap((element) => {
       const item = $(element);
@@ -24,11 +24,9 @@ export const parseTankiListing = ({ $, baseUrl }: ParseListingInput): ListingIte
       const title = item.find('.preview_title').first().text().replaceAll(/\s+/g, ' ').trim();
       const url = href ? absoluteUrl({ href, baseUrl }) : null;
 
-      if (!url || !title || seen.has(url)) {
+      if (!url || !title) {
         return [];
       }
-
-      seen.add(url);
 
       const background = TANKI_LISTING.backgroundUrl.exec(item.find('.preview_image-holder').attr('style') ?? '')?.[1];
       const timestamp = Number(item.find('[data-timestamp]').first().attr('data-timestamp'));
@@ -42,4 +40,6 @@ export const parseTankiListing = ({ $, baseUrl }: ParseListingInput): ListingIte
         }
       ];
     });
+
+  return uniqueBy(items, (item) => item.url);
 };

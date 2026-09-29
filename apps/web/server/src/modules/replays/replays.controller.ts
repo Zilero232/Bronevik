@@ -1,5 +1,6 @@
 import type { Request } from 'express';
 
+import { CacheTTL } from '@nestjs/cache-manager';
 import {
   Body,
   Controller,
@@ -24,7 +25,9 @@ import { ZodResponse } from 'nestjs-zod';
 
 import type { UploadedReplayFile } from './replays.types';
 
+import { CACHE_TTL } from '../../common/cache';
 import { CurrentUserId, OptionalUserId } from '../../common/decorators';
+import { ViewerCacheInterceptor } from '../../common/interceptors';
 import { REPLAY_UPLOAD } from './config';
 import {
   BestOfWeekDto,
@@ -86,6 +89,8 @@ export class ReplaysController {
 
   @AllowAnonymous()
   @Get('best')
+  @UseInterceptors(ViewerCacheInterceptor)
+  @CacheTTL(CACHE_TTL.server)
   @ZodResponse({ type: BestOfWeekDto })
   best(@Query() { week }: BestOfWeekQueryDto) {
     return this.queries.bestOfWeek(week);
@@ -93,6 +98,8 @@ export class ReplaysController {
 
   @AllowAnonymous()
   @Get('versions')
+  @UseInterceptors(ViewerCacheInterceptor)
+  @CacheTTL(CACHE_TTL.server)
   @ZodResponse({ type: ReplayVersionsDto })
   versions() {
     return this.queries.versions();

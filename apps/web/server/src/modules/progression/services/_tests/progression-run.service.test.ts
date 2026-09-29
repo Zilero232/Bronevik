@@ -46,7 +46,7 @@ const setup = () => {
   prisma.player.findUnique.mockResolvedValue(null);
   prisma.tankBattleDelta.findMany.mockResolvedValue([]);
   prisma.battle.findMany.mockResolvedValue([]);
-  prisma.battle.count.mockResolvedValue(0);
+  prisma.battle.findFirst.mockResolvedValue(null);
   prisma.vehicle.findMany.mockResolvedValue([Object.assign(mock<Vehicle>(), { tankId, tier: 8, name: 'Object 140', shortName: 'Об. 140' })]);
   prisma.playerTank.findMany.mockResolvedValue([]);
   prisma.tankChallengeProgress.findMany.mockResolvedValue([]);
@@ -144,7 +144,7 @@ describe('ProgressionRunService.run', () => {
 
     ledger.grant.mockResolvedValue(false);
     prisma.battle.findMany.mockResolvedValue(range(0, 20).map(() => modBattle()));
-    prisma.battle.count.mockResolvedValue(20);
+    prisma.battle.findFirst.mockResolvedValue(mock<Battle>());
 
     await service.run(now);
 
@@ -201,7 +201,7 @@ describe('ProgressionRunService.run', () => {
     const { prisma, ledger, notifications, service } = setup();
 
     prisma.battle.findMany.mockResolvedValue(range(0, 20).map(() => modBattle()));
-    prisma.battle.count.mockResolvedValue(20);
+    prisma.battle.findFirst.mockResolvedValue(mock<Battle>());
 
     await service.run(now);
 

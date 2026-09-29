@@ -1,2 +1,2 @@
 export { detectMarkGains, markPairKey } from './mark-gains';
-export type { MarkBattle } from './mark-gains.types';
+export type { MarkBattle, MarkPair } from './mark-gains.types';

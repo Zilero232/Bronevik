@@ -1,4 +1,4 @@
-import { sortBy } from 'remeda';
+import { sortBy, sum, sumBy } from 'remeda';
 
 import type { ActivityRow, BestHour, BestHoursInput, Sample } from './pulse-grid.types';
 
@@ -19,8 +19,8 @@ export const activityGrid = (rows: readonly ActivityRow[]): number[][] => {
 };
 
 export const bestHours = ({ grid, count }: BestHoursInput): BestHour[] => {
-  const totals = Array.from({ length: PULSE.hours }, (_, hour) => grid.reduce((sum, day) => sum + (day[hour] ?? 0), 0));
-  const all = totals.reduce((sum, value) => sum + value, 0);
+  const totals = Array.from({ length: PULSE.hours }, (_, hour) => sumBy(grid, (day) => day[hour] ?? 0));
+  const all = sum(totals);
 
   if (all === 0) {
     return [];

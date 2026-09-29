@@ -1,3 +1,5 @@
+import { sum } from 'remeda';
+
 import type { VehicleType } from '../../../../../generated';
 import type { ReplayTrack } from '../replay-tracks';
 import type {
@@ -71,7 +73,7 @@ export const readHeatmapCells = (data: unknown): number[] | null => {
   return parsed.success ? parsed.data.cells : null;
 };
 
-export const gridTotal = (cells: readonly number[]): number => cells.reduce((total, value) => total + value, 0);
+export const gridTotal = (cells: readonly number[]): number => sum(cells);
 
 export const heatmapKey = ({ mode, scope }: HeatmapKeyInput): string => `${mode}:${scope}`;
 

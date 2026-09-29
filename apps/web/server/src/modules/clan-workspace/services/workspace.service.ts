@@ -4,6 +4,7 @@ import type { ClanScope, WorkspaceView } from '../clan-workspace.types';
 
 import { AppConflictException, AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
 import { isUniqueViolation, PrismaService } from '../../../core';
+import { CLAN_WORKSPACE } from '../config';
 import { canOwnWorkspace } from '../lib';
 import { toClanEventView } from '../mappers';
 import { ClanAccessService } from './clan-access.service';
@@ -44,7 +45,7 @@ export class WorkspaceService {
       this.prisma.clanEvent.findMany({
         where: { clanId: id, startsAt: { gte: new Date() } },
         orderBy: { startsAt: 'asc' },
-        take: 10,
+        take: CLAN_WORKSPACE.upcomingEvents,
         include: { attendance: true }
       }),
       membership.isOfficer ? this.prisma.recruitCandidate.groupBy({ by: ['status'], where: { clanId: id }, _count: { _all: true } }) : []

@@ -4,6 +4,7 @@ import type { Request, Response } from 'express';
 import { Catch, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { ThrottlerException } from '@nestjs/throttler';
 import { modErrorCodeSchema } from '@otmetki/schemas';
+import { getUnixTime } from 'date-fns';
 import { ZodSerializationException, ZodValidationException } from 'nestjs-zod';
 import { isIncludedIn } from 'remeda';
 
@@ -25,7 +26,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const response = context.getResponse<Response>();
 
     if (MOD_REPLY.pathPrefixes.some((prefix) => request.path.startsWith(prefix))) {
-      response.setHeader(MOD_REPLY.serverTimeHeader, String(Math.floor(Date.now() / 1000)));
+      response.setHeader(MOD_REPLY.serverTimeHeader, String(getUnixTime(new Date())));
     }
 
     if (isIncludedIn(request.path, MOD_REPLY.contractPaths)) {

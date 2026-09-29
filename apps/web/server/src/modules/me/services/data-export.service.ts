@@ -3,16 +3,19 @@ import type { AnalyticsExport, RawStatsExport } from '@otmetki/schemas';
 import { Injectable } from '@nestjs/common';
 import { subDays } from 'date-fns';
 
-import { PrismaService } from '../../../core';
+import { PrismaService, UserLestaAccountsService } from '../../../core';
 import { DATA_EXPORT } from '../config';
 import { toAccountExport, toBattleExport, toSessionExport, toTankExport, toTankProgressExport } from '../mappers';
 
 @Injectable()
 export class DataExportService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly lestaAccounts: UserLestaAccountsService
+  ) {}
 
   async raw(userId: string): Promise<RawStatsExport> {
-    const accountIds = await this.accountIds(userId);
+    const accountIds = await this.lestaAccounts.accountIds(userId);
     const [players, tanks, snapshots] = await Promise.all([
       this.prisma.player.findMany({ where: { accountId: { in: accountIds } }, orderBy: { accountId: 'asc' } }),
       this.prisma.playerTank.findMany({ where: { accountId: { in: accountIds } }, orderBy: [{ accountId: 'asc' }, { tankId: 'asc' }] }),
@@ -33,7 +36,7 @@ export class DataExportService {
   }
 
   async analytics(userId: string): Promise<AnalyticsExport> {
-    const accountIds = await this.accountIds(userId);
+    const accountIds = await this.lestaAccounts.accountIds(userId);
     const [sessions, battles, progress] = await Promise.all([
       this.prisma.playSession.findMany({
         where: { accountId: { in: accountIds }, startedAt: { gte: subDays(new Date(), DATA_EXPORT.sessionDays) } },
@@ -57,11 +60,5 @@ export class DataExportService {
       battles: battles.map(toBattleExport),
       tankProgress: progress.map(toTankProgressExport)
     };
-  }
-
-  private async accountIds(userId: string): Promise<bigint[]> {
-    const links = await this.prisma.userLestaAccount.findMany({ where: { userId }, select: { accountId: true } });
-
-    return links.map((link) => link.accountId);
   }
 }

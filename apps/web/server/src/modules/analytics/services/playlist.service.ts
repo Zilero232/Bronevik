@@ -3,6 +3,7 @@ import type { Playlist, PlaylistReason } from '@otmetki/schemas';
 import { Injectable } from '@nestjs/common';
 import { PLAYLIST, PLAYLIST_REASONS, vehicleTypeSchema } from '@otmetki/schemas';
 import { differenceInCalendarDays } from 'date-fns';
+import { millisecondsInDay } from 'date-fns/constants';
 
 import type { PlaylistInput } from '../analytics.types';
 import type { PlaylistCandidate } from '../lib';
@@ -13,7 +14,6 @@ import { EntitlementsService } from '../../billing';
 import { MissionProgressService } from '../../missions';
 import { PlayerMarksService } from '../../players';
 import { VehicleCatalogService } from '../../reference';
-import { PLAYLIST_SEED } from '../config';
 import { buildPlaylist, dailyWindow } from '../lib';
 import { FirstWinService } from './first-win.service';
 import { OwnAccountService } from './own-account.service';
@@ -35,7 +35,7 @@ export class PlaylistService {
     const { resetAt } = dailyWindow(now);
     const isExtended = await this.entitlements.isPlus(userId);
     const size = isExtended ? PLAYLIST.plusSize : PLAYLIST.freeSize;
-    const daySeed = seed ?? Math.floor(resetAt.getTime() / PLAYLIST_SEED.dayMs);
+    const daySeed = seed ?? Math.floor(resetAt.getTime() / millisecondsInDay);
     const accountId = await this.accounts.find({ userId, account });
     const base = { isExtended, size, seed: daySeed };
 

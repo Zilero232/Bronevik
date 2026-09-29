@@ -4,6 +4,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 import type { UserLestaAccount } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 
+import { UserLestaAccountsService } from '../../../../core';
 import { OwnAccountService } from '../own-account.service';
 
 const primary = 100n;
@@ -14,7 +15,7 @@ const setup = (accountIds: bigint[]) => {
 
   prisma.userLestaAccount.findMany.mockResolvedValue(accountIds.map((accountId) => mock<UserLestaAccount>({ accountId })));
 
-  return { prisma, service: new OwnAccountService(prisma) };
+  return { prisma, service: new OwnAccountService(new UserLestaAccountsService(prisma)) };
 };
 
 describe('OwnAccountService.find', () => {

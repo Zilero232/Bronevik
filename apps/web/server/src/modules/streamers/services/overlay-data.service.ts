@@ -8,7 +8,7 @@ import type { Overlay } from '../../../../generated';
 import type { AccountTankInput, BuildOverlayDataInput, OverlayData, PreviewOverlayRequest } from '../streamers.types';
 
 import { AppNotFoundException } from '../../../common/exceptions';
-import { readRecord, toNumber } from '../../../common/lib';
+import { percentOf, readRecord, toNumber } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { CosmeticsService } from '../../progression';
@@ -160,7 +160,7 @@ export class OverlayDataService {
       view: {
         battles: session.battles,
         wins: session.wins,
-        winRate: session.battles > 0 ? (session.wins * 100) / session.battles : null,
+        winRate: percentOf({ value: session.wins, by: session.battles }),
         avgDamage: session.battles > 0 ? session.damageDealt / session.battles : null,
         frags: session.frags,
         wn8: session.wn8,

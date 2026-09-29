@@ -144,7 +144,10 @@ export class ProgressionRunService {
     const tanks = sortBy([...samples], [([, rows]) => battlesOf(rows), 'desc']).slice(0, TANK_CHALLENGES.maxTanksPerWeek);
     const vehicles = await this.vehicles(tanks.map(([tankId]) => tankId));
     const hasModData =
-      (await this.prisma.battle.count({ where: { accountId, startedAt: { gte: subDays(now, PROGRESSION_RUN.modLookbackDays) } } })) > 0;
+      (await this.prisma.battle.findFirst({
+        where: { accountId, startedAt: { gte: subDays(now, PROGRESSION_RUN.modLookbackDays) } },
+        select: { id: true }
+      })) !== null;
 
     const completedRows = await this.prisma.tankChallengeProgress.findMany({
       where: { accountId, weekStart, tankId: { in: tanks.map(([tankId]) => tankId) }, completedAt: { not: null } },

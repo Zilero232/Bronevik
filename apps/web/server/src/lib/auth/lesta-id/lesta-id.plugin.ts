@@ -2,7 +2,7 @@ import type { BetterAuthPlugin } from 'better-auth';
 
 import { createAuthEndpoint, getSessionFromCtx, sessionMiddleware } from 'better-auth/api';
 import { deleteSessionCookie, expireCookie, setSessionCookie } from 'better-auth/cookies';
-import { addMilliseconds, addSeconds, getUnixTime } from 'date-fns';
+import { addMilliseconds, addSeconds, getUnixTime, millisecondsToSeconds } from 'date-fns';
 import { randomBytes } from 'node:crypto';
 import { z } from 'zod';
 
@@ -50,7 +50,7 @@ export const lestaId = ({ isConnected, lesta, store, apiUrl, webUrl }: LestaIdOp
             expiresAt: addMilliseconds(new Date(), LESTA_ID.stateTtlMs)
           });
 
-          const stateCookie = ctx.context.createAuthCookie(LESTA_ID.stateCookie, { maxAge: LESTA_ID.stateTtlMs / 1000 });
+          const stateCookie = ctx.context.createAuthCookie(LESTA_ID.stateCookie, { maxAge: millisecondsToSeconds(LESTA_ID.stateTtlMs) });
 
           await ctx.setSignedCookie(stateCookie.name, state, ctx.context.secret, stateCookie.attributes);
 

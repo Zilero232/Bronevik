@@ -1,5 +1,6 @@
 import type { Prisma } from '../../../../../../generated';
 import type { TankMarks } from '../../lib/marks-gain';
+import type { PlayerIdentity } from '../../lib/player-identity';
 
 export type { AccountModeRow, TankModeRow } from '../../lib/mode-stats';
 
@@ -21,3 +22,7 @@ export type SyncedRow = {
 };
 
 export type MarksRow = TankMarks;
+
+export type PlayerIdentityRow = PlayerIdentity & {
+  seenAt: Date;
+};

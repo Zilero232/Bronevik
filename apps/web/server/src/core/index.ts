@@ -25,5 +25,7 @@ export { SESSION_EVENTS } from './session-events';
 export type { SessionEndedEvent, SessionEventsSink } from './session-events';
 export { LocalDiskStorage, ObjectStorage, ObjectStorageModule, StorageObjectMissingError } from './storage';
 export type { PutObjectInput } from './storage';
+export { USER_LESTA_ACCOUNT_ORDER, UserLestaAccountsModule, UserLestaAccountsService } from './user-lesta-accounts';
+export type { RequirePrimaryInput } from './user-lesta-accounts';
 export { markGainedKey, WEBHOOK_EMITTER } from './webhooks';
 export type { EmitWebhookInput, WebhookEmitter, WebhookSubject } from './webhooks';

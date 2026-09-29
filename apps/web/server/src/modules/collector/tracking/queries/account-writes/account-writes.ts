@@ -1,4 +1,12 @@
-import type { AccountModeRow, LatestTanksSqlInput, MarksRow, PlayerTankUpsertRow, SyncedRow, TankModeRow } from './account-writes.types';
+import type {
+  AccountModeRow,
+  LatestTanksSqlInput,
+  MarksRow,
+  PlayerIdentityRow,
+  PlayerTankUpsertRow,
+  SyncedRow,
+  TankModeRow
+} from './account-writes.types';
 
 import { Prisma } from '../../../../../../generated';
 import { MODE_STATS_SQL } from '../../../../../common/lib';
@@ -148,4 +156,37 @@ export const upsertTankModeStatsSql = (rows: readonly TankModeRow[]): Prisma.Sql
     battles = EXCLUDED.battles, wins = EXCLUDED.wins, damage_dealt = EXCLUDED.damage_dealt, frags = EXCLUDED.frags,
     spotted = EXCLUDED.spotted, xp = EXCLUDED.xp, survived_battles = EXCLUDED.survived_battles, updated_at = now()
   WHERE tank_mode_stats.battles <= EXCLUDED.battles
+`;
+
+export const upsertPlayersSql = (rows: readonly PlayerIdentityRow[]): Prisma.Sql => Prisma.sql`
+  INSERT INTO player (account_id, nickname, clan_id, created_at, tracking_tier, logout_at, updated_at)
+  SELECT r.account_id, r.nickname, r.clan_id, r.created_at, r.tracking_tier::tracking_tier, r.logout_at, now()
+  FROM jsonb_to_recordset(${toJson(
+    rows.map((row) => ({
+      account_id: row.accountId,
+      nickname: row.nickname,
+      clan_id: row.clanId,
+      created_at: row.createdAt,
+      tracking_tier: row.trackingTier,
+      logout_at: row.logoutAt
+    }))
+  )}::jsonb)
+    AS r(account_id bigint, nickname text, clan_id bigint, created_at timestamptz, tracking_tier text, logout_at timestamptz)
+  ORDER BY r.account_id
+  ON CONFLICT (account_id) DO UPDATE SET
+    nickname = EXCLUDED.nickname,
+    clan_id = EXCLUDED.clan_id,
+    created_at = EXCLUDED.created_at,
+    tracking_tier = EXCLUDED.tracking_tier,
+    logout_at = coalesce(EXCLUDED.logout_at, player.logout_at),
+    updated_at = now()
+`;
+
+export const touchNicknamesSql = (rows: readonly PlayerIdentityRow[]): Prisma.Sql => Prisma.sql`
+  INSERT INTO player_nickname_history (account_id, nickname, last_seen_at)
+  SELECT r.account_id, r.nickname, r.seen_at
+  FROM jsonb_to_recordset(${toJson(rows.map((row) => ({ account_id: row.accountId, nickname: row.nickname, seen_at: row.seenAt })))}::jsonb)
+    AS r(account_id bigint, nickname text, seen_at timestamptz)
+  ORDER BY r.account_id
+  ON CONFLICT (account_id, nickname) DO UPDATE SET last_seen_at = EXCLUDED.last_seen_at
 `;

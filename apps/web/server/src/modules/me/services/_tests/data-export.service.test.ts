@@ -5,6 +5,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 import type { AccountSnapshot, Player, PlayerTank, UserLestaAccount } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 
+import { UserLestaAccountsService } from '../../../../core';
 import { DATA_EXPORT } from '../../config';
 import { DataExportService } from '../data-export.service';
 
@@ -22,7 +23,7 @@ const createService = (linked: bigint[]) => {
   prisma.playSession.findMany.mockResolvedValue([]);
   prisma.battle.findMany.mockResolvedValue([]);
 
-  return { service: new DataExportService(prisma), prisma };
+  return { service: new DataExportService(prisma, new UserLestaAccountsService(prisma)), prisma };
 };
 
 const accountFilter = { accountId: { in: [7n, 8n] } };

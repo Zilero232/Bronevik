@@ -2,6 +2,7 @@ import type { INestApplication } from '@nestjs/common';
 import type { Queue } from 'bullmq';
 
 import { getQueueToken } from '@nestjs/bullmq';
+import { CacheModule } from '@nestjs/cache-manager';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
@@ -110,6 +111,7 @@ beforeAll(async () => {
   storage = new LocalDiskStorage(root);
 
   const moduleRef = await Test.createTestingModule({
+    imports: [CacheModule.register()],
     controllers: [ReplaysController],
     providers: [
       ReplayUploadService,

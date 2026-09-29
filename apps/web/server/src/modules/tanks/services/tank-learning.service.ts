@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 import type { AccountLearningLookup } from '../tanks.types';
 
 import { AppNotFoundException } from '../../../common/exceptions';
-import { clampPercent, clampPercentDelta } from '../../../common/lib';
+import { clampPercentDelta, percentOf } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { bucketOf } from '../lib';
 import { toTankLearning } from '../mappers';
@@ -35,7 +35,7 @@ export class TankLearningService {
     }
 
     const bucket = bucketOf(snapshot.battles);
-    const winRate = clampPercent((snapshot.wins * 100) / snapshot.battles);
+    const winRate = percentOf({ value: snapshot.wins, by: snapshot.battles });
     const bucketWinRate = curve.buckets[bucket]?.winRate ?? null;
 
     return {

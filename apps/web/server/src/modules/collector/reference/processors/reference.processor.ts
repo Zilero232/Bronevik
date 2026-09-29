@@ -1,10 +1,10 @@
-import { Processor, WorkerHost } from '@nestjs/bullmq';
+import { Processor } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 import { match } from 'ts-pattern';
 
 import { WORKER_CONCURRENCY } from '../../config';
 import { encyclopediaPayloadSchema, JOB, QUEUE } from '../../contracts';
-import { MetricsService } from '../../metrics';
+import { MetricsService, TrackedWorkerHost } from '../../metrics';
 import {
   CatalogSyncService,
   EncyclopediaSyncService,
@@ -14,23 +14,19 @@ import {
 } from '../services';
 
 @Processor(QUEUE.reference, { concurrency: WORKER_CONCURRENCY.reference })
-export class ReferenceProcessor extends WorkerHost {
+export class ReferenceProcessor extends TrackedWorkerHost {
   constructor(
     private readonly encyclopedia: EncyclopediaSyncService,
     private readonly expectedValues: ExpectedValuesSyncService,
     private readonly moe: MoeThresholdsSyncService,
     private readonly mastery: MasteryThresholdsSyncService,
     private readonly catalog: CatalogSyncService,
-    private readonly metrics: MetricsService
+    metrics: MetricsService
   ) {
-    super();
+    super(metrics);
   }
 
-  async process(job: Job) {
-    return this.metrics.track({ job, run: () => this.handle(job) });
-  }
-
-  private async handle(job: Job) {
+  protected async handle(job: Job) {
     return match<string, Promise<unknown>>(job.name)
       .with(JOB.reference.versionCheck, () => this.encyclopedia.checkVersion())
       .with(JOB.reference.encyclopedia, () => this.encyclopedia.sync(encyclopediaPayloadSchema.parse(job.data)))

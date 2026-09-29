@@ -6,7 +6,7 @@ import { match } from 'ts-pattern';
 import type { PlayerTanksInput } from '../players.types';
 import type { LatestTankSnapshot } from '../selects';
 
-import { emptyRating, page, percentOf, RATING_PERIOD_TO_DB, ratingValue, ratio, sortRows, toIso } from '../../../common/lib';
+import { clampPercent, emptyRating, page, percentOf, RATING_PERIOD_TO_DB, ratingValue, ratio, sortRows, toIso } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
 import { PLAYER_STATS } from '../config';
@@ -56,7 +56,7 @@ export class PlayerTanksService {
             wn8: rating ? ratingValue({ kind: 'wn8', value: rating.wn8 }) : emptyRating(),
             markOfMastery: Math.min(4, Math.max(0, tank.markOfMastery)),
             marksOnGun: tank.marksOnGun,
-            moePercent: tank.moePercent === null ? null : Math.min(100, Math.max(0, tank.moePercent)),
+            moePercent: clampPercent(tank.moePercent),
             damagePercentile: rating?.damagePercentile ?? null,
             maxFrags: snapshot?.maxFrags ?? null,
             maxXp: snapshot?.maxXp ?? null,

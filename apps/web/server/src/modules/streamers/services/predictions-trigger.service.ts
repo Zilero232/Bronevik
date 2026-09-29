@@ -39,7 +39,7 @@ export class PredictionsTriggerService implements BattleEventsSink {
 
       const job: PredictionJob = { accountId: String(accountId), tankId, occurredAt: occurredAt.toISOString() };
 
-      await this.queue.add(STREAMERS_QUEUE.jobs.predictionOpen, job, { removeOnComplete: true, removeOnFail: 100 });
+      await this.queue.add(STREAMERS_QUEUE.jobs.predictionOpen, job, { removeOnComplete: true, removeOnFail: PREDICTIONS.failedJobsKept });
     } catch (error) {
       this.logger.warn(`prediction trigger for ${accountId} failed: ${errorMessage(error)}`);
     }

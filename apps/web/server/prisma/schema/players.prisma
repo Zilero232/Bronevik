@@ -111,5 +111,6 @@ model PlayerTank {
   @@id([accountId, tankId])
   @@index([tankId])
   @@index([accountId, progressXp(sort: Desc)])
+  @@index([marksOnGun, accountId])
   @@map("player_tank")
 }

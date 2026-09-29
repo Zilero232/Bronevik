@@ -1,7 +1,6 @@
 export {
   nationSchema,
   tankRoleSchema,
-  tankStatusSchema,
   tierSchema,
   vehicleCatalogItemSchema,
   vehicleCatalogSchema,

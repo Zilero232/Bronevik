@@ -1,6 +1,7 @@
 import type { MissionProgress, MissionProgressItem } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
+import { uniqueBy } from 'remeda';
 
 import type { PlanProgress } from '../lib';
 import type { NextMissions, UpdateProgressInput } from '../missions.types';
@@ -71,7 +72,7 @@ export class MissionProgressService {
       progress
     });
 
-    const firstPerBranch = steps.filter((step, index) => steps.findIndex((other) => other.chainId === step.chainId) === index);
+    const firstPerBranch = uniqueBy(steps, (step) => step.chainId);
 
     return {
       operationName: rows.operation.name ?? `#${rows.operation.operationId}`,

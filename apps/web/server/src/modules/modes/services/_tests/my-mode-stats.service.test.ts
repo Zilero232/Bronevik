@@ -11,6 +11,7 @@ import type { MyModeSqlRow } from '../../modes.types';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
 import { bonusTypesOfMode } from '../../../../common/lib';
+import { UserLestaAccountsService } from '../../../../core';
 import { MyModeStatsService } from '../my-mode-stats.service';
 
 const summary = (tankId: number): VehicleSummary => ({
@@ -54,7 +55,7 @@ const createService = () => {
   catalog.summary.mockImplementation(async (tankId) => summary(tankId));
   career.modes.mockResolvedValue({ accountId: 42, source: 'none', modes: [] });
 
-  return { service: new MyModeStatsService(prisma, catalog, career), prisma, catalog, career };
+  return { service: new MyModeStatsService(prisma, catalog, career, new UserLestaAccountsService(prisma)), prisma, catalog, career };
 };
 
 describe('MyModeStatsService.stats', () => {

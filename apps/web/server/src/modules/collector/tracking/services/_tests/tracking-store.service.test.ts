@@ -170,6 +170,38 @@ describe('TrackingStoreService.upsertPlayer', () => {
   });
 });
 
+describe('TrackingStoreService.upsertPlayers', () => {
+  it('writes players who kept their clan in one batch with their nicknames', async () => {
+    const { prisma, store } = createStore();
+
+    await store.upsertPlayers([
+      { info: info(5), previous: stored({ clanId: 5 }), tier: 'population', promote: false, now: NOW },
+      { info: { ...info(null), account_id: 2 }, previous: undefined, tier: 'population', promote: false, now: NOW }
+    ]);
+
+    expect(prisma.$executeRaw).toHaveBeenCalledTimes(2);
+    expect(prisma.player.upsert).not.toHaveBeenCalled();
+  });
+
+  it('keeps a clan switch on the per-player path that records the clan history', async () => {
+    const { prisma, store } = createStore();
+
+    await store.upsertPlayers([{ info: info(9), previous: stored({ clanId: 5 }), tier: 'population', promote: false, now: NOW }]);
+
+    expect(prisma.$executeRaw).not.toHaveBeenCalled();
+    expect(prisma.playerClanHistory.create.mock.calls[0]?.[0].data).toMatchObject({ clanId: 9n, joinedAt: NOW });
+  });
+
+  it('writes an account listed twice only once', async () => {
+    const { prisma, store } = createStore();
+    const entry = { info: info(9), previous: stored({ clanId: 5 }), tier: 'population' as const, promote: false, now: NOW };
+
+    await store.upsertPlayers([entry, entry]);
+
+    expect(prisma.player.upsert).toHaveBeenCalledOnce();
+  });
+});
+
 const syncedRowsSchema = z.array(z.object({ account_id: z.number(), next_poll_at: z.string(), last_polled_at: z.string() }));
 
 describe('TrackingStoreService.markSynced', () => {

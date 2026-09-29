@@ -6,6 +6,7 @@ import type { PlayerTank, TankChallengeProgress, UserLestaAccount } from '../../
 import type { PrismaService } from '../../../../core';
 
 import { weekWindow } from '../../../../common/lib';
+import { UserLestaAccountsService } from '../../../../core';
 import { EntitlementsService } from '../../../billing';
 import { TankProgressService } from '../tank-progress.service';
 
@@ -35,7 +36,7 @@ const setup = () => {
   prisma.playerTank.findMany.mockResolvedValue([]);
   prisma.tankChallengeProgress.findMany.mockResolvedValue([]);
 
-  return { prisma, entitlements, service: new TankProgressService(prisma, entitlements) };
+  return { prisma, entitlements, service: new TankProgressService(prisma, entitlements, new UserLestaAccountsService(prisma)) };
 };
 
 describe('TankProgressService.list', () => {

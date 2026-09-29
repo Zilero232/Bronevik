@@ -1,4 +1,4 @@
-import { clamp, fromKeys, zip } from 'remeda';
+import { clamp, fromKeys, sumBy, zip } from 'remeda';
 
 import type { CurvePoint } from '../interpolation';
 import type {
@@ -38,7 +38,7 @@ export const tankBronyaScore = ({ totals, reference, priorBattles = BRONYA_INDEX
     percentileOf({ value: values[component], quantiles: reference.quantiles[component] })
   );
 
-  const rawScore = BRONYA_COMPONENTS.reduce((sum, component) => sum + BRONYA_INDEX.weights[component] * percentiles[component], 0);
+  const rawScore = sumBy(BRONYA_COMPONENTS, (component) => BRONYA_INDEX.weights[component] * percentiles[component]);
 
   const shrunkScore = (totals.battles * rawScore + priorBattles * BRONYA_INDEX.neutralScore) / (totals.battles + priorBattles);
 
@@ -65,13 +65,13 @@ export const bronyaIndex = ({ tanks, references, priorBattles = BRONYA_INDEX.pri
     scored.push(tankBronyaScore({ totals, reference, priorBattles }));
   }
 
-  const battles = scored.reduce((sum, tank) => sum + tank.battles, 0);
+  const battles = sumBy(scored, (tank) => tank.battles);
 
   if (battles === 0) {
     return { index: null, confidence: 0, battles, tanks: scored, tanksWithoutReference };
   }
 
-  const score = scored.reduce((sum, tank) => sum + tank.battles * tank.shrunkScore, 0) / battles;
+  const score = sumBy(scored, (tank) => tank.battles * tank.shrunkScore) / battles;
 
   return {
     index: Math.round(score * BRONYA_INDEX.scale),

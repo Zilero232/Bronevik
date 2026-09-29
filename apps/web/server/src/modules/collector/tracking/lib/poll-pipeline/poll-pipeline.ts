@@ -99,9 +99,13 @@ const processAccount = async ({ ports, info, tanks, baseline, tier, now }: Proce
   const accountId = info.account_id;
   const { changedTankIds, masteryOnlyTankIds } = diffAccountTanks({ baseline, current: tanks });
   const scan = changedTankIds.length > 0;
-  const stats = scan ? await lesta.tankStats({ accountId, tankIds: changedTankIds }) : [];
-  const marks = scan && isIncludedIn(tier, POLL_PIPELINE.marksTiers) ? await lesta.tankMarks({ accountId, tankIds: changedTankIds }) : null;
-  const wn8 = scan ? await store.overallWn8(accountId) : null;
+  const [stats, marks, wn8] = scan
+    ? await Promise.all([
+        lesta.tankStats({ accountId, tankIds: changedTankIds }),
+        isIncludedIn(tier, POLL_PIPELINE.marksTiers) ? lesta.tankMarks({ accountId, tankIds: changedTankIds }) : null,
+        store.overallWn8(accountId)
+      ])
+    : [[], null, null];
 
   return store.withAccount({
     accountId,
@@ -152,10 +156,10 @@ export const runPollPipeline = async ({ ports, accountIds, tier, promote = false
   const toScan: AccountInfo[] = [];
   const synced: MarkSyncedInput[] = [];
 
+  await store.upsertPlayers(present.map((info) => ({ info, previous: players.get(info.account_id), tier, promote, now })));
+
   for (const info of present) {
     const previous = players.get(info.account_id);
-
-    await store.upsertPlayer({ info, previous, tier, promote, now });
 
     const scan = hasNewBattles({
       storedLastBattleAt: previous?.lastBattleAt,

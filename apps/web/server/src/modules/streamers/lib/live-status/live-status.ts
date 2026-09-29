@@ -1,3 +1,5 @@
+import { firstBy } from 'remeda';
+
 import type { LiveState, MergeLiveInput, WentLiveInput } from './live-status.types';
 
 export const mergeLiveStatus = ({ channels, streams }: MergeLiveInput): LiveState => {
@@ -7,11 +9,11 @@ export const mergeLiveStatus = ({ channels, streams }: MergeLiveInput): LiveStat
     return stream ? [stream] : [];
   });
 
-  if (live.length === 0) {
+  const top = firstBy(live, [(stream) => stream.viewers ?? -1, 'desc']);
+
+  if (!top) {
     return { isLive: false, platform: null, viewers: null };
   }
-
-  const top = live.reduce((best, stream) => ((stream.viewers ?? -1) > (best.viewers ?? -1) ? stream : best));
 
   return { isLive: true, platform: top.platform, viewers: top.viewers };
 };

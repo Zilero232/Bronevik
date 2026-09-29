@@ -47,7 +47,10 @@ export class AnalyticsOverviewService {
     const rows = tankRows.map(toAggregateRow);
     const totals = statLine({ rows, expected });
     const vehicles = new Map([...catalog.values()].map((entry) => [entry.summary.tankId, entry.summary]));
-    const playtime = modCount > 0 ? await this.battlePlaytime(window) : await this.deltaPlaytime(window);
+    const [playtime, sessions] = await Promise.all([
+      modCount > 0 ? this.battlePlaytime(window) : this.deltaPlaytime(window),
+      this.sessions({ window, totals })
+    ]);
 
     return {
       accountId: Number(accountId),
@@ -58,7 +61,7 @@ export class AnalyticsOverviewService {
       ...splitPlaytime(playtime),
       trend: trendPoints({ rows: trendRows.map((row) => ({ ...toAggregateRow(row), bucket: row.bucket })), expected }),
       tilt: tilt(recentMod.toReversed()),
-      sessions: await this.sessions({ window, totals })
+      sessions
     };
   }
 

@@ -1,10 +1,10 @@
-import { Processor, WorkerHost } from '@nestjs/bullmq';
+import { Processor } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 import { match } from 'ts-pattern';
 
 import { WORKER_CONCURRENCY } from '../../config';
 import { accountRatingsPayloadSchema, JOB, QUEUE } from '../../contracts';
-import { MetricsService } from '../../metrics';
+import { MetricsService, TrackedWorkerHost } from '../../metrics';
 import {
   AccountRatingsService,
   BuildUsageService,
@@ -17,7 +17,7 @@ import {
 } from '../services';
 
 @Processor(QUEUE.aggregate, { concurrency: WORKER_CONCURRENCY.aggregate })
-export class AggregateProcessor extends WorkerHost {
+export class AggregateProcessor extends TrackedWorkerHost {
   constructor(
     private readonly accountRatings: AccountRatingsService,
     private readonly serverStats: ServerStatsService,
@@ -27,16 +27,12 @@ export class AggregateProcessor extends WorkerHost {
     private readonly learning: LearningCurveService,
     private readonly buildUsage: BuildUsageService,
     private readonly modeMeta: ModeMetaService,
-    private readonly metrics: MetricsService
+    metrics: MetricsService
   ) {
-    super();
+    super(metrics);
   }
 
-  async process(job: Job) {
-    return this.metrics.track({ job, run: () => this.handle(job) });
-  }
-
-  private async handle(job: Job) {
+  protected async handle(job: Job) {
     return match<string, Promise<unknown>>(job.name)
       .with(JOB.aggregate.accountRatings, () => this.accountRatings.compute(accountRatingsPayloadSchema.parse(job.data)))
       .with(JOB.aggregate.serverStats, () => this.serverStats.compute())

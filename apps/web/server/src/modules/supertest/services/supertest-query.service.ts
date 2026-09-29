@@ -58,12 +58,14 @@ export class SupertestQueryService {
   }
 
   async mine(userId: string): Promise<SupertestMine> {
-    const accountId = await this.accounts.resolve({ userId });
-    const affected = await this.prisma.supertestChange.findMany({
-      where: { tankId: { not: null } },
-      distinct: ['tankId'],
-      select: { tankId: true }
-    });
+    const [accountId, affected] = await Promise.all([
+      this.accounts.resolve({ userId }),
+      this.prisma.supertestChange.findMany({
+        where: { tankId: { not: null } },
+        distinct: ['tankId'],
+        select: { tankId: true }
+      })
+    ]);
 
     const owned = await this.prisma.playerTank.findMany({
       where: { accountId, tankId: { in: affected.flatMap((row) => (row.tankId === null ? [] : [row.tankId])) } },

@@ -3,7 +3,7 @@ import type { PopularBuilds, ProvisionOption } from '@otmetki/schemas';
 import { Injectable } from '@nestjs/common';
 import { loadoutSchema } from '@otmetki/schemas';
 import { subDays } from 'date-fns';
-import { isNonNullish, unique } from 'remeda';
+import { isNonNullish, sumBy, unique } from 'remeda';
 
 import type { BattleSamplesInput, PopularBuildsInput } from '../builds.types';
 import type { LoadoutSample, RankedLoadout } from '../lib';
@@ -36,7 +36,7 @@ export class PopularBuildsService {
     return {
       tankId,
       source,
-      sampleSize: samples.reduce((sum, sample) => sum + sample.weight, 0),
+      sampleSize: sumBy(samples, (sample) => sample.weight),
       builds: ranked.map((build) => ({
         optionalDevices: resolve(build.optionalDevices),
         consumables: resolve(build.consumables),

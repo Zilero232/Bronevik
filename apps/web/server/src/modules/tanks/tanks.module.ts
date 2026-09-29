@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 
+import { UserLestaAccountsModule } from '../../core';
 import { BillingCoreModule } from '../billing';
 import { MarksModule } from '../marks';
 import { UsageModule } from '../usage';
@@ -28,7 +29,7 @@ import { VehicleSourcesController } from './vehicle-sources.controller';
 import { VehiclesController } from './vehicles.controller';
 
 @Module({
-  imports: [MarksModule, BillingCoreModule, UsageModule],
+  imports: [UserLestaAccountsModule, MarksModule, BillingCoreModule, UsageModule],
   controllers: [TanksController, TankArmorController, MyTanksController, VehiclesController, VehicleSourcesController],
   providers: [
     armorStorageProvider,

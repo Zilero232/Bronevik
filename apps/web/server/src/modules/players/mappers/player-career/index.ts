@@ -1,2 +1,2 @@
-export { careerRecordRefs, careerSourceFromBlock, toPlayerAssist } from './player-career';
-export type { CareerRecordKey, CareerRecordRef, CareerSource } from './player-career.types';
+export { careerRecordRefs, toPlayerAssist } from './player-career';
+export type { CareerRecordKey, CareerRecordRef } from './player-career.types';

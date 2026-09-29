@@ -8,13 +8,14 @@ import type { PrismaService } from '../../../../core';
 import type { PlayerMarksService } from '../../../players';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
+import { UserLestaAccountsService } from '../../../../core';
 import { MyMarksService } from '../my-marks.service';
 
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
   const playerMarks = mock<PlayerMarksService>();
 
-  return { service: new MyMarksService(prisma, playerMarks), prisma, playerMarks };
+  return { service: new MyMarksService(new UserLestaAccountsService(prisma), playerMarks), prisma, playerMarks };
 };
 
 describe('MyMarksService', () => {

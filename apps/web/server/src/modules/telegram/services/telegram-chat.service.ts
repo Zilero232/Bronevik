@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import type { LinkedChat, TelegramIdentity } from '../telegram.types';
 
 import { PrismaService } from '../../../core';
-import { resolveBotLocale } from '../lib';
+import { BOT_USER_SELECT, toLinkedBotUser } from '../../bot-commands';
 
 @Injectable()
 export class TelegramChatService {
@@ -12,35 +12,10 @@ export class TelegramChatService {
   async find(telegramId: bigint): Promise<LinkedChat | null> {
     const account = await this.prisma.telegramAccount.findUnique({
       where: { telegramId },
-      select: {
-        userId: true,
-        languageCode: true,
-        user: {
-          select: {
-            locale: true,
-            lestaAccounts: {
-              orderBy: [{ isPrimary: 'desc' }, { linkedAt: 'asc' }],
-              take: 1,
-              select: { accountId: true, player: { select: { nickname: true } } }
-            }
-          }
-        }
-      }
+      select: { userId: true, languageCode: true, user: { select: BOT_USER_SELECT } }
     });
 
-    if (!account) {
-      return null;
-    }
-
-    const [primary] = account.user.lestaAccounts;
-
-    return {
-      userId: account.userId,
-      telegramId,
-      accountId: primary?.accountId ?? null,
-      nickname: primary?.player.nickname ?? null,
-      locale: resolveBotLocale(account.user.locale || account.languageCode)
-    };
+    return account ? { ...toLinkedBotUser({ userId: account.userId, user: account.user, languageHint: account.languageCode }), telegramId } : null;
   }
 
   async touch({ telegramId, username, languageCode }: TelegramIdentity): Promise<void> {

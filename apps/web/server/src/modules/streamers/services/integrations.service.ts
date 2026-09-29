@@ -1,7 +1,7 @@
 import type { CookieOptions } from 'express';
 
 import { Injectable, Logger } from '@nestjs/common';
-import { addSeconds } from 'date-fns';
+import { addSeconds, secondsToMilliseconds } from 'date-fns';
 import { match } from 'ts-pattern';
 
 import type { StreamerProvider } from '../../../../generated';
@@ -81,7 +81,7 @@ export class IntegrationsService {
       sameSite: 'lax',
       secure: this.config.get('API_URL').startsWith('https://'),
       path: OAUTH_STATE.cookiePath,
-      maxAge: OAUTH_STATE.ttlSeconds * 1000
+      maxAge: secondsToMilliseconds(OAUTH_STATE.ttlSeconds)
     };
   }
 

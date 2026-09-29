@@ -130,8 +130,8 @@ export const createFakeStore = ({ players = [], baselines = {}, accountBattles =
   const store = {
     blockedAccounts: vi.fn(async (ids: readonly number[]) => new Set(ids.filter((id) => blocked.includes(id)))),
     loadPlayers: vi.fn(async (ids: readonly number[]): Promise<StoredPlayer[]> => players.filter((player) => ids.includes(player.accountId))),
-    upsertPlayer: vi.fn(async (input: UpsertPlayerInput) => {
-      upserted.push(input);
+    upsertPlayers: vi.fn(async (entries: readonly UpsertPlayerInput[]) => {
+      upserted.push(...entries);
     }),
     markSynced: vi.fn(async (entries: readonly MarkSyncedInput[]) => {
       synced.push(...entries);

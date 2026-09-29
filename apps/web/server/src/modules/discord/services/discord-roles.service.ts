@@ -5,7 +5,7 @@ import type { ApplyRolesInput, SyncGuildInput, SyncMemberInput } from '../discor
 import type { MemberStanding } from '../lib';
 
 import { errorMessage } from '../../../common/lib';
-import { PrismaService } from '../../../core';
+import { PrismaService, USER_LESTA_ACCOUNT_ORDER } from '../../../core';
 import { AUTH_PROVIDER } from '../../../lib/auth';
 import { EntitlementsService } from '../../billing';
 import { DISCORD_LIMITS, DISCORD_TOKENS } from '../config';
@@ -105,7 +105,7 @@ export class DiscordRolesService {
         user: {
           select: {
             lestaAccounts: {
-              orderBy: [{ isPrimary: 'desc' }, { linkedAt: 'asc' }],
+              orderBy: USER_LESTA_ACCOUNT_ORDER,
               take: 1,
               select: { accountId: true, player: { select: { clanMembership: { select: { clanId: true } } } } }
             }

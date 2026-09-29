@@ -4,7 +4,7 @@ import type { LestaAccountStore, LinkLestaAccountInput } from '../../../lib/auth
 import type { LestaClient } from '../../../lib/lesta';
 
 import { errorMessage } from '../../../common/lib';
-import { LESTA_CLIENT, LIMIT_LOCK_SCOPE, lockedTransaction, PrismaService } from '../../../core';
+import { LESTA_CLIENT, LIMIT_LOCK_SCOPE, lockedTransaction, PrismaService, USER_LESTA_ACCOUNT_ORDER } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { CollectorProducerService } from '../../collector';
 
@@ -28,7 +28,7 @@ export class LestaAccountsService implements LestaAccountStore {
   async primaryAccountId(userId: string): Promise<number | null> {
     const link = await this.prisma.userLestaAccount.findFirst({
       where: { userId },
-      orderBy: [{ isPrimary: 'desc' }, { linkedAt: 'asc' }],
+      orderBy: USER_LESTA_ACCOUNT_ORDER,
       select: { accountId: true }
     });
 

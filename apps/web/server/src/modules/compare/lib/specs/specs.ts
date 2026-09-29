@@ -1,4 +1,4 @@
-import { isNumber, isPlainObject } from 'remeda';
+import { firstBy, isNumber, isPlainObject } from 'remeda';
 
 import type { FlattenInput, JoinKeyInput, SpecsRow } from './specs.types';
 
@@ -52,11 +52,7 @@ export const bestBySpec = (rows: readonly SpecsRow[]): Record<string, number | n
         return [key, null];
       }
 
-      const best = candidates.reduce((winner, candidate) =>
-        (lowerWins ? candidate.value < winner.value : candidate.value > winner.value) ? candidate : winner
-      );
-
-      return [key, best.tankId];
+      return [key, firstBy(candidates, [(candidate) => candidate.value, lowerWins ? 'asc' : 'desc'])?.tankId ?? null];
     })
   );
 };

@@ -3,7 +3,15 @@ import { z } from 'zod';
 
 import { Prisma } from '../../../../../../../generated';
 import { MODE_STATS_SQL } from '../../../../../../common/lib';
-import { markSyncedSql, upsertAccountModeStatsSql, upsertLatestTanksSql, upsertPlayerTanksSql, upsertTankModeStatsSql } from '../account-writes';
+import {
+  markSyncedSql,
+  touchNicknamesSql,
+  upsertAccountModeStatsSql,
+  upsertLatestTanksSql,
+  upsertPlayersSql,
+  upsertPlayerTanksSql,
+  upsertTankModeStatsSql
+} from '../account-writes';
 import { TANK_SNAPSHOT_COLUMNS } from '../account-writes.constants';
 
 const jsonParam = (sql: Prisma.Sql): unknown[] => {
@@ -34,6 +42,45 @@ describe('upsertPlayerTanksSql', () => {
 
   it('never clears a known garage flag, only raises it for a tank just played', () => {
     expect(upsertPlayerTanksSql([]).sql).toContain('ELSE player_tank.in_garage END');
+  });
+});
+
+const identity = {
+  accountId: 9_007_199_254_740_993n,
+  nickname: 'Tanker',
+  clanId: null,
+  createdAt: new Date('2020-01-01T00:00:00Z'),
+  trackingTier: 'active' as const,
+  logoutAt: null,
+  seenAt: new Date('2026-09-26T12:00:00Z')
+};
+
+describe('upsertPlayersSql', () => {
+  it('sends bigint account ids as snake_case JSON records', () => {
+    expect(jsonParam(upsertPlayersSql([identity]))).toEqual([
+      {
+        account_id: '9007199254740993',
+        nickname: 'Tanker',
+        clan_id: null,
+        created_at: '2020-01-01T00:00:00.000Z',
+        tracking_tier: 'active',
+        logout_at: null
+      }
+    ]);
+  });
+
+  it('never clears a known logout time', () => {
+    expect(upsertPlayersSql([]).sql).toContain('logout_at = coalesce(EXCLUDED.logout_at, player.logout_at)');
+  });
+
+  it('locks the rows in account order so concurrent batches cannot deadlock', () => {
+    expect(upsertPlayersSql([]).sql).toContain('ORDER BY r.account_id');
+  });
+});
+
+describe('touchNicknamesSql', () => {
+  it('moves the last-seen time of a known nickname forward', () => {
+    expect(touchNicknamesSql([identity]).sql).toContain('DO UPDATE SET last_seen_at = EXCLUDED.last_seen_at');
   });
 });
 

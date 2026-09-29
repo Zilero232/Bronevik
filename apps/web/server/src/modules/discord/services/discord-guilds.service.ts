@@ -51,8 +51,11 @@ export class DiscordGuildsService {
     const channelId = stringOption({ options, name: DISCORD_OPTIONS.channel });
     const reportChannelId = stringOption({ options, name: DISCORD_OPTIONS.reportChannel });
     const wantsTierRoles = booleanOption({ options, name: DISCORD_OPTIONS.tierRoles });
-    const isPlus = await this.entitlements.isPlus(linked.userId);
-    const existing = await this.prisma.discordGuild.findUnique({ where: { guildId }, select: { tierRoles: true } });
+    const [isPlus, existing] = await Promise.all([
+      this.entitlements.isPlus(linked.userId),
+      this.prisma.discordGuild.findUnique({ where: { guildId }, select: { tierRoles: true } })
+    ]);
+
     const tierRoles = wantsTierRoles && isPlus ? await this.ensureTierRoles({ guildId, locale, current: existing?.tierRoles }) : {};
 
     const data = {

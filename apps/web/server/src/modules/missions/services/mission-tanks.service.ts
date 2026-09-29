@@ -7,7 +7,7 @@ import type { MissionMetricChoice } from '../lib';
 import type { GarageState, MissionContext, MissionTanksInput, ServerStatsInput, ServerStatsResult, UserQuestInput } from '../missions.types';
 
 import { COHORT_TO_DB, percentOf, SERVER_PERIOD_TO_DB, STATS_MODE_TO_DB } from '../../../common/lib';
-import { PrismaService } from '../../../core';
+import { PrismaService, USER_LESTA_ACCOUNT_ORDER } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
 import { MISSION_TANKS } from '../config';
 import { missionFilter, missionMetric, rankTanks, toCandidate } from '../lib';
@@ -86,7 +86,7 @@ export class MissionTanksService {
   async garageTanks(userId: string): Promise<GarageState> {
     const link = await this.prisma.userLestaAccount.findFirst({
       where: { userId },
-      orderBy: [{ isPrimary: 'desc' }, { linkedAt: 'asc' }],
+      orderBy: USER_LESTA_ACCOUNT_ORDER,
       select: { accountId: true }
     });
 

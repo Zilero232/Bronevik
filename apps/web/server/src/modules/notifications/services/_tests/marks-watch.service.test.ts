@@ -33,7 +33,7 @@ const createService = () => {
   const redis = new RedisMock();
 
   catalog.summary.mockResolvedValue(mock<VehicleSummary>({ name: 'T-34-85', shortName: 'T-34-85' }));
-  prisma.player.findUnique.mockResolvedValue(mock<Player>({ nickname: 'Tanker' }));
+  prisma.player.findMany.mockResolvedValue([mock<Player>({ accountId: 7n, nickname: 'Tanker' })]);
 
   return { service: new MarksWatchService(prisma, catalog, notifications, redis), prisma, notifications, redis };
 };
@@ -62,8 +62,8 @@ describe('MarksWatchService', () => {
 
     await redis.set(MARKS_WATCH.cursorKey, CURSOR);
     prisma.battle.findMany.mockResolvedValue(rows);
-    prisma.battle.findFirst.mockResolvedValue(null);
-    prisma.playerTank.findUnique.mockResolvedValue(mock<PlayerTank>({ marksOnGun: 1 }));
+    prisma.$queryRaw.mockResolvedValue([]);
+    prisma.playerTank.findMany.mockResolvedValue([mock<PlayerTank>({ accountId: 7n, tankId: 1, marksOnGun: 1 })]);
 
     expect(await service.run()).toBe(1);
     expect(notifications.notifyAccount).toHaveBeenCalledTimes(1);
@@ -91,8 +91,8 @@ describe('MarksWatchService', () => {
 
     await redis.set(MARKS_WATCH.cursorKey, CURSOR);
     prisma.battle.findMany.mockResolvedValue([battle({ id: 'b3', marks: 2, minute: 0 })]);
-    prisma.battle.findFirst.mockResolvedValue(mock<Battle>({ marksOnGun: 2 }));
-    prisma.playerTank.findUnique.mockResolvedValue(mock<PlayerTank>({ marksOnGun: 1 }));
+    prisma.$queryRaw.mockResolvedValue([{ accountId: 7n, tankId: 1, marksOnGun: 2 }]);
+    prisma.playerTank.findMany.mockResolvedValue([mock<PlayerTank>({ accountId: 7n, tankId: 1, marksOnGun: 1 })]);
 
     expect(await service.run()).toBe(0);
     expect(notifications.notifyAccount).not.toHaveBeenCalled();
@@ -103,8 +103,8 @@ describe('MarksWatchService', () => {
 
     await redis.set(MARKS_WATCH.cursorKey, CURSOR);
     prisma.battle.findMany.mockResolvedValue([battle({ id: 'b4', marks: 1, minute: 0 })]);
-    prisma.battle.findFirst.mockResolvedValue(null);
-    prisma.playerTank.findUnique.mockResolvedValue(mock<PlayerTank>({ marksOnGun: 0 }));
+    prisma.$queryRaw.mockResolvedValue([]);
+    prisma.playerTank.findMany.mockResolvedValue([mock<PlayerTank>({ accountId: 7n, tankId: 1, marksOnGun: 0 })]);
 
     expect(await service.run()).toBe(1);
   });
@@ -114,8 +114,8 @@ describe('MarksWatchService', () => {
 
     await redis.set(MARKS_WATCH.cursorKey, CURSOR);
     prisma.battle.findMany.mockResolvedValue([battle({ id: 'b5', marks: 1, minute: 0 })]);
-    prisma.battle.findFirst.mockResolvedValue(null);
-    prisma.playerTank.findUnique.mockResolvedValue(null);
+    prisma.$queryRaw.mockResolvedValue([]);
+    prisma.playerTank.findMany.mockResolvedValue([]);
 
     expect(await service.run()).toBe(0);
   });

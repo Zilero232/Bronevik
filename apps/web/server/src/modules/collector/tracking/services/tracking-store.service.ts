@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { addDays, fromUnixTime } from 'date-fns';
-import { groupBy } from 'remeda';
+import { addDays } from 'date-fns';
+import { groupBy, partition, uniqueBy } from 'remeda';
 
-import type { Prisma, TrackingTier } from '../../../../../generated';
+import type { Prisma } from '../../../../../generated';
 import type { TankBaseline } from '../lib/account-diff';
 import type { GainedMark } from '../lib/marks-gain';
 import type { AccountStorePort, MarkSyncedInput, PollStorePort, StoredPlayer, UpsertPlayerInput, WithAccountInput } from '../lib/poll-pipeline';
@@ -22,14 +22,17 @@ import { PurgeGuardService } from '../../purge';
 import { TRACKING } from '../config';
 import { buildDaySession } from '../lib/day-session';
 import { gainedMarks, snapshotMarks } from '../lib/marks-gain';
+import { changesClan, playerIdentity } from '../lib/player-identity';
 import { nextPollAt } from '../lib/poll-schedule';
 import { isSnapshotMode, SNAPSHOT_MODES } from '../lib/snapshots';
 import { toStoredPlayer } from '../mappers';
 import {
   markSyncedSql,
+  touchNicknamesSql,
   updateMarksSql,
   upsertAccountModeStatsSql,
   upsertLatestTanksSql,
+  upsertPlayersSql,
   upsertPlayerTanksSql,
   upsertTankModeStatsSql
 } from '../queries';
@@ -57,20 +60,27 @@ export class TrackingStoreService implements PollStorePort {
     return players.map(toStoredPlayer);
   }
 
-  async upsertPlayer({ info, previous, tier, promote, now }: UpsertPlayerInput): Promise<void> {
-    const accountId = BigInt(info.account_id);
-    const clanId = info.clan_id === null ? null : BigInt(info.clan_id);
-    const trackingTier: TrackingTier = promote ? 'active' : (previous?.trackingTier ?? tier);
+  async upsertPlayers(entries: readonly UpsertPlayerInput[]): Promise<void> {
+    const distinct = uniqueBy(entries, (entry: UpsertPlayerInput) => entry.info.account_id);
+    const [moving, staying] = partition(distinct, (entry) => changesClan(entry));
 
-    const identity = {
-      nickname: info.nickname,
-      clanId,
-      createdAt: fromUnixTime(info.created_at),
-      trackingTier,
-      ...(info.logout_at ? { logoutAt: fromUnixTime(info.logout_at) } : {})
-    } satisfies Prisma.PlayerUpdateInput;
+    if (staying.length > 0) {
+      const rows = staying.map((entry) => ({ ...playerIdentity(entry), seenAt: entry.now }));
 
-    const clanChanged = previous ? previous.clanId !== info.clan_id : clanId !== null;
+      await this.prisma.$transaction([this.prisma.$executeRaw(upsertPlayersSql(rows)), this.prisma.$executeRaw(touchNicknamesSql(rows))]);
+    }
+
+    for (const entry of moving) {
+      await this.upsertPlayer(entry);
+    }
+  }
+
+  async upsertPlayer(input: UpsertPlayerInput): Promise<void> {
+    const { info, previous, now } = input;
+    const { accountId, logoutAt, ...fields } = playerIdentity(input);
+    const identity = { ...fields, ...(logoutAt ? { logoutAt } : {}) } satisfies Prisma.PlayerUpdateInput;
+    const { clanId } = fields;
+    const clanChanged = changesClan(input);
 
     await this.prisma.$transaction(
       async (tx) => {

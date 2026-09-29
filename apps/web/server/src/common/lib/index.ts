@@ -1,4 +1,6 @@
 export { ARENA_BONUS_TYPE, bonusTypesOfMode, GAME_MODE_BONUS_TYPES, gameModeOfBonusType } from './bonus-type';
+export { careerSourceFromBlock } from './career-source';
+export type { CareerSource } from './career-source';
 export { clanInfoFields } from './clan-info';
 export { isCrossOriginStateChange } from './cross-origin';
 export { clanEmblem } from './emblem';

@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import type { LeagueInput, LeagueScopeInput, LeagueView } from '../social.types';
 
 import { toIsoDate, weekWindow } from '../../../common/lib';
-import { PrismaService } from '../../../core';
+import { PrismaService, USER_LESTA_ACCOUNT_ORDER } from '../../../core';
 import { LEAGUE, LEAGUE_DIVISION } from '../config';
 import { divisionStandings, needsMarks, rankLeague, tierMoves } from '../lib';
 import { toLeagueEntry, toStoredStandings } from '../mappers';
@@ -61,7 +61,7 @@ export class LeagueService {
     const links = await this.prisma.userLestaAccount.findMany({
       where: { userId },
       select: { accountId: true },
-      orderBy: [{ isPrimary: 'desc' }, { linkedAt: 'asc' }]
+      orderBy: USER_LESTA_ACCOUNT_ORDER
     });
 
     const own = new Set(links.map((link) => link.accountId));
@@ -75,20 +75,20 @@ export class LeagueService {
     const group = await this.prisma.leagueMembership.findMany({ where: { weekStart: window.weekStart, tier: mine.tier, groupNo: mine.groupNo } });
     const accountIds = group.map((member) => member.accountId);
     const isClosed = group.every((member) => member.closedAt !== null);
-    const players = await this.prisma.player.findMany({ where: { accountId: { in: accountIds } }, select: { accountId: true, nickname: true } });
-    const standings = isClosed
-      ? toStoredStandings(group)
-      : divisionStandings({
+    const [players, weekStats] = await Promise.all([
+      this.prisma.player.findMany({ where: { accountId: { in: accountIds } }, select: { accountId: true, nickname: true } }),
+      isClosed ? null : this.stats.weekStats({ accountIds, start: window.start, end: window.end, withMarks: needsMarks(LEAGUE_DIVISION.metric) })
+    ]);
+
+    const standings = weekStats
+      ? divisionStandings({
           tier: mine.tier,
-          stats: [
-            ...(
-              await this.stats.weekStats({ accountIds, start: window.start, end: window.end, withMarks: needsMarks(LEAGUE_DIVISION.metric) })
-            ).values()
-          ],
+          stats: [...weekStats.values()],
           metric: LEAGUE_DIVISION.metric,
           minBattles: LEAGUE_DIVISION.minBattles,
           rules: LEAGUE_DIVISION
-        }).entries;
+        }).entries
+      : toStoredStandings(group);
 
     const nicknames = new Map(players.map((player) => [player.accountId, player.nickname]));
 

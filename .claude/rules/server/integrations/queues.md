@@ -17,7 +17,8 @@ queue (discord, streamers, notifications, …) keeps that queue's name, job name
 payload schema in its own `config/`. Importing the collector barrel from every worker
 module risks import cycles. Never a string literal at a call site.
 
-Every processor wraps its work in `MetricsService.track({ job, run })`: `process`
-delegates to a private `handle`. `MetricsService` comes from the metrics module's
+Every processor extends `TrackedWorkerHost` (`modules/collector/metrics/processors`),
+whose `process` wraps the protected `handle(job)` in `MetricsService.track({ job, run })`;
+a processor only implements `handle`. `MetricsService` comes from the metrics module's
 own barrel, `modules/collector/metrics` (global, cycle-free), never from the
 collector barrel.

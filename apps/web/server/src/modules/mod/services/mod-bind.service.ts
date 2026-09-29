@@ -9,7 +9,7 @@ import type { BindCode, BindCodeInput, BindInput } from '../mod.types';
 import { AppForbiddenException, ModException } from '../../../common/exceptions';
 import { randomCode } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
-import { PrismaService, REDIS } from '../../../core';
+import { PrismaService, REDIS, USER_LESTA_ACCOUNT_ORDER } from '../../../core';
 import { BIND_CODE } from '../config';
 import { bindCodePattern, bindRequestSchema, deviceSecret, hashSecret, newDeviceId, normalizeBindCode } from '../lib';
 
@@ -22,7 +22,7 @@ export class ModBindService {
   ) {}
 
   async issueCode({ userId, accountId }: BindCodeInput): Promise<BindCode> {
-    const links = await this.prisma.userLestaAccount.findMany({ where: { userId }, orderBy: [{ isPrimary: 'desc' }, { linkedAt: 'asc' }] });
+    const links = await this.prisma.userLestaAccount.findMany({ where: { userId }, orderBy: USER_LESTA_ACCOUNT_ORDER });
 
     if (links.length === 0) {
       throw new AppForbiddenException('FORBIDDEN', 'Link a Lesta account before binding the mod');

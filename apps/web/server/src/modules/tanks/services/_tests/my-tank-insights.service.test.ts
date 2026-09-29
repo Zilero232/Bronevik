@@ -7,6 +7,7 @@ import type { TankEconomyReportService } from '../tank-economy-report.service';
 import type { TankLearningService } from '../tank-learning.service';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
+import { UserLestaAccountsService } from '../../../../core';
 import { MyTankInsightsService } from '../my-tank-insights.service';
 
 const createService = () => {
@@ -16,7 +17,7 @@ const createService = () => {
 
   prisma.userLestaAccount.findFirst.mockResolvedValue(mock<UserLestaAccount>({ accountId: 42n }));
 
-  return { service: new MyTankInsightsService(prisma, economy, learning), prisma, economy, learning };
+  return { service: new MyTankInsightsService(new UserLestaAccountsService(prisma), economy, learning), prisma, economy, learning };
 };
 
 describe('MyTankInsightsService.economyOf', () => {

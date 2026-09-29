@@ -19,7 +19,8 @@ export class ReferenceTablesService {
       return this.cached.tables;
     }
 
-    const tables = { expected: await this.expected(), tiers: await this.tiers(), references: await this.references() };
+    const [expected, tiers, references] = await Promise.all([this.expected(), this.tiers(), this.references()]);
+    const tables = { expected, tiers, references };
 
     this.cached = { tables, loadedAt: Date.now() };
 

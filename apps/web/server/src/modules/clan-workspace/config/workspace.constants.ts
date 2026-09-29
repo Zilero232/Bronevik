@@ -6,5 +6,6 @@ export const CLAN_WORKSPACE = {
   reminderLeadMinutes: 30,
   inactiveDays: 7,
   reportDays: 7,
-  maxCandidates: 500
+  maxCandidates: 500,
+  upcomingEvents: 10
 } as const;

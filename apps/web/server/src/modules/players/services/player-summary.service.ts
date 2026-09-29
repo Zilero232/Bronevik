@@ -26,22 +26,21 @@ export class PlayerSummaryService {
   }
 
   async summary(accountId: bigint): Promise<PlayerSummary> {
-    const player = await this.prisma.player.findUnique({
-      where: { accountId },
-      include: { clanMembership: { include: { clan: true } } }
-    });
-
-    if (!player) {
-      throw new AppNotFoundException('PLAYER_NOT_FOUND', `No player with id ${accountId}`);
-    }
-
-    const [snapshot, overall, marks, mastery, tanksOwned] = await Promise.all([
+    const [player, snapshot, overall, marks, mastery, tanksOwned] = await Promise.all([
+      this.prisma.player.findUnique({
+        where: { accountId },
+        include: { clanMembership: { include: { clan: true } } }
+      }),
       this.prisma.accountSnapshot.findFirst({ where: { accountId, mode: PLAYER_STATS.snapshotMode }, orderBy: { capturedAt: 'desc' } }),
       this.prisma.accountRating.findUnique({ where: { accountId_period: { accountId, period: 'overall' } } }),
       this.prisma.playerTank.groupBy({ by: ['marksOnGun'], where: { accountId, marksOnGun: { gt: 0 } }, _count: { _all: true } }),
       this.prisma.playerTank.count({ where: { accountId, markOfMastery: 4 } }),
       this.prisma.playerTank.count({ where: { accountId } })
     ]);
+
+    if (!player) {
+      throw new AppNotFoundException('PLAYER_NOT_FOUND', `No player with id ${accountId}`);
+    }
 
     const marksOf = (count: number) => marks.find((group) => group.marksOnGun === count)?._count._all ?? 0;
     const membership = player.clanMembership;

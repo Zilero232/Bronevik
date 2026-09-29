@@ -1,21 +1,21 @@
-import { Processor, WorkerHost } from '@nestjs/bullmq';
+import { Processor } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 
 import { WORKER_CONCURRENCY } from '../../config';
 import { enrolPayloadSchema, QUEUE } from '../../contracts';
-import { MetricsService } from '../../metrics';
+import { MetricsService, TrackedWorkerHost } from '../../metrics';
 import { EnrolService } from '../services';
 
 @Processor(QUEUE.enrol, { concurrency: WORKER_CONCURRENCY.enrol })
-export class EnrolProcessor extends WorkerHost {
+export class EnrolProcessor extends TrackedWorkerHost {
   constructor(
     private readonly enrolment: EnrolService,
-    private readonly metrics: MetricsService
+    metrics: MetricsService
   ) {
-    super();
+    super(metrics);
   }
 
-  async process(job: Job) {
-    return this.metrics.track({ job, run: () => this.enrolment.enrol(enrolPayloadSchema.parse(job.data)) });
+  protected async handle(job: Job) {
+    return this.enrolment.enrol(enrolPayloadSchema.parse(job.data));
   }
 }

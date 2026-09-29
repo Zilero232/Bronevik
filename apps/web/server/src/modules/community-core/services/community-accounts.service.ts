@@ -5,7 +5,7 @@ import type { AccountOfInput } from '../community-core.types';
 import type { PlayerStats } from '../lib';
 
 import { AppForbiddenException } from '../../../common/exceptions';
-import { PrismaService } from '../../../core';
+import { PrismaService, USER_LESTA_ACCOUNT_ORDER } from '../../../core';
 import { toPlayerStats } from '../mappers';
 
 @Injectable()
@@ -15,7 +15,7 @@ export class CommunityAccountsService {
   async accountOf({ userId, accountId }: AccountOfInput): Promise<bigint> {
     const links = await this.prisma.userLestaAccount.findMany({
       where: { userId },
-      orderBy: [{ isPrimary: 'desc' }, { linkedAt: 'asc' }],
+      orderBy: USER_LESTA_ACCOUNT_ORDER,
       select: { accountId: true }
     });
 

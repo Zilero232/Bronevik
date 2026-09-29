@@ -1,14 +1,16 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Redis } from 'ioredis';
-import { isNonNullish, uniqueBy } from 'remeda';
+import { isNonNullish, unique, uniqueBy } from 'remeda';
 
 import type { MarkBattle } from '../lib';
 import type { PreviousMarksInput } from '../notifications.types';
+import type { PreviousBattleMarksRow } from '../queries';
 
 import { PrismaService, REDIS } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
 import { MARKS_WATCH } from '../config';
 import { detectMarkGains, markPairKey } from '../lib';
+import { previousBattleMarksSql } from '../queries';
 import { NotificationService } from './notification.service';
 
 @Injectable()
@@ -47,8 +49,8 @@ export class MarksWatchService {
     const previous = await this.previousMarks({ battles, since });
     const gains = detectMarkGains({ battles, previous });
 
-    for (const gain of gains) {
-      await this.announce(gain);
+    if (gains.length > 0) {
+      await this.announce(gains);
     }
 
     await this.redis.set(MARKS_WATCH.cursorKey, last.receivedAt.toISOString());
@@ -59,43 +61,50 @@ export class MarksWatchService {
   private async previousMarks({ battles, since }: PreviousMarksInput): Promise<Map<string, number>> {
     const pairs = uniqueBy(battles, markPairKey);
 
-    const known = await Promise.all(
-      pairs.map(async ({ accountId, tankId }) => {
-        const [battle, tank] = await Promise.all([
-          this.prisma.battle.findFirst({
-            where: { accountId, tankId, marksOnGun: { not: null }, receivedAt: { lte: since } },
-            orderBy: { startedAt: 'desc' },
-            select: { marksOnGun: true }
-          }),
-          this.prisma.playerTank.findUnique({ where: { accountId_tankId: { accountId, tankId } }, select: { marksOnGun: true } })
-        ]);
-
-        const marks = battle?.marksOnGun ?? tank?.marksOnGun ?? null;
-
-        return isNonNullish(marks) ? ([markPairKey({ accountId, tankId }), marks] as const) : null;
+    const [earlier, tanks] = await Promise.all([
+      this.prisma.$queryRaw<PreviousBattleMarksRow[]>(previousBattleMarksSql({ pairs, since })),
+      this.prisma.playerTank.findMany({
+        where: { OR: pairs.map(({ accountId, tankId }) => ({ accountId, tankId })) },
+        select: { accountId: true, tankId: true, marksOnGun: true }
       })
-    );
-
-    return new Map(known.filter(isNonNullish));
-  }
-
-  private async announce(gain: MarkBattle): Promise<void> {
-    const [player, vehicle] = await Promise.all([
-      this.prisma.player.findUnique({ where: { accountId: gain.accountId }, select: { nickname: true } }),
-      this.catalog.summary(gain.tankId)
     ]);
 
-    await this.notifications.notifyAccount({
-      accountId: gain.accountId,
-      notification: {
-        event: 'moeGained',
-        accountId: Number(gain.accountId),
-        nickname: player?.nickname ?? String(gain.accountId),
-        tankId: gain.tankId,
-        tankName: vehicle.shortName || vehicle.name,
-        marks: gain.marksOnGun
-      },
-      dedupeKey: `moe-${gain.id}`
+    const fromBattles = new Map(earlier.map((row) => [markPairKey(row), row.marksOnGun]));
+    const fromTanks = new Map(tanks.map((tank) => [markPairKey(tank), tank.marksOnGun]));
+
+    return new Map(
+      pairs.flatMap((pair) => {
+        const key = markPairKey(pair);
+        const marks = fromBattles.get(key) ?? fromTanks.get(key) ?? null;
+
+        return isNonNullish(marks) ? [[key, marks] as const] : [];
+      })
+    );
+  }
+
+  private async announce(gains: readonly MarkBattle[]): Promise<void> {
+    const players = await this.prisma.player.findMany({
+      where: { accountId: { in: unique(gains.map((gain) => gain.accountId)) } },
+      select: { accountId: true, nickname: true }
     });
+
+    const nicknames = new Map(players.map((player) => [player.accountId, player.nickname]));
+
+    for (const gain of gains) {
+      const vehicle = await this.catalog.summary(gain.tankId);
+
+      await this.notifications.notifyAccount({
+        accountId: gain.accountId,
+        notification: {
+          event: 'moeGained',
+          accountId: Number(gain.accountId),
+          nickname: nicknames.get(gain.accountId) ?? String(gain.accountId),
+          tankId: gain.tankId,
+          tankName: vehicle.shortName || vehicle.name,
+          marks: gain.marksOnGun
+        },
+        dedupeKey: `moe-${gain.id}`
+      });
+    }
   }
 }

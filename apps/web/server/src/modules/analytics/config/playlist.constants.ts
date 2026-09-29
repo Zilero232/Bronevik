@@ -15,6 +15,5 @@ export const FIRST_WIN = {
 } as const;
 
 export const PLAYLIST_SEED = {
-  dayMs: 86_400_000,
   pureRandFromDay: 20_726
 } as const;

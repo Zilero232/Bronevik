@@ -11,5 +11,6 @@ export const PREDICTIONS = {
   recentBattles: 20,
   thresholdStep: 100,
   minThreshold: 500,
-  defaultThreshold: 2_000
+  defaultThreshold: 2_000,
+  failedJobsKept: 100
 } as const;

@@ -40,31 +40,9 @@
 }
 
 .description {
+  @include muted-text;
+
   margin: 0;
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-  line-height: var(--leading-body);
-}
-
-.fairPlay {
-  display: flex;
-  align-items: flex-start;
-  margin: 0;
-  color: var(--color-text-muted);
-  font-size: var(--text-xs);
-  gap: var(--space-3);
-
-  :global(svg) {
-    width: 14px;
-    height: 14px;
-    flex-shrink: 0;
-    color: var(--color-success);
-  }
-
-  strong {
-    color: var(--color-text);
-    font-weight: 500;
-  }
 }
 
 .footer {

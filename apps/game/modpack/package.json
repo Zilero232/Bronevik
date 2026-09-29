@@ -32,8 +32,10 @@
     "@nanostores/preact": "^1.1.0",
     "@otmetki/icons": "workspace:*",
     "clsx": "catalog:",
+    "date-fns": "catalog:",
     "nanostores": "1.5.3",
     "preact": "^10.29.8",
+    "remeda": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {

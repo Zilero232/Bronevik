@@ -50,11 +50,9 @@
 
 .summary {
   @include stack(var(--space-2));
+  @include list-reset;
 
-  padding: 0;
-  margin: 0;
   color: var(--color-text-muted);
-  list-style: none;
 }
 
 .path {

@@ -1,14 +1,14 @@
-import { useFormatter, useLocale, useTranslations } from 'use-intl';
+import { useLocale, useTranslations } from 'use-intl';
 
 import { useSelectedClient } from '@/entities/client';
 import { useInstallation } from '@/entities/installation';
 import { statusMessageValues, statusView, usePatchReport } from '@/entities/patch-report';
-import { pickLocalized } from '@/shared/lib';
+import { pickLocalized, useDisplayFormat } from '@/shared/lib';
 
 export const usePatchStatus = () => {
   const t = useTranslations('patch');
   const tErrors = useTranslations('errors');
-  const format = useFormatter();
+  const { stamp } = useDisplayFormat();
   const locale = useLocale();
   const { clientPath } = useSelectedClient();
   const reportQuery = usePatchReport();
@@ -28,6 +28,6 @@ export const usePatchStatus = () => {
     title: t(`status.${view.kind}`, values),
     hint: t(`hint.${view.kind}`, values),
     notes,
-    checkedAt: checkedAt ? t('checkedAt', { date: format.dateTime(checkedAt, { dateStyle: 'medium', timeStyle: 'short' }) }) : t('neverChecked')
+    checkedAt: checkedAt ? t('checkedAt', { date: stamp(checkedAt) }) : t('neverChecked')
   };
 };

@@ -15,22 +15,14 @@
 }
 
 .hint {
+  @include muted-text(var(--text-xs));
+
   margin: 0;
-  color: var(--color-text-muted);
-  font-size: var(--text-xs);
-  line-height: var(--leading-body);
 }
 
 .item {
   @include stack(var(--space-2));
-
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-sm);
-
-  &:hover,
-  &:focus-within {
-    background-color: var(--color-surface-hover);
-  }
+  @include hover-item;
 }
 
 .label {

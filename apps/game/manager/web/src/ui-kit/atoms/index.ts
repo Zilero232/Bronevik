@@ -6,6 +6,8 @@ export { Checkbox } from './Checkbox';
 export type { CheckboxProps } from './Checkbox';
 export { ExternalLink } from './ExternalLink';
 export type { ExternalLinkProps } from './ExternalLink';
+export { IconButton } from './IconButton';
+export type { IconButtonProps } from './IconButton';
 export { Select } from './Select';
 export type { SelectOption, SelectProps } from './Select';
 export { Spinner } from './Spinner';

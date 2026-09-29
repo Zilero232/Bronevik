@@ -1,6 +1,7 @@
 import { Layers, PackagePlus, Search, Sparkles } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 
+import { useQueryLabels } from '@/shared/lib';
 import { Button, EmptyState, Notice, QueryState, Switch, TextInput, ToggleChips } from '@/ui-kit';
 
 import { useComponentCatalog } from '../model/hooks';
@@ -10,6 +11,7 @@ import s from './ComponentCatalog.module.scss';
 
 export const ComponentCatalog = () => {
   const t = useTranslations();
+  const queryLabels = useQueryLabels();
   const {
     catalogQuery,
     clientPath,
@@ -29,7 +31,7 @@ export const ComponentCatalog = () => {
   } = useComponentCatalog();
 
   return (
-    <QueryState errorTitle={t('common.loadFailed')} loadingLabel={t('common.loading')} query={catalogQuery} retryLabel={t('common.retry')}>
+    <QueryState {...queryLabels} query={catalogQuery}>
       {() =>
         hasComponents ? (
           <div className={s.root}>

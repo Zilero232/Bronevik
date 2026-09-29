@@ -2,6 +2,7 @@ import { UserRoundCog } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 
 import { ProfileActions } from '@/features/profile/profile-actions';
+import { useQueryLabels } from '@/shared/lib';
 import { Badge, Card, EmptyState, QueryState } from '@/ui-kit';
 
 import { useProfileList } from '../model/hooks';
@@ -10,11 +11,12 @@ import s from './ProfileList.module.scss';
 
 export const ProfileList = () => {
   const t = useTranslations();
+  const queryLabels = useQueryLabels();
   const { clientPath, profilesQuery, count, max, rows } = useProfileList();
 
   return (
     <Card actions={max > 0 && <Badge>{t('profiles.count', { count, max })}</Badge>} title={t('profiles.title')}>
-      <QueryState errorTitle={t('common.loadFailed')} loadingLabel={t('common.loading')} query={profilesQuery} retryLabel={t('common.retry')}>
+      <QueryState {...queryLabels} query={profilesQuery}>
         {() =>
           rows.length > 0 ? (
             <ul className={s.list}>

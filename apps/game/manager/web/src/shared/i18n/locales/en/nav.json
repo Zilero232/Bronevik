@@ -1,17 +1,22 @@
 {
   "label": "Sections",
-  "home": "Home",
-  "components": "Components",
-  "sets": "Sets",
-  "profiles": "Profiles",
-  "backups": "Backups",
-  "settings": "Settings",
-  "about": "About",
-  "install": "Install",
-  "help": "Help",
+  "sections": {
+    "home": "Home",
+    "components": "Components",
+    "sets": "Sets & profiles",
+    "settings": "Settings",
+    "help": "Help"
+  },
+  "tabs": {
+    "label": "Section tabs",
+    "sets": "Sets",
+    "profiles": "Profiles",
+    "settings": "General",
+    "backups": "Backups",
+    "about": "About"
+  },
   "groups": {
     "modpack": "Modpack",
-    "mine": "Mine",
     "app": "App"
   },
   "marker": {

@@ -1,8 +1,11 @@
 import { useTranslations } from 'use-intl';
 
+import type { PageId } from '@/shared/lib';
+
 import { useSelectedClient } from '@/entities/client';
 import { useInstallation } from '@/entities/installation';
 import { statusView, usePatchReport } from '@/entities/patch-report';
+import { PAGE_SECTIONS } from '@/shared/config';
 import { useNavigation } from '@/shared/lib';
 
 import { NAV_GROUPS, NAV_ICONS } from '../../../config';
@@ -22,14 +25,18 @@ export const useAppShell = () => {
     groups: NAV_GROUPS.map((group) => ({
       id: group.id,
       label: t(`groups.${group.id}`),
-      items: group.pages.map((id) => ({
-        id,
-        label: t(id),
-        icon: NAV_ICONS[id],
-        isActive: id === page,
-        marker: navMarker({ page: id, view, canInstall }),
-        onSelect: () => navigate({ page: id })
-      }))
+      items: group.sections.map((id) => {
+        const pages: readonly PageId[] = PAGE_SECTIONS[id].pages;
+
+        return {
+          id,
+          label: t(`sections.${id}`),
+          icon: NAV_ICONS[id],
+          isActive: pages.includes(page),
+          marker: navMarker({ section: id, view, canInstall }),
+          onSelect: () => navigate({ page: id })
+        };
+      })
     })),
     gameVersion: client?.version ?? null,
     modpackVersion: isInstalled ? (installation?.modpackVersion ?? null) : null,

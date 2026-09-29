@@ -2,6 +2,7 @@ import { RefreshCw, ShieldCheck, TriangleAlert } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 
 import { RestoreMissingButton } from '@/features/conflict/restore-missing';
+import { useQueryLabels } from '@/shared/lib';
 import { Button, Card, QueryState } from '@/ui-kit';
 
 import type { ConflictReportProps } from './ConflictReport.types';
@@ -12,6 +13,7 @@ import s from './ConflictReport.module.scss';
 
 export const ConflictReport = ({ hideWhenClean = false }: ConflictReportProps) => {
   const t = useTranslations();
+  const queryLabels = useQueryLabels();
   const { clientPath, conflictsQuery, items, isVisible, restorable, hasMissing, isChecking, onRecheck } = useConflictReport({ hideWhenClean });
 
   if (!isVisible) {
@@ -33,7 +35,7 @@ export const ConflictReport = ({ hideWhenClean = false }: ConflictReportProps) =
       title={t('conflicts.title')}
       tone={items.length > 0 ? 'warning' : 'default'}
     >
-      <QueryState errorTitle={t('common.loadFailed')} loadingLabel={t('common.loading')} query={conflictsQuery} retryLabel={t('common.retry')}>
+      <QueryState {...queryLabels} query={conflictsQuery}>
         {() =>
           items.length > 0 ? (
             <ul className={s.list}>

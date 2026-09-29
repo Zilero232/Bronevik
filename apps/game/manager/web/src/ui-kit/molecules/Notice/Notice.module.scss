@@ -47,9 +47,7 @@
 }
 
 .body {
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-  line-height: var(--leading-body);
+  @include muted-text;
 
   p {
     margin: 0;

@@ -1,26 +1,23 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { useFormatter, useTranslations } from 'use-intl';
+import { useTranslations } from 'use-intl';
 
 import { useSelectedClient } from '@/entities/client';
 import { QUERY_KEYS } from '@/shared/config';
-import { useErrorToast } from '@/shared/lib';
+import { useDisplayFormat, useErrorToast } from '@/shared/lib';
 
 import { clearCache, scanCache } from '../../../api';
-import { CLEAR_CACHE } from '../../../config';
 
 export const useClearCache = () => {
   const t = useTranslations('settings.cache');
-  const format = useFormatter();
+  const { megabytes } = useDisplayFormat();
   const showError = useErrorToast();
   const { clientPath } = useSelectedClient();
   const [unchecked, setUnchecked] = useState<Set<string>>(() => new Set());
   const planQuery = useQuery({ queryKey: QUERY_KEYS.cachePlan(clientPath), queryFn: () => scanCache(clientPath), enabled: false });
   const targets = planQuery.data?.targets ?? [];
   const chosen = targets.filter((target) => !unchecked.has(target.id));
-  const megabytes = (bytes: number) =>
-    format.number(bytes / CLEAR_CACHE.bytesPerMegabyte, { style: 'unit', unit: 'megabyte', maximumFractionDigits: 1 });
 
   const rescan = async () => {
     const { error } = await planQuery.refetch();

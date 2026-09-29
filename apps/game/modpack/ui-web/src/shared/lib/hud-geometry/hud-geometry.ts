@@ -1,3 +1,5 @@
+import { clamp } from 'remeda';
+
 import type { UiMessageOf } from '../../api/protocol';
 import type {
   AnchorInput,
@@ -48,8 +50,8 @@ export const panelRect = ({ panel, screen }: PanelRectInput): Rect => ({
 
 export const clampRect = ({ rect, screen }: RectOnScreen): Rect => ({
   ...rect,
-  left: Math.min(Math.max(rect.left, 0), Math.max(screen.width - rect.width, 0)),
-  top: Math.min(Math.max(rect.top, 0), Math.max(screen.height - rect.height, 0))
+  left: clamp(rect.left, { min: 0, max: Math.max(screen.width - rect.width, 0) }),
+  top: clamp(rect.top, { min: 0, max: Math.max(screen.height - rect.height, 0) })
 });
 
 export const dragRect = ({ rect, dx, dy, screen, grid }: DragInput): Rect => {

@@ -23,14 +23,14 @@
   "untrusted_host": "The manager downloads only from triotmetki.ru and the official pages of the library authors.",
   "disk_full": "Clear the game cache in Settings or delete files you do not need, then try again.",
   "file_locked": "Close the game and Lesta Game Center, add the game folder to your antivirus exclusions and try again.",
-  "not_enough_space": "Free some disk space or delete old snapshots under Backups.",
-  "rollback_failed": "Open Backups and roll back to the latest snapshot: it was taken before the operation.",
-  "nothing_to_restore": "Open Install and install the modpack again: your settings stay.",
+  "not_enough_space": "Free some disk space or delete old snapshots under Settings → Backups.",
+  "rollback_failed": "Open Settings → Backups and roll back to the latest snapshot: it was taken before the operation.",
+  "nothing_to_restore": "Open Home and install the modpack again: your settings stay.",
   "set_limit": "You can keep up to 12 sets.",
   "set_name": "The name cannot be empty or longer than 40 characters.",
   "set_missing": "The set list was refreshed: pick the set again.",
   "set_code": "A set code starts with TS1., a set file ends in .tmset.",
   "offline": "Check your connection. The installed modpack keeps working.",
-  "contract": "Update the manager under About. If that does not help, collect the logs under Help.",
+  "contract": "Update the manager under Settings → About. If that does not help, collect the logs under Help.",
   "unknown": "Try again. If the error stays, collect the logs under Help and send them to us."
 }

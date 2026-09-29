@@ -8,10 +8,8 @@
   border-top: 1px solid rgb(255 255 255 / 6%);
   background-image: linear-gradient(180deg, rgb(20 20 23 / 78%) 0%, rgb(14 14 16 / 62%) 100%);
   color: token(color-text);
-  font-family: $font-family;
-  text-shadow:
-    0 0 2px rgb(0 0 0 / 90%),
-    1px 1px 1px rgb(0 0 0 / 90%);
+
+  @include hud-text;
 }
 
 .plain {

@@ -2,11 +2,9 @@
 
 .list {
   @include stack(var(--space-4));
+  @include list-reset;
 
   max-height: 360px;
-  padding: 0;
-  margin: 0;
-  list-style: none;
   overflow-y: auto;
 }
 

@@ -1,13 +1,7 @@
 @use '../../../../../shared/styles/gameface' as *;
 
 .reload {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-family: $font-family;
-  text-shadow:
-    0 0 2px rgb(0 0 0 / 90%),
-    1px 1px 1px rgb(0 0 0 / 90%);
+  @include hud-stack;
 }
 
 .hidden {

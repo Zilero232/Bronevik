@@ -1,7 +1,7 @@
-import { Check, Copy, Pencil, Trash2 } from 'lucide-react';
+import { Check, Copy, Pencil } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 
-import { Button, ConfirmDialog, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, FormField, TextInput } from '@/ui-kit';
+import { Button, DeleteButton, IconButton, NameDialog } from '@/ui-kit';
 
 import type { ProfileActionsProps } from './ProfileActions.types';
 
@@ -23,42 +23,31 @@ export const ProfileActions = ({ clientPath, profile }: ProfileActionsProps) => 
         <Check aria-hidden />
         {t('activate')}
       </Button>
-      <Button aria-label={t('export')} disabled={isPending} size='icon' title={t('export')} variant='ghost' onClick={onCopyCode}>
+      <IconButton disabled={isPending} label={t('export')} onClick={onCopyCode}>
         <Copy aria-hidden />
-      </Button>
-      <Button aria-label={t('rename')} disabled={isPending} size='icon' title={t('rename')} variant='ghost' onClick={() => setRenameOpen(true)}>
+      </IconButton>
+      <IconButton disabled={isPending} label={t('rename')} onClick={() => setRenameOpen(true)}>
         <Pencil aria-hidden />
-      </Button>
-      <ConfirmDialog
-        trigger={
-          <Button aria-label={common('delete')} disabled={isPending} size='icon' title={common('delete')} variant='ghost'>
-            <Trash2 aria-hidden />
-          </Button>
-        }
+      </IconButton>
+      <DeleteButton
         cancelLabel={common('cancel')}
-        confirmLabel={common('delete')}
         description={t('deleteDescription')}
+        disabled={isPending}
+        label={common('delete')}
         title={t('deleteTitle', { name: profile.name })}
-        tone='danger'
         onConfirm={onDelete}
       />
-      <Dialog open={isRenameOpen} onOpenChange={setRenameOpen}>
-        <DialogContent>
-          <form className={s.form} onSubmit={onRename}>
-            <DialogHeader>
-              <DialogTitle>{t('renameTitle')}</DialogTitle>
-            </DialogHeader>
-            <FormField error={renameError} label={t('name')}>
-              {(control) => <TextInput {...control} {...renameField} autoComplete='off' />}
-            </FormField>
-            <DialogFooter>
-              <Button isPending={isPending} type='submit'>
-                {common('save')}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <NameDialog
+        error={renameError}
+        field={renameField}
+        isPending={isPending}
+        label={t('name')}
+        open={isRenameOpen}
+        submitLabel={common('save')}
+        title={t('renameTitle')}
+        onOpenChange={setRenameOpen}
+        onSubmit={onRename}
+      />
     </div>
   );
 };

@@ -1,17 +1,14 @@
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { save } from '@tauri-apps/plugin-dialog';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useTranslations } from 'use-intl';
-import { z } from 'zod';
 
 import type { SetsView } from '@/entities/component-set';
 
 import { COMPONENT_SET, deleteSet, duplicateSet, exportSet, exportSetFile, renameSet, setFileName } from '@/entities/component-set';
 import { QUERY_KEYS } from '@/shared/config';
-import { useErrorToast, useNavigation } from '@/shared/lib';
+import { useErrorToast, useNameForm, useNavigation } from '@/shared/lib';
 
 import type { NameDialog, UseSetActionsInput } from './use-set-actions.types';
 
@@ -21,10 +18,10 @@ export const useSetActions = ({ set }: UseSetActionsInput) => {
   const showError = useErrorToast();
   const { navigate } = useNavigation();
   const [dialog, setDialog] = useState<NameDialog>(null);
-  const schema = z.object({ name: z.string().trim().min(1, t('validation.name')).max(COMPONENT_SET.nameMaxLength, t('validation.name')) });
-  const form = useForm({
-    resolver: zodResolver(schema),
-    values: { name: dialog === 'duplicate' ? t('copyName', { name: set.name }).slice(0, COMPONENT_SET.nameMaxLength) : set.name }
+  const form = useNameForm({
+    name: dialog === 'duplicate' ? t('copyName', { name: set.name }).slice(0, COMPONENT_SET.nameMaxLength) : set.name,
+    maxLength: COMPONENT_SET.nameMaxLength,
+    message: t('validation.name')
   });
 
   const store = (view: SetsView) => queryClient.setQueryData(QUERY_KEYS.sets, view);
@@ -77,8 +74,8 @@ export const useSetActions = ({ set }: UseSetActionsInput) => {
 
   return {
     dialog,
-    nameField: form.register('name'),
-    nameError: form.formState.errors.name?.message,
+    nameField: form.field,
+    nameError: form.error,
     isPending: rename.isPending || remove.isPending || copyCode.isPending || exportFile.isPending,
     onApply: () => navigate({ page: 'install', params: { components: set.components } }),
     onOpenDialog: setDialog,
@@ -86,6 +83,6 @@ export const useSetActions = ({ set }: UseSetActionsInput) => {
     onDelete: () => remove.mutate(),
     onCopyCode: () => copyCode.mutate(),
     onExportFile: () => exportFile.mutate(),
-    onSubmitName: form.handleSubmit(({ name }) => rename.mutate(name))
+    onSubmitName: form.submitWith((name) => rename.mutate(name))
   };
 };

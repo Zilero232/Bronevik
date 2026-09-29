@@ -1,22 +1,11 @@
 @use '@/shared/styles/mixins' as *;
 
 .list {
-  padding: 0;
-  margin: 0;
-  list-style: none;
+  @include list-reset;
 }
 
 .row {
-  display: flex;
-  min-height: 52px;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--color-border);
-  gap: var(--space-5);
-
-  &:last-child {
-    border-bottom: none;
-  }
+  @include divided-row(52px);
 }
 
 .text {

@@ -4,12 +4,16 @@ import { NAV_MARKER } from '../../config';
 
 const problemTones = new Set<string>(NAV_MARKER.problemTones);
 
-export const navMarker = ({ page, view, canInstall }: NavMarkerInput): NavMarker | null => {
-  if (page === 'install') {
-    return canInstall ? 'new' : null;
+export const navMarker = ({ section, view, canInstall }: NavMarkerInput): NavMarker | null => {
+  if (section !== 'home') {
+    return null;
   }
 
-  if (page !== 'home' || view === null) {
+  if (canInstall) {
+    return 'new';
+  }
+
+  if (view === null) {
     return null;
   }
 

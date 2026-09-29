@@ -1,7 +1,6 @@
-import { Save } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 
-import { Button, FormField, TextInput } from '@/ui-kit';
+import { NameForm } from '@/ui-kit';
 
 import type { SaveProfileFormProps } from './SaveProfileForm.types';
 
@@ -11,17 +10,19 @@ import s from './SaveProfileForm.module.scss';
 
 export const SaveProfileForm = ({ clientPath, disabled }: SaveProfileFormProps) => {
   const t = useTranslations('profiles');
-  const { register, error, isPending, onSubmit } = useSaveProfileForm(clientPath);
+  const { field, error, isPending, onSubmit } = useSaveProfileForm(clientPath);
 
   return (
-    <form className={s.root} onSubmit={onSubmit}>
-      <FormField error={error} label={t('name')}>
-        {(control) => <TextInput {...control} {...register('name')} autoComplete='off' disabled={disabled} placeholder={t('namePlaceholder')} />}
-      </FormField>
-      <Button disabled={disabled} isPending={isPending} type='submit'>
-        <Save aria-hidden />
-        {t('save')}
-      </Button>
-    </form>
+    <NameForm
+      className={s.root}
+      disabled={disabled}
+      error={error}
+      field={field}
+      isPending={isPending}
+      label={t('name')}
+      placeholder={t('namePlaceholder')}
+      submitLabel={t('save')}
+      onSubmit={onSubmit}
+    />
   );
 };

@@ -1,7 +1,7 @@
-import { FileInput, Gauge, PlayCircle, ShieldCheck } from 'lucide-react';
+import { FileInput, Gauge, PlayCircle } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 
-import { ComponentPreview, PERF, PreviewAudio } from '@/entities/catalog';
+import { ComponentPreview, FairPlayNote, PERF, PreviewAudio } from '@/entities/catalog';
 import { useInstallWizard } from '@/features/setup/install-modpack';
 import { Badge, Button, Card, Checkbox, EmptyState, ExternalLink, FormField, Select } from '@/ui-kit';
 
@@ -76,12 +76,7 @@ export const ComponentsStep = () => {
               </Badge>
             )}
             <p className={s.previewText}>{preview.description}</p>
-            {preview.fairPlay && (
-              <p className={s.fairPlay}>
-                <ShieldCheck aria-hidden />
-                {preview.fairPlay}
-              </p>
-            )}
+            {preview.fairPlay && <FairPlayNote>{preview.fairPlay}</FairPlayNote>}
             {preview.video && (
               <ExternalLink href={preview.video}>
                 <PlayCircle aria-hidden />

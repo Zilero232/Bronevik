@@ -1,7 +1,7 @@
-import { Copy, CopyPlus, FileDown, Pencil, Play, Trash2 } from 'lucide-react';
+import { Copy, CopyPlus, FileDown, Pencil, Play } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 
-import { Button, ConfirmDialog, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, FormField, TextInput } from '@/ui-kit';
+import { Button, DeleteButton, IconButton, NameDialog } from '@/ui-kit';
 
 import type { SetActionsProps } from './SetActions.types';
 
@@ -21,55 +21,37 @@ export const SetActions = ({ set }: SetActionsProps) => {
         <Play aria-hidden />
         {t('apply')}
       </Button>
-      <Button aria-label={t('copyCode')} disabled={isPending} size='icon' title={t('copyCode')} variant='ghost' onClick={onCopyCode}>
+      <IconButton disabled={isPending} label={t('copyCode')} onClick={onCopyCode}>
         <Copy aria-hidden />
-      </Button>
-      <Button aria-label={t('exportFile')} disabled={isPending} size='icon' title={t('exportFile')} variant='ghost' onClick={onExportFile}>
+      </IconButton>
+      <IconButton disabled={isPending} label={t('exportFile')} onClick={onExportFile}>
         <FileDown aria-hidden />
-      </Button>
-      <Button
-        aria-label={t('duplicate')}
-        disabled={isPending}
-        size='icon'
-        title={t('duplicate')}
-        variant='ghost'
-        onClick={() => onOpenDialog('duplicate')}
-      >
+      </IconButton>
+      <IconButton disabled={isPending} label={t('duplicate')} onClick={() => onOpenDialog('duplicate')}>
         <CopyPlus aria-hidden />
-      </Button>
-      <Button aria-label={t('rename')} disabled={isPending} size='icon' title={t('rename')} variant='ghost' onClick={() => onOpenDialog('rename')}>
+      </IconButton>
+      <IconButton disabled={isPending} label={t('rename')} onClick={() => onOpenDialog('rename')}>
         <Pencil aria-hidden />
-      </Button>
-      <ConfirmDialog
-        trigger={
-          <Button aria-label={common('delete')} disabled={isPending} size='icon' title={common('delete')} variant='ghost'>
-            <Trash2 aria-hidden />
-          </Button>
-        }
+      </IconButton>
+      <DeleteButton
         cancelLabel={common('cancel')}
-        confirmLabel={common('delete')}
         description={t('deleteDescription')}
+        disabled={isPending}
+        label={common('delete')}
         title={t('deleteTitle', { name: set.name })}
-        tone='danger'
         onConfirm={onDelete}
       />
-      <Dialog open={dialog !== null} onOpenChange={(open) => (open ? undefined : onCloseDialog())}>
-        <DialogContent>
-          <form className={s.form} onSubmit={onSubmitName}>
-            <DialogHeader>
-              <DialogTitle>{t(dialog === 'duplicate' ? 'duplicateTitle' : 'renameTitle')}</DialogTitle>
-            </DialogHeader>
-            <FormField error={nameError} label={t('name')}>
-              {(control) => <TextInput {...control} {...nameField} autoComplete='off' />}
-            </FormField>
-            <DialogFooter>
-              <Button isPending={isPending} type='submit'>
-                {common('save')}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <NameDialog
+        error={nameError}
+        field={nameField}
+        isPending={isPending}
+        label={t('name')}
+        open={dialog !== null}
+        submitLabel={common('save')}
+        title={t(dialog === 'duplicate' ? 'duplicateTitle' : 'renameTitle')}
+        onOpenChange={(open) => (open ? undefined : onCloseDialog())}
+        onSubmit={onSubmitName}
+      />
     </div>
   );
 };

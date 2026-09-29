@@ -1,3 +1,5 @@
+import { clamp } from 'remeda';
+
 import type { ClampIntInput } from './clamp-int.types';
 
 export const clampInt = ({ raw, min, max }: ClampIntInput): number | null => {
@@ -7,8 +9,5 @@ export const clampInt = ({ raw, min, max }: ClampIntInput): number | null => {
     return null;
   }
 
-  const low = min ?? Number.MIN_SAFE_INTEGER;
-  const high = max ?? Number.MAX_SAFE_INTEGER;
-
-  return Math.min(Math.max(parsed, low), high);
+  return clamp(parsed, { min: min ?? Number.MIN_SAFE_INTEGER, max: max ?? Number.MAX_SAFE_INTEGER });
 };

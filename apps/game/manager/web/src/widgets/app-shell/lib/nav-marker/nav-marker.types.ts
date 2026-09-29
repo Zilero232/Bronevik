@@ -1,10 +1,10 @@
 import type { StatusView } from '@/entities/patch-report';
-import type { PageId } from '@/shared/lib';
+import type { SectionId } from '@/shared/lib';
 
 export type NavMarker = 'new' | 'problem' | 'update';
 
 export type NavMarkerInput = {
-  page: PageId;
+  section: SectionId;
   view: StatusView | null;
   canInstall: boolean;
 };

@@ -58,10 +58,9 @@
 }
 
 .content {
+  @include muted-text;
+
   padding: 0 var(--space-5) var(--space-5);
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-  line-height: var(--leading-body);
   user-select: text;
   white-space: pre-line;
 }

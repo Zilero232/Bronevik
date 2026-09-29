@@ -4,6 +4,7 @@ import { ImportProfileForm } from '@/features/profile/import-profile';
 import { SaveProfileForm } from '@/features/profile/save-profile';
 import { Card, HelpTip, PageHeader } from '@/ui-kit';
 import { ProfileList } from '@/widgets/profile-list';
+import { SectionTabs } from '@/widgets/section-tabs';
 
 import { useProfilesView } from '../model/hooks';
 
@@ -13,6 +14,7 @@ export const ProfilesView = () => {
 
   return (
     <>
+      <SectionTabs section='sets' />
       <PageHeader
         description={t('profiles.description')}
         help={<HelpTip label={t('help.tipLabel')}>{t('help.tips.profiles')}</HelpTip>}

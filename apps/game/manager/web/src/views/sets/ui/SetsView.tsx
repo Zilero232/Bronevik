@@ -3,6 +3,7 @@ import { useTranslations } from 'use-intl';
 import { ImportSetForm } from '@/features/component-set/import-set';
 import { SaveSetForm } from '@/features/component-set/save-set';
 import { Card, HelpTip, PageHeader } from '@/ui-kit';
+import { SectionTabs } from '@/widgets/section-tabs';
 import { SetList } from '@/widgets/set-list';
 
 import { useSetsView } from '../model/hooks';
@@ -13,6 +14,7 @@ export const SetsView = () => {
 
   return (
     <>
+      <SectionTabs section='sets' />
       <PageHeader
         description={t('sets.description')}
         help={<HelpTip label={t('help.tipLabel')}>{t('help.tips.sets')}</HelpTip>}

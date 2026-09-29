@@ -2,6 +2,7 @@ import { Boxes } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 
 import { SetActions } from '@/features/component-set/set-actions';
+import { useQueryLabels } from '@/shared/lib';
 import { Badge, Card, EmptyState, QueryState } from '@/ui-kit';
 
 import { useSetList } from '../model/hooks';
@@ -10,11 +11,12 @@ import s from './SetList.module.scss';
 
 export const SetList = () => {
   const t = useTranslations();
+  const queryLabels = useQueryLabels();
   const { setsQuery, count, max, rows } = useSetList();
 
   return (
     <Card actions={max > 0 && <Badge>{t('sets.count', { count, max })}</Badge>} title={t('sets.listTitle')}>
-      <QueryState errorTitle={t('common.loadFailed')} loadingLabel={t('common.loading')} query={setsQuery} retryLabel={t('common.retry')}>
+      <QueryState {...queryLabels} query={setsQuery}>
         {() =>
           rows.length > 0 ? (
             <ul className={s.list}>

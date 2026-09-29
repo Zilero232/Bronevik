@@ -1,12 +1,11 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
+  @include list-reset;
+
   display: grid;
-  padding: 0;
-  margin: 0;
   gap: var(--space-3);
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  list-style: none;
 }
 
 .step {

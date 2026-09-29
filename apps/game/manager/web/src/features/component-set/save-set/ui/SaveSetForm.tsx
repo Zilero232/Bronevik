@@ -1,7 +1,6 @@
-import { Save } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 
-import { Button, FormField, TextInput } from '@/ui-kit';
+import { NameForm } from '@/ui-kit';
 
 import type { SaveSetFormProps } from './SaveSetForm.types';
 
@@ -11,17 +10,20 @@ import s from './SaveSetForm.module.scss';
 
 export const SaveSetForm = ({ components, disabled }: SaveSetFormProps) => {
   const t = useTranslations('sets');
-  const { register, error, isPending, onSubmit } = useSaveSetForm(components);
+  const { field, error, isPending, onSubmit } = useSaveSetForm(components);
 
   return (
-    <form className={s.root} onSubmit={onSubmit}>
-      <FormField error={error} hint={t('saveHint', { count: components.length })} label={t('name')}>
-        {(control) => <TextInput {...control} {...register('name')} autoComplete='off' disabled={disabled} placeholder={t('namePlaceholder')} />}
-      </FormField>
-      <Button disabled={disabled} isPending={isPending} type='submit'>
-        <Save aria-hidden />
-        {t('save')}
-      </Button>
-    </form>
+    <NameForm
+      className={s.root}
+      disabled={disabled}
+      error={error}
+      field={field}
+      hint={t('saveHint', { count: components.length })}
+      isPending={isPending}
+      label={t('name')}
+      placeholder={t('namePlaceholder')}
+      submitLabel={t('save')}
+      onSubmit={onSubmit}
+    />
   );
 };

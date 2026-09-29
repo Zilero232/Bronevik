@@ -1,2 +1,2 @@
 export { NavigationContext, useNavigation } from './navigation-context';
-export type { NavigationParams, NavigationTarget, NavigationValue, PageId } from './navigation.types';
+export type { NavigationParams, NavigationTarget, NavigationValue, PageId, SectionId, TabbedSectionId } from './navigation.types';

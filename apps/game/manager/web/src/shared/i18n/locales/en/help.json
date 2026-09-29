@@ -29,7 +29,7 @@
     },
     "backups": {
       "question": "How do I roll back if something broke?",
-      "answer": "Open Backups. Before every install and update the manager takes an automatic snapshot; you can take your own too. “Roll back” restores the modpack files, its settings and the other mods removed during an install."
+      "answer": "Open Settings → Backups. Before every install and update the manager takes an automatic snapshot; you can take your own too. “Roll back” restores the modpack files, its settings and the other mods removed during an install."
     },
     "presets": {
       "question": "How do the ready-made sets differ?",
@@ -49,7 +49,7 @@
     },
     "uninstall": {
       "question": "How do I remove the modpack?",
-      "answer": "Open Backups → “Remove the modpack”. Only our files are removed, other mods stay. You can keep the mod settings in case you come back."
+      "answer": "Open Settings → Backups → “Remove the modpack”. Only our files are removed, other mods stay. You can keep the mod settings in case you come back."
     },
     "smartscreen": {
       "question": "Windows warns me on launch",
@@ -58,7 +58,7 @@
   },
   "tips": {
     "home": "The essentials at a glance: is the game found, is the modpack installed, are there updates. The manager checks for updates on its own, on the schedule from Settings.",
-    "install": "Four steps: game, components, other mods, install. A snapshot is taken first — everything can be rolled back in Backups.",
+    "install": "Four steps: game, components, other mods, install. A snapshot is taken first — everything can be rolled back in Settings → Backups.",
     "components": "The switch turns a component on or off without reinstalling. Changes apply on the next game launch.",
     "sets": "A set remembers a list of components. “Apply” opens the install wizard with that list — you see the changes before installing.",
     "profiles": "A profile keeps the component settings from the in-game mod window. Apply a profile while the game is closed.",

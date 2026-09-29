@@ -38,7 +38,7 @@
   "reviewRemove": "Other mods to remove: {count}",
   "reviewReinstall": "The modpack is already installed: it is replaced with this selection, and disabled components ({count}) stay disabled",
   "confirmRemoveTitle": "Remove {count} other mods?",
-  "confirmRemoveDescription": "Exactly the ticked files and folders are removed. The snapshot brings them back on the Backups page.",
+  "confirmRemoveDescription": "Exactly the ticked files and folders are removed. The snapshot brings them back under Settings → Backups.",
   "installed": "The modpack is installed",
   "noCatalog": "The component catalogue has not been downloaded from the server yet",
   "clientUnsupported": "The modpack cannot be installed into this client — choose Lesta's Mir Tankov at a supported version",
@@ -57,7 +57,7 @@
     "author": "Author:",
     "restart": "After the first start with OpenWG Gameface the game restarts itself once to register the modpack's pages."
   },
-  "installedHint": "Components on: {count}. A snapshot was taken — if you do not like something, roll back in Backups.",
+  "installedHint": "Components on: {count}. A snapshot was taken — if you do not like something, roll back in Settings → Backups.",
   "installing": "Installing",
   "installingHint": "Downloading the packages, checking their checksums and putting the files in place. Do not start the game until the install finishes.",
   "reviewWhat": "What will be installed",

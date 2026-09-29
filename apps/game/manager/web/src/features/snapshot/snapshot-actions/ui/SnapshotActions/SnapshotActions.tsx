@@ -1,7 +1,7 @@
-import { RotateCcw, Trash2 } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 
-import { Button, ConfirmDialog } from '@/ui-kit';
+import { Button, ConfirmDialog, DeleteButton } from '@/ui-kit';
 
 import type { SnapshotActionsProps } from './SnapshotActions.types';
 
@@ -30,18 +30,13 @@ export const SnapshotActions = ({ clientPath, id, dateLabel }: SnapshotActionsPr
         title={t('restoreTitle', { date: dateLabel })}
         onConfirm={onRestore}
       />
-      <ConfirmDialog
-        trigger={
-          <Button aria-label={common('delete')} disabled={isDeleting} size='icon' title={common('delete')} variant='ghost'>
-            <Trash2 aria-hidden />
-          </Button>
-        }
+      <DeleteButton
         cancelLabel={common('cancel')}
-        confirmLabel={common('delete')}
         description={t('deleteDescription')}
+        disabled={isDeleting}
         isPending={isDeleting}
+        label={common('delete')}
         title={t('deleteTitle', { date: dateLabel })}
-        tone='danger'
         onConfirm={onDelete}
       />
     </div>

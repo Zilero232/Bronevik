@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { MANAGER_ERROR_CODES } from '@/shared/api';
-import { PAGE_IDS } from '@/shared/config';
+import { PAGE_IDS, PAGE_SECTIONS } from '@/shared/config';
 
 import { MESSAGES } from '../messages';
 
@@ -24,8 +24,17 @@ describe('MESSAGES', () => {
     expect(texts.every((text) => typeof text === 'string' && text.trim().length > 0)).toBe(true);
   });
 
-  it('names every page of the navigation', () => {
-    expect(PAGE_IDS.every((page) => page in MESSAGES.ru.nav)).toBe(true);
+  it('names every section of the navigation and every tab inside one', () => {
+    const sections = Object.entries(PAGE_SECTIONS);
+
+    expect(sections.every(([section]) => section in MESSAGES.ru.nav.sections)).toBe(true);
+    expect(sections.filter(([, { tabs }]) => tabs).every(([, { pages }]) => pages.every((page) => page in MESSAGES.ru.nav.tabs))).toBe(true);
+  });
+
+  it('places every page in a section of the navigation', () => {
+    const placed = Object.values(PAGE_SECTIONS).flatMap(({ pages }) => pages);
+
+    expect(PAGE_IDS.every((page) => placed.includes(page))).toBe(true);
   });
 
   it('explains every error code the app can report', () => {

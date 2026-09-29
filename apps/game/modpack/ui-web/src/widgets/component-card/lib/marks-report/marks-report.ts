@@ -1,3 +1,6 @@
+import { fromUnixTime, isValid, lightFormat } from 'date-fns';
+import { clamp } from 'remeda';
+
 import type { MarksReportView, ReportCard, ReportRow, ReportTone, UiMarksReport } from './marks-report.types';
 
 import { formatNumber, formatPercent } from '../../../../shared/lib/hud-format';
@@ -9,16 +12,10 @@ const deltaText = (delta: number | null): string => (delta === null ? MARKS_REPO
 
 const percentText = (value: number | null): string => (value === null ? MARKS_REPORT.dash : formatPercent({ value, digits: 2 }));
 
-const two = (value: number): string => String(value).padStart(2, '0');
+const reportDate = (seconds: number | null): string => {
+  const date = seconds === null ? null : fromUnixTime(seconds);
 
-export const reportDate = (seconds: number | null): string => {
-  if (seconds === null) {
-    return MARKS_REPORT.dash;
-  }
-
-  const date = new Date(seconds * 1000);
-
-  return `${two(date.getDate())}.${two(date.getMonth() + 1)} ${two(date.getHours())}:${two(date.getMinutes())}`;
+  return date && isValid(date) ? lightFormat(date, MARKS_REPORT.dateFormat) : MARKS_REPORT.dash;
 };
 
 const chartOf = (values: number[]): MarksReportView['chart'] => {
@@ -79,7 +76,7 @@ const cardsOf = (report: UiMarksReport): ReportCard[] => {
 
 export const marksReportView = (report: UiMarksReport): MarksReportView => ({
   percent: percentText(report.percent),
-  progress: `${Math.min(100, Math.max(0, report.percent ?? 0))}%`,
+  progress: `${clamp(report.percent ?? 0, { min: 0, max: 100 })}%`,
   cards: cardsOf(report),
   rows: report.battles.map((battle, index): ReportRow => ({
     key: `${battle.t ?? index}-${index}`,

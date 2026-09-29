@@ -3,6 +3,7 @@ import { useTranslations } from 'use-intl';
 
 import { ClientPicker } from '@/features/client/client-picker';
 import { BLOCKER_MESSAGES } from '@/features/setup/install-modpack';
+import { useQueryLabels } from '@/shared/lib';
 import { Button, Card, Notice, QueryState } from '@/ui-kit';
 
 import { useFirstRun } from '../model/hooks';
@@ -11,6 +12,7 @@ import s from './FirstRun.module.scss';
 
 export const FirstRun = () => {
   const t = useTranslations();
+  const queryLabels = useQueryLabels();
   const {
     clientsQuery,
     planQuery,
@@ -35,13 +37,7 @@ export const FirstRun = () => {
           </span>
           <div className={s.body}>
             <h3 className={s.title}>{t('home.setup.stepGame')}</h3>
-            <QueryState
-              errorMessage={errorMessage}
-              errorTitle={t('common.loadFailed')}
-              loadingLabel={t('common.loading')}
-              query={clientsQuery}
-              retryLabel={t('common.retry')}
-            >
+            <QueryState errorMessage={errorMessage} {...queryLabels} query={clientsQuery}>
               {() => (
                 <>
                   {client ? (
@@ -67,13 +63,7 @@ export const FirstRun = () => {
           <div className={s.body}>
             <h3 className={s.title}>{t('home.setup.stepPreset')}</h3>
             {hasClient ? (
-              <QueryState
-                errorMessage={errorMessage}
-                errorTitle={t('common.loadFailed')}
-                loadingLabel={t('common.loading')}
-                query={planQuery}
-                retryLabel={t('common.retry')}
-              >
+              <QueryState errorMessage={errorMessage} {...queryLabels} query={planQuery}>
                 {() =>
                   blocker ? (
                     <Notice title={t('install.blocked')} tone='danger'>

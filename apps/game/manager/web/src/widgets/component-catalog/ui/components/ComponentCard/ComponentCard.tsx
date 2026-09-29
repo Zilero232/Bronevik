@@ -1,7 +1,7 @@
-import { Gauge, Lock, PlayCircle, ShieldCheck } from 'lucide-react';
+import { Gauge, Lock, PlayCircle } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 
-import { ComponentPreview, PERF, PreviewAudio } from '@/entities/catalog';
+import { ComponentPreview, FairPlayNote, PERF, PreviewAudio } from '@/entities/catalog';
 import { ComponentToggle } from '@/features/component/component-toggle';
 import { Badge, ExternalLink } from '@/ui-kit';
 
@@ -34,12 +34,11 @@ export const ComponentCard = ({ clientPath, isInstalled, row }: ComponentCardPro
         </header>
         <p className={s.description}>{row.description}</p>
         {row.fairPlay && (
-          <p className={s.fairPlay}>
-            <ShieldCheck aria-hidden />
+          <FairPlayNote>
             <span>
               <strong>{t('fairPlay')}:</strong> {row.fairPlay}
             </span>
-          </p>
+          </FairPlayNote>
         )}
         <footer className={s.footer}>
           {row.dependencies.length > 0 && <span className={s.dependencies}>{t('dependencies', { list: row.dependencies.join(', ') })}</span>}

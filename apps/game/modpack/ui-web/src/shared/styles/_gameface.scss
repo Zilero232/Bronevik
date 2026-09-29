@@ -12,6 +12,21 @@ $font-family: warhelios, 'Arial Narrow', arial, sans-serif;
   text-transform: uppercase;
 }
 
+@mixin hud-text {
+  font-family: $font-family;
+  text-shadow:
+    0 0 2px rgb(0 0 0 / 90%),
+    1px 1px 1px rgb(0 0 0 / 90%);
+}
+
+@mixin hud-stack {
+  @include hud-text;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 @mixin ellipsis {
   overflow: hidden;
   text-overflow: ellipsis;

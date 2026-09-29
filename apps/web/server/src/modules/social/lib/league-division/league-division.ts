@@ -17,7 +17,7 @@ import { rankLeague } from '../league/league';
 
 const TOP = LEAGUE_TIERS.length - 1;
 
-export const tierIndex = (tier: LeagueTier): number => LEAGUE_TIERS.indexOf(tier);
+const tierIndex = (tier: LeagueTier): number => LEAGUE_TIERS.indexOf(tier);
 
 export const nextTier = ({ tier, zone }: NextTierInput): LeagueTier => {
   if (tier === null) {

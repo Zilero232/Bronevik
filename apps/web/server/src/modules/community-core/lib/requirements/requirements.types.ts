@@ -1,14 +1,11 @@
 import type { z } from 'zod';
 
+import type { playerStatsSchema } from '../../dto/community-core.schemas';
 import type { statRequirementsSchema } from './requirements.schemas';
 
 export type StatRequirements = z.infer<typeof statRequirementsSchema>;
 
-export type PlayerStats = {
-  battles: number;
-  wn8: number | null;
-  winRate: number | null;
-};
+export type PlayerStats = z.infer<typeof playerStatsSchema>;
 
 export type CheckRequirementsInput = {
   stats: PlayerStats | null;

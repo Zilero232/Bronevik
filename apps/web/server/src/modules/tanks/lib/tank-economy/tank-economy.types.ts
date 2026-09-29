@@ -1,14 +1,9 @@
 import type { VehicleSummary } from '@otmetki/schemas';
 
-export type EconomyBattle = {
-  tankId: number;
+import type { Battle } from '../../../../../generated';
+
+export type EconomyBattle = Pick<Battle, 'ammoCost' | 'consumablesCost' | 'creditsGross' | 'isPremiumAccount' | 'repairCost' | 'tankId' | 'xp'> & {
   credits: number;
-  creditsGross: number | null;
-  repairCost: number | null;
-  ammoCost: number | null;
-  consumablesCost: number | null;
-  xp: number;
-  isPremiumAccount: boolean | null;
 };
 
 export type AccountEconomyInput = {

@@ -6,7 +6,7 @@ import { slugify } from '../../../../../../common/lib';
 import { translate } from '../../../localization';
 import { minimapUrl } from '../../../source';
 
-export const localizeArena = ({ arena, messages = {} }: LocalizeArenaInput): LocalizedArenaFields =>
+const localizeArena = ({ arena, messages = {} }: LocalizeArenaInput): LocalizedArenaFields =>
   pickBy(
     {
       name: translate({ messages, key: arena.nameKey }),

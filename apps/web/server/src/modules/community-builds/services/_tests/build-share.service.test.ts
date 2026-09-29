@@ -161,6 +161,7 @@ describe('BuildShareService.update', () => {
     const { service, prisma } = createService();
 
     prisma.build.findFirst.mockResolvedValue(build);
+    prisma.build.update.mockResolvedValue(build);
 
     await service.update({ id: build.id, userId: 'author', title: 'New title' });
 

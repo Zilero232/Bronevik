@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { MODPACK_RELEASES_SOURCE } from '../../config';
-import { INDEX } from '../../lib/select-release/_tests/fixtures';
+import { INDEX } from '../../lib/release-index/_tests/fixtures';
 import { ReleaseIndexService } from '../release-index.service';
 
 const EMPTY = { schemaVersion: 1, releases: [] };

@@ -1,5 +1,6 @@
 import type { z } from 'zod';
 
+import type { HttpClientService } from '../../../../core';
 import type { CheckoutInput } from '../../billing.types';
 import type { yookassaPaymentSchema, yookassaWebhookSchema } from './yookassa.schemas';
 
@@ -9,6 +10,11 @@ export type YooKassaWebhook = z.infer<typeof yookassaWebhookSchema>;
 export type YooKassaCredentials = {
   shopId: string;
   secretKey: string;
+};
+
+export type YooKassaClientInput = {
+  credentials: YooKassaCredentials;
+  http: HttpClientService;
 };
 
 export type CreatePaymentInput = {

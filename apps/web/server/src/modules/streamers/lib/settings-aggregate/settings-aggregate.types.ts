@@ -1,6 +1,6 @@
 import type { AggregateField, SettingsValues } from '@otmetki/schemas';
 
-export type FieldSpec = { field: string; kind: 'categorical' } | { field: string; kind: 'numeric'; step: number };
+type FieldSpec = { field: string; kind: 'categorical' } | { field: string; kind: 'numeric'; step: number };
 
 export type AggregateCohortInput = {
   contributions: readonly SettingsValues[];

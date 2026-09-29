@@ -5,11 +5,6 @@ export type ExtendPeriodInput = {
   days?: number;
 };
 
-export type IsPeriodActiveInput = {
-  currentPeriodEnd: Date | null;
-  now: Date;
-};
-
 export type AutoRenewInput = {
   isRecurringEnabled: boolean;
   hasMethod: boolean;

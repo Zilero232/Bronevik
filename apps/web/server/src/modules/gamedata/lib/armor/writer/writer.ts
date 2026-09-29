@@ -1,9 +1,7 @@
-import type { Prisma } from '../../../../../../generated';
 import type { ArmorWriteCounts, PurgeArmorModelsInput, WriteArmorModelsInput } from './writer.types';
 
+import { toStoredJson } from '../../importer/writer/batches';
 import { ARMOR_PACK, armorStorageKey } from '../pack';
-
-const toJson = (value: unknown): Prisma.InputJsonValue => JSON.parse(JSON.stringify(value));
 
 export const writeArmorModels = async ({ prisma, storage, collected, onProgress }: WriteArmorModelsInput): Promise<ArmorWriteCounts> => {
   const { version, sourceSha, models } = collected;
@@ -24,7 +22,14 @@ export const writeArmorModels = async ({ prisma, storage, collected, onProgress 
       counts.uploaded += 1;
     }
 
-    const row = { gameVersion: version, storageKey, hash: model.hash, bytes: model.bytes.byteLength, modules: toJson(model.modules), sourceSha };
+    const row = {
+      gameVersion: version,
+      storageKey,
+      hash: model.hash,
+      bytes: model.bytes.byteLength,
+      modules: toStoredJson(model.modules),
+      sourceSha
+    };
 
     await prisma.vehicleArmorModel.upsert({ where: { tankId: model.tankId }, create: { tankId: model.tankId, ...row }, update: row });
 

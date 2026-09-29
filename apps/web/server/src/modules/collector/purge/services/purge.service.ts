@@ -4,6 +4,7 @@ import { Queue } from 'bullmq';
 
 import type { PurgeAccountPayload } from '../../contracts';
 
+import { errorMessage } from '../../../../common/lib';
 import { HYPERTABLE, PrismaService } from '../../../../core';
 import { JOB, QUEUE } from '../../contracts';
 import { PURGE } from '../config';
@@ -91,7 +92,7 @@ export class PurgeService {
       this.logger.log(`purged account ${accountId}`);
     } catch (error) {
       if (requestId) {
-        await this.prisma.dataDeletionRequest.update({ where: { id: requestId }, data: { status: 'failed', error: String(error) } });
+        await this.prisma.dataDeletionRequest.update({ where: { id: requestId }, data: { status: 'failed', error: errorMessage(error) } });
       }
 
       throw error;

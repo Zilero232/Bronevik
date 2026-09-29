@@ -6,6 +6,7 @@ import type {
   BuildPage,
   BuildsQuery,
   BuildView,
+  BuildViewInput,
   BuildViewsInput,
   CreateBuildRequest,
   PopularBuildsInput,
@@ -24,9 +25,8 @@ export class BuildShareService {
   constructor(private readonly prisma: PrismaService) {}
 
   async list({ tankId, sort, limit, offset, viewerUserId }: BuildsQuery): Promise<BuildPage> {
-    const where: Prisma.BuildWhereInput = { visibility: 'public', status: 'published', ...(tankId === undefined ? {} : { tankId }) };
-    const orderBy: Prisma.BuildOrderByWithRelationInput[] =
-      sort === 'popular' ? [{ likesCount: 'desc' }, { createdAt: 'desc' }] : [{ createdAt: 'desc' }];
+    const where: Prisma.BuildWhereInput = { ...BUILD_SHARE.publicWhere, ...(tankId === undefined ? {} : { tankId }) };
+    const orderBy = [...BUILD_SHARE.order[sort]];
 
     const [rows, total] = await Promise.all([
       this.prisma.build.findMany({ where, orderBy, take: limit, skip: offset, include: BUILD_INCLUDE }),
@@ -38,8 +38,8 @@ export class BuildShareService {
 
   async popular({ tankId, viewerUserId }: PopularBuildsInput): Promise<BuildView[]> {
     const rows = await this.prisma.build.findMany({
-      where: { tankId, visibility: 'public', status: 'published' },
-      orderBy: [{ likesCount: 'desc' }, { createdAt: 'desc' }],
+      where: { ...BUILD_SHARE.publicWhere, tankId },
+      orderBy: [...BUILD_SHARE.order.popular],
       take: BUILD_SHARE.popularLimit,
       include: BUILD_INCLUDE
     });
@@ -54,9 +54,7 @@ export class BuildShareService {
       throw new AppNotFoundException('NOT_FOUND', `No build ${id}`);
     }
 
-    const [view] = await this.views({ rows: [build], viewerUserId });
-
-    return view ?? this.notFound(id);
+    return this.view({ row: build, viewerUserId });
   }
 
   async create({ userId, tankId, title, description, loadout, visibility }: CreateBuildRequest): Promise<BuildView> {
@@ -80,23 +78,24 @@ export class BuildShareService {
       include: BUILD_INCLUDE
     });
 
-    return this.get({ id: build.id, viewerUserId: userId });
+    return this.view({ row: build, viewerUserId: userId });
   }
 
   async update({ id, userId, title, description, loadout, visibility }: UpdateBuildRequest): Promise<BuildView> {
     await this.owned({ id, userId });
 
-    await this.prisma.build.update({
+    const build = await this.prisma.build.update({
       where: { id },
       data: {
         ...(title === undefined ? {} : { title }),
         ...(description === undefined ? {} : { description }),
         ...(loadout === undefined ? {} : { loadout: toJsonValue(loadout) }),
         ...(visibility === undefined ? {} : { visibility })
-      }
+      },
+      include: BUILD_INCLUDE
     });
 
-    return this.get({ id, viewerUserId: userId });
+    return this.view({ row: build, viewerUserId: userId });
   }
 
   async remove({ id, userId }: OwnedById): Promise<void> {
@@ -146,6 +145,12 @@ export class BuildShareService {
     return rows.map((build) =>
       toBuildView({ build, author: build.author, likedByMe: likedIds.has(build.id), gameVersion: build.gameVersion?.version ?? null })
     );
+  }
+
+  private async view({ row, viewerUserId }: BuildViewInput): Promise<BuildView> {
+    const [view] = await this.views({ rows: [row], viewerUserId });
+
+    return view ?? this.notFound(row.id);
   }
 
   private notFound(id: string): never {

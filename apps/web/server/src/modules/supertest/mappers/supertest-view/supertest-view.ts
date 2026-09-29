@@ -12,7 +12,7 @@ const DELTA_DIGITS = 6;
 const tankKey = (row: Pick<SupertestChangeRow, 'tankId' | 'tankName'>): string =>
   row.tankId === null ? `name:${row.tankName.trim().toLowerCase()}` : `tank:${row.tankId}`;
 
-export const toSupertestChange = (row: SupertestChangeRow): SupertestChangeView => {
+const toSupertestChange = (row: SupertestChangeRow): SupertestChangeView => {
   const baseline = changeBaseline({ from: row.fromValue, live: row.liveValue });
 
   return {

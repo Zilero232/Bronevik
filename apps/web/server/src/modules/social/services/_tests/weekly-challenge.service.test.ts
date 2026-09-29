@@ -83,8 +83,8 @@ const createService = () => {
   prisma.$queryRaw.mockResolvedValue([]);
   prisma.tankBattleDelta.findMany.mockResolvedValue([]);
   prisma.vehicle.findMany.mockResolvedValue([]);
-  prisma.weeklyChallengeProgress.findUnique.mockResolvedValue(null);
-  prisma.accountBadge.findUnique.mockResolvedValue(null);
+  prisma.weeklyChallengeProgress.findMany.mockResolvedValue([]);
+  prisma.accountBadge.findMany.mockResolvedValue([]);
   events.markCounts.mockResolvedValue(new Map());
 
   return { service: new WeeklyChallengeService(prisma, events, notifications), prisma, events, notifications };
@@ -113,7 +113,7 @@ describe('WeeklyChallengeService.evaluate', () => {
   it('does nothing again for a challenge already completed this week', async () => {
     const { service, prisma, notifications } = createService();
 
-    prisma.weeklyChallengeProgress.findUnique.mockResolvedValue(progress(now));
+    prisma.weeklyChallengeProgress.findMany.mockResolvedValue([progress(now)]);
 
     expect(await service.evaluate(now)).toBe(0);
     expect(prisma.accountBadge.upsert).not.toHaveBeenCalled();
@@ -123,7 +123,7 @@ describe('WeeklyChallengeService.evaluate', () => {
   it('counts a completion in a later week without notifying again', async () => {
     const { service, prisma, notifications } = createService();
 
-    prisma.accountBadge.findUnique.mockResolvedValue(badge);
+    prisma.accountBadge.findMany.mockResolvedValue([badge]);
 
     expect(await service.evaluate(now)).toBe(1);
     expect(prisma.accountBadge.upsert).toHaveBeenCalledWith(expect.objectContaining({ update: { context: expect.objectContaining({ times: 2 }) } }));

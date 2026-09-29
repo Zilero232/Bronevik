@@ -117,10 +117,6 @@ export type TracksOfInput = {
   summary: ReplaySummary;
 };
 
-export type ParseJobData = {
-  replayId: string;
-};
-
 export type OverflowOwner = {
   userId: string;
   stored: number;

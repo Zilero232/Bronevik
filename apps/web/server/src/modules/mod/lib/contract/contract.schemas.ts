@@ -43,7 +43,7 @@ const moeValuesSchema = z.strictObject({
   moving_avg_damage: count
 });
 
-export const modShotSchema = z.strictObject({
+const modShotSchema = z.strictObject({
   damage: z.number().int().min(0).max(MOD_SHOTS.maxDamage),
   nominal: z.number().int().min(1).max(MOD_SHOTS.maxDamage).nullable(),
   shell: z.enum(MOD_SHOTS.shells),

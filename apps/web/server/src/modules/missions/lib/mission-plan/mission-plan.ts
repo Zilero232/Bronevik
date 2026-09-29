@@ -1,6 +1,6 @@
 import { sortBy } from 'remeda';
 
-import type { PlannedStep, PlanOperationInput, ToStepInput } from './mission-plan.types';
+import type { PlanBranch, PlannedStep, PlanOperationInput, ToPlanBranchesInput, ToStepInput } from './mission-plan.types';
 
 const toStep = ({ branch, mission, withHonors }: ToStepInput): PlannedStep => ({
   questId: mission.questId,
@@ -39,3 +39,10 @@ export const planOperation = ({ branches, progress, coverage = new Map() }: Plan
     ...ordered.flatMap((lane) => lane.retries.map((mission) => toStep({ branch: lane.branch, mission, withHonors: true })))
   ];
 };
+
+export const toPlanBranches = ({ branches, missions }: ToPlanBranchesInput): PlanBranch[] =>
+  branches.map((branch) => ({
+    chainId: branch.chainId,
+    key: branch.key,
+    missions: missions.filter((mission) => mission.chainId === branch.chainId)
+  }));

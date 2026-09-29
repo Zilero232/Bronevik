@@ -1,6 +1,6 @@
 import type { MissionPlanStep } from '@otmetki/schemas';
 
-export type PlanMission = {
+type PlanMission = {
   questId: number;
   chainId: number;
   position: number;
@@ -32,4 +32,9 @@ export type ToStepInput = {
   branch: PlanBranch;
   mission: PlanMission;
   withHonors: boolean;
+};
+
+export type ToPlanBranchesInput = {
+  branches: readonly Pick<PlanBranch, 'chainId' | 'key'>[];
+  missions: readonly PlanMission[];
 };

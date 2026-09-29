@@ -1,6 +1,6 @@
 import type { ChangeVerdict } from '../change-verdict';
 
-export type SummaryTank = {
+type SummaryTank = {
   key: string;
   tankId: number | null;
   changes: ReadonlyArray<{ verdict: ChangeVerdict }>;

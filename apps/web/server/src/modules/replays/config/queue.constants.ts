@@ -2,6 +2,7 @@ export const REPLAYS_QUEUE = {
   name: 'replays',
   jobs: { parse: 'parse', bestOfWeek: 'best-of-week', overflowCleanup: 'overflow-cleanup', tagBackfill: 'tag-backfill' },
   concurrency: 1,
+  parseJobPrefix: 'parse-',
   parseAttempts: 3,
   parseBackoffMs: 10_000
 } as const;

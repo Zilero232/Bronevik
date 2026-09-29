@@ -1,1 +1,1 @@
-export { parseConditions, toJson } from './conditions';
+export { parseConditions } from './conditions';

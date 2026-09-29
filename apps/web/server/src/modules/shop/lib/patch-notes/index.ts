@@ -1,1 +1,1 @@
-export { isPatchNotes, patchVersion, versionCandidates } from './patch-notes';
+export { isPatchNotes, versionsOf } from './patch-notes';

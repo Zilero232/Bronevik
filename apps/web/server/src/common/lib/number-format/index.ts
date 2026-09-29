@@ -1,2 +1,2 @@
-export { formatNumber, formatNumberOr, formatPercent, formatPercentOr } from './number-format';
+export { formatNumberOr, formatPercentOr } from './number-format';
 export type { FormatNumberInput, FormatPercentInput } from './number-format.types';

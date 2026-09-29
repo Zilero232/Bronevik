@@ -14,7 +14,7 @@ import {
   SlugParamsDto,
   StreamerInvitationListDto
 } from './dto';
-import { StreamerClaimService, StreamerProfileService, StreamerSettingsService } from './services';
+import { StreamerClaimService, StreamerInvitationService, StreamerModerationService, StreamerSettingsService } from './services';
 
 @ApiTags('streamers')
 @Roles([...MODERATION.roles])
@@ -22,28 +22,27 @@ import { StreamerClaimService, StreamerProfileService, StreamerSettingsService }
 export class AdminStreamersController {
   constructor(
     private readonly claims: StreamerClaimService,
-    private readonly profiles: StreamerProfileService,
+    private readonly invites: StreamerInvitationService,
+    private readonly moderation: StreamerModerationService,
     private readonly settings: StreamerSettingsService
   ) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createEditorial(@Body() body: EditorialStreamerDto) {
-    await this.claims.createEditorial(body);
+    await this.moderation.createEditorial(body);
   }
 
   @Post(':slug/settings')
   @HttpCode(HttpStatus.NO_CONTENT)
   async saveEditorialSettings(@CurrentUserId() userId: string, @Param() { slug }: SlugParamsDto, @Body() body: SaveStreamerSettingsDto) {
-    const profile = await this.profiles.publicBySlug(slug);
-
-    await this.settings.save({ profileId: profile.id, userId, source: 'editorial', values: body.values, sourceUrls: body.sourceUrls });
+    await this.settings.saveEditorial({ slug, userId, values: body.values, sourceUrls: body.sourceUrls });
   }
 
   @Post(':slug/hide')
   @HttpCode(HttpStatus.NO_CONTENT)
   async hide(@Param() { slug }: SlugParamsDto) {
-    await this.claims.hide(slug);
+    await this.moderation.hide(slug);
   }
 
   @Get('claims')
@@ -61,18 +60,18 @@ export class AdminStreamersController {
   @Get('invitations')
   @ZodResponse({ type: StreamerInvitationListDto })
   invitations() {
-    return this.claims.invitations();
+    return this.invites.list();
   }
 
   @Post('invitations/seed')
   @HttpCode(HttpStatus.NO_CONTENT)
   async seedInvitations() {
-    await this.claims.seedInvitations();
+    await this.invites.seed();
   }
 
   @Post('invitations/:slug/sent')
   @HttpCode(HttpStatus.NO_CONTENT)
   async invitationSent(@Param() { slug }: SlugParamsDto) {
-    await this.claims.markInvitationSent(slug);
+    await this.invites.markSent(slug);
   }
 }

@@ -20,6 +20,8 @@ export { StreamerCardsService } from './streamer-cards.service';
 export { StreamerClaimService } from './streamer-claim.service';
 export { StreamerDirectoryService } from './streamer-directory.service';
 export { StreamerFollowService } from './streamer-follow.service';
+export { StreamerInvitationService } from './streamer-invitation.service';
+export { StreamerModerationService } from './streamer-moderation.service';
 export { StreamerProfileService } from './streamer-profile.service';
 export { StreamerSettingsService } from './streamer-settings.service';
 export { StreamerStatsService } from './streamer-stats.service';

@@ -1,7 +1,7 @@
 import type { Follow, Prisma, PrismaClient } from '../../../../../generated';
 
 export type FollowFlags = Pick<Follow, 'isFavorite' | 'isFollowing'>;
-export type FollowFlag = keyof FollowFlags;
+type FollowFlag = keyof FollowFlags;
 
 export type FollowFlagConfig = {
   on: Partial<FollowFlags>;
@@ -9,7 +9,7 @@ export type FollowFlagConfig = {
   reset: Prisma.FollowUpdateManyMutationInput;
 };
 
-export type FollowKey = Pick<Follow, 'kind' | 'targetId' | 'userId'>;
+type FollowKey = Pick<Follow, 'kind' | 'targetId' | 'userId'>;
 
 export type SetFollowFlagInput = {
   prisma: Pick<PrismaClient, 'follow'>;

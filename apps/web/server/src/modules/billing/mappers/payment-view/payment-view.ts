@@ -1,5 +1,6 @@
+import type { PaymentHistoryItem } from '@otmetki/schemas';
+
 import type { Payment } from '../../../../../generated';
-import type { PaymentHistoryItem } from '../../billing.types';
 
 import { toIso } from '../../../../common/lib';
 

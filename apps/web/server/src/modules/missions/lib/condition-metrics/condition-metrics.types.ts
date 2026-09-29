@@ -1,10 +1,6 @@
-import type { MissionMetric } from '@otmetki/schemas';
+import type { MissionCondition, MissionMetric } from '@otmetki/schemas';
 
-export type MetricCondition = {
-  progressId: string;
-  isMain: boolean;
-  isHeader: boolean;
-};
+export type MetricCondition = Pick<MissionCondition, 'isHeader' | 'isMain' | 'progressId'>;
 
 export type MissionMetricChoice = {
   metric: MissionMetric;

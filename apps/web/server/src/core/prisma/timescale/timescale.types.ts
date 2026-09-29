@@ -21,7 +21,7 @@ export type TimescaleStatement = {
   sql: string;
 };
 
-export type AggregateVersions = Readonly<Record<string, string | null>>;
+type AggregateVersions = Readonly<Record<string, string | null>>;
 
 export type StaleAggregate = {
   relation: string;

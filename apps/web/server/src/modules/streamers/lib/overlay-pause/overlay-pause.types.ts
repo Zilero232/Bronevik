@@ -1,4 +1,4 @@
-export type RankedOverlay = {
+type RankedOverlay = {
   id: string;
   createdAt: Date;
 };

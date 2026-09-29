@@ -12,10 +12,10 @@ import { z } from 'zod';
 import { Prisma } from '../../../../../generated';
 import { LestaHttpError, LestaNetworkError, LestaNotConfiguredError, LestaQueueFullError } from '../../../../lib/lesta';
 import { AppNotFoundException, ModException } from '../../../exceptions';
-import { MOD_CONTRACT_PATHS, MOD_REPLY } from '../all-exceptions.constants';
+import { MOD_REPLY } from '../all-exceptions.constants';
 import { AllExceptionsFilter } from '../all-exceptions.filter';
 
-const [modPath = ''] = MOD_CONTRACT_PATHS;
+const [modPath] = MOD_REPLY.contractPaths;
 
 const zodError = () => {
   const result = z.object({ nickname: z.string() }).safeParse({ nickname: 1 });

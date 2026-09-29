@@ -11,3 +11,9 @@ export const versionCandidates = (version: string): string[] => {
 
   return unique([version, [...parts, ...Array.from<string>({ length: Math.max(0, 4 - parts.length) }).fill('0')].join('.')]);
 };
+
+export const versionsOf = (title: string): string[] => {
+  const version = patchVersion(title);
+
+  return version === null ? [] : versionCandidates(version);
+};

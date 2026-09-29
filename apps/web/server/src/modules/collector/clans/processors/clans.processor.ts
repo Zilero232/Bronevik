@@ -19,13 +19,13 @@ export class ClansProcessor extends WorkerHost {
   }
 
   async process(job: Job) {
-    return this.metrics.track({
-      job,
-      run: () =>
-        match<string, Promise<unknown>>(job.name)
-          .with(JOB.clans.dispatch, async () => ({ dispatched: await this.dispatcher.dispatch(clanDispatchPayloadSchema.parse(job.data)) }))
-          .with(JOB.clans.history, () => this.history.history(accountBatchPayloadSchema.parse(job.data)))
-          .otherwise(() => this.sync.refresh(clanRefreshPayloadSchema.parse(job.data)))
-    });
+    return this.metrics.track({ job, run: () => this.handle(job) });
+  }
+
+  private async handle(job: Job) {
+    return match<string, Promise<unknown>>(job.name)
+      .with(JOB.clans.dispatch, async () => ({ dispatched: await this.dispatcher.dispatch(clanDispatchPayloadSchema.parse(job.data)) }))
+      .with(JOB.clans.history, () => this.history.history(accountBatchPayloadSchema.parse(job.data)))
+      .otherwise(() => this.sync.refresh(clanRefreshPayloadSchema.parse(job.data)));
   }
 }

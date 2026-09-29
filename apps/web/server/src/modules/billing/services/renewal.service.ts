@@ -5,8 +5,8 @@ import type { Subscription } from '../../../../generated';
 
 import { errorMessage } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { PLUS_PLANS, PLUS_SUBSCRIPTION, RENEWAL } from '../config';
-import { describePlan, isPlusPlan, planPrice, renewalIdempotenceKey, YooKassaClient } from '../lib';
+import { PLUS_SUBSCRIPTION, RENEWAL } from '../config';
+import { describePlan, planPrice, renewalIdempotenceKey, storedPlan, YooKassaClient } from '../lib';
 import { EntitlementsService } from './entitlements.service';
 import { SubscriptionService } from './subscription.service';
 import { WebhookService } from './webhook.service';
@@ -39,9 +39,16 @@ export class RenewalService {
       take: RENEWAL.batchSize
     });
 
+    const pending = await this.prisma.payment.findMany({
+      where: { subscriptionId: { in: due.map((subscription) => subscription.id) }, isAutoCharge: true, status: 'pending' },
+      select: { subscriptionId: true },
+      distinct: ['subscriptionId']
+    });
+
+    const awaiting = new Set(pending.map((payment) => payment.subscriptionId));
     let charged = 0;
 
-    for (const subscription of due) {
+    for (const subscription of due.filter((candidate) => !awaiting.has(candidate.id))) {
       try {
         charged += (await this.charge(subscription)) ? 1 : 0;
       } catch (error) {
@@ -81,13 +88,11 @@ export class RenewalService {
   }
 
   private async charge(subscription: Subscription): Promise<boolean> {
-    const pending = await this.prisma.payment.count({ where: { subscriptionId: subscription.id, isAutoCharge: true, status: 'pending' } });
-
-    if (pending > 0 || !subscription.savedCardId || !subscription.currentPeriodEnd) {
+    if (!subscription.savedCardId || !subscription.currentPeriodEnd) {
       return false;
     }
 
-    const plan = isPlusPlan(subscription.plan) ? subscription.plan : PLUS_PLANS.monthly.plan;
+    const plan = storedPlan(subscription.plan);
     const amountRub = planPrice({ plan, discountPercent: null });
 
     const payment = await this.yookassa.chargeSavedMethod({

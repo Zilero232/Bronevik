@@ -1,16 +1,11 @@
+import type { z } from 'zod';
+
 import type { ReplayPacket, ReplayPlayer, TrackPoint } from '../../../../lib/replay';
+import type { replayTracksSchema } from '../../dto/replays.schemas';
 
-export type TrackSample = [time: number, x: number, z: number];
+export type ReplayTrack = z.infer<typeof replayTracksSchema>['tracks'][number];
 
-export type ReplayTrack = {
-  vehicleId: number;
-  accountId: number | null;
-  name: string;
-  team: number;
-  tankId: number | null;
-  vehicleType: string | null;
-  points: TrackSample[];
-};
+export type TrackSample = ReplayTrack['points'][number];
 
 export type BuildTracksInput = {
   packets: readonly ReplayPacket[];

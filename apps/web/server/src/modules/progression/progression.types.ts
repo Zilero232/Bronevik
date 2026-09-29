@@ -12,7 +12,7 @@ export type TankChallengeDefinition = {
   needsMod: boolean;
 };
 
-export type ProgressionTx = Prisma.TransactionClient;
+type ProgressionTx = Prisma.TransactionClient;
 
 export type GrantShellsInput = {
   userId: string;

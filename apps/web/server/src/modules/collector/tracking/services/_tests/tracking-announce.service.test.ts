@@ -27,7 +27,7 @@ describe('TrackingAnnounceService.announceMarks', () => {
   it('emits a mark.gained event addressed to the player and their clan', async () => {
     const { prisma, webhooks, announce } = createAnnounce();
 
-    prisma.player.findUnique.mockResolvedValue(mock<Player>({ clanId: 7n, nickname: 'tanker' }));
+    prisma.player.findMany.mockResolvedValue([mock<Player>({ accountId: gained.accountId, clanId: 7n, nickname: 'tanker' })]);
 
     await announce.announceMarks([gained]);
 
@@ -43,7 +43,7 @@ describe('TrackingAnnounceService.announceMarks', () => {
   it('still emits for an unknown player, without a clan or nickname', async () => {
     const { prisma, webhooks, announce } = createAnnounce();
 
-    prisma.player.findUnique.mockResolvedValue(null);
+    prisma.player.findMany.mockResolvedValue([]);
 
     await announce.announceMarks([gained]);
 
@@ -57,7 +57,7 @@ describe('TrackingAnnounceService.announceMarks dedupe', () => {
   it('keys the event by account, tank and marks so a repeated announcement is delivered once', async () => {
     const { prisma, webhooks, announce } = createAnnounce();
 
-    prisma.player.findUnique.mockResolvedValue(null);
+    prisma.player.findMany.mockResolvedValue([]);
 
     await announce.announceMarks([gained]);
     await announce.announceMarks([gained]);

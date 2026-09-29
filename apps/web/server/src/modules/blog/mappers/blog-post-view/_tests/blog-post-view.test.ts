@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { BlogPostRow } from '../../../selects';
 
 import { BLOG_IMAGES } from '../../../config';
-import { blogCoverUrl, imageFileUrl, toBlogEditorPostView, toBlogPostSummary, toBlogPostView } from '../blog-post-view';
+import { toBlogEditorPostView, toBlogPostSummary, toBlogPostView } from '../blog-post-view';
 
 const API_URL = 'https://api.triotmetki.ru';
 const IMAGE_FILE = '0b4c8f1e-2a6d-4c1b-9f5e-3d7a8b9c0d1e.webp';
@@ -30,26 +30,6 @@ const POST: BlogPostRow = {
   updatedAt: new Date('2026-09-21T10:00:00.000Z'),
   author: { id: '22222222-2222-4222-8222-222222222222', name: 'Редакция', image: 'javascript:alert(1)' }
 };
-
-describe('imageFileUrl', () => {
-  it('points at the public image route of the API', () => {
-    expect(imageFileUrl({ key: POST.coverKey ?? '', apiUrl: API_URL })).toBe(new URL(BLOG_IMAGES.route.replace('{file}', IMAGE_FILE), API_URL).href);
-  });
-});
-
-describe('blogCoverUrl', () => {
-  it('prefers the uploaded cover', () => {
-    expect(blogCoverUrl({ post: { coverKey: POST.coverKey, coverUrl: 'https://example.com/a.png' }, apiUrl: API_URL })).toContain(IMAGE_FILE);
-  });
-
-  it('falls back to the external cover URL', () => {
-    expect(blogCoverUrl({ post: { coverKey: null, coverUrl: 'https://example.com/a.png' }, apiUrl: API_URL })).toBe('https://example.com/a.png');
-  });
-
-  it('returns null without any cover', () => {
-    expect(blogCoverUrl({ post: { coverKey: null, coverUrl: null }, apiUrl: API_URL })).toBeNull();
-  });
-});
 
 describe('toBlogPostSummary', () => {
   it('drops an author avatar that is not an http URL', () => {

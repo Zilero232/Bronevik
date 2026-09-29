@@ -9,7 +9,7 @@ export type UnsignedModpackRelease = Omit<ModpackRelease, 'signature'>;
 
 export type ReleasePayloadInput = Pick<ModpackRelease, 'catalog' | 'games' | 'packages' | 'version'>;
 
-export type ReleasePackageFile = Omit<ModpackReleasePackage, 'url'>;
+type ReleasePackageFile = Omit<ModpackReleasePackage, 'url'>;
 
 export type BuildReleaseInput = Pick<ModpackRelease, 'games' | 'publishedAt' | 'version'> & {
   baseUrl: string;

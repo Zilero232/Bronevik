@@ -1,1 +1,1 @@
-export { buildVehicleRows, localizeVehicle } from './vehicle-rows';
+export { buildVehicleRows } from './vehicle-rows';

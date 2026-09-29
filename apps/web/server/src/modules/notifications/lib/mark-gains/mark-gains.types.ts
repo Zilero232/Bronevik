@@ -1,10 +1,6 @@
-export type MarkBattle = {
-  id: string;
-  accountId: bigint;
-  tankId: number;
-  marksOnGun: number;
-  startedAt: Date;
-};
+import type { Battle } from '../../../../../generated';
+
+export type MarkBattle = Pick<Battle, 'accountId' | 'id' | 'startedAt' | 'tankId'> & { marksOnGun: number };
 
 export type MarkPair = Pick<MarkBattle, 'accountId' | 'tankId'>;
 

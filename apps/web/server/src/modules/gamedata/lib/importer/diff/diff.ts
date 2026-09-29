@@ -1,3 +1,5 @@
+import { isPlainObject } from 'remeda';
+
 import type { CollectChangesInput, DiffInput, KeyOfInput, SpecChange, SpecPrimitive } from '../importer.types';
 
 import { DIFF_KEYS } from '../importer.constants';
@@ -5,10 +7,8 @@ import { DIFF_KEYS } from '../importer.constants';
 const isPrimitive = (value: unknown): value is SpecPrimitive =>
   value === null || typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean';
 
-const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
-
 const keyOf = ({ item, index }: KeyOfInput): string => {
-  if (isRecord(item)) {
+  if (isPlainObject(item)) {
     const key = DIFF_KEYS.find((candidate) => typeof item[candidate] === 'string');
 
     if (key) {
@@ -24,7 +24,7 @@ const toRecord = (value: unknown): Record<string, unknown> => {
     return Object.fromEntries(value.map((item, index) => [keyOf({ item, index }), item]));
   }
 
-  return isRecord(value) ? value : {};
+  return isPlainObject(value) ? value : {};
 };
 
 const collect = ({ before, after, path, changes }: CollectChangesInput): void => {

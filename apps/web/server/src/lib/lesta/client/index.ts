@@ -1,6 +1,6 @@
 export { createLestaClient } from './client';
 export type { LestaClient } from './client';
-export { LESTA_API, LESTA_LANGUAGES, LESTA_RETRY } from './client.constants';
+export { LESTA_API } from './client.constants';
 export type {
   DeepPartial,
   FieldList,
@@ -16,5 +16,3 @@ export type {
   LestaRetryOptions,
   Selected
 } from './client.types';
-export { fieldAwareSchema, fieldsParam } from './params';
-export { createRequester } from './requester';

@@ -62,7 +62,7 @@ export const leagueEntrySchema = z.object({
   zone: leagueZoneSchema.nullable()
 });
 
-export const leagueDivisionSchema = z.object({
+const leagueDivisionSchema = z.object({
   accountId: accountIdSchema,
   tier: leagueTierSchema,
   group: z.number().int().positive(),
@@ -83,7 +83,7 @@ export const leagueSchema = z.object({
   entries: z.array(leagueEntrySchema)
 });
 
-export const challengeSchema = challengeRuleSchema.extend({
+const challengeSchema = challengeRuleSchema.extend({
   badgeCode: z.string(),
   progress: z.array(z.object({ accountId: accountIdSchema, value: z.number(), completedAt: isoDateTimeSchema.nullable() }))
 });
@@ -127,4 +127,9 @@ export const wrappedSchema = z.object({
   bestBattle: z
     .object({ tankId: tankIdSchema, damageDealt: countSchema, frags: countSchema, at: isoDateTimeSchema, replayId: uuidSchema.nullable() })
     .nullable()
+});
+
+export const challengeBadgeContextSchema = z.object({
+  times: z.number().int().nonnegative(),
+  lastWeek: isoDateSchema.nullable()
 });

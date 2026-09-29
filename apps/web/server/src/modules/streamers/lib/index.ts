@@ -8,6 +8,7 @@ export { chatText, chatValue } from './chat-copy';
 export type { ChatMessage, ChatValues } from './chat-copy';
 export { bioHasCode, newClaimCode } from './claim-code';
 export { matchDonation } from './donation-match';
+export { canPredict, readIntegrationConfig } from './integration-config';
 export { mergeLiveStatus, wentLive } from './live-status';
 export type { LiveStream } from './live-status';
 export { winStreak } from './overlay-data';

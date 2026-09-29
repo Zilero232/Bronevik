@@ -29,6 +29,11 @@ export type BlogImageUpload = z.infer<typeof blogImageUploadSchema>;
 export type CreateBlogPostRequest = z.output<typeof createBlogPostSchema> & Owned;
 export type UpdateBlogPostRequest = z.output<typeof updateBlogPostSchema> & ById;
 
+export type SlugWriteInput<T> = {
+  slug: string;
+  write: () => Promise<T>;
+};
+
 export type UploadedBlogImage = {
   buffer: Buffer;
   size: number;

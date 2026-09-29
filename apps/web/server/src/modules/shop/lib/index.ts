@@ -1,9 +1,10 @@
-export { bonusCodeStatus } from './bonus-status';
+export { reportedStatus, reportTallies } from './bonus-status';
+export type { ReportTally } from './bonus-status';
 export { parseOfferDetail } from './offer-detail';
 export type { OfferDetail } from './offer-detail';
 export { absenceBeforeReturn, offerAppearance, returnEstimate } from './offer-return';
 export type { ReturnEstimate } from './offer-return';
-export { isPatchNotes, patchVersion, versionCandidates } from './patch-notes';
+export { isPatchNotes, versionsOf } from './patch-notes';
 export { matchTankNames } from './tank-mentions';
 export type { NamedVehicle } from './tank-mentions';
 export { parseWotexpressCodes } from './wotexpress-codes';

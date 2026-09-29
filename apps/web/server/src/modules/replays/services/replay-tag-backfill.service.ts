@@ -3,9 +3,8 @@ import { Injectable } from '@nestjs/common';
 import type { TagBackfillOutcome } from '../replays.types';
 
 import { PrismaService } from '../../../core';
-import { replaySummarySchema } from '../../../lib/replay';
 import { REPLAY_TAGGING } from '../config';
-import { replayTagColumns } from '../lib';
+import { readStoredSummary, replayTagColumns } from '../lib';
 
 @Injectable()
 export class ReplayTagBackfillService {
@@ -20,9 +19,9 @@ export class ReplayTagBackfillService {
     });
 
     const updates = rows.map((row) => {
-      const summary = replaySummarySchema.safeParse(row.summary);
+      const summary = readStoredSummary(row.summary);
 
-      return { id: row.id, data: summary.success ? replayTagColumns(summary.data) : { tagsVersion: REPLAY_TAGGING.version } };
+      return { id: row.id, data: summary ? replayTagColumns(summary) : { tagsVersion: REPLAY_TAGGING.version } };
     });
 
     if (updates.length > 0) {

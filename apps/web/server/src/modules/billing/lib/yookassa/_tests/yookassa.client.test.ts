@@ -1,8 +1,13 @@
+import type { Options } from 'ky';
+
 import { describe, expect, it, vi } from 'vitest';
+import { mock } from 'vitest-mock-extended';
 
-import type { YooKassaPayment } from '../yookassa.types';
+import type { HttpClientService } from '../../../../../core';
+import type { YooKassaCredentials, YooKassaPayment } from '../yookassa.types';
 
-import { AppBadRequestException } from '../../../../../common/exceptions';
+import { AppBadRequestException, AppNotFoundException } from '../../../../../common/exceptions';
+import { http } from '../../../../../lib/http';
 import { YOOKASSA } from '../../../config';
 import { YooKassaClient } from '../yookassa.client';
 
@@ -15,14 +20,24 @@ const payment: YooKassaPayment = {
   confirmation: { confirmation_url: 'https://yookassa.test/confirm' }
 };
 
+type Fetch = NonNullable<Options['fetch']>;
+
 type Sent = {
   request: Request;
   body: unknown;
 };
 
+const clientWith =
+  (fetch: Fetch) =>
+  (keys: YooKassaCredentials = credentials): YooKassaClient =>
+    new YooKassaClient({
+      credentials: keys,
+      http: mock<HttpClientService>({ requestJson: ({ url, options }) => http(url, { ...options, fetch }).json() })
+    });
+
 const reply = (body: unknown, status = 200) => {
   const sent: Sent[] = [];
-  const fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+  const fetch = vi.fn<Fetch>(async (input) => {
     if (input instanceof Request) {
       sent.push({ request: input, body: input.method === 'GET' ? null : await input.clone().json() });
     }
@@ -30,7 +45,7 @@ const reply = (body: unknown, status = 200) => {
     return new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
   });
 
-  return { fetchSpy, sent };
+  return { fetch, sent, client: clientWith(fetch) };
 };
 
 const sentRequest = ({ sent }: ReturnType<typeof reply>): Sent => {
@@ -58,7 +73,7 @@ describe('YooKassaClient.isConfigured', () => {
     [{ shopId: '', secretKey: 'secret' }, false],
     [{ shopId: 'shop', secretKey: '' }, false]
   ])('needs both the shop id and the secret key (%o)', (input, expected) => {
-    expect(new YooKassaClient(input).isConfigured).toBe(expected);
+    expect(clientWith(vi.fn<Fetch>())(input).isConfigured).toBe(expected);
   });
 });
 
@@ -66,7 +81,7 @@ describe('YooKassaClient.createPayment', () => {
   it('posts a redirect payment with basic auth and the idempotence key', async () => {
     const replied = reply(payment);
 
-    await expect(new YooKassaClient(credentials).createPayment(purchase)).resolves.toEqual(payment);
+    await expect(replied.client().createPayment(purchase)).resolves.toEqual(payment);
 
     const { request, body } = sentRequest(replied);
 
@@ -88,11 +103,9 @@ describe('YooKassaClient.createPayment', () => {
   it('refuses without calling YooKassa when credentials are missing', async () => {
     const replied = reply(payment);
 
-    await expect(new YooKassaClient({ shopId: '', secretKey: '' }).createPayment(purchase)).rejects.toMatchObject({
-      response: { code: 'PAYMENT_FAILED' }
-    });
+    await expect(replied.client({ shopId: '', secretKey: '' }).createPayment(purchase)).rejects.toBeInstanceOf(AppNotFoundException);
 
-    expect(replied.fetchSpy).not.toHaveBeenCalled();
+    expect(replied.fetch).not.toHaveBeenCalled();
   });
 });
 
@@ -100,7 +113,7 @@ describe('YooKassaClient.chargeSavedMethod', () => {
   it('charges the saved payment method without a confirmation step', async () => {
     const replied = reply(payment);
 
-    await new YooKassaClient(credentials).chargeSavedMethod({
+    await replied.client().chargeSavedMethod({
       amountRub: 529,
       description: 'Renewal',
       paymentMethodId: 'card-1',
@@ -120,7 +133,7 @@ describe('YooKassaClient.getPayment', () => {
   it('reads a payment by its encoded id without an idempotence key', async () => {
     const replied = reply(payment);
 
-    await new YooKassaClient(credentials).getPayment('a/b');
+    await replied.client().getPayment('a/b');
 
     const { request } = sentRequest(replied);
 
@@ -132,23 +145,21 @@ describe('YooKassaClient.getPayment', () => {
 
 describe('YooKassaClient errors', () => {
   it('turns an error response into a payment failure', async () => {
-    reply({ type: 'error', code: 'invalid_request', description: 'Bad amount' }, 400);
-
-    const failure = new YooKassaClient(credentials).getPayment('pay-1');
+    const failure = reply({ type: 'error', code: 'invalid_request', description: 'Bad amount' }, 400).client().getPayment('pay-1');
 
     await expect(failure).rejects.toBeInstanceOf(AppBadRequestException);
     await expect(failure).rejects.toMatchObject({ response: { code: 'PAYMENT_FAILED' } });
   });
 
   it('turns an unexpected body into a payment failure', async () => {
-    reply({ id: 'pay-1', status: 'unknown' });
-
-    await expect(new YooKassaClient(credentials).getPayment('pay-1')).rejects.toMatchObject({ response: { code: 'PAYMENT_FAILED' } });
+    await expect(reply({ id: 'pay-1', status: 'unknown' }).client().getPayment('pay-1')).rejects.toMatchObject({
+      response: { code: 'PAYMENT_FAILED' }
+    });
   });
 
   it('turns a network error into a payment failure', async () => {
-    vi.spyOn(globalThis, 'fetch').mockRejectedValue(new TypeError('fetch failed'));
+    const offline = clientWith(vi.fn<Fetch>().mockRejectedValue(new TypeError('fetch failed')));
 
-    await expect(new YooKassaClient(credentials).getPayment('pay-1')).rejects.toBeInstanceOf(AppBadRequestException);
+    await expect(offline().getPayment('pay-1')).rejects.toBeInstanceOf(AppBadRequestException);
   });
 });

@@ -1,6 +1,7 @@
 import type { PoolConfig } from 'pg';
 
 import type { Prisma, PrismaClient } from '../../../generated';
+import type { PrismaService } from './prisma.service';
 
 export type CreatePrismaClientInput = {
   url: string;
@@ -21,3 +22,5 @@ export type PrismaModuleOptions = {
   poolMax?: number;
   statementTimeoutMs?: number;
 };
+
+export type PrismaExecutor = Prisma.TransactionClient | PrismaService;

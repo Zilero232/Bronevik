@@ -1,2 +1,2 @@
-export { planOperation } from './mission-plan';
-export type { PlanBranch, PlanMission, PlannedStep, PlanProgress } from './mission-plan.types';
+export { planOperation, toPlanBranches } from './mission-plan';
+export type { PlanBranch, PlannedStep, PlanProgress } from './mission-plan.types';

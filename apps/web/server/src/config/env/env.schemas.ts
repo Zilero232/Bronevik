@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { envList } from '../env-list';
 import { LESTA } from '../lesta.constants';
 
 const ipAddress = z.union([z.ipv4(), z.ipv6()]);
@@ -22,16 +23,7 @@ export const envSchema = z.object({
 
   LESTA_APPLICATION_ID: z.string().default(''),
   LESTA_RPS: z.coerce.number().int().positive().default(20),
-  LESTA_EGRESS_IPS: z
-    .string()
-    .default('')
-    .transform((value) =>
-      value
-        .split(LESTA.egress.listSeparator)
-        .map((part) => part.trim())
-        .filter((part) => part.length > 0)
-    )
-    .pipe(z.array(ipAddress).max(LESTA.egress.maxIps)),
+  LESTA_EGRESS_IPS: z.string().default('').transform(envList).pipe(z.array(ipAddress).max(LESTA.egress.maxIps)),
   LESTA_EGRESS_IP: z.union([ipAddress, z.literal('')]).default(''),
 
   TELEGRAM_BOT_TOKEN: z.string().default(''),

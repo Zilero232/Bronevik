@@ -1,1 +1,2 @@
-export { bonusCodeStatus } from './bonus-status';
+export { reportedStatus, reportTallies } from './bonus-status';
+export type { ReportTally } from './bonus-status.types';

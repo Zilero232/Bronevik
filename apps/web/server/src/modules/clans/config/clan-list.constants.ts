@@ -1,0 +1,10 @@
+import type { ClanListSortField } from '@otmetki/schemas';
+
+export const CLAN_LIST_SORT = {
+  members: 'c.members_count',
+  wn8: 's.avg_wn8',
+  winRate: 's.avg_win_rate',
+  eloRating10: 's.elo_rating_10',
+  strongholdLevel: 'c.stronghold_level',
+  activeMembers: 's.active_members_7d'
+} as const satisfies Record<ClanListSortField, string>;

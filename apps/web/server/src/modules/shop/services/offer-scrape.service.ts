@@ -56,7 +56,7 @@ export class OfferScrapeService {
 
   private async store({ item, detail, vehicles, now }: StoreOfferInput): Promise<number> {
     const tankIds = matchTankNames({ text: `${item.title}\n${detail?.text ?? ''}`, vehicles, minLength: NEWS_ENRICH.minTankNameLength });
-    const discountPercent = detail?.tankDiscountPercent ?? null;
+    const discountPercent = detail?.tankDiscountPercent || null;
     const offer = await this.createOffer({
       source: OFFER_SCRAPE.source,
       externalId: new URL(item.url).pathname,
@@ -64,7 +64,7 @@ export class OfferScrapeService {
       url: item.url,
       image: item.image,
       tankIds,
-      discountPercent,
+      discountPercent: detail?.tankDiscountPercent ?? null,
       contents: toJsonValue({ discounts: detail?.discounts ?? [], bonusCodes: detail?.bonusCodes ?? [] }),
       startsAt: item.publishedAt ?? now,
       endsAt: detail?.endsAt ?? null
@@ -84,13 +84,14 @@ export class OfferScrapeService {
       });
     }
 
+    const names = new Map(vehicles.map((vehicle) => [vehicle.tankId, vehicle.name]));
     let notified = 0;
 
     for (const tankId of tankIds) {
-      const tankName = vehicles.find((vehicle) => vehicle.tankId === tankId)?.name ?? String(tankId);
+      const tankName = names.get(tankId) ?? String(tankId);
 
-      notified += await this.notifications.tankDiscounted({ tankId, tankName, discountPercent: discountPercent || null, offerId: offer.id });
-      notified += await this.announceReturn({ tankId, tankName, discountPercent: discountPercent || null, offerId: offer.id, now });
+      notified += await this.notifications.tankDiscounted({ tankId, tankName, discountPercent, offerId: offer.id });
+      notified += await this.announceReturn({ tankId, tankName, discountPercent, offerId: offer.id, now });
     }
 
     return notified;

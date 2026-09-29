@@ -1,1 +1,1 @@
-export { arenaLocalizationKeys, buildArenaRows, localizeArena } from './arena-rows';
+export { arenaLocalizationKeys, buildArenaRows } from './arena-rows';

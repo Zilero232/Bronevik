@@ -10,8 +10,8 @@ import type { AssertFeatureInput, AssertWithinLimitInput, LimitInput } from '../
 
 import { AppForbiddenException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
-import { ENTITLEMENTS, PLUS_SUBSCRIPTION } from '../config';
-import { isTrialEligible, plusStateOf, trialDaysFor } from '../lib';
+import { ENTITLEMENTS } from '../config';
+import { isTrialEligible, plusStateOf, plusSubscriptionKey, trialDaysFor } from '../lib';
 import { EntitlementsBusService } from './entitlements-bus.service';
 
 @Injectable()
@@ -43,7 +43,7 @@ export class EntitlementsService implements OnModuleInit, OnModuleDestroy {
   async refresh(userId: string): Promise<PlusState> {
     const [subscription, accounts, referral] = await Promise.all([
       this.prisma.subscription.findUnique({
-        where: { userId_product: { userId, product: PLUS_SUBSCRIPTION.product } },
+        where: plusSubscriptionKey(userId),
         select: { status: true, currentPeriodEnd: true, trialStartedAt: true }
       }),
       this.prisma.userLestaAccount.findMany({ where: { userId }, select: { accountId: true } }),

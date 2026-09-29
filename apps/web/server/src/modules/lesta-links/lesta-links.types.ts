@@ -25,7 +25,7 @@ export type TokenRenewalResult = {
   failed: number;
 };
 
-export type StaleLink = {
+type StaleLink = {
   userId: string;
   accountId: bigint;
   tokenExpiresAt: Date | null;

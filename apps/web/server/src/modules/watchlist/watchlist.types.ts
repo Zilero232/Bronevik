@@ -54,7 +54,7 @@ export type MarksGainRow = {
   marks: number;
 };
 
-export type DigestSettings = Pick<NotificationSettings, 'userId' | 'watchlistDigest' | 'watchlistDigestAt'>;
+type DigestSettings = Pick<NotificationSettings, 'userId' | 'watchlistDigest' | 'watchlistDigestAt'>;
 
 export type DigestForInput = {
   settings: DigestSettings;

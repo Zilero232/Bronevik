@@ -1,17 +1,10 @@
 import type { ClanMemberEvent } from '@otmetki/schemas';
 
-import type { ClanRole } from '../../../../../../generated';
+import type { ClanMember, ClanRole } from '../../../../../../generated';
 
-type StoredMember = {
-  accountId: bigint;
-  role: ClanRole;
-};
+type StoredMember = Pick<ClanMember, 'accountId' | 'role'>;
 
-export type CurrentMember = {
-  accountId: bigint;
-  role: ClanRole;
-  joinedAt: Date | null;
-};
+export type CurrentMember = Pick<ClanMember, 'accountId' | 'joinedAt' | 'role'>;
 
 export type DiffClanRosterInput = {
   stored: readonly StoredMember[];

@@ -7,7 +7,7 @@ import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { AllExceptionsFilter } from '../../../common/filters';
-import { INDEX } from '../lib/select-release/_tests/fixtures';
+import { INDEX } from '../lib/release-index/_tests/fixtures';
 import { ModpackReleasesController } from '../modpack-releases.controller';
 import { DownloadFilesService, ModpackReleasesService, ReleaseIndexService } from '../services';
 

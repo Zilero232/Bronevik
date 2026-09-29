@@ -8,7 +8,9 @@ import type { CreateBlogPostRequest } from '../../blog.types';
 import type { BlogPostRow } from '../../selects';
 import type { BlogImageService } from '../blog-image.service';
 
+import { Prisma } from '../../../../../generated';
 import { AppBadRequestException, AppConflictException, AppNotFoundException } from '../../../../common/exceptions';
+import { PRISMA_CODE } from '../../../../core';
 import { BLOG, BLOG_IMAGES } from '../../config';
 import { BlogEditorService } from '../blog-editor.service';
 
@@ -132,6 +134,18 @@ describe('BlogEditorService.create', () => {
 
     await expect(service.create({ ...CREATE, slug: 'patch-1-45' })).rejects.toBeInstanceOf(AppConflictException);
     expect(prisma.blogPost.create).not.toHaveBeenCalled();
+  });
+
+  it('answers a conflict when another post takes the slug between the check and the insert', async () => {
+    const { service, prisma } = createService();
+
+    prisma.blogPost.count.mockResolvedValue(0);
+
+    prisma.blogPost.create.mockRejectedValue(
+      new Prisma.PrismaClientKnownRequestError('unique', { code: PRISMA_CODE.uniqueViolation, clientVersion: 'test' })
+    );
+
+    await expect(service.create(CREATE)).rejects.toBeInstanceOf(AppConflictException);
   });
 
   it('refuses an uploaded cover and a cover URL at once', async () => {

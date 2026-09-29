@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { PLUS_PLANS, PRICING } from '../../../config';
-import { describePlan, isPlusPlan, planPrice } from '../pricing';
+import { describePlan, isPlusPlan, planPrice, storedPlan } from '../pricing';
 
 describe('planPrice', () => {
   it('charges the list price without a discount', () => {
@@ -37,5 +37,13 @@ describe('isPlusPlan', () => {
     expect(isPlusPlan('halfYearly')).toBe(false);
     expect(isPlusPlan('toString')).toBe(false);
     expect(isPlusPlan(null)).toBe(false);
+  });
+});
+
+describe('storedPlan', () => {
+  it('keeps a plan on sale and falls back to the monthly plan otherwise', () => {
+    expect(storedPlan(PLUS_PLANS.yearly.plan)).toBe(PLUS_PLANS.yearly.plan);
+    expect(storedPlan('halfYearly')).toBe(PLUS_PLANS.monthly.plan);
+    expect(storedPlan(null)).toBe(PLUS_PLANS.monthly.plan);
   });
 });

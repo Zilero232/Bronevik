@@ -3,12 +3,13 @@ import { addHours } from 'date-fns';
 
 import type { Prisma } from '../../../../generated';
 import type { OwnedById } from '../../community-core';
-import type { CreatePlatoonRequest, PlatoonPage, PlatoonQuery } from '../platoons.types';
+import type { AuthorLookups, CreatePlatoonRequest, PlatoonPage, PlatoonQuery, PlatoonView } from '../platoons.types';
 
 import { AppBadRequestException, AppNotFoundException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
 import { CommunityAccountsService } from '../../community-core';
 import { PLATOON } from '../config';
+import { inWn8Range } from '../lib';
 import { toPlatoonView } from '../mappers';
 
 @Injectable()
@@ -43,25 +44,14 @@ export class PlatoonService {
         this.prisma.platoonPost.count({ where })
       ]);
 
-      const [stats, nicknames] = await Promise.all([
-        this.accounts.statsOf(page.map((row) => row.accountId)),
-        this.accounts.nicknamesOf(page.map((row) => row.accountId))
-      ]);
+      const { stats, nicknames } = await this.lookups(page.map((row) => row.accountId));
 
       return { items: page.map((post) => toPlatoonView({ post, stats, nicknames })), total, limit, offset };
     }
 
     const rows = await this.prisma.platoonPost.findMany({ where, orderBy: { createdAt: 'desc' }, take: PLATOON.filterScanLimit });
-    const [stats, nicknames] = await Promise.all([
-      this.accounts.statsOf(rows.map((row) => row.accountId)),
-      this.accounts.nicknamesOf(rows.map((row) => row.accountId))
-    ]);
-
-    const filtered = rows.filter((row) => {
-      const wn8 = stats.get(row.accountId)?.wn8 ?? null;
-
-      return (minWn8 === undefined || (wn8 !== null && wn8 >= minWn8)) && (maxWn8 === undefined || (wn8 !== null && wn8 <= maxWn8));
-    });
+    const { stats, nicknames } = await this.lookups(rows.map((row) => row.accountId));
+    const filtered = rows.filter((row) => inWn8Range({ wn8: stats.get(row.accountId)?.wn8 ?? null, minWn8, maxWn8 }));
 
     return {
       items: filtered.slice(offset, offset + limit).map((post) => toPlatoonView({ post, stats, nicknames })),
@@ -71,7 +61,16 @@ export class PlatoonService {
     };
   }
 
-  async create({ userId, accountId, expiresInHours, availableFrom, availableUntil, minWn8, message, ...rest }: CreatePlatoonRequest) {
+  async create({
+    userId,
+    accountId,
+    expiresInHours,
+    availableFrom,
+    availableUntil,
+    minWn8,
+    message,
+    ...rest
+  }: CreatePlatoonRequest): Promise<PlatoonView> {
     const account = await this.accounts.accountOf({ userId, accountId });
     const now = new Date();
 
@@ -96,9 +95,7 @@ export class PlatoonService {
       });
     });
 
-    const [stats, nicknames] = await Promise.all([this.accounts.statsOf([account]), this.accounts.nicknamesOf([account])]);
-
-    return toPlatoonView({ post, stats, nicknames });
+    return toPlatoonView({ post, ...(await this.lookups([account])) });
   }
 
   async close({ id, userId }: OwnedById): Promise<void> {
@@ -113,5 +110,11 @@ export class PlatoonService {
     const { count } = await this.prisma.platoonPost.updateMany({ where: { status: 'open', expiresAt: { lte: now } }, data: { status: 'expired' } });
 
     return count;
+  }
+
+  private async lookups(accountIds: readonly bigint[]): Promise<AuthorLookups> {
+    const [stats, nicknames] = await Promise.all([this.accounts.statsOf(accountIds), this.accounts.nicknamesOf(accountIds)]);
+
+    return { stats, nicknames };
   }
 }

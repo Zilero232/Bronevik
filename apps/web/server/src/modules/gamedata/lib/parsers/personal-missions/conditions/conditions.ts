@@ -7,7 +7,7 @@ import { PERSONAL_MISSION_KEYS } from '../personal-missions.constants';
 
 const symbol = (name: string): string => (name.split('.').pop() ?? name).toLowerCase();
 
-export const toJson = (value: PyValue | undefined): PersonalMissionJson => {
+const toJson = (value: PyValue | undefined): PersonalMissionJson => {
   if (value === undefined || value === null || typeof value !== 'object') {
     return value ?? null;
   }

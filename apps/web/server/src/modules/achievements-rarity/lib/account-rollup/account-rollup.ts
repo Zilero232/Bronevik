@@ -1,10 +1,11 @@
 import { z } from 'zod';
 
-import type { AccountRollup, AccountRollupInput } from './account-rollup.types';
+import type { AccountRollup, AccountRollupInput, ObtainableRow } from './account-rollup.types';
 
-import { ACHIEVEMENTS_VIEW } from '../../config';
+import { ACHIEVEMENTS_AGGREGATE, ACHIEVEMENTS_VIEW } from '../../config';
 
 const countsSchema = z.record(z.string(), z.number()).catch({});
+const completionSections = new Set<string>(ACHIEVEMENTS_AGGREGATE.completionSections);
 
 export const readCounts = (value: unknown): Record<string, number> => countsSchema.parse(value);
 
@@ -23,3 +24,6 @@ export const accountRollup = ({ counts, points, obtainable }: AccountRollupInput
     completion: obtainable.size > 0 ? (obtained / obtainable.size) * ACHIEVEMENTS_VIEW.percentScale : 0
   };
 };
+
+export const obtainableNames = (catalog: readonly ObtainableRow[]): Set<string> =>
+  new Set(catalog.filter((row) => row.section !== null && completionSections.has(row.section)).map((row) => row.name));

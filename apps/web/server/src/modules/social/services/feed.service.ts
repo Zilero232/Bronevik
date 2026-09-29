@@ -18,7 +18,7 @@ export class FeedService {
     private readonly events: SnapshotEventsService
   ) {}
 
-  async feed({ userId, days }: FeedInput): Promise<{ items: FeedItem[] }> {
+  async feed({ userId, days = FEED.days }: FeedInput): Promise<{ items: FeedItem[] }> {
     const { accountIds } = await this.follows.circle(userId);
     const until = new Date();
     const since = subDays(until, days);

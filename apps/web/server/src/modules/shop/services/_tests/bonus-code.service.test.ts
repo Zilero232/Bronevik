@@ -83,22 +83,34 @@ describe('BonusCodeService.refreshStatuses', () => {
     prisma.bonusCode.updateMany.mockResolvedValue({ count: 2 });
     prisma.bonusCode.findMany.mockResolvedValue([row]);
 
-    vi.mocked(prisma.bonusCodeReport.groupBy).mockResolvedValue([
-      {
-        id: 'report-1',
-        code: row.code,
-        userId: 'u1',
-        verdict: 'working',
-        ipHash: null,
-        createdAt: now,
-        _count: { _all: BONUS_CODE.minReports },
-        _min: undefined,
-        _max: undefined
-      }
-    ]);
+    vi.mocked(prisma.bonusCodeReport.groupBy)
+      .mockResolvedValueOnce([
+        {
+          id: 'report-1',
+          code: row.code,
+          userId: 'u1',
+          verdict: 'working',
+          ipHash: null,
+          createdAt: now,
+          _count: { _all: BONUS_CODE.minReports },
+          _min: undefined,
+          _max: undefined
+        }
+      ])
+      .mockResolvedValueOnce([
+        {
+          id: 'report-1',
+          code: row.code,
+          userId: 'u1',
+          verdict: 'working',
+          ipHash: null,
+          createdAt: now,
+          _count: undefined,
+          _min: undefined,
+          _max: { createdAt: now }
+        }
+      ]);
 
-    prisma.bonusCodeReport.findFirst.mockResolvedValue(null);
-    prisma.bonusCode.findUniqueOrThrow.mockResolvedValue(row);
     prisma.bonusCode.update.mockResolvedValue(row);
 
     expect(await service.refreshStatuses(now)).toBe(3);
@@ -110,7 +122,7 @@ describe('BonusCodeService.refreshStatuses', () => {
 
     expect(prisma.bonusCode.update.mock.calls[0]?.[0]).toMatchObject({
       where: { code: row.code },
-      data: { workingReports: BONUS_CODE.minReports, expiredReports: 0, status: 'working' }
+      data: { workingReports: BONUS_CODE.minReports, expiredReports: 0, lastReportAt: now, status: 'working' }
     });
   });
 
@@ -122,5 +134,6 @@ describe('BonusCodeService.refreshStatuses', () => {
 
     expect(await service.refreshStatuses(now)).toBe(4);
     expect(prisma.bonusCode.update).not.toHaveBeenCalled();
+    expect(prisma.bonusCodeReport.groupBy).not.toHaveBeenCalled();
   });
 });

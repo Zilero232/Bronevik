@@ -5,16 +5,17 @@ import { subDays } from 'date-fns';
 import { sortBy } from 'remeda';
 
 import type { BucketTankRow, HistoryWindowPolicy } from '../lib';
-import type { ActivityInput, ActivityRow, HistoryInput, HistoryPolicyInput } from '../players.types';
+import type { ActivityInput, HistoryInput, HistoryPolicyInput } from '../players.types';
+import type { ActivityRow } from '../queries';
 
 import { moscowDay, moscowDayStart, percentOf } from '../../../common/lib';
-import { TIME } from '../../../config';
 import { PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { BronyaReferencesService, ExpectedValuesService, VehicleCatalogService } from '../../reference';
 import { HISTORY_WINDOW } from '../config';
 import { historyWindow, seriesPoints } from '../lib';
 import { toClanHistoryEntry, toNicknameHistoryEntry } from '../mappers';
+import { activityDaysSql, historySeriesSql } from '../queries';
 
 @Injectable()
 export class PlayerHistoryService {
@@ -44,20 +45,7 @@ export class PlayerHistoryService {
     const { from, to } = historyWindow({ from: query.from, to: query.to, now: new Date(), policy });
 
     const [rows, expected, tiers, patches, references] = await Promise.all([
-      this.prisma.$queryRaw<BucketTankRow[]>`
-        SELECT (date_trunc(${query.granularity}, captured_at AT TIME ZONE ${TIME.zone}) AT TIME ZONE ${TIME.zone}) AS bucket,
-               tank_id,
-               sum(battles)::float8 AS battles,
-               sum(wins)::float8 AS wins,
-               sum(damage_dealt)::float8 AS damage,
-               sum(frags)::float8 AS frags,
-               sum(spotted)::float8 AS spotted,
-               sum(dropped_capture_points)::float8 AS def,
-               sum(capture_points)::float8 AS cap
-        FROM tank_battle_delta
-        WHERE account_id = ${accountId} AND mode = 'random'::stats_mode AND captured_at >= ${from} AND captured_at < ${to}
-        GROUP BY 1, 2
-      `,
+      this.prisma.$queryRaw<BucketTankRow[]>(historySeriesSql({ accountId, granularity: query.granularity, from, to })),
       this.expected.all(),
       this.catalog.tiers(),
       this.prisma.gameVersion.findMany({ where: { releasedAt: { gte: from, lt: to } }, orderBy: { releasedAt: 'asc' } }),
@@ -78,15 +66,7 @@ export class PlayerHistoryService {
     const to = new Date();
     const from = moscowDayStart(subDays(to, days - 1));
 
-    const rows = await this.prisma.$queryRaw<ActivityRow[]>`
-      SELECT to_char(captured_at AT TIME ZONE ${TIME.zone}, 'YYYY-MM-DD') AS day,
-             sum(battles)::float8 AS battles,
-             sum(wins)::float8 AS wins
-      FROM tank_battle_delta
-      WHERE account_id = ${accountId} AND mode = 'random'::stats_mode AND captured_at >= ${from}
-      GROUP BY 1
-      ORDER BY 1
-    `;
+    const rows = await this.prisma.$queryRaw<ActivityRow[]>(activityDaysSql({ accountId, from }));
 
     return {
       from: moscowDay(from),

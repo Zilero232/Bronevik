@@ -1,6 +1,7 @@
-import { gameEventSchema, gameEventsQuerySchema } from '@otmetki/schemas';
+import { gameEventsQuerySchema } from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
-import { z } from 'zod';
+
+import { gameEventListSchema } from './events.schemas';
 
 export class GameEventsQueryDto extends createZodDto(gameEventsQuerySchema) {}
-export class GameEventListDto extends createZodDto(z.array(gameEventSchema)) {}
+export class GameEventListDto extends createZodDto(gameEventListSchema) {}

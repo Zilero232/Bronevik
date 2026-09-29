@@ -1,2 +1,2 @@
-export { accountRollup, heldNames, readCounts } from './account-rollup';
-export type { AccountRollup, AccountRollupInput } from './account-rollup.types';
+export { accountRollup, heldNames, obtainableNames, readCounts } from './account-rollup';
+export type { AccountRollup, AccountRollupInput, ObtainableRow } from './account-rollup.types';

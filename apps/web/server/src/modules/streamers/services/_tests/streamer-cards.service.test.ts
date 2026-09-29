@@ -3,7 +3,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { AccountRating, PlayerTank, StreamerProfile, Vehicle } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
-import type { ProfileWithChannels } from '../../streamers.types';
+import type { ProfileCardRow } from '../../selects';
 
 import { STREAMERS } from '../../config';
 import { StreamerCardsService } from '../streamer-cards.service';
@@ -36,7 +36,7 @@ const profileRow = (overrides: Partial<StreamerProfile> = {}): StreamerProfile =
   ...overrides
 });
 
-const cardProfile = (overrides: Partial<ProfileWithChannels> = {}): ProfileWithChannels => ({
+const cardProfile = (overrides: Partial<ProfileCardRow> = {}): ProfileCardRow => ({
   ...profileRow(),
   channels: [],
   ...overrides

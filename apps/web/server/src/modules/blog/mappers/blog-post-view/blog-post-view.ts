@@ -1,23 +1,17 @@
 import { isIncludedIn } from 'remeda';
 
 import type { BlogEditorPostView, BlogPostSummaryView, BlogPostView } from '../../blog.types';
-import type { BlogCoverInput, ImageFileUrlInput, ToBlogPostViewInput } from './blog-post-view.types';
+import type { ToBlogPostViewInput } from './blog-post-view.types';
 
 import { toIso } from '../../../../common/lib';
 import { toAuthorView } from '../../../community-core';
-import { BLOG, BLOG_IMAGES } from '../../config';
-import { outlineArticle } from '../../lib';
-
-export const imageFileUrl = ({ key, apiUrl }: ImageFileUrlInput): string =>
-  new URL(BLOG_IMAGES.route.replace('{file}', key.slice(BLOG_IMAGES.prefix.length + 1)), apiUrl).href;
-
-export const blogCoverUrl = ({ post, apiUrl }: BlogCoverInput): string | null =>
-  post.coverKey ? imageFileUrl({ key: post.coverKey, apiUrl }) : post.coverUrl;
+import { BLOG } from '../../config';
+import { blogCoverUrl, outlineArticle } from '../../lib';
 
 export const toBlogPostSummary = ({ post, apiUrl }: ToBlogPostViewInput): BlogPostSummaryView => ({
   id: post.id,
   slug: post.slug,
-  locale: isIncludedIn(post.locale, BLOG.locales) ? post.locale : 'ru',
+  locale: isIncludedIn(post.locale, BLOG.locales) ? post.locale : BLOG.defaultLocale,
   title: post.title,
   excerpt: post.excerpt,
   cover: blogCoverUrl({ post, apiUrl }),

@@ -4,6 +4,8 @@ import { HttpStatus } from '@nestjs/common';
 
 import type { ModErrorCode } from '../../exceptions';
 
+import { PRISMA_CODE } from '../../../core';
+
 export const STATUS_TO_CODE: Partial<Record<number, ApiErrorCode>> = {
   [HttpStatus.BAD_REQUEST]: 'VALIDATION_FAILED',
   [HttpStatus.UNAUTHORIZED]: 'UNAUTHORIZED',
@@ -24,6 +26,7 @@ export const LESTA_NOT_CONNECTED = {
 
 export const MOD_REPLY = {
   pathPrefixes: ['/mod/', '/replays/mod'],
+  contractPaths: ['/mod/bind', '/mod/ingest'],
   serverTimeHeader: 'x-otmetki-server-time'
 } as const;
 
@@ -38,8 +41,6 @@ export const STATUS_TO_MOD_ERROR: Partial<Record<number, ModErrorCode>> = {
 };
 
 export const PRISMA_TO_HTTP: Partial<Record<string, { status: number; code: ApiErrorCode }>> = {
-  P2025: { status: HttpStatus.NOT_FOUND, code: 'NOT_FOUND' },
-  P2002: { status: HttpStatus.CONFLICT, code: 'CONFLICT' }
+  [PRISMA_CODE.notFound]: { status: HttpStatus.NOT_FOUND, code: 'NOT_FOUND' },
+  [PRISMA_CODE.uniqueViolation]: { status: HttpStatus.CONFLICT, code: 'CONFLICT' }
 };
-
-export const MOD_CONTRACT_PATHS: readonly string[] = ['/mod/bind', '/mod/ingest'];

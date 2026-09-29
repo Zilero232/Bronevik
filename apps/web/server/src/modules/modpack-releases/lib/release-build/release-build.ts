@@ -1,10 +1,10 @@
 import type { ModpackRelease, ModpackReleaseIndex } from '@otmetki/schemas';
 
 import { sortBy } from 'remeda';
-import semver from 'semver';
 
 import type { BuildReleaseInput, MergeReleaseIndexInput, ModpackCatalog, ReleasePayloadInput, UnsignedModpackRelease } from './release-build.types';
 
+import { newestFirst } from '../release-order';
 import { RELEASE_BUILD } from './release-build.constants';
 
 const hex = (digest: string) => digest.trim().toLowerCase();
@@ -51,9 +51,7 @@ const withRelease = (releases: ModpackReleaseIndex['releases'], release: Modpack
   const previous = releases.find((candidate) => candidate.version === release.version);
   const others = releases.filter((candidate) => candidate.version !== release.version);
 
-  return [...others, { ...release, publishedAt: previous?.publishedAt ?? release.publishedAt }].toSorted((left, right) =>
-    semver.rcompare(left.version, right.version)
-  );
+  return newestFirst([...others, { ...release, publishedAt: previous?.publishedAt ?? release.publishedAt }]);
 };
 
 export const mergeReleaseIndex = ({ index, release, manager }: MergeReleaseIndexInput): ModpackReleaseIndex => {

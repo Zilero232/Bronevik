@@ -1,2 +1,13 @@
-export { accumulateTracks, arenaBounds, emptyGrid, fallbackBounds, gridTotal, mergeGrids, readHeatmapCells } from './heatmap';
-export type { MapBounds } from './heatmap.types';
+export {
+  accumulateTracks,
+  arenaBounds,
+  emptyGrid,
+  fallbackBounds,
+  gridTotal,
+  heatmapKey,
+  heatmapScopes,
+  mergeGrids,
+  readHeatmapCells,
+  trackVehicleTag,
+  vehicleClassesOf
+} from './heatmap';

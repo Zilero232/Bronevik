@@ -1,4 +1,5 @@
 import type { AttendanceStatus } from '../../../../../generated';
+import type { WeeklyReportView } from '../../clan-workspace.types';
 
 export type WeeklyReportInput = {
   events: number;
@@ -7,9 +8,4 @@ export type WeeklyReportInput = {
   inactiveMembers: number;
 };
 
-export type WeeklyReport = {
-  events: number;
-  attendanceRate: number | null;
-  newCandidates: number;
-  inactiveMembers: number;
-};
+export type WeeklyReport = Pick<WeeklyReportView, 'attendanceRate' | 'events' | 'inactiveMembers' | 'newCandidates'>;

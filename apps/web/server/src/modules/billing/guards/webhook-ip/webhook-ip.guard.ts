@@ -1,9 +1,8 @@
 import type { CanActivate, ExecutionContext } from '@nestjs/common';
+import type { Request } from 'express';
 import type { BlockList } from 'node:net';
 
 import { Injectable } from '@nestjs/common';
-
-import type { WebhookRequest } from '../../billing.types';
 
 import { AppForbiddenException } from '../../../../common/exceptions';
 import { AppConfigService, isProduction } from '../../../../config';
@@ -21,8 +20,8 @@ export class WebhookIpGuard implements CanActivate {
   }
 
   canActivate(context: ExecutionContext): boolean {
-    const request = context.switchToHttp().getRequest<WebhookRequest>();
-    const ip = request.ip ?? request.socket?.remoteAddress ?? '';
+    const request = context.switchToHttp().getRequest<Request>();
+    const ip = request.ip ?? request.socket.remoteAddress ?? '';
 
     if (!isAllowedIp({ list: this.list, ip })) {
       throw new AppForbiddenException('FORBIDDEN', 'Webhook source is not allowed');

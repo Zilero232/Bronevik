@@ -1,5 +1,6 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
+import { match } from 'ts-pattern';
 
 import { WORKER_CONCURRENCY } from '../../config';
 import { JOB, purgeAccountPayloadSchema, QUEUE } from '../../contracts';
@@ -17,21 +18,17 @@ export class PurgeProcessor extends WorkerHost {
   }
 
   async process(job: Job) {
-    return this.metrics.track({
-      job,
-      run: async () => {
-        if (job.name === JOB.purge.dispatch) {
-          return { dispatched: await this.purge.dispatch() };
-        }
+    return this.metrics.track({ job, run: () => this.handle(job) });
+  }
 
-        if (job.name === JOB.purge.retention) {
-          return { deleted: await this.retention.purgeExpired() };
-        }
-
+  private async handle(job: Job) {
+    return match<string, Promise<unknown>>(job.name)
+      .with(JOB.purge.dispatch, async () => ({ dispatched: await this.purge.dispatch() }))
+      .with(JOB.purge.retention, async () => ({ deleted: await this.retention.purgeExpired() }))
+      .otherwise(async () => {
         await this.purge.purgeAccount(purgeAccountPayloadSchema.parse(job.data));
 
         return { purged: true };
-      }
-    });
+      });
   }
 }

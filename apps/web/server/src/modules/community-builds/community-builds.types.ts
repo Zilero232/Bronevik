@@ -13,3 +13,4 @@ export type CreateBuildRequest = CreateBuildInput & Owned;
 export type UpdateBuildRequest = z.output<typeof updateBuildSchema> & OwnedById;
 export type PopularBuildsInput = { tankId: number } & Viewer;
 export type BuildViewsInput = { rows: BuildRow[] } & Viewer;
+export type BuildViewInput = { row: BuildRow } & Viewer;

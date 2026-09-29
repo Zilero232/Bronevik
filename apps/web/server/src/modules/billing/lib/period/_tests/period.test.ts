@@ -1,7 +1,7 @@
 import { addDays, addMonths } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 
-import { cancelsAtPeriodEnd, extendPeriod, isPeriodActive, renewalIdempotenceKey, revokePeriod } from '../period';
+import { cancelsAtPeriodEnd, extendPeriod, renewalIdempotenceKey, revokePeriod } from '../period';
 
 const now = new Date('2026-09-25T12:00:00Z');
 
@@ -18,13 +18,6 @@ describe('extendPeriod', () => {
 
   it('starts a first period from now', () => {
     expect(extendPeriod({ currentPeriodEnd: null, now, months: 12 })).toEqual(addMonths(now, 12));
-  });
-});
-
-describe('isPeriodActive', () => {
-  it('is false exactly at the end of the period', () => {
-    expect(isPeriodActive({ currentPeriodEnd: now, now })).toBe(false);
-    expect(isPeriodActive({ currentPeriodEnd: null, now })).toBe(false);
   });
 });
 

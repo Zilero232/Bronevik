@@ -15,3 +15,5 @@ export const describePlan = ({ plan, isRenewal }: DescribePlanInput): string =>
   (isRenewal ? PAYMENT_DESCRIPTION.renewal : PAYMENT_DESCRIPTION.purchase).replace('{months}', String(PLUS_PLANS[plan].months));
 
 export const isPlusPlan = (plan: string | null): plan is PlusPlan => plan !== null && Object.hasOwn(PLUS_PLANS, plan);
+
+export const storedPlan = (plan: string | null): PlusPlan => (isPlusPlan(plan) ? plan : PLUS_PLANS.monthly.plan);

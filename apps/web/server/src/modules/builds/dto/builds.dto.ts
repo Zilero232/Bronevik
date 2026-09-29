@@ -8,13 +8,13 @@ import {
   loadoutResultSchema,
   popularBuildsQuerySchema,
   popularBuildsSchema,
-  recommendedBuildSchema,
-  tankIdSchema
+  recommendedBuildSchema
 } from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
-import { z } from 'zod';
 
-export class BuildTankParamsDto extends createZodDto(z.object({ id: tankIdSchema })) {}
+import { buildTankParamsSchema } from './builds.schemas';
+
+export class BuildTankParamsDto extends createZodDto(buildTankParamsSchema) {}
 export class BuildOptionsDto extends createZodDto(buildOptionsSchema) {}
 export class LoadoutRequestDto extends createZodDto(loadoutRequestSchema) {}
 export class LoadoutResultDto extends createZodDto(loadoutResultSchema) {}

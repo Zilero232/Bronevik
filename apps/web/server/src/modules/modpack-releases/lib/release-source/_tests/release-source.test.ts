@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { INDEX } from '../../select-release/_tests/fixtures';
+import { INDEX } from '../../release-index/_tests/fixtures';
 import { isPublished, releaseNeeds } from '../release-source';
 import { managerReleaseManifestSchema, modpackReleaseManifestSchema } from '../release-source.schemas';
 

@@ -88,15 +88,16 @@ export class ClanResolverService {
         skipDuplicates: true
       });
 
-      for (const member of members) {
-        const role = clanRoleToDb(member.role) ?? 'private';
-        const accountId = BigInt(member.account_id);
+      const rows = members.map((member) => ({
+        accountId: BigInt(member.account_id),
+        clanId,
+        role: clanRoleToDb(member.role) ?? CLAN_PAGE.defaultRole,
+        joinedAt: fromUnixSeconds(member.joined_at)
+      }));
 
-        await tx.clanMember.upsert({
-          where: { accountId },
-          create: { accountId, clanId, role, joinedAt: fromUnixSeconds(member.joined_at) },
-          update: { clanId, role, joinedAt: fromUnixSeconds(member.joined_at) }
-        });
+      if (rows.length > 0) {
+        await tx.clanMember.deleteMany({ where: { accountId: { in: rows.map((row) => row.accountId) } } });
+        await tx.clanMember.createMany({ data: rows });
       }
     });
 

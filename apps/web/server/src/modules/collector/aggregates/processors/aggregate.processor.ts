@@ -33,19 +33,19 @@ export class AggregateProcessor extends WorkerHost {
   }
 
   async process(job: Job) {
-    return this.metrics.track({
-      job,
-      run: () =>
-        match<string, Promise<unknown>>(job.name)
-          .with(JOB.aggregate.accountRatings, () => this.accountRatings.compute(accountRatingsPayloadSchema.parse(job.data)))
-          .with(JOB.aggregate.serverStats, () => this.serverStats.compute())
-          .with(JOB.aggregate.tankPercentiles, () => this.percentiles.compute())
-          .with(JOB.aggregate.tierMaintenance, () => this.maintenance.run())
-          .with(JOB.aggregate.tankEconomy, () => this.economy.compute())
-          .with(JOB.aggregate.learningCurve, () => this.learning.compute())
-          .with(JOB.aggregate.buildUsage, () => this.buildUsage.compute())
-          .with(JOB.aggregate.modeMeta, () => this.modeMeta.compute())
-          .otherwise(async () => ({ ignored: job.name }))
-    });
+    return this.metrics.track({ job, run: () => this.handle(job) });
+  }
+
+  private async handle(job: Job) {
+    return match<string, Promise<unknown>>(job.name)
+      .with(JOB.aggregate.accountRatings, () => this.accountRatings.compute(accountRatingsPayloadSchema.parse(job.data)))
+      .with(JOB.aggregate.serverStats, () => this.serverStats.compute())
+      .with(JOB.aggregate.tankPercentiles, () => this.percentiles.compute())
+      .with(JOB.aggregate.tierMaintenance, () => this.maintenance.run())
+      .with(JOB.aggregate.tankEconomy, () => this.economy.compute())
+      .with(JOB.aggregate.learningCurve, () => this.learning.compute())
+      .with(JOB.aggregate.buildUsage, () => this.buildUsage.compute())
+      .with(JOB.aggregate.modeMeta, () => this.modeMeta.compute())
+      .otherwise(async () => ({ ignored: job.name }));
   }
 }

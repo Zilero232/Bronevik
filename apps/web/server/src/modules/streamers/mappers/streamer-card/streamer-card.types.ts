@@ -1,10 +1,10 @@
 import type { AccountRating, PlayerTank, Vehicle } from '../../../../../generated';
-import type { ProfileWithChannels } from '../../streamers.types';
+import type { ProfileCardRow } from '../../selects';
 
-export type FavouriteTankRow = Pick<PlayerTank, 'battles' | 'tankId'>;
+type FavouriteTankRow = Pick<PlayerTank, 'battles' | 'tankId'>;
 
 export type ToStreamerCardInput = {
-  profile: ProfileWithChannels;
+  profile: ProfileCardRow;
   rating: AccountRating | undefined;
   marks3: number | null;
   favourites: readonly FavouriteTankRow[];

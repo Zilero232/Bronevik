@@ -6,11 +6,12 @@ import type { TournamentParticipant } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { CommunityAccountsService, PlayerStats } from '../../../community-core';
 import type { Bracket } from '../../lib';
-import type { TournamentWithParticipants } from '../../mappers';
+import type { TournamentWithParticipants } from '../../selects';
 
 import { Prisma } from '../../../../../generated';
 import { AppBadRequestException, AppConflictException, AppForbiddenException } from '../../../../common/exceptions';
 import { TOURNAMENT } from '../../config';
+import { participantSeedsSql } from '../../queries';
 import { TournamentService } from '../tournament.service';
 
 const now = new Date('2026-09-25T12:00:00Z');
@@ -186,13 +187,7 @@ describe('TournamentService.start', () => {
 
     await service.start({ id, userId: 'organizer' });
 
-    const seeds = prisma.tournamentParticipant.update.mock.calls.map(([args]) => [args.where.tournamentId_accountId?.accountId, args.data.seed]);
-
-    expect(seeds).toEqual([
-      [2n, 1],
-      [3n, 2],
-      [1n, 3]
-    ]);
+    expect(prisma.$executeRaw).toHaveBeenCalledExactlyOnceWith(participantSeedsSql({ tournamentId: id, seededAccountIds: [2n, 3n, 1n] }));
   });
 
   it('writes a bracket that gives the top seed the bye', async () => {

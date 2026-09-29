@@ -6,9 +6,10 @@ import { unique } from 'remeda';
 import type { AccountBatchPayload, EnrolPayload } from '../contracts';
 import type { EnrolInput, EnrolManyInput, PollInput } from './producer.types';
 
+import { errorMessage } from '../../../common/lib';
 import { chunkIds } from '../../../lib/lesta';
 import { ENROL_PRIORITY, JOB, QUEUE } from '../contracts';
-import { PRODUCER } from './producer.constants';
+import { PRODUCER } from './config';
 
 @Injectable()
 export class CollectorProducerService {
@@ -39,7 +40,7 @@ export class CollectorProducerService {
         }))
       );
     } catch (error) {
-      this.logger.warn(`enrol of ${ids.length} account(s) was not queued: ${String(error)}`);
+      this.logger.warn(`enrol of ${ids.length} account(s) was not queued: ${errorMessage(error)}`);
     }
   }
 
@@ -53,7 +54,7 @@ export class CollectorProducerService {
     try {
       await this.pollQueue.addBulk(batches.map((batch) => ({ name: JOB.poll.batch, data: { accountIds: batch } })));
     } catch (error) {
-      this.logger.warn(`poll of ${accountIds.length} account(s) was not queued: ${String(error)}`);
+      this.logger.warn(`poll of ${accountIds.length} account(s) was not queued: ${errorMessage(error)}`);
     }
   }
 }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import { INDEX } from '../../release-index/_tests/fixtures';
 import { selectRelease } from '../select-release';
-import { INDEX } from './fixtures';
 
 describe('selectRelease', () => {
   it('picks the newest release that supports the client, comparing versions semantically', () => {

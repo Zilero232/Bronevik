@@ -15,11 +15,11 @@ export type BestBattlePeriod = z.infer<typeof bestBattlePeriodSchema>;
 
 export type BestBattleMetric = z.infer<typeof bestBattleMetricSchema>;
 
-export type BestBattleSource = (typeof BEST_BATTLE_SOURCES)[number];
+type BestBattleSource = (typeof BEST_BATTLE_SOURCES)[number];
 
-export type BestBattlesQuery = z.infer<typeof bestBattlesQuerySchema>;
+type BestBattlesQuery = z.infer<typeof bestBattlesQuerySchema>;
 
-export type BestBattlesFacetsQuery = z.infer<typeof bestBattlesFacetsQuerySchema>;
+type BestBattlesFacetsQuery = z.infer<typeof bestBattlesFacetsQuerySchema>;
 
 export type BestBattle = z.infer<typeof bestBattleSchema>;
 

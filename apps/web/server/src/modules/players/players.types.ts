@@ -34,12 +34,6 @@ export type ActivityInput = {
   days: number;
 };
 
-export type ActivityRow = {
-  day: string;
-  battles: number;
-  wins: number;
-};
-
 export type SessionsInput = {
   accountId: bigint;
   limit: number;
@@ -69,22 +63,11 @@ export type PlaytimeRow = {
   damage: number;
 };
 
-export type CombinedDamageRow = {
-  tank_id: number;
-  battles: number;
-  combined: number;
-};
-
 export type PopularPlayersInput = PopularPlayersQuery;
 
 export type PlaytimeResultInput = {
   rows: PlaytimeRow[];
   source: Playtime['source'];
-};
-
-export type PlaytimeWindowInput = {
-  accountId: bigint;
-  from: Date;
 };
 
 export type PopularRow = {

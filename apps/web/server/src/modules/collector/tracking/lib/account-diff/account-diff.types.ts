@@ -1,8 +1,6 @@
-export type TankBaseline = {
-  tankId: number;
-  battles: number;
-  markOfMastery: number;
-};
+import type { PlayerTank } from '../../../../../../generated';
+
+export type TankBaseline = Pick<PlayerTank, 'battles' | 'markOfMastery' | 'tankId'>;
 
 type CurrentTank = {
   tank_id: number;

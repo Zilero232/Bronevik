@@ -1,15 +1,23 @@
-import type { SettingsHistoryEntry, SettingsProvenance, SettingsTableRow, SettingsValues, StreamerSettingsView } from '@otmetki/schemas';
+import type {
+  SettingsGroupKey,
+  SettingsHistoryEntry,
+  SettingsProvenance,
+  SettingsTableRow,
+  SettingsValues,
+  StreamerSettingsView
+} from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
-import { changedGroups, settingsGroupKeySchema, streamerSettingsSchema, toSettingsValues, zoomMax } from '@otmetki/schemas';
+import { changedGroups, settingsGroupKeySchema, streamerSettingsSchema, toSettingsValues } from '@otmetki/schemas';
 
-import type { SaveMySettingsInput, SaveSettingsRequest } from '../streamers.types';
+import type { SaveEditorialSettingsInput, SaveMySettingsInput, SaveSettingsRequest } from '../streamers.types';
 
 import { Prisma } from '../../../../generated';
 import { AppNotFoundException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
 import { SETTINGS_HISTORY, STREAMERS } from '../config';
-import { toSettingsHistoryEntry, toSettingsView } from '../mappers';
+import { toSettingsHistoryEntry, toSettingsTableRow, toSettingsView } from '../mappers';
+import { SETTINGS_TABLE_SELECT } from '../selects';
 import { StreamerProfileService } from './streamer-profile.service';
 
 @Injectable()
@@ -57,13 +65,19 @@ export class StreamerSettingsService {
     return this.mine(userId);
   }
 
+  async saveEditorial({ slug, ...input }: SaveEditorialSettingsInput): Promise<void> {
+    const profile = await this.profiles.publicBySlug(slug);
+
+    await this.save({ ...input, profileId: profile.id, source: 'editorial' });
+  }
+
   async save({ profileId, userId, source, values, sourceUrls }: SaveSettingsRequest): Promise<void> {
     const current = await this.prisma.streamerProfile.findUniqueOrThrow({ where: { id: profileId }, select: { settings: true } });
     const previous = current.settings === null ? null : streamerSettingsSchema.parse(current.settings);
     const previousValues = previous ? toSettingsValues(previous) : null;
     const changed = changedGroups({ previous: previousValues, next: values });
     const checkedAt = new Date().toISOString();
-    const next: Record<string, unknown> = {};
+    const next: Partial<Record<SettingsGroupKey, unknown>> = {};
 
     for (const group of settingsGroupKeySchema.options) {
       const content = values[group];
@@ -92,42 +106,15 @@ export class StreamerSettingsService {
   async table(): Promise<SettingsTableRow[]> {
     const rows = await this.prisma.streamerProfile.findMany({
       where: { hiddenAt: null, settings: { not: Prisma.DbNull }, ...(STREAMERS.editorialEnabled ? {} : { kind: 'claimed' }) },
-      select: { slug: true, displayName: true, isLive: true, settings: true, settingsUpdatedAt: true },
+      select: SETTINGS_TABLE_SELECT,
       orderBy: { settingsUpdatedAt: { sort: 'desc', nulls: 'last' } }
     });
 
-    return rows.flatMap((row) => {
-      const parsed = streamerSettingsSchema.safeParse(row.settings);
-
-      if (!parsed.success || !row.settingsUpdatedAt) {
-        return [];
-      }
-
-      const values = parsed.data;
-
-      return {
-        slug: row.slug,
-        displayName: row.displayName,
-        isLive: row.isLive,
-        sniperSensitivity: values.controls?.sensitivity?.sniper ?? null,
-        fov: values.camera?.fov ?? null,
-        preset: values.display?.preset ?? null,
-        zoomMax: zoomMax(values.zoom?.steps),
-        modsKind: values.mods?.kind ?? null,
-        gpu: values.hardware?.gpu ?? null,
-        updatedAt: row.settingsUpdatedAt.toISOString()
-      };
-    });
+    return rows.flatMap((row) => toSettingsTableRow(row) ?? []);
   }
 
   async compare(slugs: readonly string[]): Promise<StreamerSettingsView[]> {
-    const views: StreamerSettingsView[] = [];
-
-    for (const slug of slugs) {
-      views.push(await this.bySlug(slug));
-    }
-
-    return views;
+    return Promise.all(slugs.map((slug) => this.bySlug(slug)));
   }
 
   async valuesOf(profileId: string): Promise<SettingsValues | null> {

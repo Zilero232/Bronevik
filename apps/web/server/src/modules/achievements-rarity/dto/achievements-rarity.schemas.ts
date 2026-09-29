@@ -13,7 +13,7 @@ import { z } from 'zod';
 
 import { ACHIEVEMENTS_VIEW, RARITY_TIER_NAMES } from '../config';
 
-export const rarityTierSchema = z.enum(RARITY_TIER_NAMES);
+const rarityTierSchema = z.enum(RARITY_TIER_NAMES);
 
 export const achievementsQuerySchema = z.object({
   section: z.string().trim().min(1).max(32).optional(),
@@ -87,7 +87,7 @@ export const heldAchievementSchema = achievementRarityItemSchema.extend({
   count: countSchema
 });
 
-export const seriesRowSchema = z.object({
+const seriesRowSchema = z.object({
   name: z.string(),
   title: z.string(),
   titleEn: z.string().nullable(),

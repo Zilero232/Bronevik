@@ -1,5 +1,7 @@
 import type { CollectorJobName } from '@otmetki/schemas';
 
+import type { JobSuccessKeyInput } from '../../collector/metrics';
+
 import { JOB, QUEUE } from '../../collector';
 
 export const HEALTH = {
@@ -24,7 +26,7 @@ export const COLLECTOR_JOB_SOURCES = {
   moeImport: [{ queue: QUEUE.reference, name: JOB.reference.moeThresholds }],
   xvmExpected: [{ queue: QUEUE.reference, name: JOB.reference.wn8Expected }],
   gameFiles: []
-} as const satisfies Record<CollectorJobName, readonly { queue: string; name: string }[]>;
+} as const satisfies Record<CollectorJobName, readonly JobSuccessKeyInput[]>;
 
 export const QUEUE_COUNTS = {
   waiting: ['waiting', 'prioritized', 'paused'],

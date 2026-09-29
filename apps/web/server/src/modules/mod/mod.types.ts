@@ -4,7 +4,7 @@ import type { Request } from 'express';
 import type { ZodType } from 'zod';
 
 import type { ModDevice } from '../../../generated';
-import type { BattleResultEvent, IngestBatch, IngestEvent } from './lib';
+import type { BattleResultEvent, IngestBatch, IngestEvent, IngestResponse } from './lib';
 
 export type LedgerKeyInput = {
   accountId: bigint;
@@ -53,11 +53,7 @@ export type RevokeDeviceInput = {
   deviceId: string;
 };
 
-export type SessionSummary = {
-  session_id: string;
-  wn8: number | null;
-  battles: number;
-};
+export type SessionSummary = NonNullable<IngestResponse['session']>;
 
 export type BattleEventInput = {
   device: AuthenticatedDevice;

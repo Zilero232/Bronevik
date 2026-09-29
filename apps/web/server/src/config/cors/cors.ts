@@ -1,10 +1,11 @@
 import type { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 
-import { filter, isEmpty, map, pipe, unique } from 'remeda';
+import { unique } from 'remeda';
 
 import type { Env } from '../env';
 import type { CorsOptionsForInput } from './cors.types';
 
+import { envList } from '../env-list';
 import { CORS } from './cors.constants';
 
 const originOf = (url: string): string | null => {
@@ -16,12 +17,7 @@ const originOf = (url: string): string | null => {
 };
 
 export const allowedOrigins = (env: Pick<Env, 'CORS_ORIGINS' | 'WEB_URL'>): string[] => {
-  const extra = pipe(
-    env.CORS_ORIGINS.split(','),
-    map((origin) => origin.trim()),
-    filter((origin) => !isEmpty(origin))
-  );
-
+  const extra = envList(env.CORS_ORIGINS);
   const web = originOf(env.WEB_URL);
 
   return unique([...(web ? [web] : []), ...extra]);

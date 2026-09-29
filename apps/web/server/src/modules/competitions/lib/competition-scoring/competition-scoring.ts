@@ -1,5 +1,6 @@
-import type { CompetitionStatus } from '@otmetki/schemas';
+import type { CompetitionScoring, CompetitionStatus } from '@otmetki/schemas';
 
+import { COMPETITION, competitionScoringSchema } from '@otmetki/schemas';
 import { sortBy, sumBy } from 'remeda';
 
 import type {
@@ -8,7 +9,8 @@ import type {
   RankableTeam,
   ScoreBattlesInput,
   ScoreLineInput,
-  ScoreTotalsInput
+  ScoreTotalsInput,
+  TeamEntry
 } from './competition-scoring.types';
 
 import { COMPETITION_SCORE } from './competition-scoring.constants';
@@ -61,4 +63,15 @@ export const competitionStatus = ({ startsAt, endsAt, now }: CompetitionStatusIn
   }
 
   return now < endsAt ? 'running' : 'finished';
+};
+
+export const teamTotals = (entries: readonly TeamEntry[]): ParticipantScore => ({
+  score: round(sumBy(entries, (entry) => entry.score)),
+  battles: sumBy(entries, (entry) => entry.battles)
+});
+
+export const readScoring = (value: unknown): CompetitionScoring => {
+  const parsed = competitionScoringSchema.safeParse(value);
+
+  return parsed.success ? parsed.data : COMPETITION.defaultScoring;
 };

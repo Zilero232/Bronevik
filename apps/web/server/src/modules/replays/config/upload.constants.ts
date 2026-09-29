@@ -1,6 +1,7 @@
 export const REPLAY_UPLOAD = {
   field: 'file',
   maxBytes: 50 * 1024 * 1024,
+  maxFileNameLength: 255,
   multipartOverheadBytes: 64 * 1024,
   extensions: ['.mtreplay', '.wotreplay'],
   contentType: 'application/octet-stream',

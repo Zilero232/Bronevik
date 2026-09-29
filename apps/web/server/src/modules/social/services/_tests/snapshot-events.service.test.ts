@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { mockDeep } from 'vitest-mock-extended';
 
 import type { PrismaService } from '../../../../core';
-import type { SnapshotEventRow } from '../../social.types';
+import type { SnapshotEventRow } from '../../queries';
 
 import { FEED } from '../../config';
 import { SnapshotEventsService } from '../snapshot-events.service';

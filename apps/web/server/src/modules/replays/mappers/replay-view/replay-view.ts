@@ -6,11 +6,8 @@ import { isIncludedIn } from 'remeda';
 import type { ReplayPlayer } from '../../../../lib/replay';
 import type { ToReplayViewInput } from './replay-view.types';
 
-import { replaySummarySchema } from '../../../../lib/replay';
 import { REPLAY_LINKS } from '../../config';
-
-const toCount = (value: number | null | undefined): number | null =>
-  value === null || value === undefined || !Number.isFinite(value) ? null : Math.max(0, Math.round(value));
+import { readStoredSummary, toCount } from '../../lib';
 
 const toPlayerView = (player: ReplayPlayer): ReplayPlayerView | null => {
   if (player.accountId === null || player.accountId <= 0 || player.tankId === null || player.tankId <= 0) {
@@ -46,12 +43,6 @@ const toPlayerView = (player: ReplayPlayer): ReplayPlayerView | null => {
     lifeTimeSec: toCount(result?.lifeTimeSeconds),
     killerVehicleId: result?.killerVehicleId ?? null
   };
-};
-
-const readStoredSummary = (value: unknown) => {
-  const parsed = replaySummarySchema.safeParse(value);
-
-  return parsed.success ? parsed.data : null;
 };
 
 export const toReplayView = ({ replay, apiUrl, viewerUserId = null }: ToReplayViewInput): ReplayView => {

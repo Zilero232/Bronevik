@@ -1,6 +1,3 @@
-export type CurvePointRow = {
-  percent: number;
-  damage: number;
-  players: number;
-  battles: number;
-};
+import type { MoeCurvePoint } from '@otmetki/schemas';
+
+export type CurvePointRow = MoeCurvePoint;

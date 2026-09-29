@@ -8,7 +8,7 @@ import { AppNotFoundException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
 import { COMPARE_PROFILE } from '../config';
-import { bestBySpec, numericSpecs } from '../lib';
+import { bestBySpec, numericSpecs, pickProfile } from '../lib';
 
 @Injectable()
 export class TankCompareService {
@@ -28,16 +28,11 @@ export class TankCompareService {
           throw new AppNotFoundException('TANK_NOT_FOUND', `No tank ${tankId}`);
         }
 
-        const wanted = profiles?.[index];
-        const own = stored.filter((profile) => profile.tankId === tankId);
-        const profile =
-          own.find((candidate) => candidate.profileId === (wanted ?? COMPARE_PROFILE.preferred)) ??
-          own.find((candidate) => candidate.isDefault) ??
-          own[0];
+        const profile = pickProfile({ profiles: stored, tankId, wanted: profiles?.[index] });
 
         return {
           vehicle: entry.summary,
-          profileId: profile?.profileId ?? 'default',
+          profileId: profile?.profileId ?? COMPARE_PROFILE.fallback,
           specs: numericSpecs(profile?.data)
         };
       })

@@ -77,7 +77,7 @@ describe('HeatmapService.apply', () => {
     const { service, prisma } = createService();
 
     prisma.replay.updateMany.mockResolvedValue({ count: 1 });
-    prisma.mapHeatmap.findUnique.mockResolvedValue(null);
+    prisma.mapHeatmap.findMany.mockResolvedValue([]);
 
     const written = await service.apply({ replayId: 'r1', arenaId: 'a', mode: 'ctf', tracks: [track] });
     const keys = prisma.mapHeatmap.upsert.mock.calls.map(
@@ -104,7 +104,7 @@ describe('HeatmapService.apply', () => {
     };
 
     prisma.replay.updateMany.mockResolvedValue({ count: 1 });
-    prisma.mapHeatmap.findUnique.mockResolvedValue(stored);
+    prisma.mapHeatmap.findMany.mockResolvedValue([stored]);
 
     await service.apply({ replayId: 'r1', arenaId: 'a', mode: null, tracks: [track] });
 

@@ -61,7 +61,7 @@ export type ShellAccumulator = {
   ammo: number;
 };
 
-export type SkillAccumulator = {
+type SkillAccumulator = {
   weight: number;
   count: number;
   positions: number;

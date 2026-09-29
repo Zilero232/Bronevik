@@ -1,14 +1,27 @@
-import type { ChargeSavedMethodInput, CreatePaymentInput, YooKassaCredentials, YooKassaPayment, YooKassaRequestInput } from './yookassa.types';
+import type { HttpClientService } from '../../../../core';
+import type {
+  ChargeSavedMethodInput,
+  CreatePaymentInput,
+  YooKassaClientInput,
+  YooKassaCredentials,
+  YooKassaPayment,
+  YooKassaRequestInput
+} from './yookassa.types';
 
-import { AppBadRequestException } from '../../../../common/exceptions';
+import { AppBadRequestException, AppNotFoundException } from '../../../../common/exceptions';
 import { errorMessage } from '../../../../common/lib';
-import { http } from '../../../../lib/http';
 import { YOOKASSA } from '../../config';
 import { toAmount } from './yookassa';
 import { yookassaPaymentSchema } from './yookassa.schemas';
 
 export class YooKassaClient {
-  constructor(private readonly credentials: YooKassaCredentials) {}
+  private readonly credentials: YooKassaCredentials;
+  private readonly http: HttpClientService;
+
+  constructor({ credentials, http }: YooKassaClientInput) {
+    this.credentials = credentials;
+    this.http = http;
+  }
 
   get isConfigured(): boolean {
     return Boolean(this.credentials.shopId && this.credentials.secretKey);
@@ -45,18 +58,21 @@ export class YooKassaClient {
 
   private async request({ path, method, json, idempotenceKey }: YooKassaRequestInput): Promise<YooKassaPayment> {
     if (!this.isConfigured) {
-      throw new AppBadRequestException('PAYMENT_FAILED', 'Payments are not configured');
+      throw new AppNotFoundException('INTEGRATION_UNAVAILABLE', 'Payments are not configured on this server');
     }
 
     const authorization = `Basic ${Buffer.from(`${this.credentials.shopId}:${this.credentials.secretKey}`).toString('base64')}`;
 
     try {
-      const body = await http(`${YOOKASSA.apiUrl}${path}`, {
-        method,
-        json,
-        timeout: YOOKASSA.timeoutMs,
-        headers: { authorization, ...(idempotenceKey ? { 'idempotence-key': idempotenceKey } : {}) }
-      }).json();
+      const body = await this.http.requestJson({
+        url: `${YOOKASSA.apiUrl}${path}`,
+        options: {
+          method,
+          json,
+          timeout: YOOKASSA.timeoutMs,
+          headers: { authorization, ...(idempotenceKey ? { 'idempotence-key': idempotenceKey } : {}) }
+        }
+      });
 
       return yookassaPaymentSchema.parse(body);
     } catch (error) {

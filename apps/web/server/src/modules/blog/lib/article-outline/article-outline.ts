@@ -8,13 +8,14 @@ import { isIncludedIn } from 'remeda';
 import { unified } from 'unified';
 import { VFile } from 'vfile';
 
-import type { ArticleHeading, ArticleOutline, TocEntry } from './article-outline.types';
+import type { BlogTocItem } from '../../blog.types';
+import type { ArticleOutline, TocEntry } from './article-outline.types';
 
 import { BLOG } from '../../config';
 
 const processor = unified().use(remarkParse).use(remarkGfm).use(remarkRehype).use(rehypeSlug).use(rehypeExtractToc);
 
-const flattenToc = (entries: TocEntry[]): ArticleHeading[] =>
+const flattenToc = (entries: TocEntry[]): BlogTocItem[] =>
   entries.flatMap(({ id, value, depth, children }) => [
     ...(id && isIncludedIn(depth, BLOG.tocDepths) ? [{ id, text: value, depth }] : []),
     ...flattenToc(children ?? [])

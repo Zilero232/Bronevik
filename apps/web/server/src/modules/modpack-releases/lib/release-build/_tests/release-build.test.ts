@@ -1,7 +1,7 @@
 import { modpackReleaseSchema } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
-import { INDEX, release } from '../../select-release/_tests/fixtures';
+import { INDEX, release } from '../../release-index/_tests/fixtures';
 import { buildRelease, catalogPackages, mergeReleaseIndex, releasePayload } from '../release-build';
 
 const BASE_URL = 'https://triotmetki.ru/downloads/modpack/0.2.0';

@@ -1,6 +1,7 @@
 import type { I18nFlavor } from '@grammyjs/i18n';
 import type { PlaylistItem, PlaylistReason } from '@otmetki/schemas';
 import type { Context } from 'grammy';
+import type { Update } from 'grammy/types';
 
 import type { NotificationChannel, NotificationEvent, NotificationSettings, Prisma } from '../../../generated';
 import type { TelegramIdentity } from '../../lib/auth';
@@ -115,4 +116,9 @@ export type PlaylistReasonInput = {
 export type SharedCommandInput = {
   ctx: BotContext;
   command: keyof typeof SHARED_COMMAND_OF;
+};
+
+export type TelegramWebhookInput = {
+  update: Update;
+  secret: string | undefined;
 };

@@ -3,9 +3,9 @@ import { z } from 'zod';
 
 import { MAP_STATS } from '../config';
 
-export const mapStatsTierSchema = z.coerce.number().int().min(MAP_STATS.allTiers).max(MAP_STATS.maxTier);
+const mapStatsTierSchema = z.coerce.number().int().min(MAP_STATS.allTiers).max(MAP_STATS.maxTier);
 
-export const mapStatsHourSchema = z
+const mapStatsHourSchema = z
   .number()
   .int()
   .min(0)

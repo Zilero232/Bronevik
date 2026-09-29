@@ -1,3 +1,4 @@
+import type { Configuration } from '@hocuspocus/server';
 import type { z } from 'zod';
 
 import type { TacticBoard } from '../../../generated';
@@ -35,3 +36,5 @@ export type ReplaceLiveDataInput = {
   id: string;
   data: TacticBoardData;
 };
+
+export type CollabDocumentHooks = Required<Pick<Configuration<CollabContext>, 'onAuthenticate' | 'onLoadDocument' | 'onStoreDocument'>>;

@@ -7,7 +7,7 @@ import { Prisma } from '../../../../generated';
 import { AppNotFoundException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
 import { PLUS_PLANS } from '../config';
-import { describeCard, isPlusPlan, revokePeriod, YooKassaClient } from '../lib';
+import { describeCard, revokePeriod, storedPlan, YooKassaClient } from '../lib';
 import { EntitlementsService } from './entitlements.service';
 import { PromoService } from './promo.service';
 import { ReferralService } from './referral.service';
@@ -57,7 +57,7 @@ export class WebhookService {
       return false;
     }
 
-    const plan = isPlusPlan(row.plan) ? row.plan : PLUS_PLANS.monthly.plan;
+    const plan = storedPlan(row.plan);
 
     const isRefunded = await this.prisma.$transaction(async (tx) => {
       const claimed = await tx.payment.updateMany({ where: { id: row.id, status: 'succeeded' }, data: { status: 'refunded' } });
@@ -130,7 +130,7 @@ export class WebhookService {
     }
 
     const now = new Date();
-    const plan = isPlusPlan(row.plan) ? row.plan : 'monthly';
+    const plan = storedPlan(row.plan);
     const method = remote.payment_method?.saved ? { id: remote.payment_method.id, title: describeCard(remote.payment_method) } : null;
 
     const settled = await this.prisma.$transaction(

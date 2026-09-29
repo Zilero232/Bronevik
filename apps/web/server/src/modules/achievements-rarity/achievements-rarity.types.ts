@@ -10,11 +10,11 @@ import type {
   collectorsSchema,
   heldAchievementSchema,
   playerCollectionSchema,
-  seriesRowSchema,
   tankRarityItemSchema,
   tankRarityQuerySchema,
   tankRaritySchema
 } from './dto';
+import type { ObtainableRow } from './lib';
 
 export type AchievementsQuery = z.infer<typeof achievementsQuerySchema>;
 
@@ -35,8 +35,6 @@ export type CollectorRow = z.infer<typeof collectorRowSchema>;
 export type CollectorsView = z.infer<typeof collectorsSchema>;
 
 export type HeldAchievement = z.infer<typeof heldAchievementSchema>;
-
-export type SeriesRow = z.infer<typeof seriesRowSchema>;
 
 export type PlayerCollection = z.infer<typeof playerCollectionSchema>;
 
@@ -63,7 +61,7 @@ export type RarityAggregateResult = {
 };
 
 export type WriteAchievementsInput = {
-  catalog: Pick<Achievement, 'name' | 'section'>[];
+  catalog: ObtainableRow[];
   holders: ReadonlyMap<string, number>;
   sample: number;
   now: Date;

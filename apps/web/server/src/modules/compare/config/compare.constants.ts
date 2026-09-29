@@ -17,5 +17,6 @@ export const SPECS: Readonly<{ maxDepth: number; separator: string; skip: readon
 };
 
 export const COMPARE_PROFILE = {
-  preferred: 'top'
+  preferred: 'top',
+  fallback: 'default'
 } as const;

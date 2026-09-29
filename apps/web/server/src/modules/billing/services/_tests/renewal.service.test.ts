@@ -2,7 +2,7 @@ import { addDays, addHours, subDays } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { Subscription } from '../../../../../generated';
+import type { Payment, Subscription } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { YooKassaClient, YooKassaPayment } from '../../lib';
 import type { EntitlementsService } from '../entitlements.service';
@@ -48,7 +48,7 @@ const createService = ({ isRecurring = true, isConfigured = true, isCheckout = t
   const entitlements = mock<EntitlementsService>();
 
   prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
-  prisma.payment.count.mockResolvedValue(0);
+  prisma.payment.findMany.mockResolvedValue([]);
   yookassa.chargeSavedMethod.mockResolvedValue(remote('pending'));
 
   const service = new RenewalService(prisma, yookassa, subscriptions, webhooks, entitlements);
@@ -133,7 +133,7 @@ describe('RenewalService.chargeDue', () => {
     const { service, prisma, yookassa } = createService();
 
     prisma.subscription.findMany.mockResolvedValue([dueSubscription()]);
-    prisma.payment.count.mockResolvedValue(1);
+    prisma.payment.findMany.mockResolvedValue([mock<Payment>({ subscriptionId: 'sub-1' })]);
 
     await expect(service.chargeDue(now)).resolves.toBe(0);
     expect(yookassa.chargeSavedMethod).not.toHaveBeenCalled();

@@ -3,7 +3,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { AccountBadge, Player } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
-import type { SnapshotEventRow } from '../../social.types';
+import type { SnapshotEventRow } from '../../queries';
 import type { FollowService } from '../follow.service';
 import type { SnapshotEventsService } from '../snapshot-events.service';
 

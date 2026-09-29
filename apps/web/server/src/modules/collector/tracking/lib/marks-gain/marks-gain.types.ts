@@ -9,7 +9,7 @@ export type TankMarks = TankKey & {
   marks: number;
 };
 
-export type StoredTankMarks = TankKey & {
+type StoredTankMarks = TankKey & {
   marksOnGun: number | null;
 };
 

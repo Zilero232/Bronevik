@@ -9,4 +9,3 @@ export {
   OfficialTopDto,
   OfficialTopQueryDto
 } from './leaderboards.dto';
-export { officialPlayerParamsSchema } from './leaderboards.schemas';

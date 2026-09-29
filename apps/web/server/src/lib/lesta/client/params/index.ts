@@ -1,1 +1,1 @@
-export { callParams, fieldAwareSchema, fieldsParam, toSearchParams } from './params';
+export { callParams, fieldAwareSchema, toSearchParams } from './params';

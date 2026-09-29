@@ -1,2 +1,2 @@
 export { toAchievementItem } from './achievement-view';
-export type { AchievementItemInput, RarityRow } from './achievement-view.types';
+export type { AchievementItemInput } from './achievement-view.types';

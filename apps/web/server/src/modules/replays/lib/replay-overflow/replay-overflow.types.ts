@@ -6,7 +6,7 @@ export type OverflowPlanInput = {
 export type OverflowPlan =
   { kind: 'delete'; deleteAt: Date } | { kind: 'notice'; deleteAt: Date; daysLeft: number } | { kind: 'wait'; deleteAt: Date };
 
-export type StoredReplay = {
+type StoredReplay = {
   id: string;
   createdAt: Date;
 };

@@ -14,8 +14,19 @@ export class TrackingAnnounceService {
   ) {}
 
   async announceMarks(gained: readonly GainedMark[]): Promise<void> {
+    if (gained.length === 0) {
+      return;
+    }
+
+    const players = await this.prisma.player.findMany({
+      where: { accountId: { in: [...new Set(gained.map((mark) => mark.accountId))] } },
+      select: { accountId: true, clanId: true, nickname: true }
+    });
+
+    const byAccount = new Map(players.map((player) => [player.accountId, player]));
+
     for (const mark of gained) {
-      const player = await this.prisma.player.findUnique({ where: { accountId: mark.accountId }, select: { clanId: true, nickname: true } });
+      const player = byAccount.get(mark.accountId);
 
       await this.webhooks.emit({
         event: 'mark.gained',

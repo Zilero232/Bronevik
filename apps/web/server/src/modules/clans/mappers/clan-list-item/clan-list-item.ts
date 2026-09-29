@@ -1,6 +1,6 @@
 import type { ClanListItem } from '@otmetki/schemas';
 
-import type { ClanListRow } from '../../clans.types';
+import type { ClanListRow } from '../../queries';
 
 import { clampPercent, ratingValue } from '../../../../common/lib';
 import { toClanSummary } from '../clan-summary';

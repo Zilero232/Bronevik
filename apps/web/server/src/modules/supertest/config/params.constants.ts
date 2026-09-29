@@ -1,4 +1,4 @@
-export const SUPERTEST_UNITS = {
+const SUPERTEST_UNITS = {
   s: 's',
   m: 'm',
   mm: 'mm',

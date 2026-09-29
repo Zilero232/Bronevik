@@ -1,6 +1,6 @@
-import type { MissionTanksQuery, UpdateMissionProgressInput } from '@otmetki/schemas';
+import type { MissionGarageState, MissionTanksQuery, ServerPeriod, SkillCohort, UpdateMissionProgressInput } from '@otmetki/schemas';
 
-import type { Mission, MissionBranch, MissionOperation } from '../../../generated';
+import type { Mission, MissionBranch, MissionOperation, PlayerTank, TankServerStats } from '../../../generated';
 
 export type MissionContext = {
   mission: Mission;
@@ -13,11 +13,7 @@ export type OperationRows = {
   missions: Mission[];
 };
 
-export type OperationLookup = {
-  gameVersionId: number;
-  campaignId: number;
-  operationId: number;
-};
+export type OperationLookup = Pick<MissionOperation, 'campaignId' | 'gameVersionId' | 'operationId'>;
 
 export type UserQuestInput = {
   userId: string;
@@ -29,7 +25,7 @@ export type UserOperationInput = {
   operationId: number;
 };
 
-export type NextMissionLine = {
+type NextMissionLine = {
   branchKey: string;
   title: string;
   condition: string | null;
@@ -53,4 +49,22 @@ export type MissionTanksInput = MissionTanksQuery & {
 export type MissionVersion = {
   id: number;
   version: string;
+};
+
+export type ServerStatsInput = {
+  tankIds: number[];
+  period: ServerPeriod;
+  minBattles?: number;
+};
+
+export type ServerStatsResult = {
+  cohort: SkillCohort;
+  rows: TankServerStats[];
+};
+
+type GarageTank = Pick<PlayerTank, 'battles' | 'inGarage' | 'tankId' | 'wins'>;
+
+export type GarageState = {
+  state: MissionGarageState;
+  tanks: GarageTank[];
 };

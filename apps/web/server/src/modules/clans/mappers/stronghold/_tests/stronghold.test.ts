@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import type { ToStrongholdInput } from '../stronghold.types';
 
+import { STRONGHOLD } from '../../../config';
 import { toStronghold } from '../stronghold';
-import { STRONGHOLD } from '../stronghold.constants';
 
 const [lowTier = 0, midTier = 0] = STRONGHOLD.tiers;
 

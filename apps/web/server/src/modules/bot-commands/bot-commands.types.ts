@@ -4,7 +4,7 @@ import type { BOT_LOCALE, SHARED_COMMANDS } from './config';
 
 export type BotLocale = (typeof BOT_LOCALE.locales)[number];
 
-export type SharedCommand = (typeof SHARED_COMMANDS)[number];
+type SharedCommand = (typeof SHARED_COMMANDS)[number];
 
 export type PlayerCard = {
   accountId: bigint;

@@ -10,7 +10,7 @@ import { PrismaService } from '../../../core';
 import { BLOG } from '../config';
 import { toBlogPostSummary, toBlogPostView } from '../mappers';
 import { blogTagsSql } from '../queries';
-import { BLOG_POST_INCLUDE } from '../selects';
+import { BLOG_POST_INCLUDE, BLOG_POST_ORDER } from '../selects';
 
 @Injectable()
 export class BlogQueryService {
@@ -31,7 +31,7 @@ export class BlogQueryService {
     const [rows, total] = await Promise.all([
       this.prisma.blogPost.findMany({
         where,
-        orderBy: [{ publishedAt: 'desc' }, { id: 'desc' }],
+        orderBy: [...BLOG_POST_ORDER],
         take: limit,
         skip: offset,
         include: BLOG_POST_INCLUDE
@@ -55,7 +55,7 @@ export class BlogQueryService {
         id: { not: post.id },
         OR: [{ category: post.category }, ...(post.tags.length > 0 ? [{ tags: { hasSome: post.tags } }] : [])]
       },
-      orderBy: [{ publishedAt: 'desc' }, { id: 'desc' }],
+      orderBy: [...BLOG_POST_ORDER],
       take: BLOG.relatedLimit,
       include: BLOG_POST_INCLUDE
     });

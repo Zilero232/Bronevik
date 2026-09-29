@@ -17,7 +17,6 @@ export {
   collectorsSchema,
   heldAchievementSchema,
   playerCollectionSchema,
-  seriesRowSchema,
   tankRarityItemSchema,
   tankRarityQuerySchema,
   tankRaritySchema

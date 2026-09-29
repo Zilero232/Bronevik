@@ -17,6 +17,8 @@ const reportTargetSchema = z.enum([
   'streamer_profile'
 ]);
 
+const reportStatusSchema = z.enum(['open', 'resolved', 'dismissed']);
+
 export const createReportSchema = z.object({
   targetType: reportTargetSchema,
   targetId: z.string().trim().min(1).max(64),
@@ -30,18 +32,18 @@ export const contentReportSchema = z.object({
   targetId: z.string(),
   reason: z.string(),
   details: z.string().nullable(),
-  status: z.enum(['open', 'resolved', 'dismissed']),
+  status: reportStatusSchema,
   reporterUserId: uuidSchema.nullable(),
   createdAt: isoDateTimeSchema,
   resolvedAt: isoDateTimeSchema.nullable()
 });
 
-export const reportsQuerySchema = z.object({ status: z.enum(['open', 'resolved', 'dismissed']).default('open') });
+export const reportsQuerySchema = z.object({ status: reportStatusSchema.default('open') });
 
 export const contentReportListSchema = z.array(contentReportSchema);
 
 export const resolveReportSchema = z.object({
-  status: z.enum(['resolved', 'dismissed']),
+  status: reportStatusSchema.exclude(['open']),
   hideTarget: z.boolean().default(false)
 });
 

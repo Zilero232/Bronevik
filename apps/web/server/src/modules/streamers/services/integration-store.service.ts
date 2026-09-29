@@ -4,10 +4,11 @@ import type { StreamerIntegration, StreamerProvider } from '../../../../generate
 import type { OAuthStateInput, SaveIntegrationInput, SetPredictionsInput, StoreTokenInput, StreamerIntegrationView } from '../streamers.types';
 
 import { AppBadRequestException, AppConflictException, AppNotFoundException } from '../../../common/exceptions';
-import { readRecord, toJsonValue } from '../../../common/lib';
+import { toJsonValue } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { PREDICTIONS } from '../config';
 import { storedIntegrationConfigSchema } from '../dto';
+import { canPredict } from '../lib';
+import { toIntegrationView } from '../mappers';
 
 @Injectable()
 export class IntegrationStoreService {
@@ -16,18 +17,7 @@ export class IntegrationStoreService {
   async list(userId: string): Promise<StreamerIntegrationView[]> {
     const integrations = await this.prisma.streamerIntegration.findMany({ where: { userId }, orderBy: { createdAt: 'asc' } });
 
-    return integrations.map((integration) => {
-      const config = readRecord(integration.config);
-
-      return {
-        provider: integration.provider,
-        externalId: integration.externalId,
-        login: typeof config.login === 'string' ? config.login : null,
-        connectedAt: integration.createdAt.toISOString(),
-        predictions: config.predictions === true,
-        canPredict: this.canPredict(integration)
-      };
-    });
+    return integrations.map(toIntegrationView);
   }
 
   byProvider(provider: StreamerProvider): Promise<StreamerIntegration[]> {
@@ -59,7 +49,7 @@ export class IntegrationStoreService {
       throw new AppNotFoundException('NOT_FOUND', 'Twitch is not connected');
     }
 
-    if (enabled && !this.canPredict(integration)) {
+    if (enabled && !canPredict(integration)) {
       throw new AppBadRequestException('VALIDATION_FAILED', 'Reconnect Twitch to allow predictions');
     }
 
@@ -80,9 +70,5 @@ export class IntegrationStoreService {
 
   async remove({ userId, provider }: OAuthStateInput): Promise<void> {
     await this.prisma.streamerIntegration.deleteMany({ where: { userId, provider } });
-  }
-
-  private canPredict(integration: StreamerIntegration): boolean {
-    return integration.provider === 'twitch' && (integration.scope ?? '').split(' ').includes(PREDICTIONS.scope);
   }
 }

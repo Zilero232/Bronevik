@@ -1,12 +1,13 @@
 import type { ModpackReleaseIndex } from '@otmetki/schemas';
 
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { modpackReleaseIndexSchema } from '@otmetki/schemas';
 import { readFile } from 'node:fs/promises';
 
 import type { CachedReleaseIndex } from './release-index.types';
 
+import { errorMessage, isMissingFileError } from '../../../common/lib';
 import { MODPACK_RELEASES_SOURCE, MODPACK_RELEASES_TOKENS } from '../config';
+import { parseReleaseIndex } from '../lib';
 
 @Injectable()
 export class ReleaseIndexService {
@@ -43,28 +44,26 @@ export class ReleaseIndexService {
 
   private async readIndex(): Promise<ModpackReleaseIndex> {
     try {
-      const index = modpackReleaseIndexSchema.parse(await this.read());
+      const index = parseReleaseIndex(await this.read());
 
       this.cached = { index, loadedAt: Date.now() };
 
       return index;
     } catch (error) {
       this.retryAt = Date.now() + MODPACK_RELEASES_SOURCE.retryDelayMs;
-      this.logger.warn(`Release index refresh failed${this.cached ? ', serving the cached one' : ''}: ${String(error)}`);
+      this.logger.warn(`Release index refresh failed${this.cached ? ', serving the cached one' : ''}: ${errorMessage(error)}`);
 
       throw error;
     }
   }
 
-  private async read(): Promise<unknown> {
-    const text = await readFile(this.indexPath, 'utf8').catch((error: unknown) => {
-      if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
+  private read(): Promise<string> {
+    return readFile(this.indexPath, 'utf8').catch((error: unknown) => {
+      if (isMissingFileError(error)) {
         return '';
       }
 
       throw error;
     });
-
-    return text.trim() === '' ? MODPACK_RELEASES_SOURCE.emptyIndex : JSON.parse(text);
   }
 }

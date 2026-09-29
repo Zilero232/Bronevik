@@ -1,8 +1,7 @@
 export const LESTA = {
   tierAReserve: 0.2,
   egress: {
-    maxIps: 5,
-    listSeparator: ','
+    maxIps: 5
   },
   request: {
     timeoutMs: 8_000,

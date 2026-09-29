@@ -2,13 +2,13 @@ import type { MissionProgress, MissionProgressItem } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 
-import type { PlanProgress } from '../lib/mission-plan';
+import type { PlanProgress } from '../lib';
 import type { NextMissions, UpdateProgressInput } from '../missions.types';
 
 import { AppNotFoundException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
 import { MISSION_PLAN } from '../config';
-import { planOperation } from '../lib/mission-plan';
+import { planOperation, toPlanBranches } from '../lib';
 import { readConditions, toProgressItem } from '../mappers';
 import { MissionCatalogService } from './mission-catalog.service';
 
@@ -67,11 +67,7 @@ export class MissionProgressService {
     const [rows, progress] = await Promise.all([this.catalog.operationById(anchor.operationId), this.progressMap(userId)]);
     const byQuest = new Map(rows.missions.map((mission) => [mission.questId, mission]));
     const steps = planOperation({
-      branches: rows.branches.map((branch) => ({
-        chainId: branch.chainId,
-        key: branch.key,
-        missions: rows.missions.filter((mission) => mission.chainId === branch.chainId)
-      })),
+      branches: toPlanBranches(rows),
       progress
     });
 

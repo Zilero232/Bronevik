@@ -22,9 +22,9 @@ export const rngSummarySchema = z.object({
   penRate: percentSchema.nullable()
 });
 
-export const rngTierRowSchema = rngSummarySchema.extend({ tier: z.number().int().min(1).max(11) });
+const rngTierRowSchema = rngSummarySchema.extend({ tier: z.number().int().min(1).max(11) });
 
-export const rngShellRowSchema = rngSummarySchema.extend({ shell: z.string() });
+const rngShellRowSchema = rngSummarySchema.extend({ shell: z.string() });
 
 export const honestRngSchema = z.object({
   period: rngPeriodSchema,

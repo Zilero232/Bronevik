@@ -5,6 +5,4 @@ export { toModOverview } from './mod-overview';
 export type { ModOverviewInput } from './mod-overview';
 export { toModTankRating } from './mod-tank-rating';
 export type { ModTankRatingInput } from './mod-tank-rating';
-export { toStoredLoadout } from './stored-loadout';
-export { toStoredShot } from './stored-shot';
-export type { StoredShotRecord } from './stored-shot';
+export { toPlayerTankMoe } from './player-tank-moe';

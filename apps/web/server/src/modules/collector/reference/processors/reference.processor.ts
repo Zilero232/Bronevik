@@ -27,17 +27,17 @@ export class ReferenceProcessor extends WorkerHost {
   }
 
   async process(job: Job) {
-    return this.metrics.track({
-      job,
-      run: () =>
-        match<string, Promise<unknown>>(job.name)
-          .with(JOB.reference.versionCheck, () => this.encyclopedia.checkVersion())
-          .with(JOB.reference.encyclopedia, () => this.encyclopedia.sync(encyclopediaPayloadSchema.parse(job.data)))
-          .with(JOB.reference.wn8Expected, () => this.expectedValues.sync())
-          .with(JOB.reference.moeThresholds, () => this.moe.sync())
-          .with(JOB.reference.masteryThresholds, () => this.mastery.sync())
-          .with(JOB.reference.englishNames, () => this.catalog.englishNames())
-          .otherwise(async () => ({ ignored: job.name }))
-    });
+    return this.metrics.track({ job, run: () => this.handle(job) });
+  }
+
+  private async handle(job: Job) {
+    return match<string, Promise<unknown>>(job.name)
+      .with(JOB.reference.versionCheck, () => this.encyclopedia.checkVersion())
+      .with(JOB.reference.encyclopedia, () => this.encyclopedia.sync(encyclopediaPayloadSchema.parse(job.data)))
+      .with(JOB.reference.wn8Expected, () => this.expectedValues.sync())
+      .with(JOB.reference.moeThresholds, () => this.moe.sync())
+      .with(JOB.reference.masteryThresholds, () => this.mastery.sync())
+      .with(JOB.reference.englishNames, () => this.catalog.englishNames())
+      .otherwise(async () => ({ ignored: job.name }));
   }
 }

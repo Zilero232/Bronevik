@@ -1,6 +1,6 @@
 import type { AccountAchievements, Player } from '../../../../../generated';
 
-export type CollectorSourceRow = Pick<AccountAchievements, 'accountId' | 'completion' | 'held' | 'points'> & {
+type CollectorSourceRow = Pick<AccountAchievements, 'accountId' | 'completion' | 'held' | 'points'> & {
   player: Pick<Player, 'clanId' | 'nickname'>;
 };
 

@@ -2,14 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { subDays } from 'date-fns';
 import { createHash } from 'node:crypto';
 
-import type { BonusCodeView, DiscoverBonusCodeInput, ListBonusCodesInput, RecountInput, ReportBonusCodeInput } from '../shop.types';
+import type { ReportTally } from '../lib';
+import type { BonusCodeView, DiscoverBonusCodeInput, ListBonusCodesInput, RecountInput, ReportBonusCodeInput, TalliesInput } from '../shop.types';
 
 import { AppNotFoundException } from '../../../common/exceptions';
 import { isUniqueViolation, PrismaService } from '../../../core';
 import { NotificationService } from '../../notifications';
-import { BONUS_CODE } from '../config';
-import { bonusCodeStatus } from '../lib';
-import { toBonusCodeView, VERDICT_TO_DB } from '../mappers';
+import { BONUS_CODE, VERDICT_TO_DB } from '../config';
+import { reportedStatus, reportTallies } from '../lib';
+import { toBonusCodeView } from '../mappers';
 
 @Injectable()
 export class BonusCodeService {
@@ -22,7 +23,7 @@ export class BonusCodeService {
     const rows = await this.prisma.bonusCode.findMany({
       where: status ? { status } : {},
       orderBy: [{ discoveredAt: 'desc' }, { code: 'asc' }],
-      take: 200
+      take: BONUS_CODE.listLimit
     });
 
     return rows.map(toBonusCodeView);
@@ -69,35 +70,46 @@ export class BonusCodeService {
       data: { status: 'expired' }
     });
 
-    const open = await this.prisma.bonusCode.findMany({ where: { status: { not: 'expired' } }, select: { code: true } });
+    const open = await this.prisma.bonusCode.findMany({ where: { status: { not: 'expired' } }, select: { code: true, expiresAt: true } });
 
-    for (const { code } of open) {
-      await this.recount({ code, now });
+    if (open.length > 0) {
+      const tallies = await this.tallies({ codes: open.map(({ code }) => code), now });
+
+      await this.prisma.$transaction(
+        open.map(({ code, expiresAt }) =>
+          this.prisma.bonusCode.update({ where: { code }, data: reportedStatus({ tally: tallies.get(code), expiresAt, now }) })
+        )
+      );
     }
 
     return stale.count + open.length;
   }
 
   private async recount({ code, now }: RecountInput) {
-    const since = subDays(now, BONUS_CODE.reportWindowDays);
-    const [counts, latest, current] = await Promise.all([
-      this.prisma.bonusCodeReport.groupBy({ by: ['verdict'], where: { code, createdAt: { gte: since } }, _count: { _all: true } }),
-      this.prisma.bonusCodeReport.findFirst({ where: { code }, orderBy: { createdAt: 'desc' }, select: { createdAt: true } }),
+    const [tallies, current] = await Promise.all([
+      this.tallies({ codes: [code], now }),
       this.prisma.bonusCode.findUniqueOrThrow({ where: { code }, select: { expiresAt: true } })
     ]);
 
-    const countOf = (verdict: 'expired' | 'working') => counts.find((row) => row.verdict === verdict)?._count._all ?? 0;
-    const working = countOf('working');
-    const expired = countOf('expired');
-
     return this.prisma.bonusCode.update({
       where: { code },
-      data: {
-        workingReports: working,
-        expiredReports: expired,
-        lastReportAt: latest?.createdAt ?? null,
-        status: bonusCodeStatus({ working, expired, expiresAt: current.expiresAt, now })
-      }
+      data: reportedStatus({ tally: tallies.get(code), expiresAt: current.expiresAt, now })
+    });
+  }
+
+  private async tallies({ codes, now }: TalliesInput): Promise<Map<string, ReportTally>> {
+    const [counts, latest] = await Promise.all([
+      this.prisma.bonusCodeReport.groupBy({
+        by: ['code', 'verdict'],
+        where: { code: { in: codes }, createdAt: { gte: subDays(now, BONUS_CODE.reportWindowDays) } },
+        _count: { _all: true }
+      }),
+      this.prisma.bonusCodeReport.groupBy({ by: ['code'], where: { code: { in: codes } }, _max: { createdAt: true } })
+    ]);
+
+    return reportTallies({
+      counts: counts.map((row) => ({ code: row.code, verdict: row.verdict, count: row._count._all })),
+      latest: latest.map((row) => ({ code: row.code, createdAt: row._max.createdAt }))
     });
   }
 }

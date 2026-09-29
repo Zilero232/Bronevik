@@ -18,7 +18,7 @@ export type ToBuildUsageInput = {
   cohort: BuildCohort;
 };
 
-export type ShellShot = Pick<Shot, 'isPremium' | 'kind' | 'shell' | 'shellId'>;
+type ShellShot = Pick<Shot, 'isPremium' | 'kind' | 'shell' | 'shellId'>;
 
 export type ShellInfoInput = {
   turrets: readonly { guns: readonly { shots: readonly ShellShot[] }[] }[];

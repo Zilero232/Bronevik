@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import { accountWn8 } from '@otmetki/ratings';
 import { fromUnixTime } from 'date-fns';
-import { groupBy, sortBy, sumBy } from 'remeda';
+import { mapValues, sortBy } from 'remeda';
 
 import type { BattleEventsSink, WebhookEmitter } from '../../../core';
 import type { IngestResponse } from '../lib';
@@ -10,8 +10,8 @@ import type { BattleEventInput, IngestInput, LedgeredEventInput, MarkGainedInput
 import { errorMessage } from '../../../common/lib';
 import { BATTLE_EVENTS, isUniqueViolation, markGainedKey, PrismaService, WEBHOOK_EMITTER } from '../../../core';
 import { ExpectedValuesService } from '../../reference';
-import { countsForSession, moePercent, sessionIncrement, sessionUuid } from '../lib';
-import { toBattleData } from '../mappers';
+import { countsForSession, moePercent, sessionIncrement, sessionTankTotals, sessionUuid } from '../lib';
+import { toBattleData, toPlayerTankMoe } from '../mappers';
 import { EventLedgerService } from './event-ledger.service';
 
 @Injectable()
@@ -83,36 +83,14 @@ export class ModIngestService {
         });
 
         if (sessionId) {
-          const increment = sessionIncrement(event);
-
           await tx.playSession.update({
             where: { id: sessionId },
-            data: {
-              battles: { increment: increment.battles },
-              wins: { increment: increment.wins },
-              losses: { increment: increment.losses },
-              draws: { increment: increment.draws },
-              damageDealt: { increment: increment.damageDealt },
-              damageAssisted: { increment: increment.damageAssisted },
-              damageBlocked: { increment: increment.damageBlocked },
-              frags: { increment: increment.frags },
-              spotted: { increment: increment.spotted },
-              xp: { increment: increment.xp },
-              survived: { increment: increment.survived },
-              credits: { increment: increment.credits },
-              lastActivityAt: new Date(),
-              status: 'open'
-            }
+            data: { ...mapValues(sessionIncrement(event), (value) => ({ increment: value })), lastActivityAt: new Date(), status: 'open' }
           });
         }
 
         if (event.moe) {
-          const values = {
-            marksOnGun: event.moe.marks_on_gun,
-            moePercent: moePercent(event.moe.damage_rating),
-            moeMovingDamage: event.moe.moving_avg_damage,
-            moeUpdatedAt: new Date()
-          };
+          const values = toPlayerTankMoe(event.moe);
 
           await tx.playerTank.upsert({
             where: { accountId_tankId: { accountId, tankId } },
@@ -155,13 +133,7 @@ export class ModIngestService {
       }
 
       if (event.type === 'moe_snapshot') {
-        const values = {
-          marksOnGun: event.marks_on_gun,
-          moePercent: moePercent(event.damage_rating),
-          moeMovingDamage: event.moving_avg_damage,
-          moeUpdatedAt: new Date()
-        };
-
+        const values = toPlayerTankMoe(event);
         const where = { accountId_tankId: { accountId: device.accountId, tankId: event.tank_id } };
         const previous = await this.prisma.playerTank.findUnique({ where, select: { marksOnGun: true } });
 
@@ -218,19 +190,7 @@ export class ModIngestService {
     }
 
     const expected = await this.expected.all();
-
-    const tanks = Object.values(groupBy(battles, (battle) => String(battle.tankId))).map((rows) => ({
-      tankId: rows[0]?.tankId ?? 0,
-      battles: rows.length,
-      wins: rows.filter((row) => row.result === 'win').length,
-      damageDealt: sumBy(rows, (row) => row.damageDealt),
-      frags: sumBy(rows, (row) => row.frags),
-      spotted: sumBy(rows, (row) => row.spotted),
-      capturePoints: 0,
-      droppedCapturePoints: 0
-    }));
-
-    const { wn8 } = accountWn8({ tanks, expected });
+    const { wn8 } = accountWn8({ tanks: sessionTankTotals(battles), expected });
 
     await this.prisma.playSession.update({ where: { id }, data: { wn8 } });
 

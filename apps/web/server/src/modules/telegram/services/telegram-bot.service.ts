@@ -6,9 +6,9 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Bot } from 'grammy';
 import pRetry from 'p-retry';
 
-import type { BotContext } from '../telegram.types';
+import type { BotContext, TelegramWebhookInput } from '../telegram.types';
 
-import { errorMessage } from '../../../common/lib';
+import { errorMessage, timingSafeEqual } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { BOT, BOT_API, BOT_COMMANDS, EXTERNAL_BOT_COMMANDS, TELEGRAM_TOKENS } from '../config';
 import { LINK_CONFIRM_DATA, looksLikeLinkCode, webhookUrl } from '../lib';
@@ -67,7 +67,17 @@ export class TelegramBotService implements OnApplicationBootstrap, OnModuleDestr
     }
   }
 
-  async handleUpdate(update: Update): Promise<void> {
+  async handleWebhook({ update, secret }: TelegramWebhookInput): Promise<void> {
+    const expected = this.config.get('TELEGRAM_WEBHOOK_SECRET');
+
+    if (!expected || !secret || !timingSafeEqual({ left: secret, right: expected })) {
+      return;
+    }
+
+    await this.handleUpdate(update);
+  }
+
+  private async handleUpdate(update: Update): Promise<void> {
     if (!this.bot) {
       return;
     }

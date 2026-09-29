@@ -8,8 +8,7 @@ import type {
   clanRefreshPayloadSchema,
   encyclopediaPayloadSchema,
   enrolPayloadSchema,
-  purgeAccountPayloadSchema,
-  webhookDeliverPayloadSchema
+  purgeAccountPayloadSchema
 } from './queues.schemas';
 
 export type QueueName = (typeof QUEUE)[keyof typeof QUEUE];
@@ -23,4 +22,3 @@ export type ClanRefreshPayload = z.infer<typeof clanRefreshPayloadSchema>;
 export type EncyclopediaPayload = z.infer<typeof encyclopediaPayloadSchema>;
 export type AccountRatingsPayload = z.infer<typeof accountRatingsPayloadSchema>;
 export type PurgeAccountPayload = z.infer<typeof purgeAccountPayloadSchema>;
-export type WebhookDeliverPayload = z.infer<typeof webhookDeliverPayloadSchema>;

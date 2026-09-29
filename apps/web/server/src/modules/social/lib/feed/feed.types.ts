@@ -1,4 +1,6 @@
-import type { FeedItem, RecordEventRow, SnapshotEventRow } from '../../social.types';
+import type { AccountBadge } from '../../../../../generated';
+import type { RecordEventRow, SnapshotEventRow } from '../../queries';
+import type { FeedItem } from '../../social.types';
 
 export type BuildFeedInput = {
   snapshots: readonly SnapshotEventRow[];
@@ -12,11 +14,7 @@ export type BuildFeedInput = {
 
 export type { FeedItem };
 
-export type FeedBadge = {
-  accountId: bigint;
-  badgeCode: string;
-  awardedAt: Date;
-};
+type FeedBadge = Pick<AccountBadge, 'accountId' | 'awardedAt' | 'badgeCode'>;
 
 export type MarkRow = Pick<SnapshotEventRow, 'marks_on_gun' | 'prev_marks'>;
 

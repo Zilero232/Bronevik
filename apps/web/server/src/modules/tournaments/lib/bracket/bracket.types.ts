@@ -1,26 +1,14 @@
-export type BracketMatch = {
-  round: number;
-  index: number;
-  a: number | null;
-  b: number | null;
-  winner: number | null;
-};
+import type { z } from 'zod';
 
-export type Bracket = {
-  size: number;
-  rounds: BracketMatch[][];
-};
+import type { bracketSchema } from '../../dto/tournaments.schemas';
 
-export type ReportWinnerInput = {
+export type Bracket = z.infer<typeof bracketSchema>;
+
+export type BracketMatch = Bracket['rounds'][number][number];
+
+export type ReportWinnerInput = Pick<BracketMatch, 'index' | 'round'> & {
   bracket: Bracket;
-  round: number;
-  index: number;
   winner: number;
 };
 
-export type PlaceWinnerInput = {
-  rounds: BracketMatch[][];
-  round: number;
-  index: number;
-  winner: number | null;
-};
+export type PlaceWinnerInput = Pick<Bracket, 'rounds'> & Pick<BracketMatch, 'index' | 'round' | 'winner'>;

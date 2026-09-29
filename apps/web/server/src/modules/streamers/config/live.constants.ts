@@ -5,11 +5,13 @@ export const LIVE = {
   alertDedupePrefix: 'streamer-live',
   twitch: {
     helixUrl: 'https://api.twitch.tv/helix',
-    batch: 100
+    batch: 100,
+    fallbackTokenSeconds: 3600
   },
   vk: {
     apiUrl: 'https://apidev.live.vkvideo.ru',
     tokenUrl: 'https://api.live.vkvideo.ru/oauth/server/token',
+    channelUrl: 'https://live.vkvideo.ru',
     batch: 100
   },
   youtube: {

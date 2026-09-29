@@ -6,7 +6,7 @@ import type { AchievementsCatalog, AchievementsQuery, CatalogEntry } from '../ac
 import { PrismaService } from '../../../core';
 import { byRarity, sortCatalog } from '../lib';
 import { toAchievementItem } from '../mappers';
-import { CATALOG_ROW_SELECT } from '../selects';
+import { CATALOG_ROW_SELECT, RARITY_ROW_SELECT } from '../selects';
 
 @Injectable()
 export class AchievementCatalogService {
@@ -15,7 +15,7 @@ export class AchievementCatalogService {
   async entries(): Promise<CatalogEntry[]> {
     const [catalog, rarity] = await Promise.all([
       this.prisma.achievement.findMany({ select: CATALOG_ROW_SELECT }),
-      this.prisma.achievementRarity.findMany({ select: { name: true, holders: true, points: true, share: true, sample: true, computedAt: true } })
+      this.prisma.achievementRarity.findMany({ select: RARITY_ROW_SELECT })
     ]);
 
     const byName = new Map(rarity.map((row) => [row.name, row]));

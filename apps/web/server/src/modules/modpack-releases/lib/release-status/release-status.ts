@@ -1,11 +1,11 @@
 import type { ModpackReleasesStatus } from '@otmetki/schemas';
 
-import semver from 'semver';
-
 import type { ReleaseStatusInput } from './release-status.types';
 
+import { newestFirst } from '../release-order';
+
 export const releaseStatus = ({ index, sizes }: ReleaseStatusInput): ModpackReleasesStatus => {
-  const [release] = index.releases.toSorted((left, right) => semver.rcompare(left.version, right.version));
+  const [release] = newestFirst(index.releases);
   const manager = index.manager;
 
   return {

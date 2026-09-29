@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { accountRollup, heldNames, readCounts } from '../account-rollup';
+import { ACHIEVEMENTS_AGGREGATE } from '../../../config';
+import { accountRollup, heldNames, obtainableNames, readCounts } from '../account-rollup';
 
 const points = new Map([
   ['common', 10],
@@ -45,5 +46,18 @@ describe('readCounts', () => {
 describe('heldNames', () => {
   it('keeps positive counts only', () => {
     expect(heldNames({ a: 0, b: 2 })).toEqual(['b']);
+  });
+});
+
+describe('obtainableNames', () => {
+  it('keeps only medals from the completion sections', () => {
+    const [section] = ACHIEVEMENTS_AGGREGATE.completionSections;
+    const catalog = [
+      { name: 'counted', section },
+      { name: 'memorial', section: 'memorial' },
+      { name: 'orphan', section: null }
+    ];
+
+    expect([...obtainableNames(catalog)]).toEqual(['counted']);
   });
 });

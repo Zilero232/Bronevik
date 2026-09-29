@@ -2,7 +2,20 @@ import { describe, expect, it } from 'vitest';
 
 import type { ReplayTrack } from '../../replay-tracks';
 
-import { accumulateTracks, arenaBounds, emptyGrid, fallbackBounds, gridTotal, mergeGrids, readHeatmapCells, toCell } from '../heatmap';
+import { HEATMAP } from '../../../config';
+import {
+  accumulateTracks,
+  arenaBounds,
+  emptyGrid,
+  fallbackBounds,
+  gridTotal,
+  heatmapScopes,
+  mergeGrids,
+  readHeatmapCells,
+  toCell,
+  trackVehicleTag,
+  vehicleClassesOf
+} from '../heatmap';
 
 const bounds = fallbackBounds(100);
 const gridSize = 4;
@@ -79,5 +92,47 @@ describe('readHeatmapCells', () => {
   it('returns null for a malformed stored value', () => {
     expect(readHeatmapCells({ cells: [1, -1] })).toBeNull();
     expect(readHeatmapCells({ cells: [0, 2] })).toEqual([0, 2]);
+  });
+});
+
+describe('trackVehicleTag', () => {
+  it('takes the tag after the nation prefix', () => {
+    expect(trackVehicleTag('germany:G16_PzVIB_Tiger_II')).toBe('G16_PzVIB_Tiger_II');
+  });
+
+  it('returns null without a tag', () => {
+    expect(trackVehicleTag(null)).toBeNull();
+    expect(trackVehicleTag('germany')).toBeNull();
+  });
+});
+
+describe('vehicleClassesOf', () => {
+  it('resolves a track by tank id first and by vehicle tag otherwise', () => {
+    const byId = { ...track([]), vehicleId: 1, tankId: 10 };
+    const byTag = { ...track([]), vehicleId: 2, vehicleType: 'ussr:R04_T-34' };
+    const unknown = { ...track([]), vehicleId: 3, vehicleType: 'ussr:Nope' };
+    const vehicles = [
+      { tankId: 10, tag: 'X', type: 'heavyTank' as const },
+      { tankId: 20, tag: 'R04_T-34', type: 'mediumTank' as const }
+    ];
+
+    expect(vehicleClassesOf({ tracks: [byId, byTag, unknown], vehicles })).toEqual(
+      new Map([
+        [1, 'heavyTank'],
+        [2, 'mediumTank']
+      ])
+    );
+  });
+});
+
+describe('heatmapScopes', () => {
+  it('puts every track in the all scope and each classified track in its class scope', () => {
+    const heavy = { ...track([]), vehicleId: 1 };
+    const unclassified = { ...track([]), vehicleId: 2 };
+    const scopes = heatmapScopes({ tracks: [heavy, unclassified], classes: new Map([[1, 'heavyTank' as const]]) });
+
+    expect(scopes.get(HEATMAP.allScope)).toEqual([heavy, unclassified]);
+    expect(scopes.get('heavyTank')).toEqual([heavy]);
+    expect(scopes.size).toBe(2);
   });
 });

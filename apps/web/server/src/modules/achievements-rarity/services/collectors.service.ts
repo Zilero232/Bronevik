@@ -6,10 +6,10 @@ import type { CollectorsQuery, CollectorsView, HeldAchievement, PlayerCollection
 import { AppNotFoundException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
-import { ACHIEVEMENTS_AGGREGATE, ACHIEVEMENTS_VIEW } from '../config';
-import { byRarity, heldNames, readCounts, seriesProgress, standing } from '../lib';
+import { ACHIEVEMENTS_VIEW } from '../config';
+import { byRarity, heldNames, obtainableNames, readCounts, seriesProgress, standing } from '../lib';
 import { toCollectorRow, toSeriesView } from '../mappers';
-import { COLLECTOR_ROW_SELECT, RANKED_COLLECTORS } from '../selects';
+import { COLLECTOR_ROW_SELECT, PLAYER_COLLECTION_SELECT, RANKED_COLLECTORS } from '../selects';
 import { AchievementCatalogService } from './achievement-catalog.service';
 
 @Injectable()
@@ -51,12 +51,7 @@ export class CollectorsService {
   async player({ accountId, viewerUserId }: PlayerCollectionInput): Promise<PlayerCollection> {
     const player = await this.prisma.player.findUnique({
       where: { accountId },
-      select: {
-        nickname: true,
-        isHidden: true,
-        achievementSet: { select: { counts: true, maxSeries: true, held: true, points: true, completion: true, fetchedAt: true, computedAt: true } },
-        lestaLinks: { select: { userId: true } }
-      }
+      select: PLAYER_COLLECTION_SELECT
     });
 
     if (!player) {
@@ -87,7 +82,6 @@ export class CollectorsService {
       })
     );
 
-    const sections = new Set<string>(ACHIEVEMENTS_AGGREGATE.completionSections);
     const position = set?.computedAt ? standing({ above, total: ranked }) : { rank: null, topPercent: null };
 
     return {
@@ -97,7 +91,7 @@ export class CollectorsService {
       held: set?.held ?? 0,
       points: set?.points ?? 0,
       completion: set?.completion ?? 0,
-      obtainable: entries.filter((entry) => entry.item.section !== null && sections.has(entry.item.section)).length,
+      obtainable: obtainableNames(entries.map((entry) => entry.item)).size,
       rank: position.rank,
       topPercent: position.topPercent,
       sample: ranked,

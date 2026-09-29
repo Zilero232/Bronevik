@@ -1,12 +1,16 @@
+import type { Options } from 'ky';
+
 import { ConfigService } from '@nestjs/config';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { Env } from '../../../../config/env';
+import type { HttpClientService } from '../../../../core';
 import type { FeedReaderService } from '../feed-reader.service';
 import type { TwitchSdkService } from '../twitch-sdk.service';
 
 import { AppConfigService } from '../../../../config';
+import { http } from '../../../../lib/http';
 import { LIVE, STREAMERS } from '../../config';
 import { LivePlatformsService } from '../live-platforms.service';
 
@@ -34,25 +38,34 @@ const noCredentials = {
 const getAppToken = vi.fn<TwitchSdkService['getAppToken']>();
 const readFeed = vi.fn<FeedReaderService['read']>();
 
+const requests: Request[] = [];
+let route: Route = () => ({});
+
+const serve = (next: Route) => {
+  route = next;
+};
+
+const fetch: NonNullable<Options['fetch']> = async (input, init) => {
+  const request = input instanceof Request ? new Request(input, init) : new Request(String(input), init);
+
+  requests.push(request);
+  const body = route(new URL(request.url), request);
+
+  return body instanceof Response ? body : Response.json(body);
+};
+
+const httpClient = mock<HttpClientService>({
+  getJson: ({ url, options }) => http.get(url, { ...options, fetch }).json(),
+  requestJson: ({ url, options }) => http(url, { ...options, fetch }).json()
+});
+
 const createService = (env: Partial<Env> = credentials) =>
   new LivePlatformsService(
     new AppConfigService(new ConfigService<Env, true>(env)),
+    httpClient,
     mock<TwitchSdkService>({ getAppToken }),
     mock<FeedReaderService>({ read: readFeed })
   );
-
-const requests: Request[] = [];
-
-const serve = (route: Route) => {
-  vi.spyOn(globalThis, 'fetch').mockImplementation(async (input, init) => {
-    const request = input instanceof Request ? new Request(input, init) : new Request(String(input), init);
-
-    requests.push(request);
-    const body = route(new URL(request.url), request);
-
-    return body instanceof Response ? body : Response.json(body);
-  });
-};
 
 const twitchApi =
   (online: Record<string, number | null>, users: Record<string, string> = {}): Route =>
@@ -210,7 +223,7 @@ describe('LivePlatformsService.vkStreams', () => {
     expect(tokenRequest?.url).toBe(LIVE.vk.tokenUrl);
     expect(tokenRequest?.headers.get('authorization')).toBe(`Basic ${basic}`);
     expect(channelsRequest?.headers.get('authorization')).toBe('Bearer vk-token');
-    await expect(channelsRequest?.json()).resolves.toEqual({ channels: [{ url: 'https://live.vkvideo.ru/jove' }] });
+    await expect(channelsRequest?.json()).resolves.toEqual({ channels: [{ url: `${LIVE.vk.channelUrl}/jove` }] });
   });
 
   it('reuses the VK token until it expires', async () => {

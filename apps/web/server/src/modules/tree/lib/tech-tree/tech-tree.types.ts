@@ -1,4 +1,4 @@
-import type { VehicleSummary } from '@otmetki/schemas';
+import type { TechTreeEdge, VehicleSummary } from '@otmetki/schemas';
 
 import type { Vehicle } from '../../../../../generated';
 
@@ -10,7 +10,4 @@ export type BuildTechTreeInput = {
   summaries: ReadonlyMap<number, VehicleSummary>;
 };
 
-export type EdgeEnds = {
-  from: number;
-  to: number;
-};
+export type EdgeEnds = Pick<TechTreeEdge, 'from' | 'to'>;

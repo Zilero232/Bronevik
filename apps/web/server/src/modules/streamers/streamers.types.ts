@@ -25,7 +25,6 @@ import type {
   Challenge,
   Overlay,
   SettingsApplyRequest,
-  StreamerChannel,
   StreamerClaim as StreamerClaimRow,
   StreamerInvitation,
   StreamerPlatform,
@@ -149,7 +148,7 @@ export type BuildOverlayDataInput = Omit<CreateOverlayInput, 'accountId'> & {
   accountId: bigint | null;
 };
 
-export type OverlayMoeInput = {
+export type AccountTankInput = {
   accountId: bigint;
   tankId: number;
 };
@@ -168,7 +167,7 @@ export type ChatReplyInput = {
   command: ChatCommand;
 };
 
-export type ChatTextInput = {
+export type StreamerTextInput = {
   streamerUserId: string;
   message: ChatMessage;
   values: ChatValues;
@@ -212,11 +211,7 @@ export type CachedToken = {
   expiresAt: number;
 };
 
-export type ProfileWithChannels = StreamerProfile & {
-  channels: StreamerChannel[];
-};
-
-export type ChannelInput = {
+type ChannelInput = {
   platform: StreamerPlatform;
   url: string;
   sourceUrl?: string;
@@ -303,6 +298,8 @@ export type StreamerDirectoryQueryView = z.infer<typeof streamerDirectoryQuerySc
 
 export type SaveMySettingsInput = Omit<SaveSettingsRequest, 'profileId' | 'userId'> & { userId: string };
 
+export type SaveEditorialSettingsInput = Omit<SaveSettingsRequest, 'profileId' | 'source' | 'userId'> & { slug: string; userId: string };
+
 export type SetAnonymousInput = {
   userId: string;
   anonymousStats: boolean;
@@ -318,17 +315,7 @@ export type SetPredictionsInput = UpdatePredictionsInput & {
   userId: string;
 };
 
-export type OpenPredictionInput = {
-  accountId: bigint;
-  tankId: number;
-};
-
 export type SettlePredictionInput = {
   userId: string;
   now: Date;
-};
-
-export type PredictionThresholdInput = {
-  accountId: bigint;
-  tankId: number;
 };

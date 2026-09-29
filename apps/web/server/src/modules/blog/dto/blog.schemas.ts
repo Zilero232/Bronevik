@@ -1,14 +1,15 @@
 import { booleanParam, countSchema, httpsUrlSchema, isoDateTimeSchema, paginatedSchema, paginationQuerySchema, uuidSchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
+import { BlogCategory, BlogPostStatus } from '../../../../generated';
 import { authorSchema } from '../../community-core';
 import { BLOG, BLOG_IMAGES, BLOG_POST_LIMITS } from '../config';
 
-export const blogCategorySchema = z.enum(BLOG.categories);
+const blogCategorySchema = z.enum(BlogCategory);
 
-export const blogStatusSchema = z.enum(['draft', 'published']);
+const blogStatusSchema = z.enum(BlogPostStatus);
 
-export const blogLocaleSchema = z.enum(BLOG.locales);
+const blogLocaleSchema = z.enum(BLOG.locales);
 
 const blogTagSchema = z
   .string()
@@ -22,15 +23,15 @@ const blogSlugSchema = z
   .string()
   .trim()
   .toLowerCase()
-  .min(3)
+  .min(BLOG.slugMinLength)
   .max(BLOG.slugMaxLength)
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
 
-const coverExtensions = Object.keys(BLOG_IMAGES.types).join('|');
+const imageFilePattern = `[0-9a-f-]{36}\\.(?:${Object.keys(BLOG_IMAGES.types).join('|')})`;
 
-export const blogImageFileSchema = z.string().regex(new RegExp(`^[0-9a-f-]{36}\\.(?:${coverExtensions})$`));
+const blogImageFileSchema = z.string().regex(new RegExp(`^${imageFilePattern}$`));
 
-export const blogImageKeySchema = z.string().regex(new RegExp(`^${BLOG_IMAGES.prefix}/[0-9a-f-]{36}\\.(?:${coverExtensions})$`));
+const blogImageKeySchema = z.string().regex(new RegExp(`^${BLOG_IMAGES.prefix}/${imageFilePattern}$`));
 
 export const blogTocItemSchema = z.object({ id: z.string(), text: z.string(), depth: z.number().int().min(1).max(6) });
 
@@ -106,14 +107,14 @@ const blogPostFieldsSchema = z.object({
 });
 
 export const createBlogPostSchema = blogPostFieldsSchema.extend({
-  locale: blogLocaleSchema.default('ru'),
+  locale: blogLocaleSchema.default(BLOG.defaultLocale),
   tags: blogPostFieldsSchema.shape.tags.default([]),
   coverKey: blogPostFieldsSchema.shape.coverKey.default(null),
   coverUrl: blogPostFieldsSchema.shape.coverUrl.default(null),
   seoTitle: blogPostFieldsSchema.shape.seoTitle.default(null),
   seoDescription: blogPostFieldsSchema.shape.seoDescription.default(null),
   isFeatured: z.boolean().default(false),
-  status: blogStatusSchema.default('draft')
+  status: blogStatusSchema.default(BlogPostStatus.draft)
 });
 
 export const updateBlogPostSchema = blogPostFieldsSchema.partial();

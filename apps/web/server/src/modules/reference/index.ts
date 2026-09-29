@@ -6,7 +6,6 @@ export {
   moeThresholdLevels,
   readVehicleStats,
   toMasteryThreshold,
-  toMasteryThresholdRecord,
   toMoeThreshold,
   toMoeThresholdRecord,
   toVehicleStats

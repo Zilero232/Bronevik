@@ -1,2 +1,2 @@
 export { parseVkCommand } from './vk-command';
-export type { ParsedVkCommand, VkCommand } from './vk-command.types';
+export type { ParsedVkCommand } from './vk-command.types';

@@ -6,7 +6,7 @@ import { Redis } from 'ioredis';
 import { meanBy } from 'remeda';
 
 import type { PredictionJob, PredictionState } from '../lib';
-import type { OpenPredictionInput, PredictionThresholdInput, SettlePredictionInput } from '../streamers.types';
+import type { AccountTankInput, SettlePredictionInput } from '../streamers.types';
 
 import { errorMessage } from '../../../common/lib';
 import { PrismaService, REDIS } from '../../../core';
@@ -46,7 +46,7 @@ export class TwitchPredictionsService {
     return settled;
   }
 
-  private async open({ accountId, tankId }: OpenPredictionInput): Promise<boolean> {
+  private async open({ accountId, tankId }: AccountTankInput): Promise<boolean> {
     const api = this.api();
 
     if (!api) {
@@ -148,7 +148,7 @@ export class TwitchPredictionsService {
     return true;
   }
 
-  private async threshold({ accountId, tankId }: PredictionThresholdInput): Promise<number> {
+  private async threshold({ accountId, tankId }: AccountTankInput): Promise<number> {
     const recent = await this.prisma.battle.findMany({
       where: { accountId, tankId },
       orderBy: { receivedAt: 'desc' },

@@ -1,11 +1,8 @@
 import type { ModeRank } from '@otmetki/schemas';
 
-export type RankableTank = {
-  tankId: number;
-  battles: number;
-  wins: number;
-  decided: number;
-};
+import type { ModeTankAggregate } from '../../../../../generated';
+
+export type RankableTank = Pick<ModeTankAggregate, 'battles' | 'decided' | 'tankId' | 'wins'>;
 
 export type RankModeTanksInput = {
   tanks: readonly RankableTank[];

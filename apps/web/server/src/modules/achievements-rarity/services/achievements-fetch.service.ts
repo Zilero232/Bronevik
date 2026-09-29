@@ -50,21 +50,4 @@ export class AchievementsFetchService {
 
     return { requested: candidates.length, stored: rows.length };
   }
-
-  async backfill(now = new Date()): Promise<AchievementsFetchResult> {
-    const total: AchievementsFetchResult = { requested: 0, stored: 0 };
-
-    for (let run = 0; run < ACHIEVEMENTS_FETCH.backfillRuns; run += 1) {
-      const result = await this.fetch(now);
-
-      total.requested += result.requested;
-      total.stored += result.stored;
-
-      if (result.requested < ACHIEVEMENTS_FETCH.batch || result.stored === 0) {
-        break;
-      }
-    }
-
-    return total;
-  }
 }

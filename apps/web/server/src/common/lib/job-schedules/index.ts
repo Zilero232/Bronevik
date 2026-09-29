@@ -1,2 +1,2 @@
-export { isScheduleActive, registerJobSchedules } from './job-schedules';
-export type { JobSchedule, ScheduleEnvironment } from './job-schedules.types';
+export { registerJobSchedules } from './job-schedules';
+export type { JobSchedule } from './job-schedules.types';

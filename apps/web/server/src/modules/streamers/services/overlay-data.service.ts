@@ -5,7 +5,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { challengeConditionSchema, overlayConfigSchema, plusLimit } from '@otmetki/schemas';
 
 import type { Overlay } from '../../../../generated';
-import type { BuildOverlayDataInput, OverlayData, OverlayMoeInput, PreviewOverlayRequest } from '../streamers.types';
+import type { AccountTankInput, BuildOverlayDataInput, OverlayData, PreviewOverlayRequest } from '../streamers.types';
 
 import { AppNotFoundException } from '../../../common/exceptions';
 import { readRecord, toNumber } from '../../../common/lib';
@@ -172,7 +172,7 @@ export class OverlayDataService {
     };
   }
 
-  private async moe({ accountId, tankId }: OverlayMoeInput) {
+  private async moe({ accountId, tankId }: AccountTankInput) {
     const [progress, vehicle] = await Promise.all([
       this.prisma.playerTank.findUnique({
         where: { accountId_tankId: { accountId, tankId } },

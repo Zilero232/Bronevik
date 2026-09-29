@@ -6,6 +6,7 @@ import type { ComparePlayersInput } from '../compare.types';
 
 import { PrismaService } from '../../../core';
 import { PlayerResolverService, PlayerSummaryService } from '../../players';
+import { commonTankIds } from '../lib';
 
 @Injectable()
 export class PlayerCompareService {
@@ -24,17 +25,6 @@ export class PlayerCompareService {
       select: { accountId: true, tankId: true }
     });
 
-    const owners = new Map<number, Set<bigint>>();
-
-    for (const tank of tanks) {
-      const set = owners.get(tank.tankId) ?? new Set<bigint>();
-
-      set.add(tank.accountId);
-      owners.set(tank.tankId, set);
-    }
-
-    const commonTankIds = [...owners.entries()].filter(([, set]) => set.size === resolved.length).map(([tankId]) => tankId);
-
-    return { players, commonTankIds };
+    return { players, commonTankIds: commonTankIds({ tanks, accountCount: resolved.length }) };
   }
 }

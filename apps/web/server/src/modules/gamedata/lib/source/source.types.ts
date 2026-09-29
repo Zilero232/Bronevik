@@ -2,13 +2,13 @@ import type { GAME_DATA_SOURCES } from './source.constants';
 
 type GameDataSourceId = keyof typeof GAME_DATA_SOURCES;
 
-export type RepoSource = {
+type RepoSource = {
   owner: string;
   repo: string;
   ref: string;
 };
 
-export type RepoRevision = RepoSource & {
+type RepoRevision = RepoSource & {
   sha: string;
   committedAt?: string;
 };

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { match } from 'ts-pattern';
 
 import type { NotificationLocale } from '../../notifications';
-import type { ChatReplyInput, ChatTextInput } from '../streamers.types';
+import type { ChatReplyInput, StreamerTextInput } from '../streamers.types';
 
 import { AppConfigService } from '../../../config';
 import { PrismaService } from '../../../core';
@@ -23,7 +23,7 @@ export class StreamerStatsService {
     return resolveNotificationLocale(user?.locale);
   }
 
-  async text({ streamerUserId, message, values }: ChatTextInput): Promise<string> {
+  async text({ streamerUserId, message, values }: StreamerTextInput): Promise<string> {
     return chatText({ locale: await this.chatLocale(streamerUserId), message, values });
   }
 

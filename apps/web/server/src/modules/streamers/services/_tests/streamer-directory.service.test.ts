@@ -6,14 +6,15 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { StreamerProfile } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
-import type { ProfileWithChannels, StreamerDirectoryQueryView } from '../../streamers.types';
+import type { ProfileCardRow } from '../../selects';
+import type { StreamerDirectoryQueryView } from '../../streamers.types';
 import type { StreamerCardsService } from '../streamer-cards.service';
 
 import { Prisma } from '../../../../../generated';
 import { STREAMERS } from '../../config';
 import { StreamerDirectoryService } from '../streamer-directory.service';
 
-const profile = (slug: string): ProfileWithChannels => ({ ...mock<StreamerProfile>({ slug, settings: null }), channels: [] });
+const profile = (slug: string): ProfileCardRow => ({ ...mock<StreamerProfile>({ slug, settings: null }), channels: [] });
 
 const card = (slug: string): StreamerCard => ({
   slug,

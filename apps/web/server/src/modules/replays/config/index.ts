@@ -1,4 +1,4 @@
-export { BEST_OF_WEEK, REPLAY_SEARCH } from './best-of-week.constants';
+export { BEST_OF_WEEK } from './best-of-week.constants';
 export { REPLAY_FILES } from './files.constants';
 export { HEATMAP } from './heatmap.constants';
 export { REPLAY_LINKS } from './links.constants';
@@ -6,5 +6,6 @@ export { MOD_REPLAY_STATUS } from './mod-status.constants';
 export { REPLAY_OVERFLOW } from './overflow.constants';
 export { REPLAY_MEDALS, REPLAY_PARSE } from './parse.constants';
 export { REPLAYS_QUEUE, REPLAYS_SCHEDULES } from './queue.constants';
+export { REPLAY_SEARCH } from './search.constants';
 export { REPLAY_TAGGING } from './tagging.constants';
 export { REPLAY_UPLOAD } from './upload.constants';

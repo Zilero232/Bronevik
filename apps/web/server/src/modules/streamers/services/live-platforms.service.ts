@@ -8,7 +8,7 @@ import type { CachedToken } from '../streamers.types';
 
 import { errorMessage } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
-import { http } from '../../../lib/http';
+import { HttpClientService } from '../../../core';
 import { LIVE, STREAMERS } from '../config';
 import { twitchStreamsSchema, twitchUsersSchema, vkChannelsSchema, vkTokenSchema, youtubeChannelSchema, youtubeLiveSchema } from '../dto';
 import { FeedReaderService } from './feed-reader.service';
@@ -22,6 +22,7 @@ export class LivePlatformsService {
 
   constructor(
     private readonly config: AppConfigService,
+    private readonly http: HttpClientService,
     private readonly twitch: TwitchSdkService,
     private readonly feeds: FeedReaderService
   ) {}
@@ -47,12 +48,13 @@ export class LivePlatformsService {
     const streams: LiveStream[] = [];
 
     for (const part of chunk([...logins], LIVE.twitch.batch)) {
-      const body = await http
-        .get(`${LIVE.twitch.helixUrl}/streams`, {
+      const body = await this.http.getJson({
+        url: `${LIVE.twitch.helixUrl}/streams`,
+        options: {
           searchParams: new URLSearchParams(part.map((login): [string, string] => ['user_login', login])),
           headers: { 'client-id': this.config.get('TWITCH_CLIENT_ID'), authorization: `Bearer ${token}` }
-        })
-        .json();
+        }
+      });
 
       for (const stream of twitchStreamsSchema.parse(body).data) {
         streams.push({ platform: 'twitch', handle: stream.user_login.toLowerCase(), viewers: stream.viewer_count });
@@ -68,12 +70,10 @@ export class LivePlatformsService {
     }
 
     const token = await this.twitchAccess();
-    const body = await http
-      .get(`${LIVE.twitch.helixUrl}/users`, {
-        searchParams: { login },
-        headers: { 'client-id': this.config.get('TWITCH_CLIENT_ID'), authorization: `Bearer ${token}` }
-      })
-      .json();
+    const body = await this.http.getJson({
+      url: `${LIVE.twitch.helixUrl}/users`,
+      options: { searchParams: { login }, headers: { 'client-id': this.config.get('TWITCH_CLIENT_ID'), authorization: `Bearer ${token}` } }
+    });
 
     return twitchUsersSchema.parse(body).data[0]?.description ?? null;
   }
@@ -115,11 +115,10 @@ export class LivePlatformsService {
 
     for (const channelId of channelIds) {
       try {
-        const body = await http
-          .get(`${LIVE.youtube.apiUrl}/search`, {
-            searchParams: { part: 'id', channelId, eventType: 'live', type: 'video', key: this.config.get('YOUTUBE_API_KEY') }
-          })
-          .json();
+        const body = await this.http.getJson({
+          url: `${LIVE.youtube.apiUrl}/search`,
+          options: { searchParams: { part: 'id', channelId, eventType: 'live', type: 'video', key: this.config.get('YOUTUBE_API_KEY') } }
+        });
 
         if (youtubeLiveSchema.parse(body).items.length > 0) {
           streams.push({ platform: 'youtube', handle: channelId.toLowerCase(), viewers: null });
@@ -137,9 +136,10 @@ export class LivePlatformsService {
       return null;
     }
 
-    const body = await http
-      .get(`${LIVE.youtube.apiUrl}/channels`, { searchParams: { part: 'snippet', id: channelId, key: this.config.get('YOUTUBE_API_KEY') } })
-      .json();
+    const body = await this.http.getJson({
+      url: `${LIVE.youtube.apiUrl}/channels`,
+      options: { searchParams: { part: 'snippet', id: channelId, key: this.config.get('YOUTUBE_API_KEY') } }
+    });
 
     return youtubeChannelSchema.parse(body).items[0]?.snippet.description ?? null;
   }
@@ -162,12 +162,14 @@ export class LivePlatformsService {
 
   private async vkChannels(handles: readonly string[]) {
     const token = await this.vkAccess();
-    const body = await http
-      .post(`${LIVE.vk.apiUrl}/v1/channels`, {
-        json: { channels: handles.map((handle) => ({ url: `https://live.vkvideo.ru/${handle}` })) },
+    const body = await this.http.requestJson({
+      url: `${LIVE.vk.apiUrl}/v1/channels`,
+      options: {
+        method: 'post',
+        json: { channels: handles.map((handle) => ({ url: `${LIVE.vk.channelUrl}/${handle}` })) },
         headers: { authorization: `Bearer ${token}` }
-      })
-      .json();
+      }
+    });
 
     return vkChannelsSchema.parse(body).data.channels;
   }
@@ -179,7 +181,10 @@ export class LivePlatformsService {
 
     const token = await this.twitch.getAppToken(this.config.get('TWITCH_CLIENT_ID'), this.config.get('TWITCH_CLIENT_SECRET'));
 
-    this.twitchToken = { value: token.accessToken, expiresAt: Date.now() + (token.expiresIn ?? 3600) * LIVE.tokenMsPerSecond };
+    this.twitchToken = {
+      value: token.accessToken,
+      expiresAt: Date.now() + (token.expiresIn ?? LIVE.twitch.fallbackTokenSeconds) * LIVE.tokenMsPerSecond
+    };
 
     return token.accessToken;
   }
@@ -190,9 +195,10 @@ export class LivePlatformsService {
     }
 
     const credentials = Buffer.from(`${this.config.get('VK_LIVE_CLIENT_ID')}:${this.config.get('VK_LIVE_CLIENT_SECRET')}`).toString('base64');
-    const body = await http
-      .post(LIVE.vk.tokenUrl, { body: new URLSearchParams({ grant_type: 'client_credentials' }), headers: { authorization: `Basic ${credentials}` } })
-      .json();
+    const body = await this.http.requestJson({
+      url: LIVE.vk.tokenUrl,
+      options: { method: 'post', body: new URLSearchParams({ grant_type: 'client_credentials' }), headers: { authorization: `Basic ${credentials}` } }
+    });
 
     const token = vkTokenSchema.parse(body);
 

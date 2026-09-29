@@ -1,4 +1,4 @@
-export type ParamChangeLine = {
+type ParamChangeLine = {
   kind: 'change';
   label: string;
   from: number;
@@ -7,7 +7,7 @@ export type ParamChangeLine = {
   raw: string;
 };
 
-export type ParamValueLine = {
+type ParamValueLine = {
   kind: 'value';
   label: string;
   value: number;

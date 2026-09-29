@@ -1,8 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 
 import { LESTA_OUTCOME_RECORDER } from '../../../core';
-import { CircuitBreakerService } from './circuit-breaker.service';
-import { MetricsService } from './metrics.service';
+import { CircuitBreakerService, MetricsService } from './services';
 
 @Global()
 @Module({

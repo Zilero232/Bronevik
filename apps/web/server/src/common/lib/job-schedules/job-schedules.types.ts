@@ -12,7 +12,7 @@ export type JobSchedule = {
   needsLesta?: boolean;
 };
 
-export type ScheduleEnvironment = {
+type ScheduleEnvironment = {
   hasLesta: boolean;
 };
 

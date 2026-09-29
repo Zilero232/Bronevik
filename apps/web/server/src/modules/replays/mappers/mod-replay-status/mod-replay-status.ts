@@ -3,16 +3,9 @@ import type { ModReplayHighlights, ModReplayStatus } from '@otmetki/schemas';
 import type { ModReplayStatusRow } from '../../selects';
 
 import { percentOf } from '../../../../common/lib';
-import { replaySummarySchema } from '../../../../lib/replay';
+import { readStoredSummary, toCount } from '../../lib';
 
-const toCount = (value: number | null | undefined): number | null =>
-  value === null || value === undefined || !Number.isFinite(value) ? null : Math.max(0, Math.round(value));
-
-const recorderResult = (summary: unknown) => {
-  const parsed = replaySummarySchema.safeParse(summary);
-
-  return parsed.success ? (parsed.data.players.find((player) => player.isRecorder)?.result ?? null) : null;
-};
+const recorderResult = (summary: unknown) => readStoredSummary(summary)?.players.find((player) => player.isRecorder)?.result ?? null;
 
 const toHighlights = (row: ModReplayStatusRow): ModReplayHighlights | null => {
   const result = recorderResult(row.summary);

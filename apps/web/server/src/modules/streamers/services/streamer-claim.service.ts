@@ -1,28 +1,21 @@
-import type { AdminClaim, EditorialStreamerInput, StreamerInvitation as InvitationView, StreamerClaim as StreamerClaimView } from '@otmetki/schemas';
+import type { AdminClaim, StreamerClaim as StreamerClaimView } from '@otmetki/schemas';
 
 import { Injectable, Logger } from '@nestjs/common';
+import { isIncludedIn } from 'remeda';
 import { match } from 'ts-pattern';
 
-import type { StreamerClaim, StreamerPlatform } from '../../../../generated';
+import type { StreamerClaim } from '../../../../generated';
 import type { ParsedChannel } from '../lib';
-import type {
-  ClaimRef,
-  ClaimTarget,
-  CompleteClaimInput,
-  ContestedClaimInput,
-  RemovalRequestInput,
-  ResolveClaimRequest,
-  StartClaimRequest
-} from '../streamers.types';
+import type { ClaimRef, ClaimTarget, CompleteClaimInput, ContestedClaimInput, ResolveClaimRequest, StartClaimRequest } from '../streamers.types';
 
 import { Prisma } from '../../../../generated';
 import { AppConflictException, AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
-import { errorMessage, readRecord, toJsonValue } from '../../../common/lib';
+import { errorMessage, toJsonValue } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { CLAIM, CLAIM_METHOD_TO_DB, REMOVAL_REPORT, STREAMER_INVITATIONS, STREAMERS } from '../config';
+import { CLAIM, CLAIM_METHOD_TO_DB, STREAMERS } from '../config';
 import { invitationChannelsSchema } from '../dto';
-import { bioHasCode, newClaimCode, parseChannel } from '../lib';
-import { toAdminClaim, toClaimView, toInvitationView } from '../mappers';
+import { bioHasCode, newClaimCode, parseChannel, readIntegrationConfig } from '../lib';
+import { toAdminClaim, toClaimView } from '../mappers';
 import { LivePlatformsService } from './live-platforms.service';
 import { StreamerProfileService } from './streamer-profile.service';
 
@@ -42,8 +35,8 @@ export class StreamerClaimService {
 
     if (method === 'oauth') {
       const integration = await this.prisma.streamerIntegration.findUnique({ where: { userId_provider: { userId, provider: 'twitch' } } });
-      const login = readRecord(integration?.config).login;
-      const owns = typeof login === 'string' && channels.some((channel) => channel.platform === 'twitch' && channel.handle === login.toLowerCase());
+      const login = readIntegrationConfig(integration?.config).login?.toLowerCase();
+      const owns = login !== undefined && channels.some((channel) => channel.platform === 'twitch' && channel.handle === login);
 
       if (!owns) {
         throw new AppForbiddenException('FORBIDDEN', 'The connected Twitch channel is not on this page');
@@ -53,7 +46,7 @@ export class StreamerClaimService {
         data: { ...this.targetRef(target), userId, method: CLAIM_METHOD_TO_DB[method], platform: 'twitch' }
       });
 
-      if (await this.contested({ target, userId, login: login.toLowerCase() })) {
+      if (await this.contested({ target, userId, login })) {
         return toClaimView({ claim, slug });
       }
 
@@ -85,11 +78,9 @@ export class StreamerClaimService {
       throw new AppNotFoundException('NOT_FOUND', 'No open code claim');
     }
 
-    for (const channel of await this.channelsOf(target)) {
-      if (!new Set<string>(CLAIM.bioPlatforms).has(channel.platform)) {
-        continue;
-      }
+    const channels = (await this.channelsOf(target)).filter((channel) => isIncludedIn(channel.platform, CLAIM.bioPlatforms));
 
+    for (const channel of channels) {
       const bio = await this.description(channel);
 
       if (bioHasCode({ bio, code: claim.code })) {
@@ -131,81 +122,6 @@ export class StreamerClaimService {
     }
 
     await this.prisma.streamerClaim.update({ where: { id }, data: { status: 'dismissed', resolvedAt: new Date(), resolvedBy: moderatorId } });
-  }
-
-  async requestRemoval({ slug, contact, reason, userId }: RemovalRequestInput): Promise<void> {
-    const profile = await this.profiles.publicBySlug(slug);
-
-    await this.prisma.contentReport.create({
-      data: {
-        reporterUserId: userId,
-        targetType: REMOVAL_REPORT.targetType,
-        targetId: profile.id,
-        reason: reason ?? REMOVAL_REPORT.reason,
-        details: contact
-      }
-    });
-  }
-
-  async hide(slug: string): Promise<void> {
-    const profile = await this.prisma.streamerProfile.findUnique({ where: { slug } });
-
-    if (!profile) {
-      throw new AppNotFoundException('NOT_FOUND', `No streamer ${slug}`);
-    }
-
-    await this.prisma.$transaction([
-      this.prisma.streamerProfile.update({ where: { id: profile.id }, data: { hiddenAt: new Date(), isLive: false } }),
-      this.prisma.contentReport.updateMany({
-        where: { targetType: REMOVAL_REPORT.targetType, targetId: profile.id, status: 'open' },
-        data: { status: 'resolved', resolvedAt: new Date() }
-      })
-    ]);
-  }
-
-  async createEditorial({ slug, displayName, channels }: EditorialStreamerInput): Promise<void> {
-    if (!STREAMERS.editorialEnabled) {
-      throw new AppForbiddenException('FORBIDDEN', 'Editorial entries are disabled until the legal review');
-    }
-
-    const taken = await this.prisma.streamerProfile.count({ where: { slug } });
-
-    if (taken > 0) {
-      throw new AppConflictException('STREAMER_SLUG_TAKEN', `The slug ${slug} is taken`);
-    }
-
-    const profile = await this.prisma.streamerProfile.create({ data: { slug, displayName, kind: 'editorial' } });
-
-    await this.profiles.replaceChannels({ profileId: profile.id, channels });
-  }
-
-  async seedInvitations(): Promise<number> {
-    for (const invitation of STREAMER_INVITATIONS) {
-      await this.prisma.streamerInvitation.upsert({
-        where: { slug: invitation.slug },
-        create: { slug: invitation.slug, displayName: invitation.displayName, sourceUrl: invitation.sourceUrl, channels: [...invitation.channels] },
-        update: {}
-      });
-    }
-
-    return STREAMER_INVITATIONS.length;
-  }
-
-  async invitations(): Promise<InvitationView[]> {
-    const rows = await this.prisma.streamerInvitation.findMany({ orderBy: { createdAt: 'asc' } });
-
-    return rows.map(toInvitationView);
-  }
-
-  async markInvitationSent(slug: string): Promise<void> {
-    const updated = await this.prisma.streamerInvitation.updateMany({
-      where: { slug, status: 'pending' },
-      data: { status: 'sent', sentAt: new Date() }
-    });
-
-    if (updated.count === 0) {
-      throw new AppNotFoundException('NOT_FOUND', `No pending invitation ${slug}`);
-    }
   }
 
   private async target(slug: string): Promise<ClaimTarget> {
@@ -256,7 +172,7 @@ export class StreamerClaimService {
     });
   }
 
-  private async description(channel: { platform: StreamerPlatform; handle: string }): Promise<string | null> {
+  private async description(channel: ParsedChannel): Promise<string | null> {
     try {
       return await match(channel.platform)
         .with('twitch', () => this.platforms.twitchDescription(channel.handle))

@@ -1,7 +1,7 @@
 import type { FollowView } from '../../social.types';
 import type { ToFollowViewInput } from './follow-view.types';
 
-import { FOLLOW_KIND_FROM_DB } from '../../lib/views';
+import { FOLLOW_KIND_FROM_DB } from '../../config';
 
 export const toFollowView = ({ follow, nickname }: ToFollowViewInput): FollowView => ({
   id: follow.id,

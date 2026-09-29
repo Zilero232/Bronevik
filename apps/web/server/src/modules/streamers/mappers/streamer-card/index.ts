@@ -1,2 +1,2 @@
 export { toStreamerCard } from './streamer-card';
-export type { FavouriteTankRow, ToStreamerCardInput } from './streamer-card.types';
+export type { ToStreamerCardInput } from './streamer-card.types';

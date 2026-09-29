@@ -1,8 +1,9 @@
 import type { BuildTracksInput, DownsampleInput, ReplayTrack, TrackSample } from './replay-tracks.types';
 
 import { collectTracks } from '../../../../lib/replay';
+import { REPLAY_TRACKS } from './replay-tracks.constants';
 
-const round = (value: number): number => Math.round(value * 10) / 10;
+const round = (value: number): number => Math.round(value * REPLAY_TRACKS.coordinateScale) / REPLAY_TRACKS.coordinateScale;
 
 export const downsample = ({ points, stepSeconds }: DownsampleInput): TrackSample[] => {
   const samples: TrackSample[] = [];

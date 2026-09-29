@@ -3,7 +3,7 @@ import { addDays } from 'date-fns';
 
 import type { Prisma, RecruitingPost } from '../../../../generated';
 import type { OwnedById } from '../../community-core';
-import type { CanCloseInput, CreateRecruitingRequest, RecruitingPage, RecruitingQuery } from '../recruiting.types';
+import type { CanCloseInput, CreateRecruitingRequest, RecruitingPage, RecruitingQuery, RecruitingView } from '../recruiting.types';
 
 import { AppBadRequestException, AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
 import { toJsonValue } from '../../../common/lib';
@@ -36,7 +36,7 @@ export class RecruitingService {
     return { items: await this.views(rows), total, limit, offset };
   }
 
-  async create({ userId, kind, clanId, accountId, title, body, requirements, expiresInDays }: CreateRecruitingRequest) {
+  async create({ userId, kind, clanId, accountId, title, body, requirements, expiresInDays }: CreateRecruitingRequest): Promise<RecruitingView> {
     const account = await this.accounts.accountOf({ userId, accountId });
     let postClanId: bigint | null = null;
 
@@ -119,7 +119,7 @@ export class RecruitingService {
     return members.some((member) => isRecruitingOfficer(member.role));
   }
 
-  private async views(rows: RecruitingPost[]) {
+  private async views(rows: RecruitingPost[]): Promise<RecruitingView[]> {
     const accountIds = rows.flatMap((row) => (row.accountId === null ? [] : [row.accountId]));
     const clanIds = rows.flatMap((row) => (row.clanId === null ? [] : [row.clanId]));
     const [stats, nicknames, clans] = await Promise.all([

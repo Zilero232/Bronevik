@@ -5,7 +5,7 @@ import type { AccountTankRating, PlayerTank } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { ThresholdsService, VehicleCatalogService } from '../../../reference';
 import type { CatalogEntry, ThresholdSet } from '../../../reference/reference.types';
-import type { CombinedDamageRow } from '../../players.types';
+import type { CombinedDamageRow } from '../../queries';
 
 import { unknownVehicle } from '../../../reference/mappers';
 import { PLAYER_MARKS } from '../../config';

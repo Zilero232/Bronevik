@@ -3,6 +3,7 @@ import { dirname, resolve, sep } from 'node:path';
 
 import type { PutObjectInput } from './storage.types';
 
+import { isMissingFileError } from '../../common/lib';
 import { StorageObjectMissingError } from './errors';
 import { ObjectStorage } from './object-storage';
 
@@ -27,7 +28,7 @@ export class LocalDiskStorage extends ObjectStorage {
     try {
       return new Uint8Array(await readFile(path));
     } catch (error) {
-      if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
+      if (isMissingFileError(error)) {
         throw new StorageObjectMissingError(key);
       }
 

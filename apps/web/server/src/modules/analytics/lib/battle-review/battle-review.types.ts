@@ -1,23 +1,26 @@
 import type { BattleAnalysis, TankReference, VehicleType } from '@otmetki/schemas';
 
-export type ReviewedBattle = {
-  damageDealt: number;
-  damageAssistedRadio: number;
-  damageAssistedTrack: number;
-  damageAssistedStun: number;
-  damageBlocked: number;
-  frags: number;
-  spotted: number;
-  survived: boolean;
-  lifetimeSec: number | null;
-  durationSec: number | null;
-  shotsFired: number | null;
-  shotsHit: number | null;
-  shotsPierced: number | null;
-  moePercent: number | null;
-  moePercentDelta: number | null;
-  moeMovingAvg: number | null;
-};
+import type { Battle } from '../../../../../generated';
+
+export type ReviewedBattle = Pick<
+  Battle,
+  | 'damageAssistedRadio'
+  | 'damageAssistedStun'
+  | 'damageAssistedTrack'
+  | 'damageBlocked'
+  | 'damageDealt'
+  | 'durationSec'
+  | 'frags'
+  | 'lifetimeSec'
+  | 'moeMovingAvg'
+  | 'moePercent'
+  | 'moePercentDelta'
+  | 'shotsFired'
+  | 'shotsHit'
+  | 'shotsPierced'
+  | 'spotted'
+  | 'survived'
+>;
 
 export type ReviewInput = {
   battle: ReviewedBattle;

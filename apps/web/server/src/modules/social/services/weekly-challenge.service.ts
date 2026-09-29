@@ -3,13 +3,21 @@ import { groupBy, sumBy, unique } from 'remeda';
 
 import type { WeekStats } from '../lib';
 import type { ChallengeBattleRow } from '../queries';
-import type { ChallengesView, RecordChallengeInput, WeekStatsInput } from '../social.types';
+import type {
+  AwardBadgesInput,
+  ChallengeBadgeContext,
+  ChallengeResult,
+  ChallengesView,
+  EvaluateChallengesInput,
+  WeekStatsInput
+} from '../social.types';
 
 import { toIsoDate, toJsonValue, weekWindow } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { NotificationService } from '../../notifications';
 import { CHALLENGE_BADGES, WEEKLY_CHALLENGES } from '../config';
-import { badgeCodeOf, challengeProgress, isChallengeBadgeCode } from '../lib';
+import { challengeBadgeContextSchema } from '../dto/social.schemas';
+import { badgeCodeOf, challengeProgress } from '../lib';
 import { toWeeklyChallengeView } from '../mappers';
 import { challengeBattlesSql } from '../queries';
 import { SnapshotEventsService } from './snapshot-events.service';
@@ -39,7 +47,7 @@ export class WeeklyChallengeService {
   }
 
   async evaluate(now: Date): Promise<number> {
-    const { start, end, weekStart } = weekWindow(now);
+    const window = weekWindow(now);
     let cursor: bigint | null = null;
     let accounts = 0;
     let completed = 0;
@@ -54,14 +62,8 @@ export class WeeklyChallengeService {
       });
 
       const accountIds: bigint[] = links.map((link) => link.accountId);
-      const stats = accountIds.length === 0 ? new Map<bigint, WeekStats>() : await this.weekStats({ accountIds, start, end });
 
-      for (const [accountId, own] of stats) {
-        for (const definition of WEEKLY_CHALLENGES) {
-          completed += (await this.record({ accountId, weekStart, definition, stats: own, now })) ? 1 : 0;
-        }
-      }
-
+      completed += accountIds.length === 0 ? 0 : await this.evaluatePage({ ...window, accountIds, now });
       accounts += accountIds.length;
       cursor = accountIds.at(-1) ?? cursor;
 
@@ -75,49 +77,76 @@ export class WeeklyChallengeService {
     return completed;
   }
 
-  private async record({ accountId, weekStart, definition, stats, now }: RecordChallengeInput): Promise<boolean> {
-    const value = challengeProgress({ definition, stats });
-    const key = { accountId_weekStart_code: { accountId, weekStart, code: definition.code } };
-    const existing = await this.prisma.weeklyChallengeProgress.findUnique({ where: key });
-    const justCompleted = value >= definition.target && !existing?.completedAt;
+  private async evaluatePage({ accountIds, start, end, weekStart, now }: EvaluateChallengesInput): Promise<number> {
+    const [stats, existing] = await Promise.all([
+      this.weekStats({ accountIds, start, end }),
+      this.prisma.weeklyChallengeProgress.findMany({
+        where: { weekStart, accountId: { in: accountIds }, completedAt: { not: null } },
+        select: { accountId: true, code: true }
+      })
+    ]);
 
-    await this.prisma.weeklyChallengeProgress.upsert({
-      where: key,
-      create: { accountId, weekStart, code: definition.code, progress: value, target: definition.target, completedAt: justCompleted ? now : null },
-      update: { progress: value, target: definition.target, ...(justCompleted ? { completedAt: now } : {}) }
-    });
+    const done = new Set(existing.map((row) => `${row.accountId}:${row.code}`));
+    const results = [...stats].flatMap(([accountId, own]) =>
+      WEEKLY_CHALLENGES.map((definition): ChallengeResult => {
+        const progress = challengeProgress({ definition, stats: own });
 
-    if (!justCompleted) {
-      return false;
+        return { accountId, definition, progress, isNewlyCompleted: progress >= definition.target && !done.has(`${accountId}:${definition.code}`) };
+      })
+    );
+
+    await this.prisma.$transaction(
+      results.map(({ accountId, definition, progress, isNewlyCompleted }) =>
+        this.prisma.weeklyChallengeProgress.upsert({
+          where: { accountId_weekStart_code: { accountId, weekStart, code: definition.code } },
+          create: { accountId, weekStart, code: definition.code, progress, target: definition.target, completedAt: isNewlyCompleted ? now : null },
+          update: { progress, target: definition.target, ...(isNewlyCompleted ? { completedAt: now } : {}) }
+        })
+      )
+    );
+
+    const completions = results.filter((result) => result.isNewlyCompleted);
+
+    await this.awardBadges({ completions, weekStart });
+
+    return completions.length;
+  }
+
+  private async awardBadges({ completions, weekStart }: AwardBadgesInput): Promise<void> {
+    if (completions.length === 0) {
+      return;
     }
 
-    const badgeCode = badgeCodeOf(definition);
-
-    if (!isChallengeBadgeCode(badgeCode)) {
-      throw new Error(`Unknown challenge badge ${badgeCode}`);
-    }
-
-    const badge = await this.prisma.accountBadge.findUnique({ where: { accountId_badgeCode: { accountId, badgeCode } } });
-    const times =
-      (typeof badge?.context === 'object' && badge.context && !Array.isArray(badge.context) && typeof badge.context.times === 'number'
-        ? badge.context.times
-        : 0) + 1;
-
-    await this.prisma.accountBadge.upsert({
-      where: { accountId_badgeCode: { accountId, badgeCode } },
-      create: { accountId, badgeCode, context: toJsonValue({ times, lastWeek: toIsoDate(weekStart) }) },
-      update: { context: toJsonValue({ times, lastWeek: toIsoDate(weekStart) }) }
+    const badges = await this.prisma.accountBadge.findMany({
+      where: {
+        accountId: { in: unique(completions.map((completion) => completion.accountId)) },
+        badgeCode: { in: unique(completions.map((completion) => badgeCodeOf(completion.definition))) }
+      },
+      select: { accountId: true, badgeCode: true, context: true }
     });
 
-    if (!badge) {
-      await this.notifications.notifyAccount({
-        accountId,
-        dedupeKey: `badge-${accountId}-${badgeCode}`,
-        notification: { event: 'badgeAwarded', accountId: Number(accountId), badgeCode, title: definition.code }
+    const held = new Map(badges.map((badge) => [`${badge.accountId}:${badge.badgeCode}`, badge.context]));
+
+    for (const { accountId, definition } of completions) {
+      const badgeCode = badgeCodeOf(definition);
+      const key = `${accountId}:${badgeCode}`;
+      const stored = challengeBadgeContextSchema.partial().safeParse(held.get(key));
+      const context: ChallengeBadgeContext = { times: (stored.data?.times ?? 0) + 1, lastWeek: toIsoDate(weekStart) };
+
+      await this.prisma.accountBadge.upsert({
+        where: { accountId_badgeCode: { accountId, badgeCode } },
+        create: { accountId, badgeCode, context: toJsonValue(context) },
+        update: { context: toJsonValue(context) }
       });
-    }
 
-    return true;
+      if (!held.has(key)) {
+        await this.notifications.notifyAccount({
+          accountId,
+          dedupeKey: `badge-${accountId}-${badgeCode}`,
+          notification: { event: 'badgeAwarded', accountId: Number(accountId), badgeCode, title: definition.code }
+        });
+      }
+    }
   }
 
   private async weekStats({ accountIds, start, end }: WeekStatsInput): Promise<Map<bigint, WeekStats>> {

@@ -1,6 +1,7 @@
 import type { CompetitionsQuery, CreateCompetition, JoinCompetitionInput } from '@otmetki/schemas';
 
 import type { Competition, CompetitionSource } from '../../../generated';
+import type { CatalogEntry } from '../reference';
 import type { ParticipantScore } from './lib';
 import type { CompetitionWithSummary } from './selects';
 
@@ -36,6 +37,7 @@ export type ScoreCompetitionInput = {
 
 export type ScoreEntryInput = {
   competition: Competition;
+  catalog: ReadonlyMap<number, CatalogEntry> | null;
   accountId: bigint;
   joinedAt: Date;
 };

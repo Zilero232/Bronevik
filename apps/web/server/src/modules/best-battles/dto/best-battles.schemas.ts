@@ -35,13 +35,13 @@ export const bestBattlesQuerySchema = bestBattlesFacetsQuerySchema.extend({
     .optional()
 });
 
-export const bestBattleMedalSchema = z.object({
+const bestBattleMedalSchema = z.object({
   name: z.string(),
   title: z.string(),
   image: z.string().nullable()
 });
 
-export const bestBattleArenaSchema = z.object({
+const bestBattleArenaSchema = z.object({
   arenaId: z.string(),
   name: z.string()
 });

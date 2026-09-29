@@ -4,9 +4,9 @@ import type { AuthService } from '@thallesp/nestjs-better-auth';
 import type { IncomingMessage } from 'node:http';
 import type { Duplex } from 'node:stream';
 
-import { Document, Hocuspocus } from '@hocuspocus/server';
+import { Document } from '@hocuspocus/server';
 import { EventEmitter } from 'node:events';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 import * as Y from 'yjs';
 
@@ -38,19 +38,9 @@ const createCollab = () => {
   auth.api.getSession.mockResolvedValue(null);
   redis.createExtension.mockReturnValue({ extensionName: 'redis-test-double' });
 
-  const configure = vi.spyOn(Hocuspocus.prototype, 'configure');
   const collab = new TacticsCollabService(adapterHost, boards, config, auth, live, redis);
-  const [configuration] = configure.mock.lastCall ?? [];
 
-  configure.mockRestore();
-
-  const { onAuthenticate, onLoadDocument, onStoreDocument } = configuration ?? {};
-
-  if (!onAuthenticate || !onLoadDocument || !onStoreDocument) {
-    throw new Error('the collab service registers no document hooks');
-  }
-
-  return { server, auth, boards, live, collab, hooks: { onAuthenticate, onLoadDocument, onStoreDocument } };
+  return { server, auth, boards, live, collab, hooks: collab.documentHooks() };
 };
 
 const authPayload = (documentName: string) => {

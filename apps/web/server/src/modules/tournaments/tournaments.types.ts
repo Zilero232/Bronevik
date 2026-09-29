@@ -1,7 +1,7 @@
 import type { z } from 'zod';
 
-import type { Prisma, TournamentStatus } from '../../../generated';
-import type { PrismaService } from '../../core';
+import type { TournamentStatus } from '../../../generated';
+import type { PrismaExecutor } from '../../core';
 import type { NamesById, Owned, OwnedById } from '../community-core';
 import type {
   createTournamentSchema,
@@ -12,7 +12,7 @@ import type {
   tournamentsQuerySchema,
   withdrawTournamentSchema
 } from './dto/tournaments.schemas';
-import type { TournamentWithParticipants } from './mappers';
+import type { TournamentWithParticipants } from './selects';
 
 export type TournamentView = z.infer<typeof tournamentSchema>;
 export type TournamentsQuery = z.output<typeof tournamentsQuerySchema>;
@@ -28,7 +28,7 @@ export type TournamentMove = OwnedById & {
 };
 
 export type OrganizedInput = OwnedById & {
-  db?: Prisma.TransactionClient | PrismaService;
+  db?: PrismaExecutor;
 };
 
 export type TournamentViewWith = {

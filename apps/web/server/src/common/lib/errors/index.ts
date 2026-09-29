@@ -1,1 +1,1 @@
-export { errorMessage } from './errors';
+export { errorMessage, isMissingFileError } from './errors';

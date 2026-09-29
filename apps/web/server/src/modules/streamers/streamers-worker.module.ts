@@ -1,6 +1,7 @@
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 
+import { HttpModule } from '../../core';
 import { NotificationsProducerModule } from '../notifications';
 import { ReferenceCoreModule } from '../reference';
 import { STREAMERS_QUEUE } from './config';
@@ -25,7 +26,7 @@ import {
 } from './services';
 
 @Module({
-  imports: [NotificationsProducerModule, ReferenceCoreModule, BullModule.registerQueue({ name: STREAMERS_QUEUE.name })],
+  imports: [HttpModule, NotificationsProducerModule, ReferenceCoreModule, BullModule.registerQueue({ name: STREAMERS_QUEUE.name })],
   providers: [
     ChallengeService,
     ChallengeFeedService,

@@ -1,7 +1,6 @@
 import {
   apiErrorSchema,
   clanEventsPageSchema,
-  clanIdSchema,
   clanListPageSchema,
   clanListQuerySchema,
   clanMembersSchema,
@@ -24,7 +23,6 @@ import {
   sessionsPageSchema,
   tankDetailQuerySchema,
   tankDetailSchema,
-  tankIdSchema,
   tankServerStatsQuerySchema,
   tankStatsPageSchema,
   tierListQuerySchema,
@@ -33,13 +31,15 @@ import {
   timeSeriesSchema
 } from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
-import { z } from 'zod';
 
-export class V1PlayerLookupDto extends createZodDto(z.object({ idOrNick: z.string().trim().min(2).max(24) })) {}
-export class V1PlayerParamsDto extends createZodDto(z.object({ id: z.coerce.number().int().positive() })) {}
-export class V1SessionParamsDto extends createZodDto(z.object({ id: z.coerce.number().int().positive(), sessionId: z.uuid() })) {}
-export class V1TankParamsDto extends createZodDto(z.object({ id: tankIdSchema })) {}
-export class V1ClanParamsDto extends createZodDto(z.object({ id: clanIdSchema })) {}
+import { playerLookupParamsSchema, playerParamsSchema, sessionParamsSchema } from '../../players';
+import { v1ClanParamsSchema, v1TankParamsSchema } from './v1.schemas';
+
+export class V1PlayerLookupDto extends createZodDto(playerLookupParamsSchema) {}
+export class V1PlayerParamsDto extends createZodDto(playerParamsSchema) {}
+export class V1SessionParamsDto extends createZodDto(sessionParamsSchema) {}
+export class V1TankParamsDto extends createZodDto(v1TankParamsSchema) {}
+export class V1ClanParamsDto extends createZodDto(v1ClanParamsSchema) {}
 export class V1RecentPeriodsDto extends createZodDto(recentPeriodsSchema) {}
 export class V1PlayerMarksDto extends createZodDto(playerMarksSchema) {}
 export class V1LeaderboardQueryDto extends createZodDto(leaderboardQuerySchema) {}

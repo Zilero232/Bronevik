@@ -1,9 +1,10 @@
-import type { CompetitionPage, CompetitionScoring, Competition as CompetitionView } from '@otmetki/schemas';
+import type { CompetitionPage, Competition as CompetitionView } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
-import { COMPETITION, competitionScoringSchema } from '@otmetki/schemas';
+import { COMPETITION } from '@otmetki/schemas';
+import { match } from 'ts-pattern';
 
-import type { Competition, Prisma } from '../../../../generated';
+import type { Prisma } from '../../../../generated';
 import type {
   CanViewInput,
   CompetitionCreateInput,
@@ -22,7 +23,7 @@ import { isUniqueViolation, PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { titleSlug } from '../../community-core';
 import { COMPETITION_RUN } from '../config';
-import { competitionStatus, rankTeams } from '../lib';
+import { competitionStatus, rankTeams, readScoring } from '../lib';
 import { toCompetitionStanding, toCompetitionSummary } from '../mappers';
 import { COMPETITION_SUMMARY_INCLUDE } from '../selects';
 
@@ -42,14 +43,12 @@ export class CompetitionService {
     const mine: Prisma.CompetitionWhereInput =
       query.mine && viewerUserId ? { OR: [{ ownerUserId: viewerUserId }, { entries: { some: { userId: viewerUserId } } }] } : {};
 
-    const status: Prisma.CompetitionWhereInput =
-      query.status === 'upcoming'
-        ? { startsAt: { gt: now } }
-        : query.status === 'running'
-          ? { startsAt: { lte: now }, endsAt: { gt: now } }
-          : query.status === 'finished'
-            ? { endsAt: { lte: now } }
-            : {};
+    const status = match(query.status)
+      .returnType<Prisma.CompetitionWhereInput>()
+      .with('upcoming', () => ({ startsAt: { gt: now } }))
+      .with('running', () => ({ startsAt: { lte: now }, endsAt: { gt: now } }))
+      .with('finished', () => ({ endsAt: { lte: now } }))
+      .otherwise(() => ({}));
 
     if (query.mine && !viewerUserId) {
       return { items: [], total: 0, limit: query.limit, offset: query.offset };
@@ -257,7 +256,7 @@ export class CompetitionService {
 
     return {
       ...toCompetitionSummary({ row, now: new Date() }),
-      scoring: this.scoringOf(row),
+      scoring: readScoring(row.scoring),
       maxTeamSize: COMPETITION.maxTeamSize,
       isOwner,
       myTeamId: myTeam?.id ?? null,
@@ -267,11 +266,5 @@ export class CompetitionService {
         .map((team) => toCompetitionStanding({ team, rank: ranks.get(team.id) ?? teams.length, nicknameOf }))
         .sort((left, right) => left.rank - right.rank)
     };
-  }
-
-  private scoringOf(row: Competition): CompetitionScoring {
-    const parsed = competitionScoringSchema.safeParse(row.scoring);
-
-    return parsed.success ? parsed.data : COMPETITION.defaultScoring;
   }
 }

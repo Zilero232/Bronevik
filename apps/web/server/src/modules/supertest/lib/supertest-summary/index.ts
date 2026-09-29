@@ -1,2 +1,2 @@
 export { narrowToTanks, supertestTotals, tankVerdict } from './supertest-summary';
-export type { NarrowInput, SummaryAnnouncement, SummaryTank } from './supertest-summary.types';
+export type { NarrowInput, SummaryAnnouncement } from './supertest-summary.types';

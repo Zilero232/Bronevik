@@ -7,8 +7,7 @@ import { AppBadRequestException, AppNotFoundException } from '../../../common/ex
 import { AppConfigService } from '../../../config';
 import { ObjectStorage, StorageObjectMissingError } from '../../../core';
 import { BLOG_IMAGES } from '../config';
-import { detectImageType, imageTypeOf } from '../lib';
-import { imageFileUrl } from '../mappers';
+import { detectImageType, imageFileUrl, imageTypeOf } from '../lib';
 
 @Injectable()
 export class BlogImageService {

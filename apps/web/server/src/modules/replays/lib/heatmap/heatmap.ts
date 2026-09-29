@@ -1,5 +1,16 @@
-import type { AccumulateInput, MapBounds, MergeGridsInput, ToCellInput } from './heatmap.types';
+import type { VehicleType } from '../../../../../generated';
+import type { ReplayTrack } from '../replay-tracks';
+import type {
+  AccumulateInput,
+  HeatmapKeyInput,
+  HeatmapScopesInput,
+  MapBounds,
+  MergeGridsInput,
+  ToCellInput,
+  VehicleClassesInput
+} from './heatmap.types';
 
+import { HEATMAP } from '../../config';
 import { arenaBoundsSchema, heatmapDataSchema } from './heatmap.schemas';
 
 export const fallbackBounds = (halfSize: number): MapBounds => ({ minX: -halfSize, maxX: halfSize, minZ: -halfSize, maxZ: halfSize });
@@ -61,3 +72,35 @@ export const readHeatmapCells = (data: unknown): number[] | null => {
 };
 
 export const gridTotal = (cells: readonly number[]): number => cells.reduce((total, value) => total + value, 0);
+
+export const heatmapKey = ({ mode, scope }: HeatmapKeyInput): string => `${mode}:${scope}`;
+
+export const trackVehicleTag = (vehicleType: string | null): string | null => vehicleType?.split(':')[1] || null;
+
+export const vehicleClassesOf = ({ tracks, vehicles }: VehicleClassesInput): Map<number, VehicleType> => {
+  const byTankId = new Map(vehicles.map((vehicle) => [vehicle.tankId, vehicle.type]));
+  const byTag = new Map(vehicles.flatMap((vehicle) => (vehicle.tag ? [[vehicle.tag, vehicle.type] as const] : [])));
+
+  return new Map(
+    tracks.flatMap((track) => {
+      const tag = trackVehicleTag(track.vehicleType);
+      const type = (track.tankId === null ? undefined : byTankId.get(track.tankId)) ?? (tag === null ? undefined : byTag.get(tag));
+
+      return type ? [[track.vehicleId, type] as const] : [];
+    })
+  );
+};
+
+export const heatmapScopes = ({ tracks, classes }: HeatmapScopesInput): Map<string, ReplayTrack[]> => {
+  const scopes = new Map<string, ReplayTrack[]>([[HEATMAP.allScope, [...tracks]]]);
+
+  for (const track of tracks) {
+    const vehicleClass = classes.get(track.vehicleId);
+
+    if (vehicleClass) {
+      scopes.set(vehicleClass, [...(scopes.get(vehicleClass) ?? []), track]);
+    }
+  }
+
+  return scopes;
+};

@@ -6,7 +6,7 @@ export type LiveStream = {
   viewers: number | null;
 };
 
-export type LiveChannelRef = {
+type LiveChannelRef = {
   platform: StreamerPlatform;
   handle: string;
 };

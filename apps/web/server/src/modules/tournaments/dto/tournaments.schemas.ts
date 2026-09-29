@@ -21,6 +21,8 @@ export const bracketSchema = z.object({
   )
 });
 
+export const tournamentRulesSchema = z.object({ maxParticipants: z.number().int().positive() });
+
 const tournamentParticipantSchema = z.object({
   accountId: accountIdSchema,
   nickname: z.string().nullable(),
@@ -54,7 +56,7 @@ export const createTournamentSchema = z.object({
   title: z.string().trim().min(5).max(140),
   description: z.string().trim().max(8000).optional(),
   requirements: statRequirementsSchema.default({}),
-  maxParticipants: z.number().int().min(TOURNAMENT.minParticipants).max(TOURNAMENT.maxParticipants).default(64),
+  maxParticipants: z.number().int().min(TOURNAMENT.minParticipants).max(TOURNAMENT.maxParticipants).default(TOURNAMENT.defaultParticipants),
   registrationEndsAt: isoDateTimeSchema.optional(),
   startsAt: isoDateTimeSchema,
   openRegistration: z.boolean().default(false)

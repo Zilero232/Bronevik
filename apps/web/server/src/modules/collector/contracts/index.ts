@@ -18,6 +18,5 @@ export type {
   EnrolPayload,
   EnrolPriority,
   PurgeAccountPayload,
-  QueueName,
-  WebhookDeliverPayload
+  QueueName
 } from './queues.types';

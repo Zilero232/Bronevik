@@ -7,7 +7,7 @@ import { z } from 'zod';
 import type { ExpectedValuesDateInput, MasteryThresholdRow, MoeThresholdRow } from './community-data.types';
 
 import { REFERENCE } from '../../config';
-import { LESTA_MASTERY } from './community-data.constants';
+import { EXPECTED_VALUES_HEADER, LESTA_MASTERY } from './community-data.constants';
 
 const threshold = z.coerce.number().int().positive();
 
@@ -37,11 +37,9 @@ export const masteryThresholdRows = (distribution: Readonly<Record<string, Reado
     return [{ tankId: Number(tankId), class3: thresholds.third, class2: thresholds.second, class1: thresholds.first, master: thresholds.ace }];
   });
 
-const isoDay = /^\d{4}-\d{2}-\d{2}/;
-
 export const expectedValuesDate = ({ header, now }: ExpectedValuesDateInput): Date => {
   const version = typeof header.version === 'string' ? header.version : '';
-  const match = isoDay.exec(version);
+  const match = EXPECTED_VALUES_HEADER.isoDayPattern.exec(version);
 
   return match ? new Date(`${match[0]}T00:00:00Z`) : startOfDay(now, { in: utc });
 };

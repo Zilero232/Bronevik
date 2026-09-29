@@ -6,6 +6,7 @@ export const BONUS_CODE = {
   verdictShare: 0.6,
   reportWindowDays: 3,
   staleAfterDays: 60,
+  listLimit: 200,
   wotexpressSource: 'wotexpress.info',
   reportThrottle: { limit: 20, ttl: 60_000 }
 } as const;

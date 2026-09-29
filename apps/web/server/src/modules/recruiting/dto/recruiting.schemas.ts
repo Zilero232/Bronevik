@@ -2,9 +2,9 @@ import { accountIdSchema, clanIdSchema, isoDateTimeSchema, paginatedSchema, pagi
 import { z } from 'zod';
 
 import { playerStatsSchema, postStatusSchema, statRequirementsSchema } from '../../community-core';
-import { RECRUITING } from '../config';
+import { RECRUITING, RECRUITING_KIND_FROM_DB } from '../config';
 
-const recruitingKindSchema = z.enum(['clan_seeks_player', 'player_seeks_clan']);
+const recruitingKindSchema = z.enum(RECRUITING_KIND_FROM_DB);
 
 export const recruitingPostSchema = z.object({
   id: uuidSchema,

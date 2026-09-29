@@ -1,3 +1,4 @@
+import type { Vehicle, VehicleType } from '../../../../../generated';
 import type { ReplayTrack } from '../replay-tracks';
 
 export type MapBounds = {
@@ -23,4 +24,19 @@ export type AccumulateInput = {
 export type MergeGridsInput = {
   base: readonly number[] | null;
   add: readonly number[];
+};
+
+export type HeatmapKeyInput = {
+  mode: string;
+  scope: string;
+};
+
+export type VehicleClassesInput = {
+  tracks: readonly ReplayTrack[];
+  vehicles: readonly Pick<Vehicle, 'tag' | 'tankId' | 'type'>[];
+};
+
+export type HeatmapScopesInput = {
+  tracks: readonly ReplayTrack[];
+  classes: ReadonlyMap<number, VehicleType>;
 };

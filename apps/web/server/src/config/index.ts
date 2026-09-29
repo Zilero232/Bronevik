@@ -1,5 +1,6 @@
 export { AppConfigModule, AppConfigService } from './app-config';
 export { ARMOR_VIEWER } from './armor.constants';
+export { AUTH_COOKIE } from './auth.constants';
 export { BULL_BOARD } from './board.constants';
 export { allowedOrigins, corsOptionsFor, guardedOrigins } from './cors';
 export { envSchema, isProduction, validateEnv } from './env';
@@ -10,3 +11,4 @@ export { expressTrustProxy, trustedProxies } from './proxy';
 export { SOURCES } from './sources.constants';
 export { TIME } from './time.constants';
 export { TIMESCALE } from './timescale.constants';
+export { WORKER } from './worker.constants';

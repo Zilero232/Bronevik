@@ -1,4 +1,4 @@
-import type { TankChallengeMetric } from '@otmetki/schemas';
+import type { TankChallenge } from '@otmetki/schemas';
 
 import type { TankChallengeDefinition } from '../../progression.types';
 import type { BattleSample } from '../battle-samples';
@@ -9,12 +9,7 @@ export type WeeklyTankChallengesInput = {
   hasModData: boolean;
 };
 
-export type ResolvedChallenge = {
-  code: string;
-  metric: TankChallengeMetric;
-  target: number;
-  threshold: number | null;
-};
+export type ResolvedChallenge = Pick<TankChallenge, 'code' | 'metric' | 'target' | 'threshold'>;
 
 export type ChallengeProgressInput = {
   challenge: Pick<ResolvedChallenge, 'metric' | 'threshold'>;

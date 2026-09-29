@@ -1,6 +1,7 @@
-import type { ModShot, StoredShotRecord } from './stored-shot.types';
+import type { StoredShot } from '../../../analytics';
+import type { ModShot } from './stored-shot.types';
 
-export const toStoredShot = (shot: ModShot): StoredShotRecord => ({
+export const toStoredShot = (shot: ModShot): StoredShot => ({
   damage: shot.damage,
   nominal: shot.nominal,
   shell: shot.shell,

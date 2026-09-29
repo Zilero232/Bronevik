@@ -1,13 +1,7 @@
 import type { NamedVehicle } from '../../../shop';
+import type { SupertestChangeView } from '../../supertest.types';
 
-export type ParsedChange = {
-  param: string | null;
-  label: string;
-  from: number | null;
-  to: number | null;
-  unit: string | null;
-  raw: string;
-};
+export type ParsedChange = Pick<SupertestChangeView, 'from' | 'label' | 'param' | 'raw' | 'to' | 'unit'>;
 
 export type TankHeading = {
   tankId: number | null;

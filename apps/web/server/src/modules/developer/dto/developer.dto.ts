@@ -10,15 +10,15 @@ import {
   createWebhookEndpointSchema,
   developerOverviewSchema,
   updateWebhookEndpointSchema,
-  uuidSchema,
   webhookDeliveriesSchema,
   webhookEndpointSchema,
   webhookEndpointsSchema
 } from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
-import { z } from 'zod';
 
-export class DeveloperIdParamsDto extends createZodDto(z.object({ id: uuidSchema })) {}
+import { developerIdParamsSchema } from './developer.schemas';
+
+export class DeveloperIdParamsDto extends createZodDto(developerIdParamsSchema) {}
 export class ApiTiersDto extends createZodDto(apiTiersSchema) {}
 export class DeveloperOverviewDto extends createZodDto(developerOverviewSchema) {}
 export class ApiKeysDto extends createZodDto(apiKeysSchema) {}

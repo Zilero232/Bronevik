@@ -16,6 +16,10 @@ export class NewsProcessor extends WorkerHost {
   }
 
   async process(job: Job) {
-    return this.metrics.track({ job, run: () => this.news.sync() });
+    return this.metrics.track({ job, run: () => this.handle() });
+  }
+
+  private async handle() {
+    return this.news.sync();
   }
 }

@@ -1,5 +1,6 @@
 import type { RecentPeriod } from '@otmetki/schemas';
 
+import { MASTERY_LEVELS } from '@otmetki/ratings';
 import { PLUS_LIMITS } from '@otmetki/schemas';
 
 export const PLAYER_STATS = {
@@ -9,7 +10,7 @@ export const PLAYER_STATS = {
   insightsMinBattles: { overall: 30, recent: 5 }
 } as const;
 
-export const HISTORY = {
+const HISTORY = {
   defaultDays: PLUS_LIMITS.historyDays.free,
   maxDays: 730
 } as const;
@@ -22,5 +23,6 @@ export const HISTORY_WINDOW = {
 
 export const PLAYER_MARKS = {
   minTier: 5,
-  combinedDamageBattles: 100
+  combinedDamageBattles: 100,
+  maxMastery: MASTERY_LEVELS.length - 1
 } as const;

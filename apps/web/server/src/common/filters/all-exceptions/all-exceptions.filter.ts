@@ -5,13 +5,14 @@ import { Catch, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { ThrottlerException } from '@nestjs/throttler';
 import { modErrorCodeSchema } from '@otmetki/schemas';
 import { ZodSerializationException, ZodValidationException } from 'nestjs-zod';
+import { isIncludedIn } from 'remeda';
 
 import type { ReplyInput } from './all-exceptions.types';
 
 import { isPrismaRequestError } from '../../../core';
 import { LestaNotConfiguredError } from '../../../lib/lesta';
 import { errorMessage } from '../../lib';
-import { LESTA_NOT_CONNECTED, MOD_CONTRACT_PATHS, MOD_REPLY, PRISMA_TO_HTTP } from './all-exceptions.constants';
+import { LESTA_NOT_CONNECTED, MOD_REPLY, PRISMA_TO_HTTP } from './all-exceptions.constants';
 import { bodyWithField, codeForStatus, isLestaError, middlewareStatus, modErrorForStatus, retryAfterSeconds, zodIssues } from './lib';
 
 @Catch()
@@ -27,7 +28,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       response.setHeader(MOD_REPLY.serverTimeHeader, String(Math.floor(Date.now() / 1000)));
     }
 
-    if (MOD_CONTRACT_PATHS.includes(request.path)) {
+    if (isIncludedIn(request.path, MOD_REPLY.contractPaths)) {
       this.replyMod({ exception, response });
 
       return;

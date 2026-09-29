@@ -8,7 +8,7 @@ import { translate } from '../../../localization';
 import { MODULE_TYPE, VEHICLE_TYPE } from '../../importer.constants';
 import { prices, vehicleModules } from '../vehicle-modules';
 
-export const localizeVehicle = ({ vehicle, messages = {} }: LocalizeVehicleInput): LocalizedVehicleFields => {
+const localizeVehicle = ({ vehicle, messages = {} }: LocalizeVehicleInput): LocalizedVehicleFields => {
   const name = translate({ messages, key: vehicle.nameKey });
 
   return pickBy(

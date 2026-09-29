@@ -35,7 +35,7 @@ export type UserBudget = {
   day: SecondBudget;
 };
 
-export type LimiterWindow = 'day' | 'second';
+type LimiterWindow = 'day' | 'second';
 
 export type LimiterInput = {
   tier: ApiTier;

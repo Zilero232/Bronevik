@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { INDEX } from '../../select-release/_tests/fixtures';
+import { INDEX } from '../../release-index/_tests/fixtures';
 import { releaseStatus } from '../release-status';
 
 const sizes = { modpack: 2_048, manager: 4_096 };

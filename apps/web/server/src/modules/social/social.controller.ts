@@ -4,7 +4,7 @@ import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
 import { CurrentUserId } from '../../common/decorators';
-import { FEED, SIGNATURE } from './config';
+import { SIGNATURE } from './config';
 import {
   ChallengesDto,
   CreateFollowDto,
@@ -54,7 +54,7 @@ export class SocialController {
   @Get('social/feed')
   @ZodResponse({ type: FeedDto })
   feed(@CurrentUserId() userId: string, @Query() { days }: FeedQueryDto) {
-    return this.feeds.feed({ userId, days: days ?? FEED.days });
+    return this.feeds.feed({ userId, days });
   }
 
   @Get('social/leagues')
@@ -81,6 +81,6 @@ export class SocialController {
   @Get('players/:id/wrapped')
   @ZodResponse({ type: WrappedDto })
   yearWrapped(@Param() { id }: WrappedParamsDto, @Query() { year }: WrappedQueryDto) {
-    return this.wrapped.wrapped({ accountId: id, year: year ?? new Date().getUTCFullYear() });
+    return this.wrapped.wrapped({ accountId: id, year });
   }
 }

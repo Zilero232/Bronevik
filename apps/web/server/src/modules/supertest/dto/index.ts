@@ -4,7 +4,5 @@ export {
   supertestChangeSchema,
   supertestListSchema,
   supertestMineSchema,
-  supertestTankSchema,
-  supertestTotalsSchema,
-  supertestVerdictSchema
+  supertestTankSchema
 } from './supertest.schemas';

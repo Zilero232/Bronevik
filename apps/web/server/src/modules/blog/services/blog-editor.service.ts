@@ -2,12 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { randomBytes } from 'node:crypto';
 import { isIncludedIn } from 'remeda';
 
-import type { BlogEditorAccess, BlogEditorPostView, CreateBlogPostRequest, UpdateBlogPostRequest } from '../blog.types';
+import type { BlogEditorAccess, BlogEditorPostView, CreateBlogPostRequest, SlugWriteInput, UpdateBlogPostRequest } from '../blog.types';
 import type { BlogPostRow } from '../selects';
 
 import { AppBadRequestException, AppConflictException, AppNotFoundException } from '../../../common/exceptions';
 import { AppConfigService } from '../../../config';
-import { PrismaService } from '../../../core';
+import { isUniqueViolation, PrismaService } from '../../../core';
 import { BLOG } from '../config';
 import { blogSlug, outlineArticle, uniqueBlogSlug } from '../lib';
 import { toBlogEditorPostView } from '../mappers';
@@ -48,20 +48,26 @@ export class BlogEditorService {
       throw new AppConflictException('CONFLICT', `The slug ${slug} is taken`);
     }
 
-    const post = await this.prisma.blogPost.create({
-      data: {
-        ...fields,
-        slug: isTaken ? uniqueBlogSlug({ base, suffix: randomBytes(3).toString('hex') }) : base,
-        title,
-        body,
-        status,
-        coverKey,
-        coverUrl,
-        authorUserId: userId,
-        readingMinutes: outlineArticle(body).readingMinutes,
-        publishedAt: status === 'published' ? new Date() : null
-      },
-      include: BLOG_POST_INCLUDE
+    const free = isTaken ? uniqueBlogSlug({ base, suffix: randomBytes(3).toString('hex') }) : base;
+
+    const post = await this.withFreeSlug({
+      slug: free,
+      write: () =>
+        this.prisma.blogPost.create({
+          data: {
+            ...fields,
+            slug: free,
+            title,
+            body,
+            status,
+            coverKey,
+            coverUrl,
+            authorUserId: userId,
+            readingMinutes: outlineArticle(body).readingMinutes,
+            publishedAt: status === 'published' ? new Date() : null
+          },
+          include: BLOG_POST_INCLUDE
+        })
     });
 
     return this.view(post);
@@ -87,14 +93,18 @@ export class BlogEditorService {
 
     const isFirstPublish = fields.status === 'published' && current.publishedAt === null;
 
-    const post = await this.prisma.blogPost.update({
-      where: { id },
-      data: {
-        ...fields,
-        ...(fields.body === undefined ? {} : { readingMinutes: outlineArticle(fields.body).readingMinutes }),
-        ...(isFirstPublish ? { publishedAt: new Date() } : {})
-      },
-      include: BLOG_POST_INCLUDE
+    const post = await this.withFreeSlug({
+      slug: slug ?? current.slug,
+      write: () =>
+        this.prisma.blogPost.update({
+          where: { id },
+          data: {
+            ...fields,
+            ...(fields.body === undefined ? {} : { readingMinutes: outlineArticle(fields.body).readingMinutes }),
+            ...(isFirstPublish ? { publishedAt: new Date() } : {})
+          },
+          include: BLOG_POST_INCLUDE
+        })
     });
 
     if (current.coverKey !== post.coverKey) {
@@ -119,6 +129,18 @@ export class BlogEditorService {
     }
 
     return post;
+  }
+
+  private async withFreeSlug<T>({ slug, write }: SlugWriteInput<T>): Promise<T> {
+    try {
+      return await write();
+    } catch (error) {
+      if (isUniqueViolation(error)) {
+        throw new AppConflictException('CONFLICT', `The slug ${slug} is taken`);
+      }
+
+      throw error;
+    }
   }
 
   private assertOneCover({ coverKey, coverUrl }: Pick<BlogPostRow, 'coverKey' | 'coverUrl'>): void {

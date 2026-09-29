@@ -230,7 +230,7 @@ export type TryLoadoutInput = {
   warnings: string[];
 };
 
-export type ProvisionRowContext = {
+type ProvisionRowContext = {
   vehicles: VehicleSpec[];
   messages: LocalizedMessages;
   sourceId: SourceRevision['sourceId'];

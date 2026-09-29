@@ -5,7 +5,7 @@ import type { RollupRow, TankOwnersRow } from '../queries';
 
 import { PrismaService } from '../../../core';
 import { ACHIEVEMENTS_AGGREGATE } from '../config';
-import { accountRollup, heldNames, rarityPoints, readCounts, shareOf } from '../lib';
+import { accountRollup, heldNames, obtainableNames, rarityPoints, readCounts, shareOf } from '../lib';
 import { rollupUpdateSql, tankOwnersSql } from '../queries';
 
 @Injectable()
@@ -45,8 +45,7 @@ export class RarityAggregateService {
     await this.prisma.$transaction([this.prisma.achievementRarity.deleteMany(), this.prisma.achievementRarity.createMany({ data: rows })]);
 
     const points = new Map(rows.map((row) => [row.name, row.points]));
-    const sections = new Set<string>(ACHIEVEMENTS_AGGREGATE.completionSections);
-    const obtainable = new Set(catalog.filter((row) => row.section !== null && sections.has(row.section)).map((row) => row.name));
+    const obtainable = obtainableNames(catalog);
 
     for await (const chunk of this.chunks()) {
       const rollups: RollupRow[] = chunk.map((row) => ({

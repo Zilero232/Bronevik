@@ -9,7 +9,6 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Subscription } from '../../../../../../generated';
 import type { PrismaService } from '../../../../../core';
-import type { PlusRequest } from '../../../billing.types';
 import type { EntitlementsBusService } from '../../../services/entitlements-bus.service';
 
 import { AppForbiddenException, AppUnauthorizedException } from '../../../../../common/exceptions';
@@ -20,7 +19,7 @@ import { PlusGuard } from '../plus.guard';
 const now = new Date('2026-09-25T12:00:00Z');
 const feature: PlusFeature = 'history';
 
-const contextFor = (request: PlusRequest) => {
+const contextFor = (request: { session?: { user: { id: string } } | null }) => {
   const http = mock<HttpArgumentsHost>();
 
   http.getRequest.mockReturnValue(request);

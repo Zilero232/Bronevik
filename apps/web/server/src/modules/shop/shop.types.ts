@@ -44,6 +44,11 @@ export type RecountInput = {
   now: Date;
 };
 
+export type TalliesInput = {
+  codes: string[];
+  now: Date;
+};
+
 export type StoreOfferInput = {
   item: ListingItem;
   detail: OfferDetail | null;

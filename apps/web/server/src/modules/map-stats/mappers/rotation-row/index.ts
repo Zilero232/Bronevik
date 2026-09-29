@@ -1,2 +1,2 @@
 export { toMapRotationRow } from './rotation-row';
-export type { RotationArena, RotationRowInput } from './rotation-row.types';
+export type { RotationRowInput } from './rotation-row.types';

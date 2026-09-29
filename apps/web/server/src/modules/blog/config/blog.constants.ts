@@ -1,12 +1,13 @@
 export const BLOG = {
   editorRoles: ['admin', 'moderator'],
-  categories: ['announcements', 'updates', 'analysis', 'patches', 'community', 'esports'],
   locales: ['ru', 'en'],
+  defaultLocale: 'ru',
   relatedLimit: 3,
   tagsLimit: 30,
   editorLimit: 200,
   wordsPerMinute: 200,
   tocDepths: [2, 3],
+  slugMinLength: 3,
   slugMaxLength: 96,
   slugFallback: 'post',
   reservedSlugs: ['editor', 'rss']

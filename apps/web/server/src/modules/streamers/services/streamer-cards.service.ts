@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { groupBy, indexBy, unique } from 'remeda';
 
 import type { StreamerProfile } from '../../../../generated';
-import type { ProfileWithChannels } from '../streamers.types';
+import type { ProfileCardRow } from '../selects';
 
 import { toIso, toNumber } from '../../../common/lib';
 import { PrismaService } from '../../../core';
@@ -31,7 +31,7 @@ export class StreamerCardsService {
     };
   }
 
-  async cards(profiles: readonly ProfileWithChannels[]): Promise<StreamerCard[]> {
+  async cards(profiles: readonly ProfileCardRow[]): Promise<StreamerCard[]> {
     const accountIds = unique(profiles.flatMap((profile) => (profile.accountId === null ? [] : [profile.accountId])));
 
     const [ratings, marks, tanks] = await Promise.all([

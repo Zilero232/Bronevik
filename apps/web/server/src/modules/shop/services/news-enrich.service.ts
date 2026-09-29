@@ -3,7 +3,7 @@ import { unique } from 'remeda';
 
 import { PrismaService } from '../../../core';
 import { NEWS_ENRICH } from '../config';
-import { isPatchNotes, matchTankNames, patchVersion, versionCandidates } from '../lib';
+import { isPatchNotes, matchTankNames, versionsOf } from '../lib';
 
 @Injectable()
 export class NewsEnrichService {
@@ -21,26 +21,36 @@ export class NewsEnrichService {
       return 0;
     }
 
-    const vehicles = await this.prisma.vehicle.findMany({ select: { tankId: true, name: true } });
+    const versions = unique(items.flatMap((item) => (item.gameVersionId === null ? versionsOf(item.title) : [])));
+    const [vehicles, gameVersions] = await Promise.all([
+      this.prisma.vehicle.findMany({ select: { tankId: true, name: true } }),
+      versions.length > 0 ? this.prisma.gameVersion.findMany({ where: { version: { in: versions } }, select: { id: true, version: true } }) : []
+    ]);
 
-    for (const item of items) {
-      const version = patchVersion(item.title);
-      const gameVersion = version
-        ? await this.prisma.gameVersion.findFirst({ where: { version: { in: versionCandidates(version) } }, select: { id: true } })
-        : null;
+    const versionIds = new Map(gameVersions.map((row) => [row.version, row.id]));
 
-      const mentioned = matchTankNames({ text: `${item.title}\n${item.summary ?? ''}`, vehicles, minLength: NEWS_ENRICH.minTankNameLength });
+    await this.prisma.$transaction(
+      items.map((item) => {
+        const gameVersionId =
+          item.gameVersionId ??
+          versionsOf(item.title)
+            .map((version) => versionIds.get(version))
+            .find((id) => id !== undefined) ??
+          null;
 
-      await this.prisma.newsItem.update({
-        where: { id: item.id },
-        data: {
-          kind: isPatchNotes(item.title) ? 'patchNotes' : item.kind,
-          gameVersionId: item.gameVersionId ?? gameVersion?.id ?? null,
-          tankIds: unique([...item.tankIds, ...mentioned]),
-          enrichedAt: now
-        }
-      });
-    }
+        const mentioned = matchTankNames({ text: `${item.title}\n${item.summary ?? ''}`, vehicles, minLength: NEWS_ENRICH.minTankNameLength });
+
+        return this.prisma.newsItem.update({
+          where: { id: item.id },
+          data: {
+            kind: isPatchNotes(item.title) ? 'patchNotes' : item.kind,
+            gameVersionId,
+            tankIds: unique([...item.tankIds, ...mentioned]),
+            enrichedAt: now
+          }
+        });
+      })
+    );
 
     return items.length;
   }

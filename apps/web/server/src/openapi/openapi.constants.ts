@@ -1,9 +1,11 @@
+import { AUTH_COOKIE } from '../config';
+
 export const OPENAPI = {
   internal: {
     path: 'docs',
     title: 'Three Marks API',
     description: 'Site API, public /v1 and the mod ingest for Три отметки. Data source: Леста Игры.',
-    sessionCookie: 'better-auth.session_token',
+    sessionCookie: AUTH_COOKIE.session,
     openApiVersion: '3.1.0'
   },
   public: {

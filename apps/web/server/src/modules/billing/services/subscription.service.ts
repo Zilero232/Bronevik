@@ -1,14 +1,16 @@
+import type { BillingStatus, PaymentHistoryItem, PlanOffer } from '@otmetki/schemas';
+
 import { Injectable } from '@nestjs/common';
 import { isPlusState, PLUS } from '@otmetki/schemas';
 
-import type { ActivateInput, BillingStatus, GrantDaysInput, PaymentHistoryItem, SetAutoRenewInput } from '../billing.types';
+import type { ActivateInput, GrantDaysInput, SetAutoRenewInput } from '../billing.types';
 
 import { AppBadRequestException } from '../../../common/exceptions';
 import { isEntitled, toIso } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { PrismaService } from '../../../core';
 import { PLUS_PLANS, PLUS_SUBSCRIPTION } from '../config';
-import { cancelsAtPeriodEnd, extendPeriod } from '../lib';
+import { cancelsAtPeriodEnd, extendPeriod, plusSubscriptionKey } from '../lib';
 import { toPaymentHistoryItem } from '../mappers';
 import { EntitlementsService } from './entitlements.service';
 
@@ -29,7 +31,7 @@ export class SubscriptionService {
   }
 
   async activate({ db, userId, plan, method, now }: ActivateInput): Promise<string> {
-    const current = await db.subscription.findUnique({ where: { userId_product: { userId, product: PLUS_SUBSCRIPTION.product } } });
+    const current = await db.subscription.findUnique({ where: plusSubscriptionKey(userId) });
     const isRunning = isEntitled({ subscription: current, now });
 
     const data = {
@@ -49,7 +51,7 @@ export class SubscriptionService {
     };
 
     const subscription = await db.subscription.upsert({
-      where: { userId_product: { userId, product: PLUS_SUBSCRIPTION.product } },
+      where: plusSubscriptionKey(userId),
       create: { userId, product: PLUS_SUBSCRIPTION.product, ...data },
       update: data,
       select: { id: true }
@@ -59,12 +61,12 @@ export class SubscriptionService {
   }
 
   async grantDays({ db, userId, days, now }: GrantDaysInput): Promise<void> {
-    const current = await db.subscription.findUnique({ where: { userId_product: { userId, product: PLUS_SUBSCRIPTION.product } } });
+    const current = await db.subscription.findUnique({ where: plusSubscriptionKey(userId) });
     const isRunning = isEntitled({ subscription: current, now });
     const currentPeriodEnd = extendPeriod({ currentPeriodEnd: isRunning ? (current?.currentPeriodEnd ?? null) : null, now, days });
 
     await db.subscription.upsert({
-      where: { userId_product: { userId, product: PLUS_SUBSCRIPTION.product } },
+      where: plusSubscriptionKey(userId),
       create: { userId, product: PLUS_SUBSCRIPTION.product, status: 'active', currentPeriodEnd, cancelAtPeriodEnd: true },
       update: { currentPeriodEnd, ...(isRunning ? {} : { status: 'active' as const, cancelAtPeriodEnd: true }) }
     });
@@ -72,7 +74,7 @@ export class SubscriptionService {
 
   async status(userId: string): Promise<BillingStatus> {
     const [subscription, plus] = await Promise.all([
-      this.prisma.subscription.findUnique({ where: { userId_product: { userId, product: PLUS_SUBSCRIPTION.product } } }),
+      this.prisma.subscription.findUnique({ where: plusSubscriptionKey(userId) }),
       this.entitlements.refresh(userId)
     ]);
 
@@ -90,7 +92,7 @@ export class SubscriptionService {
     };
   }
 
-  plans() {
+  plans(): PlanOffer[] {
     return Object.values(PLUS_PLANS).map(({ plan, months, priceRub }) => ({ plan, months, priceRub }));
   }
 
@@ -101,7 +103,7 @@ export class SubscriptionService {
   }
 
   async setAutoRenew({ userId, isEnabled }: SetAutoRenewInput): Promise<BillingStatus> {
-    const subscription = await this.prisma.subscription.findUnique({ where: { userId_product: { userId, product: PLUS_SUBSCRIPTION.product } } });
+    const subscription = await this.prisma.subscription.findUnique({ where: plusSubscriptionKey(userId) });
 
     if (!subscription) {
       throw new AppBadRequestException('SUBSCRIPTION_REQUIRED', 'There is no Plus subscription to change');

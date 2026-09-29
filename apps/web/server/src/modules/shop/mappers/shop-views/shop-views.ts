@@ -6,7 +6,7 @@ import type { NewsView, NewsWithVersion, OfferViewInput } from './shop-views.typ
 
 import { toIso } from '../../../../common/lib';
 import { httpUrl } from '../../../../lib/scrape';
-import { NEWS_KIND_FROM_DB } from './shop-views.constants';
+import { NEWS_KIND_FROM_DB } from '../../config';
 
 const rewardsSchema = z.array(z.string());
 

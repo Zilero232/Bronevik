@@ -1,17 +1,7 @@
+import type { RngDaily } from '../../../../../generated';
 import type { StoredShot } from '../../../analytics';
 
-export type RollTally = {
-  battles: number;
-  players: Set<string>;
-  shots: number;
-  damage: number;
-  nominal: number;
-  within: number;
-  bucketShots: number[];
-  fired: number;
-  hit: number;
-  pierced: number;
-};
+export type RollTally = Omit<RngDaily, 'day' | 'players' | 'scope'> & { players: Set<string> };
 
 export type BattleAccuracy = {
   fired: number;

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { CHALLENGE_BADGES, WEEKLY_CHALLENGES } from '../../../config';
-import { badgeCodeOf, challengeProgress, isChallengeBadgeCode, isCompleted } from '../challenges';
+import { badgeCodeOf, challengeOfBadge, challengeProgress } from '../challenges';
 
 const empty = { battles: 0, wins: 0, spotted: 0, marks: 0, bigDamage: [] };
 const heavy = WEEKLY_CHALLENGES.find((definition) => definition.code === 'heavy-4000');
@@ -34,15 +34,6 @@ describe('challengeProgress', () => {
   });
 });
 
-describe('isCompleted', () => {
-  it('completes exactly at the target', () => {
-    for (const definition of WEEKLY_CHALLENGES.filter((item) => item.metric === 'battles')) {
-      expect(isCompleted({ definition, stats: { ...empty, battles: definition.target } })).toBe(true);
-      expect(isCompleted({ definition, stats: { ...empty, battles: definition.target - 1 } })).toBe(false);
-    }
-  });
-});
-
 describe('badgeCodeOf', () => {
   it('gives every challenge its own badge', () => {
     const codes = WEEKLY_CHALLENGES.map(badgeCodeOf);
@@ -51,10 +42,10 @@ describe('badgeCodeOf', () => {
   });
 });
 
-describe('isChallengeBadgeCode', () => {
-  it('accepts the badge of every configured challenge and nothing else', () => {
-    expect(WEEKLY_CHALLENGES.every((definition) => isChallengeBadgeCode(badgeCodeOf(definition)))).toBe(true);
-    expect(WEEKLY_CHALLENGES.some((definition) => isChallengeBadgeCode(definition.code))).toBe(false);
-    expect(isChallengeBadgeCode(`${CHALLENGE_BADGES.prefix}retired`)).toBe(false);
+describe('challengeOfBadge', () => {
+  it('finds the challenge of every configured badge and nothing else', () => {
+    expect(WEEKLY_CHALLENGES.every((definition) => challengeOfBadge(badgeCodeOf(definition)) === definition)).toBe(true);
+    expect(WEEKLY_CHALLENGES.some((definition) => challengeOfBadge(definition.code) !== null)).toBe(false);
+    expect(challengeOfBadge(`${CHALLENGE_BADGES.prefix}retired`)).toBeNull();
   });
 });

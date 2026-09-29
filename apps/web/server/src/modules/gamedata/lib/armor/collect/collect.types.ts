@@ -9,7 +9,7 @@ export type CollectArmorModelsInput = {
   onProgress?: (message: string) => void;
 };
 
-export type ArmorModelBuild = {
+type ArmorModelBuild = {
   tankId: number;
   tag: string;
   bytes: Uint8Array;
@@ -17,7 +17,7 @@ export type ArmorModelBuild = {
   modules: ArmorModules;
 };
 
-export type SkippedArmorModel = {
+type SkippedArmorModel = {
   tag: string;
   reason: string;
 };

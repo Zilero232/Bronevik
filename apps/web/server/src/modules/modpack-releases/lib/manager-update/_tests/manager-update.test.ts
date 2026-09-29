@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { INDEX } from '../../select-release/_tests/fixtures';
+import { INDEX } from '../../release-index/_tests/fixtures';
 import { selectManagerUpdate } from '../manager-update';
 
 const query = { target: 'windows', arch: 'x86_64', current: '0.1.0' };

@@ -1,6 +1,6 @@
 import type { Options } from 'ky';
 
-export type HttpGetInput = {
+export type HttpRequestInput = {
   url: string;
   options?: Options;
 };

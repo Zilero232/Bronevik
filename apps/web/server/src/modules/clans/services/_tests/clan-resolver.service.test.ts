@@ -9,6 +9,7 @@ import { AppNotFoundException } from '../../../../common/exceptions';
 import { insensitiveEquals } from '../../../../common/lib';
 import { LESTA_ERROR_CODE, LestaApiError } from '../../../../lib/lesta';
 import { CollectorProducerService, PurgeGuardService } from '../../../collector';
+import { CLAN_PAGE } from '../../config';
 import { ClanResolverService } from '../clan-resolver.service';
 
 const listed = (clanId: number, tag: string): ClanListItem => ({ clan_id: clanId, tag, name: tag, members_count: 1, created_at: 1_600_000_000 });
@@ -133,7 +134,10 @@ describe('ClanResolverService.ensure', () => {
 
     await resolver.ensure(42n);
 
-    expect(prisma.clanMember.upsert.mock.calls.map(([args]) => args.create.role)).toEqual(['commander', 'private']);
+    expect(prisma.clanMember.createMany.mock.calls[0]?.[0]?.data).toEqual([
+      expect.objectContaining({ role: 'commander' }),
+      expect.objectContaining({ role: CLAN_PAGE.defaultRole })
+    ]);
   });
 
   it('stores a clan without a member list as empty', async () => {
@@ -143,7 +147,7 @@ describe('ClanResolverService.ensure', () => {
 
     await resolver.ensure(42n);
 
-    expect(prisma.clanMember.upsert).not.toHaveBeenCalled();
+    expect(prisma.clanMember.createMany).not.toHaveBeenCalled();
     expect(collector.enrolMany).toHaveBeenCalledWith(expect.objectContaining({ accountIds: [] }));
   });
 });
@@ -158,7 +162,7 @@ describe('ClanResolverService.ensure deletion requests', () => {
     await resolver.ensure(42n);
 
     expect(prisma.player.createMany.mock.calls[0]?.[0]?.data).toEqual([expect.objectContaining({ accountId: 1n })]);
-    expect(prisma.clanMember.upsert.mock.calls.map(([args]) => args.where.accountId)).toEqual([1n]);
+    expect(prisma.clanMember.createMany.mock.calls[0]?.[0]?.data).toEqual([expect.objectContaining({ accountId: 1n })]);
     expect(collector.enrolMany).toHaveBeenCalledWith({ accountIds: [1], priority: 'normal' });
   });
 });

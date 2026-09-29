@@ -1,13 +1,5 @@
-import type { ApiErrorCode, ApiErrorDetails } from '@otmetki/schemas';
+import type { ApiError } from '@otmetki/schemas';
 
-export type ErrorBodyInput = {
-  code: ApiErrorCode;
-  error: string;
-  details?: ApiErrorDetails;
-};
+export type ErrorBodyInput = Pick<ApiError, 'code' | 'details' | 'error'>;
 
-export type ErrorBody = {
-  error: string;
-  code: ApiErrorCode;
-  details?: ApiErrorDetails;
-};
+export type ErrorBody = Pick<ApiError, 'code' | 'details' | 'error'>;

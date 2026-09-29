@@ -1,16 +1,16 @@
 import type { PlayerMarks } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
-import { MOE } from '@otmetki/ratings';
 import { sortBy } from 'remeda';
 
-import type { CombinedDamageRow } from '../players.types';
+import type { CombinedDamageRow } from '../queries';
 
-import { toIso } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { ThresholdsService, VehicleCatalogService } from '../../reference';
 import { PLAYER_MARKS } from '../config';
-import { combinedSource, nextMark } from '../lib';
+import { marksSummary } from '../lib';
+import { toPlayerMark } from '../mappers';
+import { combinedDamageSql } from '../queries';
 
 @Injectable()
 export class PlayerMarksService {
@@ -32,65 +32,30 @@ export class PlayerMarksService {
     const combinedOf = new Map(combined.map((row) => [row.tank_id, row.combined]));
     const damageOf = new Map(ratings.map((row) => [row.tankId, row.avgDamage]));
 
-    const items = tanks
-      .filter((tank) => (catalog.get(tank.tankId)?.summary.tier ?? 0) >= PLAYER_MARKS.minTier)
-      .map((tank) => {
-        const threshold = moe.get(tank.tankId);
-        const thresholds = threshold ? { p65: threshold.p65, p85: threshold.p85, p95: threshold.p95, p100: threshold.p100 } : null;
-        const moePercent = tank.moePercent === null ? null : Math.min(MOE.maxPercent, Math.max(0, tank.moePercent));
-        const target = nextMark({
-          percent: moePercent,
-          marksOnGun: tank.marksOnGun,
-          thresholds,
-          movingDamage: tank.moeMovingDamage
-        });
+    const items = tanks.flatMap((tank) => {
+      const vehicle = catalog.get(tank.tankId)?.summary;
 
-        const fromBattles = combinedOf.get(tank.tankId);
-        const fromRating = damageOf.get(tank.tankId);
+      if (!vehicle || vehicle.tier < PLAYER_MARKS.minTier) {
+        return [];
+      }
 
-        return {
-          vehicle: catalog.get(tank.tankId)?.summary ?? null,
-          battles: tank.battles,
-          marksOnGun: tank.marksOnGun,
-          markOfMastery: Math.min(4, Math.max(0, tank.markOfMastery)),
-          moePercent,
-          movingDamage: tank.moeMovingDamage,
-          avgCombinedDamage: fromBattles ?? fromRating ?? null,
-          combinedDamageSource: combinedSource({ fromBattles, fromRating }),
-          thresholds,
-          nextMarkPercent: target.percent,
-          damageToNextMark: target.damage,
-          updatedAt: toIso(tank.moeUpdatedAt ?? tank.updatedAt)
-        };
-      })
-      .flatMap((item) => (item.vehicle ? [{ ...item, vehicle: item.vehicle }] : []));
-
-    const count = (marks: number) => items.filter((item) => item.marksOnGun === marks).length;
+      return [
+        toPlayerMark({
+          tank,
+          vehicle,
+          threshold: moe.get(tank.tankId),
+          fromBattles: combinedOf.get(tank.tankId),
+          fromRating: damageOf.get(tank.tankId)
+        })
+      ];
+    });
 
     return {
-      summary: {
-        moe3: count(3),
-        moe2: count(2),
-        moe1: count(1),
-        mastery: items.filter((item) => item.markOfMastery === 4).length,
-        eligible: items.length
-      },
+      summary: marksSummary(items),
       items: sortBy(items, [(item) => item.damageToNextMark ?? Number.POSITIVE_INFINITY, 'asc'], [(item) => item.battles, 'desc'])
     };
   }
-
   private async combinedDamage(accountId: bigint): Promise<CombinedDamageRow[]> {
-    return this.prisma.$queryRaw<CombinedDamageRow[]>`
-      SELECT tank_id, count(*)::float8 AS battles,
-             avg(damage_dealt + greatest(damage_assisted_radio, damage_assisted_track, damage_assisted_stun))::float8 AS combined
-      FROM (
-        SELECT tank_id, damage_dealt, damage_assisted_radio, damage_assisted_track, damage_assisted_stun,
-               row_number() OVER (PARTITION BY tank_id ORDER BY started_at DESC) AS position
-        FROM battle
-        WHERE account_id = ${accountId}
-      ) recent
-      WHERE position <= ${PLAYER_MARKS.combinedDamageBattles}
-      GROUP BY tank_id
-    `;
+    return this.prisma.$queryRaw<CombinedDamageRow[]>(combinedDamageSql(accountId));
   }
 }

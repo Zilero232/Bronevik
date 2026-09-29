@@ -2,7 +2,7 @@ import type { VehicleSummary } from '@otmetki/schemas';
 import type { z } from 'zod';
 
 import type { Mission, MissionBranch, MissionCampaign, MissionOperation } from '../../../../../generated';
-import type { storedConditionSchema } from './mission-view.schemas';
+import type { storedConditionSchema } from '../../dto';
 
 export type StoredCondition = z.infer<typeof storedConditionSchema>;
 

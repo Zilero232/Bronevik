@@ -1,2 +1,2 @@
 export { breakdown, statLine, trendPoints } from './stat-line';
-export type { AggregateRow, BreakdownVehicle, BucketedRow, RawTankRow } from './stat-line.types';
+export type { AggregateRow, BreakdownVehicle, RawTankRow } from './stat-line.types';

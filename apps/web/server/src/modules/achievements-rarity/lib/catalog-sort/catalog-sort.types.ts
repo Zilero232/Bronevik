@@ -1,6 +1,6 @@
 import type { ACHIEVEMENTS_VIEW } from '../../config';
 
-export type CatalogSort = (typeof ACHIEVEMENTS_VIEW.catalogSorts)[number];
+type CatalogSort = (typeof ACHIEVEMENTS_VIEW.catalogSorts)[number];
 
 export type SortableAchievement = {
   name: string;

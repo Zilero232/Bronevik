@@ -9,8 +9,6 @@ export const badgeCodeOf = (definition: Pick<ChallengeDefinition, 'code'>): stri
 export const challengeOfBadge = (code: string): ChallengeDefinition | null =>
   WEEKLY_CHALLENGES.find((definition) => badgeCodeOf(definition) === code) ?? null;
 
-export const isChallengeBadgeCode = (code: string): boolean => challengeOfBadge(code) !== null;
-
 export const challengeProgress = ({ definition, stats }: ChallengeProgressInput): number =>
   match(definition)
     .with({ metric: 'battles' }, () => stats.battles)
@@ -24,5 +22,3 @@ export const challengeProgress = ({ definition, stats }: ChallengeProgressInput)
           .length
     )
     .exhaustive();
-
-export const isCompleted = ({ definition, stats }: ChallengeProgressInput): boolean => challengeProgress({ definition, stats }) >= definition.target;

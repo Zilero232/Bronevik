@@ -3,7 +3,7 @@ import type { LeagueTier, LeagueZone } from '@otmetki/schemas';
 import type { LEAGUE_DIVISION } from '../../config';
 import type { LeagueMetric, LeagueStats, RankedEntry } from '../league/league.types';
 
-export type DivisionRules = Pick<typeof LEAGUE_DIVISION, 'groupSize' | 'minRanked' | 'zoneShare'>;
+type DivisionRules = Pick<typeof LEAGUE_DIVISION, 'groupSize' | 'minRanked' | 'zoneShare'>;
 
 export type NextTierInput = {
   tier: LeagueTier | null;

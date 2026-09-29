@@ -1,11 +1,6 @@
-import type { z } from 'zod';
+import type { ClanSnapshot, GlobalMapProvince } from '../../../../../generated';
 
-import type { GlobalMapProvince } from '../../../../../generated';
-import type { rawBuildingSchema } from './stronghold.schemas';
-
-export type RawBuilding = z.infer<typeof rawBuildingSchema>;
-
-export type StrongholdProvince = Pick<GlobalMapProvince, 'arenaId' | 'dailyRevenue' | 'name' | 'provinceId'>;
+type StrongholdProvince = Pick<GlobalMapProvince, 'arenaId' | 'dailyRevenue' | 'name' | 'provinceId'>;
 
 export type ToStrongholdInput = {
   clanId: number;
@@ -14,6 +9,6 @@ export type ToStrongholdInput = {
   buildings: unknown;
   reserves: unknown;
   updatedAt: Date | null;
-  elo: { eloRating6: number | null; eloRating8: number | null; eloRating10: number | null };
+  elo: Pick<ClanSnapshot, 'eloRating10' | 'eloRating6' | 'eloRating8'>;
   provinces: StrongholdProvince[];
 };

@@ -2,6 +2,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 import { differenceInSeconds, startOfMinute } from 'date-fns';
 
+import type { QueueSample, SampleQueueInput } from '../monitoring.types';
+
+import { errorMessage } from '../../../../common/lib';
 import { AppConfigService, LESTA } from '../../../../config';
 import { bulkRequestsPerSecond, PrismaService } from '../../../../core';
 import { COLLECTOR_STATE_KEY } from '../../config';
@@ -25,30 +28,14 @@ export class QueueStatsService {
     try {
       await this.write();
     } catch (error) {
-      this.logger.warn(`queue stats failed: ${String(error)}`);
+      this.logger.warn(`queue stats failed: ${errorMessage(error)}`);
     }
   }
 
   private async write() {
     const now = new Date();
     const bucketStart = startOfMinute(now);
-    const queues: Record<string, Record<string, number>> = {};
-
-    for (const queue of this.registry.all()) {
-      const counts = await queue.getJobCounts(...MONITORING.countedStates);
-      const [oldest] = await queue.getJobs([...MONITORING.waitingStates], 0, 0, true);
-      const lagSeconds = oldest ? Math.max(0, differenceInSeconds(now, oldest.timestamp, { roundingMethod: 'round' })) : 0;
-      const queueDepth = (counts.waiting ?? 0) + (counts.prioritized ?? 0) + (counts.delayed ?? 0);
-
-      queues[queue.name] = { ...counts, lagSeconds };
-
-      await this.prisma.collectorJobMetric.upsert({
-        where: { queue_bucketStart: { queue: queue.name, bucketStart } },
-        create: { queue: queue.name, bucketStart, lagSeconds, queueDepth },
-        update: { lagSeconds, queueDepth }
-      });
-    }
-
+    const samples = await Promise.all(this.registry.all().map((queue) => this.sample({ queue, now })));
     const requestsPerSecond = this.config.get('LESTA_RPS');
 
     const budget = {
@@ -58,9 +45,19 @@ export class QueueStatsService {
       circuitOpen: this.breaker.isOpen()
     };
 
-    const snapshot = { collectedAt: now.toISOString(), queues };
+    const snapshot = {
+      collectedAt: now.toISOString(),
+      queues: Object.fromEntries(samples.map(({ name, counts, lagSeconds }) => [name, { ...counts, lagSeconds }]))
+    };
 
     await this.prisma.$transaction([
+      ...samples.map(({ name, lagSeconds, queueDepth }) =>
+        this.prisma.collectorJobMetric.upsert({
+          where: { queue_bucketStart: { queue: name, bucketStart } },
+          create: { queue: name, bucketStart, lagSeconds, queueDepth },
+          update: { lagSeconds, queueDepth }
+        })
+      ),
       this.prisma.collectorState.upsert({
         where: { key: COLLECTOR_STATE_KEY.queues },
         create: { key: COLLECTOR_STATE_KEY.queues, value: snapshot },
@@ -72,5 +69,19 @@ export class QueueStatsService {
         update: { value: budget }
       })
     ]);
+  }
+
+  private async sample({ queue, now }: SampleQueueInput): Promise<QueueSample> {
+    const [counts, [oldest]] = await Promise.all([
+      queue.getJobCounts(...MONITORING.countedStates),
+      queue.getJobs([...MONITORING.waitingStates], 0, 0, true)
+    ]);
+
+    return {
+      name: queue.name,
+      counts,
+      lagSeconds: oldest ? Math.max(0, differenceInSeconds(now, oldest.timestamp, { roundingMethod: 'round' })) : 0,
+      queueDepth: (counts.waiting ?? 0) + (counts.prioritized ?? 0) + (counts.delayed ?? 0)
+    };
   }
 }

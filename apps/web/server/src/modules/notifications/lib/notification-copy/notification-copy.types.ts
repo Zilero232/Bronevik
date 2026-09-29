@@ -5,7 +5,7 @@ import type { NOTIFICATION_COPY } from '../../config/copy.constants';
 
 export type NotificationLocale = (typeof NOTIFICATION_COPY.locales)[number];
 
-export type CopyValues = TranslationVariables;
+type CopyValues = TranslationVariables;
 
 export type RenderedNotification = {
   title: string;

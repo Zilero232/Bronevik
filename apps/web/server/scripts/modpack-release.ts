@@ -4,7 +4,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { parseArgs } from 'node:util';
 
-import { MODPACK_RELEASES_SOURCE } from '../src/modules/modpack-releases/config';
+import { isMissingFileError } from '../src/common/lib';
 import {
   buildRelease,
   catalogPackages,
@@ -12,6 +12,7 @@ import {
   mergeReleaseIndex,
   modpackCatalogSchema,
   modpackReleaseManifestSchema,
+  parseReleaseIndex,
   RELEASE_BUILD,
   RELEASE_SOURCE,
   releaseNeeds,
@@ -55,7 +56,7 @@ const readText = async (path: string) => (await readFile(path, 'utf8')).trim();
 
 const readOptional = (path: string) =>
   readFile(path, 'utf8').catch((error: unknown) => {
-    if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
+    if (isMissingFileError(error)) {
       return '';
     }
 
@@ -64,16 +65,10 @@ const readOptional = (path: string) =>
 
 const unsignedReleaseSchema = modpackReleaseSchema.omit({ signature: true });
 
-const readIndex = async (path: string) => {
-  const current = await readOptional(path);
-
-  return modpackReleaseIndexSchema.parse(current.trim() === '' ? MODPACK_RELEASES_SOURCE.emptyIndex : JSON.parse(current));
-};
+const readIndex = async (path: string) => parseReleaseIndex(await readOptional(path));
 
 const readJson = async (path: string): Promise<unknown> => JSON.parse(await readFile(path, 'utf8'));
 
-// Prints the lines release.yml appends to $GITHUB_OUTPUT: both versions, the supported clients and
-// which of the two the published index (--current, absent = empty) still lacks.
 const source = async () => {
   const {
     version,
@@ -95,11 +90,6 @@ const prepare = async () => {
   const out = required('out');
   const catalogBytes = await readFile(required('catalog'));
   const catalog = modpackCatalogSchema.parse(JSON.parse(catalogBytes.toString('utf8')));
-
-  if (catalog.modpackVersion !== version) {
-    console.error(`the catalogue is modpack ${catalog.modpackVersion}, not ${version}`);
-    process.exit(1);
-  }
 
   const packages = await Promise.all(
     catalogPackages(catalog).map(async ({ id, file }) => {

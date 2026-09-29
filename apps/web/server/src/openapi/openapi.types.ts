@@ -1,7 +1,5 @@
 import type { INestApplication } from '@nestjs/common';
-import type { OpenAPIObject, ReferenceObject, SchemaObject, SwaggerDocumentOptions } from '@nestjs/swagger';
-
-import type { OPENAPI } from './openapi.constants';
+import type { SwaggerDocumentOptions } from '@nestjs/swagger';
 
 export type PublicDocumentInput = {
   app: INestApplication;
@@ -10,16 +8,4 @@ export type PublicDocumentInput = {
 
 export type SetupDocsInput = PublicDocumentInput & {
   internal: boolean;
-};
-
-export type RepairNullableInput = {
-  document: OpenAPIObject;
-  version: (typeof OPENAPI.versions)[keyof typeof OPENAPI.versions];
-};
-
-export type OpenApiSchema = ReferenceObject | SchemaObject;
-
-export type RepairPropertyInput = {
-  property: OpenApiSchema;
-  version: RepairNullableInput['version'];
 };

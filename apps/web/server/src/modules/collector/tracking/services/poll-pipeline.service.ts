@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 
 import type { PollResult, RunPipelineInput } from '../tracking.types';
 
+import { errorMessage } from '../../../../common/lib';
 import { runPollPipeline } from '../lib/poll-pipeline';
 import { RatingsTriggerService } from './ratings-trigger.service';
 import { TrackingLestaService } from './tracking-lesta.service';
@@ -22,7 +23,7 @@ export class PollPipelineService {
       ports: {
         lesta: this.lesta.port(lane),
         store: this.store,
-        onError: ({ accountId, error }) => this.logger.warn(`account ${accountId} failed: ${String(error)}`)
+        onError: ({ accountId, error }) => this.logger.warn(`account ${accountId} failed: ${errorMessage(error)}`)
       },
       accountIds,
       tier,

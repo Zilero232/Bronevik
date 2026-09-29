@@ -19,7 +19,7 @@ export class AchievementsRarityProcessor extends WorkerHost {
   async process(job: Job): Promise<unknown> {
     return match(job.name)
       .with(ACHIEVEMENTS_RARITY_QUEUE.jobs.fetch, () => this.metrics.track({ job, run: () => this.fetcher.fetch() }))
-      .with(ACHIEVEMENTS_RARITY_QUEUE.jobs.aggregate, () => this.aggregates.compute())
+      .with(ACHIEVEMENTS_RARITY_QUEUE.jobs.aggregate, () => this.metrics.track({ job, run: () => this.aggregates.compute() }))
       .otherwise(() => null);
   }
 }

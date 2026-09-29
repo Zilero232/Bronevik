@@ -1,2 +1,2 @@
 export { pausedOverlayIds } from './overlay-pause';
-export type { PausedOverlaysInput, RankedOverlay } from './overlay-pause.types';
+export type { PausedOverlaysInput } from './overlay-pause.types';

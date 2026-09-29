@@ -8,7 +8,7 @@ import type { StreamerProfileService } from '../streamer-profile.service';
 
 import { Prisma } from '../../../../../generated';
 import { AppConflictException, AppForbiddenException, AppNotFoundException } from '../../../../common/exceptions';
-import { CLAIM, CLAIM_METHOD_TO_DB, REMOVAL_REPORT, STREAMER_INVITATIONS } from '../../config';
+import { CLAIM, CLAIM_METHOD_TO_DB } from '../../config';
 import { StreamerClaimService } from '../streamer-claim.service';
 import { streamerProfileRow } from './streamers.fixtures';
 
@@ -477,121 +477,5 @@ describe('StreamerClaimService.pending', () => {
 
     expect(claims.map(({ slug }) => slug)).toEqual(['from-profile', 'from-invitation']);
     expect(claims[1]?.evidence).toBe('proof');
-  });
-});
-
-describe('StreamerClaimService.hide', () => {
-  it('rejects an unknown slug', async () => {
-    const { service } = createService();
-
-    await expect(service.hide(SLUG)).rejects.toBeInstanceOf(AppNotFoundException);
-  });
-
-  it('hides the profile, takes it off air and closes its open removal requests', async () => {
-    const { service, prisma } = createService();
-
-    prisma.streamerProfile.findUnique.mockResolvedValue(mock<StreamerProfile>({ id: 'p1' }));
-
-    await service.hide(SLUG);
-
-    expect(prisma.streamerProfile.update).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { id: 'p1' }, data: { hiddenAt: NOW, isLive: false } })
-    );
-
-    expect(prisma.contentReport.updateMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: { targetType: REMOVAL_REPORT.targetType, targetId: 'p1', status: 'open' },
-        data: { status: 'resolved', resolvedAt: NOW }
-      })
-    );
-  });
-});
-
-describe('StreamerClaimService.requestRemoval', () => {
-  it('files the request as a content report against the profile with the contact as details', async () => {
-    const { service, prisma, profiles } = createService();
-
-    profiles.publicBySlug.mockResolvedValue(mock<StreamerProfile>({ id: 'p1' }));
-
-    await service.requestRemoval({ slug: SLUG, contact: 'mail@example.com', reason: 'not me', userId: null });
-
-    expect(prisma.contentReport.create).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: { reporterUserId: null, targetType: REMOVAL_REPORT.targetType, targetId: 'p1', reason: 'not me', details: 'mail@example.com' }
-      })
-    );
-  });
-
-  it('falls back to the default reason and keeps the signed-in reporter', async () => {
-    const { service, prisma, profiles } = createService();
-
-    profiles.publicBySlug.mockResolvedValue(mock<StreamerProfile>({ id: 'p1' }));
-
-    await service.requestRemoval({ slug: SLUG, contact: '@jove', userId: USER });
-
-    expect(prisma.contentReport.create).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: expect.objectContaining({ reporterUserId: USER, reason: REMOVAL_REPORT.reason })
-      })
-    );
-  });
-});
-
-describe('StreamerClaimService.createEditorial', () => {
-  it('refuses editorial entries while they are disabled', async () => {
-    const { service, prisma } = createService();
-
-    await expect(service.createEditorial({ slug: SLUG, displayName: 'Jove', channels: [] })).rejects.toBeInstanceOf(AppForbiddenException);
-    expect(prisma.streamerProfile.create).not.toHaveBeenCalled();
-  });
-});
-
-describe('StreamerClaimService.seedInvitations', () => {
-  it('upserts every configured invitation without overwriting existing ones', async () => {
-    const { service, prisma } = createService();
-
-    const seeded = await service.seedInvitations();
-
-    expect(seeded).toBe(STREAMER_INVITATIONS.length);
-    expect(prisma.streamerInvitation.upsert).toHaveBeenCalledTimes(STREAMER_INVITATIONS.length);
-    expect(prisma.streamerInvitation.upsert).toHaveBeenCalledWith(expect.objectContaining({ update: {} }));
-  });
-});
-
-describe('StreamerClaimService.invitations', () => {
-  it('shows malformed stored channels as an empty list', async () => {
-    const { service, prisma } = createService();
-
-    prisma.streamerInvitation.findMany.mockResolvedValue([invitation({ channels: 'broken' }), invitation({ slug: 'other', sentAt: NOW })]);
-
-    const views = await service.invitations();
-
-    expect(views.map(({ channels }) => channels)).toEqual([[], INVITATION_CHANNELS]);
-    expect(views[1]?.sentAt).toBe(NOW.toISOString());
-  });
-});
-
-describe('StreamerClaimService.markInvitationSent', () => {
-  it('fails when no pending invitation matches', async () => {
-    const { service, prisma } = createService();
-
-    prisma.streamerInvitation.updateMany.mockResolvedValue({ count: 0 });
-
-    await expect(service.markInvitationSent(SLUG)).rejects.toBeInstanceOf(AppNotFoundException);
-  });
-
-  it('marks a pending invitation as sent now', async () => {
-    const { service, prisma } = createService();
-
-    prisma.streamerInvitation.updateMany.mockResolvedValue({ count: 1 });
-
-    await service.markInvitationSent(SLUG);
-
-    expect(prisma.streamerInvitation.updateMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: { slug: SLUG, status: 'pending' },
-        data: { status: 'sent', sentAt: NOW }
-      })
-    );
   });
 });

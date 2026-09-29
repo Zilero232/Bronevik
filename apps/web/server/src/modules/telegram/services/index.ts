@@ -1,6 +1,5 @@
 export { TelegramBotService } from './telegram-bot.service';
 export { TelegramChatService } from './telegram-chat.service';
-export { TelegramCommandRegistry } from './telegram-command-registry.service';
 export { TelegramCommandsService } from './telegram-commands.service';
 export { TelegramIdentityService } from './telegram-identity.service';
 export { TelegramInlineService } from './telegram-inline.service';

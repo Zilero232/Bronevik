@@ -12,3 +12,4 @@ export {
   MissionTanksQueryDto,
   UpdateMissionProgressDto
 } from './missions.dto';
+export { storedConditionSchema, storedConditionsSchema } from './missions.schemas';

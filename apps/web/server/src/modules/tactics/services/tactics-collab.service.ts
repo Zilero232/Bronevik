@@ -8,7 +8,7 @@ import { HttpAdapterHost } from '@nestjs/core';
 import { AuthService } from '@thallesp/nestjs-better-auth';
 import { WebSocketServer } from 'ws';
 
-import type { CollabContext } from '../tactics.types';
+import type { CollabContext, CollabDocumentHooks } from '../tactics.types';
 
 import { allowedOrigins, AppConfigService } from '../../../config';
 import { TACTICS } from '../config';
@@ -41,6 +41,12 @@ export class TacticsCollabService implements OnApplicationBootstrap, OnApplicati
       extensions: [this.redis.createExtension({ ...redisConnection(this.config.get('REDIS_URL')), prefix: TACTICS.redisPrefix })],
       debounce: TACTICS.debounceMs,
       maxDebounce: TACTICS.maxDebounceMs,
+      ...this.documentHooks()
+    });
+  }
+
+  documentHooks(): CollabDocumentHooks {
+    return {
       onAuthenticate: async ({ documentName, token, requestHeaders, connectionConfig }) => {
         const boardId = boardIdOf({ prefix: TACTICS.documentPrefix, name: documentName });
 
@@ -81,7 +87,7 @@ export class TacticsCollabService implements OnApplicationBootstrap, OnApplicati
           await this.boards.storeState({ id: boardId, state, snapshot: boardSnapshot(document) });
         }
       }
-    });
+    };
   }
 
   onApplicationBootstrap(): void {

@@ -1,11 +1,12 @@
+import type { BillingStatus } from '@otmetki/schemas';
+
 import { Injectable } from '@nestjs/common';
 import { addDays } from 'date-fns';
-
-import type { BillingStatus } from '../billing.types';
 
 import { AppConflictException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
 import { PLUS_PLANS, PLUS_SUBSCRIPTION } from '../config';
+import { plusSubscriptionKey } from '../lib';
 import { EntitlementsService } from './entitlements.service';
 import { SubscriptionService } from './subscription.service';
 
@@ -47,7 +48,7 @@ export class TrialService {
         };
 
         await tx.subscription.upsert({
-          where: { userId_product: { userId, product: PLUS_SUBSCRIPTION.product } },
+          where: plusSubscriptionKey(userId),
           create: { userId, product: PLUS_SUBSCRIPTION.product, ...data },
           update: data
         });

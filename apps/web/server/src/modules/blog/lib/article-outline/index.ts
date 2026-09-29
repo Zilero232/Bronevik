@@ -1,2 +1,2 @@
 export { outlineArticle } from './article-outline';
-export type { ArticleHeading, ArticleOutline } from './article-outline.types';
+export type { ArticleOutline } from './article-outline.types';

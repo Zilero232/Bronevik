@@ -1,5 +1,3 @@
-export type NotificationMessageInput = {
-  title: string;
-  body: string;
-  url: string;
-};
+import type { RenderedNotification } from '../../../notifications';
+
+export type NotificationMessageInput = RenderedNotification;

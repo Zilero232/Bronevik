@@ -33,11 +33,7 @@ export type UpdateNotificationsInput = Partial<NotificationSettings> & {
   userId: string;
 };
 
-export type BaselineInput = {
-  accountId: bigint;
-  metric: Goal['metric'];
-  tankId: number | null;
-};
+export type BaselineInput = Pick<GoalRow, 'accountId' | 'metric' | 'tankId'>;
 
 export type HangarGoalsInput = {
   userId: string;

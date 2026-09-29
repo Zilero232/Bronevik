@@ -65,6 +65,7 @@ import {
   StreamerClaimService,
   StreamerDirectoryService,
   StreamerFollowService,
+  StreamerModerationService,
   StreamerProfileService,
   StreamerSettingsService,
   TwitchPanelService
@@ -85,7 +86,8 @@ export class StreamersController {
     private readonly settings: StreamerSettingsService,
     private readonly aggregates: SettingsAggregateService,
     private readonly shares: SettingsShareService,
-    private readonly follows: StreamerFollowService
+    private readonly follows: StreamerFollowService,
+    private readonly moderation: StreamerModerationService
   ) {}
 
   @AllowAnonymous()
@@ -349,7 +351,7 @@ export class StreamersController {
   @Post(':slug/removal-request')
   @HttpCode(HttpStatus.NO_CONTENT)
   async removalRequest(@Param() { slug }: SlugParamsDto, @Body() body: RemovalRequestDto, @OptionalUserId() userId: string | null) {
-    await this.claims.requestRemoval({ ...body, slug, userId });
+    await this.moderation.requestRemoval({ ...body, slug, userId });
   }
 
   @Put(':slug/follow')

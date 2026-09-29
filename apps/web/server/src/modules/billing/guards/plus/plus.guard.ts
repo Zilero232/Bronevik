@@ -1,10 +1,9 @@
 import type { CanActivate, ExecutionContext } from '@nestjs/common';
 import type { PlusFeature } from '@otmetki/schemas';
+import type { UserSession } from '@thallesp/nestjs-better-auth';
 
 import { Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-
-import type { PlusRequest } from '../../billing.types';
 
 import { AppForbiddenException, AppUnauthorizedException } from '../../../../common/exceptions';
 import { PLUS_GUARD } from '../../config';
@@ -24,7 +23,7 @@ export class PlusGuard implements CanActivate {
       return true;
     }
 
-    const userId = context.switchToHttp().getRequest<PlusRequest>().session?.user.id;
+    const userId = context.switchToHttp().getRequest<{ session?: UserSession | null }>().session?.user.id;
 
     if (!userId) {
       throw new AppUnauthorizedException('UNAUTHORIZED', 'Authentication required');

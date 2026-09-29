@@ -1,9 +1,9 @@
-export type PyName = {
+type PyName = {
   kind: 'name';
   name: string;
 };
 
-export type PyCall = {
+type PyCall = {
   kind: 'call';
   name: string;
   args: PyValue[];

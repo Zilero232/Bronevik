@@ -1,2 +1,2 @@
 export { clearFollowFlag, setFollowFlag } from './follow-flags';
-export type { FollowFlag, FollowFlagConfig, FollowFlags } from './follow-flags.types';
+export type { FollowFlagConfig, FollowFlags } from './follow-flags.types';

@@ -6,7 +6,7 @@ import { Keyboard, VK } from 'vk-io';
 
 import type { VkCallbackBody, VkKeyboardInput, VkTextInput } from '../vk.types';
 
-import { errorMessage } from '../../../common/lib';
+import { errorMessage, timingSafeEqual } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { AUTH_PROVIDER } from '../../../lib/auth';
 import { BOT_LOCALE, BotAccountsService, BotRepliesService, createFluentStore, isPublicUrl, SITE_LINKS, siteUrl } from '../../bot-commands';
@@ -60,8 +60,24 @@ export class VkBotService implements OnApplicationBootstrap, OnModuleDestroy {
     }
   }
 
-  async handleWebhook(body: VkCallbackBody): Promise<void> {
+  async handleCallback(body: VkCallbackBody): Promise<string> {
+    if (!this.usesCallback) {
+      return VK_BOT.okResponse;
+    }
+
+    if (body.type === VK_BOT.confirmationType) {
+      return this.config.get('VK_CALLBACK_CONFIRMATION');
+    }
+
+    const expected = this.config.get('VK_CALLBACK_SECRET');
+
+    if (typeof body.secret !== 'string' || !timingSafeEqual({ left: body.secret, right: expected })) {
+      return VK_BOT.okResponse;
+    }
+
     await this.vk?.updates.handleWebhookUpdate(body);
+
+    return VK_BOT.okResponse;
   }
 
   private async onMessage(ctx: MessageContext): Promise<void> {

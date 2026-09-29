@@ -1,7 +1,7 @@
-export { accountRollup, heldNames, readCounts } from './account-rollup';
-export type { AccountRollup, AccountRollupInput } from './account-rollup';
+export { accountRollup, heldNames, obtainableNames, readCounts } from './account-rollup';
+export type { AccountRollup, AccountRollupInput, ObtainableRow } from './account-rollup';
 export { byRarity, sortCatalog } from './catalog-sort';
-export type { CatalogSort, RarityRanked, SortableAchievement, SortCatalogInput } from './catalog-sort';
+export type { RarityRanked, SortableAchievement, SortCatalogInput } from './catalog-sort';
 export { rarityPoints, rarityTier, shareOf } from './rarity';
 export type { RarityTier, ShareInput } from './rarity';
 export { seriesProgress } from './series-progress';

@@ -1,5 +1,7 @@
 import type { CompetitionScoring } from '@otmetki/schemas';
 
+import type { CompetitionTeam } from '../../../../../generated';
+
 export type ScoredLine = {
   damage: number;
   assist: number;
@@ -34,14 +36,12 @@ export type ParticipantScore = {
   battles: number;
 };
 
-export type RankableTeam = {
-  id: string;
-  score: number;
-  battles: number;
-};
+export type RankableTeam = Pick<CompetitionTeam, 'battles' | 'id' | 'score'>;
 
 export type CompetitionStatusInput = {
   startsAt: Date;
   endsAt: Date;
   now: Date;
 };
+
+export type TeamEntry = ParticipantScore;

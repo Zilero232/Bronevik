@@ -24,9 +24,9 @@ export class FollowService {
       select: { accountId: true, nickname: true }
     });
 
-    return follows.map((follow) =>
-      toFollowView({ follow, nickname: players.find((player) => player.accountId === follow.targetId)?.nickname ?? null })
-    );
+    const nicknames = new Map(players.map((player) => [player.accountId, player.nickname]));
+
+    return follows.map((follow) => toFollowView({ follow, nickname: nicknames.get(follow.targetId) ?? null }));
   }
 
   async create({ userId, kind, targetId }: CreateFollowInput): Promise<FollowView[]> {

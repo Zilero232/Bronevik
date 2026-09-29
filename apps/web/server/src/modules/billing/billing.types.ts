@@ -1,10 +1,7 @@
-import type { BillingStatus, PaymentHistoryItem, PlusCountKey, PlusFeature } from '@otmetki/schemas';
+import type { PlusCountKey, PlusFeature } from '@otmetki/schemas';
 
-import type { Prisma } from '../../../generated';
-import type { PrismaService } from '../../core';
+import type { PrismaExecutor } from '../../core';
 import type { PlusPlan } from './lib';
-
-type PrismaExecutor = Prisma.TransactionClient | PrismaService;
 
 type SavedMethod = {
   id: string;
@@ -61,16 +58,9 @@ export type RewardReferralInput = {
   now: Date;
 };
 
-export type { BillingStatus, PaymentHistoryItem };
-
 export type SetAutoRenewInput = {
   userId: string;
   isEnabled: boolean;
-};
-
-export type WebhookRequest = {
-  ip?: string;
-  socket?: { remoteAddress?: string };
 };
 
 export type LimitInput = {
@@ -86,10 +76,6 @@ export type AssertFeatureInput = {
 export type AssertWithinLimitInput = LimitInput & {
   count: number;
   feature?: PlusFeature;
-};
-
-export type PlusRequest = {
-  session?: { user: { id: string } } | null;
 };
 
 export type EntitlementChange = {

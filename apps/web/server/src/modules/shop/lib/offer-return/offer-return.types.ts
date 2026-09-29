@@ -5,7 +5,7 @@ export type ReturnEstimate = {
   nextExpectedAt: Date | null;
 };
 
-export type PastOffer = {
+type PastOffer = {
   endsAt: Date | null;
   lastSeenAt: Date;
 };

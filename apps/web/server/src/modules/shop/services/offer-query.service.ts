@@ -65,13 +65,14 @@ export class OfferQueryService {
     }
 
     const vehicles = await this.prisma.vehicle.findMany({ where: { tankId: { in: [...byTank.keys()] } }, select: { tankId: true, name: true } });
+    const names = new Map(vehicles.map((vehicle) => [vehicle.tankId, vehicle.name]));
 
     const archive = [...byTank.entries()].map(([id, entry]) => {
       const estimate = returnEstimate(entry.appearances);
 
       return {
         tankId: id,
-        tankName: vehicles.find((vehicle) => vehicle.tankId === id)?.name ?? null,
+        tankName: names.get(id) ?? null,
         timesSeen: estimate.timesSeen,
         lastSeenAt: toIso(estimate.lastSeenAt),
         lastDiscountPercent: entry.lastDiscountPercent,

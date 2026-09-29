@@ -1,21 +1,25 @@
-import type { BattleResult, ChallengeCondition } from '@otmetki/schemas';
+import type { ChallengeCondition } from '@otmetki/schemas';
 
-export type EvaluatedBattle = {
-  id: string;
-  tankId: number;
+import type { Battle } from '../../../../../generated';
+
+export type EvaluatedBattle = Pick<
+  Battle,
+  | 'damageAssistedRadio'
+  | 'damageAssistedTrack'
+  | 'damageBlocked'
+  | 'damageDealt'
+  | 'frags'
+  | 'id'
+  | 'moePercent'
+  | 'result'
+  | 'spotted'
+  | 'startedAt'
+  | 'survived'
+  | 'tankId'
+  | 'xp'
+> & {
   tankType: string | null;
   tier: number | null;
-  startedAt: Date;
-  result: BattleResult;
-  damageDealt: number;
-  damageAssistedRadio: number;
-  damageAssistedTrack: number;
-  damageBlocked: number;
-  frags: number;
-  spotted: number;
-  xp: number;
-  survived: boolean;
-  moePercent: number | null;
 };
 
 type ChallengeProgress = {

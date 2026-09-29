@@ -81,7 +81,15 @@ export class ReplayUploadService {
     }
 
     const storageKey = replayStorageKey({ sha256, extension });
-    const data = { storageKey, sha256, fileName: file.originalname.slice(0, 255), fileSize: file.size, uploaderUserId, deviceId, visibility };
+    const data = {
+      storageKey,
+      sha256,
+      fileName: file.originalname.slice(0, REPLAY_UPLOAD.maxFileNameLength),
+      fileSize: file.size,
+      uploaderUserId,
+      deviceId,
+      visibility
+    };
 
     const replay = await lockedTransaction({
       prisma: this.prisma,
@@ -115,7 +123,11 @@ export class ReplayUploadService {
     await this.queue.add(
       REPLAYS_QUEUE.jobs.parse,
       { replayId: replay.id },
-      { jobId: `parse-${replay.id}`, attempts: REPLAYS_QUEUE.parseAttempts, backoff: { type: 'exponential', delay: REPLAYS_QUEUE.parseBackoffMs } }
+      {
+        jobId: `${REPLAYS_QUEUE.parseJobPrefix}${replay.id}`,
+        attempts: REPLAYS_QUEUE.parseAttempts,
+        backoff: { type: 'exponential', delay: REPLAYS_QUEUE.parseBackoffMs }
+      }
     );
 
     return replay;

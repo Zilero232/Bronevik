@@ -6,6 +6,7 @@ import type { LestaClients } from '../../../../core';
 import type { ClanRefreshPayload } from '../../contracts';
 import type { SeedResult } from '../tracking.types';
 
+import { errorMessage } from '../../../../common/lib';
 import { LESTA_CLIENTS, PrismaService } from '../../../../core';
 import { chunkIds } from '../../../../lib/lesta';
 import { COLLECTOR_STATE_KEY } from '../../config';
@@ -56,7 +57,7 @@ export class SeedService {
             found.add(accountId);
           }
         } catch (error) {
-          this.logger.warn(`ratings/top ${type}/${rankField} failed: ${String(error)}`);
+          this.logger.warn(`ratings/top ${type}/${rankField} failed: ${errorMessage(error)}`);
         }
       }
     }

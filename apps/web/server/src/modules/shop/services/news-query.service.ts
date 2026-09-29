@@ -4,7 +4,8 @@ import type { Prisma } from '../../../../generated';
 import type { NewsPage, NewsQuery } from '../shop.types';
 
 import { PrismaService } from '../../../core';
-import { NEWS_KIND_TO_DB, toNewsView } from '../mappers';
+import { NEWS_KIND_TO_DB } from '../config';
+import { toNewsView } from '../mappers';
 
 @Injectable()
 export class NewsQueryService {

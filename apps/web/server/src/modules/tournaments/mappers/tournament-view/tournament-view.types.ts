@@ -1,10 +1,6 @@
-import type { Tournament, TournamentParticipant } from '../../../../../generated';
 import type { NamesById } from '../../../community-core';
 import type { Bracket } from '../../lib/bracket';
-
-export type TournamentWithParticipants = Tournament & {
-  participants: TournamentParticipant[];
-};
+import type { TournamentWithParticipants } from '../../selects';
 
 export type TournamentViewInput = {
   tournament: TournamentWithParticipants;

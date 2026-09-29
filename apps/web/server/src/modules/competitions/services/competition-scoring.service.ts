@@ -1,7 +1,4 @@
-import type { CompetitionScoring } from '@otmetki/schemas';
-
 import { Injectable } from '@nestjs/common';
-import { COMPETITION, competitionScoringSchema } from '@otmetki/schemas';
 import { addHours, max } from 'date-fns';
 
 import type { EntryScore, ScoreCompetitionInput, ScoreEntryInput } from '../competitions.types';
@@ -12,7 +9,7 @@ import { PrismaService } from '../../../core';
 import { NotificationService } from '../../notifications';
 import { VehicleCatalogService } from '../../reference';
 import { COMPETITION_RUN } from '../config';
-import { rankTeams, scoreBattles, scoreTotals } from '../lib';
+import { rankTeams, readScoring, scoreBattles, scoreTotals, teamTotals } from '../lib';
 import { toScoredLine } from '../mappers';
 import { competitionBattlesSql } from '../queries';
 
@@ -36,14 +33,25 @@ export class CompetitionScoringService {
 
   private async score({ competition, now }: ScoreCompetitionInput): Promise<void> {
     const entries = await this.prisma.competitionEntry.findMany({ where: { competitionId: competition.id } });
+    const catalog = competition.minTier === null ? null : await this.catalog.all();
+    const results: (EntryScore & Pick<ScoreEntryInput, 'accountId'>)[] = [];
 
     for (const entry of entries) {
-      const result = await this.scoreEntry({ competition, accountId: entry.accountId, joinedAt: entry.joinedAt });
-
-      await this.prisma.competitionEntry.update({
-        where: { competitionId_accountId: { competitionId: competition.id, accountId: entry.accountId } },
-        data: { score: result.score, battles: result.battles, source: result.source }
+      results.push({
+        accountId: entry.accountId,
+        ...(await this.scoreEntry({ competition, catalog, accountId: entry.accountId, joinedAt: entry.joinedAt }))
       });
+    }
+
+    if (results.length > 0) {
+      await this.prisma.$transaction(
+        results.map(({ accountId, score, battles, source }) =>
+          this.prisma.competitionEntry.update({
+            where: { competitionId_accountId: { competitionId: competition.id, accountId } },
+            data: { score, battles, source }
+          })
+        )
+      );
     }
 
     const teams = await this.prisma.competitionTeam.findMany({
@@ -54,8 +62,7 @@ export class CompetitionScoringService {
     const totals = teams.map((team) => ({
       id: team.id,
       name: team.name,
-      score: Math.round(team.entries.reduce((sum, entry) => sum + entry.score, 0) * 10) / 10,
-      battles: team.entries.reduce((sum, entry) => sum + entry.battles, 0),
+      ...teamTotals(team.entries),
       userIds: [...new Set(team.entries.map((entry) => entry.userId))]
     }));
 
@@ -88,8 +95,8 @@ export class CompetitionScoringService {
     }
   }
 
-  private async scoreEntry({ competition, accountId, joinedAt }: ScoreEntryInput): Promise<EntryScore> {
-    const scoring = this.scoringOf(competition.scoring);
+  private async scoreEntry({ competition, catalog, accountId, joinedAt }: ScoreEntryInput): Promise<EntryScore> {
+    const scoring = readScoring(competition.scoring);
     const from = max([competition.startsAt, joinedAt]);
     const limit = competition.battlesPerPlayer;
 
@@ -102,7 +109,6 @@ export class CompetitionScoringService {
             competitionBattlesSql({ accountId, battleTypes, from, until: competition.endsAt, limit: limit * COMPETITION_RUN.battlesFetchFactor })
           );
 
-    const catalog = competition.minTier === null ? null : await this.catalog.all();
     const eligible = battles.filter((battle) => !catalog || (catalog.get(battle.tankId)?.summary.tier ?? 0) >= (competition.minTier ?? 0));
 
     if (eligible.length > 0) {
@@ -154,11 +160,5 @@ export class CompetitionScoringService {
       }),
       source: 'snapshots'
     };
-  }
-
-  private scoringOf(value: unknown): CompetitionScoring {
-    const parsed = competitionScoringSchema.safeParse(value);
-
-    return parsed.success ? parsed.data : COMPETITION.defaultScoring;
   }
 }

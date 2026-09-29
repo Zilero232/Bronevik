@@ -5,7 +5,7 @@ import type { GameVersion, NewsItem, Vehicle } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 
 import { NEWS_ENRICH } from '../../config';
-import { patchVersion, versionCandidates } from '../../lib';
+import { versionsOf } from '../../lib';
 import { NewsEnrichService } from '../news-enrich.service';
 
 const now = new Date('2026-09-25T12:00:00Z');
@@ -51,10 +51,10 @@ describe('NewsEnrichService.run', () => {
     const title = 'Обновление 2.1: список изменений';
 
     prisma.newsItem.findMany.mockResolvedValue([newsRow({ title })]);
-    prisma.gameVersion.findFirst.mockResolvedValue(mock<GameVersion>({ id: 42 }));
+    prisma.gameVersion.findMany.mockResolvedValue([mock<GameVersion>({ id: 42, version: versionsOf(title)[0] })]);
 
     expect(await service.run(now)).toBe(1);
-    expect(prisma.gameVersion.findFirst.mock.calls[0]?.[0]?.where).toEqual({ version: { in: versionCandidates(patchVersion(title) ?? '') } });
+    expect(prisma.gameVersion.findMany.mock.calls[0]?.[0]?.where).toEqual({ version: { in: versionsOf(title) } });
 
     expect(prisma.newsItem.update).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -75,7 +75,7 @@ describe('NewsEnrichService.run', () => {
 
     const data = prisma.newsItem.update.mock.calls[0]?.[0].data;
 
-    expect(prisma.gameVersion.findFirst).not.toHaveBeenCalled();
+    expect(prisma.gameVersion.findMany).not.toHaveBeenCalled();
     expect(data).toMatchObject({ kind: 'news', gameVersionId: 5 });
     expect(data?.tankIds).toEqual([7, 3]);
   });

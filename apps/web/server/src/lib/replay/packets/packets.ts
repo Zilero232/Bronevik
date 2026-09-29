@@ -8,7 +8,7 @@ import { BATTLE_PERIOD, PACKET_FRAME, PACKET_TYPE } from './packets.constants';
 import { decodePacket } from './packets.decoders';
 import { resolveSupport } from './packets.support';
 
-export function* iterateRawPackets(stream: Uint8Array): Generator<RawPacket, number> {
+function* iterateRawPackets(stream: Uint8Array): Generator<RawPacket, number> {
   const view = new DataView(stream.buffer, stream.byteOffset, stream.byteLength);
   let offset = 0;
 

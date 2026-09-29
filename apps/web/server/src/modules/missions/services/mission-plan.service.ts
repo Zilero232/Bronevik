@@ -6,8 +6,7 @@ import type { Mission } from '../../../../generated';
 import type { UserOperationInput } from '../missions.types';
 
 import { MISSION_TANKS } from '../config';
-import { planOperation } from '../lib/mission-plan';
-import { rankTanks, toCandidate } from '../lib/tank-fit';
+import { planOperation, rankTanks, toCandidate, toPlanBranches } from '../lib';
 import { MissionCatalogService } from './mission-catalog.service';
 import { MissionProgressService } from './mission-progress.service';
 import { MissionTanksService } from './mission-tanks.service';
@@ -61,11 +60,7 @@ export class MissionPlanService {
     );
 
     const steps = planOperation({
-      branches: rows.branches.map((branch) => ({
-        chainId: branch.chainId,
-        key: branch.key,
-        missions: rows.missions.filter((mission) => mission.chainId === branch.chainId)
-      })),
+      branches: toPlanBranches(rows),
       progress,
       coverage
     });

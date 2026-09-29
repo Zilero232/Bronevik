@@ -5,7 +5,7 @@ export type CountOfInput = {
   states: readonly string[];
 };
 
-export type GameFilesImport = {
+type GameFilesImport = {
   version: string;
   importedAt: string | null;
 };

@@ -32,7 +32,7 @@ export type RawTankRow = {
   survived: number;
 };
 
-export type BucketedRow = AggregateRow & {
+type BucketedRow = AggregateRow & {
   bucket: Date;
 };
 

@@ -1,3 +1,2 @@
-export { forwardedClientIp, isInternalToken, isTrustedPeer, throttleSubject } from './throttle-subject';
-export { THROTTLE_SUBJECT } from './throttle-subject.constants';
+export { throttleSubject } from './throttle-subject';
 export type { ThrottleRequest, ThrottleSubject, ThrottleSubjectInput, ThrottleSubjectPolicy } from './throttle-subject.types';

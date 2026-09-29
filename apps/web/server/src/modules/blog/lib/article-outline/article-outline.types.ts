@@ -1,13 +1,9 @@
 import type { TocEntry } from '@stefanprobst/rehype-extract-toc';
 
-export type ArticleHeading = {
-  id: string;
-  text: string;
-  depth: number;
-};
+import type { BlogTocItem } from '../../blog.types';
 
 export type ArticleOutline = {
-  toc: ArticleHeading[];
+  toc: BlogTocItem[];
   readingMinutes: number;
 };
 

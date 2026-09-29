@@ -6,7 +6,7 @@ export type IsDigestDueInput = {
   now: Date;
 };
 
-export type DigestPlayer = {
+type DigestPlayer = {
   nickname: string;
   battles: number;
   wins: number;

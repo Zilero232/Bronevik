@@ -1,2 +1,1 @@
-export { replayTagColumns, replayTags } from './replay-tags';
-export type { ReplayTagColumns } from './replay-tags.types';
+export { replayTagColumns } from './replay-tags';

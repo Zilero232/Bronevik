@@ -1,7 +1,7 @@
 import { accountIdSchema, countSchema, isoDateTimeSchema, tankIdSchema, uuidSchema, vehicleSummarySchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
-export const supertestVerdictSchema = z
+const supertestVerdictSchema = z
   .enum(['buff', 'nerf', 'neutral'])
   .describe(
     'buff: better than before for the player (lower is better for reload, aim time, dispersion and weight); nerf: worse; neutral: unchanged or unknown'
@@ -48,7 +48,7 @@ export const supertestAnnouncementSchema = z.object({
   tanks: z.array(supertestTankSchema)
 });
 
-export const supertestTotalsSchema = z.object({
+const supertestTotalsSchema = z.object({
   announcements: countSchema,
   tanks: countSchema,
   buffs: countSchema,

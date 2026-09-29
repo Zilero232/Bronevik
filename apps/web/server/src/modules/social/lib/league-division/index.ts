@@ -1,12 +1,2 @@
-export { divisionStandings, divisionZones, nextTier, placeMembers, tierIndex, tierMoves } from './league-division';
-export type {
-  DivisionRules,
-  DivisionStanding,
-  DivisionStandings,
-  DivisionStandingsInput,
-  DivisionZones,
-  DivisionZonesInput,
-  NextTierInput,
-  PlaceMembersInput,
-  TierMoves
-} from './league-division.types';
+export { divisionStandings, nextTier, placeMembers, tierMoves } from './league-division';
+export type { DivisionStanding } from './league-division.types';

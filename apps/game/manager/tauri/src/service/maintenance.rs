@@ -17,6 +17,7 @@ impl Manager {
 
         ensure_closed(&scope.client.path)?;
         conflicts::restore(scope.context())?;
+        self.sync_res_map(&scope.client);
 
         conflicts::scan(scope.context())
     }

@@ -19,6 +19,7 @@ use crate::components::ClientContext;
 use crate::deep_link::DeepLink;
 use crate::detect::{self, DetectInput, GameClient};
 use crate::error::{AppError, AppResult, ErrorCode};
+use crate::gameface::{self, GamefaceStatus, ResMapOutcome};
 use crate::install::owned_patterns_catalog;
 use crate::patch::{PatchReport, PatchStatus};
 use crate::paths::{normalized, same_path, Layout};
@@ -40,6 +41,7 @@ pub struct Manager {
     settings: Mutex<ManagerSettings>,
     report: Mutex<PatchReport>,
     others: Mutex<HashMap<String, PatchStatus>>,
+    res_maps: Mutex<HashMap<String, ResMapOutcome>>,
     pending_link: Mutex<Option<DeepLink>>,
     check_lock: tokio::sync::Mutex<()>,
     write_lock: tokio::sync::Mutex<()>,
@@ -83,6 +85,7 @@ impl Manager {
             settings: Mutex::new(settings),
             report: Mutex::new(PatchReport::default()),
             others: Mutex::new(HashMap::new()),
+            res_maps: Mutex::new(HashMap::new()),
             pending_link: Mutex::new(None),
             check_lock: tokio::sync::Mutex::new(()),
             write_lock: tokio::sync::Mutex::new(()),
@@ -149,6 +152,23 @@ impl Manager {
         };
 
         others.insert(normalized(path), report.status.clone()).is_none_or(|previous| previous != report.status)
+    }
+
+    pub fn sync_res_map(&self, client: &GameClient) -> ResMapOutcome {
+        let outcome = gameface::sync(client);
+
+        if let Ok(mut known) = self.res_maps.lock() {
+            known.insert(normalized(&client.path), outcome);
+        }
+
+        outcome
+    }
+
+    pub fn gameface_status(&self, path: Option<&Path>) -> AppResult<GamefaceStatus> {
+        let client = self.client(path)?;
+        let outcome = self.res_maps.lock().ok().and_then(|known| known.get(&normalized(&client.path)).copied());
+
+        Ok(GamefaceStatus { restart_expected: outcome.is_some_and(ResMapOutcome::restart_expected) })
     }
 
     pub fn detect(&self) -> Vec<GameClient> {

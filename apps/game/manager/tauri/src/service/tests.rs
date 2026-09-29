@@ -182,3 +182,24 @@ fn disabling_a_component_downloads_nothing() {
     assert_eq!(changed, vec!["damage_log"]);
     assert!(Manifest::read(&scope.client_dir).unwrap().unwrap().dependencies.is_empty());
 }
+
+#[test]
+fn remembers_whether_gameface_restarts_the_client_after_the_last_change() {
+    let root = tempfile::tempdir().unwrap();
+    let manager = manager(root.path());
+    let client_dir = lesta_client_dir(root.path(), "Мир танков", "1.45.0.0");
+    let client = manager.client(Some(&client_dir)).unwrap();
+    let gameface = client.mods_dir.join(THEIR_GAMEFACE);
+
+    assert!(!manager.gameface_status(Some(&client_dir)).unwrap().restart_expected);
+
+    fs::write(&gameface, b"not a package").unwrap();
+
+    assert_eq!(manager.sync_res_map(&client), ResMapOutcome::Skipped);
+    assert!(manager.gameface_status(Some(&client_dir)).unwrap().restart_expected);
+
+    fs::remove_file(&gameface).unwrap();
+
+    assert_eq!(manager.sync_res_map(&client), ResMapOutcome::NoGameface);
+    assert!(!manager.gameface_status(Some(&client_dir)).unwrap().restart_expected);
+}

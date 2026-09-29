@@ -15,6 +15,7 @@ use crate::dependencies::{DependencyState, DependencyStatus};
 use crate::detect::client::{Branch, ClientProblem};
 use crate::detect::{ClientSource, GameClient, GameVersion};
 use crate::error::{AppError, ErrorCode};
+use crate::gameface::GamefaceStatus;
 use crate::install::{ForeignEntry, ForeignLocation};
 use crate::patch::{PatchReport, PatchStatus};
 use crate::profiles::{ProfileSummary, ProfilesView, MAX_PROFILES};
@@ -162,6 +163,7 @@ fn samples() -> Vec<(&'static str, Value)> {
             }),
         ),
         ("patch-reports", value(&reports)),
+        ("gameface-status", value(&GamefaceStatus { restart_expected: true })),
         ("error", value(&AppError::coded(ErrorCode::Busy, "another operation is running"))),
         (
             "install-plan",

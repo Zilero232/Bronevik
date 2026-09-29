@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { catalogSchema } from '@/entities/catalog';
 import { installPlanSchema } from '@/features/setup/install-modpack';
 
-import { dependencyRows, installedDependencies, needsClientRestart } from '../dependencies';
+import { dependencyRows, installedDependencies } from '../dependencies';
 
 const { dependencies } = catalogSchema.parse(catalog);
 const { dependencies: statuses } = installPlanSchema.parse(plan);
@@ -34,15 +34,5 @@ describe('dependencyRows', () => {
     expect(rows.find((row) => row.dependency.id === 'openwg_gameface')).toMatchObject({ state: 'ours', checked: true, locked: true });
     expect(rows.find((row) => row.dependency.id === 'guiflash')).toMatchObject({ state: 'user', checked: false, locked: true });
     expect(installedDependencies(rows)).toEqual([]);
-  });
-});
-
-describe('needsClientRestart', () => {
-  it('asks for the one restart only when a new dependency needs it', () => {
-    const selection = new Set(['damage_log']);
-
-    expect(needsClientRestart(dependencyRows({ dependencies, statuses: [], selection, excluded: none }))).toBe(true);
-    expect(needsClientRestart(dependencyRows({ dependencies, statuses: [], selection, excluded: new Set(['openwg_gameface']) }))).toBe(false);
-    expect(needsClientRestart(dependencyRows({ dependencies, statuses, selection, excluded: none }))).toBe(false);
   });
 });

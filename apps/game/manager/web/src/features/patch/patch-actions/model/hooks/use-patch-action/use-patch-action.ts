@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { match } from 'ts-pattern';
 import { useTranslations } from 'use-intl';
 
+import { useGamefaceNotice } from '@/entities/gameface';
 import { checkNow, migrateModpack, updateModpack } from '@/entities/patch-report';
 import { QUERY_KEYS } from '@/shared/config';
 import { useErrorToast } from '@/shared/lib';
@@ -13,6 +14,7 @@ export const usePatchAction = ({ kind, clientPath }: UsePatchActionInput) => {
   const t = useTranslations('patch');
   const queryClient = useQueryClient();
   const showError = useErrorToast();
+  const notifyGameface = useGamefaceNotice();
   const run: PatchActionRunner = match(kind)
     .with('check', () => () => checkNow())
     .with('migrate', () => migrateModpack)
@@ -27,6 +29,7 @@ export const usePatchAction = ({ kind, clientPath }: UsePatchActionInput) => {
 
       if (kind !== 'check') {
         toast.success(t(kind === 'update' ? 'updatedToast' : 'migratedToast'));
+        await notifyGameface(clientPath);
       }
     },
     onError: showError

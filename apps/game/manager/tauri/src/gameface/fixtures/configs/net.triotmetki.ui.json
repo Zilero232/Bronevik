@@ -1,0 +1,22 @@
+[
+  {
+    "itemID": "otmetki/ui/settings",
+    "type": "Layout",
+    "path": "coui://gui/gameface/mods/triotmetki/ui/index.html",
+    "parameters": {
+      "extension": "",
+      "entrance": "OtmetkiSettings",
+      "impl": "gameface"
+    }
+  },
+  {
+    "itemID": "otmetki/ui/hud",
+    "type": "Layout",
+    "path": "coui://gui/gameface/mods/triotmetki/ui/hud.html",
+    "parameters": {
+      "extension": "",
+      "entrance": "OtmetkiHud",
+      "impl": "gameface"
+    }
+  }
+]

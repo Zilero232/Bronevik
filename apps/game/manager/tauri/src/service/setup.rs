@@ -206,6 +206,7 @@ impl Manager {
             durable_dir: &self.layout.durable_dir(),
         })?;
         dependencies::install(InstallDependenciesInput { context: scope.context(), wanted: &wanted, fetched: &fetched })?;
+        self.sync_res_map(&scope.client);
 
         read_installation(scope.context())
     }
@@ -223,6 +224,9 @@ impl Manager {
             remove_config: request.remove_config,
             durable_dir: &self.layout.durable_dir(),
             shared_elsewhere: installed_elsewhere(&self.layout.clients_dir(), &scope.client_dir),
-        })
+        })?;
+        self.sync_res_map(&scope.client);
+
+        Ok(())
     }
 }

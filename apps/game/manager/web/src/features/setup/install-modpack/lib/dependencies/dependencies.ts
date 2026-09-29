@@ -22,6 +22,3 @@ export const dependencyRows = ({ dependencies, statuses, selection, excluded }: 
     });
 
 export const installedDependencies = (rows: readonly DependencyRow[]): DependencyRow[] => rows.filter((row) => row.checked && !row.locked);
-
-export const needsClientRestart = (rows: readonly DependencyRow[]): boolean =>
-  installedDependencies(rows).some((row) => row.dependency.restartRequired && row.state === 'missing');

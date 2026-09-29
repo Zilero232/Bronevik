@@ -1,0 +1,61 @@
+[
+  {
+    "inserted": ["type", "parameters"],
+    "order": ["type", "parameters"]
+  },
+  {
+    "inserted": ["type", "path", "parameters"],
+    "order": ["type", "path", "parameters"]
+  },
+  {
+    "inserted": ["name", "includes"],
+    "order": ["name", "includes"]
+  },
+  {
+    "inserted": [
+      "isInvertIfOutOfScreen",
+      "isClosedByResize",
+      "cascadeXOffset",
+      "cascadeYOffset",
+      "centerXShift",
+      "centerYShift",
+      "cursorXOffset",
+      "cursorYOffset"
+    ],
+    "order": [
+      "centerYShift",
+      "cascadeYOffset",
+      "cursorYOffset",
+      "centerXShift",
+      "isInvertIfOutOfScreen",
+      "isClosedByResize",
+      "cascadeXOffset",
+      "cursorXOffset"
+    ]
+  },
+  {
+    "inserted": ["entrance", "extension", "impl"],
+    "order": ["extension", "entrance", "impl"]
+  },
+  {
+    "inserted": ["key", "textdomain", "extension"],
+    "order": ["extension", "key", "textdomain"]
+  },
+  {
+    "inserted": ["key", "pluralKey", "textdomain", "extension"],
+    "order": ["key", "textdomain", "pluralKey", "extension"]
+  },
+  {
+    "inserted": ["textureName", "x", "y", "width", "height"],
+    "order": ["y", "x", "height", "textureName", "width"]
+  },
+  {
+    "inserted": ["itemID", "type", "path", "parameters"],
+    "deleted": ["itemID"],
+    "order": ["path", "type", "parameters"]
+  },
+  {
+    "inserted": ["extension", "entrance", "impl"],
+    "order": ["entrance", "extension", "impl"]
+  }
+]

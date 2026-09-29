@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'use-intl';
 
 import { previewSrc } from '@/entities/catalog';
 import { useSelectedClient } from '@/entities/client';
+import { useGamefaceNotice } from '@/entities/gameface';
 import { QUERY_KEYS } from '@/shared/config';
 import { pickLocalized, useErrorToast, useNavigation } from '@/shared/lib';
 
@@ -20,7 +21,6 @@ import {
   installBlocker,
   installedDependencies,
   matchingPreset,
-  needsClientRestart,
   presetSelection,
   toggleSelection
 } from '../../../lib';
@@ -32,6 +32,7 @@ export const useInstallWizardState = ({ initialPreset, initialComponents, startA
   const { navigate } = useNavigation();
   const queryClient = useQueryClient();
   const showError = useErrorToast();
+  const notifyGameface = useGamefaceNotice();
   const { clientPath } = useSelectedClient();
   const planQuery = useInstallPlan(clientPath);
   const [stepIndex, setStepIndex] = useState(startAtReview ? INSTALL_WIZARD.steps.length - 1 : 0);
@@ -120,6 +121,7 @@ export const useInstallWizardState = ({ initialPreset, initialComponents, startA
       });
 
       navigate({ page: 'home' });
+      await notifyGameface(clientPath);
     },
     onError: showError
   });
@@ -159,7 +161,6 @@ export const useInstallWizardState = ({ initialPreset, initialComponents, startA
     removeOthers,
     dependencies,
     dependencyCount: installedDependencies(rows).length,
-    needsRestart: needsClientRestart(rows),
     isReinstall,
     isClientSupported,
     isOffline: blocker === 'offline',

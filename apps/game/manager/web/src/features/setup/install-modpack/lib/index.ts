@@ -1,4 +1,4 @@
-export { dependencyRows, installedDependencies, needsClientRestart } from './dependencies';
+export { dependencyRows, installedDependencies } from './dependencies';
 export type { DependencyRow } from './dependencies';
 export { installBlocker } from './install-blocker';
 export type { InstallBlocker } from './install-blocker';

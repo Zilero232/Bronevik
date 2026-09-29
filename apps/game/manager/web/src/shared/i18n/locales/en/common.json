@@ -9,5 +9,6 @@
   "save": "Save",
   "delete": "Delete",
   "legal": "Mir Tankov is a Lesta Games title. Three Marks is an independent project not affiliated with Lesta Games.",
-  "linkBlocked": "This link cannot be opened from the manager"
+  "linkBlocked": "This link cannot be opened from the manager",
+  "gamefaceRestart": "On the first start the game restarts once — this is how OpenWG Gameface applies new resources"
 }

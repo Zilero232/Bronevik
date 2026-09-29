@@ -46,6 +46,7 @@ impl Manager {
 
         ensure_closed(&scope.client.path)?;
         snapshots::restore(RestoreInput { context: scope.context(), durable_dir: &self.layout.durable_dir(), id })?;
+        self.sync_res_map(&scope.client);
 
         Ok(snapshots::list(&scope.client_dir))
     }

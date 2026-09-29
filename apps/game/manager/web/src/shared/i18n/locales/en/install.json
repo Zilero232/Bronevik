@@ -54,8 +54,7 @@
     "userCopy": "Your copy is used: {file}",
     "version": "Version {version}",
     "licence": "Licence:",
-    "author": "Author:",
-    "restart": "After the first start with OpenWG Gameface the game restarts itself once to register the modpack's pages."
+    "author": "Author:"
   },
   "installedHint": "Components on: {count}. A snapshot was taken — if you do not like something, roll back in Settings → Backups.",
   "installing": "Installing",

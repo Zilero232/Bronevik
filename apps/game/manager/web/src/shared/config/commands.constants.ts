@@ -29,6 +29,7 @@ export const COMMANDS = {
   installModpack: 'install_modpack',
   uninstallModpack: 'uninstall_modpack',
   readInstallerProfile: 'read_installer_profile',
+  getGamefaceStatus: 'get_gameface_status',
   takeDeepLink: 'take_deep_link',
   getConflicts: 'get_conflicts',
   restoreMissing: 'restore_missing',

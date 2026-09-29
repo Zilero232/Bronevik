@@ -14,7 +14,6 @@ export const ReviewStep = () => {
     selectedCount,
     removeOthers,
     dependencyCount,
-    needsRestart,
     isReinstall,
     parkedCount,
     takeSnapshot,
@@ -74,7 +73,6 @@ export const ReviewStep = () => {
           </li>
         )}
         {dependencyCount > 0 && <li>{t('reviewDependencies', { count: dependencyCount })}</li>}
-        {needsRestart && <li>{t('dependencies.restart')}</li>}
         {isReinstall && <li className={s.warning}>{t('reviewReinstall', { count: parkedCount })}</li>}
         {removeOthers.size > 0 && <li className={s.danger}>{t('reviewRemove', { count: removeOthers.size })}</li>}
         {plan && <li>{t(`source.${plan.source}`, { version: plan.release?.version ?? '' })}</li>}

@@ -10,6 +10,7 @@ mod detect;
 mod durable;
 mod error;
 mod fsx;
+mod gameface;
 mod ini_file;
 mod install;
 mod logs;
@@ -174,6 +175,7 @@ pub fn run() {
             commands::install_modpack,
             commands::uninstall_modpack,
             commands::read_installer_profile,
+            commands::get_gameface_status,
             commands::take_deep_link,
             commands::get_conflicts,
             commands::restore_missing,

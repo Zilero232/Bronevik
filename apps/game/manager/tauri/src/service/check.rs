@@ -157,7 +157,11 @@ impl Manager {
     fn migrate_scope(&self, scope: &ClientScope, from_mods_dir: &Path) -> AppResult<Vec<String>> {
         ensure_closed(&scope.client.path)?;
 
-        patch::migrate(MigrateInput { context: scope.context(), from_mods_dir })
+        let migrated = patch::migrate(MigrateInput { context: scope.context(), from_mods_dir })?;
+
+        self.sync_res_map(&scope.client);
+
+        Ok(migrated)
     }
 
     pub async fn migrate_now(&self, client_path: Option<&Path>) -> AppResult<Vec<String>> {
@@ -243,6 +247,8 @@ impl Manager {
             }
         }
 
+        self.sync_res_map(&scope.client);
+
         Ok(written)
     }
 
@@ -283,6 +289,8 @@ impl Manager {
         if !wanted.is_empty() {
             dependencies::install(InstallDependenciesInput { context: scope.context(), wanted: &wanted, fetched: &fetched })?;
         }
+
+        self.sync_res_map(&scope.client);
 
         Ok(changed)
     }

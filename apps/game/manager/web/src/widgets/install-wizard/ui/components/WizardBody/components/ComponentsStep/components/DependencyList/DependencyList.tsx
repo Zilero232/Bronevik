@@ -1,4 +1,3 @@
-import { RotateCw } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 
 import { useInstallWizard } from '@/features/setup/install-modpack';
@@ -8,7 +7,7 @@ import s from './DependencyList.module.scss';
 
 export const DependencyList = () => {
   const t = useTranslations('install.dependencies');
-  const { dependencies, needsRestart, onToggleDependency } = useInstallWizard();
+  const { dependencies, onToggleDependency } = useInstallWizard();
 
   if (dependencies.length === 0) {
     return null;
@@ -43,12 +42,6 @@ export const DependencyList = () => {
           </p>
         </div>
       ))}
-      {needsRestart && (
-        <p className={s.note}>
-          <RotateCw aria-hidden />
-          {t('restart')}
-        </p>
-      )}
     </fieldset>
   );
 };

@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 STRINGS = {
     'ru': {
-        'component_crosshair': u'Прицел',
+        'component_crosshair': u'Прицелы',
         'component_crosshair_hint': u'Пресеты из вкладки «Прицел» настроек игры и своя центральная метка поверх центра прицела игры. '
                                    u'Только внешний вид, никаких расчётов упреждения или пробития.',
         'crosshair_preset': u'Пресет',
@@ -46,7 +46,7 @@ STRINGS = {
         'crosshair_mark_hides_centre': u'Скрыть центральный маркер игры',
     },
     'en': {
-        'component_crosshair': u'Crosshair',
+        'component_crosshair': u'Crosshairs',
         'component_crosshair_hint': u'Presets of the game\'s own Reticle settings and a centre mark of your choice over the game\'s '
                                    u'reticle centre. Looks only, no lead or penetration calculation.',
         'crosshair_preset': u'Preset',

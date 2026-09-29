@@ -10,8 +10,11 @@ export const GAMEFACE = {
     on: 'on',
     dataChangedEvent: 'viewEnv.onDataChanged'
   },
+  // UNVERIFIED on Lesta 1.45: resizeViewPx(width, height), which sizes a wulf view that would otherwise
+  // take the size of its content (the HUD page's labels), so the page covers the whole client.
   viewEnv: {
-    clientSize: 'getClientSizePx'
+    clientSize: 'getClientSizePx',
+    resizeView: 'resizeViewPx'
   },
   model: {
     state: 'state',

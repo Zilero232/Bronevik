@@ -2,6 +2,7 @@
 of components.json and its on/off switch in config.json."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ...hud.panel import moved_values
 from ..hud import component_config
 
 
@@ -22,3 +23,12 @@ class FeatureComponent(object):
 
     def enabled_in_hangar(self):
         return self.enabled() and not self.app.in_battle
+
+    def save_place(self, props):
+        """Keep where the player dragged (or how far they scaled) the component's hangar label."""
+        return component_config(self.app).update(self.component_id, moved_values(props))
+
+    def reset_place(self, keys):
+        """Put the keys `keys` of the component's section back to their defaults; returns the changed keys."""
+        defaults = self.settings.schema.defaults
+        return component_config(self.app).update(self.component_id, dict((key, defaults[key]) for key in keys if key in defaults))

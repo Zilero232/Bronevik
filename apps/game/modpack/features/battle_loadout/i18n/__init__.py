@@ -4,18 +4,18 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 STRINGS = {
     'ru': {
         'component_battle_loadout': u'Оборудование в бою',
-        'component_battle_loadout_hint': u'Оборудование вашего танка (★ — в слоте со своим бонусом), полевая модернизация и директивы в перетаскиваемой панели. Только свой танк: чужое оборудование клиент не показывает, и мод его не угадывает.',
+        'component_battle_loadout_hint': u'Оборудование вашего танка (★ — в слоте со своим бонусом), полевая модернизация и инструкции в перетаскиваемой панели. Только свой танк: чужое оборудование клиент не показывает, и мод его не угадывает.',
         'battle_loadout_style': u'Вид',
         'battle_loadout_style_compact': u'Компактный: значки в строку',
         'battle_loadout_style_detailed': u'Подробный: названия по группам',
         'battle_loadout_show_devices': u'Оборудование',
         'battle_loadout_show_modifications': u'Полевая модернизация',
-        'battle_loadout_show_directives': u'Директивы',
+        'battle_loadout_show_directives': u'Инструкции',
         'battle_loadout_show_icons': u'Значки предметов',
         'battle_loadout_icon_size': u'Размер значков',
         'battle_loadout_devices': u'Оборудование',
         'battle_loadout_modifications': u'Модернизация',
-        'battle_loadout_directives': u'Директивы',
+        'battle_loadout_directives': u'Инструкции',
     },
     'en': {
         'component_battle_loadout': u'Loadout in battle',

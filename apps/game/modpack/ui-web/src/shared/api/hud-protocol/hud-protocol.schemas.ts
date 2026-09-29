@@ -16,16 +16,21 @@ export const hudPanelSchema = z.object({
   alpha: z.number(),
   drag: z.boolean(),
   border: z.boolean(),
-  visible: z.boolean()
+  visible: z.boolean(),
+  scale: z.number(),
+  kind: z.enum(HUD_PROTOCOL.kinds)
 });
 
 export const hudStateSchema = z.object({
   v: z.literal(HUD_PROTOCOL.version),
   cursor: z.boolean(),
+  edit: z.boolean(),
   panels: z.array(hudPanelSchema)
 });
 
 export const hudMessageSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('ready') }),
-  z.object({ type: z.literal('moved'), id: z.string(), x: z.number(), y: z.number(), align_x: alignX, align_y: alignY })
+  z.object({ type: z.literal('moved'), id: z.string(), x: z.number(), y: z.number(), align_x: alignX, align_y: alignY }),
+  z.object({ type: z.literal('resized'), id: z.string(), scale: z.number() }),
+  z.object({ type: z.literal('pressed'), id: z.string() })
 ]);

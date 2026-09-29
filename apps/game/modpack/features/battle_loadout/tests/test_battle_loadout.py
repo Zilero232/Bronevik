@@ -52,7 +52,7 @@ class FormatTest(unittest.TestCase):
         loadout = clean_loadout(LOADOUT)
         detailed = format_panel(loadout, Settings({'style': 'detailed', 'show_icons': False, 'show_modifications': True}, SCHEMA), translator())
         assert u'Оборудование: ' in detailed and u'Турбонагнетатель ★' in detailed and u'Модернизация: ' in detailed
-        assert u'Директивы: ' in detailed and 'img://' not in detailed
+        assert u'Инструкции: ' in detailed and 'img://' not in detailed
         compact = format_panel(loadout, Settings({}, SCHEMA), translator())
         assert 'img://gui/maps/icons/artefact/turbocharger.png' in compact and u'Турбонагнетатель' not in compact
         assert u'Обзор' not in compact

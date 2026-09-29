@@ -12,6 +12,7 @@ GUIFlash fires from its `py_update` when the player drags a component (hold Ctrl
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....hud import HudBackend
+from ....hud.panel import GAMEFACE_PROPS
 from ....hud.surface import SPACE_BATTLE, SPACE_LOBBY
 from ....log import log, safe
 from ..space import current_space
@@ -38,12 +39,16 @@ def accepts_spaces(method):
     return code is not None and SPACE_ARGUMENT in code.co_varnames[:code.co_argcount]
 
 
+def flash_props(props):
+    return dict((key, value) for key, value in (props or {}).items() if key not in GAMEFACE_PROPS)
+
+
 class GuiFlashBackend(HudBackend):
 
     name = 'guiflash'
 
     def __init__(self):
-        self.listener = None
+        self.listeners = []
         self.listening = False
         self.spaces = accepts_spaces(getattr(g_guiFlash, 'createComponent', None))
 
@@ -60,7 +65,7 @@ class GuiFlashBackend(HudBackend):
 
     @safe
     def create(self, alias, props):
-        props = dict(LABEL_PROPS, **props)
+        props = dict(LABEL_PROPS, **flash_props(props))
         if self.spaces:
             space = current_space()
             g_guiFlash.createComponent(alias, COMPONENT_TYPE.LABEL, props, battle=space == SPACE_BATTLE, lobby=space == SPACE_LOBBY)
@@ -70,7 +75,7 @@ class GuiFlashBackend(HudBackend):
 
     @safe
     def update(self, alias, props):
-        g_guiFlash.updateComponent(alias, dict(props))
+        g_guiFlash.updateComponent(alias, flash_props(props))
         return True
 
     @safe
@@ -80,7 +85,8 @@ class GuiFlashBackend(HudBackend):
 
     @safe
     def listen(self, on_moved):
-        self.listener = on_moved
+        if on_moved not in self.listeners:
+            self.listeners.append(on_moved)
         updated = getattr(COMPONENT_EVENT, 'UPDATED', None)
         if updated is None or self.listening:
             return
@@ -90,5 +96,5 @@ class GuiFlashBackend(HudBackend):
 
     @safe
     def _on_updated(self, alias, props):
-        if self.listener is not None:
-            self.listener(alias, props if isinstance(props, dict) else {})
+        for listener in list(self.listeners):
+            listener(alias, props if isinstance(props, dict) else {})

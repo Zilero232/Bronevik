@@ -12,5 +12,6 @@ export const HUD_EDITOR = {
   defaultScreen: { width: 1920, height: 1080 },
   moveThrottleMs: 150,
   nudge: NUDGE,
-  resetActionId: 'reset'
+  resetActionId: 'reset',
+  resetAllActionId: 'reset-all'
 } as const;

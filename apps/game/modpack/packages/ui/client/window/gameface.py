@@ -1,22 +1,20 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.log import safe
-from ...protocol import (BUTTON_MARKER, BUTTON_MARKER_VALUE, GAMEFACE_ROOT, MESSAGE_ARG, RES_MAP_BUTTON, RES_MAP_WINDOW, SEND_COMMAND,
-                         STATE_PROPERTY)
+from ...protocol import MESSAGE_ARG, RES_MAP_WINDOW, SEND_COMMAND, STATE_PROPERTY
 
 # OpenWG Gameface (openwg_gameface) is a runtime dependency we do not bundle; Lesta needs its Lesta-compatible
 # build. API names follow docs.wotstat.info (Gameface theory) and are UNVERIFIED on Lesta 1.45.
 try:
     from frameworks.wulf import ViewFlags, ViewModel, ViewSettings, WindowFlags
     from gui.impl.pub import ViewImpl, WindowImpl
-    from openwg_gameface import ModDynAccessor, gf_mod_inject
+    from openwg_gameface import ModDynAccessor
     AVAILABLE = True
 except ImportError:
     AVAILABLE = False
 
 # Module-level accessors: a plain function stored on a class would become an unbound method on Python 2.
 SETTINGS_LAYOUT = ModDynAccessor(RES_MAP_WINDOW) if AVAILABLE else None
-BUTTON_LAYOUT = ModDynAccessor(RES_MAP_BUTTON) if AVAILABLE else None
 
 
 def message_of(args):
@@ -71,36 +69,5 @@ if AVAILABLE:
         def __init__(self, controller):
             super(SettingsWindow, self).__init__(wndFlags=WindowFlags.WINDOW, content=SettingsGameView(controller))
 
-    class ButtonViewModel(ViewModel):
-
-        def __init__(self, properties=1, commands=1):
-            super(ButtonViewModel, self).__init__(properties=properties, commands=commands)
-
-        def _initialize(self):
-            super(ButtonViewModel, self)._initialize()
-            self._addStringProperty(BUTTON_MARKER, BUTTON_MARKER_VALUE)
-            self.open = self._addCommand('open')
-            gf_mod_inject(self, RES_MAP_BUTTON, styles=[GAMEFACE_ROOT + '/button.css'], modules=[GAMEFACE_ROOT + '/button.js'])
-
-    class HangarButtonView(ViewImpl):
-
-        def __init__(self, on_open):
-            settings = ViewSettings(BUTTON_LAYOUT(), flags=ViewFlags.VIEW, model=ButtonViewModel())
-            super(HangarButtonView, self).__init__(settings)
-            self.on_open = on_open
-
-        def _onLoading(self, *args, **kwargs):
-            super(HangarButtonView, self)._onLoading(*args, **kwargs)
-            self.getViewModel().open += self._on_open
-
-        def _finalize(self):
-            self.getViewModel().open -= self._on_open
-            super(HangarButtonView, self)._finalize()
-
-        @safe
-        def _on_open(self, args=None):
-            self.on_open()
-
 else:
     SettingsWindow = None
-    HangarButtonView = None

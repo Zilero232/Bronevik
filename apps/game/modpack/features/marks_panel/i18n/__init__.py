@@ -12,7 +12,7 @@ STRINGS = {
         'marks_panel_line_compact': u'{projected}% ({delta}) · {next}%: {need_next}',
         'marks_panel_line_minimal': u'{projected}% ({delta})',
         'marks_panel_line_no_curve': u'{title} {percent}%: нет порогов',
-        'component_marks_panel': u'Панель отметки в бою',
+        'component_marks_panel': u'Отметка в бою',
         'component_marks_panel_hint': u'Процент отметки в бою: прогноз, урон до 65/85/95 %, урон на +0,5 %, боёв до отметки. Перетаскивается в редакторе HUD.',
         'marks_panel_style': u'Вид',
         'marks_panel_style_extended': u'Подробный',
@@ -42,7 +42,7 @@ STRINGS = {
         'marks_panel_line_compact': u'{projected}% ({delta}) · {next}%: {need_next}',
         'marks_panel_line_minimal': u'{projected}% ({delta})',
         'marks_panel_line_no_curve': u'{title} {percent}%: no thresholds',
-        'component_marks_panel': u'In-battle MoE panel',
+        'component_marks_panel': u'MoE panel in battle',
         'component_marks_panel_hint': u'Marks-of-excellence percent in battle: projection, damage to 65/85/95%, damage for +0.5%, battles to the '
                                       u'next mark. Drag it in the HUD editor.',
         'marks_panel_style': u'Style',

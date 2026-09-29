@@ -5,6 +5,8 @@ import unittest
 
 import _support  # noqa: F401
 from otmetki.core.events import EventBus
+from otmetki.core.hud.modifier import is_held, modifier_keys
+from otmetki.core.hud.panel import moved_values
 from otmetki.core.hud import (EVENT_DESCRIBE, EVENT_EDIT, ComponentConfig, HudBackend, HudLayer, HudPreview, NullBackend, alias_of,
                               component_schema, hex_color, layout_props, matching, max_length, panel_schema)
 from otmetki.core.templates import format_value, render
@@ -74,7 +76,7 @@ class PanelSchemaTest(unittest.TestCase):
         assert settings.get('template') == '12345'
         assert 'enabled' not in settings.to_dict()
         props = layout_props(settings)
-        assert props == {'x': 4000, 'y': 0, 'alignX': 'center', 'alignY': 'top', 'alpha': 0.5, 'drag': True, 'border': False}
+        assert props == {'x': 4000, 'y': 0, 'alignX': 'center', 'alignY': 'top', 'alpha': 0.5, 'drag': True, 'border': False, 'scale': 1.0}
 
     def test_normalizers(self):
         assert hex_color('#a0b1c2') == '#A0B1C2'
@@ -231,6 +233,23 @@ class HudPreviewTest(unittest.TestCase):
         preview = HudPreview(layer, 'damage_log', lambda: 'x')
         preview.on_edit(True)
         assert not preview.previewing
+
+
+class ModifierTest(unittest.TestCase):
+
+    def test_alt_is_the_default_and_either_side_counts(self):
+        assert modifier_keys('unknown') == modifier_keys('alt')
+        assert is_held('alt', lambda key: key == 'KEY_RALT')
+        assert not is_held('alt', lambda key: key == 'KEY_LCONTROL')
+
+    def test_ctrl_alt_needs_both_groups(self):
+        assert not is_held('ctrl_alt', lambda key: key == 'KEY_LALT')
+        assert is_held('ctrl_alt', lambda key: key in ('KEY_LALT', 'KEY_RCONTROL'))
+
+    def test_moved_values_map_renderer_props_to_settings(self):
+        assert moved_values({'x': 1.6, 'y': -2, 'alignX': 'right', 'alignY': 'bottom', 'scale': 1.25}) == {
+            'x': 2, 'y': -2, 'align_x': 'right', 'align_y': 'bottom', 'scale': 125}
+        assert moved_values({'x': True, 'scale': 'big'}) == {}
 
 
 class ShellTest(unittest.TestCase):

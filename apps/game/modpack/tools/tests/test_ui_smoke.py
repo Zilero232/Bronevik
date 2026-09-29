@@ -322,13 +322,12 @@ class UiSmokeTest(unittest.TestCase):
         self.events.onAvatarReady()
         assert self.windows == []
 
-    def test_hangar_button_in_the_crew_widget_and_links_in_the_game_browser(self):
+    def test_no_child_view_in_the_crew_widget_and_links_in_the_game_browser(self):
         self.open_hangar(2)
         widget_class = sys.modules['gui.impl.lobby.crew.hangar_crew_widget'].HangarCrewWidget
         widget = widget_class(None)
         widget._onLoading()
-        button_class = sys.modules['gui.mods.otmetki.ui.client.window'].HangarButtonView
-        assert [type(child) for child in widget.children] == [button_class]
+        assert widget.children == [] and self.injected == []
         assert sys.modules['gui.mods.otmetki.ui.client.browser'].open_url('https://triotmetki.ru/mod')
         assert self.opened == ['https://triotmetki.ru/mod']
 

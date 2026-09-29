@@ -66,7 +66,7 @@ class HangarInfoTest(unittest.TestCase):
     def test_settings(self):
         settings = Settings({'clock_format': '%s', 'x': 99999, 'align_x': 'middle'}, SCHEMA)
         assert settings.get('clock_format') == '%H:%M:%S'
-        assert layout_of(settings) == {'x': 4000, 'y': 60, 'alignX': 'right', 'alignY': 'top'}
+        assert layout_of(settings) == {'x': 4000, 'y': 120, 'alignX': 'right', 'alignY': 'top', 'scale': 1.0}
         assert SETTINGS == ('hangar_info',)
 
     def test_strings_in_sync(self):

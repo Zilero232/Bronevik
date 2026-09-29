@@ -56,6 +56,17 @@ export const createGamefaceBridge = (scope: object): GamefaceBridge => {
 
   return {
     clientSize: () => toClientSize(invoke({ target: read(GAMEFACE.globals.viewEnv), method: GAMEFACE.viewEnv.clientSize, args: [] })),
+    resizeView: ({ width, height }) => {
+      const viewEnv = read(GAMEFACE.globals.viewEnv);
+
+      if (typeof viewEnv?.[GAMEFACE.viewEnv.resizeView] !== 'function') {
+        return false;
+      }
+
+      invoke({ target: viewEnv, method: GAMEFACE.viewEnv.resizeView, args: [width, height] });
+
+      return true;
+    },
     state: () => {
       const state = read(GAMEFACE.globals.model)?.[GAMEFACE.model.state];
 

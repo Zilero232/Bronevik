@@ -24,6 +24,7 @@ COMMANDS = (
     'hud_edit',
     'hud_move',
     'hud_reset',
+    'hud_reset_all',
 )
 
 REQUIRED = {
@@ -43,9 +44,4 @@ REQUIRED = {
     'hud_reset': ('panel',),
 }
 
-BUTTON_MARKER = 'otmetkiButton'
-BUTTON_MARKER_VALUE = 'otmetki'
-
 RES_MAP_WINDOW = 'otmetki/ui/settings'
-RES_MAP_BUTTON = 'otmetki/ui/button'
-GAMEFACE_ROOT = 'coui://gui/gameface/mods/triotmetki/ui'

@@ -34,7 +34,12 @@ export const HudEditor = ({ panels }: HudEditorProps) => {
       ) : (
         <Empty>{t('hudEmpty')}</Empty>
       )}
-      {editor.hasSelection && <ActionBar items={[{ id: HUD_EDITOR.resetActionId, label: t('hudReset'), onClick: editor.resetSelected }]} />}
+      <ActionBar
+        items={[
+          ...(editor.hasSelection ? [{ id: HUD_EDITOR.resetActionId, label: t('hudReset'), onClick: editor.resetSelected }] : []),
+          { id: HUD_EDITOR.resetAllActionId, label: t('hudResetAll'), onClick: editor.resetAll }
+        ]}
+      />
     </Card>
   );
 };

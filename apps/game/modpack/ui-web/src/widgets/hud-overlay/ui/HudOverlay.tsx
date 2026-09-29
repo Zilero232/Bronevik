@@ -7,7 +7,7 @@ export const HudOverlay = () => {
   const overlay = useHudOverlay();
 
   return (
-    <div className={s.overlay}>
+    <div className={s.overlay} style={overlay.style}>
       {overlay.labels.map((label) => (
         <HudLabel key={label.panel.id} label={label} />
       ))}

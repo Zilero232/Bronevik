@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { GAMEFACE } from '../../../../../../shared/api/gameface';
 import { createGamefaceMock, installGamefaceMock } from '../../../../../../shared/api/gameface/mock';
@@ -13,6 +13,12 @@ const sample = readFileSync(
   'utf8'
 );
 
+const withState = (patch: Record<string, unknown>, panel: Record<string, unknown> = {}): string => {
+  const state = JSON.parse(sample) as { panels: Record<string, unknown>[] };
+
+  return JSON.stringify({ ...state, ...patch, panels: state.panels.map((item) => ({ ...item, ...panel })) });
+};
+
 const install = (state: string) => {
   const mock = createGamefaceMock({ state, clientSize: () => ({ width: 1920, height: 1080 }), onSend: () => null });
 
@@ -21,92 +27,91 @@ const install = (state: string) => {
   return mock;
 };
 
-const target = (box: Pick<DOMRect, 'height' | 'left' | 'top' | 'width'>): Element => {
-  const element = document.createElement('div');
+const sent = (mock: ReturnType<typeof install>) => mock.sent().map((message) => JSON.parse(message) as Record<string, unknown>);
 
-  element.getBoundingClientRect = () => ({
-    ...box,
-    x: box.left,
-    y: box.top,
-    right: box.left + box.width,
-    bottom: box.top + box.height,
-    toJSON: () => box
-  });
+const mount = async (state: string) => {
+  const mock = install(state);
+  const hook = renderHook(useHudOverlay);
 
-  return element;
+  await hook.settle();
+  await hook.settle();
+
+  return { mock, hook };
 };
 
 afterEach(() => {
   Object.values(GAMEFACE.globals).forEach((name) => Reflect.deleteProperty(globalThis, name));
+  document.documentElement.style.fontSize = '';
+  vi.useRealTimers();
 });
 
 describe(useHudOverlay, () => {
-  it('announces itself and draws the pushed labels from their anchors', async () => {
-    const mock = install(sample);
-    const hook = renderHook(useHudOverlay);
+  it('announces itself and places the pushed labels on the client screen, hidden until measured', async () => {
+    const { mock, hook } = await mount(sample);
 
-    await hook.settle();
-    await hook.settle();
-
-    expect(mock.sent().map((message) => JSON.parse(message))).toEqual([{ type: 'ready' }]);
+    expect(sent(mock)).toEqual([{ type: 'ready' }]);
 
     const [label] = hook.current().labels;
 
-    expect(label?.style).toEqual({ left: '20rem', bottom: '140rem', opacity: 0.9 });
+    expect(label?.style).toEqual({ left: '20rem', top: '940rem', opacity: 0 });
     expect(label?.lines[0]?.[0]).toMatchObject({ kind: 'text', style: { color: '#F2EAD3' } });
-    expect(label?.draggable).toBe(true);
+    expect(hook.current().style).toEqual({ width: '1920rem', height: '1080rem' });
   });
 
-  it('drags a label while the cursor is shown and reports its new anchor', async () => {
-    const mock = install(sample);
-    const hook = renderHook(useHudOverlay);
+  it('lets the mouse through and shows no frame until the edit modifier is held', async () => {
+    const { mock, hook } = await mount(withState({ edit: false }));
+    const [label] = hook.current().labels;
 
-    await hook.settle();
-    await hook.settle();
+    expect(label).toMatchObject({ interactive: false, framed: false });
 
-    document.documentElement.style.fontSize = '1px';
-    window.innerWidth = 1920;
-    window.innerHeight = 1080;
+    hook.run(() => label?.onMouseDown({ clientX: 1, clientY: 1 }));
+    hook.run(() => window.dispatchEvent(new MouseEvent('mouseup', { clientX: 50, clientY: 50 })));
+    hook.run(() => label?.onWheel({ deltaY: -1, preventDefault: () => undefined }));
 
-    hook.run(() =>
-      hook.current().labels[0]?.onMouseDown({ clientX: 100, clientY: 900, currentTarget: target({ left: 20, top: 880, width: 200, height: 60 }) })
-    );
+    expect(sent(mock)).toHaveLength(1);
+  });
 
+  it('drags a label while the modifier is held and reports its new anchor', async () => {
+    const { mock, hook } = await mount(sample);
+
+    expect(hook.current().labels[0]).toMatchObject({ interactive: true, framed: true });
+
+    hook.run(() => hook.current().labels[0]?.onMouseDown({ clientX: 100, clientY: 900 }));
     hook.run(() => window.dispatchEvent(new MouseEvent('mousemove', { clientX: 1700, clientY: 100 })));
 
     expect(hook.current().labels[0]?.dragging).toBe(true);
 
     hook.run(() => window.dispatchEvent(new MouseEvent('mouseup', { clientX: 1700, clientY: 100 })));
 
-    const moved = mock.sent().map((message) => JSON.parse(message) as Record<string, unknown>)[1];
-
-    expect(moved).toEqual({ type: 'moved', id: 'otmetki.hud.damage_log', x: -100, y: 80, align_x: 'right', align_y: 'top' });
-    expect(hook.current().labels[0]?.style).toMatchObject({ right: '100rem', top: '80rem' });
+    expect(sent(mock)[1]).toEqual({ type: 'moved', id: 'otmetki.hud.damage_log', x: -300, y: 140, align_x: 'right', align_y: 'top' });
     expect(hook.current().labels[0]?.dragging).toBe(false);
   });
 
-  it('ignores a press without the cursor and a state that does not parse', async () => {
-    const mock = install(JSON.stringify({ ...JSON.parse(sample), cursor: false }));
-    const hook = renderHook(useHudOverlay);
+  it('scales a panel with the wheel while the modifier is held', async () => {
+    const { mock, hook } = await mount(sample);
+    const preventDefault = vi.fn();
 
-    await hook.settle();
-    await hook.settle();
+    hook.run(() => hook.current().labels[0]?.onWheel({ deltaY: -100, preventDefault }));
 
-    hook.run(() =>
-      hook.current().labels[0]?.onMouseDown({ clientX: 1, clientY: 1, currentTarget: target({ left: 0, top: 0, width: 1, height: 1 }) })
-    );
+    expect(preventDefault).toHaveBeenCalledOnce();
+    expect(sent(mock)[1]).toEqual({ type: 'resized', id: 'otmetki.hud.damage_log', scale: 1.1 });
+    expect(hook.current().labels[0]?.style).toMatchObject({ transform: 'scale(1.1)', transformOrigin: '0 0' });
+  });
 
-    hook.run(() => window.dispatchEvent(new MouseEvent('mouseup', { clientX: 50, clientY: 50 })));
+  it('presses the settings button without the modifier and never drags it then', async () => {
+    const { mock, hook } = await mount(withState({ edit: false }, { kind: 'button' }));
+    const [button] = hook.current().labels;
 
-    expect(mock.sent()).toHaveLength(1);
-    expect(hook.current().labels[0]?.draggable).toBe(false);
+    expect(button).toMatchObject({ button: true, interactive: true, framed: false });
 
-    install('{"v": 99}');
+    hook.run(() => button?.onClick());
 
-    const empty = renderHook(useHudOverlay);
+    expect(sent(mock)[1]).toEqual({ type: 'pressed', id: 'otmetki.hud.damage_log' });
+  });
 
-    await empty.settle();
+  it('ignores a state that does not parse', async () => {
+    const { hook } = await mount('{"v": 99}');
 
-    expect(empty.current().labels).toEqual([]);
+    expect(hook.current().labels).toEqual([]);
   });
 });

@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ...core.compat import string_types, to_text
+from ...core.hud import EVENT_RESET_LAYOUT
 from ..components import COMPANION_ACTIONS, COMPANION_ID, build_catalog, find
 from ..fields import Labels
 from ..hud_edit import HudEditor, move_values
@@ -36,6 +37,7 @@ class SettingsBridge(object):
             'hud_edit': self._on_hud_edit,
             'hud_move': self._on_hud_move,
             'hud_reset': self._on_hud_reset,
+            'hud_reset_all': self._on_hud_reset_all,
         }
 
     def labels(self):
@@ -180,3 +182,9 @@ class SettingsBridge(object):
     def _on_hud_reset(self, message):
         panel_id = message['panel']
         self._changed(panel_id, self.editor.reset(panel_id))
+
+    def _on_hud_reset_all(self, message):
+        for panel_id in self.editor.panel_ids():
+            self._changed(panel_id, self.editor.reset(panel_id))
+        self.context.bus.emit(EVENT_RESET_LAYOUT)
+        self.context.reset_layout()

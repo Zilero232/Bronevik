@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 STRINGS = {
     'ru': {
-        'component_chat_filter': u'Чат боя',
+        'component_chat_filter': u'Фильтр чата',
         'component_chat_filter_hint': u'Время у сообщений, фильтр повторов, флуда и слов. Ваши сообщения не фильтруются.',
         'chat_filter_timestamp_format': u'Время у сообщений',
         'chat_filter_timestamp_format_': u'Не показывать',
@@ -16,7 +16,7 @@ STRINGS = {
         'chat_filter_block_words_hint': u'Через запятую, без учёта регистра.',
     },
     'en': {
-        'component_chat_filter': u'Battle chat',
+        'component_chat_filter': u'Chat filter',
         'component_chat_filter_hint': u'Message times, a filter for repeats, flood and words. Your own messages are never filtered.',
         'chat_filter_timestamp_format': u'Message time',
         'chat_filter_timestamp_format_': u'Hidden',

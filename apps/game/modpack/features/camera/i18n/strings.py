@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 STRINGS = {
     'ru': {
-        'component_camera': u'Камера',
+        'component_camera': u'Зум и камера',
         'component_camera_hint': u'Зум при входе в снайперский режим и стабилизация из настроек игры. Отдаление камеры и свободный обзор сверх игровых '
                                 u'не делаем, пока Леста не подтвердит, что это разрешено.',
         'camera_preset': u'Пресет камеры',
@@ -20,7 +20,7 @@ STRINGS = {
         'camera_horizontal_stabilization': u'Горизонтальная стабилизация в снайперском режиме',
     },
     'en': {
-        'component_camera': u'Camera',
+        'component_camera': u'Zoom and camera',
         'component_camera_hint': u'Zoom on entering sniper mode and stabilisation from the game settings. Camera distance and free look beyond the game\'s '
                                 u'own are left out until Lesta confirms they are allowed.',
         'camera_preset': u'Camera preset',

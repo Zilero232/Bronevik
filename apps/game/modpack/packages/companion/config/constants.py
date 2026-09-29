@@ -1,5 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ...core.hud.modifier import DEFAULT_MODIFIER, MODIFIER_CHOICES
+
 DEFAULT_SERVER_URL = 'https://api.triotmetki.ru'
 FEATURES = (
     'send_battle_results',
@@ -112,11 +114,13 @@ DEFAULTS = {
     'settings_anonymous_stats': False,
     'settings_include_resolution': False,
     'settings_include_sensitivity': False,
+    'hud_modifier': DEFAULT_MODIFIER,
 }
 CHOICES = {
     'settings_action': ('', 'export', 'restore'),
     'settings_target': ('profile', 'private'),
     'share_session_channel': SHARE_CHANNELS,
+    'hud_modifier': MODIFIER_CHOICES,
 }
 LIMITS = {
     'session_idle_minutes': (10, 24 * 60),

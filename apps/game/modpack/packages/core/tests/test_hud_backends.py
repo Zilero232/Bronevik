@@ -122,6 +122,8 @@ class LayerTest(unittest.TestCase):
         saved = self.store.read()['panel']
         assert (saved['x'], saved['y'], saved['align_x'], saved['align_y']) == (7, 8, 'right', 'bottom')
         assert not self.backend.listeners[0](self.alias, {'x': True, 'alignX': 'middle'})
+        assert self.backend.listeners[0](self.alias, {'scale': 1.5})
+        assert self.store.read()['panel']['scale'] == 150
         assert self.layer.backend_name == 'fake'
 
 
@@ -136,11 +138,13 @@ class SurfaceTest(unittest.TestCase):
 
     def test_state_per_space(self):
         state = self.surface.state(SPACE_BATTLE, False)
-        assert state['v'] == HUD_PROTOCOL_VERSION and state['cursor'] is False
+        assert state['v'] == HUD_PROTOCOL_VERSION and state['cursor'] is False and state['edit'] is False
         assert [panel['id'] for panel in state['panels']] == ['otmetki.hud.damage_log']
         lobby = self.surface.state(SPACE_LOBBY, True)['panels'][0]
         assert lobby == {'id': 'otmetki.hangar_info', 'text': '12:00', 'x': -10, 'y': 4, 'align_x': 'right', 'align_y': 'top', 'alpha': 1.0,
-                         'drag': False, 'border': False, 'visible': True}
+                         'drag': False, 'border': False, 'visible': True, 'scale': 1.0, 'kind': 'label'}
+        assert self.surface.state(SPACE_LOBBY, False, True)['edit'] is False
+        assert self.surface.state(SPACE_LOBBY, True, True)['edit'] is True
         assert json.loads(self.surface.encode(SPACE_BATTLE, True))['panels'][0]['text'].endswith(u'урон 1 200</font>')
 
     def test_update_and_delete(self):
@@ -161,9 +165,15 @@ class SurfaceTest(unittest.TestCase):
                     '{"type": "moved", "id": 5, "x": 1, "y": 2}', '{"type": "moved", "id": "x", "x": true, "y": 2}', 'x' * 5000):
             assert decode_hud_message(raw) is None, raw
         assert self.surface.handle('{"type": "moved", "id": "unknown", "x": 1, "y": 2}') is None
+        resized = self.surface.handle(json.dumps({'type': 'resized', 'id': 'otmetki.hud.damage_log', 'scale': 9}))
+        assert resized == ('resized', {'id': 'otmetki.hud.damage_log', 'scale': 3.0})
+        assert self.surface.panel('otmetki.hud.damage_log')['scale'] == 3.0
+        assert self.surface.handle(json.dumps({'type': 'pressed', 'id': 'otmetki.hangar_info'})) == ('pressed', {'id': 'otmetki.hangar_info'})
+        for raw in ('{"type": "resized", "id": "x", "scale": "big"}', '{"type": "pressed"}'):
+            assert decode_hud_message(raw) is None, raw
 
     def test_state_fixture_is_current(self):
-        state = self.surface.state(SPACE_BATTLE, True)
+        state = self.surface.state(SPACE_BATTLE, True, True)
         if os.environ.get('OTMETKI_UPDATE_FIXTURES') == '1':
             with io.open(HUD_STATE_FIXTURE, 'w', encoding='utf-8', newline='\n') as handle:
                 handle.write(json.dumps(state, sort_keys=True, indent=2, ensure_ascii=False) + '\n')

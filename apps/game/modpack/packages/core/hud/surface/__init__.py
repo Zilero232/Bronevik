@@ -1,11 +1,14 @@
 """The Gameface HUD page's side of the renderer: the labels as one JSON state, the page's messages back.
 
 `HudSurface` keeps every label the layer created (GUIFlash props) with the GUI space it was created in, so
-a hangar label never shows in battle and the other way round, as GUIFlash does. `encode(space, cursor)` is
-the view model's `state` property: `{v, cursor, panels: [{id, text, x, y, align_x, align_y, alpha, drag,
-border, visible}]}`. The page sends `{type: 'ready'}` once it can draw, and `{type: 'moved', id, x, y,
-align_x, align_y}` after the player dragged a label (only while the cursor is shown). `handle(raw)` decodes
-one message; the ui-web side is `src/shared/api/hud-protocol` (a test checks both command lists).
+a hangar label never shows in battle and the other way round, as GUIFlash does. `encode(space, cursor, edit)`
+is the view model's `state` property: `{v, cursor, edit, panels: [{id, text, x, y, align_x, align_y, alpha,
+drag, border, visible, scale, kind}]}`. `edit` is true while the player holds the edit modifier (Alt by
+default) and a cursor is shown: only then does a panel take the mouse, show its frame and move. The page
+sends `{type: 'ready'}` once it can draw, `{type: 'moved', id, x, y, align_x, align_y}` after a drag,
+`{type: 'resized', id, scale}` after the modifier + wheel, and `{type: 'pressed', id}` when the player
+clicks a button panel. `handle(raw)` decodes one message; the ui-web side is `src/shared/api/hud-protocol`
+(a test checks both command lists).
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -14,16 +17,44 @@ import json
 from ...codec import canonical_json
 from ...compat import is_number, string_types, to_text
 from .constants import (ALIGN_X, ALIGN_Y, HUD_COMMANDS, HUD_MAX_MESSAGE_CHARS, HUD_MESSAGE_ARG, HUD_PROTOCOL_VERSION, HUD_RES_MAP_ID,
-                        HUD_SEND_COMMAND, HUD_STATE_PROPERTY, PANEL_KEYS, POSITION_LIMIT, SPACE_BATTLE, SPACE_LOBBY)
+                        HUD_SEND_COMMAND, HUD_STATE_PROPERTY, KIND_BUTTON, KIND_LABEL, KINDS, PANEL_KEYS, POSITION_LIMIT, SCALE_LIMITS,
+                        SPACE_BATTLE, SPACE_LOBBY)
 
 __all__ = ('HUD_COMMANDS', 'HUD_MESSAGE_ARG', 'HUD_PROTOCOL_VERSION', 'HUD_RES_MAP_ID', 'HUD_SEND_COMMAND', 'HUD_STATE_PROPERTY',
-           'HudSurface', 'SPACE_BATTLE', 'SPACE_LOBBY', 'decode_hud_message')
+           'HudSurface', 'KIND_BUTTON', 'KIND_LABEL', 'SPACE_BATTLE', 'SPACE_LOBBY', 'decode_hud_message')
 
 
 def _position(value):
     if not is_number(value) or isinstance(value, bool):
         return None
     return max(-POSITION_LIMIT, min(POSITION_LIMIT, int(round(value))))
+
+
+def _scale(value):
+    if not is_number(value) or isinstance(value, bool):
+        return None
+    low, high = SCALE_LIMITS
+    return round(max(low, min(high, float(value))), 2)
+
+
+def _moved(message):
+    x, y = _position(message.get('x')), _position(message.get('y'))
+    if x is None or y is None:
+        return None
+    fields = {'x': x, 'y': y}
+    if message.get('align_x') in ALIGN_X:
+        fields['alignX'] = message['align_x']
+    if message.get('align_y') in ALIGN_Y:
+        fields['alignY'] = message['align_y']
+    return fields
+
+
+def _resized(message):
+    scale = _scale(message.get('scale'))
+    return {'scale': scale} if scale is not None else None
+
+
+_FIELDS = {'moved': _moved, 'resized': _resized, 'pressed': lambda message: {}}
 
 
 def decode_hud_message(raw):
@@ -37,16 +68,14 @@ def decode_hud_message(raw):
     if not isinstance(message, dict) or message.get('type') not in HUD_COMMANDS:
         return None
     command = message['type']
-    if command != 'moved':
+    reader = _FIELDS.get(command)
+    if reader is None:
         return command, {}
-    alias, x, y = message.get('id'), _position(message.get('x')), _position(message.get('y'))
-    if not isinstance(alias, string_types) or x is None or y is None:
+    alias = message.get('id')
+    fields = reader(message) if isinstance(alias, string_types) else None
+    if fields is None:
         return None
-    fields = {'id': to_text(alias), 'x': x, 'y': y}
-    if message.get('align_x') in ALIGN_X:
-        fields['alignX'] = message['align_x']
-    if message.get('align_y') in ALIGN_Y:
-        fields['alignY'] = message['align_y']
+    fields['id'] = to_text(alias)
     return command, fields
 
 
@@ -87,21 +116,27 @@ class HudSurface(object):
             value = props.get(prop, default)
             panel[key] = value if value is not None else default
         panel['text'] = to_text(panel['text'])
+        panel['scale'] = _scale(panel['scale']) or 1.0
+        if panel['kind'] not in KINDS:
+            panel['kind'] = KIND_LABEL
         return panel
 
-    def state(self, space, cursor):
-        return {'v': HUD_PROTOCOL_VERSION, 'cursor': bool(cursor), 'panels': [self.panel(alias) for alias in self.aliases(space)]}
+    def state(self, space, cursor, edit=False):
+        cursor = bool(cursor)
+        return {'v': HUD_PROTOCOL_VERSION, 'cursor': cursor, 'edit': cursor and bool(edit),
+                'panels': [self.panel(alias) for alias in self.aliases(space)]}
 
-    def encode(self, space, cursor):
-        return canonical_json(self.state(space, cursor))
+    def encode(self, space, cursor, edit=False):
+        return canonical_json(self.state(space, cursor, edit))
 
     def handle(self, raw):
-        """Apply a page message: a drag moves the label here too. Returns the decoded (command, fields) or None."""
+        """Apply a page message: a drag or a resize changes the label here too. Returns the decoded (command, fields)
+        or None."""
         decoded = decode_hud_message(raw)
         if decoded is None:
             return None
         command, fields = decoded
-        if command == 'moved':
+        if 'id' in fields:
             if fields['id'] not in self.labels:
                 return None
             self.update(fields['id'], dict((key, value) for key, value in fields.items() if key != 'id'))

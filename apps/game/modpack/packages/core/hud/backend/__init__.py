@@ -26,7 +26,17 @@ class HudBackend(object):
         return False
 
     def listen(self, on_moved):
-        """Call `on_moved(alias, props)` when the player drags a panel (props: x, y, optional alignX/alignY)."""
+        """Call `on_moved(alias, props)` when the player drags or resizes a panel (props: x, y, optional alignX/alignY,
+        or scale); every listener is called."""
+
+    def listen_press(self, on_press):
+        """Call `on_press(alias)` when the player clicks a button panel (only a backend that draws buttons)."""
+
+    def draws_buttons(self):
+        return False
+
+    def set_modifier(self, mode):
+        """The key the player holds to move and resize panels (`core.hud.modifier` modes)."""
 
 
 class NullBackend(HudBackend):
@@ -78,3 +88,15 @@ class BackendChain(HudBackend):
     def listen(self, on_moved):
         for backend in self.backends:
             backend.listen(on_moved)
+
+    def listen_press(self, on_press):
+        for backend in self.backends:
+            backend.listen_press(on_press)
+
+    def draws_buttons(self):
+        active = self.active()
+        return active is not None and active.draws_buttons()
+
+    def set_modifier(self, mode):
+        for backend in self.backends:
+            backend.set_modifier(mode)

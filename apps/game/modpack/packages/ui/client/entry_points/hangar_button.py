@@ -1,42 +1,65 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.client.game import client_attr
-from ....core.hooks import override
+from ....core.hud import panel_schema
+from ....core.hud.panel import moved_values
 from ....core.log import log, safe
-from ..constants import BUTTON_HOSTS
-from ..window import BUTTON_LAYOUT, HangarButtonView
+from ..constants import BUTTON_ALIAS, BUTTON_DEFAULTS, BUTTON_LAYOUT_KEYS, BUTTON_SECTION
 
 
-def _host_class():
-    for module_name, class_name in BUTTON_HOSTS:
-        host = client_attr(module_name, class_name)
-        if host is not None:
-            return host
-    return None
+def _hud_config(app):
+    try:
+        from ....core.client.hud import component_config
+    except ImportError:
+        return None
+    return component_config(app)
 
 
-# The openwg_gameface layout accessor behind BUTTON_LAYOUT is UNVERIFIED on Lesta 1.45 (see ..constants for the host).
+# The settings button is a panel of the Gameface HUD page (the same full-screen page as the hangar labels), docked
+# under the hangar's top bar and moved like every panel with the edit modifier. A child view injected into a
+# client widget (the 1.45 crew widget) drew it in the widget's box, mid-screen, and its click could not reach
+# the model; without the Gameface HUD page ModsList and Ctrl+Shift+T open the window.
 class HangarButton(object):
 
-    def __init__(self, on_open):
+    def __init__(self, app, on_open):
+        self.app = app
         self.on_open = on_open
-        self.host = None
+        self.settings = None
+        self.shown = False
 
     @safe
     def install(self):
-        if HangarButtonView is None or self.host is not None:
-            return self.host is not None
-        host = _host_class()
-        if host is None:
-            log('ui: no hangar Gameface view to host the button, use ModsList or Ctrl+Shift+T')
+        config = _hud_config(self.app)
+        if config is None:
             return False
-        on_open = self.on_open
+        if self.settings is None:
+            self.settings = config.section(BUTTON_SECTION, panel_schema(BUTTON_DEFAULTS))
+        return self.show()
 
-        @override(host, '_onLoading')
-        def _on_loading(original, view, *args, **kwargs):
-            result = original(view, *args, **kwargs)
-            view.setChildView(BUTTON_LAYOUT(), HangarButtonView(on_open))
-            return result
+    def layout(self):
+        settings = self.settings
+        return {'x': settings.get('x'), 'y': settings.get('y'), 'alignX': settings.get('align_x'), 'alignY': settings.get('align_y'),
+                'scale': round(settings.get('scale') / 100, 2)}
 
-        self.host = host
-        return True
+    @safe
+    def show(self):
+        if self.settings is None or self.app.in_battle:
+            return False
+        shown = bool(self.app.ui.button(BUTTON_ALIAS, self.layout(), self.on_open, self.save))
+        if shown != self.shown:
+            self.shown = shown
+            log('ui: hangar button %s' % ('on the Gameface HUD page' if shown else 'not drawn (no Gameface HUD page), use ModsList or Ctrl+Shift+T'))
+        return shown
+
+    def save(self, props):
+        config = _hud_config(self.app)
+        if config is not None:
+            config.update(BUTTON_SECTION, moved_values(props))
+
+    @safe
+    def reset(self):
+        config = _hud_config(self.app)
+        if config is None or self.settings is None:
+            return
+        defaults = self.settings.schema.defaults
+        config.update(BUTTON_SECTION, dict((key, defaults[key]) for key in BUTTON_LAYOUT_KEYS))
+        self.app.ui.place(BUTTON_ALIAS, self.layout())

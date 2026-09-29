@@ -1,9 +1,11 @@
 export const HUD_OVERLAY = {
-  // One page pixel per design pixel until Gameface reports its root font size (it scales the page
-  // through it; every length is rem, 1rem = 1px of the design).
-  fallbackScale: 1,
   grid: 1,
   unit: 'rem',
-  centered: '50%',
-  translate: { x: 'translateX(-50%)', y: 'translateY(-50%)', both: 'translate(-50%, -50%)' }
+  defaultScreen: { width: 1920, height: 1080 },
+  screenCheckMs: 1000,
+  clickSlop: 3,
+  buttonSize: 36,
+  logoSize: 22,
+  scaleOrigin: '0 0',
+  hidden: 0
 } as const;

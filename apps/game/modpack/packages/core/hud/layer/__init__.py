@@ -1,7 +1,7 @@
 """What features call: register a panel with its schema, show text in it, hide it.
 
-When the backend reports a drag (`on_moved`), the new x/y (and the anchor, when the renderer sends one)
-are saved into the panel's section of components.json, so the panel comes back where the player left it.
+When the backend reports a drag or a resize (`on_moved`), the new x/y (and the anchor, when the renderer sends
+one) or scale are saved into the panel's section of components.json, so the panel comes back where the player left it.
 An unchanged text is not sent again (a Flash or Gameface re-layout per call is the cost).
 
 `set_muted(True)` (the streamer hotkey) and `set_blocked(panel_ids)` (the streamer's private panels) take panels off
@@ -9,9 +9,9 @@ the screen without the features knowing: their texts are held and come back when
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ...compat import is_number, string_types, to_text
+from ...compat import is_number, string_types
 from ..backend import NullBackend
-from ..panel import LAYOUT_KEYS, MOVED_ALIGNS, alias_of, layout_props, panel_of
+from ..panel import LAYOUT_KEYS, alias_of, layout_props, moved_values, panel_of
 
 
 class HudLayer(object):
@@ -144,12 +144,5 @@ class HudLayer(object):
         panel_id = panel_of(alias)
         if panel_id not in self.panels:
             return False
-        values = {}
-        for key in ('x', 'y'):
-            value = props.get(key)
-            if is_number(value) and not isinstance(value, bool):
-                values[key] = int(round(value))
-        for prop, key in MOVED_ALIGNS:
-            if isinstance(props.get(prop), string_types):
-                values[key] = to_text(props[prop])
+        values = moved_values(props)
         return bool(self.config.update(panel_id, values))

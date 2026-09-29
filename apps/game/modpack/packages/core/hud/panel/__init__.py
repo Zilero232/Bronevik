@@ -1,16 +1,19 @@
 """The per-panel settings schema: the layout keys every HUD panel has, plus the panel's own.
 
-components.json stores (and a settings window edits) `x`, `y`, `align_x`, `align_y`,
-`alpha` (0-100), `font_size`, `drag`, `border` for every panel. `layout_props` maps them to the
-renderer props (GUIFlash label names). The panel's on/off switch stays in the companion config.
+components.json stores (and a settings window edits) `x`, `y`, `align_x`, `align_y`, `alpha` (0-100), `font_size`,
+`drag`, `border` and `scale` (percent, set with the edit modifier + wheel on the Gameface page) for every panel.
+`layout_props` maps them to the renderer props (GUIFlash label names; `scale` and `kind` reach only the Gameface
+page). The panel's on/off switch stays in the companion config.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ...compat import is_number, string_types, to_text
 from ...settings import Schema
-from .constants import ALIAS_PREFIX, HEX_COLOR, LAYOUT_KEYS, MAX_SOUND_EVENT, MOVED_ALIGNS, PANEL_CHOICES, PANEL_DEFAULTS, PANEL_LIMITS, SOUND_EVENT
+from .constants import (ALIAS_PREFIX, GAMEFACE_PROPS, HEX_COLOR, LAYOUT_KEYS, MAX_SOUND_EVENT, MOVED_ALIGNS, PANEL_CHOICES, PANEL_DEFAULTS, PANEL_LIMITS,
+                        SOUND_EVENT)
 
-__all__ = ('ALIAS_PREFIX', 'LAYOUT_KEYS', 'MOVED_ALIGNS', 'PANEL_DEFAULTS', 'alias_of', 'component_schema', 'hex_color', 'layout_props', 'matching',
-           'max_length', 'panel_of', 'panel_schema', 'sound_event')
+__all__ = ('ALIAS_PREFIX', 'GAMEFACE_PROPS', 'LAYOUT_KEYS', 'MOVED_ALIGNS', 'PANEL_DEFAULTS', 'alias_of', 'component_schema', 'hex_color', 'layout_props',
+           'matching', 'max_length', 'moved_values', 'panel_of', 'panel_schema', 'sound_event')
 
 
 def component_schema(defaults, choices=None, limits=None, normalizers=None):
@@ -71,4 +74,21 @@ def layout_props(settings):
         'alpha': round(settings.get('alpha') / 100, 2),
         'drag': bool(settings.get('drag')),
         'border': bool(settings.get('border')),
+        'scale': round((settings.get('scale') or PANEL_DEFAULTS['scale']) / 100, 2),
     }
+
+
+def moved_values(props):
+    """The settings values of a renderer's drag or resize report (x, y, alignX, alignY, scale as a fraction)."""
+    values = {}
+    for key in ('x', 'y'):
+        value = props.get(key)
+        if is_number(value) and not isinstance(value, bool):
+            values[key] = int(round(value))
+    for prop, key in MOVED_ALIGNS:
+        if isinstance(props.get(prop), string_types):
+            values[key] = to_text(props[prop])
+    scale = props.get('scale')
+    if is_number(scale) and not isinstance(scale, bool):
+        values['scale'] = int(round(scale * 100))
+    return values

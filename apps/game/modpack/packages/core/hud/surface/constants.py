@@ -2,11 +2,11 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 # The Gameface HUD page (ui-web `hud` entry, packages/ui/gameface/hud.html) and its view model: one string
 # property with the whole HUD as JSON, one command the page sends its messages through.
-HUD_PROTOCOL_VERSION = 1
+HUD_PROTOCOL_VERSION = 2
 HUD_STATE_PROPERTY = 'state'
 HUD_SEND_COMMAND = 'send'
 HUD_MESSAGE_ARG = 'message'
-HUD_COMMANDS = ('ready', 'moved')
+HUD_COMMANDS = ('ready', 'moved', 'resized', 'pressed')
 HUD_MAX_MESSAGE_CHARS = 4 * 1024
 HUD_RES_MAP_ID = 'otmetki/ui/hud'
 
@@ -16,6 +16,12 @@ SPACE_LOBBY = 'lobby'
 ALIGN_X = ('left', 'center', 'right')
 ALIGN_Y = ('top', 'center', 'bottom')
 POSITION_LIMIT = 4000
+SCALE_LIMITS = (0.5, 3.0)
+
+# The hangar's settings button stays clickable without the edit modifier; a label lets the mouse through.
+KIND_LABEL = 'label'
+KIND_BUTTON = 'button'
+KINDS = (KIND_LABEL, KIND_BUTTON)
 
 # GUIFlash label props -> the page's panel keys, with the value a panel has when a prop was never sent.
 PANEL_KEYS = (
@@ -28,4 +34,6 @@ PANEL_KEYS = (
     ('drag', 'drag', False),
     ('border', 'border', False),
     ('visible', 'visible', True),
+    ('scale', 'scale', 1.0),
+    ('kind', 'kind', KIND_LABEL),
 )

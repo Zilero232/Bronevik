@@ -16,7 +16,8 @@ export const PROTOCOL = {
     'profile_import',
     'hud_edit',
     'hud_move',
-    'hud_reset'
+    'hud_reset',
+    'hud_reset_all'
   ],
   groups: ['data', 'hangar', 'battle'],
   alignX: ['left', 'center', 'right'],

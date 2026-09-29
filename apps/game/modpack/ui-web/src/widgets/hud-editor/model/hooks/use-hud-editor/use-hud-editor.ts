@@ -8,6 +8,7 @@ import type { KeyPress, PointerPress } from './use-hud-editor.types';
 import { gameface } from '../../../../../shared/api/gameface';
 import { send } from '../../../../../shared/api/protocol';
 import { dragRect, dragTo, moveMessage, panelRect, stageBox, stageScale } from '../../../../../shared/lib/hud-geometry';
+import { designScreen, rootScale } from '../../../../../shared/lib/hud-screen';
 import { createThrottle } from '../../../../../shared/lib/throttle';
 import { HUD_EDITOR } from '../../../config';
 
@@ -19,7 +20,7 @@ export const useHudEditor = (panels: UiPanel[]) => {
   const [live, setLive] = useState<LiveRect | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
 
-  screenRef.current = gameface.clientSize() ?? HUD_EDITOR.defaultScreen;
+  screenRef.current = designScreen({ client: gameface.clientSize(), scale: rootScale(), fallback: HUD_EDITOR.defaultScreen });
 
   useEffect(() => {
     const follow =
@@ -59,6 +60,7 @@ export const useHudEditor = (panels: UiPanel[]) => {
     hasPanels: panels.length > 0,
     hasSelection: selected !== null,
     editOnScreen: () => send({ type: 'hud_edit', active: true }),
+    resetAll: () => send({ type: 'hud_reset_all' }),
     resetSelected: () => {
       if (selected) {
         send({ type: 'hud_reset', panel: selected });

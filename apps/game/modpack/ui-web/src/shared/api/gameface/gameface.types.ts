@@ -5,6 +5,7 @@ export type ClientSize = {
 
 export type GamefaceBridge = {
   clientSize: () => ClientSize | null;
+  resizeView: (size: ClientSize) => boolean;
   state: () => string | null;
   send: (message: string) => boolean;
   onDataChanged: (callback: () => void) => void;

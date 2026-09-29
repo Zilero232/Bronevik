@@ -9,6 +9,7 @@ from ..bridge import SettingsBridge
 from ..i18n import STRINGS
 from ..profiles import FILE_NAME, ProfileStore
 from ..protocol import encode_state
+from .constants import MODIFIER_KEY
 from .context import UiContext
 from .entry_points import HangarButton, ModsListButton
 from .window import WindowController
@@ -49,12 +50,13 @@ class UiHost(object):
         self.profiles = ProfileStore(open_config(app.config_dir, FILE_NAME, pretty=True), time.time)
         self.bridge = SettingsBridge(UiContext(app, self))
         self.window = WindowController(self.on_message, self.state_text)
-        self.button = HangarButton(self.open)
+        self.button = HangarButton(app, self.open)
         self.mods_list = ModsListButton(self.open)
         self.hotkey = _hotkey(self.on_hotkey)
         self.on_screen_editing = False
         bus = app.bus
         bus.on('battle_enter', self.on_battle_enter)
+        bus.on('hangar', self.on_hangar)
         bus.on('component_settings', self._on_changed)
         if GamefaceSettingsView.available():
             add_settings_view(app, GamefaceSettingsView(app, self))
@@ -63,6 +65,7 @@ class UiHost(object):
 
     def install_entry_points(self):
         translate = self.app.translate
+        self.apply_modifier()
         self.button.install()
         self.mods_list.install(translate('mod_name'), translate('component_companion_hint'))
         if self.hotkey is not None:
@@ -72,7 +75,12 @@ class UiHost(object):
     def state_text(self):
         return encode_state(self.bridge.state())
 
+    @safe
+    def apply_modifier(self):
+        self.app.ui.set_modifier(self.app.config.get(MODIFIER_KEY))
+
     def push(self):
+        self.apply_modifier()
         if self.window.is_open:
             self.window.push(self.state_text())
 
@@ -80,6 +88,7 @@ class UiHost(object):
     def open(self, *args):
         if self.app.in_battle:
             return
+        log('ui: open the settings window')
         if self.on_screen_editing:
             self.bridge.editor.set_editing(False)
             self.on_screen_editing = False
@@ -107,6 +116,9 @@ class UiHost(object):
         if active:
             self.close()
             self.app.ui.notify(self.app.translate('ui_hud_edit_hint'))
+
+    def on_hangar(self):
+        self.button.show()
 
     def on_battle_enter(self):
         self.bridge.editor.set_editing(False)

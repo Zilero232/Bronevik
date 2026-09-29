@@ -22,9 +22,10 @@ DEFAULTS = {
     'template': '',
     'font_size': 14,
     'x': -20,
-    'y': 60,
+    'y': 120,
     'align_x': 'right',
     'align_y': 'top',
+    'scale': 100,
 }
 
 CHOICES = {
@@ -38,4 +39,5 @@ LIMITS = {
     'font_size': (8, 48),
     'x': (-4000, 4000),
     'y': (-4000, 4000),
+    'scale': (50, 300),
 }

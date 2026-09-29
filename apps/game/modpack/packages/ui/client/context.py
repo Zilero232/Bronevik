@@ -95,3 +95,6 @@ class UiContext(object):
 
     def hud_editing(self, active):
         self.host.on_hud_editing(active)
+
+    def reset_layout(self):
+        self.host.button.reset()

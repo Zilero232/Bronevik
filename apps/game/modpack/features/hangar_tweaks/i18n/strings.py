@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 STRINGS = {
     'ru': {
-        'component_hangar_tweaks': u'Ангар',
+        'component_hangar_tweaks': u'Удобный ангар',
         'component_hangar_tweaks_hint': u'Карусель и масштаб интерфейса из настроек игры, бесплатные быстрые действия с выбранным танком.',
         'hangar_tweaks_carousel_rows': u'Ряды карусели',
         'hangar_tweaks_carousel_rows_single': u'Один ряд',
@@ -34,7 +34,7 @@ STRINGS = {
         'hangar_tweaks_refused_berths': u'В казарме не хватает мест',
     },
     'en': {
-        'component_hangar_tweaks': u'Hangar',
+        'component_hangar_tweaks': u'Hangar tweaks',
         'component_hangar_tweaks_hint': u'The carousel and interface scale from the game settings, free quick actions on the selected tank.',
         'hangar_tweaks_carousel_rows': u'Carousel rows',
         'hangar_tweaks_carousel_rows_single': u'One row',

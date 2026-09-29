@@ -113,6 +113,32 @@
           "min": 5,
           "type": "int",
           "value": 15
+        },
+        {
+          "choices": [
+            {
+              "label": "Alt",
+              "value": "alt"
+            },
+            {
+              "label": "Ctrl+Alt",
+              "value": "ctrl_alt"
+            },
+            {
+              "label": "Ctrl",
+              "value": "ctrl"
+            },
+            {
+              "label": "Shift",
+              "value": "shift"
+            }
+          ],
+          "default": "alt",
+          "hint": "Удерживайте её и тяните панель мышью, колесо меняет размер. В бою курсор появляется по Ctrl.",
+          "key": "hud_modifier",
+          "label": "Клавиша перемещения панелей",
+          "type": "choice",
+          "value": "alt"
         }
       ],
       "group": "data",

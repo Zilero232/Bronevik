@@ -3,13 +3,14 @@
 `HudPreview(layer, panel_id, render_preview, ...).attach(bus)` answers `hud_describe(collect)` with the
 panel's preview text and size (`collect(panel_id, preview, width, height, enabled)`), and on `hud_edit(True)` shows the panel with that preview text (only
 when its switch is on and the player is in the hangar) so it can be dragged into place; `hud_edit(False)`
-or `end()` (the panel's own battle start) hides the preview again.
+or `end()` (the panel's own battle start) hides the preview again. `hud_reset_layout()` asks every hangar
+label that keeps its own place (outside the layer) to go back to its default.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from .constants import EVENT_DESCRIBE, EVENT_EDIT
+from .constants import EVENT_DESCRIBE, EVENT_EDIT, EVENT_RESET_LAYOUT
 
-__all__ = ('EVENT_DESCRIBE', 'EVENT_EDIT', 'HudPreview')
+__all__ = ('EVENT_DESCRIBE', 'EVENT_EDIT', 'EVENT_RESET_LAYOUT', 'HudPreview')
 
 
 def _always():

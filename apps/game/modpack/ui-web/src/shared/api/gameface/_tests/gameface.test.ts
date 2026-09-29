@@ -38,6 +38,15 @@ describe(createGamefaceBridge, () => {
     expect(states).toEqual(['initial', 'after ping']);
   });
 
+  it('sizes the view to the client when the view can be resized', () => {
+    const resize = vi.fn();
+    const bridge = createGamefaceBridge({ viewEnv: { [GAMEFACE.viewEnv.resizeView]: resize } });
+
+    expect(bridge.resizeView(SIZE)).toBe(true);
+    expect(resize).toHaveBeenCalledWith(SIZE.width, SIZE.height);
+    expect(createGamefaceBridge({}).resizeView(SIZE)).toBe(false);
+  });
+
   it('reports a missing model instead of throwing', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
     const bridge = createGamefaceBridge({});

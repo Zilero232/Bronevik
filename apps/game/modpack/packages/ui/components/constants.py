@@ -20,6 +20,7 @@ COMPANION_KEYS = (
     'settings_include_resolution',
     'settings_include_sensitivity',
     'flush_interval_seconds',
+    'hud_modifier',
 )
 # Never editable in the window: connection, one-shot actions and the language (the header switches it).
 HIDDEN_CONFIG_KEYS = ('server_url', 'bind_code', 'settings_action', 'language')
@@ -28,4 +29,4 @@ ACTION_SETTINGS_EXPORT = 'settings_export'
 ACTION_SETTINGS_RESTORE = 'settings_restore'
 COMPANION_ACTIONS = (ACTION_SETTINGS_EXPORT, ACTION_SETTINGS_RESTORE)
 
-PANEL_POSITION_KEYS = ('x', 'y', 'align_x', 'align_y', 'drag')
+PANEL_POSITION_KEYS = ('x', 'y', 'align_x', 'align_y', 'drag', 'scale')

@@ -133,5 +133,6 @@ export const messageSchema = z.discriminatedUnion('type', [
     align_x: z.optional(z.enum(PROTOCOL.alignX)),
     align_y: z.optional(z.enum(PROTOCOL.alignY))
   }),
-  z.object({ type: z.literal('hud_reset'), panel: text })
+  z.object({ type: z.literal('hud_reset'), panel: text }),
+  z.object({ type: z.literal('hud_reset_all') })
 ]);

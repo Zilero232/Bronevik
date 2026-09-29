@@ -24,7 +24,7 @@
       "patterns": ["com.modxvm.*", "*xvm*"],
       "components": ["damage_log", "hit_log", "received_hits", "sixth_sense", "minimap"],
       "note": {
-        "ru": "Свой лог урона, лог попаданий, лампа и миникарта: при включённых наших панелях выйдут две одинаковые.",
+        "ru": "Свой лог урона, лог попаданий, лампа и мини-карта: при включённых наших панелях выйдут две одинаковые.",
         "en": "Its own damage log, hit log, lamp and minimap: with our panels on you get two of each."
       }
     },
@@ -51,7 +51,7 @@
       "components": ["team_hp", "damage_log", "main_gun", "battle_clock", "sixth_sense", "battle_efficiency", "session_stats"],
       "note": {
         "ru": "ХП команд, лог урона, «Основной калибр», часы и сессия: две версии одних панелей, известны падения клиента.",
-        "en": "Team HP, damage log, «Основной калибр», clock and session: two copies of the same panels; client crashes are known."
+        "en": "Team HP, damage log, High Caliber, clock and session: two copies of the same panels; client crashes are known."
       }
     },
     {
@@ -103,7 +103,7 @@
       "components": ["session_stats"],
       "note": {
         "ru": "Вторая статистика сессии; такие моды у Armagomen и Левши роняли клиент вместе с другими.",
-        "en": "A second session stats mod; the Armagomen and Левша ones crashed the client together with others."
+        "en": "A second session stats mod; the Armagomen and Levsha ones crashed the client together with others."
       }
     },
     {
@@ -128,8 +128,8 @@
         "en": "Recommended"
       },
       "description": {
-        "ru": "Всё, чем пользуется большинство игроков.",
-        "en": "What most players use."
+        "ru": "Основные панели боя и ангара — то, чем пользуется большинство игроков.",
+        "en": "The main battle and hangar panels: what most players use."
       }
     },
     {
@@ -139,8 +139,8 @@
         "en": "Minimal (FPS)"
       },
       "description": {
-        "ru": "Только отметка и лампа: минимум нагрузки на слабых ПК.",
-        "en": "Only the MoE panel and the sixth sense lamp: the lightest load for weak PCs."
+        "ru": "Только отметка в бою, лампа и чистый ангар: минимум нагрузки на слабых ПК.",
+        "en": "Only the in-battle MoE panel, the sixth sense lamp and the clean hangar: the lightest load for weak PCs."
       }
     },
     {
@@ -150,8 +150,8 @@
         "en": "Streamer"
       },
       "description": {
-        "ru": "Крупные панели, которые хорошо читаются на трансляции.",
-        "en": "Big panels that read well on stream."
+        "ru": "Панели, которые интересно видеть зрителям: отметка, урон, перезарядка, снаряжение и оборудование, плюс режим стримера с клавишей «убрать панели».",
+        "en": "Panels viewers like to see: MoE, damage, reload, consumables and equipment, plus the streamer mode with its “hide panels” key."
       }
     },
     {
@@ -259,8 +259,8 @@
         "en": "Links the mod to the site and sends your own battle results and MoE percentages. Sends nothing until you bind it with a code from the site."
       },
       "fairPlay": {
-        "ru": "Только ваши данные: блок personal итогов боя и ваш досье. Данные других игроков не читаются.",
-        "en": "Only your own data: the personal block of battle results and your dossier. Other players' data is never read."
+        "ru": "Только ваши данные: ваша часть итогов боя и ваше досье. Данные других игроков не читаются.",
+        "en": "Only your own data: your part of the battle results and your dossier. Other players' data is never read."
       },
       "perf": "low",
       "preview": {
@@ -301,7 +301,7 @@
         "en": "Your MoE percent in battle: at the start and projected after it, damage to 65/85/95%, damage for +0.5%, the average and battles to the next mark. Four styles and your own macro template, colour by change or by mark, movable in the HUD editor."
       },
       "fairPlay": {
-        "ru": "Считается по вашему урону и засвету, как в итогах боя.",
+        "ru": "Считается по вашему урону и помощи, как в итогах боя.",
         "en": "Computed from your own damage and assistance, as in battle results."
       },
       "perf": "low",
@@ -319,7 +319,7 @@
       },
       "description": {
         "ru": "Нанесённый, заблокированный, ассистированный и полученный урон за бой и последние записи с типом снаряда. Источник полученного урона (пожар, таран, падение, боеукладка) и класс техники противника, цвета по виду урона и отдельная всплывающая строка «Последнее попадание».",
-        "en": "Damage dealt, blocked, assisted and received in the battle and the latest entries with the shell type. The source of received damage (fire, ram, a fall, the ammo rack) and the enemy vehicle class, colours by damage kind and a separate «Last hit» pop-up."
+        "en": "Damage dealt, blocked, assisted and received in the battle and the latest entries with the shell type. The source of received damage (fire, ram, a fall, the ammo rack) and the enemy vehicle class, colours by damage kind and a separate “Last hit” pop-up."
       },
       "fairPlay": {
         "ru": "Только события, которые игра уже показывает вам.",
@@ -360,11 +360,11 @@
         "en": "Team HP and score"
       },
       "description": {
-        "ru": "Суммарная прочность команд и счёт уничтоженных машин над миникартой; вид «Полоска на танк» показывает прочность каждой машины обеих команд.",
-        "en": "Total team hit points and the frag score above the minimap; the «A bar per tank» style shows the hit points of every vehicle of both teams."
+        "ru": "Суммарная прочность команд и счёт уничтоженных машин; вид «Полоска на каждый танк» показывает прочность каждой машины обеих команд.",
+        "en": "Total team hit points and the frag score; the “A bar per tank” style shows the hit points of every vehicle of both teams."
       },
       "fairPlay": {
-        "ru": "Те же данные, что в ушах команд у стандартного интерфейса.",
+        "ru": "Те же данные, что в списках команд («ушах») стандартного интерфейса.",
         "en": "The same data as the vanilla team panels."
       },
       "perf": "medium",
@@ -425,7 +425,7 @@
       },
       "description": {
         "ru": "Рекорд урона (помощи, фрагов) на танке в бою: «рекорд 6 812, осталось 1 200»; после боя карточка нового рекорда и звук.",
-        "en": "The tank's damage (assist, frags) record in battle: «record 6,812, 1,200 to go»; after the battle a new-record card and a sound."
+        "en": "The tank's damage (assist, frags) record in battle: “record 6,812, 1,200 to go”; after the battle a new-record card and a sound."
       },
       "fairPlay": {
         "ru": "Только ваши рекорды: свои итоги боёв, досье своего танка и их копия на сайте.",
@@ -488,8 +488,8 @@
         "en": "Consumables and shells"
       },
       "description": {
-        "ru": "Своё снаряжение с откатом и оставшиеся снаряды каждого типа одной строкой, в любом месте экрана.",
-        "en": "Your consumables with their cooldowns and the shells left of each type on one line, anywhere on screen."
+        "ru": "Своё снаряжение с откатом и оставшиеся снаряды каждого типа одной строкой, в любом месте экрана; по желанию — пробитие, урон и скорость своих снарядов, как в их подсказке в бою.",
+        "en": "Your consumables with their cooldowns and the shells left of each type on one line, anywhere on screen; optionally your shells’ penetration, damage and velocity, as their in-battle tooltip shows them."
       },
       "fairPlay": {
         "ru": "Только свой танк: то же, что панель снаряжения игры.",
@@ -531,7 +531,7 @@
       },
       "description": {
         "ru": "Сколько градусов ваше орудие ещё повернётся влево и вправо до упора: «УГН ◄ 12° ├───●──┤ 8° ►», с подсветкой, когда до упора осталось мало. Появляется только на машинах с ограниченной горизонтальной наводкой — ПТ, САУ и части танков.",
-        "en": "How many degrees your gun can still turn left and right before its limits: «Traverse ◄ 12° ├───●──┤ 8° ►», highlighted when little is left. Shows only on vehicles with a limited traverse: tank destroyers, SPGs and some tanks."
+        "en": "How many degrees your gun can still turn left and right before its limits: “Traverse ◄ 12° ├───●──┤ 8° ►”, highlighted when little is left. Shows only on vehicles with a limited traverse: tank destroyers, SPGs and some tanks."
       },
       "fairPlay": {
         "ru": "Только параметры своей машины и положение своей башни; ничего не наводит и не меняет.",
@@ -593,8 +593,8 @@
         "en": "15 m circle"
       },
       "description": {
-        "ru": "Круг радиусом 15 м на земле вокруг вашего танка: отъедьте от куста дальше — и выстрел вас демаскирует. По клавише (Ctrl+Shift+B) или постоянно, четыре цвета; исчезает, когда танк уничтожен.",
-        "en": "A 15 m circle on the ground around your tank: move farther from the bush and your shot gives you away. By a hotkey (Ctrl+Shift+B) or always, four colours; gone when the tank is destroyed."
+        "ru": "Круг радиусом 15 м на земле вокруг вашего танка: отъедьте от куста дальше — и выстрел вас демаскирует. По клавише (Ctrl+Shift+B, Ctrl+Shift+C, F7 или F8) или постоянно, четыре цвета; исчезает, когда танк уничтожен.",
+        "en": "A 15 m circle on the ground around your tank: move farther from the bush and your shot gives you away. By a hotkey (Ctrl+Shift+B, Ctrl+Shift+C, F7 or F8) or always, four colours; gone when the tank is destroyed."
       },
       "fairPlay": {
         "ru": "Только позиция своего танка и фиксированный радиус; ничего о противниках.",
@@ -614,7 +614,7 @@
         "en": "Loadout in battle"
       },
       "description": {
-        "ru": "Оборудование вашего танка со значками (★ — в слоте со своим бонусом), полевая модернизация и директивы в перетаскиваемой панели; компактный или подробный вид.",
+        "ru": "Оборудование вашего танка со значками (★ — в слоте со своим бонусом), полевая модернизация и инструкции в перетаскиваемой панели; компактный или подробный вид.",
         "en": "Your tank's equipment with icons (★: in a slot with its own bonus), field modifications and directives on a movable panel; compact or detailed."
       },
       "fairPlay": {
@@ -631,12 +631,12 @@
       "category": "battle",
       "presets": ["recommended", "streamer"],
       "title": {
-        "ru": "Миникарта",
+        "ru": "Мини-карта",
         "en": "Minimap"
       },
       "description": {
-        "ru": "Увеличение миникарты, имена танков и ваши круги обзора: только настройки, которые поддерживает сам клиент.",
-        "en": "A bigger minimap, vehicle names and your own view range circles: only options the client itself supports."
+        "ru": "Размер и прозрачность мини-карты, подписи техники и ваши круги обзора: только то, что есть в настройках самой игры.",
+        "en": "Minimap size and opacity, vehicle names and your own view range circles: only what the game settings themselves offer."
       },
       "fairPlay": {
         "ru": "Без маркеров пропавших из засвета и направлений стволов.",
@@ -681,7 +681,7 @@
         "en": "Camera presets, the zoom on entering sniper mode, the dynamic camera and horizontal stabilisation: the game's own settings, set from the mod window."
       },
       "fairPlay": {
-        "ru": "Меняет только вашу камеру в пределах правил Lesta.",
+        "ru": "Меняет только вашу камеру в пределах правил Лесты.",
         "en": "Changes only your own camera, within Lesta's rules."
       },
       "perf": "low",
@@ -785,8 +785,8 @@
         "en": "A summary after each battle in the notifications and the session battles in the mod window: damage, assist, economy with repair costs, shots, MoE."
       },
       "fairPlay": {
-        "ru": "Только ваш блок итогов боя.",
-        "en": "Only your own block of battle results."
+        "ru": "Только ваша часть итогов боя.",
+        "en": "Only your own part of the battle results."
       },
       "perf": "low",
       "preview": {
@@ -865,8 +865,8 @@
         "en": "Battle wounds"
       },
       "description": {
-        "ru": "Куда попадали по вашему танку: после боя в ангаре — итог последнего боя, а в окне модпака — схема сверху (корпус, башня, орудие, ходовая) с точками попаданий и список: сторона, исход, урон, кто стрелял. Хранятся последние бои.",
-        "en": "Where your tank was hit: after the battle the hangar shows the last battle's summary, and the modpack window a schematic from above (hull, turret, gun, running gear) with the hit points and a list: side, outcome, damage, who fired. The last battles are kept."
+        "ru": "Куда попадали по вашему танку: после боя в ангаре — итог последнего боя, а в окне мода — схема сверху (корпус, башня, орудие, ходовая) с точками попаданий и список: сторона, исход, урон, кто стрелял. Хранятся последние бои.",
+        "en": "Where your tank was hit: after the battle the hangar shows the last battle's summary, and the mod window a schematic from above (hull, turret, gun, running gear) with the hit points and a list: side, outcome, damage, who fired. The last battles are kept."
       },
       "fairPlay": {
         "ru": "Только попадания по своему танку и только после боя; где был стрелявший, не записывается.",
@@ -929,7 +929,7 @@
       },
       "description": {
         "ru": "Цели из кабинета на сайте: прогресс в ангаре, строка в бою («нужно 3 900 урона») и звук, когда цель выполнена.",
-        "en": "Goals from your site dashboard: progress in the hangar, a battle line («3,900 damage needed») and a sound when a goal is met."
+        "en": "Goals from your site dashboard: progress in the hangar, a battle line (“3,900 damage needed”) and a sound when a goal is met."
       },
       "fairPlay": {
         "ru": "Только ваши цели и ваш прогресс, после привязки мода.",
@@ -951,7 +951,7 @@
       },
       "description": {
         "ru": "Личные боевые задачи в работе с основным условием и условием «с отличием»: подпись в ангаре, строка в бою для задач вашего класса и список всех задач в окне мода.",
-        "en": "The personal missions in progress with their main and «with honours» conditions: a hangar label, a battle line for your class and a list of every mission in the mod window."
+        "en": "The personal missions in progress with their main and “with honours” conditions: a hangar label, a battle line for your class and a list of every mission in the mod window."
       },
       "fairPlay": {
         "ru": "Ваши задачи из экрана ЛБЗ самой игры; ничего о других игроках.",
@@ -972,7 +972,7 @@
       },
       "description": {
         "ru": "Кто во взводе нажал «Готов» — как в окне взвода, и ваши бои за сессию во взводе и в клановых режимах: боёв, процент побед, средний урон.",
-        "en": "Who in the platoon pressed «Ready», as in the platoon window, and your battles of the session in a platoon and in clan modes: battles, win rate, average damage."
+        "en": "Who in the platoon pressed “Ready”, as in the platoon window, and your battles of the session in a platoon and in clan modes: battles, win rate, average damage."
       },
       "fairPlay": {
         "ru": "Только имена и отметки готовности из окна взвода и ваши собственные бои; статистику напарников мод не читает.",

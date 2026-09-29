@@ -4,14 +4,22 @@ MODS_LIST_ID = 'otmetki'
 ICON_PATH = 'gui/gameface/mods/triotmetki/ui/icon.png'
 BROWSER_OPENERS = ('openWebBrowser', 'wg_openWebBrowser')
 
-# Hangar Gameface views the "Three Marks" button is injected into, tried in order (module, class). RU 1.45
-# client source: gui/impl/lobby/crew/hangar_crew_widget.py HangarCrewWidget(ViewImpl) with _onLoading, and
-# frameworks/wulf/view/view.py setChildView(resourceID, view); the 1.45 hangar has no gui.impl HangarView.
-# None importable -> ModsList and the hotkey.
-BUTTON_HOSTS = (
-    ('gui.impl.lobby.crew.hangar_crew_widget', 'HangarCrewWidget'),
-)
+# The settings button on the Gameface HUD page: its own section of components.json, docked top right under the
+# hangar's top bar and above hangar_info. UNVERIFIED on Lesta 1.45: that the top bar ends above y=64 at scale 1.0.
+BUTTON_ALIAS = 'otmetki.ui.button'
+BUTTON_SECTION = 'hangar_button'
+BUTTON_DEFAULTS = {
+    'x': -24,
+    'y': 72,
+    'align_x': 'right',
+    'align_y': 'top',
+    'scale': 100,
+}
+BUTTON_LAYOUT_KEYS = ('x', 'y', 'align_x', 'align_y', 'scale')
 
 # Ctrl+Shift+T in the hangar opens the window (and ends the on-screen HUD edit mode).
 HOTKEY = 'KEY_T'
 HOTKEY_MODIFIERS = ('KEY_LCONTROL', 'KEY_LSHIFT')
+
+# The companion config.json key of the panel edit modifier (core.hud.modifier modes).
+MODIFIER_KEY = 'hud_modifier'

@@ -15,6 +15,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....hud import HudBackend
 from ....hud.surface import HUD_MESSAGE_ARG, HUD_RES_MAP_ID, HUD_SEND_COMMAND, HUD_STATE_PROPERTY, SPACE_LOBBY, HudSurface
 from ....log import log, log_exception, safe
+from ..modifier import ModifierWatch
 from ..space import current_space, cursor_events
 from .constants import INVALID_RES_ID, WINDOW_LAYER
 
@@ -106,8 +107,10 @@ class GamefaceBackend(HudBackend):
         self.window = None
         self.view = None
         self.broken = False
-        self.listener = None
+        self.listeners = []
+        self.press_listeners = []
         self.cursor = False
+        self.modifier = ModifierWatch(self._on_modifier)
         self._listen_cursor()
 
     @classmethod
@@ -135,11 +138,26 @@ class GamefaceBackend(HudBackend):
         return self.surface.delete(alias) and self.sync()
 
     def listen(self, on_moved):
-        self.listener = on_moved
+        if on_moved not in self.listeners:
+            self.listeners.append(on_moved)
+
+    def draws_buttons(self):
+        return True
+
+    def listen_press(self, on_press):
+        if on_press not in self.press_listeners:
+            self.press_listeners.append(on_press)
+
+    def set_modifier(self, mode):
+        self.modifier.set_mode(mode)
 
     def state_text(self):
         space = current_space()
-        return self.surface.encode(space, space == SPACE_LOBBY or self.cursor)
+        return self.surface.encode(space, space == SPACE_LOBBY or self.cursor, self.modifier.held)
+
+    def push_state(self):
+        if self.view is not None:
+            self.view.viewModel.set_state(self.state_text())
 
     @safe
     def sync(self):
@@ -148,8 +166,7 @@ class GamefaceBackend(HudBackend):
             return True
         if self.window is None and not self.open():
             return False
-        if self.view is not None:
-            self.view.viewModel.set_state(self.state_text())
+        self.push_state()
         return True
 
     def open(self):
@@ -157,6 +174,7 @@ class GamefaceBackend(HudBackend):
         if layout is None or self.broken:
             return False
         try:
+            self.modifier.install()
             self.window = HudWindow(layout, self)
             self.window.load()
         except Exception:
@@ -188,10 +206,15 @@ class GamefaceBackend(HudBackend):
         if decoded is None:
             return
         command, fields = decoded
-        if command == 'ready' and self.view is not None:
-            self.view.viewModel.set_state(self.state_text())
-        elif command == 'moved' and self.listener is not None:
-            self.listener(fields['id'], dict((key, value) for key, value in fields.items() if key != 'id'))
+        if command == 'ready':
+            self.push_state()
+        elif command == 'pressed':
+            for listener in list(self.press_listeners):
+                listener(fields['id'])
+        elif command in ('moved', 'resized'):
+            props = dict((key, value) for key, value in fields.items() if key != 'id')
+            for listener in list(self.listeners):
+                listener(fields['id'], props)
 
     def _listen_cursor(self):
         found = cursor_events()
@@ -204,11 +227,13 @@ class GamefaceBackend(HudBackend):
     @safe
     def _on_show_cursor(self, *args):
         self.cursor = True
-        if self.view is not None:
-            self.view.viewModel.set_state(self.state_text())
+        self.push_state()
 
     @safe
     def _on_hide_cursor(self, *args):
         self.cursor = False
-        if self.view is not None:
-            self.view.viewModel.set_state(self.state_text())
+        self.push_state()
+
+    @safe
+    def _on_modifier(self, held):
+        self.push_state()

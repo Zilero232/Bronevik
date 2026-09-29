@@ -96,4 +96,5 @@ def format_info(info, settings, translate, now):
 
 
 def layout_of(settings):
-    return {'x': settings.get('x'), 'y': settings.get('y'), 'alignX': settings.get('align_x'), 'alignY': settings.get('align_y')}
+    return {'x': settings.get('x'), 'y': settings.get('y'), 'alignX': settings.get('align_x'), 'alignY': settings.get('align_y'),
+            'scale': round(settings.get('scale') / 100, 2)}

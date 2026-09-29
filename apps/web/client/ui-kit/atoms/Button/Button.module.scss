@@ -15,7 +15,7 @@
   font-family: var(--font-display);
   font-weight: 700;
   gap: var(--space-2);
-  letter-spacing: 0.06em;
+  letter-spacing: var(--tracking-label);
   line-height: 1;
   text-decoration: none;
   text-transform: uppercase;
@@ -58,7 +58,7 @@
   @include touch-target;
 
   height: var(--control-h-sm);
-  padding: 0 12px;
+  padding: 0 var(--space-4);
   font-size: var(--text-sm);
 }
 
@@ -72,7 +72,7 @@
 
 .lg {
   height: var(--control-h-lg);
-  padding: 0 20px;
+  padding: 0 var(--space-6);
   font-size: var(--text-md);
 
   :global(svg) {

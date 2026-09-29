@@ -1,2 +1,2 @@
-export { boardPeers, peerColor } from './board-peers';
-export type { BoardPeer, BoardPeersInput } from './board-peers.types';
+export { boardPeers } from './board-peers';
+export type { BoardPeer } from './board-peers.types';

@@ -1,2 +1,2 @@
 export { claimFailure, claimStage } from './claim-state';
-export type { ClaimFailure, ClaimStage } from './claim-state.types';
+export type { ClaimFailure } from './claim-state.types';

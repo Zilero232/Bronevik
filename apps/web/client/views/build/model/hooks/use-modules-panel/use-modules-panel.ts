@@ -4,7 +4,8 @@ import { useTranslations } from 'next-intl';
 
 import type { BuildModuleSlot } from '../../../lib/build-catalog';
 
-import { MODULE_SLOTS, selectedModules, setModule, slotModules } from '../../../lib/loadout-edit';
+import { MODULE_SLOTS } from '../../../config';
+import { selectedModules, setModule, slotModules } from '../../../lib/loadout-edit';
 import { moduleOptions } from '../../../lib/module-options';
 import { useBuildContext } from '../../context';
 

@@ -1,10 +1,2 @@
-export { calendarLayout, calendarStep, heatLevel } from './calendar-layout';
-export type {
-  CalendarCell,
-  CalendarDay,
-  CalendarLayout,
-  CalendarMonth,
-  CalendarStepInput,
-  CalendarWeek,
-  HeatLevelInput
-} from './calendar-layout.types';
+export { calendarLayout, calendarStep, heatLevel, utcDay } from './calendar-layout';
+export type { CalendarDay } from './calendar-layout.types';

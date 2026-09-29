@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { SectionHeader } from '@/ui-kit';
 
-import { PROMO_CAROUSEL } from '../../config';
+import { PROMO_ANCHOR, PROMO_CAROUSEL } from '../../config';
 import { usePromoShowcase } from '../../model/hooks';
 import { PromoCarousel } from '../components';
 
@@ -15,7 +15,7 @@ export const PromoShowcase = () => {
   const { items } = usePromoShowcase();
 
   return (
-    <section className={s.root} id='showcase'>
+    <section className={s.root} id={PROMO_ANCHOR.showcase}>
       <SectionHeader description={t('lead')} title={t('title')} variant='display' />
       <PromoCarousel delay={PROMO_CAROUSEL.heroDelay} hasCta={false} items={items} label={t('title')} variant='hero' />
     </section>

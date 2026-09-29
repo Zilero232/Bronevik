@@ -16,7 +16,7 @@ type LabelNamespaces<TMessages, TPrefix extends string = ''> = {
       : never;
 }[keyof TMessages & string];
 
-export type FormDialogNamespace = LabelNamespaces<Messages>;
+type FormDialogNamespace = LabelNamespaces<Messages>;
 
 export type FormDialogProps<TValues extends FieldValues, TOutput extends FieldValues> = {
   dialog: FormDialogModel<TValues, TOutput>;

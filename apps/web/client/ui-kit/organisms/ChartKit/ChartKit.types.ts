@@ -27,35 +27,38 @@ export type ChartBaseProps = {
   formatValue?: (value: number) => string;
 };
 
-export type ChartDataTableProps = Pick<ChartBaseProps, 'labels' | 'series'> & {
-  id: string;
-  caption?: string;
-  isVisible: boolean;
-  formatValue: (value: number) => string;
-};
+type ChartValueFormat = Required<Pick<ChartBaseProps, 'formatValue'>>;
 
-export type ChartAxesProps = {
-  xScale: BandScale | LinearScale;
-  yScale: LinearScale;
-  labels: string[];
-  innerWidth: number;
-  innerHeight: number;
-  formatValue: (value: number) => string;
-};
+export type ChartPlotProps = Pick<ChartBaseProps, 'labels' | 'series'> &
+  ChartValueFormat & {
+    width: number;
+    height: number;
+  };
 
-export type ChartTooltipProps = {
-  state: ChartHoverState;
-  labels: string[];
-  series: ChartSeries[];
-  formatValue: (value: number) => string;
-};
+export type ChartDataTableProps = Pick<ChartBaseProps, 'labels' | 'series'> &
+  ChartValueFormat & {
+    id: string;
+    caption?: string;
+    isVisible: boolean;
+  };
 
-export type ChartCanvasProps = ChartAxesProps & {
-  width: number;
-  height: number;
-  series: ChartSeries[];
-  hover: ChartHoverState | null;
-  children: ReactNode;
-  onPointerMove: (event: PointerEvent<SVGRectElement>) => void;
-  onPointerLeave: (event: PointerEvent<SVGRectElement>) => void;
-};
+export type ChartAxesProps = Pick<ChartBaseProps, 'labels'> &
+  ChartValueFormat & {
+    xScale: BandScale | LinearScale;
+    yScale: LinearScale;
+    innerWidth: number;
+    innerHeight: number;
+  };
+
+export type ChartTooltipProps = Pick<ChartBaseProps, 'labels' | 'series'> &
+  ChartValueFormat & {
+    state: ChartHoverState;
+  };
+
+export type ChartCanvasProps = ChartAxesProps &
+  ChartPlotProps & {
+    hover: ChartHoverState | null;
+    children: ReactNode;
+    onPointerMove: (event: PointerEvent<SVGRectElement>) => void;
+    onPointerLeave: (event: PointerEvent<SVGRectElement>) => void;
+  };

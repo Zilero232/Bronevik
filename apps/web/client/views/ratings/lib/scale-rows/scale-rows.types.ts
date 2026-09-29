@@ -4,7 +4,7 @@ import type { RatingTone } from '@/shared/lib';
 
 import type { RATING_SCALE_COLUMNS } from '../../config';
 
-export type ScaleColumn = (typeof RATING_SCALE_COLUMNS)[number] & RatingScale;
+type ScaleColumn = (typeof RATING_SCALE_COLUMNS)[number] & RatingScale;
 
 export type ScaleRow = {
   tier: RatingTier;

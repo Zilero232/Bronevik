@@ -10,7 +10,7 @@ export const ModFeatures = () => {
   const t = useTranslations('mod.features');
 
   return (
-    <section className={s.root} id='features'>
+    <section className={s.root} id={MOD_PAGE.featuresAnchor}>
       <SectionHeader title={t('title')} variant='display' />
       <ul className={s.grid}>
         {MOD_FEATURES.map(({ key, icon: Icon, tone }) => (

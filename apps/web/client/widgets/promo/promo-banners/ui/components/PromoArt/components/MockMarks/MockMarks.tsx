@@ -12,7 +12,7 @@ import s from './MockMarks.module.scss';
 export const MockMarks = () => {
   const t = useTranslations('promo.mock.marks');
   const format = useFormatter();
-  const { percent, delta, trend, thresholds, damageToNext, battlesToNext } = PROMO_MOCK.marks;
+  const { percent, delta, trend, thresholds, damageToNext, battlesToNext, chart } = PROMO_MOCK.marks;
 
   return (
     <MockWindow title={t('title')}>
@@ -21,7 +21,7 @@ export const MockMarks = () => {
         <span className={s.value}>{format.number(percent / 100, { style: 'percent', minimumFractionDigits: 2 })}</span>
         <span className={s.delta}>{format.number(delta, { signDisplay: 'always', minimumFractionDigits: 2 })}</span>
       </div>
-      <Sparkline withArea className={s.chart} data={[...trend]} height={64} tone='gold' width={360} />
+      <Sparkline withArea className={s.chart} data={[...trend]} height={chart.height} tone='gold' width={chart.width} />
       <ul className={s.thresholds}>
         {thresholds.map(({ key, value, isDone }) => (
           <li key={key} className={s.threshold} data-done={isDone || undefined}>

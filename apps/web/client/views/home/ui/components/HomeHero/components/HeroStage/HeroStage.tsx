@@ -3,7 +3,7 @@
 import { TankShowcase3D } from '@/widgets/showcase/showcase-3d';
 
 import { useHeroTanks } from '../../../../../model/hooks';
-import { HeroEmblem } from './components';
+import { HeroEmblem } from '../HeroEmblem';
 
 import s from './HeroStage.module.scss';
 

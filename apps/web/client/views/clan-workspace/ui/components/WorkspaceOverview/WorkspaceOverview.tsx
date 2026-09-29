@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useId } from 'react';
 
 import { EmptyState, SectionHeader, StatList } from '@/ui-kit';
 
@@ -15,13 +16,14 @@ import s from './WorkspaceOverview.module.scss';
 export const WorkspaceOverview = ({ clanId, workspace, isOfficer, members }: WorkspaceOverviewProps) => {
   const t = useTranslations('clanWorkspace.overview');
   const tStatus = useTranslations('clanWorkspace.candidates');
+  const titleId = useId();
 
   return (
     <div className={s.root}>
       {isOfficer && <WorkspaceReport clanId={clanId} />}
       <div className={s.grid}>
-        <section aria-labelledby='workspace-upcoming' className={s.section}>
-          <SectionHeader count={workspace.upcoming.length} id='workspace-upcoming' title={t('upcoming')} />
+        <section aria-labelledby={titleId} className={s.section}>
+          <SectionHeader count={workspace.upcoming.length} id={titleId} title={t('upcoming')} />
           {workspace.upcoming.length === 0 ? (
             <EmptyState isCompact description={isOfficer ? t('noUpcomingOfficer') : t('noUpcomingMember')} title={t('noUpcoming')} />
           ) : (

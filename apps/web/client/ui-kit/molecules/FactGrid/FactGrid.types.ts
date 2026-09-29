@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-export type FactGridItem = {
+type FactGridItem = {
   id: string;
   label: ReactNode;
   value: ReactNode;

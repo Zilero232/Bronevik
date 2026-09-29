@@ -1,5 +1,4 @@
 export { DAILY_PUZZLE_KEYS, DAILY_PUZZLES } from './config';
-export type { DailyPuzzleKey } from './config';
 export { daySeed, puzzleDay, puzzleNumber } from './lib/puzzle-day';
 export { activeStreak, recordResult } from './lib/streak';
 export type { GuessStreak } from './lib/streak';
@@ -8,4 +7,3 @@ export { DailyLayout } from './ui/DailyLayout';
 export { DailyPuzzleCard } from './ui/DailyPuzzleCard';
 export { DailyPuzzleShelf } from './ui/DailyPuzzleShelf';
 export { DailyResult } from './ui/DailyResult';
-export type { DailyResultProps } from './ui/DailyResult';

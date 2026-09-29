@@ -12,10 +12,15 @@ export type ShowcaseTile = {
   share: number | null;
 };
 
+type ShowcaseSlot = {
+  family: string;
+  tile: ShowcaseTile | null;
+};
+
 export type ShowcaseEquipmentColumn = {
   category: EquipTileCategory;
-  primary: (ShowcaseTile | null)[];
-  alternative: (ShowcaseTile | null)[] | null;
+  primary: ShowcaseSlot[];
+  alternative: ShowcaseSlot[] | null;
   directive: ShowcaseTile | null;
   directiveAlternative: ShowcaseTile | null;
 };
@@ -26,7 +31,7 @@ export type EquipmentMatrixInput = {
   slots: number;
 };
 
-export type FieldModOption = {
+type FieldModOption = {
   id: number;
   name: string;
   image: string | null;
@@ -45,7 +50,7 @@ export type FieldModRingInput = {
   usage: BuildUsage | null;
 };
 
-export type CrewSkillView = {
+type CrewSkillView = {
   skill: string;
   name: string;
   image: string | null;

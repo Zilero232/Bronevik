@@ -17,6 +17,8 @@ export const CHALLENGE_CONDITION_OPTIONS = {
   aggregates: challengeConditionSchema.shape.aggregate.unwrap().options
 } as const;
 
+export const CHALLENGE_OUTCOME_METRICS = ['win', 'survive'] as const;
+
 export const CHALLENGE_SCOPES = ['any', 'tank', 'type', 'tier'] as const;
 
 export type ChallengeScope = (typeof CHALLENGE_SCOPES)[number];

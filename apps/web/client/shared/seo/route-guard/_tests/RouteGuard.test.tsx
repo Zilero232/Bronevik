@@ -2,6 +2,8 @@ import { render } from '@testing-library/react';
 import { notFound } from 'next/navigation';
 import { describe, expect, it, vi } from 'vitest';
 
+import type { RouteGuardProps } from '../RouteGuard.types';
+
 import { RouteGuard } from '../RouteGuard';
 
 const FOUND = { name: 'ИС-7', isFound: true };
@@ -11,10 +13,13 @@ const structuredData = (container: HTMLElement) =>
 
 describe('RouteGuard', () => {
   it('renders the structured data built from the found entity', async () => {
-    const schema = vi.fn((entity: typeof FOUND) => Promise.resolve({ '@type': 'Thing', name: entity.name }));
+    const schema = vi.fn((entity: typeof FOUND) =>
+      Promise.resolve({ '@context': 'https://schema.org', '@type': 'Thing', name: entity.name } as const)
+    );
+
     const { container } = render(await RouteGuard({ entity: Promise.resolve(FOUND), schema }));
 
-    expect(structuredData(container)).toEqual([{ '@type': 'Thing', name: 'ИС-7' }]);
+    expect(structuredData(container)).toEqual([{ '@context': 'https://schema.org', '@type': 'Thing', name: 'ИС-7' }]);
     expect(schema).toHaveBeenCalledWith(FOUND);
   });
 
@@ -23,7 +28,7 @@ describe('RouteGuard', () => {
   });
 
   it('renders not-found before building any schema for a missing entity', async () => {
-    const schema = vi.fn(() => Promise.resolve({}));
+    const schema = vi.fn<NonNullable<RouteGuardProps['schema']>>();
 
     vi.mocked(notFound).mockImplementationOnce(() => {
       throw new Error('NEXT_HTTP_ERROR_FALLBACK;404');

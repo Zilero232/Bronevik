@@ -1,9 +1,9 @@
 'use client';
 
 import { useFormatter, useTranslations } from 'next-intl';
+import { useId } from 'react';
 
 import { ROUTES } from '@/shared/constants';
-import { toneOfTier } from '@/shared/lib';
 import { Card, DataSourceNote, DataTable, EmptyState, Podium, PodiumCard, QueryState, SectionHeader, SegmentedControl, Skeleton } from '@/ui-kit';
 
 import { HOME } from '../../../config';
@@ -13,24 +13,16 @@ import s from './TopPlayers.module.scss';
 
 export const TopPlayers = () => {
   const t = useTranslations('home.topPlayers');
-  const tc = useTranslations('home.columns');
   const format = useFormatter();
-  const { metric, setMetric, query } = useTopPlayers();
+  const titleId = useId();
+  const { metric, metricLabel, metricOptions, setMetric, query } = useTopPlayers();
   const columns = useTopPlayerColumns(metric);
 
   return (
-    <section aria-labelledby='home-top-players' className={s.root}>
+    <section aria-labelledby={titleId} className={s.root}>
       <SectionHeader
-        action={
-          <SegmentedControl
-            aria-label={t('metric')}
-            options={HOME.topPlayers.metrics.map((value) => ({ value, label: tc(value) }))}
-            size='sm'
-            value={metric}
-            onChange={setMetric}
-          />
-        }
-        id='home-top-players'
+        action={<SegmentedControl aria-label={t('metric')} options={metricOptions} size='sm' value={metric} onChange={setMetric} />}
+        id={titleId}
         meta={t('period')}
         more={{ href: ROUTES.top, label: t('all') }}
         title={t('title')}
@@ -43,7 +35,7 @@ export const TopPlayers = () => {
             <Podium aria-label={t('title')}>
               {Array.from({ length: HOME.topPlayers.podium }, (_, index) => (
                 <li key={index}>
-                  <Skeleton className={s.skeleton} height={120} shape='block' />
+                  <Skeleton className={s.skeleton} height={HOME.topPlayers.skeletonHeight} shape='block' />
                 </li>
               ))}
             </Podium>
@@ -59,17 +51,17 @@ export const TopPlayers = () => {
         {({ podium, rest }) => (
           <>
             <Podium aria-label={t('title')}>
-              {podium.map((entry) => (
+              {podium.map(({ entry, name, tone }) => (
                 <PodiumCard
                   key={`${entry.rank}-${entry.name}`}
                   href={ROUTES.players.profile(entry.name)}
                   meta={t('battles', { count: entry.battles })}
-                  metricLabel={tc(metric)}
-                  name={entry.clanTag ? `${entry.name} [${entry.clanTag}]` : entry.name}
+                  metricLabel={metricLabel}
+                  name={name}
                   rank={entry.rank}
-                  rankLabel={`${t('rank')} ${entry.rank}`}
-                  tone={entry.tier ? toneOfTier(entry.tier) : null}
-                  value={format.number(entry.value, { maximumFractionDigits: 0 })}
+                  rankLabel={t('rank', { rank: entry.rank })}
+                  tone={tone}
+                  value={format.number(entry.value, 'integer')}
                 />
               ))}
             </Podium>

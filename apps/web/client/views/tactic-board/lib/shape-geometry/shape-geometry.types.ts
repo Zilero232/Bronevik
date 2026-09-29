@@ -1,7 +1,7 @@
 import type { TacticIcon } from '@/entities/tactic/board';
 
-import type { CanvasPalette } from '../../model/board-tools.types';
 import type { BoardBox, BoardCircle, BoardPoint } from '../board-geometry';
+import type { CanvasPalette } from '../canvas-palette';
 import type { IconGlyph } from '../icon-glyph';
 
 export type StrokeGeometry = {

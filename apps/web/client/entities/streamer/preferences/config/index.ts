@@ -1,1 +1,1 @@
-export { PREFERENCES_FILE, PREFERENCES_TAGS, PREFERENCES_VALUES } from './preferences.constants';
+export { PREFERENCES_BLOCKED_TAGS, PREFERENCES_FILE, PREFERENCES_TAGS, PREFERENCES_VALUES } from './preferences.constants';

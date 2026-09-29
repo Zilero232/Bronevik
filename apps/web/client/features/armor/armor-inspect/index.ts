@@ -1,15 +1,10 @@
-export { ARMOR_INSPECT, ARMOR_LAYERS, SHELL_KIND_KEYS } from './config';
+export { ARMOR_LAYERS } from './config';
 export { describeHit } from './lib/hit-report';
 export type { HitLayer, HitReport } from './lib/hit-report';
 export { useArmorAttack, useArmorInspect } from './model/context';
-export type { ArmorAttackContextValue, ArmorLayerKey } from './model/context';
+export type { ArmorLayerKey } from './model/context';
 export { ArmorAttackProvider } from './ui/ArmorAttackProvider';
-export type { ArmorAttackProviderProps } from './ui/ArmorAttackProvider';
 export { ArmorInspectPanel } from './ui/ArmorInspectPanel';
-export type { ArmorInspectPanelProps } from './ui/ArmorInspectPanel';
 export { ArmorInspectProvider } from './ui/ArmorInspectProvider';
-export type { ArmorInspectProviderProps } from './ui/ArmorInspectProvider';
-export { ArmorLegend } from './ui/ArmorLegend';
 export { HitReadout } from './ui/HitReadout';
-export type { HitReadoutProps } from './ui/HitReadout';
 export { ModulePicker } from './ui/ModulePicker';

@@ -3,7 +3,7 @@ export type DailyBoard<TGuess> = {
   guessIds: TGuess[];
 };
 
-export type DailyStorageKeys = {
+type DailyStorageKeys = {
   storageKey: string;
   streakKey: string;
 };

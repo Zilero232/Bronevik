@@ -49,7 +49,7 @@ export const CoverField = ({ preview, hasUploadedCover, isUploading, isInvalid, 
       </div>
       {!hasUploadedCover && (
         <FormField error={isInvalid && t('errors.coverUrl')} hint={t('coverUrlHint')} label={t('coverUrl')}>
-          <Input isInvalid={isInvalid} placeholder='https://' type='url' {...urlField} />
+          <Input isInvalid={isInvalid} placeholder={t('coverUrlPlaceholder')} type='url' {...urlField} />
         </FormField>
       )}
     </Card>

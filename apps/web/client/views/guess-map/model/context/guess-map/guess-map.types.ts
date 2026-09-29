@@ -5,7 +5,7 @@ import type { GuessStreak } from '@/entities/play/daily-puzzle';
 import type { MapFocus, MapGameStatus } from '../../../lib/daily-map';
 import type { MapHints } from '../../../lib/map-hints';
 
-export type MapGuess = {
+type MapGuess = {
   map: MapSummary;
   hints: MapHints;
 };

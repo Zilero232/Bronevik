@@ -3,10 +3,11 @@
 import { Download, ExternalLink, PackageOpen } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Badge, Button, buttonVariants } from '@/ui-kit';
+import { Badge, buttonVariants } from '@/ui-kit';
 
 import { MOD_PAGE } from '../../../config';
 import { useModPage } from '../../../model/hooks';
+import { DownloadLink } from './components';
 
 import s from './ModActions.module.scss';
 
@@ -17,40 +18,23 @@ export const ModActions = () => {
   return (
     <div className={s.root}>
       <div className={s.buttons}>
-        {downloads.manager ? (
-          <a
-            className={buttonVariants({ variant: 'primary', size: 'lg', shine: true })}
-            download={distribution.managerFileName}
-            href={distribution.managerUrl}
-            rel='noreferrer'
-            target='_blank'
-          >
-            <Download aria-hidden size={MOD_PAGE.iconSize} />
-            {t('download')}
-          </a>
-        ) : (
-          <Button disabled size='lg' variant='primary'>
-            <Download aria-hidden size={MOD_PAGE.iconSize} />
-            {t('download')}
-          </Button>
-        )}
-        {downloads.modpack ? (
-          <a
-            className={buttonVariants({ variant: 'secondary', size: 'lg' })}
-            download={distribution.packagesFileName}
-            href={distribution.packagesUrl}
-            rel='noreferrer'
-            target='_blank'
-          >
-            <PackageOpen aria-hidden size={MOD_PAGE.iconSize} />
-            {t('manual')}
-          </a>
-        ) : (
-          <Button disabled size='lg' variant='secondary'>
-            <PackageOpen aria-hidden size={MOD_PAGE.iconSize} />
-            {t('manual')}
-          </Button>
-        )}
+        <DownloadLink
+          hasShine
+          file={downloads.manager}
+          fileName={distribution.managerFileName}
+          href={distribution.managerUrl}
+          icon={Download}
+          label={t('download')}
+          variant='primary'
+        />
+        <DownloadLink
+          file={downloads.modpack}
+          fileName={distribution.packagesFileName}
+          href={distribution.packagesUrl}
+          icon={PackageOpen}
+          label={t('manual')}
+          variant='secondary'
+        />
         {distribution.mostUrl ? (
           <a className={buttonVariants({ variant: 'ghost', size: 'lg' })} href={distribution.mostUrl} rel='noreferrer' target='_blank'>
             <ExternalLink aria-hidden size={MOD_PAGE.iconSize} />

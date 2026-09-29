@@ -5,7 +5,7 @@ import type { QueryStateProps, QueryStateSource } from '@/ui-kit';
 
 import type { ResourceMissingProps } from '../ResourceMissing';
 
-export type ResourceGateMessage = Pick<ResourceMissingProps, 'description' | 'title'>;
+type ResourceGateMessage = Pick<ResourceMissingProps, 'description' | 'title'>;
 
 export type ResourceGateProps<TData> = Pick<QueryStateProps<TData>, 'children'> &
   Pick<ResourceMissingProps, 'back'> & {

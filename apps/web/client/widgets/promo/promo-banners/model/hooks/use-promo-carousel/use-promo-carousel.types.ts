@@ -1,4 +1,4 @@
-export type PromoCarouselEffect = 'fade' | 'slide';
+type PromoCarouselEffect = 'fade' | 'slide';
 
 export type UsePromoCarouselInput = {
   count: number;

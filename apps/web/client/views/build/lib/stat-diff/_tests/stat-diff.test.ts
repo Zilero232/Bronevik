@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import { TANK_SPEC_GROUPS } from '@/entities/tank/tank';
 
-import { barFill, buildStatGroups, STAT_BAR } from '..';
+import { barFill, buildStatGroups } from '..';
+import { STAT_BAR } from '../../../config';
 
 const BASE = { reloadTime: 10, shellDamage: 400, viewRange: 400, maxHealth: null };
 

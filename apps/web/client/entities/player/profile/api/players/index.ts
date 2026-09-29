@@ -12,12 +12,4 @@ export {
   getPopularPlayers
 } from './players';
 export { PLAYERS_REQUEST } from './players.constants';
-export type {
-  GroupInsight,
-  PlayerLookupInput,
-  PlayerMarkRow,
-  PlayerMarks,
-  PlayerSessionInput,
-  PlayerTanksFilter,
-  TankInsight
-} from './players.types';
+export type { GroupInsight, PlayerLookupInput, PlayerMarkRow, PlayerSessionInput, PlayerTanksFilter, TankInsight } from './players.types';

@@ -5,6 +5,7 @@ import { useFormatter } from 'next-intl';
 
 import type { SkillRowProps } from './SkillRow.types';
 
+import { SKILL_ROW } from '../../config';
 import { GameIcon } from '../GameIcon';
 
 import s from './SkillRow.module.scss';
@@ -15,7 +16,7 @@ export const SkillRow = ({ index, name, image, share = null, className }: SkillR
   return (
     <li className={clsx(s.root, className)}>
       <span className={s.index}>{index}.</span>
-      <GameIcon kind='skill' size={24} src={image} />
+      <GameIcon kind='skill' size={SKILL_ROW.iconSize} src={image} />
       <span className={s.name}>{name}</span>
       {share !== null && (
         <span className={s.share}>

@@ -2,7 +2,7 @@ import type { ClanPage, TankDetail } from '@/shared/api/generated';
 import type { Locale } from '@/shared/i18n';
 import type { OgMetric } from '@/shared/seo/og';
 
-export type EntityOgKind = 'build' | 'tank';
+type EntityOgKind = 'build' | 'tank';
 
 type EntityOgInput = {
   locale: Locale;
@@ -18,6 +18,11 @@ export type SiteOgCardInput = EntityOgInput;
 
 export type ClanOgCardInput = EntityOgInput & {
   page: Pick<ClanPage, 'clan' | 'stats'>;
+};
+
+export type DashInput = {
+  value: number | null;
+  render: (known: number) => string;
 };
 
 export type EntityOgCardData = {

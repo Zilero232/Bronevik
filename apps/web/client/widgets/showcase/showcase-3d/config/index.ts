@@ -5,6 +5,7 @@ export {
   LOW_POWER,
   SHOWCASE_CANVAS,
   SHOWCASE_MOTION,
+  SHOWCASE_RIG,
   SHOWCASE_ROTATION,
   TURRET_SWEEP
 } from './showcase.constants';

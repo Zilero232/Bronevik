@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useId } from 'react';
 
 import { EmptyState, QueryState, SectionHeader, Skeleton } from '@/ui-kit';
 
@@ -15,6 +16,7 @@ import s from './WorkspaceEvents.module.scss';
 
 export const WorkspaceEvents = ({ clanId, isOfficer, members }: WorkspaceEventsProps) => {
   const t = useTranslations('clanWorkspace.events');
+  const titleId = useId();
   const { query, upcoming, past } = useWorkspaceEvents({ clanId, isEnabled: true });
 
   return (
@@ -44,8 +46,8 @@ export const WorkspaceEvents = ({ clanId, isOfficer, members }: WorkspaceEventsP
           </ul>
         )}
         {past.length > 0 && (
-          <section aria-labelledby='workspace-past' className={s.root}>
-            <SectionHeader count={past.length} id='workspace-past' meta={t('pastMeta', { days: WORKSPACE_VIEW.historyDays })} title={t('past')} />
+          <section aria-labelledby={titleId} className={s.root}>
+            <SectionHeader count={past.length} id={titleId} meta={t('pastMeta', { days: WORKSPACE_VIEW.historyDays })} title={t('past')} />
             <ul className={s.list}>
               {past.map((event) => (
                 <li key={event.id}>

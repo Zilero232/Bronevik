@@ -4,7 +4,7 @@ import type { STRONGHOLD } from '../../config';
 
 export type GlobalMap = ClanStronghold['globalMap'];
 
-export type GlobalMapElo = {
+type GlobalMapElo = {
   tier: (typeof STRONGHOLD.eloTiers)[number];
   value: number | null;
 };

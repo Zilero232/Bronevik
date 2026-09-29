@@ -51,6 +51,8 @@ export const HOME_ICON = {
   heroMark: 240,
   heroMarkStroke: 1.25,
   community: 220,
+  communityArrow: 12,
+  forYou: 16,
   figure: 16,
   more: 14,
   modpack: 18,

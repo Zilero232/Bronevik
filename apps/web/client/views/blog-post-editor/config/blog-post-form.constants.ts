@@ -10,6 +10,7 @@ export const BLOG_POST_FORM = {
   tagSeparator: ',',
   locales: ['ru', 'en'],
   skeletonHeights: [56, 480],
+  rows: 3,
   upload: {
     path: '/blog/editor/images',
     field: 'file',

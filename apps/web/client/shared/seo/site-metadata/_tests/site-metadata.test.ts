@@ -6,14 +6,14 @@ import { DEFAULT_LOCALE, localePath, LOCALES } from '@/shared/i18n';
 
 import { createPageMetadata } from '../page-metadata';
 import { absoluteUrl, languageAlternates } from '../site-metadata';
-import { X_DEFAULT } from '../site-metadata.constants';
+import { SITE_METADATA } from '../site-metadata.constants';
 
 describe('languageAlternates', () => {
   it('lists every locale plus x-default pointing at the default locale', () => {
     const alternates = languageAlternates('/tanks');
 
-    expect(Object.keys(alternates).sort()).toEqual([...LOCALES, X_DEFAULT].sort());
-    expect(alternates[X_DEFAULT]).toBe(alternates[DEFAULT_LOCALE]);
+    expect(Object.keys(alternates).sort()).toEqual([...LOCALES, SITE_METADATA.xDefault].sort());
+    expect(alternates[SITE_METADATA.xDefault]).toBe(alternates[DEFAULT_LOCALE]);
   });
 
   it('localises the path for every locale', () => {

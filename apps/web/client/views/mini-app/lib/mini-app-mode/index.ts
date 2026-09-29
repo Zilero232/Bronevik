@@ -1,2 +1,2 @@
 export { resolveMiniAppMode } from './mini-app-mode';
-export type { MiniAppEnv, MiniAppLaunch, MiniAppMode, MiniAppModeInput, MiniAppPlatform } from './mini-app-mode.types';
+export type { MiniAppLaunch, MiniAppPlatform } from './mini-app-mode.types';

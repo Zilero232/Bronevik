@@ -10,7 +10,7 @@ export type CalendarCell = {
 
 export type CalendarWeek = CalendarCell[];
 
-export type CalendarMonth = {
+type CalendarMonth = {
   index: number;
   date: string;
 };

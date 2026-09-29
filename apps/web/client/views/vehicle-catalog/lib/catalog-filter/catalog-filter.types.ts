@@ -8,6 +8,11 @@ export type FilterCatalogInput = {
   search: string;
 };
 
+export type RankOfInput = {
+  list: readonly string[];
+  value: string;
+};
+
 export type CatalogTierGroup = {
   tier: number;
   vehicles: VehicleCatalogItem[];

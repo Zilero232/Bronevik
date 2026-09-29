@@ -2,7 +2,7 @@ import { sortBy } from 'remeda';
 
 import type { SortMarksInput } from './marks-sort.types';
 
-const COMPLETE = 100;
+import { MARKS } from '../../config';
 
 export const sortMarks = ({ rows, sort }: SortMarksInput) => {
   const tracked = rows.filter(({ moePercent }) => moePercent !== null);
@@ -17,7 +17,7 @@ export const sortMarks = ({ rows, sort }: SortMarksInput) => {
 
   return sortBy(
     tracked,
-    [({ moePercent }) => (moePercent ?? 0) >= COMPLETE, 'asc'],
+    [({ moePercent }) => (moePercent ?? 0) >= MARKS.completePercent, 'asc'],
     [({ damageToNextMark }) => damageToNextMark ?? Number.POSITIVE_INFINITY, 'asc']
   );
 };

@@ -4,7 +4,7 @@ export type SettingsFieldMessage = keyof Messages['streamerSettings']['fields'];
 
 export type SettingsOption = keyof Messages['streamerSettings']['options'];
 
-export type SettingsUnit = keyof Messages['streamerSettings']['units'];
+type SettingsUnit = keyof Messages['streamerSettings']['units'];
 
 export type SettingsValueView =
   | { kind: 'list'; items: string[] }

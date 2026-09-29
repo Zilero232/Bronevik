@@ -131,6 +131,7 @@
       "coverRemove": "Remove",
       "coverFailed": "Could not upload the image",
       "coverUrl": "Or an image link",
+      "coverUrlPlaceholder": "https://",
       "coverUrlHint": "https only.",
       "slug": "Post address",
       "slugPlaceholder": "patch-1-45",

@@ -1,5 +1,6 @@
 import { ArrowRight, Download } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useId } from 'react';
 
 import { Link } from '@/shared/i18n/navigation';
 import { buttonVariants } from '@/ui-kit';
@@ -11,13 +12,14 @@ import s from './ModpackPromo.module.scss';
 
 export const ModpackPromo = () => {
   const t = useTranslations('home.modpack');
+  const titleId = useId();
 
   return (
-    <section aria-labelledby='home-modpack' className={s.root}>
+    <section aria-labelledby={titleId} className={s.root}>
       <div className={s.panel}>
         <div className={s.copy}>
           <p className={s.eyebrow}>{t('eyebrow')}</p>
-          <h2 className={s.title} id='home-modpack'>
+          <h2 className={s.title} id={titleId}>
             {t('title')}
           </h2>
           <p className={s.lead}>{t('lead')}</p>

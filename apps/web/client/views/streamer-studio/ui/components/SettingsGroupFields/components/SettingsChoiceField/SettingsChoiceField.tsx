@@ -1,6 +1,5 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 import { Controller } from 'react-hook-form';
 
 import { Select } from '@/ui-kit';
@@ -8,15 +7,10 @@ import { Select } from '@/ui-kit';
 import type { SettingsChoiceFieldProps } from './SettingsChoiceField.types';
 
 import { SETTINGS_FORM } from '../../../../../config';
-import { useSettingsField } from '../../../../../model/hooks';
+import { useSettingsChoiceField } from '../../../../../model/hooks';
 
 export const SettingsChoiceField = ({ field }: SettingsChoiceFieldProps) => {
-  const t = useTranslations('streamerSettings');
-  const tf = useTranslations('streamer.settings');
-  const { control, label } = useSettingsField(field.path);
-
-  const options = field.kind === 'boolean' ? SETTINGS_FORM.booleans : field.options;
-  const items = [{ value: SETTINGS_FORM.unset, label: tf('unset') }, ...options.map((option) => ({ value: option, label: t(`options.${option}`) }))];
+  const { control, label, items } = useSettingsChoiceField(field);
 
   return (
     <Controller

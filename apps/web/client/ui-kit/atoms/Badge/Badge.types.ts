@@ -2,7 +2,7 @@ import type { ComponentProps } from 'react';
 
 export type BadgeTone = 'accent' | 'battle' | 'brass' | 'danger' | 'gold' | 'neutral' | 'olive' | 'premium' | 'sky' | 'steel' | 'success' | 'warning';
 
-export type BadgeShape = 'corner' | 'pill' | 'plate' | 'ribbon';
+type BadgeShape = 'corner' | 'pill' | 'plate' | 'ribbon';
 
 export type BadgeProps = ComponentProps<'span'> & {
   tone?: BadgeTone;

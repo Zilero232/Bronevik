@@ -1,7 +1,7 @@
 import type { VehicleSummary } from '@otmetki/schemas';
 import type { ReactNode } from 'react';
 
-export type TankShowcaseFigure = {
+type TankShowcaseFigure = {
   id: string;
   label: ReactNode;
   value: ReactNode;

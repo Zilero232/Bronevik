@@ -43,7 +43,7 @@ export const EquipTile = ({
       {name !== null && <GameIcon kind={kind} size={Math.round(px * EQUIP_TILE.iconRatio)} src={image} />}
       {isImproved && size !== 'xs' && (
         <span aria-hidden className={s.chevron}>
-          <ChevronsUp size={12} strokeWidth={2.5} />
+          <ChevronsUp size={EQUIP_TILE.chevron.size} strokeWidth={EQUIP_TILE.chevron.strokeWidth} />
         </span>
       )}
       {share !== null && size !== 'xs' && <span className={s.share}>{format.number(share, 'share')}</span>}

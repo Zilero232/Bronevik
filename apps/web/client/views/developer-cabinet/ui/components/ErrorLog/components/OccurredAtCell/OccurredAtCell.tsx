@@ -1,7 +1,7 @@
-import type { OccurredAtCellProps } from './OccurredAtCell.types';
+import { RelativeTime } from '@/ui-kit';
 
-import { TimeAgo } from '../../../TimeAgo';
+import type { OccurredAtCellProps } from './OccurredAtCell.types';
 
 import s from './OccurredAtCell.module.scss';
 
-export const OccurredAtCell = ({ value }: OccurredAtCellProps) => <TimeAgo className={s.root} value={value} />;
+export const OccurredAtCell = ({ value }: OccurredAtCellProps) => <RelativeTime className={s.root} value={value} />;

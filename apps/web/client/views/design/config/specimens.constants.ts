@@ -8,3 +8,9 @@ export const CHART_SPECIMENS = {
 export const SPARKLINE_SPECIMEN = [12, 18, 15, 22, 27, 24, 31, 29, 36, 40, 38, 45] as const;
 
 export const AVATAR_SPECIMENS = ['A A', 'B B', 'C C', 'D D', 'E E'] as const;
+
+export const NUMBER_SPECIMEN = {
+  initial: 48_211,
+  min: 10_000,
+  span: 90_000
+} as const;

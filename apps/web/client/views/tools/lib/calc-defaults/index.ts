@@ -1,3 +1,3 @@
 export { shellPriceValues, targetDefaults } from './calc-defaults';
 
-export type { ShellPriceValues, TargetValues } from './calc-defaults.types';
+export type { TargetValues } from './calc-defaults.types';

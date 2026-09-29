@@ -1,6 +1,6 @@
-import type { MARKDOWN_REHYPE_PLUGINS } from '../config';
+import type { MARKDOWN_PLUGINS } from '../config';
 
-export type MarkdownVariant = keyof typeof MARKDOWN_REHYPE_PLUGINS;
+type MarkdownVariant = keyof typeof MARKDOWN_PLUGINS.rehype;
 
 export type MarkdownProps = {
   children: string;

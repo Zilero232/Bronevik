@@ -1,5 +1,5 @@
-import type { SettingsField } from '@/entities/streamer/settings';
+import type { SettingsChoiceFieldInput } from '../../../../../model/hooks';
 
 export type SettingsChoiceFieldProps = {
-  field: Extract<SettingsField, { kind: 'boolean' | 'enum' }>;
+  field: SettingsChoiceFieldInput;
 };

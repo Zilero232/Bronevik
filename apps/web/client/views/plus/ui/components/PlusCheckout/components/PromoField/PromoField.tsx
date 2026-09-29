@@ -1,35 +1,21 @@
 'use client';
 
-import type { CheckoutInput } from '@otmetki/schemas';
-
 import { PROMO_CODE } from '@otmetki/schemas';
 import { useTranslations } from 'next-intl';
-import { useId } from 'react';
-import { useFormContext } from 'react-hook-form';
 
-import { usePlus } from '@/features/plus/plus-gate';
 import { Input } from '@/ui-kit';
 
-import { normalizePromoCode } from '../../../../../lib/promo-code';
+import { usePromoField } from '../../../../../model/hooks';
 
 import s from './PromoField.module.scss';
 
 export const PromoField = () => {
   const t = useTranslations('plus.checkout.promo');
-  const id = useId();
-  const { isSignedIn, isPlus, isCheckoutAvailable } = usePlus();
-  const {
-    register,
-    formState: { errors }
-  } = useFormContext<CheckoutInput>();
+  const { id, hintId, isShown, isInvalid, message, field } = usePromoField();
 
-  if (!isSignedIn || isPlus || !isCheckoutAvailable) {
+  if (!isShown) {
     return null;
   }
-
-  const error = errors.promoCode;
-
-  const message = error && (error.type === 'server' ? t('rejected') : t('invalid', { min: PROMO_CODE.minLength, max: PROMO_CODE.maxLength }));
 
   return (
     <div className={s.root}>
@@ -37,18 +23,18 @@ export const PromoField = () => {
         {t('label')}
       </label>
       <Input
-        aria-describedby={`${id}-hint`}
-        aria-invalid={Boolean(error)}
+        aria-describedby={hintId}
+        aria-invalid={isInvalid}
         autoComplete='off'
         id={id}
-        isInvalid={Boolean(error)}
+        isInvalid={isInvalid}
         maxLength={PROMO_CODE.maxLength}
         placeholder={t('placeholder')}
         spellCheck={false}
-        {...register('promoCode', { setValueAs: normalizePromoCode })}
+        {...field}
       />
-      <p className={s.hint} data-invalid={Boolean(error)} id={`${id}-hint`} role={error ? 'alert' : undefined}>
-        {message ?? t('hint')}
+      <p className={s.hint} data-invalid={isInvalid} id={hintId} role={isInvalid ? 'alert' : undefined}>
+        {message}
       </p>
     </div>
   );

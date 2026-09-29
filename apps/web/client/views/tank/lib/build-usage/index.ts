@@ -1,2 +1,2 @@
 export { orderCrew, shellKindKey } from './build-usage';
-export type { CrewRoleKey, OrderedCrewRole, ShellKindKey } from './build-usage.types';
+export type { OrderedCrewRole } from './build-usage.types';

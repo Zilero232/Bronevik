@@ -8,14 +8,14 @@ import { ROUTES } from '@/shared/constants';
 import { FORMATS, messages, TIME_ZONE } from '@/shared/i18n';
 import { OG_COLORS, OG_TONES } from '@/shared/seo/og';
 
-import type { ClanOgCardInput, EntityOgCardData, SiteOgCardInput, TankOgCardInput } from './entity-og-card.types';
+import type { ClanOgCardInput, DashInput, EntityOgCardData, SiteOgCardInput, TankOgCardInput } from './entity-og-card.types';
 
 const toolsOf = (locale: Locale) => ({
   t: createTranslator({ locale, messages: messages[locale] }),
   format: createFormatter({ locale, formats: FORMATS, timeZone: TIME_ZONE })
 });
 
-const dash = (value: number | null, render: (known: number) => string) => (value === null ? '—' : render(value));
+const dash = ({ value, render }: DashInput) => (value === null ? '—' : render(value));
 
 export const tankOgCard = ({ tank: { vehicle, serverStats }, kind, locale, host }: TankOgCardInput): EntityOgCardData => {
   const { t, format } = toolsOf(locale);
@@ -30,19 +30,19 @@ export const tankOgCard = ({ tank: { vehicle, serverStats }, kind, locale, host 
       {
         key: 'winRate',
         label: t('og.winRate'),
-        value: dash(stats?.winRate ?? null, (value) => format.number(value / 100, 'percent')),
+        value: dash({ value: stats?.winRate ?? null, render: (value) => format.number(value / 100, 'percent') }),
         color: OG_TONES[winRateTone(stats?.winRate ?? null)]
       },
       {
         key: 'avgDamage',
         label: t('og.avgDamage'),
-        value: dash(stats?.avgDamage ?? null, (value) => format.number(value, 'integer')),
+        value: dash({ value: stats?.avgDamage ?? null, render: (value) => format.number(value, 'integer') }),
         color: OG_COLORS.text
       },
       {
         key: 'players',
         label: t('og.players'),
-        value: dash(stats?.players ?? null, (value) => format.number(value, 'integer')),
+        value: dash({ value: stats?.players ?? null, render: (value) => format.number(value, 'integer') }),
         color: OG_COLORS.text
       }
     ],
@@ -62,13 +62,13 @@ export const clanOgCard = ({ page: { clan, stats }, locale, host }: ClanOgCardIn
       {
         key: 'wn8',
         label: 'WN8',
-        value: dash(stats.avgWn8.value, (value) => format.number(value, 'integer')),
+        value: dash({ value: stats.avgWn8.value, render: (value) => format.number(value, 'integer') }),
         color: OG_TONES[ratingValueTone(stats.avgWn8)]
       },
       {
         key: 'winRate',
         label: t('og.winRate'),
-        value: dash(stats.avgWinRate, (value) => format.number(value / 100, 'percent')),
+        value: dash({ value: stats.avgWinRate, render: (value) => format.number(value / 100, 'percent') }),
         color: OG_TONES[winRateTone(stats.avgWinRate)]
       },
       { key: 'members', label: t('og.members'), value: format.number(clan.membersCount, 'integer'), color: OG_COLORS.text }

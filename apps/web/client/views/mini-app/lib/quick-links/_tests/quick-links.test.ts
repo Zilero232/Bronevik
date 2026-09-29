@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { ROUTES } from '@/shared/constants';
 
-import { QUICK_LINKS } from '../../../config/quick-links.constants';
+import { QUICK_LINKS } from '../../../config';
 import { quickLinkTargets } from '../quick-links';
 
 describe('quickLinkTargets', () => {

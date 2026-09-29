@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useId } from 'react';
 
 import { KeyFigure } from '@/ui-kit';
 
@@ -10,11 +11,12 @@ import s from './HighlightStats.module.scss';
 
 export const HighlightStats = () => {
   const t = useTranslations('profile.overview.highlights');
+  const titleId = useId();
   const { items, hasStats } = useHighlightStats();
 
   return (
-    <section aria-labelledby='profile-highlights' className={s.root}>
-      <h2 className={s.title} id='profile-highlights'>
+    <section aria-labelledby={titleId} className={s.root}>
+      <h2 className={s.title} id={titleId}>
         {t('title')}
         {!hasStats && <span className={s.note}>{t('empty')}</span>}
       </h2>

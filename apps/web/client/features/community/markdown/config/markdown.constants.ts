@@ -6,12 +6,14 @@ import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 
 export const MARKDOWN = {
-  remarkPlugins: [remarkGfm],
   externalRel: 'noopener noreferrer nofollow',
   externalTarget: '_blank'
 } as const;
 
-export const MARKDOWN_REHYPE_PLUGINS = {
-  default: [rehypeSanitize],
-  article: [rehypeSanitize, rehypeSlug, [rehypeAutolinkHeadings, { behavior: 'wrap' }]]
-} satisfies Record<string, NonNullable<Options['rehypePlugins']>>;
+export const MARKDOWN_PLUGINS = {
+  remark: [remarkGfm],
+  rehype: {
+    default: [rehypeSanitize],
+    article: [rehypeSanitize, rehypeSlug, [rehypeAutolinkHeadings, { behavior: 'wrap' }]]
+  }
+} satisfies { remark: NonNullable<Options['remarkPlugins']>; rehype: Record<string, NonNullable<Options['rehypePlugins']>> };

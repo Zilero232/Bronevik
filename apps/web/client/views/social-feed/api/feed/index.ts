@@ -1,2 +1,2 @@
 export { getSocialFeed } from './feed';
-export type { SocialFeed, SocialFeedInput, SocialFeedItem, SocialFeedKind } from './feed.types';
+export type { SocialFeedItem, SocialFeedKind } from './feed.types';

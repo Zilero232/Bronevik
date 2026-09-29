@@ -1,4 +1,4 @@
-export type ObtainLink = {
+type ObtainLink = {
   key: string;
   title: string;
   href: string | undefined;

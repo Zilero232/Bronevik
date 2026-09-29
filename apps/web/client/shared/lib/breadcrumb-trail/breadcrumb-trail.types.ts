@@ -4,3 +4,8 @@ export type BreadcrumbTrailItem = {
   label: ReactNode;
   href?: string;
 };
+
+export type BreadcrumbCrumb = BreadcrumbTrailItem & {
+  key: string;
+  isCurrent: boolean;
+};

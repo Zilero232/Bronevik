@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-export type DrawerSide = 'bottom' | 'right';
+type DrawerSide = 'bottom' | 'right';
 
 export type DrawerProps = {
   open: boolean;

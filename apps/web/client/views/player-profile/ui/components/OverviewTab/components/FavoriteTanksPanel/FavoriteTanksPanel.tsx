@@ -1,6 +1,7 @@
 'use client';
 
 import { useFormatter, useTranslations } from 'next-intl';
+import { useId } from 'react';
 
 import { RatingValue, TankAwards } from '@/entities/player/stats';
 import { TankShowcaseCard, WinRateCell } from '@/entities/tank/tank';
@@ -15,11 +16,12 @@ export const FavoriteTanksPanel = () => {
   const t = useTranslations('profile.overview');
   const tCommon = useTranslations('common');
   const format = useFormatter();
+  const titleId = useId();
   const { query, rows } = useFavoriteTanks();
 
   return (
-    <section aria-labelledby='profile-favorites' className={s.root}>
-      <h2 className={s.title} id='profile-favorites'>
+    <section aria-labelledby={titleId} className={s.root}>
+      <h2 className={s.title} id={titleId}>
         {t('favoritesTitle')}
       </h2>
       <QueryState

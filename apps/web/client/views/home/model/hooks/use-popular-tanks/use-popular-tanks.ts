@@ -8,7 +8,7 @@ import { QUERY_KEYS } from '@/shared/constants';
 import { HOME } from '../../../config';
 
 export const usePopularTanks = () => {
-  const params = { period: HOME.period.server, sort: 'battles', order: 'desc', limit: HOME.garage.limit } as const;
+  const params = { period: HOME.period.server, sort: HOME.garage.sort, order: HOME.garage.order, limit: HOME.garage.limit };
 
   return useQuery({
     queryKey: QUERY_KEYS.tanks.stats(params),

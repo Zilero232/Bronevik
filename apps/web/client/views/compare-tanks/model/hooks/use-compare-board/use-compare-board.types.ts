@@ -4,7 +4,7 @@ export type BoardCell = Omit<CompareCell, 'value'> & {
   display: string;
 };
 
-export type BoardRow = {
+type BoardRow = {
   key: string;
   label: string;
   unit: string;

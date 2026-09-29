@@ -4,7 +4,7 @@ import { isIncludedIn, sortBy } from 'remeda';
 
 import type { CollectionVehiclesInput, MatchesCollectionInput, TankCollectionSlug } from './tank-collections.types';
 
-import { TANK_COLLECTION_SLUGS, TANK_COLLECTIONS } from '../../config/tank-collections.constants';
+import { TANK_COLLECTION_SLUGS, TANK_COLLECTIONS } from '../../config';
 
 export const isTankCollection = (slug: string): slug is TankCollectionSlug => isIncludedIn(slug, TANK_COLLECTION_SLUGS);
 

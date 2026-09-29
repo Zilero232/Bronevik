@@ -1,7 +1,6 @@
 export { BuildStage } from './BuildStage';
 export { CrewBand } from './CrewBand';
 export { EquipmentMatrix } from './EquipmentMatrix';
-export { FieldModPair } from './FieldModPair';
 export { FieldModRing } from './FieldModRing';
 export { ShellMix } from './ShellMix';
 export { ShowcaseActions } from './ShowcaseActions';

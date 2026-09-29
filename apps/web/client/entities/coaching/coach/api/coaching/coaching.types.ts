@@ -1,10 +1,8 @@
-import type { Coach, CoachingControllerListData, CoachingOrder, ReviewOrder } from '@/shared/api/generated';
+import type { Coach, CoachingControllerListData, ReviewOrder } from '@/shared/api/generated';
 
-export type { Coach, CoachingOrder, CoachingOrderList, CoachOffer, CoachPage, CreateOrder, ReviewOrder, UpsertCoach } from '@/shared/api/generated';
+export type { Coach, CoachingOrder, CoachingOrderList, CoachOffer, CoachPage, CreateOrder, UpsertCoach } from '@/shared/api/generated';
 
 export type CoachContacts = Coach['contacts'];
-
-export type CoachingOrderStatus = CoachingOrder['status'];
 
 export type ListCoachesInput = NonNullable<CoachingControllerListData['query']> & {
   signal?: AbortSignal;

@@ -12,7 +12,7 @@ import type { CommentFormOutput, CommentFormValues } from '../../../lib/comment-
 import type { UseCommentFormInput } from './use-comment-form.types';
 
 import { createComment } from '../../../api';
-import { COMMENT_FORM_DEFAULT_VALUES, COMMENT_MAX_LENGTH } from '../../../config';
+import { COMMENT_FORM } from '../../../config';
 import { commentFormSchema, toCreateComment } from '../../../lib/comment-form';
 import { useCommentsThreadContext } from '../../context';
 
@@ -22,7 +22,7 @@ export const useCommentForm = ({ parentId, onDone }: UseCommentFormInput = {}) =
   const { thread } = useCommentsThreadContext();
   const form = useForm<CommentFormValues, unknown, CommentFormOutput>({
     resolver: zodResolver(commentFormSchema),
-    defaultValues: COMMENT_FORM_DEFAULT_VALUES
+    defaultValues: COMMENT_FORM.defaultValues
   });
 
   const body = useWatch({ control: form.control, name: 'body' });
@@ -30,7 +30,7 @@ export const useCommentForm = ({ parentId, onDone }: UseCommentFormInput = {}) =
   const create = useMutation({
     mutationFn: createComment,
     onSuccess: () => {
-      form.reset(COMMENT_FORM_DEFAULT_VALUES);
+      form.reset(COMMENT_FORM.defaultValues);
       void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.comments(thread) });
       onDone?.();
     },
@@ -42,7 +42,7 @@ export const useCommentForm = ({ parentId, onDone }: UseCommentFormInput = {}) =
   return {
     form,
     length: body.length,
-    maxLength: COMMENT_MAX_LENGTH,
+    maxLength: COMMENT_FORM.maxLength,
     isPending: create.isPending,
     onSubmit
   };

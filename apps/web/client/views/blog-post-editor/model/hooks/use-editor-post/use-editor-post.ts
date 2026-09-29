@@ -12,7 +12,7 @@ export const useEditorPost = (id: string | undefined) => {
   const { viewerId, canEdit } = useBlogEditorAccess();
   const { data, isPending, isFetching, error, refetch } = useQuery({
     queryKey: QUERY_KEYS.blog.editor.post({ viewerId, id: id ?? '' }),
-    queryFn: ({ signal }) => getEditorPost(id ?? '', signal),
+    queryFn: ({ signal }) => getEditorPost({ id: id ?? '', signal }),
     enabled: id !== undefined && canEdit
   });
 

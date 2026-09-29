@@ -2,8 +2,6 @@ import { parseAsStringLiteral } from 'nuqs/server';
 
 export const CALCULATOR_IDS = ['research', 'target', 'moe', 'crew', 'economy', 'gold', 'pass', 'frontline', 'math'] as const;
 
-export type CalculatorId = (typeof CALCULATOR_IDS)[number];
-
 export const CALC_URL_PARSER = parseAsStringLiteral(CALCULATOR_IDS).withDefault('research');
 
 export const TOOLS_LAYOUT = {

@@ -9,14 +9,7 @@ import { z } from 'zod';
 import { PWA } from '../shared/config/pwa';
 import { sameOriginCaching } from '../shared/lib/same-origin-caching';
 
-declare global {
-  // eslint-disable-next-line ts/consistent-type-definitions -- declaration merging into the worker global scope needs an interface
-  interface WorkerGlobalScope extends SerwistGlobalConfig {
-    __SW_MANIFEST: (string | PrecacheEntry)[] | undefined;
-  }
-}
-
-declare const self: ServiceWorkerGlobalScope;
+declare const self: ServiceWorkerGlobalScope & SerwistGlobalConfig & { __SW_MANIFEST: (string | PrecacheEntry)[] | undefined };
 
 const pushPayloadSchema = z.object({
   title: z.string().min(1),

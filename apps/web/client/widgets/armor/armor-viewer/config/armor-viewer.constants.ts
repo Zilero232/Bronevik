@@ -65,8 +65,6 @@ export const ARMOR_COMPARE = {
   compactQuery: '(width < 900px)'
 } as const;
 
-export const IDLE_COMMAND = { preset: 'initial', nonce: 0 } as const;
-
 export const ARMOR_ZONES = {
   layers: ['hull', 'turret'],
   sides: {

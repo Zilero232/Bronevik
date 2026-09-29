@@ -1,2 +1,2 @@
-export { eventEntry, eventTimeline } from './event-timeline';
-export type { EventEntry, EventEntryInput, EventPhase, EventTimeline, EventTimelineInput } from './event-timeline.types';
+export { eventTimeline } from './event-timeline';
+export type { EventEntry, EventPhase } from './event-timeline.types';

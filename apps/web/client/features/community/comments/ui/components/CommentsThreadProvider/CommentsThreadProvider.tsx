@@ -1,6 +1,6 @@
 'use client';
 
-import type { CommentsThreadProviderProps } from '../../../model/context';
+import type { CommentsThreadProviderProps } from './CommentsThreadProvider.types';
 
 import { CommentsThreadContext } from '../../../model/context';
 

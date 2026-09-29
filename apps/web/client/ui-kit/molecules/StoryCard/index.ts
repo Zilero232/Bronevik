@@ -1,2 +1,2 @@
 export { StoryCard } from './StoryCard';
-export type { StoryCardProps, StoryCardTone, StoryCardVariant } from './StoryCard.types';
+export type { StoryCardTone, StoryCardVariant } from './StoryCard.types';

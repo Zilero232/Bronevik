@@ -1,73 +1,66 @@
-import { isNation, toRoman } from '@otmetki/icons';
 import { Command } from 'cmdk';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 import { ClanEmblem } from '@/entities/clan/clan';
-import { clanLabel } from '@/entities/player/player';
 import { TankImage, vehicleIdentity } from '@/entities/tank/tank';
-import { ROUTES } from '@/shared/constants';
-import { toneOfTier } from '@/shared/lib';
 
 import type { PaletteResultsProps } from './PaletteResults.types';
 
+import { usePaletteResults } from '../../../model/hooks';
 import { PaletteItem } from '../PaletteItem';
 
 import s from './PaletteResults.module.scss';
 
 export const PaletteResults = ({ results, onSelect }: PaletteResultsProps) => {
   const t = useTranslations('search');
-  const tGame = useTranslations('game');
-  const format = useFormatter();
-
-  const { players, tanks, clans } = results;
+  const { players, tanks, clans } = usePaletteResults(results);
 
   return (
     <>
       {players.length > 0 && (
         <Command.Group heading={t('players')}>
-          {players.map(({ accountId, nickname, clanTag, wn8: { value, tier } }) => (
+          {players.map(({ key, value, title, meta, rating, href }) => (
             <PaletteItem
-              key={accountId}
+              key={key}
               trailing={
-                value !== null &&
-                tier !== null && (
-                  <span className={s.rating} data-tone={toneOfTier(tier)}>
-                    {format.number(value)}
+                rating && (
+                  <span className={s.rating} data-tone={rating.tone}>
+                    {rating.text}
                   </span>
                 )
               }
-              meta={clanTag ? clanLabel({ tag: clanTag }) : t('noClan')}
-              title={nickname}
-              value={`player-${accountId}`}
-              onSelect={() => onSelect(ROUTES.players.profile(nickname))}
+              meta={meta}
+              title={title}
+              value={value}
+              onSelect={() => onSelect(href)}
             />
           ))}
         </Command.Group>
       )}
       {tanks.length > 0 && (
         <Command.Group heading={t('tanks')}>
-          {tanks.map(({ vehicle }) => (
+          {tanks.map(({ key, value, vehicle, title, meta, href }) => (
             <PaletteItem
-              key={vehicle.tankId}
+              key={key}
               icon={<TankImage isDecorative size='small' tank={vehicleIdentity(vehicle)} />}
-              meta={`${toRoman(vehicle.tier)} · ${tGame(`classes.${vehicle.type}`)} · ${isNation(vehicle.nation) ? tGame(`nations.${vehicle.nation}`) : vehicle.nation}`}
-              title={vehicle.name}
-              value={`tank-${vehicle.tankId}`}
-              onSelect={() => onSelect(ROUTES.tanks.detail(vehicle.slug))}
+              meta={meta}
+              title={title}
+              value={value}
+              onSelect={() => onSelect(href)}
             />
           ))}
         </Command.Group>
       )}
       {clans.length > 0 && (
         <Command.Group heading={t('clans')}>
-          {clans.map(({ clanId, tag, name, membersCount, emblem }) => (
+          {clans.map(({ key, value, tag, emblem, title, meta, href }) => (
             <PaletteItem
-              key={clanId}
+              key={key}
               icon={<ClanEmblem size='sm' src={emblem} tag={tag} />}
-              meta={t('members', { count: membersCount })}
-              title={clanLabel({ tag, name })}
-              value={`clan-${clanId}`}
-              onSelect={() => onSelect(ROUTES.clans.detail(tag))}
+              meta={meta}
+              title={title}
+              value={value}
+              onSelect={() => onSelect(href)}
             />
           ))}
         </Command.Group>

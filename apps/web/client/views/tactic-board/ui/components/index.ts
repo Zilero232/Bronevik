@@ -1,9 +1,3 @@
 export { BoardHeader } from './BoardHeader';
-export { BoardSettingsDialog } from './BoardSettingsDialog';
-export { BoardStatus } from './BoardStatus';
-export { BoardSurface } from './BoardSurface';
-export { BoardToolbar } from './BoardToolbar';
 export { BoardWorkspace } from './BoardWorkspace';
-export { LayersPanel } from './LayersPanel';
 export { SharePanel } from './SharePanel';
-export { TextDraft } from './TextDraft';

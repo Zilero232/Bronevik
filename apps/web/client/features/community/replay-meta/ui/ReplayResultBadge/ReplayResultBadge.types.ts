@@ -1,6 +1,6 @@
-import type { REPLAY_RESULT_TONE } from '../../config';
+import type { BattleResult } from '@otmetki/schemas';
 
 export type ReplayResultBadgeProps = {
-  result: keyof typeof REPLAY_RESULT_TONE | null;
+  result: BattleResult | null;
   className?: string;
 };

@@ -9,7 +9,7 @@ export type WebhookFormError = (typeof WEBHOOK_FORM.errors)[number];
 
 export type WebhookIdFields = Pick<WebhookFormValues, 'accountIds' | 'clanIds'>;
 
-export type WebhookIdField = (typeof WEBHOOK_FORM.idFields)[number];
+type WebhookIdField = (typeof WEBHOOK_FORM.idFields)[number];
 
 export type ReportIssueInput = {
   field: WebhookIdField;

@@ -3,9 +3,9 @@
 import { clsx } from 'clsx';
 import { Check, Copy } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { highlight } from 'sugar-high';
+import { Fragment } from 'react';
 
-import { useCopyFeedback } from '@/shared/lib';
+import { codeLines, useCopyFeedback } from '@/shared/lib';
 
 import type { CodeBlockProps } from './CodeBlock.types';
 
@@ -16,6 +16,7 @@ import s from './CodeBlock.module.scss';
 export const CodeBlock = ({ code, language, title, className }: CodeBlockProps) => {
   const t = useTranslations('common');
   const { copied, onCopyClick } = useCopyFeedback({ value: code });
+  const lines = codeLines(code);
 
   return (
     <figure className={clsx(s.root, className)}>
@@ -27,8 +28,20 @@ export const CodeBlock = ({ code, language, title, className }: CodeBlockProps) 
         </IconButton>
       </figcaption>
       <pre className={s.pre}>
-        {/* eslint-disable-next-line react/dom-no-dangerously-set-innerhtml -- sugar-high returns escaped markup for our own static samples */}
-        <code className={s.code} dangerouslySetInnerHTML={{ __html: highlight(code) }} />
+        <code className={s.code}>
+          {lines.map(({ key, isFirst, className: lineClassName, tokens }) => (
+            <Fragment key={key}>
+              {!isFirst && '\n'}
+              <span className={lineClassName}>
+                {tokens.map((token) => (
+                  <span key={token.key} className={token.className} style={token.style}>
+                    {token.value}
+                  </span>
+                ))}
+              </span>
+            </Fragment>
+          ))}
+        </code>
       </pre>
     </figure>
   );

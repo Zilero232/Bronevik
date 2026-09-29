@@ -1,7 +1,8 @@
 import type { PromoId } from '../../../config';
 import type { ResolvedPromo } from '../../../lib/resolve-promos';
+import type { PromoArtProps } from '../PromoArt';
 
-export type PromoCarouselVariant = 'hero' | 'tile';
+export type PromoCarouselVariant = PromoArtProps['variant'];
 
 export type PromoCarouselProps = {
   items: readonly ResolvedPromo<PromoId>[];

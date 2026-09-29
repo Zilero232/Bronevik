@@ -13,5 +13,4 @@ export {
   takenIds,
   toggleSkill
 } from './loadout-edit';
-export { MODULE_SLOTS, SLOT_SIZES } from './loadout-edit.constants';
-export type { FieldModSide, LoadoutSlotField, ModuleSelection } from './loadout-edit.types';
+export type { LoadoutSlotField } from './loadout-edit.types';

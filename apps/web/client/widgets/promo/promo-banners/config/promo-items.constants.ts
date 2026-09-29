@@ -5,7 +5,9 @@ import { ROUTES } from '@/shared/constants';
 
 import type { PromoSpec } from '../lib/resolve-promos';
 
-const MOD_SHOWCASE_HREF = `${ROUTES.mod}#showcase`;
+import { PROMO_ANCHOR } from './promo-anchor.constants';
+
+const MOD_SHOWCASE_HREF = `${ROUTES.mod}#${PROMO_ANCHOR.showcase}`;
 
 export const PROMO_ITEMS = {
   modpack: { href: ROUTES.mod, tone: 'accent', family: 'site', requires: 'modpack', art: { kind: 'mock', mock: 'manager' } },

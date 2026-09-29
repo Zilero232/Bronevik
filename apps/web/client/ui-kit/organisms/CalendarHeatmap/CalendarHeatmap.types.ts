@@ -4,7 +4,7 @@ import type { CalendarDay } from '@/shared/lib';
 
 export type HeatmapDay = CalendarDay;
 
-export type CalendarHeatmapLegend = {
+type CalendarHeatmapLegend = {
   less: ReactNode;
   more: ReactNode;
 };

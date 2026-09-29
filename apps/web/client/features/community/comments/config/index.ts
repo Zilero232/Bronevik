@@ -1,1 +1,1 @@
-export { COMMENT_FORM_DEFAULT_VALUES, COMMENT_MAX_LENGTH, COMMENTS_THREAD } from './comments.constants';
+export { COMMENT_FORM, COMMENTS_THREAD } from './comments.constants';

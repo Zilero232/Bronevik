@@ -1,5 +1,4 @@
 export { useAchievementsPage } from './use-achievements-page';
-export { useAchievementsParams } from './use-achievements-params';
 export { useCollectorColumns } from './use-collector-columns';
 export { useCollectors } from './use-collectors';
 export { useMedalColumns } from './use-medal-columns';

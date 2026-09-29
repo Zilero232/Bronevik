@@ -1,6 +1,6 @@
 import type { OverlayData } from '@/entities/streamer/streamer';
 
-export type FeedTransport = 'polling' | 'stream';
+type FeedTransport = 'polling' | 'stream';
 
 export type FeedState = {
   transport: FeedTransport;

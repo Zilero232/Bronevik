@@ -5,7 +5,7 @@ import type { Locale } from '@/shared/i18n';
 
 import type { PlayerOgLabels, SessionOgLabels, WrappedOgLabels } from '../og-labels';
 
-export type OgStats = Pick<StatsBlock, 'avgDamage' | 'battles' | 'broneIndex' | 'winRate' | 'wn8'>;
+type OgStats = Pick<StatsBlock, 'avgDamage' | 'battles' | 'broneIndex' | 'winRate' | 'wn8'>;
 
 export type PlayerOgMetricsInput = {
   stats: OgStats;

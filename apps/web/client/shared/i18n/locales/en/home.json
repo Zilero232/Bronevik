@@ -11,6 +11,7 @@
     "tracked": "Tracked players",
     "online": "Server online",
     "activeEstimate": "Active, last hour",
+    "estimatePrefix": "≈ ",
     "estimateHint": "Our estimate from tracked players",
     "empty": "Server figures will appear as soon as player statistics come in",
     "version": "Game version",
@@ -91,7 +92,7 @@
     "empty": "No players with enough battles",
     "metric": "Metric",
     "period": "last 7 days",
-    "rank": "Rank",
+    "rank": "Rank {rank}",
     "battles": "{count, plural, one {# battle} other {# battles}}"
   },
   "marks": {

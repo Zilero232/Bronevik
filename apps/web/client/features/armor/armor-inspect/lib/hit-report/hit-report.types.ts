@@ -1,4 +1,4 @@
-import type { ArmorShell, ArmorVerdict } from '@otmetki/gamedata';
+import type { ArmorShell, ArmorTrace, ArmorTraceLayer } from '@otmetki/gamedata';
 
 export type HitLayer = {
   piece: string;
@@ -15,23 +15,11 @@ export type DescribeHitInput = {
   randomness: number;
 };
 
-export type HitPlateReport = {
-  piece: string;
-  plate: string;
-  thickness: number;
-  flags: number;
-  angle: number;
-  effective: number;
-  overmatch: boolean;
-  ricochet: boolean;
-};
+type HitPlateReport = Omit<HitLayer, 'angle' | 'distance'> & Pick<ArmorTraceLayer, 'angle' | 'effective' | 'overmatch' | 'ricochet'>;
 
-export type HitReport = {
+export type HitReport = Pick<ArmorTrace, 'chance' | 'total' | 'verdict'> & {
   first: HitPlateReport;
   main: HitPlateReport | undefined;
-  total: number;
   penetration: number;
-  chance: number;
   layerCount: number;
-  verdict: ArmorVerdict;
 };

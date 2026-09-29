@@ -7,23 +7,17 @@ export type BuildOptionsInput = {
   signal?: AbortSignal;
 };
 
-export type CalculateLoadoutInput = {
-  tankId: number;
+export type CalculateLoadoutInput = BuildOptionsInput & {
   request: LoadoutRequest;
-  signal?: AbortSignal;
 };
 
-export type PopularBuildsInput = {
-  tankId: number;
+export type PopularBuildsInput = BuildOptionsInput & {
   limit?: number;
-  signal?: AbortSignal;
 };
 
-export type RecommendedBuildInput = {
-  tankId: number;
+export type RecommendedBuildInput = BuildOptionsInput & {
   mode: BuildMode;
   cohort: BuildCohort;
-  signal?: AbortSignal;
 };
 
 export type BuildHistoryInput = RecommendedBuildInput;

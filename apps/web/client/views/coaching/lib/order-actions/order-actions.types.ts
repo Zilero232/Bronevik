@@ -1,6 +1,6 @@
 import type { CoachingOrder } from '@/entities/coaching/coach';
 
-export type OrderRole = 'coach' | 'student';
+type OrderRole = 'coach' | 'student';
 
 export type OrderActionsInput = {
   order: Pick<CoachingOrder, 'coachUserId' | 'score' | 'status'>;

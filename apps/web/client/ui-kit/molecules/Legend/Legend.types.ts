@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 export type LegendTone = 'danger' | 'neutral' | 'success' | 'warning';
 
-export type LegendItem = {
+type LegendItem = {
   key: string;
   tone: LegendTone;
   label: ReactNode;

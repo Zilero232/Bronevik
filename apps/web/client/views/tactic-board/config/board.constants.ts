@@ -64,6 +64,8 @@ export const BOARD_ICON_BANDS = {
   marker: 0
 } as const satisfies Record<TacticIconKind, number>;
 
+export const BOARD_GLYPH = { markerSegments: 16 } as const;
+
 export const CANVAS_TOKENS = {
   background: '--color-surface-sunken',
   grid: '--color-border',

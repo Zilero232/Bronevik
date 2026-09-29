@@ -65,7 +65,7 @@ export const BlogPage = () => {
         }
         skeleton={
           <div className={s.grid}>
-            <Skeleton count={BLOG_PAGE.skeletons} height={320} shape='block' />
+            <Skeleton count={BLOG_PAGE.skeletons} height={BLOG_PAGE.skeletonHeight} shape='block' />
           </div>
         }
         errorDescription={t('error.description')}

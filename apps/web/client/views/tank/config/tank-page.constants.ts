@@ -34,6 +34,8 @@ export const HERO_FIGURES = ['winRate', 'avgDamage', 'mark3'] as const;
 
 export const TOP_METRICS = ['wn8', 'avgDamage', 'winRate'] as const;
 
+export const TOP_METRIC_FALLBACK = { tone: 'average' } as const;
+
 export const BREAKDOWN_COHORTS = ['beginner', 'average', 'good', 'elite'] as const;
 
 export const MASTERY_LEVELS = [

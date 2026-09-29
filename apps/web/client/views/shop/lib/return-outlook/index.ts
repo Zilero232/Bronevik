@@ -1,2 +1,2 @@
 export { returnOutlook } from './return-outlook';
-export type { ReturnOutlook, ReturnOutlookInput, ReturnOutlookState } from './return-outlook.types';
+export type { ReturnOutlook } from './return-outlook.types';

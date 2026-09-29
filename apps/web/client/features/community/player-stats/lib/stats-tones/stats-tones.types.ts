@@ -1,10 +1,7 @@
+import type { Coach } from '@/shared/api/generated';
 import type { RatingTone } from '@/shared/lib';
 
-export type CommunityPlayerStats = {
-  battles: number;
-  wn8: number | null;
-  winRate: number | null;
-};
+export type CommunityPlayerStats = NonNullable<Coach['stats']>;
 
 export type StatsTones = {
   wn8: RatingTone | null;

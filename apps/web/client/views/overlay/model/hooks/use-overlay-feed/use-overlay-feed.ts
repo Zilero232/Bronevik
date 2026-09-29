@@ -10,8 +10,8 @@ import { QUERY_KEYS } from '@/shared/constants';
 import type { UseOverlayFeedInput } from './use-overlay-feed.types';
 
 import { getOverlayData } from '../../../api';
-import { OVERLAY_FEED } from '../../../config';
-import { feedReducer, INITIAL_FEED_STATE } from '../../../lib/feed-state';
+import { INITIAL_FEED_STATE, OVERLAY_FEED } from '../../../config';
+import { feedReducer } from '../../../lib/feed-state';
 
 export const useOverlayFeed = ({ publicId, isEnabled }: UseOverlayFeedInput) => {
   const [{ transport, data: streamed }, dispatch] = useReducer(feedReducer, INITIAL_FEED_STATE);

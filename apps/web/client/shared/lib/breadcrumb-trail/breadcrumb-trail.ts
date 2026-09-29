@@ -1,6 +1,6 @@
 import type { JsonLdCrumb } from '@/shared/seo/json-ld';
 
-import type { BreadcrumbTrailItem } from './breadcrumb-trail.types';
+import type { BreadcrumbCrumb, BreadcrumbTrailItem } from './breadcrumb-trail.types';
 
 export const breadcrumbTrail = (items: readonly BreadcrumbTrailItem[]): JsonLdCrumb[] | null => {
   if (items.length < 2 || !items.every(({ label }) => typeof label === 'string')) {
@@ -9,3 +9,6 @@ export const breadcrumbTrail = (items: readonly BreadcrumbTrailItem[]): JsonLdCr
 
   return items.flatMap(({ label, href }, index) => (href || index === items.length - 1 ? [{ name: String(label), path: href }] : []));
 };
+
+export const breadcrumbCrumbs = (items: readonly BreadcrumbTrailItem[]): BreadcrumbCrumb[] =>
+  items.map((item, depth) => ({ ...item, key: item.href ?? String(depth), isCurrent: depth === items.length - 1 }));

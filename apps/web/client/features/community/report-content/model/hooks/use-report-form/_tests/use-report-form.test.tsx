@@ -15,7 +15,7 @@ import type { ContentReport } from '../../../../api';
 import type { ReportTarget } from '../../../../lib/report-form';
 
 import { createReport } from '../../../../api/moderation/moderation';
-import { REPORT_FORM_DEFAULT_VALUES, REPORT_REASONS } from '../../../../config';
+import { REPORT_FORM } from '../../../../config';
 import { useReportForm } from '../use-report-form';
 
 vi.hoisted(() => vi.resetModules());
@@ -81,7 +81,7 @@ describe('useReportForm', () => {
   it('offers every server reason with a translated label', () => {
     const { result } = setup(SESSION);
 
-    expect(result.current.reasons.map(({ value }) => value)).toEqual(REPORT_REASONS);
+    expect(result.current.reasons.map(({ value }) => value)).toEqual(REPORT_FORM.reasons);
     expect(result.current.reasons.find(({ value }) => value === 'spam')?.label).toBe(TEXT.reasons.spam);
   });
 
@@ -95,7 +95,7 @@ describe('useReportForm', () => {
     await waitFor(() => expect(toast.success).toHaveBeenCalledWith(TEXT.sent));
     expect(vi.mocked(createReport).mock.calls[0]?.[0]).toEqual({ ...TARGET, reason: 'cheating', details: 'aimbot' });
     expect(result.current.isOpen).toBe(false);
-    expect(result.current.form.getValues()).toEqual(REPORT_FORM_DEFAULT_VALUES);
+    expect(result.current.form.getValues()).toEqual(REPORT_FORM.defaultValues);
   });
 
   it('leaves out empty details', async () => {
@@ -130,7 +130,7 @@ describe('useReportForm', () => {
     act(() => result.current.onOpenChange(false));
 
     expect(result.current.isOpen).toBe(false);
-    expect(result.current.form.getValues()).toEqual(REPORT_FORM_DEFAULT_VALUES);
+    expect(result.current.form.getValues()).toEqual(REPORT_FORM.defaultValues);
     expect(result.current.detailsLength).toBe(0);
   });
 });

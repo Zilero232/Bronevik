@@ -6,11 +6,11 @@ import { articleJsonLd, breadcrumbJsonLd, clanJsonLd, itemListJsonLd, jsonLdText
 
 describe('jsonLdText', () => {
   it('escapes a closing script tag', () => {
-    expect(jsonLdText({ name: '</script>' })).not.toContain('</script>');
+    expect(jsonLdText({ '@context': 'https://schema.org', '@type': 'Thing', name: '</script>' })).not.toContain('</script>');
   });
 
   it('escapes every opening bracket and still parses back to the same data', () => {
-    const data = { name: '<b>a</b> < c' };
+    const data = { '@context': 'https://schema.org', '@type': 'Thing', name: '<b>a</b> < c' } as const;
     const text = jsonLdText(data);
 
     expect(text).not.toContain('<');
@@ -80,8 +80,10 @@ describe('itemListJsonLd', () => {
   it('numbers the items from one and links each to its absolute locale URL', () => {
     const data = itemListJsonLd({ name: 'Scouts', path: '/t/collections/scouts', items: [{ name: 'T-100 LT', path: '/t/t-100-lt' }], locale: 'en' });
 
-    expect(data.numberOfItems).toBe(1);
-    expect(data.itemListElement[0]).toMatchObject({ position: 1, name: 'T-100 LT', url: `${SITE.url}/en/t/t-100-lt` });
+    expect(data).toMatchObject({
+      numberOfItems: 1,
+      itemListElement: [{ position: 1, name: 'T-100 LT', url: `${SITE.url}/en/t/t-100-lt` }]
+    });
   });
 
   it('describes an empty collection as a list of zero items', () => {

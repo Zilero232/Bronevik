@@ -1,5 +1,5 @@
 export const APP_TOASTER = {
-  compactQuery: '(width < 640px)',
+  className: 'otmetki-toaster',
   gap: 10,
   mobileOffset: { top: 'calc(var(--header-offset) + 8px)' }
 } as const;

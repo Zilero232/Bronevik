@@ -78,6 +78,15 @@ export default eslint(
     }
   },
 
+  // Library typings (next-intl, TanStack, React) are extended only through interface merging.
+  {
+    name: 'otmetki/declarations',
+    files: ['**/*.d.ts'],
+    rules: {
+      'ts/consistent-type-definitions': 'off'
+    }
+  },
+
   // Sorting manifest keys is pure churn and fights the conventional field order.
   {
     name: 'otmetki/manifests',
@@ -123,6 +132,17 @@ export default eslint(
           message: 'Gameface has no radio, range or checkbox input: use shared/ui/segmented, shared/ui/toggle or a stepper.'
         }
       ]
+    }
+  },
+
+  // A scrollable region (role='region' with an accessible name) must take focus so
+  // keyboard users can scroll it (WCAG 2.1.1, axe `scrollable-region-focusable`).
+  // The first entry repeats the rule's default list, which options replace.
+  {
+    name: 'otmetki/scrollable-regions',
+    files: ['apps/web/client/**/*.tsx'],
+    rules: {
+      'siberiacancode-jsx-a11y/no-noninteractive-tabindex': ['error', { tags: [], roles: ['tabpanel', 'region'], allowExpressionValues: true }]
     }
   },
 

@@ -25,7 +25,6 @@ import {
   tanksControllerTrend,
   vehiclesControllerList
 } from '@/shared/api/generated';
-import { listParam } from '@/shared/api/http';
 import { fromSdk } from '@/shared/api/source';
 
 import type {
@@ -42,48 +41,14 @@ import type {
   VehicleCatalogInput
 } from './tanks.types';
 
+import { vehicleFilterQuery } from '../../lib/vehicle-filter-query';
 import { TANK_REQUEST } from './tanks.constants';
 
-export const listTankStats = ({ signal, tiers, types, nations, statuses, roles, difficulties, ...query }: TankStatsInput): Promise<TankStatsPage> =>
-  fromSdk(() =>
-    tanksControllerList({
-      query: {
-        ...query,
-        tiers: listParam(tiers),
-        types: listParam(types),
-        nations: listParam(nations),
-        statuses: listParam(statuses),
-        roles: listParam(roles),
-        difficulties: listParam(difficulties)
-      },
-      signal
-    })
-  );
+export const listTankStats = ({ signal, ...query }: TankStatsInput): Promise<TankStatsPage> =>
+  fromSdk(() => tanksControllerList({ query: vehicleFilterQuery(query), signal }));
 
-export const listTankEconomy = ({
-  signal,
-  tiers,
-  types,
-  nations,
-  statuses,
-  roles,
-  difficulties,
-  ...query
-}: TankEconomyTableInput): Promise<TankEconomyPage> =>
-  fromSdk(() =>
-    tanksControllerEconomyTable({
-      query: {
-        ...query,
-        tiers: listParam(tiers),
-        types: listParam(types),
-        nations: listParam(nations),
-        statuses: listParam(statuses),
-        roles: listParam(roles),
-        difficulties: listParam(difficulties)
-      },
-      signal
-    })
-  );
+export const listTankEconomy = ({ signal, ...query }: TankEconomyTableInput): Promise<TankEconomyPage> =>
+  fromSdk(() => tanksControllerEconomyTable({ query: vehicleFilterQuery(query), signal }));
 
 export const getTankEconomy = ({ signal, tankId }: TankEconomyInput): Promise<TankEconomy> =>
   fromSdk(() => tanksControllerTankEconomy({ path: { id: tankId }, signal }));

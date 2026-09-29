@@ -4,7 +4,7 @@ import type { MINI_APP_PLATFORMS } from '../../config';
 
 export type MiniAppPlatform = (typeof MINI_APP_PLATFORMS)[number];
 
-export type MiniAppEnv = 'browser' | 'detecting' | 'inside';
+type MiniAppEnv = 'browser' | 'detecting' | 'inside';
 
 export type MiniAppLaunch = {
   env: MiniAppEnv;

@@ -11,15 +11,4 @@ export {
   listTankStats,
   listVehicles
 } from './tanks';
-export type {
-  MyEconomyInput,
-  MyLearningInput,
-  TankDetailInput,
-  TankEconomyInput,
-  TankEconomyTableInput,
-  TankPatchesInput,
-  TankStatsInput,
-  TankTopPlayersInput,
-  TankTrendInput,
-  TierListInput
-} from './tanks.types';
+export type { TankDetailInput, TankEconomyTableInput, TankStatsInput, TierListInput } from './tanks.types';

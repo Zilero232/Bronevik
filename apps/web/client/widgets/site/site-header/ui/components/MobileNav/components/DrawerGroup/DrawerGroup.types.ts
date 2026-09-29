@@ -1,6 +1,6 @@
 import type { SiteNavIcon } from '@/shared/constants';
 
-export type DrawerGroupLink = {
+type DrawerGroupLink = {
   key: string;
   href: string;
   icon: SiteNavIcon;

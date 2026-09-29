@@ -7,8 +7,9 @@ import { useTranslations } from 'next-intl';
 
 import type { TableColumn } from '@/ui-kit';
 
+import { RelativeTime } from '@/ui-kit';
+
 import { DeliveryStatusCell, EventCell } from '../../../ui/components/DeliveriesLog/components';
-import { TimeAgo } from '../../../ui/components/TimeAgo';
 
 const column = createColumnHelper<WebhookDelivery>();
 
@@ -24,8 +25,16 @@ export const useDeliveriesLogColumns = (): TableColumn<WebhookDelivery>[] => {
       cell: ({ getValue }) => getValue() ?? '—',
       meta: { align: 'end', isNumeric: true, hideBelow: 'sm' }
     }),
-    column.accessor('createdAt', { header: t('created'), cell: ({ getValue }) => <TimeAgo value={getValue()} /> }),
-    column.accessor('deliveredAt', { header: t('delivered'), cell: ({ getValue }) => <TimeAgo value={getValue()} />, meta: { hideBelow: 'lg' } }),
-    column.accessor('nextAttemptAt', { header: t('nextAttempt'), cell: ({ getValue }) => <TimeAgo value={getValue()} />, meta: { hideBelow: 'lg' } })
+    column.accessor('createdAt', { header: t('created'), cell: ({ getValue }) => <RelativeTime value={getValue()} /> }),
+    column.accessor('deliveredAt', {
+      header: t('delivered'),
+      cell: ({ getValue }) => <RelativeTime value={getValue()} />,
+      meta: { hideBelow: 'lg' }
+    }),
+    column.accessor('nextAttemptAt', {
+      header: t('nextAttempt'),
+      cell: ({ getValue }) => <RelativeTime value={getValue()} />,
+      meta: { hideBelow: 'lg' }
+    })
   ];
 };

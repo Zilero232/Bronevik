@@ -1,2 +1,2 @@
-export { queueHeat, waitTone } from './queue-heat';
-export type { QueueHeat, QueueHeatCell, QueueHeatRow } from './queue-heat';
+export { queueHeat } from './queue-heat';
+export type { QueueHeat } from './queue-heat';

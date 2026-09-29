@@ -6,7 +6,7 @@ import { streamersControllerCompareSettings } from '@/shared/api/generated';
 import { fromSdk } from '@/shared/api/source';
 import { QUERY_KEYS } from '@/shared/constants';
 
-export const compareStreamerSettings = (slugs: readonly string[]): Promise<StreamerSettingsView[]> =>
+const compareStreamerSettings = (slugs: readonly string[]): Promise<StreamerSettingsView[]> =>
   fromSdk(() => streamersControllerCompareSettings({ query: { slugs: slugs.join(',') } }));
 
 export const settingsCompareQueries = {

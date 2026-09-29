@@ -2,9 +2,9 @@ import type { PlayerTankRow } from '@otmetki/schemas';
 
 import { firstBy, sumBy } from 'remeda';
 
-import type { FavoriteKinds, FavoriteShare } from './favorite-kinds.types';
+import type { FavoriteKinds, FavoriteShare, TopShareInput } from './favorite-kinds.types';
 
-const topShare = <T>(rows: readonly PlayerTankRow[], key: (row: PlayerTankRow) => T): FavoriteShare<T> | null => {
+const topShare = <T>({ rows, key }: TopShareInput<T>): FavoriteShare<T> | null => {
   const total = sumBy(rows, ({ battles }) => battles);
   const totals = new Map<T, number>();
 
@@ -19,6 +19,6 @@ const topShare = <T>(rows: readonly PlayerTankRow[], key: (row: PlayerTankRow) =
 };
 
 export const favoriteKinds = (rows: readonly PlayerTankRow[]): FavoriteKinds => ({
-  nation: topShare(rows, ({ vehicle }) => vehicle.nation),
-  tankClass: topShare(rows, ({ vehicle }) => vehicle.type)
+  nation: topShare({ rows, key: ({ vehicle }) => vehicle.nation }),
+  tankClass: topShare({ rows, key: ({ vehicle }) => vehicle.type })
 });

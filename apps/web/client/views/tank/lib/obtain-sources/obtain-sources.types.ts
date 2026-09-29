@@ -8,7 +8,7 @@ export type ObtainMission = {
   isCampaignReward: boolean;
 };
 
-export type ObtainEditorialEvent = {
+type ObtainEditorialEvent = {
   title: string;
   href: string | undefined;
 };

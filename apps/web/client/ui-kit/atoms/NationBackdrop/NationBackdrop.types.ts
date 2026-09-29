@@ -1,4 +1,4 @@
-export type NationBackdropFade = 'left' | 'radial';
+type NationBackdropFade = 'left' | 'radial';
 
 export type NationBackdropProps = {
   nation: string;

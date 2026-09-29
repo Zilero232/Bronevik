@@ -10,6 +10,7 @@ export const TWITCH_PANEL = {
     'battles',
     'winRate',
     'avgDamage',
+    'wn8',
     'marks',
     'closest',
     'noMarks',

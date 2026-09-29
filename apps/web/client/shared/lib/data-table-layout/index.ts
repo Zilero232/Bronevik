@@ -1,2 +1,2 @@
 export { dataTableLayout } from './data-table-layout';
-export type { DataTableLayout, DataTableLayoutInput } from './data-table-layout.types';
+export { DATA_TABLE_LAYOUT } from './data-table-layout.constants';

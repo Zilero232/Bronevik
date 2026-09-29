@@ -1,4 +1,10 @@
+import type { Graph, Thing, WithContext } from 'schema-dts';
+
 import type { Locale } from '@/shared/i18n';
+
+type JsonLdDocument = WithContext<Thing>;
+
+export type JsonLdData = Graph | JsonLdDocument | readonly JsonLdDocument[];
 
 export type JsonLdCrumb = {
   name: string;

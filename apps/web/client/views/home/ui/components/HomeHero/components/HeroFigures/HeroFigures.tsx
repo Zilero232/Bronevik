@@ -37,7 +37,7 @@ export const HeroFigures = () => {
               icon={<HOME_FIGURES.tracked.icon size={HOME_ICON.figure} />}
               label={t('tracked')}
               tone={HOME_FIGURES.tracked.tone}
-              trend={status.activity.length > 0 ? status.activity : undefined}
+              trend={status.trend}
               value={status.trackedPlayers}
               variant='tile'
             />
@@ -47,7 +47,7 @@ export const HeroFigures = () => {
                 hint={t('estimateHint')}
                 icon={<HOME_FIGURES.online.icon size={HOME_ICON.figure} />}
                 label={t('activeEstimate')}
-                prefix='≈ '
+                prefix={t('estimatePrefix')}
                 tone={HOME_FIGURES.online.tone}
                 value={status.activePlayers}
                 variant='tile'
@@ -58,7 +58,7 @@ export const HeroFigures = () => {
                 icon={<HOME_FIGURES.online.icon size={HOME_ICON.figure} />}
                 label={t('online')}
                 tone={HOME_FIGURES.online.tone}
-                trend={status.activity.length > 0 ? status.activity : undefined}
+                trend={status.trend}
                 value={status.online}
                 variant='tile'
               />

@@ -36,7 +36,6 @@ export const CompareBoard = () => {
       {(vehicles) => (
         <section className={s.root}>
           {vehicles.length < COMPARE.minItems && <p className={s.hint}>{t('addMore')}</p>}
-          {/* eslint-disable-next-line siberiacancode-jsx-a11y/no-noninteractive-tabindex -- a scrollable region must take focus so keyboard users can scroll it */}
           <div aria-label={t('label')} className={s.scroller} role='region' tabIndex={0}>
             <table className={s.table}>
               <thead>

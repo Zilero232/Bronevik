@@ -1,2 +1,2 @@
-export { decodePreviewConfig, encodePreviewConfig, mergePreviewConfig } from './preview-config';
-export type { MergePreviewConfigInput, OverlayConfigPatch } from './preview-config.types';
+export { decodePreviewConfig, mergePreviewConfig } from './preview-config';
+export type { OverlayConfigPatch } from './preview-config.types';

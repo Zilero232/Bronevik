@@ -1,6 +1,6 @@
 import type { VehicleCatalogItem, VehicleFilter } from '@otmetki/schemas';
 
-import type { TANK_COLLECTION_SLUGS } from '../../config/tank-collections.constants';
+import type { TANK_COLLECTION_SLUGS } from '../../config';
 
 type ListCriteria = { [K in 'roles' | 'statuses' | 'tiers' | 'types']?: readonly NonNullable<VehicleFilter[K]>[number][] };
 

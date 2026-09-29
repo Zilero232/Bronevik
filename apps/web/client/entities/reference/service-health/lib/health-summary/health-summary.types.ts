@@ -4,7 +4,7 @@ import type { ServiceStatusValue } from '@/ui-kit';
 
 import type { HEALTH_COMPONENTS } from '../../config';
 
-export type HealthComponent = (typeof HEALTH_COMPONENTS)[number];
+type HealthComponent = (typeof HEALTH_COMPONENTS)[number];
 
 export type HealthVerdict = 'degraded' | 'down' | 'noLestaKey' | 'ok' | 'unknown' | 'unreachable';
 

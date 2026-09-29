@@ -1,2 +1,2 @@
 export { modelBounds, sceneParts } from './scene-parts';
-export type { ModelBounds, ScenePart, ScenePartsInput } from './scene-parts.types';
+export type { ModelBounds, ScenePart } from './scene-parts.types';

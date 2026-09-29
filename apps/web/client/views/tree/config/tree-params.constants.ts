@@ -1,7 +1,7 @@
 import { NATIONS } from '@otmetki/icons';
 import { parseAsInteger, parseAsStringLiteral } from 'nuqs/server';
 
-export const TREE_DEFAULTS = {
+const TREE_DEFAULTS = {
   nation: 'ussr'
 } as const;
 

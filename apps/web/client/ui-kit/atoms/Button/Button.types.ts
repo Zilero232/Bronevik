@@ -6,8 +6,5 @@ import type { buttonVariants } from './Button.variants';
 export type ButtonVariantProps = VariantProps<typeof buttonVariants>;
 
 export type ButtonProps = ComponentProps<'button'> & {
-  variant?: NonNullable<ButtonVariantProps['variant']>;
-  size?: NonNullable<ButtonVariantProps['size']>;
-  block?: boolean;
-  shine?: boolean;
+  [Key in keyof ButtonVariantProps]?: NonNullable<ButtonVariantProps[Key]>;
 };

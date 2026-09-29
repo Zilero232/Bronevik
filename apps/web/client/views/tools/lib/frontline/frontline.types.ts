@@ -9,7 +9,7 @@ export type FrontlinePlanInput = {
   battlesPerDay: number;
 };
 
-export type FrontlineNextReserve = {
+type FrontlineNextReserve = {
   reserve: FrontlineReserve;
   level: number;
   battles: number | null;

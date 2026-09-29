@@ -7,9 +7,9 @@ import type { ARMOR_ZONES } from '../../config';
 import type { RayHit } from '../ray-layers';
 import type { ScenePart } from '../scene-parts';
 
-export type ZoneLayer = (typeof ARMOR_ZONES.layers)[number];
+type ZoneLayer = (typeof ARMOR_ZONES.layers)[number];
 
-export type ZoneSide = keyof typeof ARMOR_ZONES.sides;
+type ZoneSide = keyof typeof ARMOR_ZONES.sides;
 
 export type ZoneHits = {
   layer: ZoneLayer;

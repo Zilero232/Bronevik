@@ -2,7 +2,7 @@ import type { ChallengeCondition, ChallengeMetric, VehicleType } from '@otmetki/
 
 export type SentenceLead = 'avg' | 'each' | 'single' | 'sum';
 
-export type SentenceKey =
+type SentenceKey =
   | 'filter.tank'
   | 'filter.tier'
   | `filter.type.${VehicleType}`

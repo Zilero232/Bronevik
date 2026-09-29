@@ -1,11 +1,13 @@
 import type { z } from 'zod';
 
+import type { CreateRecruiting } from '@/shared/api/generated';
+
 import type { REQUIREMENT_KEYS } from '../../config';
 import type { requirementsFormSchema } from './requirements.schemas';
 
-export type RequirementKey = (typeof REQUIREMENT_KEYS)[number];
+export type StatRequirements = NonNullable<CreateRecruiting['requirements']>;
 
-export type StatRequirements = Partial<Record<RequirementKey, number>>;
+type RequirementKey = (typeof REQUIREMENT_KEYS)[number];
 
 export type RequirementEntry = {
   key: RequirementKey;

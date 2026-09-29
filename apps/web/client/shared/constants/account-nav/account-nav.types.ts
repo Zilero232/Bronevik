@@ -1,6 +1,6 @@
 import type { SiteNavIcon } from '../site-nav';
 
-export type AccountNavLink = {
+type AccountNavLink = {
   key: string;
   href: string;
   icon: SiteNavIcon;

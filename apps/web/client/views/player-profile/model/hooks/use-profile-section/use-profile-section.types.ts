@@ -1,6 +1,6 @@
 import type { PlayerSection } from '@/shared/constants';
 
-export type SectionFetchInput = {
+type SectionFetchInput = {
   accountId: number;
   signal: AbortSignal;
 };

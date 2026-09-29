@@ -1,3 +1,7 @@
-import type { GuessCellProps } from '../../../ui/components/GuessCell/GuessCell.types';
+import type { CellHint } from '../../../lib/compare-guess';
 
-export type UseGuessCellInput = Pick<GuessCellProps, 'hint' | 'label' | 'text'>;
+export type UseGuessCellInput = {
+  hint: CellHint;
+  label: string;
+  text: string;
+};

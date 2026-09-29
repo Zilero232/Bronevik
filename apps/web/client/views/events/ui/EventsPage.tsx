@@ -18,8 +18,7 @@ import {
   ToggleChips
 } from '@/ui-kit';
 
-import { EVENTS_FEED } from '../api';
-import { EVENTS } from '../config';
+import { EVENTS, EVENTS_FEED } from '../config';
 import { useEventCalendar } from '../model/hooks';
 import { EventsNow, EventsPast, EventsUpcoming } from './components';
 

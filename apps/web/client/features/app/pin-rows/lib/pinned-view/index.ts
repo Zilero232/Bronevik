@@ -1,2 +1,2 @@
 export { pinnedView } from './pinned-view';
-export type { PinnedView, PinnedViewInput } from './pinned-view.types';
+export type { PinnedView } from './pinned-view.types';

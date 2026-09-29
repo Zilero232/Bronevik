@@ -13,7 +13,7 @@ import type {
   ToModuleInput
 } from './build-catalog.types';
 
-import { BUILD_CATALOG, BUILD_CATEGORIES, CREW_ROLE_ORDER } from './build-catalog.constants';
+import { BUILD_CATALOG, BUILD_CATEGORIES, CREW_ROLE_ORDER } from '../../config';
 
 const CATEGORIES: ReadonlySet<string> = new Set(BUILD_CATEGORIES);
 

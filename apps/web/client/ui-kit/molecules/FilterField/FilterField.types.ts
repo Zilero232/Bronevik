@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-export type FilterFieldSize = 'auto' | 'grow' | 'lg' | 'md' | 'sm';
+type FilterFieldSize = 'auto' | 'grow' | 'lg' | 'md' | 'sm';
 
 export type FilterFieldProps = {
   label: ReactNode;

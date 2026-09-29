@@ -1,30 +1,11 @@
-import { rowActivation } from '@/shared/lib';
-
 import type { DataTableRowsProps } from './DataTableRows.types';
 
-import { DataTableCells } from '../DataTableCells';
+import { DataTableRow } from '../DataTableRow';
 
-import s from '../../DataTable.module.scss';
-
-export const DataTableRows = <T,>({ rows, barMax, onRowClick, rowTint, getRowClass, getRowLink }: DataTableRowsProps<T>) => (
+export const DataTableRows = <T,>({ rows, ...rowProps }: DataTableRowsProps<T>) => (
   <tbody>
-    {rows.map((row, index) => {
-      const link = getRowLink?.(row.original) ?? null;
-
-      return (
-        <tr
-          key={row.id}
-          className={s.row}
-          data-class={getRowClass?.(row.original) ?? undefined}
-          data-clickable={Boolean(onRowClick) || link !== null}
-          data-linked={link !== null}
-          data-stripe={index % 2 === 1 || undefined}
-          data-tint={rowTint?.(row.original) ?? undefined}
-          {...rowActivation({ onActivate: onRowClick && (() => onRowClick(row.original)), isLinked: link !== null })}
-        >
-          <DataTableCells barMax={barMax} link={link} row={row} />
-        </tr>
-      );
-    })}
+    {rows.map((row, index) => (
+      <DataTableRow key={row.id} {...rowProps} index={index} row={row} />
+    ))}
   </tbody>
 );

@@ -3,7 +3,7 @@ export type BoardGridInput = {
   rows: readonly string[];
 };
 
-export type BoardGridLabel = {
+type BoardGridLabel = {
   label: string;
   offset: number;
 };

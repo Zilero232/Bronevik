@@ -131,6 +131,7 @@
       "coverRemove": "Убрать",
       "coverFailed": "Не удалось загрузить изображение",
       "coverUrl": "Или ссылка на изображение",
+      "coverUrlPlaceholder": "https://",
       "coverUrlHint": "Только https.",
       "slug": "Адрес статьи",
       "slugPlaceholder": "patch-1-45",

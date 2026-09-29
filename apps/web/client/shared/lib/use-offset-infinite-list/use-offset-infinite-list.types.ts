@@ -2,7 +2,7 @@ import type { QueryKey } from '@tanstack/react-query';
 
 import type { useOffsetInfiniteList } from './use-offset-infinite-list';
 
-export type OffsetListPage<TItem> = {
+type OffsetListPage<TItem> = {
   items: TItem[];
   total: number;
   offset: number;

@@ -387,6 +387,7 @@
     "battles": "Battles",
     "winRate": "Wins",
     "avgDamage": "Avg damage",
+    "wn8": "WN8",
     "marks": "Marks",
     "closest": "Closest to the next mark",
     "noMarks": "Mark progress shows up with the companion mod.",

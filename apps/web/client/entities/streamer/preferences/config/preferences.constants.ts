@@ -55,6 +55,8 @@ export const PREFERENCES_TAGS = {
   ]
 } as const;
 
+export const PREFERENCES_BLOCKED_TAGS: ReadonlySet<string> = new Set(PREFERENCES_TAGS.blocked.map((tag) => tag.toLowerCase()));
+
 export const PREFERENCES_VALUES = {
   number: /^-?\d{1,6}(\.\d{1,8})?$/u,
   truthy: ['true', '1'],

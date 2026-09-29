@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useId } from 'react';
 
 import { TankSlot } from '@/entities/tank/tank';
 import { ROUTES } from '@/shared/constants';
@@ -13,16 +14,17 @@ import s from './GarageStrip.module.scss';
 
 export const GarageStrip = () => {
   const t = useTranslations('home.garage');
+  const titleId = useId();
   const query = usePopularTanks();
 
   return (
-    <section aria-labelledby='home-garage' className={s.root}>
-      <SectionHeader id='home-garage' meta={t('period')} more={{ href: ROUTES.tanks.list, label: t('all') }} title={t('title')} variant='display' />
+    <section aria-labelledby={titleId} className={s.root}>
+      <SectionHeader id={titleId} meta={t('period')} more={{ href: ROUTES.tanks.list, label: t('all') }} title={t('title')} variant='display' />
       <QueryState
         isCompact
         skeleton={
           <div className={s.strip}>
-            <Skeleton className={s.skeleton} count={HOME.garage.skeletons} height={128} shape='block' />
+            <Skeleton className={s.skeleton} count={HOME.garage.skeletons} height={HOME.garage.skeletonHeight} shape='block' />
           </div>
         }
         empty={<EmptyState isCompact isFramed title={t('empty')} />}

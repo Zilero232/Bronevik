@@ -6,7 +6,7 @@ import type { SocialFeedKind } from '../api';
 
 export const FEED_DAYS = ['7', '14', '30'] as const;
 
-export const FEED_KINDS = ['mark', 'mastery', 'record', 'badge'] as const satisfies readonly SocialFeedKind[];
+const FEED_KINDS = ['mark', 'mastery', 'record', 'badge'] as const satisfies readonly SocialFeedKind[];
 
 export const FEED_FILTERS = ['all', ...FEED_KINDS] as const;
 

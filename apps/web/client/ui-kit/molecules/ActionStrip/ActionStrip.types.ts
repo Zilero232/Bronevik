@@ -2,7 +2,7 @@ import type { ComponentProps, ReactNode } from 'react';
 
 import type { ProgressTone } from '../../atoms';
 
-export type ActionStripLink = {
+type ActionStripLink = {
   id: string;
   href: string;
   label: string;

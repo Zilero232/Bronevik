@@ -1,7 +1,6 @@
 import { ratingTone } from '@/shared/lib';
 
-import type { CompareMetric } from '../../model/compare.types';
-import type { CompareRow, CompareRowsInput, DisplayValueInput } from './compare-rows.types';
+import type { CompareMetric, CompareRow, CompareRowsInput, DisplayValueInput } from './compare-rows.types';
 
 import { COMPARE_METRICS } from '../../config';
 import { bestIndices, deltasToBest } from '../compare-math';

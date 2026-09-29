@@ -1,2 +1,2 @@
 export { isSettledStatus, validateReplayFile } from './upload-validation';
-export type { ReplayFileProblem, ReplayFileRules } from './upload-validation.types';
+export type { ReplayFileProblem } from './upload-validation.types';

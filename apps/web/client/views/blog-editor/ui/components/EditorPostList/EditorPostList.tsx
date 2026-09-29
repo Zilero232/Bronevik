@@ -35,7 +35,7 @@ export const EditorPostList = () => {
       errorTitle={t('errorTitle')}
       isEmpty={(posts) => posts.length === 0}
       query={query}
-      skeleton={<Skeleton count={BLOG_EDITOR.skeletons} height={72} shape='block' />}
+      skeleton={<Skeleton count={BLOG_EDITOR.skeletons} height={BLOG_EDITOR.skeletonHeight} shape='block' />}
     >
       {(posts) => (
         <ul className={s.root}>

@@ -58,8 +58,8 @@ describe('equipmentMatrix', () => {
   it('ranks device families across slots and swaps the weakest for the alternative', () => {
     const [standard] = equipmentMatrix({ usage: usage(), devices: DEVICES, slots: 3 });
 
-    expect(standard?.primary.map((tile) => tile?.id)).toEqual([RAMMER.id, VENTS.id, OPTICS.id]);
-    expect(standard?.alternative?.map((tile) => tile?.id)).toEqual([RAMMER.id, VENTS.id, TURBO.id]);
+    expect(standard?.primary.map(({ tile }) => tile?.id)).toEqual([RAMMER.id, VENTS.id, OPTICS.id]);
+    expect(standard?.alternative?.map(({ tile }) => tile?.id)).toEqual([RAMMER.id, VENTS.id, TURBO.id]);
   });
 
   it('maps each family to the variant of its column and drops columns with no variants', () => {
@@ -67,13 +67,13 @@ describe('equipmentMatrix', () => {
     const trophy = columns.find(({ category }) => category === 'trophy');
 
     expect(columns.map(({ category }) => category)).toEqual(['standard', 'trophy']);
-    expect(trophy?.primary.map((tile) => tile?.id ?? null)).toEqual([RAMMER_TROPHY.id, VENTS_TROPHY.id, null]);
+    expect(trophy?.primary.map(({ tile }) => tile?.id ?? null)).toEqual([RAMMER_TROPHY.id, VENTS_TROPHY.id, null]);
   });
 
   it('adds up the share of an option over every slot it was put in', () => {
     const [standard] = equipmentMatrix({ usage: usage(), devices: DEVICES, slots: 3 });
 
-    expect(standard?.primary[0]?.share).toBeCloseTo(0.7);
+    expect(standard?.primary[0]?.tile?.share).toBeCloseTo(0.7);
     expect(standard?.directive?.id).toBe(DIRECTIVE.id);
     expect(standard?.directiveAlternative).toBeNull();
   });

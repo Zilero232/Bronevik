@@ -28,7 +28,7 @@ export const useServerStatus = () => {
     activePlayers: pulse?.activePlayers ?? null,
     trackedPlayers,
     updatedAt: pulse?.computedAt ?? null,
-    activity: activity.length > 1 ? activity : [],
+    trend: activity.length > 1 ? activity : undefined,
     isRetrying: isRefetching,
     retry: () => void refetch()
   };

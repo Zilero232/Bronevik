@@ -1,3 +1,3 @@
 export { toEventFormValues, toNewWorkspaceEvent } from './event-form';
-export { eventFormFieldsSchema, eventFormSchema } from './event-form.schemas';
-export type { EventFormFields, EventFormValues } from './event-form.types';
+export { eventFormSchema } from './event-form.schemas';
+export type { EventFormValues } from './event-form.types';

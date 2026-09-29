@@ -1,12 +1,12 @@
 import type { Vec3 } from '@otmetki/gamedata';
 
-import type { ShowcasePart, ShowcaseRig, ShowcaseRigInput } from './showcase-rig.types';
+import type { PartsOfInput, ShowcasePart, ShowcaseRig, ShowcaseRigInput, TranslateInput } from './showcase-rig.types';
 
-const ORIGIN: Vec3 = [0, 0, 0];
+import { SHOWCASE_RIG } from '../../config';
 
-const add = (a: Vec3, b: Vec3): Vec3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+const translate = ({ point, offset }: TranslateInput): Vec3 => [point[0] + offset[0], point[1] + offset[1], point[2] + offset[2]];
 
-const partsOf = (pieces: ReadonlyMap<string, ShowcasePart['piece']>, entries: readonly (readonly [string | undefined, Vec3])[]): ShowcasePart[] =>
+const partsOf = ({ pieces, entries }: PartsOfInput): ShowcasePart[] =>
   entries.flatMap(([name, position]) => {
     const piece = name === undefined ? undefined : pieces.get(name);
 
@@ -18,19 +18,25 @@ export const showcaseRig = ({ geometry, modules }: ShowcaseRigInput): ShowcaseRi
   const { mounts } = geometry;
   const turretModule = modules.turrets.at(-1);
   const gunModule = turretModule?.guns.at(-1);
-  const turretAt = add(mounts.hull, mounts.turret);
+  const turretAt = translate({ point: mounts.hull, offset: mounts.turret });
 
-  const body = partsOf(pieces, [
-    [modules.chassis.at(-1)?.piece, ORIGIN],
-    [modules.hull.piece, mounts.hull]
-  ]);
+  const body = partsOf({
+    pieces,
+    entries: [
+      [modules.chassis.at(-1)?.piece, SHOWCASE_RIG.origin],
+      [modules.hull.piece, mounts.hull]
+    ]
+  });
 
-  const turretParts = partsOf(pieces, [
-    [turretModule?.piece, ORIGIN],
-    [gunModule?.piece, (turretModule && mounts.guns[turretModule.piece]) ?? ORIGIN]
-  ]);
+  const turretParts = partsOf({
+    pieces,
+    entries: [
+      [turretModule?.piece, SHOWCASE_RIG.origin],
+      [gunModule?.piece, (turretModule && mounts.guns[turretModule.piece]) ?? SHOWCASE_RIG.origin]
+    ]
+  });
 
-  const world = [...body, ...turretParts.map((part) => ({ ...part, position: add(part.position, turretAt) }))];
+  const world = [...body, ...turretParts.map((part) => ({ ...part, position: translate({ point: part.position, offset: turretAt }) }))];
   const min: Vec3 = [Infinity, Infinity, Infinity];
   const max: Vec3 = [-Infinity, -Infinity, -Infinity];
 
@@ -47,7 +53,7 @@ export const showcaseRig = ({ geometry, modules }: ShowcaseRigInput): ShowcaseRi
   const turret = turretParts.length > 0 ? { position: turretAt, parts: turretParts } : null;
 
   if (!Number.isFinite(min[0])) {
-    return { body, turret, center: ORIGIN, radius: 1, floor: 0, height: 1 };
+    return { body, turret, center: SHOWCASE_RIG.origin, radius: 1, floor: 0, height: 1 };
   }
 
   return {

@@ -28,7 +28,8 @@ export const PROMO_MOCK = {
       { key: 'third', value: 95, isDone: false }
     ],
     damageToNext: 4870,
-    battlesToNext: 23
+    battlesToNext: 23,
+    chart: { width: 360, height: 64 }
   },
   teamHp: {
     sides: [

@@ -2,11 +2,11 @@ import type { VehicleSummary } from '@otmetki/schemas';
 
 import type { GUESS_CELLS } from '../../config';
 
-export type GuessCellKey = (typeof GUESS_CELLS)[number];
+type GuessCellKey = (typeof GUESS_CELLS)[number];
 
 export type CellVerdict = 'close' | 'match' | 'miss' | 'unknown';
 
-export type CellDirection = 'down' | 'up';
+type CellDirection = 'down' | 'up';
 
 export type CellHint = {
   verdict: CellVerdict;

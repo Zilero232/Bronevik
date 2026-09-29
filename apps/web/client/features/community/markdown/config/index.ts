@@ -1,1 +1,1 @@
-export { MARKDOWN, MARKDOWN_REHYPE_PLUGINS } from './markdown.constants';
+export { MARKDOWN, MARKDOWN_PLUGINS } from './markdown.constants';

@@ -1,4 +1,4 @@
-export type HeatCell = {
+type HeatCell = {
   hour: number;
   value: number;
   level: number;

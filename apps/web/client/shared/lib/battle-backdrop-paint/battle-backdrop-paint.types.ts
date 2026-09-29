@@ -1,6 +1,6 @@
 import type { Mote, Tracer } from '../battle-backdrop';
 
-export type BackdropSurface = {
+type BackdropSurface = {
   context: CanvasRenderingContext2D;
   width: number;
   height: number;

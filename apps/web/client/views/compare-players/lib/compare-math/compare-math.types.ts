@@ -1,4 +1,4 @@
-import type { CompareDirection } from '../../model/compare.types';
+import type { CompareDirection } from '../compare-rows';
 
 export type BestIndicesInput = {
   values: (number | null)[];

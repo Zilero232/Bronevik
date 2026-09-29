@@ -1,3 +1,5 @@
+import type { Vec3 } from '@otmetki/gamedata';
+
 export const SHOWCASE_CANVAS = {
   dpr: [1, 1.5],
   fov: 28,
@@ -72,3 +74,5 @@ export const LOW_POWER = {
   maxCores: 4,
   maxMemoryGb: 2
 } as const;
+
+export const SHOWCASE_RIG: { origin: Vec3 } = { origin: [0, 0, 0] };

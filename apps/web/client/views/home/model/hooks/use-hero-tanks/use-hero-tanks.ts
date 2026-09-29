@@ -11,10 +11,10 @@ export const useHeroTanks = () => {
   const params = {
     period: HOME.period.server,
     tiers: [HOME.strongTanks.tiers[0]],
-    sort: 'winRate',
-    order: 'desc',
+    sort: HOME.strongTanks.sort,
+    order: HOME.strongTanks.order,
     limit: HOME.strongTanks.limit
-  } as const;
+  };
 
   const { data } = useQuery({
     queryKey: QUERY_KEYS.tanks.stats(params),

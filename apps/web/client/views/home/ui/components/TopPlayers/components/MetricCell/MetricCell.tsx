@@ -11,7 +11,7 @@ export const MetricCell = ({ entry }: MetricCellProps) => {
 
   return (
     <span className={s.root} data-tone={entry.tier ? toneOfTier(entry.tier) : undefined}>
-      {format.number(entry.value, { maximumFractionDigits: 0 })}
+      {format.number(entry.value, 'integer')}
     </span>
   );
 };

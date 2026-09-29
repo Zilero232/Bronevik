@@ -1,3 +1,16 @@
+import type {
+  BlogPosting,
+  BreadcrumbList,
+  Graph,
+  ItemList,
+  OrganizationLeaf,
+  ProfilePage,
+  SearchActionLeaf,
+  SportsTeam,
+  WithActionConstraints,
+  WithContext
+} from 'schema-dts';
+
 import { isNonNullish } from 'remeda';
 
 import type { Locale, LocalePathInput } from '@/shared/i18n';
@@ -6,47 +19,49 @@ import { SITE } from '@/shared/config/site';
 import { ROUTES } from '@/shared/constants';
 import { localePath } from '@/shared/i18n';
 
-import type { ArticleJsonLdInput, BreadcrumbJsonLdInput, EntityJsonLdInput, ItemListJsonLdInput } from './json-ld.types';
+import type { ArticleJsonLdInput, BreadcrumbJsonLdInput, EntityJsonLdInput, ItemListJsonLdInput, JsonLdData } from './json-ld.types';
 
 import { absoluteUrl } from '../site-metadata';
 import { JSON_LD } from './json-ld.constants';
 
 const localeUrl = (input: LocalePathInput) => absoluteUrl(localePath(input));
 
-export const jsonLdText = (data: object) => JSON.stringify(data).replaceAll('<', JSON_LD.escapedLt);
+export const jsonLdText = (data: JsonLdData) => JSON.stringify(data).replaceAll('<', JSON_LD.escapedLt);
 
-export const organizationJsonLd = () => ({
+export const organizationJsonLd = (): OrganizationLeaf => ({
   '@type': 'Organization',
-  '@id': `${SITE.url}/#organization`,
+  '@id': `${SITE.url}${JSON_LD.organizationId}`,
   name: SITE.name,
   url: SITE.url,
   logo: absoluteUrl(JSON_LD.logo)
 });
 
-export const siteJsonLd = (locale: Locale) => ({
+const playerSearchAction = (locale: Locale): WithActionConstraints<SearchActionLeaf> => ({
+  '@type': 'SearchAction',
+  target: {
+    '@type': 'EntryPoint',
+    urlTemplate: `${SITE.url}${localePath({ path: ROUTES.players.profile(''), locale })}{${JSON_LD.searchTerm}}`
+  },
+  'query-input': `required name=${JSON_LD.searchTerm}`
+});
+
+export const siteJsonLd = (locale: Locale): Graph => ({
   '@context': JSON_LD.context,
   '@graph': [
     organizationJsonLd(),
     {
       '@type': 'WebSite',
-      '@id': `${SITE.url}/#website`,
+      '@id': `${SITE.url}${JSON_LD.websiteId}`,
       name: SITE.name,
       url: localeUrl({ path: ROUTES.home, locale }),
       inLanguage: locale,
-      publisher: { '@id': `${SITE.url}/#organization` },
-      potentialAction: {
-        '@type': 'SearchAction',
-        target: {
-          '@type': 'EntryPoint',
-          urlTemplate: `${SITE.url}${localePath({ path: ROUTES.players.profile(''), locale })}{${JSON_LD.searchTerm}}`
-        },
-        'query-input': `required name=${JSON_LD.searchTerm}`
-      }
+      publisher: { '@id': `${SITE.url}${JSON_LD.organizationId}` },
+      potentialAction: playerSearchAction(locale)
     }
   ]
 });
 
-export const breadcrumbJsonLd = ({ items, locale }: BreadcrumbJsonLdInput) => ({
+export const breadcrumbJsonLd = ({ items, locale }: BreadcrumbJsonLdInput): WithContext<BreadcrumbList> => ({
   '@context': JSON_LD.context,
   '@type': 'BreadcrumbList',
   itemListElement: items.map(({ name, path }, index) => ({
@@ -57,14 +72,14 @@ export const breadcrumbJsonLd = ({ items, locale }: BreadcrumbJsonLdInput) => ({
   }))
 });
 
-export const personJsonLd = ({ name, path, locale, image }: EntityJsonLdInput) => ({
+export const personJsonLd = ({ name, path, locale, image }: EntityJsonLdInput): WithContext<ProfilePage> => ({
   '@context': JSON_LD.context,
   '@type': 'ProfilePage',
   url: localeUrl({ path, locale }),
   mainEntity: { '@type': 'Person', name, url: localeUrl({ path, locale }), ...(image ? { image } : {}) }
 });
 
-export const clanJsonLd = ({ name, path, locale, image }: EntityJsonLdInput) => ({
+export const clanJsonLd = ({ name, path, locale, image }: EntityJsonLdInput): WithContext<SportsTeam> => ({
   '@context': JSON_LD.context,
   '@type': 'SportsTeam',
   name,
@@ -72,7 +87,7 @@ export const clanJsonLd = ({ name, path, locale, image }: EntityJsonLdInput) => 
   ...(image ? { logo: image } : {})
 });
 
-export const itemListJsonLd = ({ name, path, items, locale }: ItemListJsonLdInput) => ({
+export const itemListJsonLd = ({ name, path, items, locale }: ItemListJsonLdInput): WithContext<ItemList> => ({
   '@context': JSON_LD.context,
   '@type': 'ItemList',
   name,
@@ -86,7 +101,16 @@ export const itemListJsonLd = ({ name, path, items, locale }: ItemListJsonLdInpu
   }))
 });
 
-export const articleJsonLd = ({ headline, description, path, locale, image, datePublished, dateModified, authorName }: ArticleJsonLdInput) => ({
+export const articleJsonLd = ({
+  headline,
+  description,
+  path,
+  locale,
+  image,
+  datePublished,
+  dateModified,
+  authorName
+}: ArticleJsonLdInput): WithContext<BlogPosting> => ({
   '@context': JSON_LD.context,
   '@type': 'BlogPosting',
   headline,
@@ -97,6 +121,6 @@ export const articleJsonLd = ({ headline, description, path, locale, image, date
   dateModified,
   ...(datePublished ? { datePublished } : {}),
   ...(image ? { image: [image] } : {}),
-  author: authorName ? { '@type': 'Person', name: authorName } : { '@id': `${SITE.url}/#organization` },
+  author: authorName ? { '@type': 'Person', name: authorName } : { '@id': `${SITE.url}${JSON_LD.organizationId}` },
   publisher: organizationJsonLd()
 });

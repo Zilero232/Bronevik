@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-export type RngScopeRow = {
+type RngScopeRow = {
   id: string;
   label: ReactNode;
   shots: number;

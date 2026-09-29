@@ -1,1 +1,1 @@
-export { compareStreamerSettings, settingsCompareQueries } from './streamers';
+export { settingsCompareQueries } from './streamers';

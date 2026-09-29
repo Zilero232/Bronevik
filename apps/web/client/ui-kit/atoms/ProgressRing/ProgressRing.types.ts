@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 import type { ProgressTone } from '../ProgressBar';
 
-export type ProgressRingMarks = 0 | 1 | 2 | 3;
+type ProgressRingMarks = 0 | 1 | 2 | 3;
 
 export type ProgressRingProps = {
   value: number;

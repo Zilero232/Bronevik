@@ -2,7 +2,7 @@ import type { Key, ReactNode } from 'react';
 
 import type { OffsetInfiniteList } from '@/shared/lib';
 
-export type PagedListLayout = 'grid' | 'rows';
+type PagedListLayout = 'grid' | 'rows';
 
 export type PagedListProps<TItem> = {
   list: OffsetInfiniteList<TItem>;

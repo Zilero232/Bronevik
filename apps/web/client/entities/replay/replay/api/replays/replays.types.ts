@@ -1,14 +1,12 @@
 import type {
-  Heatmap,
   Replay,
-  ReplayPage,
   ReplaysControllerHeatmapData,
+  ReplaysControllerMineData,
   ReplaysControllerSearchData,
-  UpdateReplay,
-  UploadedReplay
+  UpdateReplay
 } from '@/shared/api/generated';
 
-export type { Heatmap, Replay, ReplayPage, UpdateReplay, UploadedReplay };
+export type { Heatmap, Replay, ReplayPage, UploadedReplay } from '@/shared/api/generated';
 
 export type ReplayPlayer = Replay['players'][number];
 
@@ -22,9 +20,7 @@ export type ReplaySearchInput = ReplaySearchQuery & {
   signal?: AbortSignal;
 };
 
-export type MyReplaysInput = {
-  limit?: number;
-  offset?: number;
+export type MyReplaysInput = NonNullable<ReplaysControllerMineData['query']> & {
   signal?: AbortSignal;
 };
 

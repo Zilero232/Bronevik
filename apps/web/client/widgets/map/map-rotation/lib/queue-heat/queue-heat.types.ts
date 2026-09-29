@@ -16,13 +16,13 @@ export type WaitToneInput = {
   tones: readonly RatingTone[];
 };
 
-export type QueueHeatCell = {
+type QueueHeatCell = {
   hour: number;
   cell: QueueCell | null;
   tone: RatingTone | null;
 };
 
-export type QueueHeatRow = {
+type QueueHeatRow = {
   tier: number;
   cells: QueueHeatCell[];
 };

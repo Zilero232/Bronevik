@@ -18,11 +18,7 @@ export type BlogPost = BlogArticle['post'];
 
 export type BlogCategory = BlogPost['category'];
 
-export type BlogLocale = BlogPost['locale'];
-
-export type BlogTocItem = BlogPost['toc'][number];
-
-export type BlogListQuery = NonNullable<BlogControllerListData['query']>;
+type BlogListQuery = NonNullable<BlogControllerListData['query']>;
 
 export type BlogListInput = BlogListQuery & {
   signal?: AbortSignal;

@@ -1,5 +1,5 @@
-import type { LegalDoc } from '../model/legal.types';
+import type { LEGAL_DOCS } from '../config';
 
 export type LegalPageProps = {
-  doc: LegalDoc;
+  doc: (typeof LEGAL_DOCS)[number];
 };

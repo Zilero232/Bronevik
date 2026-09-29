@@ -4,14 +4,13 @@ import { useBoolean } from '@siberiacancode/reactuse';
 import { History, Pencil, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Badge, Button, IconButton, Switch } from '@/ui-kit';
+import { Badge, Button, IconButton, RelativeTime, Switch } from '@/ui-kit';
 
 import type { WebhookRowProps } from './WebhookRow.types';
 
 import { WEBHOOK_STATUS_TONE } from '../../../../../config';
 import { useWebhookRow } from '../../../../../model/hooks';
 import { DeliveriesLog } from '../../../DeliveriesLog';
-import { TimeAgo } from '../../../TimeAgo';
 
 import s from './WebhookRow.module.scss';
 
@@ -39,7 +38,7 @@ export const WebhookRow = ({ endpoint, onEdit, onDelete }: WebhookRowProps) => {
           {failureCount > 0 && <span className={s.failures}>{t('failures', { count: failureCount })}</span>}
           {status === 'disabled' && (
             <span className={s.failures}>
-              {t('disabledAt')} <TimeAgo value={disabledAt} />
+              {t('disabledAt')} <RelativeTime value={disabledAt} />
             </span>
           )}
         </div>

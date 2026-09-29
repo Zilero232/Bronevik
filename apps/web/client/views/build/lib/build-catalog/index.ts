@@ -1,11 +1,2 @@
 export { buildCatalog, skillsOfRole, toBuildItem } from './build-catalog';
-export type {
-  BuildCatalog,
-  BuildCategory,
-  BuildCrewRole,
-  BuildFieldStep,
-  BuildItem,
-  BuildModule,
-  BuildModuleSlot,
-  BuildSkill
-} from './build-catalog.types';
+export type { BuildCatalog, BuildCrewRole, BuildFieldStep, BuildItem, BuildModule, BuildModuleSlot } from './build-catalog.types';

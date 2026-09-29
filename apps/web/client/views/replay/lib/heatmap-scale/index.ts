@@ -1,2 +1,1 @@
-export { heatCells, heatLevels } from './heatmap-scale';
-export type { HeatCell } from './heatmap-scale.types';
+export { heatCells } from './heatmap-scale';

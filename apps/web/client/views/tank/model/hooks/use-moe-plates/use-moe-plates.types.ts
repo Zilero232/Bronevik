@@ -4,7 +4,7 @@ import type { SpecVerdict } from '@/entities/tank/tank';
 
 import type { MoeKey } from '../../../lib';
 
-export type MoePlateDelta = {
+type MoePlateDelta = {
   days: number;
   value: number | null;
   verdict: SpecVerdict;

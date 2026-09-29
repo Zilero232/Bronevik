@@ -2,6 +2,7 @@
 
 import { Check, Link2, Share2, UserRound } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useId } from 'react';
 
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
@@ -13,10 +14,11 @@ import s from './WrappedOutro.module.scss';
 
 export const WrappedOutro = ({ nickname, years, copied, onShare, onCopy }: WrappedOutroProps) => {
   const t = useTranslations('wrapped.outro');
+  const titleId = useId();
 
   return (
-    <section aria-labelledby='wrapped-outro' className={s.root}>
-      <h2 className={s.title} id='wrapped-outro'>
+    <section aria-labelledby={titleId} className={s.root}>
+      <h2 className={s.title} id={titleId}>
         {t('title')}
       </h2>
       <div className={s.actions}>

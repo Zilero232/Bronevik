@@ -2,8 +2,6 @@ import { parseAsStringLiteral } from 'nuqs/server';
 
 export const MODE_VIEWS = ['table', 'ranks'] as const;
 
-export type ModeView = (typeof MODE_VIEWS)[number];
-
 export const MODE_VIEW_PARSER = parseAsStringLiteral(MODE_VIEWS).withDefault('table');
 
 export const MODE_TABLE = {

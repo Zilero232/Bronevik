@@ -1,5 +1,7 @@
 import { hoursToMilliseconds } from 'date-fns';
 
+import type { CellHint } from '../lib/compare-guess';
+
 export const GUESS_TANK = {
   maxGuesses: 6,
   minTier: 5,
@@ -14,6 +16,8 @@ export const GUESS_TOLERANCE = {
   winRateClose: 1.5,
   tierClose: 1
 } as const;
+
+export const GUESS_MATCH_HINT = { verdict: 'match', direction: null } as const satisfies CellHint;
 
 export const GUESS_CELLS = ['tier', 'type', 'nation', 'premium', 'damage', 'winRate'] as const;
 

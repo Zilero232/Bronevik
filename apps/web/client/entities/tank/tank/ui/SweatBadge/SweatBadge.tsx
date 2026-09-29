@@ -4,7 +4,7 @@ import { Badge } from '@/ui-kit';
 
 import type { SweatBadgeProps } from './SweatBadge.types';
 
-import { SWEAT_TONE } from '../../config';
+import { SWEAT_BADGE, SWEAT_TONE } from '../../config';
 
 export const SweatBadge = ({ level, ratio, kind = 'moe', className }: SweatBadgeProps) => {
   const t = useTranslations('tankTraits.sweat');
@@ -12,8 +12,12 @@ export const SweatBadge = ({ level, ratio, kind = 'moe', className }: SweatBadge
 
   return (
     <Badge
+      title={
+        ratio === null
+          ? undefined
+          : t(kind === 'moe' ? 'hint' : 'masteryHint', { value: format.number(ratio, { maximumFractionDigits: SWEAT_BADGE.ratioDigits }) })
+      }
       className={className}
-      title={ratio === null ? undefined : t(kind === 'moe' ? 'hint' : 'masteryHint', { value: format.number(ratio, { maximumFractionDigits: 2 }) })}
       tone={SWEAT_TONE[level]}
     >
       {t(level)}

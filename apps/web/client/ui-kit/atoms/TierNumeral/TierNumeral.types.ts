@@ -1,4 +1,4 @@
-export type TierNumeralVariant = 'hex' | 'plain';
+type TierNumeralVariant = 'hex' | 'plain';
 
 export type TierNumeralProps = {
   tier: number;

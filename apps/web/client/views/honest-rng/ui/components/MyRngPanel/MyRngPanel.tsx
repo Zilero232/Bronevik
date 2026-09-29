@@ -2,6 +2,7 @@
 
 import { Crosshair, Link2, LogIn } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useId } from 'react';
 import { match } from 'ts-pattern';
 
 import { ROUTES } from '@/shared/constants';
@@ -15,11 +16,12 @@ import s from './MyRngPanel.module.scss';
 
 export const MyRngPanel = () => {
   const t = useTranslations('honestRng.mine');
+  const titleId = useId();
   const mine = useMyHonestRng();
 
   return (
-    <section aria-labelledby='my-rng' className={s.root}>
-      <h2 className={s.title} id='my-rng'>
+    <section aria-labelledby={titleId} className={s.root}>
+      <h2 className={s.title} id={titleId}>
         {t('title')}
       </h2>
       {match(mine.status)

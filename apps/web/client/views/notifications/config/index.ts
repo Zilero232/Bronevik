@@ -3,3 +3,4 @@ export { EVENT_GROUPS, NOTIFICATION_CHANNELS } from './notification-settings.con
 export { NOTIFICATIONS_HERO } from './notifications-hero.constants';
 export { INITIAL_PUSH_BROWSER, PUSH_BROWSER } from './push-browser.constants';
 export { QUIET_HOURS } from './quiet-hours.constants';
+export { URL_BASE64 } from './url-base64.constants';

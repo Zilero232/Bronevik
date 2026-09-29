@@ -4,27 +4,14 @@ import { useQuery } from '@tanstack/react-query';
 import { useLocale } from 'next-intl';
 
 import { mapQueries } from '@/entities/map/map';
-import { listVehicles, vehicleIndex } from '@/entities/tank/tank';
-import { QUERY_KEYS } from '@/shared/constants';
+import { vehicleCatalogQuery, vehicleIndex } from '@/entities/tank/tank';
 
 import type { UseGuideSubjectInput } from './use-guide-subject.types';
 
-import { GUIDE_SUBJECT } from '../../../config';
-
 export const useGuideSubject = ({ tankId, arenaId }: UseGuideSubjectInput) => {
   const locale = useLocale();
-  const { data: catalog } = useQuery({
-    queryKey: QUERY_KEYS.tanks.catalog,
-    queryFn: ({ signal }) => listVehicles({ signal }),
-    staleTime: GUIDE_SUBJECT.catalogStaleMs,
-    enabled: tankId !== null
-  });
-
-  const { data: maps } = useQuery({
-    ...mapQueries.localizedList(locale),
-    staleTime: GUIDE_SUBJECT.mapsStaleMs,
-    enabled: arenaId !== null
-  });
+  const { data: catalog } = useQuery({ ...vehicleCatalogQuery(), enabled: tankId !== null });
+  const { data: maps } = useQuery({ ...mapQueries.localizedList(locale), enabled: arenaId !== null });
 
   return {
     vehicle: tankId === null ? null : (vehicleIndex(catalog)[tankId] ?? null),

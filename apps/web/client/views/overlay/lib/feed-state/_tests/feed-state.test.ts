@@ -3,7 +3,8 @@ import { describe, expect, it } from 'vitest';
 
 import type { OverlayData } from '@/entities/streamer/streamer';
 
-import { feedReducer, INITIAL_FEED_STATE, parseFeedMessage } from '../feed-state';
+import { INITIAL_FEED_STATE } from '../../../config';
+import { feedReducer, parseFeedMessage } from '../feed-state';
 
 const DATA: OverlayData = {
   kind: 'session',

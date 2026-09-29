@@ -17,7 +17,7 @@ export const useTelegramWidget = () => {
   const completeSignIn = useCompleteSignIn();
   const containerRef = useRef<HTMLDivElement>(null);
   const { data: config, isError } = useTelegramWidgetConfig();
-  const signIn = useMutation({
+  const { mutate: signIn, isPending: isSigningIn } = useMutation({
     mutationFn: signInWithTelegram,
     onSuccess: completeSignIn,
     onError: () => toast.error(t('telegramFailed'))
@@ -35,7 +35,7 @@ export const useTelegramWidget = () => {
     const script = document.createElement('script');
 
     const onAuth: TelegramAuthHandler = (user) => {
-      signIn.mutate(user);
+      signIn(user);
     };
 
     Reflect.set(window, LOGIN.telegramCallback, onAuth);
@@ -43,9 +43,9 @@ export const useTelegramWidget = () => {
     script.src = LOGIN.telegramScript;
     script.async = true;
     script.dataset.telegramLogin = botUsername;
-    script.dataset.size = 'large';
-    script.dataset.radius = '2';
-    script.dataset.requestAccess = 'write';
+    script.dataset.size = LOGIN.telegramWidget.size;
+    script.dataset.radius = LOGIN.telegramWidget.radius;
+    script.dataset.requestAccess = LOGIN.telegramWidget.requestAccess;
     script.dataset.onauth = `${LOGIN.telegramCallback}(user)`;
     node.append(script);
 
@@ -53,8 +53,7 @@ export const useTelegramWidget = () => {
       node.replaceChildren();
       Reflect.deleteProperty(window, LOGIN.telegramCallback);
     };
-    // eslint-disable-next-line react/exhaustive-deps -- the widget is injected once per bot; the mutation object is rebuilt every render
-  }, [botUsername]);
+  }, [botUsername, signIn]);
 
-  return { containerRef, isEnabled: Boolean(botUsername), isLoaded: config !== undefined || isError, isSigningIn: signIn.isPending };
+  return { containerRef, isEnabled: Boolean(botUsername), isLoaded: config !== undefined || isError, isSigningIn };
 };

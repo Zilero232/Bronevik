@@ -2,13 +2,11 @@
 
 import { useFormatter, useTranslations } from 'next-intl';
 
-import type { TankSpecKey } from '../../../config';
-import type { TankSpecMeta } from '../../../model/tank-specs.types';
+import type { TankSpecKey } from '../../../model/tank-specs.types';
 import type { FormatSpecInput } from './use-spec-format.types';
 
-import { TANK_SPECS } from '../../../config';
-
-const metaOf = (key: string): TankSpecMeta | undefined => Object.entries(TANK_SPECS).find(([candidate]) => candidate === key)?.[1];
+import { TANK_SPEC_FORMAT } from '../../../config';
+import { specMeta } from '../../../lib/spec-meta';
 
 export const useSpecFormat = () => {
   const t = useTranslations('tank');
@@ -16,17 +14,16 @@ export const useSpecFormat = () => {
 
   const value = ({ key, value: raw }: FormatSpecInput) => {
     if (raw === null || raw === undefined) {
-      return '—';
+      return TANK_SPEC_FORMAT.missing;
     }
 
-    const meta = metaOf(key);
-    const digits = meta?.digits ?? 2;
+    const digits = specMeta(key)?.digits ?? TANK_SPEC_FORMAT.fallbackDigits;
 
     return format.number(raw, { maximumFractionDigits: digits, minimumFractionDigits: Math.min(digits, 1) });
   };
 
   const unit = (key: string) => {
-    const meta = metaOf(key);
+    const meta = specMeta(key);
 
     return meta && meta.unit !== 'none' ? t(`units.${meta.unit}`) : '';
   };

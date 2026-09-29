@@ -8,7 +8,7 @@ export type BoardPointerEvent = KonvaEventObject<MouseEvent | PointerEvent | Tou
 
 export type BoardDragEvent = KonvaEventObject<DragEvent>;
 
-export type CanvasItemHandlers = {
+type CanvasItemHandlers = {
   isSelected: boolean;
   onPress: () => void;
   onDragEnd: (event: BoardDragEvent) => void;

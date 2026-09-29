@@ -3,6 +3,7 @@
 import { ArrowRight } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 import Image from 'next/image';
+import { useId } from 'react';
 
 import { Button, EmptyState, QueryState, SectionHeader, Skeleton } from '@/ui-kit';
 
@@ -14,10 +15,11 @@ import s from './AchievementShelf.module.scss';
 export const AchievementShelf = () => {
   const t = useTranslations('profile.overview.shelf');
   const format = useFormatter();
+  const titleId = useId();
   const { query, items, total, openAll } = useAchievementShelf();
 
   return (
-    <section aria-labelledby='profile-shelf' className={s.root}>
+    <section aria-labelledby={titleId} className={s.root}>
       <SectionHeader
         action={
           total > 0 && (
@@ -27,7 +29,7 @@ export const AchievementShelf = () => {
             </Button>
           )
         }
-        id='profile-shelf'
+        id={titleId}
         title={t('title')}
       />
       <QueryState

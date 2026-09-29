@@ -9,6 +9,10 @@ export const SWEAT_TONE = {
   extreme: 'danger'
 } as const satisfies Record<SweatLevel, BadgeTone>;
 
+export const SWEAT_BADGE = {
+  ratioDigits: 2
+} as const;
+
 export const DIFFICULTY_TONE = {
   easy: 'success',
   moderate: 'steel',

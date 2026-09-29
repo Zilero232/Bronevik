@@ -1,12 +1,14 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { useParams } from 'next/navigation';
+
+import { useRouteParam } from '@/shared/lib';
 
 import { operationQueries } from '../../../api';
 
 export const useOperationDetail = () => {
-  const params = useParams<Record<'campaign' | 'operation', string>>();
+  const campaign = useRouteParam('campaign');
+  const operation = useRouteParam('operation');
 
-  return useQuery(operationQueries.detail({ campaign: Number(params.campaign), operation: Number(params.operation) }));
+  return useQuery(operationQueries.detail({ campaign: Number(campaign), operation: Number(operation) }));
 };

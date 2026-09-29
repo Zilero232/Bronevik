@@ -1,29 +1,22 @@
 import type { FlatValue, SettingsGroupKey } from '@otmetki/schemas';
 
 import { STREAMER_SETTINGS, STREAMER_SETTINGS_AGGREGATE_FIELDS } from '@otmetki/schemas';
+import { isIncludedIn } from 'remeda';
 
 import type { SettingsRow } from '../settings-format';
 import type { SettingsFieldMessage, SettingsOption, SettingsValueView } from './settings-value.types';
 
-import { SETTINGS_FIELDS, SETTINGS_FORMAT, SETTINGS_VALUE } from '../../config';
+import { SETTINGS_FIELDS, SETTINGS_FORMAT, SETTINGS_OPTIONS, SETTINGS_VALUE } from '../../config';
 import { fieldKey } from '../settings-format';
 
-const OPTIONS: readonly SettingsOption[] = [
-  ...SETTINGS_FIELDS.flatMap((field) => ('options' in field ? field.options : [])),
-  ...SETTINGS_VALUE.booleans
-];
+export const settingsOption = (value: FlatValue): SettingsOption | null => SETTINGS_OPTIONS.find((option) => option === String(value)) ?? null;
 
-export const settingsOption = (value: FlatValue): SettingsOption | null => OPTIONS.find((option) => option === String(value)) ?? null;
+export const isSettingsGroup = (key: string): key is SettingsGroupKey => isIncludedIn(key, STREAMER_SETTINGS.groups);
 
-const GROUP_KEYS: ReadonlySet<string> = new Set(STREAMER_SETTINGS.groups);
-
-export const isSettingsGroup = (key: string): key is SettingsGroupKey => GROUP_KEYS.has(key);
-
-const FIELD_MESSAGES: ReadonlySet<string> = new Set(
-  [...SETTINGS_FIELDS.map((field) => field.path), ...STREAMER_SETTINGS_AGGREGATE_FIELDS.map((field) => field.field)].map(fieldKey)
-);
-
-const isFieldMessage = (key: string): key is SettingsFieldMessage => FIELD_MESSAGES.has(key);
+const isFieldMessage = (key: string): key is SettingsFieldMessage =>
+  [...SETTINGS_FIELDS.map((field) => field.path), ...STREAMER_SETTINGS_AGGREGATE_FIELDS.map((field) => field.field)].some(
+    (path) => fieldKey(path) === key
+  );
 
 export const fieldMessage = (path: string): SettingsFieldMessage | null => {
   const key = fieldKey(path);

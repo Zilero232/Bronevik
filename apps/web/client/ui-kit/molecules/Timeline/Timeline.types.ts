@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 import type { BadgeTone } from '../../atoms';
 
-export type TimelineItem = {
+type TimelineItem = {
   id: string;
   tone?: BadgeTone;
   date?: ReactNode;

@@ -1,6 +1,7 @@
 'use client';
 
 import { useFormatter, useTranslations } from 'next-intl';
+import { useId } from 'react';
 
 import { MarkProgress } from '@/entities/player/marks';
 import { TankCell } from '@/entities/tank/tank';
@@ -15,12 +16,13 @@ import s from './MarksPanel.module.scss';
 export const MarksPanel = () => {
   const t = useTranslations('profile.overview');
   const format = useFormatter();
+  const titleId = useId();
   const { counts, closest, query } = useOverviewMarks();
 
   return (
-    <Band aria-labelledby='profile-marks-band' className={s.band} innerClassName={s.inner}>
+    <Band aria-labelledby={titleId} className={s.band} innerClassName={s.inner}>
       <div className={s.summary}>
-        <h2 className={s.title} id='profile-marks-band'>
+        <h2 className={s.title} id={titleId}>
           {t('marksTitle')}
         </h2>
         <ProgressRing

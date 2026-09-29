@@ -1,5 +1,5 @@
-import type { SettingsField } from '@/entities/streamer/settings';
+import type { SettingsMultiFieldInput } from '../../../../../model/hooks';
 
 export type SettingsMultiFieldProps = {
-  field: Extract<SettingsField, { kind: 'multi' }>;
+  field: SettingsMultiFieldInput;
 };

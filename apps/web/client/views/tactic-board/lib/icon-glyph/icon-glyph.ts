@@ -1,8 +1,6 @@
 import type { IconGlyph, IconGlyphInput } from './icon-glyph.types';
 
-import { BOARD_ICON_BANDS } from '../../config';
-
-const MARKER_SEGMENTS = 16;
+import { BOARD_GLYPH, BOARD_ICON_BANDS } from '../../config';
 
 const rhombus = ({ kind, size }: IconGlyphInput): IconGlyph => {
   const halfWidth = size * 0.36;
@@ -20,8 +18,8 @@ const rhombus = ({ kind, size }: IconGlyphInput): IconGlyph => {
 
 const marker = (size: number): IconGlyph => {
   const radius = size * 0.36;
-  const outline = Array.from({ length: MARKER_SEGMENTS }, (_, index) => {
-    const angle = (index / MARKER_SEGMENTS) * Math.PI * 2;
+  const outline = Array.from({ length: BOARD_GLYPH.markerSegments }, (_, index) => {
+    const angle = (index / BOARD_GLYPH.markerSegments) * Math.PI * 2;
 
     return [Math.cos(angle) * radius, Math.sin(angle) * radius];
   }).flat();

@@ -3,13 +3,13 @@ import type { ComponentType } from 'react';
 
 export type PromoTone = 'accent' | 'battle' | 'brass' | 'gold' | 'olive' | 'sky' | 'steel';
 
-export type PromoFamily = 'mod' | 'site';
+type PromoFamily = 'mod' | 'site';
 
-export type PromoMock = 'crosshair' | 'damageLog' | 'gear' | 'hits' | 'manager' | 'marks' | 'teamHp';
+type PromoMock = 'crosshair' | 'damageLog' | 'gear' | 'hits' | 'manager' | 'marks' | 'teamHp';
 
-export type PromoIcon = ComponentType<{ size?: number | string; className?: string }>;
+type PromoIcon = ComponentType<{ size?: number | string; className?: string }>;
 
-export type PromoArtSpec = { kind: 'emblem'; icon: PromoIcon } | { kind: 'mock'; mock: PromoMock } | { kind: 'tank'; pick: number };
+type PromoArtSpec = { kind: 'emblem'; icon: PromoIcon } | { kind: 'mock'; mock: PromoMock } | { kind: 'tank'; pick: number };
 
 export type PromoSpec = {
   href: string;
@@ -20,7 +20,7 @@ export type PromoSpec = {
   art: PromoArtSpec;
 };
 
-export type PromoState = 'live' | 'soon';
+type PromoState = 'live' | 'soon';
 
 export type PromoArt = { kind: 'emblem'; icon: PromoIcon } | { kind: 'mock'; mock: PromoMock } | { kind: 'tank'; tank: VehicleSummary | null };
 

@@ -4,7 +4,7 @@ import { useSpecFormat } from '@/entities/tank/tank';
 
 import type { StatValueProps } from './StatValue.types';
 
-import { STAT_BAR } from '../../../../../lib/stat-diff';
+import { STAT_BAR } from '../../../../../config';
 
 import s from './StatValue.module.scss';
 

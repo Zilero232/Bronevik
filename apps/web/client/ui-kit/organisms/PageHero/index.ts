@@ -1,2 +1,2 @@
 export { PageHero } from './PageHero';
-export type { PageHeroArt, PageHeroProps } from './PageHero.types';
+export type { PageHeroArt } from './PageHero.types';

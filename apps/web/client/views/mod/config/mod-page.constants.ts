@@ -1,11 +1,14 @@
 import { Mark3Icon } from '@otmetki/icons';
 import { Gauge, History, ScrollText } from 'lucide-react';
 
+import { ROUTES } from '@/shared/constants';
+
 export const MOD_PAGE = {
   heroGlyph: 480,
   iconSize: 18,
   featureIconSize: 22,
-  bytesPerMegabyte: 1_048_576
+  bytesPerMegabyte: 1_048_576,
+  featuresAnchor: 'features'
 } as const;
 
 export const MOD_FEATURES = [
@@ -38,4 +41,11 @@ export const MOD_TUNABLES = [
   { id: 'idle', setting: 'session_idle_minutes', value: 60 }
 ] as const;
 
-export const MOD_FAQ = ['free', 'ban', 'bind', 'switches', 'replays', 'delete'] as const;
+export const MOD_FAQ = [
+  { id: 'free' },
+  { id: 'ban' },
+  { id: 'bind', link: { href: ROUTES.account.overview, label: 'accountLink' } },
+  { id: 'switches' },
+  { id: 'replays', link: { href: ROUTES.replays.list, label: 'replaysLink' } },
+  { id: 'delete', link: { href: ROUTES.account.overview, label: 'accountLink' } }
+] as const satisfies readonly { id: string; link?: { href: string; label: 'accountLink' | 'replaysLink' } }[];

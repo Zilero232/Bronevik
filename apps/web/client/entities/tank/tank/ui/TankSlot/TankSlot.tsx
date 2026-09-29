@@ -6,6 +6,7 @@ import { TankImage } from '@/ui-kit';
 
 import type { TankSlotProps } from './TankSlot.types';
 
+import { TANK_SLOT } from '../../config';
 import { vehicleIdentity } from '../../lib/vehicle-identity';
 import { WinRateCell } from '../WinRateCell';
 
@@ -24,12 +25,12 @@ export const TankSlot = ({ row }: TankSlotProps) => {
       href={ROUTES.tanks.detail(row.vehicle.slug)}
     >
       <span className={s.badge}>
-        <ClassIcon aria-hidden size={14} variant={tank.isPremium ? 'premium' : 'regular'} />
+        <ClassIcon aria-hidden size={TANK_SLOT.classIconSize} variant={tank.isPremium ? 'premium' : 'regular'} />
         <span className={s.tier}>{toRoman(tank.tier)}</span>
       </span>
       <TankImage isDecorative className={s.render} size='big' tank={tank} />
       <span className={s.footer}>
-        <span className={s.name}>{row.vehicle.shortName || row.vehicle.name}</span>
+        <span className={s.name}>{tank.name}</span>
         <WinRateCell className={s.rate} digits={1} value={row.winRate} />
       </span>
     </Link>

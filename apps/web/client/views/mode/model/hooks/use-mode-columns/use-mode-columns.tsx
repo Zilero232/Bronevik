@@ -11,6 +11,8 @@ import { ModeRankBadge } from '@/entities/mode/mode';
 import { TankCell, WinRateCell } from '@/entities/tank/tank';
 import { PERCENT_TEXT, percentText } from '@/shared/lib';
 
+import type { ModeAmountInput } from './use-mode-columns.types';
+
 import { MODE_TABLE } from '../../../config';
 
 const column = createColumnHelper<ModeTank>();
@@ -19,7 +21,7 @@ export const useModeColumns = (): TableColumn<ModeTank>[] => {
   const t = useTranslations('modes.table');
   const format = useFormatter();
 
-  const amount = (value: number | null, digits = 0) =>
+  const amount = ({ value, digits = 0 }: ModeAmountInput) =>
     value === null ? PERCENT_TEXT.empty : format.number(value, { maximumFractionDigits: digits });
 
   return [
@@ -56,21 +58,21 @@ export const useModeColumns = (): TableColumn<ModeTank>[] => {
     column.accessor((row) => row.avgDamage ?? undefined, {
       id: 'avgDamage',
       header: t('avgDamage'),
-      cell: (info) => amount(info.row.original.avgDamage),
+      cell: (info) => amount({ value: info.row.original.avgDamage }),
       sortUndefined: 'last',
       meta: MODE_TABLE.numeric
     }),
     column.accessor((row) => row.avgXp ?? undefined, {
       id: 'avgXp',
       header: t('avgXp'),
-      cell: (info) => amount(info.row.original.avgXp),
+      cell: (info) => amount({ value: info.row.original.avgXp }),
       sortUndefined: 'last',
       meta: { ...MODE_TABLE.numeric, hideBelow: 'lg' }
     }),
     column.accessor((row) => row.avgFrags ?? undefined, {
       id: 'avgFrags',
       header: t('avgFrags'),
-      cell: (info) => amount(info.row.original.avgFrags, 2),
+      cell: (info) => amount({ value: info.row.original.avgFrags, digits: 2 }),
       sortUndefined: 'last',
       meta: { ...MODE_TABLE.numeric, hideBelow: 'lg' }
     }),

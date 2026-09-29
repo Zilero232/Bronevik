@@ -4,7 +4,7 @@ import { REFERRAL } from '@otmetki/schemas';
 import { useSessionStorage } from '@siberiacancode/reactuse';
 import { useMutation } from '@tanstack/react-query';
 import { parseAsString, useQueryState } from 'nuqs';
-import { useEffect } from 'react';
+import { useEffect, useEffectEvent } from 'react';
 
 import { useAuthSession } from '@/entities/auth/session';
 
@@ -20,7 +20,7 @@ export const useReferralCapture = () => {
 
   const userId = session?.user.id ?? null;
 
-  useEffect(() => {
+  const register = useEffectEvent(() => {
     const candidate = referralToRegister({ referrerId, userId, registeredId: registered.value ?? null });
 
     if (!candidate) {
@@ -29,6 +29,9 @@ export const useReferralCapture = () => {
 
     registered.set(candidate);
     referral.mutate({ referrerId: candidate });
-    // eslint-disable-next-line react/exhaustive-deps -- register once per referrer and user; the mutation and storage objects are rebuilt every render
+  });
+
+  useEffect(() => {
+    register();
   }, [referrerId, userId]);
 };

@@ -3,7 +3,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { parseAsString, useQueryStates } from 'nuqs';
-import { useEffect } from 'react';
+import { useEffect, useEffectEvent } from 'react';
 import { toast } from 'sonner';
 
 import { QUERY_KEYS } from '@/shared/constants';
@@ -18,12 +18,8 @@ export const useConnectResultToast = () => {
     { history: 'replace', scroll: false }
   );
 
-  useEffect(() => {
-    if (connected === null && streamer === null) {
-      return;
-    }
-
-    if (connected !== null || streamer === STUDIO_CALLBACK.connected) {
+  const announce = useEffectEvent((isConnected: boolean) => {
+    if (isConnected) {
       toast.success(t('connected'), { id: STUDIO_CALLBACK.toastId });
       void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.me.streamer.integrations });
     } else {
@@ -31,6 +27,11 @@ export const useConnectResultToast = () => {
     }
 
     void setParams({ connected: null, streamer: null, tab: 'integrations' });
-    // eslint-disable-next-line react/exhaustive-deps -- only a fresh OAuth callback should fire it; t, queryClient and setParams are stable
+  });
+
+  useEffect(() => {
+    if (connected !== null || streamer !== null) {
+      announce(connected !== null || streamer === STUDIO_CALLBACK.connected);
+    }
   }, [connected, streamer]);
 };

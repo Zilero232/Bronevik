@@ -13,11 +13,11 @@ import {
   selectedModules,
   setModule,
   setSlotItem,
-  SLOT_SIZES,
   slotsOf,
   takenIds,
   toggleSkill
 } from '..';
+import { SLOT_SIZES } from '../../../config';
 
 const item = (id: number) => ({
   id,

@@ -9,7 +9,5 @@ export { usePopularTanks } from './use-popular-tanks';
 export { useRecentSearches } from './use-recent-searches';
 export { useServerStatus } from './use-server-status';
 export { useStrongTanks } from './use-strong-tanks';
-export type { StrongTier } from './use-strong-tanks';
 export { useTopPlayerColumns } from './use-top-player-columns';
 export { useTopPlayers } from './use-top-players';
-export type { TopPlayersMetric } from './use-top-players';

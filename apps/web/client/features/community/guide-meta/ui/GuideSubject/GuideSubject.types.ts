@@ -1,5 +1,5 @@
-export type GuideSubjectProps = {
-  tankId: number | null;
-  arenaId: string | null;
+import type { UseGuideSubjectInput } from '../../model/hooks';
+
+export type GuideSubjectProps = UseGuideSubjectInput & {
   className?: string;
 };

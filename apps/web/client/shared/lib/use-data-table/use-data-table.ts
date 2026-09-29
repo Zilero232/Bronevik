@@ -6,11 +6,10 @@ import { getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/rea
 import type { UseDataTableInput } from './use-data-table.types';
 
 import { columnMax } from '../column-max';
-import { dataTableLayout } from '../data-table-layout';
+import { DATA_TABLE_LAYOUT, dataTableLayout } from '../data-table-layout';
 import { pinnedFirst } from '../pinned-first';
 import { useDataTableState } from '../use-data-table-state';
 import { useHydrated } from '../use-hydrated';
-import { DATA_TABLE_LAYOUT } from './use-data-table.constants';
 
 export const useDataTable = <T>({
   data,
@@ -26,7 +25,7 @@ export const useDataTable = <T>({
 
   const { scrollNode, setScrollNode, sorting, setSorting } = useDataTableState({ initialSorting });
   const isHydrated = useHydrated();
-  const isCompact = useMediaQuery(DATA_TABLE_LAYOUT.cardsQuery);
+  const isCompact = useMediaQuery(DATA_TABLE_LAYOUT.compactQuery);
   const table = useReactTable({
     data,
     columns,

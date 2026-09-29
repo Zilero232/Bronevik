@@ -1,6 +1,6 @@
 import type { LeagueEntry, LeagueZone } from '@/entities/social/league';
 
-export type LeagueStatus = 'ranked' | 'unranked' | LeagueZone;
+type LeagueStatus = 'ranked' | 'unranked' | LeagueZone;
 
 export type LeagueStanding = {
   me: LeagueEntry | null;

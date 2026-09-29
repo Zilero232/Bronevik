@@ -10,14 +10,9 @@ export {
 export type {
   AttendanceEntry,
   AttendanceStatus,
-  CreateEventInput,
-  EventScope,
   ListEventsInput,
   NewWorkspaceEvent,
-  RsvpInput,
   RsvpStatus,
-  SetAttendanceInput,
-  UpdateEventInput,
   WorkspaceEvent,
   WorkspaceEventKind
 } from './events.types';

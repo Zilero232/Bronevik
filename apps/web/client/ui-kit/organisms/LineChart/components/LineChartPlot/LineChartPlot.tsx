@@ -11,15 +11,15 @@ import { ChartCanvas } from '../../../ChartKit';
 
 import s from '../../../ChartKit/ChartKit.module.scss';
 
-export const LineChartPlot = ({ labels, series, width, height, yDomain, withArea = false, formatValue }: LineChartPlotProps) => {
-  const { layout, pointer } = useLineChartLayout({ width, height, labels, series, yDomain });
+export const LineChartPlot = ({ yDomain, withArea = false, ...plot }: LineChartPlotProps) => {
+  const { layout, pointer } = useLineChartLayout({ ...plot, yDomain });
 
   const { innerHeight, xScale, yScale } = layout;
   const { hover } = pointer;
 
   return (
-    <ChartCanvas {...layout} {...pointer} formatValue={formatValue} height={height} labels={labels} series={series} width={width}>
-      {series.map((item, seriesIndex) => {
+    <ChartCanvas {...layout} {...pointer} {...plot}>
+      {plot.series.map((item, seriesIndex) => {
         const points = item.values.map((value, index) => ({ index, value }));
 
         return (

@@ -1,11 +1,10 @@
 import { hasArmorFlag } from '@otmetki/gamedata';
 import { sortBy } from 'remeda';
+import { MathUtils } from 'three';
 
 import type { HitLayer } from '@/features/armor/armor-inspect';
 
 import type { ToHitLayersInput } from './ray-layers.types';
-
-const DEGREES = 180 / Math.PI;
 
 export const toHitLayers = ({ hits, hideSpaced }: ToHitLayersInput): HitLayer[] => {
   const visible = sortBy(
@@ -25,7 +24,7 @@ export const toHitLayers = ({ hits, hideSpaced }: ToHitLayersInput): HitLayer[] 
               plate: plate.name,
               thickness: plate.thickness,
               flags: plate.flags,
-              angle: Math.acos(Math.min(1, Math.abs(cosine))) * DEGREES,
+              angle: Math.acos(Math.min(1, Math.abs(cosine))) * MathUtils.RAD2DEG,
               distance
             }
           ]

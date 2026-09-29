@@ -1,8 +1,9 @@
 import { SITE } from '@/shared/config';
 
-export const X_DEFAULT = 'x-default';
-
-export const THEME_COLOR = '#18181b';
+export const SITE_METADATA = {
+  xDefault: 'x-default',
+  themeColor: '#18181b'
+} as const;
 
 export const SITE_BRAND = {
   ru: { name: SITE.name, ogLocale: SITE.locale },

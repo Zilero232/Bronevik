@@ -12,12 +12,12 @@ export type CameraPose = {
 
 export type CameraPoseListener = (pose: CameraPose) => void;
 
-export type PublishPoseInput = {
+type PublishPoseInput = {
   source: ArmorPaneKey;
   pose: CameraPose;
 };
 
-export type SubscribePoseInput = {
+type SubscribePoseInput = {
   id: ArmorPaneKey;
   listener: CameraPoseListener;
 };

@@ -2,8 +2,6 @@ import type { ClanWorkspaceControllerGetData, WeeklyReport, Workspace } from '@/
 
 export type ClanWorkspace = Workspace;
 
-export type WorkspaceRole = Workspace['role'];
-
 export type WorkspaceReport = WeeklyReport;
 
 export type WorkspaceScope = ClanWorkspaceControllerGetData['path'];

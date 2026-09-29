@@ -1,6 +1,6 @@
 import type { VehicleStats } from '@otmetki/schemas';
 
-import type { TankSpecKey } from '../../config';
+import type { TankSpecKey } from '../../model/tank-specs.types';
 import type { TankSpecs } from '../../model/tank.types';
 
 import { TANK_SPEC_KEYS } from '../../config';

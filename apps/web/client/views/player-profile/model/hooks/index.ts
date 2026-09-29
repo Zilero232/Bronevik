@@ -15,6 +15,7 @@ export { useOverviewMarks } from './use-overview-marks';
 export { usePeriodRatings } from './use-period-ratings';
 export { usePlayerAchievements } from './use-player-achievements';
 export { usePlaytimeCard } from './use-playtime-card';
+export { usePlaytimeGrid } from './use-playtime-grid';
 export { useProfileActions } from './use-profile-actions';
 export { useProfileHeader } from './use-profile-header';
 export { useProfilePage } from './use-profile-page';

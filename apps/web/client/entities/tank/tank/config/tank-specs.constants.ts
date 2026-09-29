@@ -24,8 +24,15 @@ export const TANK_SPECS = {
   radioRange: { group: 'scouting', unit: 'm', digits: 0 }
 } as const satisfies Record<string, TankSpecMeta>;
 
-export type TankSpecKey = keyof typeof TANK_SPECS;
-
 export const TANK_SPEC_KEYS = keys(TANK_SPECS);
 
 export const TANK_SPEC_GROUPS = ['firepower', 'survivability', 'mobility', 'scouting'] as const satisfies readonly TankSpecGroup[];
+
+export const TANK_SPEC_RANK = {
+  epsilon: 1e-9
+} as const;
+
+export const TANK_SPEC_FORMAT = {
+  missing: '—',
+  fallbackDigits: 2
+} as const;

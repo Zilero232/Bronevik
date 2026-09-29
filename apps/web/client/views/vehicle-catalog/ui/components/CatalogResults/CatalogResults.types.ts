@@ -4,7 +4,7 @@ import type { QueryStateSource } from '@/ui-kit';
 
 import type { CatalogTierGroup } from '../../../lib/catalog-filter';
 
-export type CatalogResultsData = {
+type CatalogResultsData = {
   groups: CatalogTierGroup[];
   shown: number;
 };

@@ -14,7 +14,7 @@ import type {
   WinnerInput
 } from './stat-diff.types';
 
-import { STAT_BAR } from './stat-diff.constants';
+import { STAT_BAR } from '../../config';
 
 const read = ({ specs, key }: ReadSpecInput) => {
   const value = specs?.[key];

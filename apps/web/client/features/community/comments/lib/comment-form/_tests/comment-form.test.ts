@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { COMMENT_MAX_LENGTH } from '../../../config';
+import { COMMENT_FORM } from '../../../config';
 import { toCreateComment } from '../comment-form';
 import { commentFormSchema } from '../comment-form.schemas';
 
@@ -14,7 +14,7 @@ describe('commentFormSchema', () => {
   });
 
   it('rejects a body over the server limit', () => {
-    expect(commentFormSchema.safeParse({ body: 'x'.repeat((COMMENT_MAX_LENGTH ?? 0) + 1) }).success).toBe(false);
+    expect(commentFormSchema.safeParse({ body: 'x'.repeat((COMMENT_FORM.maxLength ?? 0) + 1) }).success).toBe(false);
   });
 });
 

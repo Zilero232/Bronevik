@@ -10,14 +10,14 @@ export type NodeStateInput = {
   path: number[];
 };
 
-export type TankNodeData = {
+type TankNodeData = {
   node: TechTreeNode;
   state: TreeElementState;
 };
 
 export type TankFlowNode = Node<TankNodeData, 'tank'>;
 
-export type BranchEdgeData = {
+type BranchEdgeData = {
   xp: number | null;
   state: TreeElementState;
 };

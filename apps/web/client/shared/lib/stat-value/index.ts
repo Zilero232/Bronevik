@@ -1,2 +1,2 @@
 export { statValueText } from './stat-value';
-export type { StatValueKind, StatValueTextInput } from './stat-value.types';
+export type { StatValueKind } from './stat-value.types';

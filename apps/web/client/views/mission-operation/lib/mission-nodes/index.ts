@@ -1,2 +1,2 @@
 export { doneCount, missionNodes } from './mission-nodes';
-export type { MissionNode, MissionNodesInput, MissionNodeState } from './mission-nodes.types';
+export type { MissionNode, MissionNodesInput } from './mission-nodes.types';

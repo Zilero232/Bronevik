@@ -1,3 +1,3 @@
-import type { Challenges } from '@/shared/api/generated';
+import type { WeeklyChallenge } from '../../../api';
 
-export type ChallengeRule = Pick<Challenges['challenges'][number], 'metric' | 'target' | 'threshold' | 'vehicleType'>;
+export type ChallengeRule = Pick<WeeklyChallenge, 'metric' | 'target' | 'threshold' | 'vehicleType'>;

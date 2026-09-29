@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useId } from 'react';
 
 import { SectionHeader } from '@/ui-kit';
 
@@ -11,17 +12,18 @@ import s from './ClosestMarks.module.scss';
 
 export const ClosestMarks = () => {
   const t = useTranslations('marks.closest');
+  const titleId = useId();
   const { player, onPick } = useClosestMarks();
 
   return (
-    <section aria-labelledby='closest-title' className={s.root} id='closest'>
+    <section aria-labelledby={titleId} className={s.root} id='closest'>
       <SectionHeader
         action={
           <div className={s.lookup}>
             <PlayerLookup player={player} onPick={onPick} />
           </div>
         }
-        id='closest-title'
+        id={titleId}
         title={t('title')}
         variant='display'
       />

@@ -1,6 +1,6 @@
 import type { Key, ReactNode } from 'react';
 
-export type ObtainListRow = {
+type ObtainListRow = {
   key: Key;
   label: ReactNode;
   value: ReactNode;

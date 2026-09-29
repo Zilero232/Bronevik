@@ -1,1 +1,1 @@
-export { REPORT_DETAILS_MAX_LENGTH, REPORT_FORM_DEFAULT_VALUES, REPORT_REASONS } from './report-form.constants';
+export { REPORT_FORM } from './report-form.constants';

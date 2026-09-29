@@ -1,7 +1,6 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useId } from 'react';
 import { Controller } from 'react-hook-form';
 
 import { MarkdownEditor } from '@/features/community/markdown-editor';
@@ -17,7 +16,6 @@ import s from './BlogPostForm.module.scss';
 
 export const BlogPostForm = ({ post }: BlogPostFormProps) => {
   const t = useTranslations('blog.editor.form');
-  const fieldId = useId();
   const editor = useBlogPostForm(post);
 
   const { errors } = editor.form.formState;
@@ -26,32 +24,20 @@ export const BlogPostForm = ({ post }: BlogPostFormProps) => {
     <form noValidate className={s.root} onSubmit={editor.onSaveDraft}>
       <div className={s.layout}>
         <Card className={s.main} padding='lg'>
-          <FormField
-            error={errors.title && t('errors.title', { min: BLOG_POST_FORM.titleMin, max: BLOG_POST_FORM.titleMax ?? editor.titleLength })}
-            hint={t('counter', { length: editor.titleLength, max: BLOG_POST_FORM.titleMax ?? editor.titleLength })}
-            htmlFor={`${fieldId}-title`}
-            label={t('title')}
-          >
+          <FormField error={errors.title && t('errors.title', editor.titleLimit)} hint={t('counter', editor.titleLimit)} label={t('title')}>
             <Input
-              id={`${fieldId}-title`}
               isInvalid={Boolean(errors.title)}
               maxLength={BLOG_POST_FORM.titleMax}
               placeholder={t('titlePlaceholder')}
               {...editor.form.register('title')}
             />
           </FormField>
-          <FormField
-            error={errors.excerpt && t('errors.excerpt', { min: BLOG_POST_FORM.excerptMin, max: BLOG_POST_FORM.excerptMax ?? editor.excerptLength })}
-            hint={t('counter', { length: editor.excerptLength, max: BLOG_POST_FORM.excerptMax ?? editor.excerptLength })}
-            htmlFor={`${fieldId}-excerpt`}
-            label={t('excerpt')}
-          >
+          <FormField error={errors.excerpt && t('errors.excerpt', editor.excerptLimit)} hint={t('counter', editor.excerptLimit)} label={t('excerpt')}>
             <Textarea
-              id={`${fieldId}-excerpt`}
               isInvalid={Boolean(errors.excerpt)}
               maxLength={BLOG_POST_FORM.excerptMax}
               placeholder={t('excerptPlaceholder')}
-              rows={3}
+              rows={BLOG_POST_FORM.rows}
               {...editor.form.register('excerpt')}
             />
           </FormField>
@@ -75,11 +61,9 @@ export const BlogPostForm = ({ post }: BlogPostFormProps) => {
           <Card className={s.panel} padding='lg'>
             <FormField label={t('category')}>
               <Controller
-                render={({ field }) => (
-                  <Select aria-label={t('category')} items={editor.categoryItems} value={field.value} onValueChange={field.onChange} />
-                )}
                 control={editor.form.control}
                 name='category'
+                render={({ field }) => <Select items={editor.categoryItems} value={field.value} onValueChange={field.onChange} />}
               />
             </FormField>
             <FormField label={t('locale')}>
@@ -91,8 +75,8 @@ export const BlogPostForm = ({ post }: BlogPostFormProps) => {
                 name='locale'
               />
             </FormField>
-            <FormField error={errors.tags && t('errors.tags')} hint={t('tagsHint')} htmlFor={`${fieldId}-tags`} label={t('tags')}>
-              <Input id={`${fieldId}-tags`} isInvalid={Boolean(errors.tags)} placeholder={t('tagsPlaceholder')} {...editor.form.register('tags')} />
+            <FormField error={errors.tags && t('errors.tags')} hint={t('tagsHint')} label={t('tags')}>
+              <Input isInvalid={Boolean(errors.tags)} placeholder={t('tagsPlaceholder')} {...editor.form.register('tags')} />
             </FormField>
             <Controller
               render={({ field }) => (
@@ -112,19 +96,14 @@ export const BlogPostForm = ({ post }: BlogPostFormProps) => {
             onRemove={editor.onCoverRemove}
           />
           <Card className={s.panel} padding='lg'>
-            <FormField error={errors.slug && t('errors.slug')} hint={t('slugHint')} htmlFor={`${fieldId}-slug`} label={t('slug')}>
-              <Input id={`${fieldId}-slug`} isInvalid={Boolean(errors.slug)} placeholder={t('slugPlaceholder')} {...editor.form.register('slug')} />
+            <FormField error={errors.slug && t('errors.slug')} hint={t('slugHint')} label={t('slug')}>
+              <Input isInvalid={Boolean(errors.slug)} placeholder={t('slugPlaceholder')} {...editor.form.register('slug')} />
             </FormField>
-            <FormField error={errors.seoTitle && t('errors.seoTitle')} htmlFor={`${fieldId}-seo-title`} label={t('seoTitle')}>
-              <Input id={`${fieldId}-seo-title`} isInvalid={Boolean(errors.seoTitle)} {...editor.form.register('seoTitle')} />
+            <FormField error={errors.seoTitle && t('errors.seoTitle')} label={t('seoTitle')}>
+              <Input isInvalid={Boolean(errors.seoTitle)} {...editor.form.register('seoTitle')} />
             </FormField>
-            <FormField error={errors.seoDescription && t('errors.seoDescription')} htmlFor={`${fieldId}-seo-description`} label={t('seoDescription')}>
-              <Textarea
-                id={`${fieldId}-seo-description`}
-                isInvalid={Boolean(errors.seoDescription)}
-                rows={3}
-                {...editor.form.register('seoDescription')}
-              />
+            <FormField error={errors.seoDescription && t('errors.seoDescription')} label={t('seoDescription')}>
+              <Textarea isInvalid={Boolean(errors.seoDescription)} rows={BLOG_POST_FORM.rows} {...editor.form.register('seoDescription')} />
             </FormField>
           </Card>
         </div>

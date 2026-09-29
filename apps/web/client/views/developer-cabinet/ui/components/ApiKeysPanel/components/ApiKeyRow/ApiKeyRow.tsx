@@ -3,11 +3,9 @@
 import { Trash2 } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { Badge, IconButton } from '@/ui-kit';
+import { Badge, IconButton, RelativeTime } from '@/ui-kit';
 
 import type { ApiKeyRowProps } from './ApiKeyRow.types';
-
-import { TimeAgo } from '../../../TimeAgo';
 
 import s from './ApiKeyRow.module.scss';
 
@@ -35,7 +33,7 @@ export const ApiKeyRow = ({ apiKey, onRevoke }: ApiKeyRowProps) => {
         <div className={s.cell}>
           <dt className={s.label}>{t('columns.lastUsed')}</dt>
           <dd className={s.value} data-idle={lastUsedAt === null}>
-            <TimeAgo fallback={t('notUsed')} value={lastUsedAt} />
+            <RelativeTime fallback={t('notUsed')} value={lastUsedAt} />
           </dd>
         </div>
         <div className={s.cell}>

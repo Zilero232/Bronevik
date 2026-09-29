@@ -1,6 +1,6 @@
 import type { PlayerInsights } from '@otmetki/schemas';
 
-export type InsightTip = PlayerInsights['tips'][number];
+type InsightTip = PlayerInsights['tips'][number];
 
 export type TipValues = Record<string, number | string>;
 

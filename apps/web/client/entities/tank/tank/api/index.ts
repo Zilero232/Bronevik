@@ -1,5 +1,4 @@
 export { compareTanks } from './compare-tanks';
-export type { CompareTanksInput } from './compare-tanks';
 export { economyView } from './mappers';
 export type { EconomyView } from './mappers';
 export {
@@ -12,19 +11,7 @@ export {
   getTankTrend,
   getTierList,
   listTankEconomy,
-  listTankStats,
-  listVehicles
+  listTankStats
 } from './tanks';
-export type {
-  MyEconomyInput,
-  MyLearningInput,
-  TankDetailInput,
-  TankEconomyInput,
-  TankEconomyTableInput,
-  TankPatchesInput,
-  TankStatsInput,
-  TankTopPlayersInput,
-  TankTrendInput,
-  TierListInput
-} from './tanks';
+export type { TankDetailInput, TankEconomyTableInput, TankStatsInput, TierListInput } from './tanks';
 export { vehicleCatalogQuery } from './vehicle-catalog';

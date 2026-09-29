@@ -7,17 +7,16 @@ import { NextIntlClientProvider } from 'next-intl';
 import { toast } from 'sonner';
 import { afterAll, afterEach, describe, expect, it, vi } from 'vitest';
 
+import { useStartTrial } from '@/entities/plus/subscription';
+import { startPlusTrial } from '@/entities/plus/subscription/api/billing/billing';
 import { QUERY_KEYS } from '@/shared/constants';
 import { messages } from '@/shared/i18n';
-
-import { startPlusTrial } from '../../../../api';
-import { useStartTrial } from '../use-start-trial';
 
 vi.hoisted(() => vi.resetModules());
 
 vi.mock('@/shared/i18n/navigation', () => ({ useRouter: () => ({ push: vi.fn() }) }));
 
-vi.mock('../../../../api', () => ({
+vi.mock('@/entities/plus/subscription/api/billing/billing', () => ({
   startPlusTrial: vi.fn(),
   getBillingStatus: vi.fn(),
   getPaymentHistory: vi.fn(),

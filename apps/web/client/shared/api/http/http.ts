@@ -3,7 +3,7 @@ import axios from 'axios';
 
 import { env } from '@/shared/config/client-env';
 import { serverEnv } from '@/shared/config/server-env';
-import { isServer } from '@/shared/lib';
+import { isServer } from '@/shared/lib/env';
 
 import { bearerToken } from './bearer-token';
 

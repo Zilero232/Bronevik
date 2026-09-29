@@ -1,6 +1,6 @@
 import type { ModuleOption, ProvisionKind } from '@otmetki/schemas';
 
-import type { BUILD_CATALOG, BUILD_CATEGORIES, CREW_ROLE_ORDER } from './build-catalog.constants';
+import type { BUILD_CATALOG, BUILD_CATEGORIES, CREW_ROLE_ORDER } from '../../config';
 
 export type BuildCategory = (typeof BUILD_CATEGORIES)[number];
 

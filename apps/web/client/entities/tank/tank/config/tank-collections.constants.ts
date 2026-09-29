@@ -1,4 +1,4 @@
-import type { TankCollectionCriteria } from '../lib/tank-collections/tank-collections.types';
+import type { TankCollectionCriteria } from '../lib/tank-collections';
 
 export const TANK_COLLECTION_SLUGS = ['preferential', 'armored', 'scouts', 'premium-farm', 'collector'] as const;
 

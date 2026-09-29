@@ -5,12 +5,12 @@ import { useVirtualizer, useWindowVirtualizer } from '@tanstack/react-virtual';
 
 import type { UseTableVirtualizerInput } from './use-table-virtualizer.types';
 
-import { TABLE_VIRTUALIZER } from './use-table-virtualizer.constants';
+import { DATA_TABLE_LAYOUT } from '../data-table-layout';
 
 export const useTableVirtualizer = ({ count, rowHeight, getScrollElement, overscan }: UseTableVirtualizerInput) => {
   'use no memo';
 
-  const isPageScroll = useMediaQuery(TABLE_VIRTUALIZER.pageScrollQuery);
+  const isPageScroll = useMediaQuery(DATA_TABLE_LAYOUT.compactQuery);
   const node = isPageScroll ? getScrollElement() : null;
   const scrollMargin = node ? node.getBoundingClientRect().top + window.scrollY : 0;
 

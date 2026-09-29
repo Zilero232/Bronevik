@@ -2,7 +2,7 @@ import { TIERS, toRoman } from '@otmetki/icons';
 
 import type { TipValues, TipValuesInput } from './insight-tip.types';
 
-const PERCENT = 100;
+import { INSIGHT_TIP } from '../../config';
 
 const numberParam = (value: number | string | undefined) => (typeof value === 'number' ? value : Number(value ?? 0));
 
@@ -15,7 +15,7 @@ export const tipValues = ({ tip, insights }: TipValuesInput): TipValues => {
   return {
     ...params,
     winRateDelta: Math.abs(numberParam(params.winRateDelta)).toFixed(1),
-    damageRatio: Math.round(numberParam(params.damageRatio) * PERCENT),
+    damageRatio: Math.round(numberParam(params.damageRatio) * INSIGHT_TIP.ratioPercent),
     tank: tank?.shortName ?? tank?.name ?? '—',
     tierRoman: tier ? toRoman(tier) : String(params.tier ?? '')
   };

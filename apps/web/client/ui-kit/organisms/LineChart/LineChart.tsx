@@ -1,38 +1,10 @@
 'use client';
 
-import { CHART, useChartFormat } from '@/shared/lib';
-
 import type { LineChartProps } from './LineChart.types';
 
 import { ChartFrame } from '../ChartKit';
 import { LineChartPlot } from './components';
 
-export const LineChart = ({
-  labels,
-  series,
-  height = CHART.defaultHeight,
-  yDomain,
-  withArea = false,
-  ariaLabel,
-  className,
-  hasTableToggle,
-  formatValue
-}: LineChartProps) => {
-  const format = useChartFormat(formatValue);
-
-  return (
-    <ChartFrame
-      ariaLabel={ariaLabel}
-      className={className}
-      formatValue={format}
-      hasTableToggle={hasTableToggle}
-      height={height}
-      labels={labels}
-      series={series}
-    >
-      {(width) => (
-        <LineChartPlot formatValue={format} height={height} labels={labels} series={series} width={width} withArea={withArea} yDomain={yDomain} />
-      )}
-    </ChartFrame>
-  );
-};
+export const LineChart = ({ yDomain, withArea = false, ...props }: LineChartProps) => (
+  <ChartFrame {...props}>{(plot) => <LineChartPlot {...plot} withArea={withArea} yDomain={yDomain} />}</ChartFrame>
+);

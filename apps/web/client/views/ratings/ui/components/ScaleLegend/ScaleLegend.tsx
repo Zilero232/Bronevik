@@ -1,6 +1,7 @@
 'use client';
 
 import { useFormatter, useTranslations } from 'next-intl';
+import { useId } from 'react';
 
 import type { ScaleLegendProps } from './ScaleLegend.types';
 
@@ -12,10 +13,11 @@ export const ScaleLegend = ({ rows }: ScaleLegendProps) => {
   const t = useTranslations('methodology.sections.scale');
   const tTiers = useTranslations('profile.header.tiers');
   const format = useFormatter();
+  const titleId = useId();
 
   return (
-    <section aria-labelledby='scale-title' className={s.root} id='scale'>
-      <h2 className={s.title} id='scale-title'>
+    <section aria-labelledby={titleId} className={s.root} id='scale'>
+      <h2 className={s.title} id={titleId}>
         {t('title')}
       </h2>
       <p className={s.lead}>{t('lead')}</p>

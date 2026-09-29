@@ -19,7 +19,6 @@ export { useShowcaseEquipment } from './use-showcase-equipment';
 export { useShowcaseFieldMods } from './use-showcase-field-mods';
 export type { ShowcaseRingSide } from './use-showcase-field-mods';
 export { useShowcaseSource } from './use-showcase-source';
-export type { ShowcaseSource } from './use-showcase-source';
 export { useShowcaseStats } from './use-showcase-stats';
 export { useShowcaseStatus } from './use-showcase-status';
 export { useShowcaseSupplies } from './use-showcase-supplies';

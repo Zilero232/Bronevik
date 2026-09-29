@@ -1,2 +1,2 @@
 export { GameIcon } from './GameIcon';
-export type { GameIconKind, GameIconProps } from './GameIcon.types';
+export type { GameIconKind } from './GameIcon.types';

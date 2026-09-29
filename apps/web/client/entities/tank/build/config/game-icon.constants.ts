@@ -11,5 +11,6 @@ export const GAME_ICON_FALLBACK = {
 } as const satisfies Record<string, LucideIcon>;
 
 export const GAME_ICON = {
-  glyphRatio: 0.6
+  glyphRatio: 0.6,
+  strokeWidth: 1.75
 } as const;

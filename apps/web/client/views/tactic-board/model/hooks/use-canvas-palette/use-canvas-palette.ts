@@ -3,7 +3,7 @@
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 
-import type { CanvasPalette } from '../../../model/board-tools.types';
+import type { CanvasPalette } from '../../../lib/canvas-palette';
 
 import { CANVAS_FALLBACK } from '../../../config';
 import { readCanvasPalette } from '../../../lib/canvas-palette';

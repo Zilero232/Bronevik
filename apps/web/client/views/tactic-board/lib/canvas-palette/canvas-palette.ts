@@ -1,7 +1,6 @@
 import { entries } from 'remeda';
 
-import type { CanvasPalette } from '../../model/board-tools.types';
-import type { PaletteSource } from './canvas-palette.types';
+import type { CanvasPalette, PaletteSource } from './canvas-palette.types';
 
 import { CANVAS_FALLBACK, CANVAS_TOKENS } from '../../config';
 

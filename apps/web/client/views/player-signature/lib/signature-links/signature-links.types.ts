@@ -1,6 +1,6 @@
 import type { SIGNATURE_SNIPPETS } from '../../config';
 
-export type SignatureSnippet = (typeof SIGNATURE_SNIPPETS)[number];
+type SignatureSnippet = (typeof SIGNATURE_SNIPPETS)[number];
 
 export type SignatureLinksInput = {
   nickname: string;

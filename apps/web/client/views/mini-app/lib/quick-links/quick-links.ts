@@ -2,7 +2,7 @@ import { ROUTES } from '@/shared/constants';
 
 import type { QuickLinkTarget } from './quick-links.types';
 
-import { QUICK_LINKS } from '../../config/quick-links.constants';
+import { QUICK_LINKS } from '../../config';
 
 export const quickLinkTargets = (nickname: string): QuickLinkTarget[] => {
   const hrefs = {

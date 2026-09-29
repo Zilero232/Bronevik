@@ -1,2 +1,2 @@
 export { getPlayerWrapped } from './wrapped';
-export type { PlayerWrapped, PlayerWrappedBattle, PlayerWrappedInput, PlayerWrappedTank } from './wrapped.types';
+export type { PlayerWrapped, PlayerWrappedBattle, PlayerWrappedInput } from './wrapped.types';

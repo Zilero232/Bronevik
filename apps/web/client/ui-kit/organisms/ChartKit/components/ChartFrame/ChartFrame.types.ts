@@ -1,9 +1,7 @@
 import type { ReactNode } from 'react';
 
-import type { ChartBaseProps } from '../../ChartKit.types';
+import type { ChartBaseProps, ChartPlotProps } from '../../ChartKit.types';
 
-export type ChartFrameProps = Pick<ChartBaseProps, 'ariaLabel' | 'className' | 'hasTableToggle' | 'labels' | 'series'> & {
-  height: number;
-  formatValue: (value: number) => string;
-  children: (width: number) => ReactNode;
+export type ChartFrameProps = Omit<ChartBaseProps, 'yDomain'> & {
+  children: (plot: ChartPlotProps) => ReactNode;
 };

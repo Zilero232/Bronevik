@@ -1,8 +1,6 @@
 import type { CellHint, CompareGuessInput, GuessFeedback, NumericHintInput, RelativeInput } from './compare-guess.types';
 
-import { GUESS_TOLERANCE } from '../../config';
-
-const MATCH: CellHint = { verdict: 'match', direction: null };
+import { GUESS_MATCH_HINT, GUESS_TOLERANCE } from '../../config';
 
 const equal = (isSame: boolean): CellHint => ({ verdict: isSame ? 'match' : 'miss', direction: null });
 
@@ -14,7 +12,7 @@ const numericHint = ({ guess, target, match, close }: NumericHintInput): CellHin
   const gap = Math.abs(target - guess);
 
   if (gap <= match) {
-    return MATCH;
+    return GUESS_MATCH_HINT;
   }
 
   return { verdict: gap <= close ? 'close' : 'miss', direction: target > guess ? 'up' : 'down' };
@@ -26,7 +24,17 @@ export const compareGuess = ({ guess, target }: CompareGuessInput): GuessFeedbac
   const isCorrect = guess.vehicle.tankId === target.vehicle.tankId;
 
   if (isCorrect) {
-    return { isCorrect, cells: { tier: MATCH, type: MATCH, nation: MATCH, premium: MATCH, damage: MATCH, winRate: MATCH } };
+    return {
+      isCorrect,
+      cells: {
+        tier: GUESS_MATCH_HINT,
+        type: GUESS_MATCH_HINT,
+        nation: GUESS_MATCH_HINT,
+        premium: GUESS_MATCH_HINT,
+        damage: GUESS_MATCH_HINT,
+        winRate: GUESS_MATCH_HINT
+      }
+    };
   }
 
   return {

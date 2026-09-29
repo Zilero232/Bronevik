@@ -1,6 +1,7 @@
 export const LOGIN = {
   telegramScript: 'https://telegram.org/js/telegram-widget.js?22',
   telegramCallback: 'onOtmetkiTelegramAuth',
+  telegramWidget: { size: 'large', radius: '2', requestAccess: 'write' },
   errorParam: 'authError',
   errors: [
     'lesta_state',

@@ -1,11 +1,7 @@
-import type { ChartBaseProps } from '../ChartKit';
+import type { ChartBaseProps, ChartPlotProps } from '../ChartKit';
 
 export type LineChartProps = ChartBaseProps & {
   withArea?: boolean;
 };
 
-export type LineChartPlotProps = Omit<LineChartProps, 'ariaLabel' | 'className' | 'formatValue' | 'hasTableToggle' | 'height'> & {
-  width: number;
-  height: number;
-  formatValue: (value: number) => string;
-};
+export type LineChartPlotProps = ChartPlotProps & Pick<LineChartProps, 'withArea' | 'yDomain'>;

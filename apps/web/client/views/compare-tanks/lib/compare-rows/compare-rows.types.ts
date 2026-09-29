@@ -20,7 +20,7 @@ export type RatioToBestInput = {
   isLower: boolean;
 };
 
-export type SpecRow = {
+type SpecRow = {
   key: TankSpecKey;
   cells: CompareCell[];
 };

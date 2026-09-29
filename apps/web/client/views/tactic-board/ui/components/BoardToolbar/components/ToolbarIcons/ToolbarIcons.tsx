@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 
 import { ClassIcon, IconButton, SegmentedControl } from '@/ui-kit';
 
-import type { BoardTeam } from '../../../../../model/board-tools.types';
+import type { BoardTeam } from '../../../../../lib/board-tools';
 
 import { BOARD_TANK_KINDS, BOARD_TEAMS } from '../../../../../config';
 import { useBoardToolbar } from '../../../../../model/hooks';

@@ -1,6 +1,6 @@
 import type { Nation, TankClass } from '@otmetki/icons';
 
-export type IconFilterValues = {
+type IconFilterValues = {
   class: TankClass;
   nation: Nation;
 };

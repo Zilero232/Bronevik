@@ -1,12 +1,10 @@
 import type { BadgeTone } from '@/ui-kit';
 
-import type { AttendanceStatus, RsvpStatus, WorkspaceEventKind } from '../api';
+import type { AttendanceStatus, WorkspaceEventKind } from '../api';
 
 export const EVENT_KINDS = ['clan_wars', 'stronghold', 'training', 'tournament', 'other'] as const satisfies readonly WorkspaceEventKind[];
 
 export const ATTENDANCE_STATUSES = ['invited', 'confirmed', 'declined', 'attended', 'absent'] as const satisfies readonly AttendanceStatus[];
-
-export const RSVP_STATUSES = ['confirmed', 'declined'] as const satisfies readonly RsvpStatus[];
 
 export const ATTENDANCE_TONES = {
   invited: 'neutral',

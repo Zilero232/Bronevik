@@ -1,6 +1,7 @@
 'use client';
 
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
+import { useId } from 'react';
 
 import { TankShowcaseCard } from '@/entities/tank/tank';
 import { ROUTES } from '@/shared/constants';
@@ -13,13 +14,13 @@ import s from './MarksMovement.module.scss';
 
 export const MarksMovement = () => {
   const t = useTranslations('home.marks');
-  const format = useFormatter();
-  const { query, updatedAt } = useMarksMovement();
+  const titleId = useId();
+  const { query, updatedAt, leaderFigures } = useMarksMovement();
   const columns = useMarksMovementColumns();
 
   return (
-    <Band aria-labelledby='home-marks' innerClassName={s.inner}>
-      <SectionHeader id='home-marks' meta={t('period')} more={{ href: ROUTES.marks, label: t('all') }} title={t('title')} variant='display' />
+    <Band aria-labelledby={titleId} innerClassName={s.inner}>
+      <SectionHeader id={titleId} meta={t('period')} more={{ href: ROUTES.marks, label: t('all') }} title={t('title')} variant='display' />
       <QueryState
         isCompact
         skeleton={
@@ -29,7 +30,7 @@ export const MarksMovement = () => {
             </Card>
             <div className={s.leaders}>
               <h3 className={s.subtitle}>{t('leaders')}</h3>
-              <Skeleton className={s.skeleton} count={HOME.marks.highlights} height={128} shape='block' />
+              <Skeleton className={s.skeleton} count={HOME.marks.highlights} height={HOME.marks.skeletonHeight} shape='block' />
             </div>
           </div>
         }
@@ -52,22 +53,7 @@ export const MarksMovement = () => {
             <div className={s.leaders}>
               <h3 className={s.subtitle}>{t('leaders')}</h3>
               {leaders.map((row) => (
-                <TankShowcaseCard
-                  key={row.vehicle.tankId}
-                  figures={[
-                    {
-                      id: 'p95',
-                      label: t('threeMarks'),
-                      value: row.moe ? format.number(row.moe.p95) : '—',
-                      delta: row.trend.p95Delta30d,
-                      isDeltaLowerBetter: true
-                    },
-                    { id: 'p65', label: t('oneMark'), value: row.moe ? format.number(row.moe.p65) : '—' },
-                    { id: 'p85', label: t('twoMarks'), value: row.moe ? format.number(row.moe.p85) : '—' }
-                  ]}
-                  layout='row'
-                  vehicle={row.vehicle}
-                />
+                <TankShowcaseCard key={row.vehicle.tankId} figures={leaderFigures(row)} layout='row' vehicle={row.vehicle} />
               ))}
             </div>
           </div>

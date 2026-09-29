@@ -10,8 +10,14 @@ export const useShowcaseEquipment = () => {
   const { isShares } = useShowcaseSource();
   const usage = useShowcaseUsage();
 
-  return {
-    columns: usage ? equipmentMatrix({ usage, devices: options.optionalDevices, slots: options.slots.optionalDevices }) : [],
-    isShares
-  };
+  const matrix = usage ? equipmentMatrix({ usage, devices: options.optionalDevices, slots: options.slots.optionalDevices }) : [];
+  const columns = matrix.map((column) => ({
+    category: column.category,
+    sets: [
+      { id: 'primary' as const, slots: column.primary, directive: column.directive },
+      { id: 'alternative' as const, slots: column.alternative, directive: column.directiveAlternative }
+    ].flatMap(({ slots, ...set }) => (slots ? [{ ...set, slots }] : []))
+  }));
+
+  return { columns, isShares };
 };

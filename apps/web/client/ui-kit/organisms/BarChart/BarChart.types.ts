@@ -1,9 +1,5 @@
-import type { ChartBaseProps } from '../ChartKit';
+import type { ChartBaseProps, ChartPlotProps } from '../ChartKit';
 
 export type BarChartProps = ChartBaseProps;
 
-export type BarChartPlotProps = Omit<BarChartProps, 'ariaLabel' | 'className' | 'formatValue' | 'hasTableToggle' | 'height'> & {
-  width: number;
-  height: number;
-  formatValue: (value: number) => string;
-};
+export type BarChartPlotProps = ChartPlotProps & Pick<BarChartProps, 'yDomain'>;

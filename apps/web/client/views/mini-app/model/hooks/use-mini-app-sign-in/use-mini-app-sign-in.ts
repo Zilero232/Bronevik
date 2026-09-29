@@ -19,6 +19,7 @@ export const useMiniAppSignIn = ({ launch, platform }: UseMiniAppSignInInput) =>
     }
   });
 
+  const { mutate } = signIn;
   const startedRef = useRef(false);
 
   useEffect(() => {
@@ -27,9 +28,8 @@ export const useMiniAppSignIn = ({ launch, platform }: UseMiniAppSignInInput) =>
     }
 
     startedRef.current = true;
-    signIn.mutate(launch.payload ?? '');
-    // eslint-disable-next-line react/exhaustive-deps -- sign in once per launch; the mutation object is rebuilt every render
-  }, [launch.env, launch.payload]);
+    mutate(launch.payload ?? '');
+  }, [launch.env, launch.payload, mutate]);
 
   return signIn;
 };

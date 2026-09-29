@@ -1,6 +1,7 @@
 'use client';
 
 import { useFormatter, useTranslations } from 'next-intl';
+import { useId } from 'react';
 
 import { ROUTES } from '@/shared/constants';
 import { EmptyState, MediaCard, QueryState, SectionHeader, Skeleton } from '@/ui-kit';
@@ -13,16 +14,17 @@ import s from './GameNews.module.scss';
 export const GameNews = () => {
   const t = useTranslations('home.news');
   const format = useFormatter();
+  const titleId = useId();
   const query = useGameNews();
 
   return (
-    <section aria-labelledby='home-news' className={s.root}>
-      <SectionHeader id='home-news' more={{ href: ROUTES.news, label: t('all') }} title={t('title')} variant='display' />
+    <section aria-labelledby={titleId} className={s.root}>
+      <SectionHeader id={titleId} more={{ href: ROUTES.news, label: t('all') }} title={t('title')} variant='display' />
       <QueryState
         isCompact
         skeleton={
           <div className={s.grid}>
-            <Skeleton className={s.skeleton} count={HOME.news.limit} height={220} shape='block' />
+            <Skeleton className={s.skeleton} count={HOME.news.limit} height={HOME.news.skeletonHeight} shape='block' />
           </div>
         }
         empty={<EmptyState isCompact isFramed title={t('empty')} />}

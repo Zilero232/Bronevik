@@ -1,3 +1,3 @@
-export { frontlinePlan, xpToLevel } from './frontline';
+export { frontlinePlan } from './frontline';
 
-export type { FrontlineNextReserve, FrontlinePlan, FrontlinePlanInput, XpToLevelInput } from './frontline.types';
+export type { FrontlinePlanInput } from './frontline.types';

@@ -4,7 +4,7 @@ import { parseAsArrayOf, parseAsInteger } from 'nuqs/server';
 
 import type { NumberFormatName } from '@/shared/i18n';
 
-import type { CompareFormat, CompareMetric } from '../model/compare.types';
+import type { CompareFormat, CompareMetric } from '../lib/compare-rows';
 
 export const COMPARE_LIMIT = {
   min: 2,

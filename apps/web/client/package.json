@@ -110,6 +110,7 @@
     "esbuild": "catalog:",
     "madge": "^8.0.0",
     "sass-embedded": "catalog:",
+    "schema-dts": "2.0.0",
     "serwist": "^9.5.12",
     "typescript": "catalog:"
   }

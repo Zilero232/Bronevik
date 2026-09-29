@@ -2,7 +2,7 @@ import { parseAsInteger, parseAsString, parseAsStringLiteral } from 'nuqs/server
 
 import type { GuideKind, GuideSort } from '@/entities/guide/guide';
 
-export const GUIDE_KINDS = ['tank', 'map', 'general'] as const satisfies readonly GuideKind[];
+const GUIDE_KINDS = ['tank', 'map', 'general'] as const satisfies readonly GuideKind[];
 
 export const GUIDE_KIND_FILTERS = ['all', ...GUIDE_KINDS] as const;
 

@@ -1,2 +1,2 @@
 export { showcaseRig } from './showcase-rig';
-export type { ShowcasePart, ShowcaseRig, ShowcaseRigInput } from './showcase-rig.types';
+export type { ShowcasePart, ShowcaseRig } from './showcase-rig.types';

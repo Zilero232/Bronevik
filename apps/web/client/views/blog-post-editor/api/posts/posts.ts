@@ -5,11 +5,11 @@ import { zBlogImageUpload } from '@/shared/api/generated/zod.gen';
 import { api, SESSION_REQUEST } from '@/shared/api/http';
 import { fromSdk, fromServer } from '@/shared/api/source';
 
-import type { UpdateBlogPostInput } from './posts.types';
+import type { GetEditorPostInput, UpdateBlogPostInput } from './posts.types';
 
 import { BLOG_POST_FORM } from '../../config';
 
-export const getEditorPost = (id: string, signal?: AbortSignal): Promise<BlogEditorPost> =>
+export const getEditorPost = ({ id, signal }: GetEditorPostInput): Promise<BlogEditorPost> =>
   fromSdk(() => blogEditorControllerGet({ ...SESSION_REQUEST, path: { id }, signal }));
 
 export const createBlogPost = (body: CreateBlogPost): Promise<BlogEditorPost> =>

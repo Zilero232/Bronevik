@@ -9,7 +9,7 @@ import type { TableColumn } from '@/ui-kit';
 
 import { TankCell, WinRateCell } from '@/entities/tank/tank';
 
-import { MetricCell } from '../../../ui/components/MissionTanks/components/MetricCell';
+import { MetricCell } from '../../../ui/components/MissionTanks/components';
 
 const column = createColumnHelper<MissionTank>();
 

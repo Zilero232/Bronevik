@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-export type FieldSpec<K extends string> = {
+type FieldSpec<K extends string> = {
   key: K;
   label: ReactNode;
   min: number;

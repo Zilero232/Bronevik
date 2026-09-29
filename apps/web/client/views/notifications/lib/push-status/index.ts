@@ -1,3 +1,3 @@
 export { resolvePushStatus } from './push-status';
 
-export type { PushStatus, PushStatusInput } from './push-status.types';
+export type { PushStatusInput } from './push-status.types';

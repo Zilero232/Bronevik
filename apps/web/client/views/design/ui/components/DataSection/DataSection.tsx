@@ -3,11 +3,11 @@
 import { Mark3Icon, RandomBattleIcon } from '@otmetki/icons';
 import { Dices } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
 
 import { AnimatedNumber, Button, EmptyState, KeyFigure, ProgressBar, ProgressRing, Skeleton, Sparkline } from '@/ui-kit';
 
 import { SPARKLINE_SPECIMEN } from '../../../config';
+import { useDataSection } from '../../../model/hooks';
 import { DesignBlock } from '../DesignBlock';
 import { DesignRow } from '../DesignRow';
 
@@ -15,7 +15,7 @@ import s from './DataSection.module.scss';
 
 export const DataSection = () => {
   const t = useTranslations('design.data');
-  const [value, setValue] = useState(48_211);
+  const { value, shuffle } = useDataSection();
 
   return (
     <DesignBlock id='data' title={t('title')}>
@@ -29,7 +29,7 @@ export const DataSection = () => {
         <span className={s.big}>
           <AnimatedNumber value={value} />
         </span>
-        <Button size='sm' variant='secondary' onClick={() => setValue(Math.round(10_000 + Math.random() * 90_000))}>
+        <Button size='sm' variant='secondary' onClick={shuffle}>
           <Dices size={14} />
           {t('shuffle')}
         </Button>

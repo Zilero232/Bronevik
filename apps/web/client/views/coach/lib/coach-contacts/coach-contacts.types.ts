@@ -1,6 +1,6 @@
 import type { COACH_CONTACT_KINDS } from '../../config';
 
-export type CoachContactKind = (typeof COACH_CONTACT_KINDS)[number];
+type CoachContactKind = (typeof COACH_CONTACT_KINDS)[number];
 
 export type CoachContactLink = {
   kind: CoachContactKind;

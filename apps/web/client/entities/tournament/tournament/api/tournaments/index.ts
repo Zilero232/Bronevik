@@ -1,11 +1,7 @@
 export { getTournament, listTournaments } from './tournaments';
 export type {
   CreateTournament,
-  GetTournamentInput,
-  ListTournamentsInput,
-  RegisterTournament,
   RegisterTournamentInput,
-  ReportMatch,
   ReportMatchInput,
   Tournament,
   TournamentBracket,

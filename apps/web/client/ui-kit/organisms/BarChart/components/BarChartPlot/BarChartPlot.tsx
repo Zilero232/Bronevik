@@ -8,16 +8,16 @@ import { ChartCanvas } from '../../../ChartKit';
 
 import s from '../../../ChartKit/ChartKit.module.scss';
 
-export const BarChartPlot = ({ labels, series, width, height, yDomain, formatValue }: BarChartPlotProps) => {
-  const { layout, pointer, inner } = useBarChartLayout({ width, height, labels, series, yDomain });
+export const BarChartPlot = ({ yDomain, ...plot }: BarChartPlotProps) => {
+  const { layout, pointer, inner } = useBarChartLayout({ ...plot, yDomain });
 
   const { xScale, yScale } = layout;
 
   return (
-    <ChartCanvas {...layout} {...pointer} formatValue={formatValue} height={height} labels={labels} series={series} width={width}>
-      {series.map((item, seriesIndex) => (
+    <ChartCanvas {...layout} {...pointer} {...plot}>
+      {plot.series.map((item, seriesIndex) => (
         <g key={item.id} className={s.series} data-tone={seriesTone({ tone: item.tone, index: seriesIndex })}>
-          {labels.map((label, index) => {
+          {plot.labels.map((label, index) => {
             const top = yScale(Math.max(item.values[index] ?? 0, 0));
 
             return (

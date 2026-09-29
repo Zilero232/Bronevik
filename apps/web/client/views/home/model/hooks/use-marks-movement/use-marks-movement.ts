@@ -1,14 +1,21 @@
 'use client';
 
+import type { MoeRow } from '@otmetki/schemas';
+
 import { useQuery } from '@tanstack/react-query';
+import { useFormatter, useLocale, useTranslations } from 'next-intl';
 
 import { listMoe } from '@/entities/player/marks';
 import { QUERY_KEYS } from '@/shared/constants';
+import { statValueText } from '@/shared/lib';
 
 import { HOME } from '../../../config';
 
 export const useMarksMovement = () => {
-  const params = { sort: 'p95Delta30d', order: 'desc', limit: HOME.marks.limit } as const;
+  const t = useTranslations('home.marks');
+  const format = useFormatter();
+  const locale = useLocale();
+  const params = { sort: HOME.marks.sort, order: HOME.marks.order, limit: HOME.marks.limit };
 
   const query = useQuery({
     queryKey: QUERY_KEYS.marks.list(params),
@@ -20,5 +27,15 @@ export const useMarksMovement = () => {
     }
   });
 
-  return { query, updatedAt: query.data?.rows[0]?.updatedAt ?? null };
+  const moeText = (value: number | undefined) => statValueText({ value: value === undefined ? null : format.number(value), locale });
+
+  return {
+    query,
+    updatedAt: query.data?.rows[0]?.updatedAt ?? null,
+    leaderFigures: (row: MoeRow) => [
+      { id: 'p95', label: t('threeMarks'), value: moeText(row.moe?.p95), delta: row.trend.p95Delta30d, isDeltaLowerBetter: true },
+      { id: 'p65', label: t('oneMark'), value: moeText(row.moe?.p65) },
+      { id: 'p85', label: t('twoMarks'), value: moeText(row.moe?.p85) }
+    ]
+  };
 };

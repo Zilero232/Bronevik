@@ -1,5 +1,6 @@
 import { ArrowRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useId } from 'react';
 
 import { Band, MediaCard } from '@/ui-kit';
 
@@ -9,10 +10,11 @@ import s from './CommunityBand.module.scss';
 
 export const CommunityBand = () => {
   const t = useTranslations('home.community');
+  const titleId = useId();
 
   return (
-    <Band aria-labelledby='home-community' innerClassName={s.inner}>
-      <h2 className={s.title} id='home-community'>
+    <Band aria-labelledby={titleId} innerClassName={s.inner}>
+      <h2 className={s.title} id={titleId}>
         {t('title')}
       </h2>
       <ul className={s.grid}>
@@ -27,7 +29,7 @@ export const CommunityBand = () => {
               aspect='wide'
               href={href}
               sub={t(`${key}.description`)}
-              subIcon={<ArrowRight size={12} />}
+              subIcon={<ArrowRight size={HOME_ICON.communityArrow} />}
               title={t(`${key}.title`)}
             />
           </li>

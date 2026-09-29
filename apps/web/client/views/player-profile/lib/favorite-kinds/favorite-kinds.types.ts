@@ -5,6 +5,11 @@ export type FavoriteShare<T> = {
   share: number;
 };
 
+export type TopShareInput<T> = {
+  rows: readonly PlayerTankRow[];
+  key: (row: PlayerTankRow) => T;
+};
+
 export type FavoriteKinds = {
   nation: FavoriteShare<PlayerTankRow['vehicle']['nation']> | null;
   tankClass: FavoriteShare<PlayerTankRow['vehicle']['type']> | null;

@@ -1,6 +1,6 @@
-import type { Tournament, TournamentsControllerListData } from '@/shared/api/generated';
+import type { RegisterTournament, ReportMatch, Tournament, TournamentsControllerListData, WithdrawTournament } from '@/shared/api/generated';
 
-export type { CreateTournament, RegisterTournament, ReportMatch, Tournament, TournamentPage } from '@/shared/api/generated';
+export type { CreateTournament, Tournament, TournamentPage } from '@/shared/api/generated';
 
 export type TournamentStatus = Tournament['status'];
 
@@ -17,20 +17,14 @@ export type GetTournamentInput = {
   signal?: AbortSignal;
 };
 
-export type RegisterTournamentInput = {
+export type RegisterTournamentInput = RegisterTournament & {
   id: string;
-  accountId?: number;
-  teamName?: string;
 };
 
-export type WithdrawTournamentInput = {
+export type WithdrawTournamentInput = WithdrawTournament & {
   id: string;
-  accountId?: number;
 };
 
-export type ReportMatchInput = {
+export type ReportMatchInput = ReportMatch & {
   id: string;
-  round: number;
-  index: number;
-  winner: number;
 };

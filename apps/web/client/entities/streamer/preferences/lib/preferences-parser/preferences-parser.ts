@@ -3,13 +3,11 @@ import { isIncludedIn, mergeDeep } from 'remeda';
 
 import type { AddValueInput, PreferencesField, PreferencesImport, ReadTagInput } from './preferences-parser.types';
 
-import { PREFERENCES_TAGS, PREFERENCES_VALUES } from '../../config';
-
-const BLOCKED = new Set<string>(PREFERENCES_TAGS.blocked.map((tag) => tag.toLowerCase()));
+import { PREFERENCES_BLOCKED_TAGS, PREFERENCES_TAGS, PREFERENCES_VALUES } from '../../config';
 
 const isBlocked = (element: Element): boolean => {
   for (let node: Element | null = element; node; node = node.parentElement) {
-    if (BLOCKED.has(node.tagName.toLowerCase())) {
+    if (PREFERENCES_BLOCKED_TAGS.has(node.tagName.toLowerCase())) {
       return true;
     }
   }

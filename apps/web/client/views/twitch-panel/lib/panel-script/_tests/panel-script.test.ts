@@ -29,8 +29,12 @@ const mount = (html: string) => {
 
   document.body.replaceChildren(...(panel ? [panel] : []));
 
-  // eslint-disable-next-line no-eval -- the shipped static script must run in the jsdom window, as a browser would
-  return () => window.eval(script);
+  return () => {
+    const element = document.createElement('script');
+
+    element.textContent = script;
+    document.body.append(element);
+  };
 };
 
 afterEach(() => {

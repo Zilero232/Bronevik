@@ -1,4 +1,4 @@
-export type ReturnOutlookState = 'later' | 'overdue' | 'soon' | 'unknown';
+type ReturnOutlookState = 'later' | 'overdue' | 'soon' | 'unknown';
 
 export type ReturnOutlook = {
   state: ReturnOutlookState;

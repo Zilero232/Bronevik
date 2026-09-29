@@ -1,6 +1,6 @@
 import type { TwitchPanel } from '@otmetki/schemas';
 
-import type { PanelConfig, PanelWindow } from './panel-script.types';
+import type { PanelConfig, PanelElementInput, PanelStatInput, PanelWindow } from './panel-script.types';
 
 export const runPanelScript = (): void => {
   const root = document.getElementById('panel');
@@ -14,7 +14,7 @@ export const runPanelScript = (): void => {
   const number = new Intl.NumberFormat(config.locale, { maximumFractionDigits: 0 });
   const percent = new Intl.NumberFormat(config.locale, { style: 'percent', maximumFractionDigits: 1 });
 
-  const el = (tag: string, className = '', text?: string) => {
+  const el = ({ tag, className = '', text }: PanelElementInput) => {
     const node = document.createElement(tag);
 
     node.className = className;
@@ -26,35 +26,35 @@ export const runPanelScript = (): void => {
     return node;
   };
 
-  const stat = (label: string, value: string) => {
-    const box = el('div', 'stat');
+  const stat = ({ label, value }: PanelStatInput) => {
+    const box = el({ tag: 'div', className: 'stat' });
 
-    box.append(el('span', 'stat-value', value), el('span', 'stat-label', label));
+    box.append(el({ tag: 'span', className: 'stat-value', text: value }), el({ tag: 'span', className: 'stat-label', text: label }));
 
     return box;
   };
 
-  const footer = () => el('p', 'note', copy.attribution);
-  const fail = () => root.replaceChildren(el('p', 'empty', copy.error), footer());
+  const footer = () => el({ tag: 'p', className: 'note', text: copy.attribution });
+  const fail = () => root.replaceChildren(el({ tag: 'p', className: 'empty', text: copy.error }), footer());
 
   const sessionBlock = (session: TwitchPanel['session']) => {
-    const block = el('section', 'block');
+    const block = el({ tag: 'section', className: 'block' });
 
-    block.append(el('h2', 'block-title', session?.isOpen ? copy.live : copy.session));
+    block.append(el({ tag: 'h2', className: 'block-title', text: session?.isOpen ? copy.live : copy.session }));
 
     if (!session || session.battles === 0) {
-      block.append(el('p', 'empty', copy.noSession));
+      block.append(el({ tag: 'p', className: 'empty', text: copy.noSession }));
 
       return block;
     }
 
-    const grid = el('div', 'grid');
+    const grid = el({ tag: 'div', className: 'grid' });
 
     grid.append(
-      stat(copy.battles, number.format(session.battles)),
-      stat(copy.winRate, percent.format(session.wins / session.battles)),
-      stat(copy.avgDamage, number.format(session.avgDamage)),
-      stat('WN8', session.wn8 === null ? '—' : number.format(session.wn8))
+      stat({ label: copy.battles, value: number.format(session.battles) }),
+      stat({ label: copy.winRate, value: percent.format(session.wins / session.battles) }),
+      stat({ label: copy.avgDamage, value: number.format(session.avgDamage) }),
+      stat({ label: copy.wn8, value: session.wn8 === null ? '—' : number.format(session.wn8) })
     );
 
     block.append(grid);
@@ -63,27 +63,32 @@ export const runPanelScript = (): void => {
   };
 
   const marksBlock = (marks: TwitchPanel['marks']) => {
-    const block = el('section', 'block');
-    const counts = el('div', 'counts');
+    const block = el({ tag: 'section', className: 'block' });
+    const counts = el({ tag: 'div', className: 'counts' });
 
-    counts.append(el('span', 'count', `3 × ${marks.moe3}`), el('span', 'count', `2 × ${marks.moe2}`), el('span', 'count', `1 × ${marks.moe1}`));
-    block.append(el('h2', 'block-title', copy.marks), counts);
+    counts.append(
+      el({ tag: 'span', className: 'count', text: `3 × ${marks.moe3}` }),
+      el({ tag: 'span', className: 'count', text: `2 × ${marks.moe2}` }),
+      el({ tag: 'span', className: 'count', text: `1 × ${marks.moe1}` })
+    );
+
+    block.append(el({ tag: 'h2', className: 'block-title', text: copy.marks }), counts);
 
     if (marks.closest.length === 0) {
-      block.append(el('p', 'empty', copy.noMarks));
+      block.append(el({ tag: 'p', className: 'empty', text: copy.noMarks }));
 
       return block;
     }
 
-    block.append(el('h2', 'block-title', copy.closest));
+    block.append(el({ tag: 'h2', className: 'block-title', text: copy.closest }));
 
     for (const line of marks.closest) {
-      const mark = el('div', 'mark');
-      const row = el('div', 'mark-row');
-      const bar = el('div', 'bar');
-      const fill = el('span');
+      const mark = el({ tag: 'div', className: 'mark' });
+      const row = el({ tag: 'div', className: 'mark-row' });
+      const bar = el({ tag: 'div', className: 'bar' });
+      const fill = el({ tag: 'span' });
 
-      row.append(el('span', '', line.tankName), el('strong', '', `${line.percent.toFixed(2)}%`));
+      row.append(el({ tag: 'span', text: line.tankName }), el({ tag: 'strong', text: `${line.percent.toFixed(2)}%` }));
       fill.style.width = `${Math.max(0, Math.min(100, line.percent))}%`;
       bar.append(fill);
       mark.append(row, bar);
@@ -94,10 +99,13 @@ export const runPanelScript = (): void => {
   };
 
   const render = (data: TwitchPanel) => {
-    const head = el('header', 'head');
+    const head = el({ tag: 'header', className: 'head' });
     const nodes = [head, sessionBlock(data.session), marksBlock(data.marks)];
 
-    head.append(el('span', 'eyebrow', copy.title), el('strong', 'nick', data.nickname ?? copy.notConnected));
+    head.append(
+      el({ tag: 'span', className: 'eyebrow', text: copy.title }),
+      el({ tag: 'strong', className: 'nick', text: data.nickname ?? copy.notConnected })
+    );
 
     if (data.profileUrl) {
       const link = Object.assign(document.createElement('a'), {

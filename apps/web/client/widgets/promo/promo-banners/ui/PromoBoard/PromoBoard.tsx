@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useId } from 'react';
 
 import { PROMO_CAROUSEL } from '../../config';
 import { usePromoBoard } from '../../model/hooks';
@@ -10,11 +11,12 @@ import s from './PromoBoard.module.scss';
 
 export const PromoBoard = () => {
   const t = useTranslations('promo.board');
+  const titleId = useId();
   const { hero, tiles, isManagerReady } = usePromoBoard();
 
   return (
-    <section aria-labelledby='promo-board-title' className={s.root}>
-      <h2 className={s.srTitle} id='promo-board-title'>
+    <section aria-labelledby={titleId} className={s.root}>
+      <h2 className={s.srTitle} id={titleId}>
         {t('title')}
       </h2>
       <div className={s.grid}>

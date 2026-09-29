@@ -1,12 +1,5 @@
 export { calculateLoadout, getBuildHistory, getBuildOptions, getRecommendedBuild, listBuildsCatalog, listPopularBuilds } from './api';
-export type {
-  BuildHistoryInput,
-  BuildOptionsInput,
-  BuildsCatalogInput,
-  CalculateLoadoutInput,
-  PopularBuildsInput,
-  RecommendedBuildInput
-} from './api';
+export type { RecommendedBuildInput } from './api';
 export { BUILD_PRESETS, BUILD_URL, EQUIP_TILE } from './config';
 export { equipCategory } from './lib/equip-category';
 export type { EquipTileCategory } from './lib/equip-category';
@@ -14,10 +7,6 @@ export { gameLabel } from './lib/game-label';
 export { emptyLoadout, parseLoadout, serializeLoadout } from './lib/loadout-code';
 export { buildKey, popularLoadout } from './lib/popular-loadout';
 export { recommendedBuildHref } from './lib/recommended-href';
-export type { RecommendedHrefInput } from './lib/recommended-href';
 export { EquipTile } from './ui/EquipTile';
-export type { EquipTileProps } from './ui/EquipTile';
 export { GameIcon } from './ui/GameIcon';
-export type { GameIconKind, GameIconProps } from './ui/GameIcon';
 export { SkillRow } from './ui/SkillRow';
-export type { SkillRowProps } from './ui/SkillRow';

@@ -1,3 +1,3 @@
 export { Legend } from './Legend';
 
-export type { LegendItem, LegendProps, LegendTone } from './Legend.types';
+export type { LegendTone } from './Legend.types';

@@ -1,2 +1,2 @@
 export { DrawerGroup } from './DrawerGroup';
-export type { DrawerGroupLink, DrawerGroupProps } from './DrawerGroup.types';
+export type { DrawerGroupProps } from './DrawerGroup.types';

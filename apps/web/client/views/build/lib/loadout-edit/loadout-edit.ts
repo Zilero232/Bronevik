@@ -22,7 +22,7 @@ import type {
   ToggleSkillInput
 } from './loadout-edit.types';
 
-import { LOADOUT_REQUEST, MODULE_ORDER, MODULE_SLOTS, SLOT_SIZES } from './loadout-edit.constants';
+import { LOADOUT_REQUEST, MODULE_ORDER, MODULE_SLOTS, SLOT_SIZES } from '../../config';
 
 export const slotsOf = ({ loadout, field }: SlotsOfInput): (number | null)[] =>
   Array.from({ length: SLOT_SIZES[field] }, (_, index) => loadout[field][index] ?? null);
@@ -78,7 +78,7 @@ export const fieldModSide = ({ loadout, step }: FieldModSideInput): FieldModSide
   return index === 0 || index === 1 ? index : null;
 };
 
-export const moduleIdsOf = (loadout: Loadout): number[] =>
+const moduleIdsOf = (loadout: Loadout): number[] =>
   (loadout.profileId ?? '')
     .split(',')
     .map(Number)

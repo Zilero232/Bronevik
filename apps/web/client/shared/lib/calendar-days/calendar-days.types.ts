@@ -1,4 +1,4 @@
-export type CalendarDate = number | string | Date;
+type CalendarDate = number | string | Date;
 
 export type ZonedDayInput = {
   date: CalendarDate;

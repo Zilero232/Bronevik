@@ -19,3 +19,13 @@ export type ShowcaseRig = {
   floor: number;
   height: number;
 };
+
+export type TranslateInput = {
+  point: Vec3;
+  offset: Vec3;
+};
+
+export type PartsOfInput = {
+  pieces: ReadonlyMap<string, ArmorPieceGeometry>;
+  entries: readonly (readonly [string | undefined, Vec3])[];
+};

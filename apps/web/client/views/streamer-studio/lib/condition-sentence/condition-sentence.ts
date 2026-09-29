@@ -13,7 +13,7 @@ import type {
   SentencePart
 } from './condition-sentence.types';
 
-const OUTCOME_METRICS = ['win', 'survive'] as const;
+import { CHALLENGE_OUTCOME_METRICS } from '../../config';
 
 const leadOf = ({ battles, aggregate }: ChallengeCondition): SentenceLead => {
   if (battles <= 1) {
@@ -25,7 +25,7 @@ const leadOf = ({ battles, aggregate }: ChallengeCondition): SentenceLead => {
 
 const goalOf = ({ condition, lead }: SentenceGoalInput): SentencePart[] => {
   const { metric, operator, value } = condition;
-  const outcome = OUTCOME_METRICS.find((item) => item === metric);
+  const outcome = CHALLENGE_OUTCOME_METRICS.find((item) => item === metric);
 
   if (outcome && (lead === 'single' || lead === 'each')) {
     return [{ key: `goal.${outcome}` }];

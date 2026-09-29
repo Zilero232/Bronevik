@@ -9,10 +9,9 @@ import { range } from 'remeda';
 import type { CalendarDay } from '../calendar-layout';
 import type { UseCalendarHeatmapInput } from './use-calendar-heatmap.types';
 
-import { calendarLayout, calendarStep, heatLevel } from '../calendar-layout';
+import { calendarLayout, calendarStep, heatLevel, utcDay } from '../calendar-layout';
 import { useScrollToEnd } from '../use-scroll-to-end';
-
-const utcDate = (date: string) => new Date(`${date}T00:00:00Z`);
+import { CALENDAR_HEATMAP } from './use-calendar-heatmap.constants';
 
 export const useCalendarHeatmap = ({ days, levels }: UseCalendarHeatmapInput) => {
   const format = useFormatter();
@@ -40,7 +39,7 @@ export const useCalendarHeatmap = ({ days, levels }: UseCalendarHeatmapInput) =>
     active,
     columns: weeks.length,
     legend: range(0, levels),
-    months: months.map(({ index, date }) => ({ index, date, label: format.dateTime(utcDate(date), { month: 'short', timeZone: 'UTC' }) })),
+    months: months.map(({ index, date }) => ({ index, date, label: format.dateTime(utcDay(date), CALENDAR_HEATMAP.monthFormat) })),
     cells: weeks.flatMap((week, column) =>
       week.map(({ key, day }, row) => ({
         key,
@@ -48,7 +47,7 @@ export const useCalendarHeatmap = ({ days, levels }: UseCalendarHeatmapInput) =>
         column,
         row,
         level: day ? heatLevel({ value: day.value, max, levels }) : 0,
-        label: day ? format.dateTime(utcDate(day.date), { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }) : undefined,
+        label: day ? format.dateTime(utcDay(day.date), CALENDAR_HEATMAP.dayFormat) : undefined,
         tabIndex: day ? (indexOf.get(day.date) === tabbable ? 0 : -1) : undefined
       }))
     ),

@@ -2,7 +2,7 @@ import type { OverlayData, OverlayMetric } from '@otmetki/schemas';
 
 import type { RatingTone } from '@/shared/lib';
 
-export type OverlayResult = NonNullable<NonNullable<OverlayData['session']>['lastBattle']>['result'];
+type OverlayResult = NonNullable<NonNullable<OverlayData['session']>['lastBattle']>['result'];
 
 export type OverlayValueKind = 'count' | 'percent' | 'rating';
 

@@ -2,7 +2,7 @@ import { GlobalMapIcon, HeavyTankSilhouetteIcon } from '@otmetki/icons';
 
 import { ROUTES } from '@/shared/constants';
 
-import type { GuessStreak } from '../lib/streak/streak.types';
+import type { GuessStreak } from '../lib/streak';
 
 export const EMPTY_STREAK = { current: 0, best: 0, played: 0, wins: 0, lastDay: null } as const satisfies GuessStreak;
 

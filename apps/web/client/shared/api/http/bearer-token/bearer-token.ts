@@ -1,5 +1,5 @@
 import { STORAGE_KEYS } from '@/shared/constants';
-import { isBrowser } from '@/shared/lib';
+import { isBrowser } from '@/shared/lib/env';
 
 const read = () => {
   if (!isBrowser()) {

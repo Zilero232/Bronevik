@@ -1,2 +1,2 @@
 export { readPinnedIds, togglePinnedId } from './pinned-ids';
-export type { PinScope, TogglePinnedIdInput } from './pinned-ids.types';
+export type { PinScope } from './pinned-ids.types';

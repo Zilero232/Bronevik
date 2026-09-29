@@ -1,6 +1,5 @@
 export { BATTLE_PASS, BATTLE_PASS_FIELDS } from './battle-pass.constants';
 export { CALC_URL_PARSER, CALCULATOR_IDS, TOOLS_FORMAT, TOOLS_LAYOUT } from './calculators.constants';
-export type { CalculatorId } from './calculators.constants';
 export { CREW_BONUSES, CREW_XP } from './crew.constants';
 export type { CrewBonus } from './crew.constants';
 export { ECONOMY, ECONOMY_TIERS, SHELL_ICONS, SHELL_KINDS } from './economy.constants';

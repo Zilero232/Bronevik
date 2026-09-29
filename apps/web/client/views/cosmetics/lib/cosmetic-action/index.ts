@@ -1,2 +1,2 @@
 export { cosmeticAction } from './cosmetic-action';
-export type { CosmeticAction, CosmeticActionInput } from './cosmetic-action.types';
+export type { CosmeticAction } from './cosmetic-action.types';

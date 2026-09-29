@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-export type SectionHeaderMore = {
+type SectionHeaderMore = {
   href: string;
   label: ReactNode;
 };

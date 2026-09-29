@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-export type ResourceMissingReason = 'error' | 'notFound';
+type ResourceMissingReason = 'error' | 'notFound';
 
 export type ResourceMissingProps = {
   reason: ResourceMissingReason;

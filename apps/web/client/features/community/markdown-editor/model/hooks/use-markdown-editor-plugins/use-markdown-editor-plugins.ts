@@ -23,7 +23,7 @@ export const useMarkdownEditorPlugins = ({ toolbar, onImageUpload }: UseMarkdown
   const { resolvedTheme } = useTheme();
   const plugins = useMemo(
     () => [
-      headingsPlugin({ allowedHeadingLevels: [...MARKDOWN_EDITOR.headingLevels] }),
+      headingsPlugin({ allowedHeadingLevels: MARKDOWN_EDITOR.headingLevels }),
       listsPlugin(),
       quotePlugin(),
       thematicBreakPlugin(),

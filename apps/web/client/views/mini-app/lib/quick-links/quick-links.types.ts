@@ -1,6 +1,6 @@
-import type { QUICK_LINKS } from '../../config/quick-links.constants';
+import type { QUICK_LINKS } from '../../config';
 
-export type QuickLinkKey = (typeof QUICK_LINKS)[number];
+type QuickLinkKey = (typeof QUICK_LINKS)[number];
 
 export type QuickLinkTarget = {
   key: QuickLinkKey;

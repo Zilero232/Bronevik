@@ -2,7 +2,7 @@ import { isIncludedIn } from 'remeda';
 
 import { SITE_FOOTER_GROUPS } from '@/shared/constants';
 
-export const LOGIN_CLOSED = {
+const LOGIN_CLOSED = {
   actionKeys: ['mod', 'ratings', 'status']
 } as const;
 

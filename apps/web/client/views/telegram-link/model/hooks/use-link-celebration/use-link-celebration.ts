@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useState } from 'react';
 import { toast } from 'sonner';
 
 import type { UseLinkCelebrationInput } from './use-link-celebration.types';
@@ -10,9 +10,11 @@ export const useLinkCelebration = ({ isLinked, onLinked }: UseLinkCelebrationInp
   const t = useTranslations('telegram.toast');
   const [previous, setPrevious] = useState(isLinked);
   const [bursts, setBursts] = useState(0);
-  const onLinkedRef = useRef(onLinked);
 
-  onLinkedRef.current = onLinked;
+  const celebrate = useEffectEvent(() => {
+    toast.success(t('linked'));
+    onLinked();
+  });
 
   if (previous !== isLinked) {
     setPrevious(isLinked);
@@ -23,13 +25,9 @@ export const useLinkCelebration = ({ isLinked, onLinked }: UseLinkCelebrationInp
   }
 
   useEffect(() => {
-    if (bursts === 0) {
-      return;
+    if (bursts > 0) {
+      celebrate();
     }
-
-    toast.success(t('linked'));
-    onLinkedRef.current();
-    // eslint-disable-next-line react/exhaustive-deps -- celebrate once per new link; the translator is stable
   }, [bursts]);
 
   return bursts;

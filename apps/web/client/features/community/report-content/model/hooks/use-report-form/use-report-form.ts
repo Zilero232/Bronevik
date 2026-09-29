@@ -12,7 +12,7 @@ import { useAuthSession } from '@/entities/auth/session';
 import type { ReportFormOutput, ReportFormValues, ReportTarget } from '../../../lib/report-form';
 
 import { createReport } from '../../../api';
-import { REPORT_DETAILS_MAX_LENGTH, REPORT_FORM_DEFAULT_VALUES, REPORT_REASONS } from '../../../config';
+import { REPORT_FORM } from '../../../config';
 import { reportFormSchema, toCreateReport } from '../../../lib/report-form';
 
 export const useReportForm = ({ targetType, targetId }: ReportTarget) => {
@@ -21,7 +21,7 @@ export const useReportForm = ({ targetType, targetId }: ReportTarget) => {
   const [isOpen, setOpen] = useBoolean(false);
   const form = useForm<ReportFormValues, unknown, ReportFormOutput>({
     resolver: zodResolver(reportFormSchema),
-    defaultValues: REPORT_FORM_DEFAULT_VALUES
+    defaultValues: REPORT_FORM.defaultValues
   });
 
   const details = useWatch({ control: form.control, name: 'details' });
@@ -31,7 +31,7 @@ export const useReportForm = ({ targetType, targetId }: ReportTarget) => {
     onSuccess: () => {
       toast.success(t('sent'));
       setOpen(false);
-      form.reset(REPORT_FORM_DEFAULT_VALUES);
+      form.reset(REPORT_FORM.defaultValues);
     },
     onError: () => toast.error(t('failed'))
   });
@@ -40,7 +40,7 @@ export const useReportForm = ({ targetType, targetId }: ReportTarget) => {
     setOpen(next);
 
     if (!next) {
-      form.reset(REPORT_FORM_DEFAULT_VALUES);
+      form.reset(REPORT_FORM.defaultValues);
     }
   };
 
@@ -51,9 +51,9 @@ export const useReportForm = ({ targetType, targetId }: ReportTarget) => {
     isSignedIn: Boolean(session),
     isOpen,
     isPending: report.isPending,
-    reasons: REPORT_REASONS.map((value) => ({ value, label: t(`reasons.${value}`) })),
+    reasons: REPORT_FORM.reasons.map((value) => ({ value, label: t(`reasons.${value}`) })),
     detailsLength: details.length,
-    detailsMaxLength: REPORT_DETAILS_MAX_LENGTH,
+    detailsMaxLength: REPORT_FORM.detailsMaxLength,
     onOpenChange,
     onSubmit
   };

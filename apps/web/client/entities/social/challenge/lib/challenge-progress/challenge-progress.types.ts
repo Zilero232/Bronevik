@@ -1,7 +1,5 @@
 import type { WeeklyChallenge } from '../../api';
 
-export type ChallengeMetric = WeeklyChallenge['metric'];
-
 export type ChallengeRow = Pick<WeeklyChallenge, 'badgeCode' | 'code' | 'metric' | 'target' | 'threshold' | 'vehicleType'> & {
   value: number;
   share: number;

@@ -8,7 +8,7 @@ export type ViewCommand = {
   nonce: number;
 };
 
-export type OrbitInput = {
+type OrbitInput = {
   azimuth?: number;
   polar?: number;
   zoom?: number;

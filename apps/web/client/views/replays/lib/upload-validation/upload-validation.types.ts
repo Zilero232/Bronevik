@@ -1,4 +1,4 @@
-export type ReplayFileRules = {
+type ReplayFileRules = {
   maxBytes: number;
   extensions: readonly string[];
 };

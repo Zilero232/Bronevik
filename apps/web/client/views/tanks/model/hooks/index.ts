@@ -4,7 +4,6 @@ export { useStatsTable } from './use-stats-table';
 export type { OptionalTankColumn } from './use-tank-columns';
 export { useTanksFigures } from './use-tanks-figures';
 export { useTanksFilters } from './use-tanks-filters';
-export { useTanksPresets } from './use-tanks-presets';
 export type { TanksPresetId } from './use-tanks-presets';
 export { useTanksState } from './use-tanks-state';
 export { useTierList } from './use-tier-list';

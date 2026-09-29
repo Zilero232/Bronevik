@@ -1,6 +1,6 @@
 import type { VehicleStats } from '@otmetki/schemas';
 
-import type { TankSpecKey } from '../../config';
+import type { TankSpecKey } from '../../model/tank-specs.types';
 
 export const SPEC_PATH: Partial<Record<TankSpecKey, string>> = {
   shellDamage: 'shells.0.damage',

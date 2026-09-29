@@ -1,24 +1,15 @@
 'use client';
 
-import { STREAMER_SETTINGS } from '@otmetki/schemas';
-import { useTranslations } from 'next-intl';
 import { Controller } from 'react-hook-form';
-import { isIncludedIn } from 'remeda';
 
 import { FormField, ToggleChips } from '@/ui-kit';
 
 import type { SettingsMultiFieldProps } from './SettingsMultiField.types';
 
-import { useSettingsField } from '../../../../../model/hooks';
+import { useSettingsMultiField } from '../../../../../model/hooks';
 
 export const SettingsMultiField = ({ field }: SettingsMultiFieldProps) => {
-  const t = useTranslations('streamerSettings');
-  const { control, label } = useSettingsField(field.path);
-
-  const options = field.options.map((option) => ({
-    value: option,
-    label: isIncludedIn(option, STREAMER_SETTINGS.zoomSteps) ? option : t(`options.${option}`)
-  }));
+  const { control, label, options } = useSettingsMultiField(field);
 
   return (
     <FormField label={label}>

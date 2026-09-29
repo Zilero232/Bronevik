@@ -66,12 +66,12 @@ export const equipmentMatrix = ({ usage, devices, slots }: EquipmentMatrixInput)
   return EQUIP_TILE.categories
     .map((category) => ({
       category,
-      primary: primary.map((family) => familyTile({ usage, devices, family, category })),
-      alternative: alternative?.map((family) => familyTile({ usage, devices, family, category })) ?? null,
+      primary: primary.map((family) => ({ family, tile: familyTile({ usage, devices, family, category }) })),
+      alternative: alternative?.map((family) => ({ family, tile: familyTile({ usage, devices, family, category }) })) ?? null,
       directive: pickTile({ pick: directive, category }),
       directiveAlternative: pickTile({ pick: directiveAlternative, category })
     }))
-    .filter(({ primary: tiles }) => tiles.some((tile) => tile !== null));
+    .filter(({ primary: slots }) => slots.some(({ tile }) => tile !== null));
 };
 
 export const fieldModRing = ({ steps, usage }: FieldModRingInput): FieldModPairView[] =>

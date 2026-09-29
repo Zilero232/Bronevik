@@ -1,4 +1,3 @@
 export { deleteAccount, getAuthSession, signOut } from './auth';
-export type { AuthSession, AuthUser, DeleteAccountOutcome } from './auth';
-export { getLinkedAccounts } from './me';
+export type { AuthSession } from './auth';
 export { sessionQueries } from './session-queries';

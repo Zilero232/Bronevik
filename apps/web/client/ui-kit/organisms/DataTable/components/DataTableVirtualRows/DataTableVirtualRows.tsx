@@ -1,25 +1,13 @@
 'use client';
 
-import { rowActivation, useTableVirtualizer } from '@/shared/lib';
+import { useTableVirtualizer } from '@/shared/lib';
 
 import type { DataTableVirtualRowsProps } from './DataTableVirtualRows.types';
 
 import { DATA_TABLE } from '../../DataTable.constants';
-import { DataTableCells } from '../DataTableCells';
+import { DataTableRow } from '../DataTableRow';
 
-import s from '../../DataTable.module.scss';
-
-export const DataTableVirtualRows = <T,>({
-  rows,
-  barMax,
-  scrollElement,
-  rowHeight,
-  columnCount,
-  onRowClick,
-  rowTint,
-  getRowClass,
-  getRowLink
-}: DataTableVirtualRowsProps<T>) => {
+export const DataTableVirtualRows = <T,>({ rows, scrollElement, rowHeight, columnCount, ...rowProps }: DataTableVirtualRowsProps<T>) => {
   'use no memo';
 
   const { items, paddingTop, paddingBottom } = useTableVirtualizer({
@@ -36,27 +24,16 @@ export const DataTableVirtualRows = <T,>({
           <td colSpan={columnCount} style={{ height: paddingTop, padding: 0 }} />
         </tr>
       )}
-      {items.map((item) => {
-        const row = rows[item.index];
-        const link = getRowLink?.(row.original) ?? null;
-
-        return (
-          <tr
-            key={row.id}
-            aria-rowindex={item.index + 2}
-            className={s.row}
-            data-class={getRowClass?.(row.original) ?? undefined}
-            data-clickable={Boolean(onRowClick) || link !== null}
-            data-linked={link !== null}
-            data-stripe={item.index % 2 === 1 || undefined}
-            data-tint={rowTint?.(row.original) ?? undefined}
-            style={{ height: rowHeight }}
-            {...rowActivation({ onActivate: onRowClick && (() => onRowClick(row.original)), isLinked: link !== null })}
-          >
-            <DataTableCells barMax={barMax} link={link} row={row} />
-          </tr>
-        );
-      })}
+      {items.map((item) => (
+        <DataTableRow
+          key={rows[item.index].id}
+          {...rowProps}
+          ariaRowIndex={item.index + DATA_TABLE.headerRowOffset}
+          height={rowHeight}
+          index={item.index}
+          row={rows[item.index]}
+        />
+      ))}
       {paddingBottom > 0 && (
         <tr aria-hidden>
           <td colSpan={columnCount} style={{ height: paddingBottom, padding: 0 }} />

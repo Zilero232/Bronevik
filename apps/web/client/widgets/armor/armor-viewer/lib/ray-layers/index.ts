@@ -1,2 +1,2 @@
 export { toHitLayers } from './ray-layers';
-export type { RayHit, ToHitLayersInput } from './ray-layers.types';
+export type { RayHit } from './ray-layers.types';

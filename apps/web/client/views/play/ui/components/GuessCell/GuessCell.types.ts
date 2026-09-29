@@ -1,10 +1,7 @@
 import type { ReactNode } from 'react';
 
-import type { CellHint } from '../../../lib/compare-guess';
+import type { UseGuessCellInput } from '../../../model/hooks';
 
-export type GuessCellProps = {
-  hint: CellHint;
-  label: string;
-  text: string;
+export type GuessCellProps = UseGuessCellInput & {
   children: ReactNode;
 };

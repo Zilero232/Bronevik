@@ -3,7 +3,7 @@ import type { VehicleCatalogItem } from '@otmetki/schemas';
 import { NATIONS, TANK_CLASSES } from '@otmetki/icons';
 import { groupBy, isIncludedIn, sortBy } from 'remeda';
 
-import type { CatalogTierGroup, FilterCatalogInput } from './catalog-filter.types';
+import type { CatalogTierGroup, FilterCatalogInput, RankOfInput } from './catalog-filter.types';
 
 const normalizeName = (value: string) =>
   value
@@ -11,7 +11,7 @@ const normalizeName = (value: string) =>
     .replaceAll('ё', 'е')
     .replaceAll(/[\s\-_.«»"'()]/g, '');
 
-const rankOf = (list: readonly string[], value: string) => {
+const rankOf = ({ list, value }: RankOfInput) => {
   const index = list.indexOf(value);
 
   return index === -1 ? list.length : index;
@@ -39,8 +39,8 @@ export const groupByTier = (vehicles: readonly VehicleCatalogItem[]): CatalogTie
       tier: group[0].tier,
       vehicles: sortBy(
         group,
-        ({ type }) => rankOf(TANK_CLASSES, type),
-        ({ nation }) => rankOf(NATIONS, nation),
+        ({ type }) => rankOf({ list: TANK_CLASSES, value: type }),
+        ({ nation }) => rankOf({ list: NATIONS, value: nation }),
         ({ isPremium }) => Number(isPremium),
         ({ shortName, name }) => shortName || name
       )

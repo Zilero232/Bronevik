@@ -4,7 +4,7 @@ import type { CsvCell } from '@/shared/lib';
 
 export type RawExportKind = 'rawJson' | 'tanksCsv';
 
-export type AnalyticsExportKind = 'analyticsJson' | 'battlesCsv' | 'sessionsCsv';
+type AnalyticsExportKind = 'analyticsJson' | 'battlesCsv' | 'sessionsCsv';
 
 export type DataExportKind = AnalyticsExportKind | RawExportKind;
 

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-export type FaqItem = {
+type FaqItem = {
   id: string;
   question: ReactNode;
   answer: ReactNode;

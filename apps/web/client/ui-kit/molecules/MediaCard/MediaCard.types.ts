@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-export type MediaCardAspect = 'portrait' | 'wide';
+type MediaCardAspect = 'portrait' | 'wide';
 
 export type MediaCardProps = {
   href?: string;

@@ -1,6 +1,6 @@
 import type { ReactElement, ReactNode } from 'react';
 
-export type ConfirmDialogTone = 'danger' | 'default';
+type ConfirmDialogTone = 'danger' | 'default';
 
 export type ConfirmDialogProps = {
   title: ReactNode;

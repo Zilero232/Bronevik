@@ -18,7 +18,7 @@ export const GameIcon = ({ src, size, kind, className }: GameIconProps) => {
 
     return (
       <span aria-hidden className={clsx(s.root, s.fallback, className)} data-kind={kind} style={{ width: size, height: size }}>
-        <Glyph size={Math.round(size * GAME_ICON.glyphRatio)} strokeWidth={1.75} />
+        <Glyph size={Math.round(size * GAME_ICON.glyphRatio)} strokeWidth={GAME_ICON.strokeWidth} />
       </span>
     );
   }

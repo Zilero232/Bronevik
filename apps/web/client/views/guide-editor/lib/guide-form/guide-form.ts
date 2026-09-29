@@ -4,7 +4,7 @@ import type { GuideFormLocale, GuideFormOutput, GuideFormValues, ToGuideFormValu
 
 import { GUIDE_FORM_DEFAULT_VALUES } from '../../config';
 
-export const guideLocaleOf = (locale: string): GuideFormLocale => (locale === 'en' ? 'en' : 'ru');
+const guideLocaleOf = (locale: string): GuideFormLocale => (locale === 'en' ? 'en' : 'ru');
 
 export const toGuideFormValues = ({ guide, locale }: ToGuideFormValuesInput): GuideFormValues =>
   guide

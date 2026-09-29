@@ -1,2 +1,2 @@
 export { getMoeHistory, listMoe } from './marks';
-export type { MoeHistoryInput, MoeListInput } from './marks.types';
+export type { MoeListInput } from './marks.types';

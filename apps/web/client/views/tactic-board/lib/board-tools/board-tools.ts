@@ -1,4 +1,4 @@
-import type { BoardDrawTool, BoardTool } from '../../model/board-tools.types';
+import type { BoardDrawTool, BoardTool } from './board-tools.types';
 
 import { BOARD_DRAW_TOOLS } from '../../config';
 

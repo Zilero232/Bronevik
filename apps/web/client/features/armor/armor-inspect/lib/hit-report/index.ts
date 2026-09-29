@@ -1,2 +1,2 @@
 export { describeHit } from './hit-report';
-export type { DescribeHitInput, HitLayer, HitPlateReport, HitReport } from './hit-report.types';
+export type { HitLayer, HitReport } from './hit-report.types';

@@ -6,6 +6,10 @@
 
   padding: var(--space-5);
   scroll-margin-top: calc(var(--header-offset) + var(--space-5));
+
+  @include below(md) {
+    padding: var(--space-4);
+  }
 }
 
 .title {

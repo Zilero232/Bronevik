@@ -15,13 +15,15 @@ export const Select = <T extends string>({ items, value, label, placeholder, cla
 
   return (
     <BaseSelect.Root items={items} value={value} onValueChange={(next) => next !== null && onValueChange(next)}>
-      {label && <BaseSelect.Label className={s.label}>{label}</BaseSelect.Label>}
-      <BaseSelect.Trigger {...control} aria-label={ariaLabel} className={clsx(s.trigger, className)}>
-        <BaseSelect.Value className={s.value} placeholder={placeholder} />
-        <BaseSelect.Icon className={s.icon}>
-          <ChevronsUpDown size={15} />
-        </BaseSelect.Icon>
-      </BaseSelect.Trigger>
+      <div className={clsx(s.field, label && s.labelled, label && className)}>
+        {label && <BaseSelect.Label className={s.label}>{label}</BaseSelect.Label>}
+        <BaseSelect.Trigger {...control} aria-label={ariaLabel} className={clsx(s.trigger, !label && className)}>
+          <BaseSelect.Value className={s.value} placeholder={placeholder} />
+          <BaseSelect.Icon className={s.icon}>
+            <ChevronsUpDown size={15} />
+          </BaseSelect.Icon>
+        </BaseSelect.Trigger>
+      </div>
       <BaseSelect.Portal>
         <BaseSelect.Positioner className={s.positioner} sideOffset={6}>
           <BaseSelect.Popup className={s.popup}>

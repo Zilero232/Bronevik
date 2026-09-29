@@ -27,6 +27,23 @@
   }
 }
 
+.inline {
+  @include below(xl) {
+    --key-figure-label-wrap: normal;
+
+    grid-auto-flow: column;
+    grid-template-columns: none;
+
+    > :nth-child(n) {
+      border-top: none;
+    }
+
+    > :nth-child(n + 2) {
+      border-left: 1px solid var(--color-border);
+    }
+  }
+}
+
 .framed {
   @include panel;
 }

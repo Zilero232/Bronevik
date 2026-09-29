@@ -12,7 +12,7 @@ export const GuessStatusBar = () => {
   const { number, guesses, currentStreak } = useGuessGame();
 
   return (
-    <KeyFigures isFramed>
+    <KeyFigures isFramed isInline>
       <KeyFigure label={t('puzzle')} prefix='#' value={number} />
       <KeyFigure hint={t('shellsTotal', { total: GUESS_TANK.maxGuesses })} label={t('shells')} value={GUESS_TANK.maxGuesses - guesses.length} />
       <KeyFigure label={t('streak')} value={currentStreak} />

@@ -117,7 +117,7 @@
   },
   "attack": {
     "attacker": "Attacking vehicle",
-    "ownGun": "Own gun — pick another vehicle",
+    "ownGun": "Own gun · change vehicle",
     "ownNote": "This vehicle’s own gun is firing now. Pick any vehicle to test the armor with its shells.",
     "foreignNote": "Shells and penetration come from the chosen vehicle’s game data. No 3D view is spent.",
     "useOwn": "Back to own gun",

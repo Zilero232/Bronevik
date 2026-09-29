@@ -27,20 +27,31 @@ export const RatingsPage = () => {
       />
       <div className={s.body}>
         <nav aria-label={t('toc')} className={s.toc}>
-          {sections.map(({ id, title }) => (
-            <a key={id} className={s.tocLink} href={`#${id}`}>
-              {title}
-            </a>
-          ))}
-          <a className={s.tocLink} href='#scale'>
-            {t('scale')}
-          </a>
+          <p aria-hidden className={s.tocTitle}>
+            {t('toc')}
+          </p>
+          <ol className={s.tocList}>
+            {sections.map(({ id, title }) => (
+              <li key={id}>
+                <a className={s.tocLink} href={`#${id}`}>
+                  {title}
+                </a>
+              </li>
+            ))}
+            <li>
+              <a className={s.tocLink} href='#scale'>
+                {t('scale')}
+              </a>
+            </li>
+          </ol>
         </nav>
-        {sections.map((section) => (
-          <MethodSection key={section.id} section={section} />
-        ))}
-        <ScaleLegend rows={scale} />
-        <SourcesNote />
+        <div className={s.content}>
+          {sections.map((section) => (
+            <MethodSection key={section.id} section={section} />
+          ))}
+          <ScaleLegend rows={scale} />
+          <SourcesNote />
+        </div>
       </div>
     </div>
   );

@@ -43,7 +43,7 @@ export const StrongTanks = () => {
             <Skeleton className={s.skeleton} count={HOME.strongTanks.cards} height={236} shape='block' />
           </div>
         }
-        empty={<EmptyState isCompact title={t('empty')} />}
+        empty={<EmptyState isCompact isFramed title={t('empty')} />}
         query={query}
       >
         {(cards) => (

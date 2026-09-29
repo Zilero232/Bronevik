@@ -45,9 +45,9 @@ export const MoeDrawer = ({ row, isOpen, onOpenChange }: MoeDrawerProps) => {
             </dl>
             <div className={s.trend}>
               <span>{t('delta7')}</span>
-              <DeltaValue value={row.trend.p95Delta7d ?? 0} verdict={thresholdVerdict(row.trend.p95Delta7d)} />
+              <DeltaValue isSameShown value={row.trend.p95Delta7d ?? Number.NaN} verdict={thresholdVerdict(row.trend.p95Delta7d)} />
               <span>{t('delta30')}</span>
-              <DeltaValue value={row.trend.p95Delta30d ?? 0} verdict={thresholdVerdict(row.trend.p95Delta30d)} />
+              <DeltaValue isSameShown value={row.trend.p95Delta30d ?? Number.NaN} verdict={thresholdVerdict(row.trend.p95Delta30d)} />
             </div>
           </section>
           <section className={s.block}>

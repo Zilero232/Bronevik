@@ -55,8 +55,10 @@ export const StatsControls = () => {
         variant='strip'
         onValueChange={(next) => setState({ view: next })}
       />
-      {view === 'table' && <QuickFilters />}
-      <TraitFilters />
+      <div className={s.filters}>
+        {view === 'table' && <QuickFilters />}
+        <TraitFilters />
+      </div>
     </div>
   );
 };

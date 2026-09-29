@@ -1,9 +1,13 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  align-items: start;
-
   @include stack(var(--space-2));
+
+  min-width: 0;
+}
+
+.reset {
+  align-self: flex-start;
 }
 
 .note,

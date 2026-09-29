@@ -6,6 +6,10 @@
 
   padding: var(--space-5);
   scroll-margin-top: calc(var(--header-offset) + var(--space-5));
+
+  @include below(md) {
+    padding: var(--space-4);
+  }
 }
 
 .title {
@@ -20,21 +24,36 @@
 }
 
 .lines {
-  @include stack(var(--space-2));
+  @include well;
 
-  padding-left: var(--space-5);
-  color: var(--color-text-dim);
-  list-style: decimal;
+  padding: var(--space-2) 0;
+  margin: 0;
+  counter-reset: formula;
+  list-style: none;
+
+  li {
+    display: grid;
+    align-items: baseline;
+    padding: var(--space-1) var(--space-4);
+    counter-increment: formula;
+    gap: var(--space-3);
+    grid-template-columns: 2ch minmax(0, 1fr);
+
+    &:before {
+      color: var(--color-text-dim);
+      content: counter(formula);
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      text-align: right;
+    }
+  }
 }
 
 .formula {
-  display: inline-block;
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-sm);
-  background-color: var(--color-surface-sunken);
   color: var(--color-text);
   font-family: var(--font-mono);
   font-size: var(--text-sm);
+  line-height: var(--leading-body);
   overflow-wrap: anywhere;
 }
 
@@ -43,6 +62,7 @@
 
   max-width: 72ch;
   padding-left: var(--space-5);
+  margin: 0;
   color: var(--color-text-muted);
   font-size: var(--text-sm);
   list-style: disc;

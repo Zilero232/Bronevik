@@ -20,6 +20,7 @@ export const LayerToggles = () => {
       <span className={s.label}>{t('controls.layers')}</span>
       <ToggleChips<ArmorLayerKey>
         aria-label={t('controls.layers')}
+        className={s.chips}
         options={ARMOR_LAYERS.map((layer) => ({ value: layer, label: t(`layers.${layer}`) }))}
         size='sm'
         value={layers}

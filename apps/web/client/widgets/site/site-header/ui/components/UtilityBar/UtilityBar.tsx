@@ -22,8 +22,8 @@ export const UtilityBar = () => {
     <div className={s.root} data-theme='dark'>
       <div className={s.inner}>
         <section aria-label={t('label')} className={s.status}>
-          <GameStatusSlot />
-          <DataStatusBadge />
+          <GameStatusSlot isServiceShown={false} />
+          <DataStatusBadge className={s.health} />
         </section>
         <div className={s.settings}>
           <Link className={s.link} href={ROUTES.mod}>

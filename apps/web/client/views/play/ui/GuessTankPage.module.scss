@@ -4,5 +4,9 @@
   @include shell;
   @include stack(var(--gap-section));
 
-  padding-bottom: var(--space-8);
+  padding-block: var(--space-7) var(--space-8);
+
+  @include below(md) {
+    padding-top: var(--space-5);
+  }
 }

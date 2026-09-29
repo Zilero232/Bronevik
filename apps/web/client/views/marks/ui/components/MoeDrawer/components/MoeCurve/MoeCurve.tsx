@@ -17,7 +17,7 @@ export const MoeCurve = ({ tankId }: MoeCurveProps) => {
 
   return (
     <QueryState
-      empty={<EmptyState isCompact description={t('emptyDescription')} title={t('emptyTitle')} />}
+      empty={<EmptyState isCompact isFramed description={t('emptyDescription')} title={t('emptyTitle')} />}
       isEmpty={({ entries }) => entries.length === 0}
       query={query}
       skeleton={<Skeleton height={MOE_LIST.historyChartHeight} width='100%' />}

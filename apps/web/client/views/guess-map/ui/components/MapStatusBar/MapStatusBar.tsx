@@ -12,7 +12,7 @@ export const MapStatusBar = () => {
   const { number, guesses, currentStreak } = useGuessMap();
 
   return (
-    <KeyFigures isFramed>
+    <KeyFigures isFramed isInline>
       <KeyFigure label={t('puzzle')} prefix='#' value={number} />
       <KeyFigure hint={t('guessesTotal', { total: GUESS_MAP.maxGuesses })} label={t('guesses')} value={GUESS_MAP.maxGuesses - guesses.length} />
       <KeyFigure label={t('streak')} value={currentStreak} />

@@ -10,13 +10,13 @@ import { useGameStatus } from '../../../model/hooks';
 
 import s from './GameStatusSlot.module.scss';
 
-export const GameStatusSlot = ({ className }: GameStatusSlotProps) => {
+export const GameStatusSlot = ({ isServiceShown = true, className }: GameStatusSlotProps) => {
   const { version, status } = useGameStatus();
 
   return (
     <div className={clsx(s.root, className)}>
       <GameVersionBadge version={version} />
-      <ServiceStatus status={status} />
+      {isServiceShown && <ServiceStatus status={status} />}
     </div>
   );
 };

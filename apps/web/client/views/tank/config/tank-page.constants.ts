@@ -6,6 +6,7 @@ export const TANK_PAGE = {
   skeletonRows: 5,
   chartHeight: 200,
   rowHeight: 36,
+  emptyIcon: 36,
   podium: 3,
   navSpyMargin: '-30% 0px -60% 0px',
   researchImage: 'contour',

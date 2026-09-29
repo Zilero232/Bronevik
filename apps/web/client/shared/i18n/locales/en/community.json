@@ -69,7 +69,7 @@
   },
   "gate": {
     "signIn": "Sign in",
-    "signInHint": "Sign in to post",
+    "signInHint": "Sign in to continue",
     "linkLesta": "Link account",
     "linkLestaHint": "A linked Lesta account is required"
   },

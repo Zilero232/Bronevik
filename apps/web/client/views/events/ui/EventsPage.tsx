@@ -62,7 +62,12 @@ export const EventsPage = () => {
       <QueryState
         empty={
           <div className={s.section}>
-            <EmptyState description={t('empty.allDescription')} icon={<CalendarX2 size={EVENTS.emptyIconSize} />} title={t('empty.allTitle')} />
+            <EmptyState
+              isFramed
+              description={t('empty.allDescription')}
+              icon={<CalendarX2 size={EVENTS.emptyIconSize} />}
+              title={t('empty.allTitle')}
+            />
           </div>
         }
         errorState={

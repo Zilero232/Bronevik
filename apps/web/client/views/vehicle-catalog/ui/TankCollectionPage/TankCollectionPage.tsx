@@ -33,6 +33,7 @@ export const TankCollectionPage = ({ slug }: TankCollectionPageProps) => {
         />
       }
     >
+      <CollectionLinks current={slug} />
       <Card className={s.criteria} variant='panel'>
         <h2 className={s.label}>{t('collections.criteriaLabel')}</h2>
         <p className={s.text}>{t(`collections.items.${slug}.criteria`)}</p>
@@ -42,7 +43,6 @@ export const TankCollectionPage = ({ slug }: TankCollectionPageProps) => {
         query={query}
         summary={(shown) => <p className={s.label}>{t('collections.count', { count: shown })}</p>}
       />
-      <CollectionLinks current={slug} />
     </CatalogLayout>
   );
 };

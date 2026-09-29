@@ -19,7 +19,7 @@ export const AttackerPicker = () => {
       <TankPicker label={t('attacker')} placeholder={t('ownGun')} value={vehicle} onChange={onPick} />
       <p className={s.note}>{t(isOwn ? 'ownNote' : 'foreignNote')}</p>
       {!isOwn && (
-        <Button size='sm' variant='ghost' onClick={onReset}>
+        <Button className={s.reset} size='sm' variant='ghost' onClick={onReset}>
           <Crosshair aria-hidden size={14} />
           {t('useOwn')}
         </Button>

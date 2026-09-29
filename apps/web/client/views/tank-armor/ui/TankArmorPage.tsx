@@ -23,8 +23,9 @@ export const TankArmorPage = () => {
         name={query.data?.response.vehicle.name}
         slug={slug}
         version={query.data?.response.gameVersion}
-      />
-      <ArmorIntro slug={slug} />
+      >
+        <ArmorIntro slug={slug} />
+      </ArmorHeader>
       {quota.isVisible && <ArmorQuota {...quota} />}
       {isLimitShown && <ArmorLimit {...quota} />}
       {!isCrawler && !isLimited && (

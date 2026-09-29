@@ -14,13 +14,20 @@
 }
 
 .section {
-  @include stack(var(--space-4));
+  @include stack(0);
+}
+
+.subsection {
+  margin-top: var(--space-5);
 }
 
 .grid {
   display: grid;
+  padding: 0;
+  margin: 0;
   gap: var(--space-3);
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  list-style: none;
 
   @include below(xl) {
     grid-template-columns: 1fr;
@@ -28,12 +35,33 @@
 }
 
 .sources {
-  @include stack(var(--space-2));
+  @include well;
 
-  max-width: 72ch;
-  padding-left: var(--space-5);
+  display: grid;
+  padding: var(--space-2) var(--space-4);
+  margin: 0;
   color: var(--color-text-muted);
-  list-style: disc;
+  list-style: none;
+
+  li {
+    position: relative;
+    padding: var(--space-2) 0 var(--space-2) var(--space-5);
+
+    &:before {
+      position: absolute;
+      top: calc(var(--space-2) + 0.55em);
+      left: var(--space-1);
+      width: 6px;
+      height: 6px;
+      background: var(--color-accent);
+      content: '';
+      transform: rotate(45deg);
+    }
+
+    & + li {
+      border-top: 1px solid var(--color-border);
+    }
+  }
 }
 
 .build {

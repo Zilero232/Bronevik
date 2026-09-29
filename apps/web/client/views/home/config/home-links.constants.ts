@@ -30,4 +30,4 @@ export const NEWS_KIND_ICON = {
   dev_blog: NotebookPen
 } as const;
 
-export const HOME_ICON = { action: 18, cta: 18, emblem: 160, community: 220, figure: 16 } as const;
+export const HOME_ICON = { action: 18, cta: 18, emblem: 160, community: 220, figure: 16, more: 14 } as const;

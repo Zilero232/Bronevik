@@ -1,6 +1,6 @@
 'use client';
 
-import { Hourglass } from 'lucide-react';
+import { ArrowRight, Hourglass } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
@@ -27,7 +27,7 @@ export const HeroFigures = () => {
         ))
         .with('empty', () => (
           <div className={s.notice}>
-            <EmptyState isCompact icon={<Hourglass size={HOME_ICON.figure} />} role='status' title={t('empty')} />
+            <EmptyState isCompact isFramed icon={<Hourglass size={HOME_ICON.figure} />} role='status' title={t('empty')} />
           </div>
         ))
         .otherwise(() => (
@@ -78,6 +78,7 @@ export const HeroFigures = () => {
       )}
       <Link className={s.more} href={ROUTES.pulse}>
         {t('pulse')}
+        <ArrowRight aria-hidden size={HOME_ICON.more} />
       </Link>
     </aside>
   );

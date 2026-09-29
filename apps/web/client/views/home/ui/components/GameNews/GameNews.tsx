@@ -25,7 +25,7 @@ export const GameNews = () => {
             <Skeleton className={s.skeleton} count={HOME.news.limit} height={220} shape='block' />
           </div>
         }
-        empty={<EmptyState isCompact title={t('empty')} />}
+        empty={<EmptyState isCompact isFramed title={t('empty')} />}
         query={query}
       >
         {(items) => (

@@ -11,6 +11,13 @@
   gap: var(--space-3);
 }
 
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-6);
+}
+
 .mode {
   min-width: 11rem;
 }

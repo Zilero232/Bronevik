@@ -114,6 +114,7 @@
     "tagsHint": "Tags are set automatically from the battle results in the replay. Hover a tag to see its rule. A replay must carry every tag you pick."
   },
   "upload": {
+    "signInHint": "Sign in to upload replays and review your battles",
     "title": "Upload a replay",
     "dropTitle": "Drop a file or pick one",
     "dropHint": "{extensions}, up to {size} MB",

@@ -25,7 +25,7 @@ export const GarageStrip = () => {
             <Skeleton className={s.skeleton} count={HOME.garage.skeletons} height={128} shape='block' />
           </div>
         }
-        empty={<EmptyState isCompact title={t('empty')} />}
+        empty={<EmptyState isCompact isFramed title={t('empty')} />}
         query={query}
       >
         {(rows) => (

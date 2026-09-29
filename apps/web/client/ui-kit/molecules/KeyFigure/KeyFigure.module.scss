@@ -67,7 +67,7 @@
 
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: var(--key-figure-label-wrap, nowrap);
 }
 
 .value {

@@ -3,7 +3,7 @@
 import { MasteryIcon } from '@otmetki/icons';
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { ProgressBar } from '@/ui-kit';
+import { EmptyState, ProgressBar } from '@/ui-kit';
 
 import type { MasteryLadderProps } from './MasteryLadder.types';
 
@@ -16,7 +16,7 @@ export const MasteryLadder = ({ mastery }: MasteryLadderProps) => {
   const format = useFormatter();
 
   if (!mastery) {
-    return <p className={s.empty}>{t('noMastery')}</p>;
+    return <EmptyState isCompact isFramed title={t('noMastery')} />;
   }
 
   return (

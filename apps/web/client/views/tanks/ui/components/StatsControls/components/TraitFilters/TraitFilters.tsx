@@ -16,6 +16,9 @@ export const TraitFilters = () => {
 
   return (
     <div className={s.root}>
+      <span aria-hidden className={s.label}>
+        {t('difficulty.label')}
+      </span>
       <ToggleChips<LearningDifficulty>
         aria-label={t('difficulty.label')}
         options={difficultyOptions}

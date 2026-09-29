@@ -12,7 +12,7 @@
     "label": "Catalog filters",
     "search": "Search by name",
     "searchPlaceholder": "Tank name",
-    "shown": "{shown, plural, one {# vehicle} other {# vehicles}} of {total}",
+    "shown": "{shown, plural, one {# vehicle} other {# vehicles}} of {total, number}",
     "reset": "Reset"
   },
   "tier": "Tier {tier}",

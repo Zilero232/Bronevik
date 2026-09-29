@@ -32,4 +32,13 @@ describe('Select', () => {
 
     expect(onValueChange).toHaveBeenCalledWith('na');
   });
+
+  it('keeps a visible label and the trigger in one field', () => {
+    const { container } = render(<Select className='sized' items={ITEMS} label='Region' value='eu' onValueChange={vi.fn()} />);
+
+    const field = container.querySelector('.sized');
+
+    expect(field).toContainElement(screen.getByText('Region'));
+    expect(field).toContainElement(screen.getByRole('combobox'));
+  });
 });

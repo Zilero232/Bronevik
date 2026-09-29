@@ -2,7 +2,7 @@
 
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { RelativeTime } from '@/ui-kit';
+import { EmptyState, RelativeTime } from '@/ui-kit';
 
 import type { QueueBacklogProps } from './QueueBacklog.types';
 
@@ -15,7 +15,7 @@ export const QueueBacklog = ({ queues, collectedAt }: QueueBacklogProps) => {
   const format = useFormatter();
 
   if (queues.length === 0) {
-    return <p className={s.empty}>{t('noQueues')}</p>;
+    return <EmptyState isCompact isFramed title={t('noQueues')} />;
   }
 
   return (

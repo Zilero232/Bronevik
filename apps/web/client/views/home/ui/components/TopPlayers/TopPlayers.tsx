@@ -52,7 +52,7 @@ export const TopPlayers = () => {
             </Card>
           </>
         }
-        empty={<EmptyState isCompact title={t('empty')} />}
+        empty={<EmptyState isCompact isFramed title={t('empty')} />}
         isEmpty={({ podium }) => podium.length === 0}
         query={query}
       >

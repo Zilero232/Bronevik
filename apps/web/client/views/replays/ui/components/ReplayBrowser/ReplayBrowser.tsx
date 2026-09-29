@@ -43,13 +43,7 @@ export const ReplayBrowser = () => {
         {({ items }) => (
           <DataTable
             emptyState={
-              <FilteredEmptyState
-                isCompact
-                description={t(empty.description)}
-                isFiltered={isFiltered}
-                title={t(empty.title)}
-                onReset={resetFilters}
-              />
+              <FilteredEmptyState description={t(empty.description)} isFiltered={isFiltered} title={t(empty.title)} onReset={resetFilters} />
             }
             footer={
               pager.pages > 1 && (

@@ -41,7 +41,7 @@ export const ReplayUpload = () => {
     <Card aria-labelledby={titleId} padding='none'>
       <CardHeader title={<span id={titleId}>{t('title')}</span>} />
       <CardBody className={s.body}>
-        <CommunityGate requiresLesta={false}>
+        <CommunityGate requiresLesta={false} signInHint={t('signInHint')}>
           <label ref={dropRef} className={s.drop} data-over={isDragOver}>
             <input accept={REPLAY_UPLOAD.accept} className={s.input} disabled={phase === 'uploading'} type='file' onChange={onInputChange} />
             <FileUp aria-hidden size={22} />

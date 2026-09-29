@@ -1,5 +1,6 @@
 'use client';
 
+import { MapIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Card, CardHeader, EmptyState, QueryState, Skeleton } from '@/ui-kit';
@@ -19,10 +20,17 @@ export const TankMaps = () => {
       <CardHeader className={s.header} meta={t('meta')} title={t('title')} />
       <div className={s.body}>
         <QueryState
-          empty={<EmptyState isCompact description={t('emptyDescription')} title={t('emptyTitle')} />}
+          empty={
+            <EmptyState description={t('emptyDescription')} icon={<MapIcon size={TANK_PAGE.emptyIcon} strokeWidth={1.5} />} title={t('emptyTitle')} />
+          }
+          skeleton={
+            <div className={s.skeleton}>
+              <Skeleton width='45%' />
+              <Skeleton count={TANK_PAGE.skeletonRows + 1} height={TANK_PAGE.rowHeight} shape='block' width='100%' />
+            </div>
+          }
           isEmpty={({ rows }) => rows.length === 0}
           query={query}
-          skeleton={<Skeleton height={TANK_PAGE.skeletonRows * TANK_PAGE.rowHeight} shape='block' width='100%' />}
         >
           {({ rows, windowDays, minBattles }) => <MapSamplesTable minBattles={minBattles} nameLabel={t('map')} rows={rows} windowDays={windowDays} />}
         </QueryState>

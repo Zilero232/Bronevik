@@ -17,6 +17,7 @@
   @include stack(var(--space-2));
 
   padding-left: var(--space-5);
+  margin: 0;
   list-style: disc;
 }
 

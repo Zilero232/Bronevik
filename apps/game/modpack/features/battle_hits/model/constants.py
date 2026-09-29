@@ -27,6 +27,9 @@ SIDES = ('front', 'left', 'right', 'rear')
 BYTE = 255.0
 START_SHIFTS = (16, 24, 32)
 END_SHIFTS = (40, 48, 56)
+# A stored point: fractions of the part's box along each axis.
+AXES = ('x', 'y', 'z')
+MIDDLE = 0.5
 FRONT_Z = 0.7
 REAR_Z = 0.3
 

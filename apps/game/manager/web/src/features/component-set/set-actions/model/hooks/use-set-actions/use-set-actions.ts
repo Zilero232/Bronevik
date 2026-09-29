@@ -9,7 +9,7 @@ import { z } from 'zod';
 
 import type { SetsView } from '@/entities/component-set';
 
-import { COMPONENT_SET, deleteSet, duplicateSet, exportSet, exportSetFile, renameSet } from '@/entities/component-set';
+import { COMPONENT_SET, deleteSet, duplicateSet, exportSet, exportSetFile, renameSet, setFileName } from '@/entities/component-set';
 import { QUERY_KEYS } from '@/shared/config';
 import { useErrorToast, useNavigation } from '@/shared/lib';
 
@@ -57,7 +57,7 @@ export const useSetActions = ({ set }: UseSetActionsInput) => {
   const exportFile = useMutation({
     mutationFn: async () => {
       const path = await save({
-        defaultPath: `${set.name}.${COMPONENT_SET.fileExtension}`,
+        defaultPath: setFileName({ name: set.name, extension: COMPONENT_SET.fileExtension }),
         filters: [{ name: t('fileFilter'), extensions: [COMPONENT_SET.fileExtension] }]
       });
 

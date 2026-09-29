@@ -69,3 +69,23 @@ fn lists_only_the_files_of_a_folder() {
     assert_eq!(list_files(dir.path()), vec![dir.path().join("file")]);
     assert!(list_files(&dir.path().join("absent")).is_empty());
 }
+
+#[test]
+fn a_copy_that_does_not_match_the_expected_hash_never_lands() {
+    let dir = tempfile::tempdir().unwrap();
+    let from = dir.path().join("снимок").join("core.mtmod");
+    let to = dir.path().join("mods").join("core.mtmod");
+
+    write(&from, "changed after the check");
+    write(&to, "the player's file");
+
+    let error = copy_expected(&from, &to, Some(&hex::encode(Sha256::digest(b"what was checked")))).unwrap_err();
+
+    assert_eq!(error.code(), ErrorCode::ChecksumMismatch);
+    assert_eq!(fs::read_to_string(&to).unwrap(), "the player's file");
+    assert!(!sibling(&to, PART_SUFFIX).exists());
+
+    copy_expected(&from, &to, Some(&hex::encode(Sha256::digest(b"changed after the check")).to_uppercase())).unwrap();
+
+    assert_eq!(fs::read_to_string(&to).unwrap(), "changed after the check");
+}

@@ -7,7 +7,7 @@ import _support
 from otmetki.core.settings import Settings
 from otmetki.features.personal_missions.i18n import STRINGS
 from otmetki.features.personal_missions.model import build_page, clean_missions, counts, format_battle, format_hangar, in_progress
-from otmetki.features.personal_missions.model.constants import MAX_TEXT, PREVIEW_MISSIONS
+from otmetki.features.personal_missions.model.constants import MAX_MISSIONS, MAX_TEXT, PREVIEW_MISSIONS
 from otmetki.features.personal_missions.model.preview import preview_text
 from otmetki.features.personal_missions.settings import SCHEMA, SETTINGS
 
@@ -17,7 +17,7 @@ def translator(language='ru'):
 
 
 def missions():
-    return clean_missions(PREVIEW_MISSIONS)
+    return clean_missions(PREVIEW_MISSIONS)[0]
 
 
 class MissionsTest(unittest.TestCase):
@@ -25,9 +25,19 @@ class MissionsTest(unittest.TestCase):
     def test_clean(self):
         raw = list(PREVIEW_MISSIONS) + [{'id': 9, 'name': u'<b>X</b>  1', 'main': u'a' * 500, 'state': 'in_progress'},
                                         {'id': 10, 'name': u'Y', 'state': 'failed'}, {'id': 11, 'name': u'', 'state': 'done'}, 'junk']
-        cleaned = clean_missions(raw)
-        assert [mission['id'] for mission in cleaned] == [1, 2, 3, 9]
-        assert cleaned[3]['name'] == u'X 1' and len(cleaned[3]['main']) == MAX_TEXT and cleaned[3]['classes'] == []
+        cleaned, totals = clean_missions(raw)
+        assert [mission['id'] for mission in cleaned] == [1, 2, 9, 3]
+        assert cleaned[2]['name'] == u'X 1' and len(cleaned[2]['main']) == MAX_TEXT and cleaned[2]['classes'] == []
+        assert totals == {'active': 3, 'done': 1, 'honors': 1}
+
+    def test_the_cap_keeps_the_missions_in_progress_and_the_totals_count_all(self):
+        finished = [{'id': index, 'name': u'Done %d' % index, 'state': 'done'} for index in range(MAX_MISSIONS + 20)]
+        active = {'id': 'last', 'name': u'Active', 'state': 'in_progress'}
+        cleaned, totals = clean_missions(finished + [active])
+        assert len(cleaned) == MAX_MISSIONS and cleaned[0]['id'] == 'last'
+        assert totals == {'active': 1, 'done': MAX_MISSIONS + 20, 'honors': 0}
+        text = format_hangar(cleaned, Settings({}, SCHEMA), translator('en'), totals)
+        assert u'1 in progress, %d done' % (MAX_MISSIONS + 20) in text and u'Active' in text
 
     def test_in_progress_by_class_and_counts(self):
         assert [mission['id'] for mission in in_progress(missions())] == [1, 2]

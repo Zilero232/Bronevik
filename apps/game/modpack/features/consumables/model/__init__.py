@@ -71,8 +71,9 @@ class Loadout(object):
         return changed
 
     def set_current(self, int_cd):
-        changed = int_cd != self.current
-        self.current = int_cd if is_int(int_cd) else None
+        current = int_cd if is_int(int_cd) else None
+        changed = current != self.current
+        self.current = current
         return changed
 
     def tick(self, seconds):

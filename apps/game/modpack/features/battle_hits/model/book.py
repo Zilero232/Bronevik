@@ -1,13 +1,44 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.classes import class_key
-from ....core.compat import is_number, to_text
-from .constants import BOOK_VERSION, DAMAGE_WINDOW_S, DAMAGING, MAX_BATTLES, MAX_HITS, OUTCOMES, PART_ORDER, SIDES
+from ....core.classes import CLASS_KEYS, class_key
+from ....core.compat import is_number, string_types, to_text
+from .constants import (AXES, BOOK_VERSION, DAMAGE_WINDOW_S, DAMAGING, MAX_BATTLES, MAX_HITS, MIDDLE, OUTCOMES, PART_NAMES, PART_ORDER,
+                        SIDES)
 from .points import impact, side_of
 
 
 def _near(first, second):
     return first is None or second is None or abs(first - second) <= DAMAGE_WINDOW_S
+
+
+def _text(value):
+    return to_text(value) if isinstance(value, string_types) and value else None
+
+
+# The book file may be damaged or edited by hand: what is read back is checked like what the book writes.
+def clean_hit(entry):
+    if not isinstance(entry, dict) or entry.get('part') not in PART_NAMES or entry.get('outcome') not in OUTCOMES:
+        return None
+    hit = {'part': entry['part'], 'outcome': entry['outcome'], 'attacker': _text(entry.get('attacker')),
+           'class': entry.get('class') if entry.get('class') in CLASS_KEYS.values() else None,
+           'damage': int(entry['damage']) if is_number(entry.get('damage')) and entry['damage'] > 0 else 0}
+    for axis in AXES:
+        value = entry.get(axis)
+        hit[axis] = min(1.0, max(0.0, float(value))) if is_number(value) else MIDDLE
+    return hit
+
+
+def clean_battle(battle):
+    if not isinstance(battle, dict) or not isinstance(battle.get('hits'), list):
+        return None
+    battle_id = battle.get('id')
+    if not (isinstance(battle_id, string_types) and battle_id) and not is_number(battle_id):
+        return None
+    hits = [hit for hit in (clean_hit(entry) for entry in battle['hits'][:MAX_HITS]) if hit is not None]
+    if not hits:
+        return None
+    return {'id': to_text(battle_id), 'vehicle': _text(battle.get('vehicle')), 't': battle.get('t') if is_number(battle.get('t')) else None,
+            'hits': hits}
 
 
 class HitBook(object):
@@ -19,7 +50,8 @@ class HitBook(object):
         self.keep = max(1, min(int(keep), MAX_BATTLES))
         data = store.read({}) if store is not None else {}
         battles = data.get('battles') if isinstance(data, dict) else None
-        self.battles = [battle for battle in (battles or []) if isinstance(battle, dict) and isinstance(battle.get('hits'), list)][-self.keep:]
+        cleaned = (clean_battle(battle) for battle in (battles if isinstance(battles, list) else []))
+        self.battles = [battle for battle in cleaned if battle is not None][-self.keep:]
         self.current = None
         self.pending = []
 

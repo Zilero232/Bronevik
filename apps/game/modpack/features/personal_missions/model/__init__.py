@@ -26,9 +26,15 @@ def clean_mission(item):
             'state': item['state'], 'classes': classes}
 
 
+def by_state(missions):
+    order = dict((state, index) for index, state in enumerate(STATES))
+    return sorted(missions, key=lambda item: order[item['state']])
+
+
+# The client lists the finished missions of every campaign too: the cap keeps the ones in progress, the totals count all.
 def clean_missions(items):
-    missions = [clean_mission(item) for item in list(items or [])[:MAX_MISSIONS]]
-    return [mission for mission in missions if mission is not None]
+    missions = by_state([mission for mission in (clean_mission(item) for item in list(items or [])) if mission is not None])
+    return missions[:MAX_MISSIONS], counts(missions)
 
 
 def in_progress(missions, vehicle_class=None):
@@ -59,12 +65,12 @@ def mark_of(mission):
     return HONORS_MARK if mission['state'] == 'honors' else DONE_MARK if mission['state'] == 'done' else u''
 
 
-def format_hangar(missions, settings, translate):
+def format_hangar(missions, settings, translate, totals=None):
     shown = in_progress(missions)[:settings.get('max_missions')]
     if not missions:
         return None
     size = settings.get('font_size')
-    lines = [font(translate('pm_title', **counts(missions)), COLOR_NEUTRAL, size + TITLE_SIZE_STEP)]
+    lines = [font(translate('pm_title', **(totals or counts(missions))), COLOR_NEUTRAL, size + TITLE_SIZE_STEP)]
     for mission in shown:
         lines.extend(mission_lines(mission, settings, translate, size))
     if not shown:
@@ -96,6 +102,5 @@ def mission_row(mission, translate):
 
 def build_page(missions, translate):
     """The window page: every mission the client listed, the ones in progress first."""
-    order = dict((state, index) for index, state in enumerate(STATES))
-    rows = [mission_row(mission, translate) for mission in sorted(missions, key=lambda item: order[item['state']])]
+    rows = [mission_row(mission, translate) for mission in by_state(missions)]
     return {'kind': 'list', 'empty': translate('pm_empty'), 'rows': rows}

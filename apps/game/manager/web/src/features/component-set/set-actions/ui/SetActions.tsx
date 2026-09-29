@@ -16,7 +16,7 @@ export const SetActions = ({ set }: SetActionsProps) => {
     useSetActions({ set });
 
   return (
-    <div className={s.root}>
+    <div aria-label={set.name} className={s.root} role='group'>
       <Button disabled={isPending} size='sm' variant='secondary' onClick={onApply}>
         <Play aria-hidden />
         {t('apply')}

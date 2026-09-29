@@ -22,6 +22,7 @@ class BushCircle(FeatureComponent):
         self.state = None
         self.vehicle_id = None
         self.model = None
+        self.owner = None
         self.hotkey = None
         self.hooks = BattleHooks()
         self.generation = 0
@@ -88,12 +89,13 @@ class BushCircle(FeatureComponent):
                 generation = self.generation
                 BigWorld.callback(ENTITY_RETRY_S, lambda: self._retry(generation, attempt + 1))
             return
-        self.model = self._create(entity)
+        self._create(entity)
 
     def _retry(self, generation, attempt):
         if generation == self.generation:
             self.apply(attempt)
 
+    # The model is taken off the avatar it was added to: on battle_leave BigWorld.player() may already be the account.
     def _create(self, entity):
         import Math
         try:
@@ -104,18 +106,20 @@ class BushCircle(FeatureComponent):
             area.enableAccurateCollision(True)
             area.setCutOffDistance(CUT_OFF_DISTANCE)
             model.node('').attach(area)
-            BigWorld.player().addModel(model)
+            self.owner = BigWorld.player()
+            self.owner.addModel(model)
+            self.model = model
             model.addMotor(BigWorld.Servo(entity.matrix))
-            return model
         except Exception:
             log_exception('bush circle: create')
-            return None
+            self._remove()
 
     def _remove(self):
-        model, self.model = self.model, None
-        if model is None:
+        model, owner = self.model, self.owner
+        self.model = self.owner = None
+        if model is None or owner is None:
             return
         try:
-            BigWorld.player().delModel(model)
+            owner.delModel(model)
         except Exception:
             log_exception('bush circle: remove')

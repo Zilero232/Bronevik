@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useFormatter, useTranslations } from 'use-intl';
@@ -13,7 +13,6 @@ import { CLEAR_CACHE } from '../../../config';
 export const useClearCache = () => {
   const t = useTranslations('settings.cache');
   const format = useFormatter();
-  const queryClient = useQueryClient();
   const showError = useErrorToast();
   const { clientPath } = useSelectedClient();
   const [unchecked, setUnchecked] = useState<Set<string>>(() => new Set());
@@ -22,6 +21,14 @@ export const useClearCache = () => {
   const chosen = targets.filter((target) => !unchecked.has(target.id));
   const megabytes = (bytes: number) =>
     format.number(bytes / CLEAR_CACHE.bytesPerMegabyte, { style: 'unit', unit: 'megabyte', maximumFractionDigits: 1 });
+
+  const rescan = async () => {
+    const { error } = await planQuery.refetch();
+
+    if (error) {
+      showError(error);
+    }
+  };
 
   const clear = useMutation({
     mutationFn: () => clearCache({ clientPath, ids: chosen.map((target) => target.id) }),
@@ -32,7 +39,7 @@ export const useClearCache = () => {
         toast.success(t('cleared', { size: megabytes(result.freedBytes) }));
       }
 
-      await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.cachePlan(clientPath) });
+      await rescan();
     },
     onError: showError
   });
@@ -56,7 +63,7 @@ export const useClearCache = () => {
     canScan: clientPath !== null,
     onScan: () => {
       setUnchecked(new Set());
-      void planQuery.refetch();
+      void rescan();
     },
     onToggle: (id: string, checked: boolean) =>
       setUnchecked((current) => (checked ? new Set([...current].filter((item) => item !== id)) : new Set([...current, id]))),

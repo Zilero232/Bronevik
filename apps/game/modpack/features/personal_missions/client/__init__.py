@@ -19,6 +19,7 @@ class PersonalMissionsPanel(BattlePanel):
 
     def __init__(self, app):
         self.missions = []
+        self.totals = None
         self.hangar_text = None
         self.read_at = 0.0
         BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text)
@@ -48,8 +49,8 @@ class PersonalMissionsPanel(BattlePanel):
             if self.hangar_text is not None:
                 self._hide_hangar()
             return
-        self.missions = clean_missions(own_missions())
-        text = format_hangar(self.missions, self.settings, self.app.translate) if self.settings.get('show_hangar') else None
+        self.missions, self.totals = clean_missions(own_missions())
+        text = format_hangar(self.missions, self.settings, self.app.translate, self.totals) if self.settings.get('show_hangar') else None
         if text is None:
             if self.hangar_text is not None:
                 self._hide_hangar()

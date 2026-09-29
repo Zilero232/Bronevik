@@ -14,7 +14,6 @@ IMG_ROOT = 'gui/maps/'
 ICON_PATH = re.compile(r'^[A-Za-z0-9_./-]{1,160}\.png$')
 BONUS_MARK = u'★'
 SEPARATOR = u' · '
-STYLES = ('compact', 'detailed')
 
 PREVIEW_SIZE = (360, 70)
 PREVIEW_LOADOUT = {

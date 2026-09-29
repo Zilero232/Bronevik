@@ -123,3 +123,75 @@ fn merging_keeps_the_newest_copy_and_honours_deletions() {
     assert_eq!(merged.deleted.iter().map(|tombstone| tombstone.id.as_str()).collect::<Vec<_>>(), vec!["b", "c"]);
     assert_eq!(merged.synced_at, Some(10.0));
 }
+
+#[test]
+fn an_imported_library_is_checked_like_our_own_sets() {
+    let root = tempfile::tempdir().unwrap();
+    let store = store(root.path());
+    let long_id = "a".repeat(MAX_ID_LENGTH + 1);
+    let mut sets = vec![
+        serde_json::json!({ "id": "ok", "name": "  Турнир  ", "components": ["core", long_id, "Bad"], "created": 1.0, "updated": 1.0 }),
+        serde_json::json!({ "id": "ok", "name": "Двойник", "components": ["core"], "created": 1.0, "updated": 1.0 }),
+        serde_json::json!({ "id": "../x", "name": "Путь", "components": ["core"], "created": 1.0, "updated": 1.0 }),
+        serde_json::json!({ "id": "blank", "name": "   ", "components": ["core"], "created": 1.0, "updated": 1.0 }),
+    ];
+
+    sets.extend(
+        (0..20)
+            .map(|index| serde_json::json!({ "id": format!("s{index}"), "name": "x".repeat(500), "components": [], "created": 2.0, "updated": 2.0 })),
+    );
+
+    let library = root.path().join("library.json");
+
+    fs::write(&library, serde_json::json!({ "version": 1, "sets": sets, "deleted": [{ "id": "", "deleted": 1.0 }] }).to_string()).unwrap();
+    store.import_file(&library).unwrap();
+
+    let file = store.load();
+    let first = file.get("ok").unwrap();
+
+    assert_eq!(file.sets.len(), MAX_SETS);
+    assert_eq!((first.name.as_str(), first.components.clone()), ("Турнир", ids(&["core"])));
+    assert!(file.sets.iter().all(|set| is_set_id(&set.id) && set.name.chars().count() <= NAME_MAX_LENGTH));
+    assert!(file.deleted.is_empty());
+}
+
+#[test]
+fn a_damaged_sets_file_is_kept_aside_not_overwritten() {
+    let root = tempfile::tempdir().unwrap();
+    let store = store(root.path());
+
+    fs::create_dir_all(store.path.parent().unwrap()).unwrap();
+    fs::write(&store.path, "{ \"sets\": [").unwrap();
+
+    assert!(store.load().sets.is_empty());
+
+    store.update(|file| file.add("Новый", &ids(&["core"]))).unwrap();
+
+    assert_eq!(fs::read_to_string(crate::fsx::sibling(&store.path, DAMAGED_SUFFIX)).unwrap(), "{ \"sets\": [");
+    assert_eq!(store.load().sets.len(), 1);
+
+    fs::write(&store.path, [0xff, 0xfe, b'{']).unwrap();
+    store.update(|file| file.add("Ещё", &ids(&["core"]))).unwrap();
+
+    assert_eq!(fs::read(crate::fsx::sibling(&store.path, DAMAGED_SUFFIX)).unwrap(), vec![0xff, 0xfe, b'{']);
+}
+
+#[test]
+fn exports_get_their_extension_and_oversized_imports_are_refused() {
+    let root = tempfile::tempdir().unwrap();
+    let store = store(root.path());
+    let saved = store.update(|file| file.add("Набор", &ids(&["core"]))).unwrap();
+
+    store.export_file(&saved.id, &root.path().join("game.exe")).unwrap();
+    store.export_library(&root.path().join("все")).unwrap();
+
+    assert!(root.path().join("game.exe.tmset").is_file() && !root.path().join("game.exe").exists());
+    assert!(root.path().join("все.json").is_file());
+    assert_eq!(with_extension(&root.path().join("a.TMSET"), SET_EXTENSION), root.path().join("a.TMSET"));
+
+    let big = root.path().join("big.tmset");
+
+    fs::write(&big, vec![b' '; usize::try_from(MAX_FILE_BYTES).unwrap() + 1]).unwrap();
+
+    assert_eq!(store.import_file(&big).unwrap_err().code(), ErrorCode::SetCode);
+}

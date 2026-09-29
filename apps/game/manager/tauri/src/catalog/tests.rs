@@ -113,6 +113,15 @@ fn refuses_a_catalog_that_claims_foreign_packages() {
 }
 
 #[test]
+fn keeps_only_owned_paths_inside_the_game_folders() {
+    let mut paths = catalog_json();
+
+    paths["ownedPaths"] = json!(["gui/gameface/mods/triotmetki/", "", "../x/", "/abs/", "\\\\server\\share\\", "C:/Windows/", "c:x/"]);
+
+    assert_eq!(parse(&paths.to_string()).unwrap().owned_paths, vec!["gui/gameface/mods/triotmetki/"]);
+}
+
+#[test]
 fn splits_the_dependency_components_from_our_packages() {
     let parsed = parse(&catalog_json().to_string()).unwrap();
     let gameface = parsed.dependency("openwg_gameface").unwrap();

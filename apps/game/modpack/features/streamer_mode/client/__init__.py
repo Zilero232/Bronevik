@@ -1,5 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ....core.client.battle import call
 from ....core.client.chat import battle_layout, is_own
 from ....core.client.component import FeatureComponent
 from ....core.client.hotkey import Hotkey
@@ -84,13 +85,14 @@ class StreamerMode(FeatureComponent):
     def _hides_chat(self):
         return self.enabled() and hides_chat(self.settings, self.app.in_battle)
 
-    # The own lines and commands are never touched; a hidden line skips the client's addMessage like chat_filter's.
+    # The own lines and commands are never touched (a command that cannot tell counts as own); a hidden line skips the
+    # client's addMessage like chat_filter's.
     def _add_message(self, original, layout, message, *args, **kwargs):
         if self._hides_chat() and not is_own(getattr(message, 'avatarSessionID', None)):
             return True
         return original(layout, message, *args, **kwargs)
 
     def _add_command(self, original, layout, command, *args, **kwargs):
-        if self._hides_chat() and not command.isSender():
+        if self._hides_chat() and not call(command, 'isSender', True):
             return None
         return original(layout, command, *args, **kwargs)

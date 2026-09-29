@@ -972,6 +972,8 @@ class ClientSmokeTest(unittest.TestCase):
         circle = self.player.models[0]
         self.assertEqual(circle.root.items[0].args, ('content/Interface/CheckPoint/CheckPoint.visual', (30.0, 30.0), 0.5, 0xFFFFFFFF))
         self.assertEqual(circle.motors, [('servo', 'own-matrix')])
+        self.key_down(type('KeyEvent', (object,), {'key': 48, 'isRepeatedEvent': lambda event: True})())
+        self.assertEqual(self.player.models, [circle])
         self.key_down(type('KeyEvent', (object,), {'key': 48})())
         self.assertEqual(self.player.models, [])
         self.key_down(type('KeyEvent', (object,), {'key': 48})())
@@ -998,6 +1000,22 @@ class ClientSmokeTest(unittest.TestCase):
         instances['battle_hits'].ui_action('clear', '4242')
         self.assertEqual(instances['battle_hits'].ui_page()['rows'], [])
         self.assertNotIn('otmetki.battle_hits', self.components)
+
+    def test_bush_circle_leaves_with_the_battle_it_was_drawn_in(self):
+        self.install_hud_stubs()
+        self.install_round_five_stubs()
+        self.load(list(ENTRY_MODULES))
+        self.player = Player(ACCOUNT)
+        self.events.onAccountShowGUI()
+        self.enter_battle_with_gun(None)
+        avatar = self.player
+        self.key_down(type('KeyEvent', (object,), {'key': 48})())
+        self.assertEqual(len(avatar.models), 1)
+        self.player = Player(ACCOUNT)
+        self.events.onAvatarBecomeNonPlayer()
+        self.assertEqual(avatar.models, [])
+        self.key_down(type('KeyEvent', (object,), {'key': 48})())
+        self.assertEqual(self.player.models, [])
 
     def test_round_four_hangar_helpers_and_private_mode(self):
         self.install_hud_stubs()

@@ -5,4 +5,4 @@ from .constants import PREVIEW_MISSIONS
 
 
 def preview_text(settings, translate):
-    return format_battle(clean_missions(PREVIEW_MISSIONS), 'mediumTank', settings, translate) or u''
+    return format_battle(clean_missions(PREVIEW_MISSIONS)[0], 'mediumTank', settings, translate) or u''

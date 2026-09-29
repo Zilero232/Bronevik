@@ -67,13 +67,16 @@ pub struct PlanInput<'a> {
 }
 
 pub fn profile_dirs(app_data: &Path) -> Vec<PathBuf> {
-    let mut found: Vec<PathBuf> = fs::read_dir(app_data.join(LESTA_FOLDER))
+    let Some(lesta) = real_dir_below(app_data, LESTA_FOLDER) else {
+        return Vec::new();
+    };
+    let mut found: Vec<PathBuf> = fs::read_dir(lesta)
         .map(|entries| {
             entries
                 .filter_map(Result::ok)
                 .filter(|entry| entry.file_name().to_string_lossy().starts_with(PROFILE_PREFIX))
                 .map(|entry| entry.path())
-                .filter(|dir| dir.join(PREFERENCES_XML).is_file())
+                .filter(|dir| is_real_dir(dir) && dir.join(PREFERENCES_XML).is_file())
                 .collect()
         })
         .unwrap_or_default();
@@ -82,8 +85,12 @@ pub fn profile_dirs(app_data: &Path) -> Vec<PathBuf> {
     found
 }
 
-fn join(root: &Path, relative: &str) -> PathBuf {
-    relative.split('/').fold(root.to_path_buf(), |path, part| path.join(part))
+fn real_dir_below(root: &Path, relative: &str) -> Option<PathBuf> {
+    relative.split('/').try_fold(root.to_path_buf(), |path, part| {
+        let next = path.join(part);
+
+        is_real_dir(&next).then_some(next)
+    })
 }
 
 fn file_count(dir: &Path) -> usize {
@@ -94,11 +101,8 @@ fn is_real_dir(path: &Path) -> bool {
     fs::symlink_metadata(path).is_ok_and(|metadata| metadata.is_dir() && !metadata.file_type().is_symlink())
 }
 
-fn target(id: String, name: String, location: CacheLocation, path: PathBuf) -> Option<CacheTarget> {
-    if !is_real_dir(&path) {
-        return None;
-    }
-
+fn target(id: String, name: String, location: CacheLocation, path: Option<PathBuf>) -> Option<CacheTarget> {
+    let path = path?;
     let files = file_count(&path);
 
     (files > 0).then(|| CacheTarget { id, name, location, size_bytes: dir_size(&path), files, path })
@@ -111,18 +115,32 @@ pub fn plan(input: PlanInput) -> CachePlan {
         let profile_name = profile.file_name().map(|name| name.to_string_lossy().into_owned()).unwrap_or_default();
 
         for relative in APP_DATA_CACHE_DIRS {
-            targets.extend(target(format!("{profile_name}/{relative}"), relative.to_owned(), CacheLocation::AppData, join(&profile, relative)));
+            targets.extend(target(
+                format!("{profile_name}/{relative}"),
+                relative.to_owned(),
+                CacheLocation::AppData,
+                real_dir_below(&profile, relative),
+            ));
         }
     }
 
     for relative in GAME_CACHE_DIRS {
-        targets.extend(target(format!("{GAME_ID_PREFIX}/{relative}"), relative.to_owned(), CacheLocation::Game, join(&input.client.path, relative)));
+        targets.extend(target(
+            format!("{GAME_ID_PREFIX}/{relative}"),
+            relative.to_owned(),
+            CacheLocation::Game,
+            real_dir_below(&input.client.path, relative),
+        ));
     }
 
     CachePlan { total_bytes: targets.iter().map(|target| target.size_bytes).sum(), targets }
 }
 
 fn empty_dir(dir: &Path) -> bool {
+    if !is_real_dir(dir) {
+        return false;
+    }
+
     let children: Vec<PathBuf> =
         fs::read_dir(dir).map(|entries| entries.filter_map(Result::ok).map(|entry| entry.path()).collect()).unwrap_or_default();
     let mut cleared = true;

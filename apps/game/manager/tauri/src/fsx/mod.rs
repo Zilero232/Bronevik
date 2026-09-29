@@ -78,9 +78,18 @@ pub fn same_content(left: &Path, right: &Path) -> bool {
 }
 
 pub fn copy_verified(from: &Path, to: &Path) -> AppResult<()> {
+    copy_expected(from, to, None)
+}
+
+pub fn copy_expected(from: &Path, to: &Path, sha256: Option<&str>) -> AppResult<()> {
     let part = sibling(to, PART_SUFFIX);
     let copied = copy_file(from, &part).and_then(|_| {
-        if !same_content(from, &part) {
+        let intact = match sha256 {
+            Some(expected) => file_sha256(&part).is_ok_and(|actual| actual.eq_ignore_ascii_case(expected)),
+            None => same_content(from, &part),
+        };
+
+        if !intact {
             return Err(AppError::coded(ErrorCode::ChecksumMismatch, format!("the copy of {} differs", from.display())));
         }
 

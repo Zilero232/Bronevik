@@ -263,7 +263,7 @@ pub fn parse(text: &str) -> AppResult<Catalog> {
     }
 
     catalog.owned_patterns.retain(|pattern| is_our_name(pattern));
-    catalog.owned_paths.retain(|path| !path.is_empty() && !path.contains("..") && !path.starts_with(['/', '\\']));
+    catalog.owned_paths.retain(|path| !path.is_empty() && !path.contains("..") && !path.contains(':') && !path.starts_with(['/', '\\']));
 
     for rule in &mut catalog.conflicts {
         rule.patterns.retain(|pattern| !pattern.trim_matches(['*', '?']).is_empty() && !is_our_name(pattern.trim_start_matches('*')));

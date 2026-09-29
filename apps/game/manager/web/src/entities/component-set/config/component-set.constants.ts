@@ -4,5 +4,9 @@ export const COMPONENT_SET = {
   codePrefix: 'TS1.',
   codeMaxLength: 16 * 1024,
   fileExtension: 'tmset',
-  libraryExtension: 'json'
+  libraryExtension: 'json',
+  fileNameUnsafe: /[\p{Cc}\\/:*?"<>|]/gu,
+  fileNameTrailing: /[. ]+$/,
+  fileNameReplacement: '_',
+  fileNameFallback: 'set'
 } as const;

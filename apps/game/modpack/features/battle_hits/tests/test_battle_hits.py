@@ -102,6 +102,24 @@ class BookTest(unittest.TestCase):
     def test_reads_a_damaged_file_as_empty(self):
         assert HitBook(MemoryStore(['nonsense']), 5).battles == []
         assert HitBook(MemoryStore({'battles': [{'id': 'x'}, 'y']}), 5).battles == []
+        assert HitBook(MemoryStore({'battles': {'id': 'x'}}), 5).battles == []
+
+    def test_reads_back_only_well_formed_battles_and_hits(self):
+        hit = {'part': 'hull', 'outcome': 'pen', 'x': 0.4, 'y': 0.5, 'z': 0.9, 'attacker': 'Pz. IV', 'class': 'medium', 'damage': 390}
+        stored = [
+            {'hits': [hit]},
+            {'id': 'no-hits', 'hits': [{'part': 'engine', 'outcome': 'pen'}, {'part': 'hull', 'outcome': 'boom'}, 'x']},
+            {'id': 5, 'vehicle': 7, 't': 'noon', 'hits': [dict(hit, x='left', z=3.0, attacker=['x'], damage=-5, **{'class': 'tank'}), hit]},
+        ]
+        book = HitBook(MemoryStore({'battles': stored}), 5)
+        assert [battle['id'] for battle in book.battles] == ['5']
+        battle = book.latest()
+        assert battle['vehicle'] is None and battle['t'] is None
+        assert battle['hits'][0] == {'part': 'hull', 'outcome': 'pen', 'x': 0.5, 'y': 0.5, 'z': 1.0, 'attacker': None, 'class': None, 'damage': 0}
+        assert battle['hits'][1] == hit
+        page = build_page(book, translator(), True)
+        assert page['rows'][0]['id'] == '5' and page['rows'][0]['title'] == u'?'
+        assert panel_text(battle, translator())
 
 
 def sample_battle():

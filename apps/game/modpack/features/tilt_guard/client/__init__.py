@@ -21,9 +21,12 @@ class TiltGuard(FeatureComponent):
         self.watch = TiltWatch()
         self.pending = []
 
+    # Battles count only while the reminders are on: a reminder is never used up while nobody could see it.
     def _on_battle_event(self, event, now):
+        if not self.enabled():
+            return
         notices = self.watch.add(event, now, self.settings)
-        if not notices or not self.enabled():
+        if not notices:
             return
         summary = self.watch.summary()
         self.pending.extend(notice_text(key, summary, self.app.translate) for key in notices)

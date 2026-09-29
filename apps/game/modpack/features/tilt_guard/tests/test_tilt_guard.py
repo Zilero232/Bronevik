@@ -7,6 +7,7 @@ import _support
 from otmetki.core.settings import Settings
 from otmetki.features.tilt_guard.i18n import STRINGS
 from otmetki.features.tilt_guard.model import TiltWatch, notice_text
+from otmetki.features.tilt_guard.model.constants import NOTICES
 from otmetki.features.tilt_guard.settings import SCHEMA, SETTINGS
 
 
@@ -54,6 +55,8 @@ class TiltWatchTest(unittest.TestCase):
         assert SETTINGS == ('hangar_tilt_guard',)
         assert Settings({'loss_streak': 50}, SCHEMA).get('loss_streak') == 10
         assert sorted(STRINGS['ru']) == sorted(STRINGS['en'])
+        for key in NOTICES:
+            assert notice_text(key, summary, translate) and 'tilt_guard_' + key in STRINGS['en']
 
 
 if __name__ == '__main__':

@@ -67,6 +67,7 @@ class FormatTest(unittest.TestCase):
         assert loadout.set_current(12) and not loadout.set_current(12)
         switched = format_panel(loadout, Settings({'show_shell_stats': True}, SCHEMA), translator()).split('\n')
         assert u'БП:' in switched[2]
+        assert loadout.set_current('x') and loadout.current is None and not loadout.set_current(None)
 
     def test_stats_values(self):
         loadout = Loadout()

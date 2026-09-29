@@ -237,7 +237,7 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 - Звуки в MP3 (`play_mp3`): наши звуки из `res/audioww/` проигрываются через собственное MP3-событие клиента, без банков Wwise.
 - Заголовок реплея теперь даёт итог боя и урон записавшего игрока (только его собственная запись итогов).
 - `Ticker.elapsed()`: время игры с прошлого тика, чтобы отсчёты не отставали (обратный вызов приходит на первом кадре после задержки).
-- Общие помощники для новых компонентов: классы техники (`core/classes`), классы боевого чата и проверка своих строк (`core/client/chat`), горячие клавиши (`core/client/hotkey`), источник урона и курс своего корпуса (`core/client/battle`).
+- Общие помощники для новых компонентов: классы техники (`core/classes`), классы боевого чата и проверка своих строк (`core/client/chat`), горячие клавиши (`core/client/hotkey`; удержанная клавиша не срабатывает повторно), источник урона и курс своего корпуса (`core/client/battle`).
 - Слой HUD и подписи ангара умеют временно убирать панели (`set_muted`, `set_blocked`) и возвращать их с последним текстом — для режима стримера.
 
 ### en
@@ -247,7 +247,7 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 - MP3 sounds (`play_mp3`): our sounds from `res/audioww/` play through the client's own custom-MP3 event, no Wwise bank needed.
 - The replay header now gives the battle result and damage of the recorder (only its own results entry).
 - `Ticker.elapsed()`: the game time since the previous tick, so countdowns do not lag (a callback fires on the first frame after its delay).
-- Shared helpers for the new components: vehicle classes (`core/classes`), the battle chat classes and the own-line check (`core/client/chat`), hotkeys (`core/client/hotkey`), the damage source and the own hull yaw (`core/client/battle`).
+- Shared helpers for the new components: vehicle classes (`core/classes`), the battle chat classes and the own-line check (`core/client/chat`), hotkeys (`core/client/hotkey`; a held key does not fire again), the damage source and the own hull yaw (`core/client/battle`).
 - The HUD layer and the hangar labels can take panels off the screen for a while (`set_muted`, `set_blocked`) and bring them back with their latest text, for the streamer mode.
 
 ## core 0.2.0

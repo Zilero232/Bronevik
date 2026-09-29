@@ -10,7 +10,7 @@ pub use scan::{id_from_name, package_files, read_package, ModPackage};
 use crate::catalog::{wildcard_match, Catalog};
 use crate::components::{is_owned, read_installation, sync_manifest, ClientContext, ComponentState};
 use crate::error::{AppError, AppResult, ErrorCode};
-use crate::fsx::{copy_verified, file_sha256, list_files, remove_path};
+use crate::fsx::{copy_expected, file_sha256, list_files, remove_path};
 use crate::install::ForeignLocation;
 use crate::snapshots::{self, backups_dir, MODPACK_PART, MODS_PART};
 
@@ -271,7 +271,7 @@ pub fn restore(context: ClientContext) -> AppResult<Vec<String>> {
         };
 
         std::fs::create_dir_all(mods_dir)?;
-        copy_verified(&copy.path, &mods_dir.join(name))?;
+        copy_expected(&copy.path, &mods_dir.join(name), catalog.component(id).and_then(|component| component.sha256.as_deref()))?;
 
         if let Some(old) = replaced.filter(|old| !Path::new(old).file_name().is_some_and(|old| old.eq_ignore_ascii_case(name))) {
             remove_path(&mods_dir.join(old))?;

@@ -6,7 +6,7 @@ use serde_json::Value;
 
 use crate::cache::{CacheLocation, CachePlan, CacheResult, CacheTarget};
 use crate::catalog::fixtures::catalog;
-use crate::catalog::{CatalogSource, LoadedCatalog, Localized};
+use crate::catalog::{LoadedCatalog, Localized};
 use crate::commands::AppInfo;
 use crate::components::{ComponentState, Installation, InstalledComponent};
 use crate::conflicts::{ConflictReport, DuplicatePackage, ForeignConflict, MissingComponent, OverridingFiles, ReplacedComponent};
@@ -123,11 +123,7 @@ fn samples() -> Vec<(&'static str, Value)> {
         ),
         (
             "catalog",
-            value(&Some(LoadedCatalog {
-                catalog: catalog(),
-                source: CatalogSource::Bundled,
-                previews_dir: Some(r"C:\Program Files\Three Marks\resources".into()),
-            })),
+            value(&Some(LoadedCatalog { catalog: catalog(), previews_dir: Some(r"C:\Users\Игрок\AppData\Local\TriOtmetki\manager".into()) })),
         ),
         ("installation", value(&installation)),
         (
@@ -171,7 +167,7 @@ fn samples() -> Vec<(&'static str, Value)> {
             "install-plan",
             value(&InstallPlan {
                 client: main.clone(),
-                catalog: Some(LoadedCatalog { catalog: catalog(), source: CatalogSource::Downloaded, previews_dir: None }),
+                catalog: Some(LoadedCatalog { catalog: catalog(), previews_dir: None }),
                 release: Some(ReleaseSummary {
                     version: "0.1.0".into(),
                     notes: Some(Localized { ru: "Первый выпуск".into(), en: "First release".into() }),
@@ -197,6 +193,20 @@ fn samples() -> Vec<(&'static str, Value)> {
                     },
                     DependencyStatus { id: "guiflash".into(), state: DependencyState::User, file: Some("gambiter.guiflash_0.6.5.mtmod".into()) },
                 ],
+            }),
+        ),
+        (
+            "install-plan-offline",
+            value(&InstallPlan {
+                client: main.clone(),
+                catalog: None,
+                release: None,
+                source: PackageSource::Offline,
+                other_mods: Vec::new(),
+                installed: false,
+                current_components: Vec::new(),
+                parked_components: Vec::new(),
+                dependencies: Vec::new(),
             }),
         ),
         (

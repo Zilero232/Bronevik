@@ -3,11 +3,9 @@
 import { useTranslations } from 'next-intl';
 
 import { PlusGate } from '@/features/plus/plus-gate';
-import { VehicleFilters } from '@/features/tank/filter-vehicles';
-import { ActionStrip } from '@/ui-kit';
 
 import { useTanksState } from '../model/hooks';
-import { EconomyTable, MyEconomy, StatsControls, StatsTable, TanksHero, TierList } from './components';
+import { EconomyTable, MyEconomy, StatsControls, StatsTable, TanksFilters, TanksHero, TierList } from './components';
 
 import s from './TanksPage.module.scss';
 
@@ -17,11 +15,9 @@ export const TanksPage = () => {
 
   return (
     <div className={s.root}>
-      <div className={s.head}>
-        <TanksHero />
-        <ActionStrip aria-label={t('hero.filters')} as='section' start={<VehicleFilters className={s.filters} />} />
-      </div>
+      <TanksHero />
       <div className={s.body}>
+        <TanksFilters />
         <StatsControls />
         {view === 'table' && <StatsTable />}
         {view === 'tierlist' && <TierList />}

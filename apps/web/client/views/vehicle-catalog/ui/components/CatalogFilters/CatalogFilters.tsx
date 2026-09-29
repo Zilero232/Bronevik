@@ -13,28 +13,32 @@ import s from './CatalogFilters.module.scss';
 
 export const CatalogFilters = () => {
   const t = useTranslations('vehicleCatalog.filters');
-  const { query, search, onSearchChange } = useVehicleCatalogPage();
+  const { query, search, searchActive, onSearchChange, onSearchReset } = useVehicleCatalogPage();
 
   return (
-    <div aria-label={t('label')} className={s.root} role='search'>
-      <div className={s.row}>
+    <VehicleFilters
+      actions={
+        query.data &&
+        query.data.total > 0 && (
+          <span aria-live='polite' className={s.shown}>
+            {t('shown', { shown: query.data.shown, total: query.data.total })}
+          </span>
+        )
+      }
+      primary={
         <Input
           aria-label={t('search')}
           icon={<Search size={VEHICLE_CATALOG_VIEW.searchIcon} />}
           placeholder={t('searchPlaceholder')}
-          size='sm'
           type='search'
           value={search}
           wrapperClassName={s.search}
           onChange={(event) => onSearchChange(event.target.value)}
         />
-        {query.data && query.data.total > 0 && (
-          <span aria-live='polite' className={s.shown}>
-            {t('shown', { shown: query.data.shown, total: query.data.total })}
-          </span>
-        )}
-      </div>
-      <VehicleFilters className={s.filters} />
-    </div>
+      }
+      extraActive={searchActive}
+      label={t('label')}
+      onExtraReset={onSearchReset}
+    />
   );
 };

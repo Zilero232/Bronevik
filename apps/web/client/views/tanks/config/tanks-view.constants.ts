@@ -12,6 +12,7 @@ export const TANKS_VIEW = {
   rowHeight: 44,
   tierListSkeleton: 320,
   heroTanks: 5,
+  chipItems: 2,
   compactNumber: { notation: 'compact', maximumFractionDigits: 1 }
 } as const;
 

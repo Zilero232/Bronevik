@@ -27,9 +27,6 @@ mod state;
 #[cfg(test)]
 mod contract;
 
-use std::path::PathBuf;
-
-use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Emitter, Manager as _, WindowEvent};
 use tauri_plugin_autostart::MacosLauncher;
 use tauri_plugin_deep_link::DeepLinkExt as _;
@@ -39,10 +36,8 @@ use crate::background::{BACKGROUND_ARG, MAIN_WINDOW};
 use crate::deep_link::DeepLink;
 use crate::paths::Layout;
 use crate::releases::{api_url, ReleasesClient};
-use crate::service::{BundledResources, Manager};
+use crate::service::Manager;
 
-pub const BUNDLED_CATALOG: &str = "resources/components.json";
-pub const BUNDLED_PACKAGES: &str = "resources/packages";
 pub const UNINSTALL_ARG: &str = "--uninstall-mods";
 pub const LOG_FILE: &str = "manager";
 
@@ -57,8 +52,7 @@ fn deliver_link(app: &AppHandle, link: DeepLink) {
 }
 
 fn uninstall_mods(layout: &Layout) {
-    let bundled = std::env::current_exe().ok().and_then(|exe| exe.parent().map(|dir| dir.join(BUNDLED_CATALOG)));
-    let loaded = catalog::load(catalog::LoadInput { cache: &layout.catalog_cache(), bundled: bundled.as_deref() });
+    let loaded = catalog::load(&layout.catalog_cache());
     let owned = install::owned_patterns_catalog(loaded.map(|loaded| loaded.catalog));
 
     for client in install::uninstall_everywhere(&layout.clients_dir(), &owned) {
@@ -96,9 +90,7 @@ pub fn run() {
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(move |app| {
-            let resource = |path: &str| -> Option<PathBuf> { app.path().resolve(path, BaseDirectory::Resource).ok() };
-            let bundled = BundledResources { catalog: resource(BUNDLED_CATALOG), packages: resource(BUNDLED_PACKAGES).filter(|dir| dir.is_dir()) };
-            let manager = Manager::new(layout, bundled, ReleasesClient::new(api_url())?);
+            let manager = Manager::new(layout, ReleasesClient::new(api_url())?);
             let settings = manager.settings();
             let handle = app.handle().clone();
 

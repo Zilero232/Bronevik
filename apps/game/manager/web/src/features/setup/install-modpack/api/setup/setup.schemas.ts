@@ -21,7 +21,7 @@ export const installPlanSchema = z.object({
   client: gameClientSchema,
   catalog: catalogSchema.nullable(),
   release: z.object({ version: z.string(), notes: localizedSchema.nullable() }).nullable(),
-  source: z.enum(['bundled', 'release', 'unavailable']),
+  source: z.enum(['release', 'offline', 'unavailable']),
   otherMods: z.array(foreignEntrySchema),
   installed: z.boolean(),
   currentComponents: z.array(z.string()),

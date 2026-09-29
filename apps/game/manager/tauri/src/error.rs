@@ -35,6 +35,7 @@ pub enum ErrorCode {
     SetName,
     SetMissing,
     SetCode,
+    Offline,
 }
 
 pub const SHARING_VIOLATION: i32 = 32;

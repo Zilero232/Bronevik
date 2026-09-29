@@ -9,7 +9,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { AllExceptionsFilter } from '../../../common/filters';
 import { INDEX } from '../lib/select-release/_tests/fixtures';
 import { ModpackReleasesController } from '../modpack-releases.controller';
-import { ModpackReleasesService, ReleaseIndexService } from '../services';
+import { DownloadFilesService, ModpackReleasesService, ReleaseIndexService } from '../services';
 
 describe('modpack releases API', () => {
   let app: INestApplication;
@@ -20,6 +20,7 @@ describe('modpack releases API', () => {
       providers: [
         ModpackReleasesService,
         { provide: ReleaseIndexService, useValue: { load: async () => INDEX } },
+        { provide: DownloadFilesService, useValue: { sizes: async () => ({ modpack: 2_048, manager: null }) } },
         { provide: APP_FILTER, useClass: AllExceptionsFilter },
         { provide: APP_PIPE, useClass: ZodValidationPipe },
         { provide: APP_INTERCEPTOR, useClass: ZodSerializerInterceptor }
@@ -55,6 +56,13 @@ describe('modpack releases API', () => {
 
     expect(response.status).toBe(400);
     expect(response.body.code).toBe('VALIDATION_FAILED');
+  });
+
+  it('answers GET /modpack/releases/status with what the downloads folder really holds', async () => {
+    const response = await request(app.getHttpServer()).get('/modpack/releases/status');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ modpack: { version: '0.10.0', publishedAt: '2026-09-27T12:00:00.000Z', size: 2_048 }, manager: null });
   });
 
   it('serves the Tauri updater payload for an older manager', async () => {

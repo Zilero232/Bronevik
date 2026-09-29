@@ -5,7 +5,7 @@ import { match } from 'ts-pattern';
 
 import { VehicleFilters } from '@/features/tank/filter-vehicles';
 import { ROUTES } from '@/shared/constants';
-import { DataTable, FilteredEmptyState, QueryState, SegmentedControl, Skeleton } from '@/ui-kit';
+import { DataTable, FilteredEmptyState, FilterField, QueryState, SegmentedControl, Skeleton } from '@/ui-kit';
 
 import type { ModeTanksProps } from './ModeTanks.types';
 
@@ -30,16 +30,16 @@ export const ModeTanks = ({ mode }: ModeTanksProps) => {
 
   return (
     <section className={s.root}>
-      <div className={s.toolbar}>
-        <VehicleFilters />
-        <SegmentedControl
-          aria-label={t('view')}
-          options={MODE_VIEWS.map((value) => ({ value, label: t(`views.${value}`) }))}
-          size='sm'
-          value={view}
-          onChange={onViewChange}
-        />
-      </div>
+      <VehicleFilters>
+        <FilterField label={t('view')}>
+          <SegmentedControl
+            aria-label={t('view')}
+            options={MODE_VIEWS.map((value) => ({ value, label: t(`views.${value}`) }))}
+            value={view}
+            onChange={onViewChange}
+          />
+        </FilterField>
+      </VehicleFilters>
       <QueryState
         skeleton={
           view === 'table' ? (

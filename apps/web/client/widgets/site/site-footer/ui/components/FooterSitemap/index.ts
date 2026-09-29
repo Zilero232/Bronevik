@@ -1,0 +1,1 @@
+export { FooterSitemap } from './FooterSitemap';

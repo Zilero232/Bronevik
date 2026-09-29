@@ -6,7 +6,6 @@ const SECTION_ROOTS = [
   { source: '/c', destination: '/clans' },
   { source: '/s', destination: '/streamers' },
   { source: '/compare', destination: '/compare/players' },
-  { source: '/play', destination: '/tools' },
   { source: '/p/:nick/sessions', destination: '/p/:nick' },
   { source: '/p/:nick/wrapped', destination: '/p/:nick' },
   { source: '/missions/:campaign', destination: '/missions' },

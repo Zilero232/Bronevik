@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
+import { DailyPuzzleShelf } from '@/entities/play/daily-puzzle';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { buttonVariants, DataSourceNote, EmptyState, ErrorState, PageHeader } from '@/ui-kit';
@@ -15,6 +16,7 @@ import s from './GuessMapPage.module.scss';
 
 export const GuessMapPage = () => {
   const t = useTranslations('play.map');
+  const tCrumbs = useTranslations('play.hub.crumbs');
   const state = useGuessMapState();
 
   return (
@@ -25,6 +27,7 @@ export const GuessMapPage = () => {
             {t('head.otherGame')}
           </Link>
         }
+        breadcrumbs={[{ label: tCrumbs('home'), href: ROUTES.home }, { label: tCrumbs('hub'), href: ROUTES.play.hub }, { label: t('head.title') }]}
         description={t('head.description')}
         title={t('head.title')}
       />
@@ -40,6 +43,7 @@ export const GuessMapPage = () => {
           </GuessMapContext>
         ))
         .exhaustive()}
+      <DailyPuzzleShelf current='guessMap' />
       <DataSourceNote />
     </div>
   );

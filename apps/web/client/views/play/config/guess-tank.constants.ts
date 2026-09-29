@@ -3,9 +3,6 @@ import { hoursToMilliseconds } from 'date-fns';
 export const GUESS_TANK = {
   maxGuesses: 6,
   minTier: 5,
-  storageKey: 'otmetki-guess-tank',
-  streakKey: 'otmetki-guess-tank:streak',
-  epoch: '2026-01-01',
   generatorSwitchDay: '2026-09-29',
   detailStaleMs: hoursToMilliseconds(1)
 } as const;

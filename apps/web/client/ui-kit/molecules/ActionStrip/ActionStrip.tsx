@@ -18,7 +18,7 @@ export const ActionStrip = ({
   children,
   ...props
 }: ActionStripProps) => (
-  <Tag className={clsx(s.root, s[variant], className)} data-theme='dark' {...props}>
+  <Tag className={clsx(s.root, s[variant], className)} {...props}>
     <div className={clsx(s.inner, s[align], innerClassName)}>
       {links && links.length > 0 && (
         <ul className={s.links}>

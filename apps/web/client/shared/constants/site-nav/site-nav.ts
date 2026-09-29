@@ -13,6 +13,7 @@ import {
   Flag,
   Flame,
   FlaskConical,
+  Gamepad2,
   GitCompareArrows,
   GraduationCap,
   HeartPulse,
@@ -34,8 +35,9 @@ import {
   UsersRound,
   Wrench
 } from 'lucide-react';
+import { isIncludedIn } from 'remeda';
 
-import type { SiteNavGroup, SiteNavLink } from './site-nav.types';
+import type { SiteFooterAction, SiteNavGroup, SiteNavLink } from './site-nav.types';
 
 import { ROUTES } from '../routes';
 
@@ -49,7 +51,8 @@ export const SITE_NAV = {
         { key: 'top', href: ROUTES.top, icon: Trophy },
         { key: 'bestBattles', href: ROUTES.bestBattles, icon: Flame },
         { key: 'achievements', href: ROUTES.achievements, icon: Medal },
-        { key: 'comparePlayers', href: ROUTES.players.compare, icon: GitCompareArrows }
+        { key: 'comparePlayers', href: ROUTES.players.compare, icon: GitCompareArrows },
+        { key: 'honestRng', href: ROUTES.honestRng, icon: Dices }
       ]
     },
     {
@@ -98,7 +101,7 @@ export const SITE_NAV = {
         { key: 'guides', href: ROUTES.guides.list, icon: BookOpen },
         { key: 'tactics', href: ROUTES.tactics.list, icon: MapIcon },
         { key: 'tournaments', href: ROUTES.tournaments.list, icon: Swords },
-        { key: 'honestRng', href: ROUTES.honestRng, icon: Dices }
+        { key: 'play', href: ROUTES.play.hub, icon: Gamepad2 }
       ]
     }
   ],
@@ -124,7 +127,16 @@ export const SITE_FOOTER_GROUPS = [
   }
 ] as const satisfies readonly SiteNavGroup[];
 
-export const SITE_FOOTER_COLUMNS = [...SITE_NAV.groups, ...SITE_FOOTER_GROUPS];
+export const SITE_FOOTER_ACTION_KEYS = ['mod', 'tools', 'plus'] as const;
+
+export const SITE_FOOTER_ACTIONS = SITE_FOOTER_GROUPS.flatMap(({ items }) => [...items]).filter((item): item is SiteFooterAction =>
+  isIncludedIn(item.key, SITE_FOOTER_ACTION_KEYS)
+);
+
+export const SITE_FOOTER_COLUMNS = [
+  ...SITE_NAV.groups,
+  ...SITE_FOOTER_GROUPS.map((group) => ({ ...group, items: group.items.filter(({ key }) => !isIncludedIn(key, SITE_FOOTER_ACTION_KEYS)) }))
+];
 
 export const SITE_LEGAL_LINKS = [
   { key: 'contacts', href: ROUTES.legal.contacts },

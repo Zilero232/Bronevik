@@ -2,7 +2,8 @@ import type { ReactNode } from 'react';
 
 export type NumberFieldProps = {
   value: number | null;
-  label: ReactNode;
+  label?: ReactNode;
+  'aria-label'?: string;
   min?: number;
   max?: number;
   step?: number;

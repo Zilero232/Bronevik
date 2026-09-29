@@ -23,13 +23,50 @@
     "missions": "Missions",
     "codes": "Codes",
     "tournaments": "Tournaments",
-    "cta": "Install the mod",
     "hints": {
       "marks": "Percent and progress",
       "builds": "Equipment and crew",
       "missions": "Personal missions",
       "codes": "Bonus and invite codes",
       "tournaments": "Schedule and brackets"
+    }
+  },
+  "modpack": {
+    "label": "The Tri Otmetki modpack",
+    "eyebrow": "Modpack and manager",
+    "title": "Marks and battle results, right in the game",
+    "lead": "A free set of fair-play mods with a manager that installs the modpack, turns on what you need and moves it after a patch.",
+    "download": "Download the manager",
+    "details": "What's inside",
+    "note": "Free · Windows 10 and 11 · nothing forbidden",
+    "props": {
+      "marks": {
+        "title": "Mark percent in battle",
+        "text": "Live mark progress and the damage you need for the next one"
+      },
+      "results": {
+        "title": "Battle results",
+        "text": "Damage, spotting, XP and credits right after the battle, the session in the garage"
+      },
+      "manager": {
+        "title": "One-click install",
+        "text": "Profiles, settings snapshots and moving the modpack after a client update"
+      },
+      "fairPlay": {
+        "title": "Fair play only",
+        "text": "No enemy positions or reload timers — only what the client itself shows"
+      }
+    },
+    "preview": {
+      "title": "Modpack manager",
+      "profile": "Profile: main",
+      "items": {
+        "marks": "Marks on the barrel",
+        "results": "Battle results",
+        "session": "Session panel",
+        "sync": "Sync with the site"
+      },
+      "patch": "Move after a patch"
     }
   },
   "garage": {

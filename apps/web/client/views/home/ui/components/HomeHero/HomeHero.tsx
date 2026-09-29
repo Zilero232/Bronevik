@@ -12,7 +12,7 @@ export const HomeHero = () => {
   const t = useTranslations('home.hero');
 
   return (
-    <section aria-labelledby='home-hero-title' className={s.root} data-theme='dark'>
+    <section aria-labelledby='home-hero-title' className={s.root}>
       <div aria-hidden className={s.scrim} />
       <div className={s.content}>
         <div className={s.main}>

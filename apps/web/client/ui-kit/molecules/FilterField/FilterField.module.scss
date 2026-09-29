@@ -1,0 +1,71 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  --field-min: 0;
+
+  display: flex;
+  min-width: 0;
+  max-width: 100%;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.head {
+  display: flex;
+  min-width: 0;
+  height: 16px;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.label {
+  @include label;
+
+  flex-shrink: 0;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.count {
+  @include numeric;
+
+  display: inline-grid;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-accent);
+  color: var(--color-accent-contrast);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  place-items: center;
+}
+
+.hint {
+  overflow: hidden;
+  min-width: 0;
+  margin-left: auto;
+  color: var(--color-text-dim);
+  font-size: var(--text-2xs);
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sm {
+  width: 128px;
+}
+
+.md {
+  width: 184px;
+}
+
+.lg {
+  width: 248px;
+}
+
+.grow {
+  min-width: 220px;
+  flex: 1 1 240px;
+}

@@ -791,6 +791,7 @@ export type {
 } from './modes';
 export { MODPACK_RELEASE_STATUSES, MODPACK_RELEASES } from './modpack-releases';
 export {
+  modpackDownloadSchema,
   modpackGameVersionSchema,
   modpackLatestQuerySchema,
   modpackLatestReleaseSchema,
@@ -801,9 +802,11 @@ export {
   modpackReleaseIndexSchema,
   modpackReleasePackageSchema,
   modpackReleaseSchema,
+  modpackReleasesStatusSchema,
   modpackReleaseStatusSchema
 } from './modpack-releases';
 export type {
+  ModpackDownload,
   ModpackLatestQuery,
   ModpackLatestRelease,
   ModpackManagerRelease,
@@ -813,6 +816,7 @@ export type {
   ModpackReleaseIndex,
   ModpackReleaseIndexInput,
   ModpackReleasePackage,
+  ModpackReleasesStatus,
   ModpackReleaseStatus
 } from './modpack-releases';
 export {

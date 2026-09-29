@@ -67,6 +67,9 @@ export const QUERY_KEYS = {
   },
   tree: (nation: string) => ['tree', nation] as const,
   pulse: ['pulse'] as const,
+  modpack: {
+    status: ['modpack', 'status'] as const
+  },
   reference: {
     version: ['reference', 'version'] as const,
     servers: ['reference', 'servers'] as const,

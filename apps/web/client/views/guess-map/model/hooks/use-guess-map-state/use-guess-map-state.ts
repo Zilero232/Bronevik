@@ -6,11 +6,10 @@ import { useQuery } from '@tanstack/react-query';
 import { useLocale } from 'next-intl';
 
 import { mapQueries } from '@/entities/map/map';
-import { activeStreak, puzzleNumber, recordResult, useDailyStorage, usePuzzleDay } from '@/entities/play/daily-puzzle';
+import { activeStreak, DAILY_PUZZLES, puzzleNumber, recordResult, useDailyStorage, usePuzzleDay } from '@/entities/play/daily-puzzle';
 
 import type { GuessMapState } from '../../context';
 
-import { GUESS_MAP } from '../../../config';
 import { fragmentZoom, mapGameStatus, mapPool, pickDailyMap } from '../../../lib/daily-map';
 import { compareMaps } from '../../../lib/map-hints';
 
@@ -21,8 +20,8 @@ export const useGuessMapState = (): GuessMapState => {
   const { day, refreshDay } = usePuzzleDay();
   const { guessIds, streak, setBoard, setStreak } = useDailyStorage<string>({
     day,
-    storageKey: GUESS_MAP.storageKey,
-    streakKey: GUESS_MAP.streakKey
+    storageKey: DAILY_PUZZLES.guessMap.storageKey,
+    streakKey: DAILY_PUZZLES.guessMap.streakKey
   });
 
   const daily = day === null ? null : pickDailyMap({ maps, day });
@@ -68,7 +67,7 @@ export const useGuessMapState = (): GuessMapState => {
   return {
     kind: 'ready',
     game: {
-      number: puzzleNumber({ epoch: GUESS_MAP.epoch, day }),
+      number: puzzleNumber({ epoch: DAILY_PUZZLES.guessMap.epoch, day }),
       target,
       focus,
       pool,

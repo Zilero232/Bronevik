@@ -21,7 +21,7 @@ python tools/build/build.py --require-pyc                # release packages -> d
 uv run python tools/build/setupkit --packages dist       # -> dist/catalog/components.json + dist/catalog/previews/*.png
 ```
 
-`--strict` fails when a package has no catalog entry or an entry has no package (the release job uses it; a `kind: "dependency"` entry has no package by design and is not counted), or when a dependency's `requiredBy` names a component the build does not ship; `--skip-artwork` writes `components.json` only. The manual `modpack.yml` run uploads `dist/catalog` as the `modpack-catalog` artifact: copy it into the manager's `tauri/resources/` or publish it as a release's `catalog` (manager README «Releases»).
+`--strict` fails when a package has no catalog entry or an entry has no package (the release job uses it; a `kind: "dependency"` entry has no package by design and is not counted), or when a dependency's `requiredBy` names a component the build does not ship; `--skip-artwork` writes `components.json` only. The manual `modpack.yml` run uploads `dist/modpack` and `dist/catalog` as the `modpack` artifact; a release publishes the catalogue as its `catalog`, which the manager downloads (manager README «Releases»).
 
 ## components.json
 

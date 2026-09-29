@@ -29,7 +29,7 @@ describe('activeSiteNav', () => {
     expect(activeSiteNav(ROUTES.tanks.list)).toEqual({ href: ROUTES.tanks.list, groupKey: 'vehicles' });
     expect(activeSiteNav(ROUTES.players.profile('Nick'))).toEqual({ href: ROUTES.players.list, groupKey: 'players' });
     expect(activeSiteNav(ROUTES.competitions.detail('spring'))).toEqual({ href: ROUTES.tournaments.list, groupKey: 'community' });
-    expect(activeSiteNav(ROUTES.play.guessTank)).toEqual({ href: ROUTES.tools, groupKey: null });
+    expect(activeSiteNav(ROUTES.play.guessTank)).toEqual({ href: ROUTES.play.hub, groupKey: 'community' });
   });
 
   it('maps streamer pages to the streamer directory', () => {
@@ -65,7 +65,7 @@ describe('SITE_NAV', () => {
   });
 
   it('keeps project pages out of the header menu', () => {
-    [ROUTES.developers, ROUTES.design, ROUTES.pulse, ROUTES.streamers.forStreamers, '/competitions', '/play'].forEach((href) =>
+    [ROUTES.developers, ROUTES.design, ROUTES.pulse, ROUTES.streamers.forStreamers, '/competitions'].forEach((href) =>
       expect(menuHrefs).not.toContain(href)
     );
   });

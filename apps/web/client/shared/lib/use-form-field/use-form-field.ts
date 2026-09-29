@@ -6,6 +6,7 @@ export const useFormField = ({ htmlFor, hasHint, hasError }: UseFormFieldInput) 
   const baseId = useId();
 
   const controlId = htmlFor ?? `${baseId}-control`;
+  const labelId = `${baseId}-label`;
   const hintId = `${baseId}-hint`;
   const errorId = `${baseId}-error`;
   const describedBy = hasError ? errorId : hasHint ? hintId : undefined;
@@ -15,5 +16,5 @@ export const useFormField = ({ htmlFor, hasHint, hasError }: UseFormFieldInput) 
     ...(hasError ? { 'aria-invalid': true } : {})
   };
 
-  return { controlId, hintId, errorId, control };
+  return { controlId, labelId, hintId, errorId, control };
 };

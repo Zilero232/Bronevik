@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
-import { FormField, Input, Select } from '@/ui-kit';
+import { DateTimeField, FormField, Input, Select } from '@/ui-kit';
 
 import type { PlatoonFormOutput, PlatoonFormValues } from '../../../../../lib/platoon-form';
 
@@ -38,11 +38,19 @@ export const PlatoonWindowFields = () => {
         />
       </div>
       <div className={s.row}>
-        <FormField htmlFor={`${id}-from`} label={t('availableFrom')}>
-          <Input id={`${id}-from`} size='sm' type='datetime-local' {...register('availableFrom')} />
+        <FormField label={t('availableFrom')}>
+          <Controller
+            control={control}
+            name='availableFrom'
+            render={({ field }) => <DateTimeField value={field.value ?? ''} onChange={field.onChange} />}
+          />
         </FormField>
-        <FormField error={errors.availableUntil && t('windowError')} htmlFor={`${id}-until`} label={t('availableUntil')}>
-          <Input id={`${id}-until`} isInvalid={Boolean(errors.availableUntil)} size='sm' type='datetime-local' {...register('availableUntil')} />
+        <FormField error={errors.availableUntil && t('windowError')} label={t('availableUntil')}>
+          <Controller
+            control={control}
+            name='availableUntil'
+            render={({ field }) => <DateTimeField isInvalid={Boolean(errors.availableUntil)} value={field.value ?? ''} onChange={field.onChange} />}
+          />
         </FormField>
       </div>
     </>

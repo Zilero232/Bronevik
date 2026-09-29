@@ -9,7 +9,6 @@ import { SegmentedControl, Select, Tabs } from '@/ui-kit';
 
 import { TANKS_VIEWS } from '../../../config';
 import { useTanksState } from '../../../model/hooks';
-import { QuickFilters, TraitFilters } from './components';
 
 import s from './StatsControls.module.scss';
 
@@ -19,46 +18,39 @@ export const StatsControls = () => {
   const [{ period, cohort, mode, view }, setState] = useTanksState();
 
   return (
-    <div className={s.root}>
-      <Tabs
-        aside={
-          <div className={s.row}>
-            {view !== 'economy' && (
-              <Select<StatsMode>
-                aria-label={t('mode')}
-                className={s.mode}
-                items={statsModeSchema.options.map((value) => ({ value, label: t(`modes.${value}`) }))}
-                value={mode}
-                onValueChange={(next) => setState({ mode: next === 'all' ? null : next })}
-              />
-            )}
-            <SegmentedControl
-              aria-label={t('period')}
-              options={serverPeriodSchema.options.map((value) => ({ value, label: tPeriods(value) }))}
-              size='sm'
-              value={period}
-              onChange={(next) => setState({ period: next })}
+    <Tabs
+      aside={
+        <div className={s.row}>
+          {view !== 'economy' && (
+            <Select<StatsMode>
+              aria-label={t('mode')}
+              className={s.mode}
+              items={statsModeSchema.options.map((value) => ({ value, label: t(`modes.${value}`) }))}
+              value={mode}
+              onValueChange={(next) => setState({ mode: next === 'all' ? null : next })}
             />
-            {view === 'table' && (
-              <SegmentedControl
-                aria-label={t('cohort')}
-                options={skillCohortSchema.options.map((value) => ({ value, label: t(`cohorts.${value}`) }))}
-                size='sm'
-                value={cohort}
-                onChange={(next) => setState({ cohort: next })}
-              />
-            )}
-          </div>
-        }
-        items={TANKS_VIEWS.map((value) => ({ value, label: t(`views.${value}`) }))}
-        value={view}
-        variant='strip'
-        onValueChange={(next) => setState({ view: next })}
-      />
-      <div className={s.filters}>
-        {view === 'table' && <QuickFilters />}
-        <TraitFilters />
-      </div>
-    </div>
+          )}
+          <SegmentedControl
+            aria-label={t('period')}
+            options={serverPeriodSchema.options.map((value) => ({ value, label: tPeriods(value) }))}
+            value={period}
+            onChange={(next) => setState({ period: next })}
+          />
+          {view === 'table' && (
+            <SegmentedControl
+              aria-label={t('cohort')}
+              options={skillCohortSchema.options.map((value) => ({ value, label: t(`cohorts.${value}`) }))}
+              value={cohort}
+              onChange={(next) => setState({ cohort: next })}
+            />
+          )}
+        </div>
+      }
+      className={s.root}
+      items={TANKS_VIEWS.map((value) => ({ value, label: t(`views.${value}`) }))}
+      value={view}
+      variant='strip'
+      onValueChange={(next) => setState({ view: next })}
+    />
   );
 };

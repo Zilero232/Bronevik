@@ -1,0 +1,22 @@
+{
+  "catalog": null,
+  "client": {
+    "branch": "release",
+    "modsDir": "D:\\Игры\\Мир танков\\mods\\1.45.0.0",
+    "packageMask": "*.mtmod",
+    "path": "D:\\Игры\\Мир танков",
+    "preferred": true,
+    "problem": null,
+    "realm": "RU",
+    "resModsDir": "D:\\Игры\\Мир танков\\res_mods\\1.45.0.0",
+    "source": "lgc",
+    "version": "1.45.0.0"
+  },
+  "currentComponents": [],
+  "dependencies": [],
+  "installed": false,
+  "otherMods": [],
+  "parkedComponents": [],
+  "release": null,
+  "source": "offline"
+}

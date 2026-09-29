@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import { EmptyState, IconFilter, QueryState, Skeleton } from '@/ui-kit';
+import { EmptyState, QueryState, Skeleton, TierPicker } from '@/ui-kit';
 
 import { TANKS_VIEW, TIER_LIST_TIERS } from '../../../config';
 import { useTierList } from '../../../model/hooks';
@@ -17,12 +17,11 @@ export const TierList = () => {
   return (
     <section aria-label={t('title')} className={s.root}>
       <div className={s.head}>
-        <IconFilter
+        <TierPicker
+          isRequired
           aria-label={t('tier')}
-          isMultiple={false}
-          kind='tier'
+          mode='single'
           options={TIER_LIST_TIERS}
-          size='sm'
           value={[tier]}
           onChange={([next]) => onTierChange(String(next))}
         />

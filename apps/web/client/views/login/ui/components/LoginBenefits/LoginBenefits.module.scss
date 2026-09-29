@@ -1,0 +1,142 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-6));
+
+  position: relative;
+  overflow: hidden;
+  padding: var(--space-7);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background:
+    radial-gradient(560px 280px at 100% 0%, color-mix(in srgb, var(--color-accent) 14%, transparent), transparent 70%),
+    radial-gradient(460px 240px at 0% 100%, color-mix(in srgb, var(--color-steel-blue) 10%, transparent), transparent 70%), var(--color-band);
+  box-shadow: var(--panel-highlight);
+  isolation: isolate;
+
+  @include rivet-rule(bottom);
+
+  &:before {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 140px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-gold) 0 30%, var(--color-accent) 30% 100%);
+    clip-path: polygon(3px 0, 100% 0, 100% 100%, 0 100%);
+    content: '';
+  }
+
+  @include below(md) {
+    padding: var(--space-5) var(--space-4) var(--space-6);
+  }
+}
+
+.texture {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  mask-image: radial-gradient(ellipse 70% 90% at 100% 0%, #000 0%, transparent 75%);
+  pointer-events: none;
+
+  @include texture(hex);
+}
+
+.emblem {
+  --otmetki-icon-accent: var(--color-gold);
+
+  position: absolute;
+  z-index: -1;
+  right: calc(var(--space-8) * -1);
+  bottom: calc(var(--space-8) * -1);
+  width: 260px;
+  height: 260px;
+  color: var(--color-accent);
+  opacity: 0.07;
+  pointer-events: none;
+  transform: rotate(-12deg);
+
+  :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+
+  @include below(md) {
+    width: 180px;
+    height: 180px;
+  }
+}
+
+.head {
+  @include stack(var(--space-2));
+
+  max-width: 46ch;
+}
+
+.kicker {
+  @include label;
+
+  color: var(--color-gold);
+}
+
+.title {
+  @include heading(var(--text-2xl));
+}
+
+.lead {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  line-height: var(--leading-body);
+}
+
+.list {
+  display: grid;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-4);
+  list-style: none;
+}
+
+.item {
+  --benefit: var(--color-accent);
+
+  display: grid;
+  align-items: start;
+  gap: var(--space-4);
+  grid-template-columns: 44px minmax(0, 1fr);
+
+  &[data-tone='gold'] {
+    --benefit: var(--color-gold);
+  }
+}
+
+.icon {
+  display: grid;
+  width: 44px;
+  height: 40px;
+  background: color-mix(in srgb, var(--benefit) 16%, var(--color-surface));
+  clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+  color: var(--benefit);
+  place-items: center;
+}
+
+.body {
+  @include stack(2px);
+
+  min-width: 0;
+  padding-top: 2px;
+}
+
+.itemTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.itemText {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  line-height: var(--leading-body);
+}

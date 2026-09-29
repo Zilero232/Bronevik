@@ -8,7 +8,7 @@ export const Band = ({
   tone = 'deep',
   width = 'wide',
   texture = tone === 'raised' ? 'hex' : 'camo',
-  isDark = true,
+  isDark = false,
   as: Tag = 'section',
   className,
   innerClassName,

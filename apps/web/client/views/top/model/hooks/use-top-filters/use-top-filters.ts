@@ -1,11 +1,14 @@
 'use client';
 
-import type { RatingKind, RatingPeriod, VehicleSummary, VehicleType } from '@otmetki/schemas';
+import type { TankClass } from '@otmetki/icons';
+import type { RatingKind, RatingPeriod, VehicleSummary } from '@otmetki/schemas';
 
-import { TIERS, toRoman } from '@otmetki/icons';
+import { toRoman } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
-import { TOP_BOARD, TOP_METRICS, TOP_PERIODS, TOP_TANK_SCOPES } from '../../../config';
+import type { ActiveFilter } from '@/ui-kit';
+
+import { TOP_METRICS, TOP_PERIODS, TOP_TANK_SCOPES } from '../../../config';
 import { metricFor } from '../../../lib/top-filter';
 import { useTopParams } from '../use-top-params';
 import { useTopTank } from '../use-top-tank';
@@ -13,24 +16,39 @@ import { useTopTank } from '../use-top-tank';
 export const useTopFilters = () => {
   const t = useTranslations('top');
   const tPeriods = useTranslations('periods');
+  const tGame = useTranslations('game.classes');
+  const tFilters = useTranslations('common.filters');
   const [{ scope, metric, period, tier, type }, setParams] = useTopParams();
   const tank = useTopTank();
+
+  const active: ActiveFilter[] = [
+    ...(tier === null
+      ? []
+      : [{ id: 'tier', label: tFilters('span', { label: t('tier'), value: toRoman(tier) }), onRemove: () => void setParams({ tier: null }) }]),
+    ...(type === null
+      ? []
+      : [{ id: 'type', label: tFilters('span', { label: t('type'), value: tGame(type) }), onRemove: () => void setParams({ type: null }) }]),
+    ...(tank
+      ? [{ id: 'tank', label: tFilters('span', { label: t('tank'), value: tank.shortName }), onRemove: () => void setParams({ tank: null }) }]
+      : [])
+  ];
 
   return {
     scope,
     metrics: TOP_METRICS[scope].map((value) => ({ value, label: t(`metrics.${value}`) })),
     periods: TOP_PERIODS.map((value) => ({ value, label: tPeriods(value) })),
-    tiers: [{ value: TOP_BOARD.anyOption, label: t('allTiers') }, ...TIERS.map((value) => ({ value: String(value), label: toRoman(value) }))],
     metric: metricFor({ scope, metric }),
     period,
-    tier: tier === null ? TOP_BOARD.anyOption : String(tier),
-    type: type ?? TOP_BOARD.anyOption,
+    tiers: tier === null ? [] : [tier],
+    types: type === null ? [] : [type],
+    active,
     tank,
     hasTank: TOP_TANK_SCOPES.includes(scope),
     onMetricChange: (next: RatingKind) => void setParams({ metric: next }),
     onPeriodChange: (next: RatingPeriod) => void setParams({ period: next }),
-    onTierChange: (next: string) => void setParams({ tier: next === TOP_BOARD.anyOption ? null : Number(next) }),
-    onTypeChange: (next: VehicleType | typeof TOP_BOARD.anyOption) => void setParams({ type: next === TOP_BOARD.anyOption ? null : next }),
-    onTankChange: (vehicle: VehicleSummary | null) => void setParams({ tank: vehicle?.tankId ?? null })
+    onTiersChange: (next: number[]) => void setParams({ tier: next[0] ?? null }),
+    onTypesChange: (next: TankClass[]) => void setParams({ type: next.find((value) => value !== type) ?? null }),
+    onTankChange: (vehicle: VehicleSummary | null) => void setParams({ tank: vehicle?.tankId ?? null }),
+    onReset: () => void setParams({ tier: null, type: null, tank: null })
   };
 };

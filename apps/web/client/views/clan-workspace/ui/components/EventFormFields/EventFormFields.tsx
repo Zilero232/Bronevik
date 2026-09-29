@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
-import { FormField, Input, Select } from '@/ui-kit';
+import { DateTimeField, FormField, Input, Select } from '@/ui-kit';
 
 import type { EventFormValues } from '../../../lib/event-form';
 
@@ -30,11 +30,19 @@ export const EventFormFields = () => {
         render={({ field }) => <Select items={kinds} label={t('kind')} value={field.value} onValueChange={field.onChange} />}
       />
       <div className={s.pair}>
-        <FormField error={errors.startsAt && t('startsAtError')} htmlFor={`${id}-starts`} label={t('startsAt')}>
-          <Input id={`${id}-starts`} isInvalid={Boolean(errors.startsAt)} size='sm' type='datetime-local' {...form.register('startsAt')} />
+        <FormField error={errors.startsAt && t('startsAtError')} label={t('startsAt')}>
+          <Controller
+            control={form.control}
+            name='startsAt'
+            render={({ field }) => <DateTimeField isInvalid={Boolean(errors.startsAt)} value={field.value ?? ''} onChange={field.onChange} />}
+          />
         </FormField>
-        <FormField error={errors.endsAt && t('endsAtError')} hint={t('endsAtHint')} htmlFor={`${id}-ends`} label={t('endsAt')}>
-          <Input id={`${id}-ends`} isInvalid={Boolean(errors.endsAt)} size='sm' type='datetime-local' {...form.register('endsAt')} />
+        <FormField error={errors.endsAt && t('endsAtError')} hint={t('endsAtHint')} label={t('endsAt')}>
+          <Controller
+            control={form.control}
+            name='endsAt'
+            render={({ field }) => <DateTimeField isInvalid={Boolean(errors.endsAt)} value={field.value ?? ''} onChange={field.onChange} />}
+          />
         </FormField>
       </div>
       <Controller

@@ -15,7 +15,7 @@
   @include touch-target;
 
   display: flex;
-  height: 32px;
+  height: var(--control-h);
   align-items: stretch;
 }
 

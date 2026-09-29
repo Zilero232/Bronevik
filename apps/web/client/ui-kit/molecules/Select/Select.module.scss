@@ -27,8 +27,8 @@
   @include touch-target;
 
   display: inline-flex;
-  min-width: 180px;
-  height: 32px;
+  min-width: var(--field-min, 180px);
+  height: var(--control-h);
   align-items: center;
   justify-content: space-between;
   padding: 0 var(--space-3);

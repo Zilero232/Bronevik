@@ -2,10 +2,9 @@
 
 import { COMPETITION, COMPETITION_MODES, COMPETITION_VISIBILITIES } from '@otmetki/schemas';
 import { useTranslations } from 'next-intl';
-import { useId } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
-import { FormField, Input, NumberField, Select } from '@/ui-kit';
+import { DateTimeField, FormField, NumberField, Select } from '@/ui-kit';
 
 import type { CompetitionFormOutput, CompetitionFormValues } from '../../../../../lib/competition-form';
 
@@ -15,8 +14,7 @@ import s from './CompetitionRulesFields.module.scss';
 
 export const CompetitionRulesFields = () => {
   const t = useTranslations('competitions');
-  const id = useId();
-  const { register, control, formState } = useFormContext<CompetitionFormValues, unknown, CompetitionFormOutput>();
+  const { control, formState } = useFormContext<CompetitionFormValues, unknown, CompetitionFormOutput>();
   const { errors } = formState;
 
   return (
@@ -74,15 +72,23 @@ export const CompetitionRulesFields = () => {
         control={control}
         name='battlesPerPlayer'
       />
-      <FormField error={errors.startsAt && t('create.startsAtError')} htmlFor={`${id}-starts`} label={t('create.startsAt')}>
-        <Input id={`${id}-starts`} isInvalid={Boolean(errors.startsAt)} size='sm' type='datetime-local' {...register('startsAt')} />
+      <FormField error={errors.startsAt && t('create.startsAtError')} label={t('create.startsAt')}>
+        <Controller
+          control={control}
+          name='startsAt'
+          render={({ field }) => <DateTimeField isInvalid={Boolean(errors.startsAt)} value={field.value ?? ''} onChange={field.onChange} />}
+        />
       </FormField>
       <FormField
         error={errors.endsAt && t('create.endsAtError', { days: COMPETITION.maxDurationDays })}
-        htmlFor={`${id}-ends`}
+
         label={t('create.endsAt')}
       >
-        <Input id={`${id}-ends`} isInvalid={Boolean(errors.endsAt)} size='sm' type='datetime-local' {...register('endsAt')} />
+        <Controller
+          control={control}
+          name='endsAt'
+          render={({ field }) => <DateTimeField isInvalid={Boolean(errors.endsAt)} value={field.value ?? ''} onChange={field.onChange} />}
+        />
       </FormField>
     </div>
   );

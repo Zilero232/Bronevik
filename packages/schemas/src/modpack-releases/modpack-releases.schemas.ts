@@ -68,3 +68,14 @@ export const modpackManagerUpdateSchema = z.object({
   url: httpsUrlSchema,
   signature: z.string()
 });
+
+export const modpackDownloadSchema = z.object({
+  version: semverSchema,
+  publishedAt: z.iso.datetime(),
+  size: z.number().int().nonnegative()
+});
+
+export const modpackReleasesStatusSchema = z.object({
+  modpack: modpackDownloadSchema.nullable(),
+  manager: modpackDownloadSchema.nullable()
+});

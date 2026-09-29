@@ -1,6 +1,4 @@
-import { NATION_ICONS, NATIONS, TANK_CLASS_ICONS, TANK_CLASSES, toRoman } from '@otmetki/icons';
-
-import { tierBand } from '@/shared/lib';
+import { NATION_ICONS, NATIONS, TANK_CLASS_ICONS, TANK_CLASSES } from '@otmetki/icons';
 
 import type { IconFilterGlyphProps } from './IconFilterGlyph.types';
 
@@ -18,18 +16,11 @@ export const IconFilterGlyph = ({ value }: IconFilterGlyphProps) => {
     return <Icon aria-hidden className={s.glyph} size={ICON_FILTER_GLYPH.size} />;
   }
 
-  if (nation) {
-    const Flag = NATION_ICONS[nation];
-
-    return <Flag aria-hidden className={s.flag} palette='color' size={ICON_FILTER_GLYPH.size} />;
+  if (!nation) {
+    return null;
   }
 
-  return (
-    <span aria-hidden className={s.hex} data-tier-band={tierBand(Number(value))}>
-      <svg className={s.hexShape} viewBox={ICON_FILTER_GLYPH.hexViewBox}>
-        <polygon points={ICON_FILTER_GLYPH.hexPoints} />
-      </svg>
-      <span className={s.numeral}>{toRoman(Number(value))}</span>
-    </span>
-  );
+  const Flag = NATION_ICONS[nation];
+
+  return <Flag aria-hidden className={s.flag} palette='color' size={ICON_FILTER_GLYPH.size} />;
 };

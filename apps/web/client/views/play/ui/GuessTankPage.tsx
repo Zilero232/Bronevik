@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
+import { DailyPuzzleShelf } from '@/entities/play/daily-puzzle';
 import { CatalogPending } from '@/entities/tank/tank';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
@@ -17,6 +18,7 @@ import s from './GuessTankPage.module.scss';
 
 export const GuessTankPage = () => {
   const t = useTranslations('play');
+  const tCrumbs = useTranslations('play.hub.crumbs');
   const state = useGuessGameState();
 
   return (
@@ -27,6 +29,7 @@ export const GuessTankPage = () => {
             {t('head.otherGame')}
           </Link>
         }
+        breadcrumbs={[{ label: tCrumbs('home'), href: ROUTES.home }, { label: tCrumbs('hub'), href: ROUTES.play.hub }, { label: t('head.title') }]}
         description={t('head.description')}
         title={t('head.title')}
       >
@@ -47,6 +50,7 @@ export const GuessTankPage = () => {
           </GuessGameContext>
         ))
         .exhaustive()}
+      <DailyPuzzleShelf current='guessTank' />
       <DataSourceNote />
     </div>
   );

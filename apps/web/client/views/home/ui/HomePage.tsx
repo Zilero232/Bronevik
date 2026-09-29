@@ -9,6 +9,7 @@ import {
   HomeActions,
   HomeHero,
   MarksMovement,
+  ModpackPromo,
   StrongTanks,
   TopPlayers
 } from './components';
@@ -27,6 +28,7 @@ export const HomePage = () => (
     </Band>
     <GarageStrip />
     <MarksMovement />
+    <ModpackPromo />
     <Band as='div' isDark={false} texture='noise' tone='raised' width='full'>
       <TopPlayers />
     </Band>

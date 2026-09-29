@@ -4,7 +4,7 @@ Usage:
     python apps/game/modpack/tools/build/setupkit [--packages DIR] [--out DIR] [--strict] [--skip-artwork]
 
 Writes <out>/components.json (default apps/game/modpack/dist/catalog) and <out>/previews/<id>.png, the files
-the modpack manager ships in tauri/resources/ or downloads as a release's `catalog`. --packages is the folder
+the modpack manager downloads as a release's `catalog`. --packages is the folder
 with the split .mtmod packages from tools/build/build.py (adds sha256/size to the manifest).
 """
 import argparse

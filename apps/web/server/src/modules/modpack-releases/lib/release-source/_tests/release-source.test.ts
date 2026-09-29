@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
 import { INDEX } from '../../select-release/_tests/fixtures';
-import { isPublished } from '../release-source';
-import { modpackReleaseManifestSchema } from '../release-source.schemas';
+import { isPublished, releaseNeeds } from '../release-source';
+import { managerReleaseManifestSchema, modpackReleaseManifestSchema } from '../release-source.schemas';
 
 const MANIFEST = { name: '@otmetki/modpack', version: '0.1.0', private: true, otmetki: { games: ['1.45.*', '1.46.0.0'] } };
 
@@ -27,5 +27,34 @@ describe('isPublished', () => {
   it('finds a version already in the index', () => {
     expect(isPublished({ index: INDEX, version: '0.2.0' })).toBe(true);
     expect(isPublished({ index: INDEX, version: '99.0.0' })).toBe(false);
+  });
+});
+
+describe('managerReleaseManifestSchema', () => {
+  it('reads the manager version and rejects a non-semver one', () => {
+    expect(managerReleaseManifestSchema.parse({ name: '@otmetki/manager', version: '0.3.0' })).toEqual({ version: '0.3.0' });
+    expect(managerReleaseManifestSchema.safeParse({ version: '0.3' }).success).toBe(false);
+  });
+});
+
+describe('releaseNeeds', () => {
+  it('releases nothing when both versions are already published', () => {
+    expect(releaseNeeds({ index: INDEX, modpackVersion: '0.2.0', managerVersion: '0.2.0' })).toEqual({ modpack: false, manager: false });
+  });
+
+  it('releases only the part whose version is new', () => {
+    expect(releaseNeeds({ index: INDEX, modpackVersion: '0.2.0', managerVersion: '0.3.0' })).toEqual({ modpack: false, manager: true });
+    expect(releaseNeeds({ index: INDEX, modpackVersion: '0.11.0', managerVersion: '0.2.0' })).toEqual({ modpack: true, manager: false });
+  });
+
+  it('never replaces a newer published manager with an older one', () => {
+    expect(releaseNeeds({ index: INDEX, modpackVersion: '0.2.0', managerVersion: '0.1.0' }).manager).toBe(false);
+  });
+
+  it('releases both into an empty index', () => {
+    expect(releaseNeeds({ index: { schemaVersion: 1, releases: [] }, modpackVersion: '0.1.0', managerVersion: '0.1.0' })).toEqual({
+      modpack: true,
+      manager: true
+    });
   });
 });

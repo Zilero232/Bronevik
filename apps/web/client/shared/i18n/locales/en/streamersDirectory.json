@@ -35,7 +35,8 @@
     "settings": "Has settings",
     "platform": "Platform",
     "anyPlatform": "All platforms",
-    "reset": "Reset"
+    "reset": "Reset",
+    "status": "Status"
   },
   "card": {
     "offline": "Offline",

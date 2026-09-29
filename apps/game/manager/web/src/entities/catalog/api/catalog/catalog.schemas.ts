@@ -74,6 +74,5 @@ export const catalogSchema = z.object({
   ownedPatterns: z.array(z.string()),
   ownedPaths: z.array(z.string()),
   conflicts: z.array(catalogConflictSchema),
-  source: z.enum(['downloaded', 'bundled']),
   previewsDir: z.string().nullable()
 });

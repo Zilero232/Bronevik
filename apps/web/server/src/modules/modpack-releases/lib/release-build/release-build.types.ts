@@ -20,6 +20,6 @@ export type BuildReleaseInput = Pick<ModpackRelease, 'games' | 'publishedAt' | '
 
 export type MergeReleaseIndexInput = {
   index: ModpackReleaseIndex;
-  release: ModpackRelease;
-  manager: ModpackManagerRelease;
+  release?: ModpackRelease;
+  manager?: ModpackManagerRelease;
 };

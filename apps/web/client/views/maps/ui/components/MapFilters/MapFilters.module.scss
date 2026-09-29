@@ -1,23 +1,5 @@
 @use '@/shared/styles/mixins' as *;
 
-.root {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-3) var(--space-4);
-}
-
 .search {
-  width: min(100%, 280px);
-
-  @include below(md) {
-    width: 100%;
-  }
-}
-
-.status {
-  display: flex;
-  align-items: center;
-  margin-left: auto;
-  gap: var(--space-3);
+  width: min(100%, 320px);
 }

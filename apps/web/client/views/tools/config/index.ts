@@ -7,7 +7,6 @@ export { ECONOMY, ECONOMY_TIERS, SHELL_ICONS, SHELL_KINDS } from './economy.cons
 export type { ShellKind } from './economy.constants';
 export { FRONTLINE, FRONTLINE_FIELDS, FRONTLINE_GAME, FRONTLINE_RESERVES } from './frontline.constants';
 export type { FrontlineReserve } from './frontline.constants';
-export { TOOL_GAMES } from './games.constants';
 export { GOLD } from './gold.constants';
 export { MOE_CALC, MOE_TARGETS } from './moe.constants';
 export type { MoeTargetValue } from './moe.constants';

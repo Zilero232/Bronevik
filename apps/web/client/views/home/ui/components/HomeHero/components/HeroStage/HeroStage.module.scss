@@ -4,8 +4,14 @@
   @include nation-tint;
 
   position: relative;
+  display: grid;
   min-width: 0;
   min-height: 280px;
+  align-items: center;
+
+  @include below(2xl) {
+    min-height: 0;
+  }
 }
 
 .backdrop {

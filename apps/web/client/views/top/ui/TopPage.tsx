@@ -39,8 +39,8 @@ export const TopPage = () => {
       <div className={s.content}>
         <TopPodium />
         <Card padding='none'>
+          <TopFilters />
           <div className={s.body}>
-            <TopFilters />
             <TopTable />
           </div>
         </Card>

@@ -15,11 +15,7 @@
     "frontline": "Front Line",
     "math": "Tank math"
   },
-  "games": {
-    "label": "Mini-games",
-    "guessTank": "Guess the tank",
-    "guessMap": "Guess the map"
-  },
+  "games": "Mini-games",
   "research": {
     "title": "XP and credits to a tank",
     "description": "Pick a tank — we take its research and purchase cost from the tech tree (or a tier estimate) and count the battles left.",

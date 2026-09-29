@@ -19,7 +19,7 @@ export const ClientStep = () => {
           <span className={s.path}>{plan.client.modsDir}</span>
           {plan.client.problem && <Badge tone='danger'>{t(`client.problem.${plan.client.problem}`)}</Badge>}
           {plan.client.problem && <span className={s.warning}>{t('install.clientUnsupported')}</span>}
-          <Badge tone={plan.source === 'unavailable' ? 'danger' : 'neutral'}>
+          <Badge tone={plan.source === 'release' ? 'neutral' : 'danger'}>
             {t(`install.source.${plan.source}`, { version: plan.release?.version ?? '' })}
           </Badge>
         </div>

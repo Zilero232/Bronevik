@@ -1,0 +1,105 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-3));
+
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid color-mix(in srgb, var(--color-warning) 45%, var(--color-border));
+  border-radius: var(--radius-sm);
+  border-left-width: 3px;
+  background: color-mix(in srgb, var(--color-warning) 7%, var(--color-surface-sunken));
+
+  @include below(md) {
+    padding: var(--space-4);
+  }
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.icon {
+  display: grid;
+  width: 34px;
+  height: 30px;
+  flex: none;
+  background: color-mix(in srgb, var(--color-warning) 18%, transparent);
+  clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+  color: var(--color-warning);
+  place-items: center;
+}
+
+.title {
+  @include heading(var(--text-lg));
+}
+
+.text {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  line-height: var(--leading-body);
+}
+
+.label {
+  @include label;
+}
+
+.actions {
+  display: grid;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-2);
+  list-style: none;
+}
+
+.action {
+  display: grid;
+  align-items: center;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  gap: var(--space-3);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  transition:
+    border-color var(--duration-fast) ease,
+    background-color var(--duration-fast) ease;
+
+  @include hover {
+    border-color: var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent) 6%, var(--color-surface));
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.actionIcon {
+  color: var(--color-accent);
+}
+
+.actionBody {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.actionTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.actionHint {
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+}
+
+.actionArrow {
+  color: var(--color-text-dim);
+}

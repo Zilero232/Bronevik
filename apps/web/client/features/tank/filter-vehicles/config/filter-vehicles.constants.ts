@@ -16,8 +16,8 @@ export const ROLE_CLASS_PREFIX = {
   SPG: 'SPG'
 } as const satisfies Record<TankClass, string>;
 
-export const VEHICLE_FILTER_ICON = {
-  reset: 14
+export const VEHICLE_FILTER_VIEW = {
+  chipItems: 2
 } as const;
 
 export const VEHICLE_FILTER_PARSERS = {

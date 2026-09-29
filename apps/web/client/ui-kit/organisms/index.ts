@@ -10,6 +10,8 @@ export type { CalendarHeatmapProps, HeatmapDay } from './CalendarHeatmap';
 export type { ChartSeries } from './ChartKit';
 export { DataTable } from './DataTable';
 export type { DataTableBarMax, DataTableDensity, DataTableProps, DataTableRowLink, DataTableRowTint, TableColumn } from './DataTable';
+export { FilterBar } from './FilterBar';
+export type { ActiveFilter, FilterBarProps } from './FilterBar';
 export { LineChart } from './LineChart';
 export type { LineChartProps } from './LineChart';
 export { PagedList } from './PagedList';

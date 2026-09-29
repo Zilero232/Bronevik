@@ -4,7 +4,8 @@ import { Gauge, History, ScrollText } from 'lucide-react';
 export const MOD_PAGE = {
   heroGlyph: 480,
   iconSize: 18,
-  featureIconSize: 22
+  featureIconSize: 22,
+  bytesPerMegabyte: 1_048_576
 } as const;
 
 export const MOD_FEATURES = [

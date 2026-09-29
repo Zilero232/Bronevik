@@ -82,7 +82,8 @@
     "tier": "Tier",
     "type": "Class",
     "nation": "Nation",
-    "reset": "Reset"
+    "reset": "Reset",
+    "label": "Vehicle filters"
   },
   "picker": {
     "placeholder": "Find a tank…",

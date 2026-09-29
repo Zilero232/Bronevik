@@ -1,0 +1,124 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-4));
+  @include rivet-rule(top);
+
+  padding-top: var(--space-6);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4) var(--space-6);
+}
+
+.docs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-6);
+
+  @include below(md) {
+    display: grid;
+    width: 100%;
+    gap: var(--space-3) var(--space-5);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  gap: var(--space-1);
+  text-decoration: none;
+  transition: color var(--duration-fast) ease;
+
+  :global(svg) {
+    color: var(--color-text-muted);
+  }
+
+  &:hover {
+    color: var(--color-accent);
+
+    :global(svg) {
+      color: currentcolor;
+    }
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  @include coarse {
+    min-height: 32px;
+  }
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  gap: var(--space-4);
+}
+
+.version {
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-sunken);
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+.attribution {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  gap: var(--space-1) var(--space-3);
+  line-height: var(--leading-body);
+
+  > * + *:before {
+    margin-right: var(--space-3);
+    color: var(--color-text-dim);
+    content: '·';
+  }
+
+  @include below(md) {
+    flex-direction: column;
+    gap: var(--space-2);
+
+    > * + *:before {
+      content: none;
+    }
+  }
+}
+
+.source {
+  color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--color-accent) 60%, transparent);
+  text-underline-offset: 3px;
+  transition: color var(--duration-fast) ease;
+
+  &:hover {
+    color: var(--color-accent);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}

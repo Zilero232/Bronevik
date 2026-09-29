@@ -53,5 +53,41 @@
     "column": "Закреп",
     "pin": "Закрепить «{name}» сверху",
     "unpin": "Открепить «{name}»"
+  },
+  "filters": {
+    "title": "Фильтры",
+    "open": "Фильтры",
+    "reset": "Сбросить",
+    "apply": "Показать",
+    "active": "Активные фильтры",
+    "remove": "Убрать фильтр «{label}»",
+    "more": "Расширенный поиск",
+    "from": "от",
+    "to": "до",
+    "rangeFrom": "{label}, от",
+    "rangeTo": "{label}, до",
+    "span": "{label}: {value}",
+    "tiers": "Уровни {value}",
+    "atLeast": "от {value}",
+    "atMost": "до {value}",
+    "between": "{from}–{to}",
+    "pair": "{label} {value}"
+  },
+  "dateTime": {
+    "placeholder": "Любое время",
+    "clear": "Очистить",
+    "now": "Сейчас",
+    "done": "Готово",
+    "time": "Время",
+    "hours": "Часы",
+    "minutes": "Минуты",
+    "hoursUp": "Час вперёд",
+    "hoursDown": "Час назад",
+    "minutesUp": "Минуты вперёд",
+    "minutesDown": "Минуты назад",
+    "nextMonth": "Следующий месяц",
+    "previousMonth": "Предыдущий месяц",
+    "zone": "МСК",
+    "zoneHint": "Время указано по Москве"
   }
 }

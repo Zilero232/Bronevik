@@ -1,3 +1,3 @@
 export { useVehicleFiltersView } from './use-vehicle-filters-view';
 
-export type { RoleChoice } from './use-vehicle-filters-view.types';
+export type { RoleChoice, UseVehicleFiltersViewInput } from './use-vehicle-filters-view.types';

@@ -3,63 +3,59 @@
 import type { TankStatus } from '@otmetki/schemas';
 
 import { NATIONS, TANK_CLASSES } from '@otmetki/icons';
-import { clsx } from 'clsx';
-import { RotateCcw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Button, IconFilter, Select, ToggleChips } from '@/ui-kit';
+import { FilterBar, FilterField, IconFilter, Select, TierPicker, ToggleChips } from '@/ui-kit';
 
 import type { RoleChoice } from '../../model/hooks';
 import type { VehicleFiltersProps } from './VehicleFilters.types';
 
-import { VEHICLE_FILTER_ICON, VEHICLE_TIERS } from '../../config';
+import { VEHICLE_TIERS } from '../../config';
 import { useVehicleFiltersView } from '../../model/hooks';
 
-import s from './VehicleFilters.module.scss';
-
-export const VehicleFilters = ({ withStatuses = true, withRoles = true, className }: VehicleFiltersProps) => {
+export const VehicleFilters = ({
+  withStatuses = true,
+  withRoles = true,
+  label,
+  leading,
+  children,
+  extraActive,
+  onExtraReset,
+  ...bar
+}: VehicleFiltersProps) => {
   const t = useTranslations('tanks.filters');
   const tTraits = useTranslations('tankTraits');
-  const { filters, isActive, statusOptions, roleItems, role, setFilters, reset, onTypesChange, onStatusesChange, onRoleChange } =
-    useVehicleFiltersView();
+  const { filters, active, statusOptions, roleItems, role, onReset, onTiersChange, onTypesChange, onNationsChange, onStatusesChange, onRoleChange } =
+    useVehicleFiltersView({ extraActive, onExtraReset });
 
   return (
-    <div className={clsx(s.root, className)}>
-      <IconFilter
-        aria-label={t('tier')}
-        kind='tier'
-        options={VEHICLE_TIERS}
-        size='sm'
-        value={filters.tiers}
-        onChange={(tiers) => setFilters({ tiers })}
-      />
-      <IconFilter aria-label={t('type')} kind='class' options={TANK_CLASSES} size='sm' value={filters.types} onChange={onTypesChange} />
-      <IconFilter
-        aria-label={t('nation')}
-        kind='nation'
-        options={NATIONS}
-        size='sm'
-        value={filters.nations}
-        onChange={(nations) => setFilters({ nations })}
-      />
+    <FilterBar active={active} label={label ?? t('label')} onReset={onReset} {...bar}>
+      {leading}
+      <FilterField count={filters.tiers.length} label={t('tier')}>
+        <TierPicker aria-label={t('tier')} options={VEHICLE_TIERS} value={filters.tiers} onChange={onTiersChange} />
+      </FilterField>
+      <FilterField count={filters.types.length} label={t('type')}>
+        <IconFilter aria-label={t('type')} kind='class' options={TANK_CLASSES} value={filters.types} onChange={onTypesChange} />
+      </FilterField>
+      <FilterField count={filters.nations.length} label={t('nation')}>
+        <IconFilter aria-label={t('nation')} kind='nation' options={NATIONS} value={filters.nations} onChange={onNationsChange} />
+      </FilterField>
       {withStatuses && (
-        <ToggleChips<TankStatus>
-          aria-label={tTraits('status.label')}
-          options={statusOptions}
-          size='sm'
-          value={filters.statuses}
-          onChange={onStatusesChange}
-        />
+        <FilterField count={filters.statuses.length} label={tTraits('status.label')}>
+          <ToggleChips<TankStatus>
+            aria-label={tTraits('status.label')}
+            options={statusOptions}
+            value={filters.statuses}
+            onChange={onStatusesChange}
+          />
+        </FilterField>
       )}
       {withRoles && (
-        <Select<RoleChoice> aria-label={tTraits('role.label')} className={s.role} items={roleItems} value={role} onValueChange={onRoleChange} />
+        <FilterField label={tTraits('role.label')} size='lg'>
+          <Select<RoleChoice> aria-label={tTraits('role.label')} items={roleItems} value={role} onValueChange={onRoleChange} />
+        </FilterField>
       )}
-      {isActive && (
-        <Button size='sm' variant='ghost' onClick={reset}>
-          <RotateCcw size={VEHICLE_FILTER_ICON.reset} />
-          {t('reset')}
-        </Button>
-      )}
-    </div>
+      {children}
+    </FilterBar>
   );
 };

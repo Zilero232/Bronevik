@@ -1,18 +1,15 @@
 'use client';
 
-import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { GuideSort } from '@/entities/guide/guide';
 
 import { TankPicker } from '@/features/tank/pick-tank';
-import { Button, SegmentedControl, Select } from '@/ui-kit';
+import { FilterBar, FilterField, SegmentedControl, Select } from '@/ui-kit';
 
 import type { GuideKindFilter } from '../../../model/hooks';
 
 import { useGuideFilterPanel } from '../../../model/hooks';
-
-import s from './GuideFilters.module.scss';
 
 export const GuideFilters = () => {
   const t = useTranslations('guides.list.filters');
@@ -26,7 +23,7 @@ export const GuideFilters = () => {
     mapItems,
     isTankShown,
     isMapShown,
-    hasFilters,
+    activeCount,
     setKind,
     setSort,
     onTankChange,
@@ -35,17 +32,23 @@ export const GuideFilters = () => {
   } = useGuideFilterPanel();
 
   return (
-    <div className={s.root}>
-      <SegmentedControl<GuideKindFilter> aria-label={t('kind')} options={kindOptions} size='sm' value={kind} onChange={setKind} />
-      {isTankShown && <TankPicker className={s.picker} placeholder={t('tank')} value={tank} onChange={onTankChange} />}
-      {isMapShown && <Select aria-label={t('map')} className={s.picker} items={mapItems} value={map} onValueChange={onMapChange} />}
-      <Select<GuideSort> aria-label={t('sort')} className={s.sort} items={sortItems} value={sort} onValueChange={setSort} />
-      {hasFilters && (
-        <Button size='sm' variant='ghost' onClick={reset}>
-          <X size={14} />
-          {t('reset')}
-        </Button>
+    <FilterBar activeCount={activeCount} onReset={reset}>
+      <FilterField label={t('kind')}>
+        <SegmentedControl<GuideKindFilter> aria-label={t('kind')} options={kindOptions} value={kind} onChange={setKind} />
+      </FilterField>
+      {isTankShown && (
+        <FilterField label={t('tankLabel')} size='lg'>
+          <TankPicker placeholder={t('tank')} value={tank} onChange={onTankChange} />
+        </FilterField>
       )}
-    </div>
+      {isMapShown && (
+        <FilterField label={t('map')} size='lg'>
+          <Select items={mapItems} value={map} onValueChange={onMapChange} />
+        </FilterField>
+      )}
+      <FilterField label={t('sort')} size='md'>
+        <Select<GuideSort> items={sortItems} value={sort} onValueChange={setSort} />
+      </FilterField>
+    </FilterBar>
   );
 };

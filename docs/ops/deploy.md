@@ -163,7 +163,7 @@ Modpack releases and the manager are published by [.github/workflows/release.yml
 
 There is no directory listing.
 
-**To release:** bump `version` in `apps/game/modpack/package.json` (+ its `## <version>` CHANGELOG entry and the component `VERSION`s that changed), commit, push, run **release** (Actions → release → Run workflow).
+**To release:** bump the version, commit, Run. The version is `version` in `apps/game/modpack/package.json` (+ its `## <version>` CHANGELOG entry and the component `VERSION`s that changed) and/or `version` in `apps/game/manager/package.json`; commit, push, run **release** (Actions → release → Run workflow). The run releases whichever of the two `releases.json` does not list yet; with both already published it ends green after `check` with «nothing to release: modpack X and manager Y are already on the VPS».
 
 | What | Single source | Read by |
 |---|---|---|
@@ -171,9 +171,9 @@ There is no directory listing.
 | supported clients | `otmetki.games` in the same `package.json` (`["1.45.*"]`; patterns `1.46.*`, `1.46.0.0`) | `modpack-release.ts source` (validated with the release schema) |
 | manager version | `version` in `apps/game/manager/package.json` | `tauri.conf.json` (`"version": "../package.json"`), `tauri/build.rs` (`MANAGER_VERSION`), the workflow |
 
-Jobs: `check` (secrets, the version and the clients via `apps/web/server/scripts/modpack-release.ts source`, the published-version guard), `modpack` (`.github/actions/modpack-release`), `manager` (`tauri build` with this release's catalogue in `tauri/resources`, so a fresh install needs no download), `publish` (signs the payload with `bunx tauri signer sign`, merges `releases.json` with `… index`, uploads to `DEPLOY_PATH/.downloads-staging/` and renames into `downloads/`, `releases.json` last so the index never names a missing file).
+Jobs: `check` (secrets, reads the published `releases.json` and runs `apps/web/server/scripts/modpack-release.ts source`: both versions, the clients, `modpack_needed` / `manager_needed`), then in parallel `modpack` (`.github/actions/modpack-release`, only when `modpack_needed`) and `manager` (`tauri build`, only when `manager_needed`; the installer carries no modpack files, the manager downloads the catalogue and the packages on the first install), then `publish` (when either is needed: signs the payload with `bunx tauri signer sign`, merges only what was built into `releases.json` with `… index`, uploads to `DEPLOY_PATH/.downloads-staging/` and renames into `downloads/`, `releases.json` last so the index never names a missing file).
 
-Component versions (`VERSION` in `packages/*/version.py` and `features/<id>/__init__.py`) stay separate: the Python 2.7 runtime reads its own and the manager compares them per package. Inputs: `force` publishes a version that `releases.json` already lists (replacing it; without it the `check` job stops), `dry_run` builds without publishing (and skips that check). The run also fails before building when a secret is missing, and when the built catalogue's `modpackVersion` differs from that `version`.
+Component versions (`VERSION` in `packages/*/version.py` and `features/<id>/__init__.py`) stay separate: the Python 2.7 runtime reads its own and the manager compares them per package. The workflow has no inputs: a published version is never replaced (bump it instead). The run fails before building when a secret is missing, and when the built catalogue's `modpackVersion` differs from that `version`.
 
 ### The signing key
 
@@ -205,11 +205,11 @@ One minisign key signs the manager's self-update and each modpack release (the m
 - [ ] The downloads folder exists (§1), and a deploy ran with this Caddyfile and `docker-compose.yml` (they serve and mount it).
 - [ ] The secrets are set: deploy.yml's `NEXT_PUBLIC_SITE_URL` and `DEPLOY_*`, plus `TAURI_SIGNING_PRIVATE_KEY` (+ `_PASSWORD`).
 - [ ] Set the supported clients in `otmetki.games` of `apps/game/modpack/package.json`, commit, push, then run **release** (Actions → release → Run workflow; no inputs needed).
-- [ ] Check `https://triotmetki.ru/downloads/releases.json`, `https://api.triotmetki.ru/modpack/releases/latest?game=1.46.0.0` (`compatible`) and the /mod page's two downloads.
+- [ ] Check `https://triotmetki.ru/downloads/releases.json`, `https://api.triotmetki.ru/modpack/releases/latest?game=1.46.0.0` (`compatible`) and the /mod page's two downloads (disabled with a «first release» note until `GET /modpack/releases/status` reports the files).
 - [ ] Publish through МОСТ as well ([most-publishing.md](most-publishing.md)) and set `MOD_DISTRIBUTION.mostUrl` once the entry is live.
 - [ ] Users bind their devices again with a code from `/me`. Devices bound in development do not exist in production.
 
-Later releases: bump the versions, commit, push and run the workflow again. A version that is already published stops the run; re-running it with `force` replaces its files and its index entry; older releases stay in the index, so clients still on an older game version keep their compatible release. The manager block always points at the installer of the run; bump `version` in `apps/game/manager/package.json` for a manager change, because the self-update only offers a newer version.
+Later releases: bump the versions, commit, push and run the workflow again. Only a version `releases.json` does not list is built and published; older releases stay in the index, so clients still on an older game version keep their compatible release. The manager is released on its own when only `version` in `apps/game/manager/package.json` changed (the self-update only offers a newer version), and a modpack-only release leaves the `manager` block as it is.
 
 ## 5. Legal pages and Plus: fill before checkout opens
 

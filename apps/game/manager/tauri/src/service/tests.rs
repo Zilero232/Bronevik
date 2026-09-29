@@ -1,6 +1,7 @@
 use std::fs;
 use std::path::Path;
 
+use super::setup::PackageSource;
 use super::*;
 use crate::catalog::fixtures::catalog_json;
 use crate::components::{read_installation, sync_manifest, ComponentState};
@@ -22,7 +23,32 @@ const THEIR_GUIFLASH: &str = "gambiter.guiflash_0.6.5.mtmod";
 fn manager(root: &Path) -> Manager {
     let layout = Layout::new(root.join("Local"), root.join("Roaming"));
 
-    Manager::new(layout, BundledResources::default(), ReleasesClient::new("http://127.0.0.1:9").unwrap())
+    Manager::new(layout, ReleasesClient::new("http://127.0.0.1:9").unwrap())
+}
+
+#[test]
+fn a_first_install_without_a_connection_is_offline() {
+    let root = tempfile::tempdir().unwrap();
+    let manager = manager(root.path());
+    let client = lesta_client_dir(root.path(), "Мир танков", "1.45.0.0");
+
+    tauri::async_runtime::block_on(async {
+        let plan = manager.prepare_install(Some(&client)).await.unwrap();
+
+        assert_eq!(plan.source, PackageSource::Offline);
+        assert!(plan.catalog.is_none());
+        assert!(plan.release.is_none());
+
+        let request = InstallRequest {
+            client_path: Some(client.clone()),
+            components: Vec::new(),
+            remove_others: Vec::new(),
+            take_snapshot: false,
+            excluded_dependencies: Vec::new(),
+        };
+
+        assert_eq!(manager.install_modpack(request).await.unwrap_err().code(), ErrorCode::Offline);
+    });
 }
 
 #[test]

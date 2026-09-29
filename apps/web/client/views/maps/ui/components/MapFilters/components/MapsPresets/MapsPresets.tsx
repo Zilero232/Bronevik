@@ -12,5 +12,5 @@ export const MapsPresets = () => {
   const t = useTranslations('maps.presets');
   const { options, active, onChange } = useMapsPresets();
 
-  return <ToggleChips<MapsPresetId> aria-label={t('label')} options={options} size='sm' value={active} onChange={onChange} />;
+  return <ToggleChips<MapsPresetId> aria-label={t('label')} options={options} value={active} onChange={onChange} />;
 };

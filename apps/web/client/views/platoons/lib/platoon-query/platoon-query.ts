@@ -1,7 +1,7 @@
 import { zonedInputToIso } from '@/shared/lib';
 
 import type { PlatoonListQuery } from '../../api';
-import type { NextSingleTierInput, PlatoonFilters, PlatoonMode } from './platoon-query.types';
+import type { PlatoonFilters, PlatoonMode } from './platoon-query.types';
 
 import { PLATOON_MODES } from '../../config';
 
@@ -26,12 +26,6 @@ export const toWn8Bound = (value: string): number | null => {
   const parsed = Number(trimmed);
 
   return trimmed === '' || !Number.isInteger(parsed) || parsed < 0 ? null : parsed;
-};
-
-export const nextSingleTier = ({ next, current }: NextSingleTierInput): number | null => {
-  const picked = next.find((value) => value !== (current === null ? null : String(current)));
-
-  return picked === undefined ? null : Number(picked);
 };
 
 const KNOWN_MODES: ReadonlySet<string> = new Set(PLATOON_MODES);

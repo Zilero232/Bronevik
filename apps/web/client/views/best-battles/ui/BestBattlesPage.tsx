@@ -38,8 +38,8 @@ export const BestBattlesPage = () => {
           </div>
         )}
         <Card padding='none'>
+          <BestBattlesFilters />
           <div className={s.body}>
-            <BestBattlesFilters />
             <QueryState
               isCompact
               errorDescription={t('error.description')}

@@ -5,7 +5,13 @@ import { ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nes
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
-import { ModpackLatestQueryDto, ModpackLatestReleaseDto, ModpackManagerUpdateDto, ModpackManagerUpdateQueryDto } from './dto';
+import {
+  ModpackLatestQueryDto,
+  ModpackLatestReleaseDto,
+  ModpackManagerUpdateDto,
+  ModpackManagerUpdateQueryDto,
+  ModpackReleasesStatusDto
+} from './dto';
 import { ModpackReleasesService } from './services';
 
 @ApiTags('modpack')
@@ -19,6 +25,16 @@ export class ModpackReleasesController {
   @ZodResponse({ type: ModpackLatestReleaseDto, status: HttpStatus.OK })
   latest(@Query() { game }: ModpackLatestQueryDto) {
     return this.releases.latest(game);
+  }
+
+  @Get('releases/status')
+  @ApiOperation({
+    operationId: 'getModpackReleasesStatus',
+    summary: 'Whether the modpack and the manager installer are published, with their versions and file sizes'
+  })
+  @ZodResponse({ type: ModpackReleasesStatusDto, status: HttpStatus.OK })
+  status() {
+    return this.releases.status();
   }
 
   @Get('manager/update')

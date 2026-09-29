@@ -1,27 +1,12 @@
 @use '@/shared/styles/mixins' as *;
 
-.root {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-3);
-}
-
 .search {
-  width: 220px;
-
-  @include below(md) {
-    width: 100%;
-  }
-}
-
-.nation {
-  min-width: 160px;
+  width: min(100%, 320px);
 }
 
 .total {
   @include source-line;
   @include numeric;
 
-  margin-left: auto;
+  white-space: nowrap;
 }

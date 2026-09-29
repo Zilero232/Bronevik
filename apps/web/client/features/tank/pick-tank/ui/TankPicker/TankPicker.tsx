@@ -4,13 +4,13 @@ import type { VehicleSummary } from '@otmetki/schemas';
 
 import { Combobox } from '@base-ui/react/combobox';
 import { clsx } from 'clsx';
-import { ChevronsUpDown, Search } from 'lucide-react';
+import { ChevronsUpDown, RotateCcw, Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 
 import { TankCell } from '@/entities/tank/tank';
 import { useFormControl } from '@/shared/lib';
-import { RetryButton } from '@/ui-kit';
+import { IconButton } from '@/ui-kit';
 
 import type { TankPickerProps } from './TankPicker.types';
 
@@ -53,7 +53,7 @@ export const TankPicker = ({
             {label}
           </label>
         )}
-        <Combobox.InputGroup className={s.group}>
+        <Combobox.InputGroup className={s.group} data-invalid={isError || undefined}>
           <Search aria-hidden className={s.icon} size={14} />
           <Combobox.Input
             aria-describedby={describedBy ?? control['aria-describedby']}
@@ -61,18 +61,23 @@ export const TankPicker = ({
             className={s.input}
             disabled={isLoading}
             id={inputId}
-            placeholder={placeholder ?? t('placeholder')}
+            placeholder={isError ? tCommon('loadErrorTitle') : (placeholder ?? t('placeholder'))}
           />
-          <Combobox.Trigger aria-label={t('open')} className={s.trigger}>
-            <ChevronsUpDown size={14} />
-          </Combobox.Trigger>
+          {isError && (
+            <span className={s.alert} role='alert'>
+              {tCommon('loadErrorTitle')}
+            </span>
+          )}
+          {isError ? (
+            <IconButton aria-label={tCommon('retry')} disabled={isFetching} size='sm' title={tCommon('loadErrorTitle')} onClick={retry}>
+              <RotateCcw size={14} />
+            </IconButton>
+          ) : (
+            <Combobox.Trigger aria-label={t('open')} className={s.trigger}>
+              <ChevronsUpDown size={14} />
+            </Combobox.Trigger>
+          )}
         </Combobox.InputGroup>
-        {isError && (
-          <div className={s.failure} role='alert'>
-            <span>{tCommon('loadErrorTitle')}</span>
-            <RetryButton disabled={isFetching} size='sm' variant='ghost' onClick={retry} />
-          </div>
-        )}
       </div>
       <Combobox.Portal>
         <Combobox.Positioner className={s.positioner} sideOffset={4}>

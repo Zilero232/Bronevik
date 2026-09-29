@@ -3,6 +3,7 @@ export { useMarksColumns } from './use-marks-columns';
 export { useMarksPage } from './use-marks-page';
 export { useMarksPresets } from './use-marks-presets';
 export type { MarksPresetId } from './use-marks-presets';
+export { useMarksToolbar } from './use-marks-toolbar';
 export { useMarksUrlState } from './use-marks-url-state';
 export { useMoeCurve } from './use-moe-curve';
 export { useMoeHistory } from './use-moe-history';

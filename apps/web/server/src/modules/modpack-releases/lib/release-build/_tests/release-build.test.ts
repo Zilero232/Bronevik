@@ -103,4 +103,22 @@ describe('mergeReleaseIndex', () => {
 
     expect(merged.manager?.publishedAt).toBe('2026-09-27T12:00:00.000Z');
   });
+
+  it('keeps the published modpack releases on a manager-only release', () => {
+    const merged = mergeReleaseIndex({ index: INDEX, manager: MANAGER });
+
+    expect(merged.releases).toEqual(INDEX.releases);
+    expect(merged.manager).toEqual(MANAGER);
+  });
+
+  it('keeps the published manager on a modpack-only release', () => {
+    const merged = mergeReleaseIndex({ index: INDEX, release: release({ version: '0.11.0', games: ['1.47.*'] }) });
+
+    expect(merged.releases.map((item) => item.version)).toEqual(['0.11.0', '0.10.0', '0.2.0', '0.1.0']);
+    expect(merged.manager).toEqual(INDEX.manager);
+  });
+
+  it('refuses to merge nothing', () => {
+    expect(() => mergeReleaseIndex({ index: INDEX })).toThrow('Nothing to merge');
+  });
 });

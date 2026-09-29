@@ -1,2 +1,2 @@
-export { isoToZonedInput, zonedInputToIso } from './zoned-time';
-export type { ZonedTimeInput } from './zoned-time.types';
+export { composeZonedInput, isoToZonedInput, roundedZonedInput, zonedInputParts, zonedInputToIso } from './zoned-time';
+export type { ComposeZonedInput, RoundedZonedInput, ZonedInputParts, ZonedTimeInput } from './zoned-time.types';

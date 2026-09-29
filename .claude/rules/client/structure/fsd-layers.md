@@ -32,7 +32,7 @@ never imports itself through its own barrel; and code in `lib/` never imports fr
 
 ## No import cycles
 
-`apps/web/client/_tests/import-cycles.test.ts` runs madge over `views`, `widgets`, `features`,
+`bun run lint:cycles` (`apps/web/client/config/import-cycles/check-import-cycles.ts`, part of `verify`) runs madge over `views`, `widgets`, `features`,
 `entities`, `shared` and `ui-kit` (tsconfig paths, type-only and dynamic imports skipped,
 `generated/` and `_tests/` ignored) and fails on any runtime cycle. A barrel makes a cycle
 easy to miss — `a → ../hooks → b → a` — so:

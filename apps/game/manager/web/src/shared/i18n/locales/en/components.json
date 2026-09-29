@@ -16,7 +16,7 @@
   "libraries": "Third-party libraries: {list}. The manager downloads any that are missing when you switch it on",
   "video": "Video",
   "noCatalog": "The component catalogue is not loaded yet",
-  "noCatalogHint": "It comes with the manager and with modpack updates.",
+  "noCatalogHint": "It is downloaded from the server with the modpack install and its updates.",
   "noResults": "Nothing found",
   "enabledToast": "{title}: on",
   "enabledWithLibrariesToast": "{title}: on, its libraries are in place ({list})",

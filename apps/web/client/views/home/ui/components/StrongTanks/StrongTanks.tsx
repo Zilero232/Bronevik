@@ -4,7 +4,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 
 import { TankShowcaseCard, WinRateCell } from '@/entities/tank/tank';
 import { ROUTES } from '@/shared/constants';
-import { ClassIcon, DataSourceNote, EmptyState, IconFilter, QueryState, SectionHeader, Skeleton } from '@/ui-kit';
+import { ClassIcon, DataSourceNote, EmptyState, QueryState, SectionHeader, Skeleton, TierPicker } from '@/ui-kit';
 
 import { HOME } from '../../../config';
 import { useStrongTanks } from '../../../model/hooks';
@@ -20,15 +20,7 @@ export const StrongTanks = () => {
     <section aria-labelledby='home-strong-tanks' className={s.root}>
       <SectionHeader
         action={
-          <IconFilter
-            aria-label={t('tier')}
-            isMultiple={false}
-            kind='tier'
-            options={HOME.strongTanks.tiers}
-            size='sm'
-            value={tiers}
-            onChange={setTiers}
-          />
+          <TierPicker isRequired aria-label={t('tier')} mode='single' options={HOME.strongTanks.tiers} size='sm' value={tiers} onChange={setTiers} />
         }
         id='home-strong-tanks'
         meta={t('period')}

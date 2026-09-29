@@ -10,7 +10,7 @@ export default mergeConfig(
   defineProject({
     test: {
       name: 'manager',
-      isolate: true,
+      pool: 'vmThreads',
       clearMocks: true,
       restoreMocks: true,
       environment: 'jsdom',

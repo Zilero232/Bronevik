@@ -1,6 +1,6 @@
 'use client';
 
-import { Download } from 'lucide-react';
+import { Package } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Suspense } from 'react';
 
@@ -19,7 +19,7 @@ export const UtilityBar = () => {
   const t = useTranslations('nav.utility');
 
   return (
-    <div className={s.root} data-theme='dark'>
+    <div className={s.root}>
       <div className={s.inner}>
         <section aria-label={t('label')} className={s.status}>
           <GameStatusSlot isServiceShown={false} />
@@ -27,7 +27,7 @@ export const UtilityBar = () => {
         </section>
         <div className={s.settings}>
           <Link className={s.link} href={ROUTES.mod}>
-            <Download aria-hidden size={14} />
+            <Package aria-hidden size={14} />
             {t('mod')}
           </Link>
           <Suspense>

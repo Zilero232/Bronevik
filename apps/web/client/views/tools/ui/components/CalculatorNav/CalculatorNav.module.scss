@@ -69,15 +69,30 @@
   }
 }
 
-.heading {
-  @include label;
-
-  display: block;
-  padding: var(--space-4) var(--space-4) var(--space-2);
+.games {
+  display: flex;
+  min-height: var(--row-h);
+  flex: none;
+  align-items: center;
   border-top: 1px solid var(--color-border);
+  background-color: var(--color-surface-sunken);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  padding-inline: var(--space-4);
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: var(--color-surface-hover);
+    color: var(--color-text);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
 
   @include below(2xl) {
-    display: none;
+    border-top: none;
   }
 }
 
@@ -85,4 +100,14 @@
   flex: none;
   margin-right: var(--space-3);
   color: var(--color-accent);
+}
+
+.arrow {
+  flex: none;
+  margin-left: auto;
+  color: var(--color-text-dim);
+
+  @include below(2xl) {
+    margin-left: var(--space-2);
+  }
 }

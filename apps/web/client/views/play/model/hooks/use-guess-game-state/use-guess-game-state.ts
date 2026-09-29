@@ -2,7 +2,7 @@
 
 import type { VehicleSummary } from '@otmetki/schemas';
 
-import { activeStreak, puzzleNumber, recordResult, useDailyStorage, usePuzzleDay } from '@/entities/play/daily-puzzle';
+import { activeStreak, DAILY_PUZZLES, puzzleNumber, recordResult, useDailyStorage, usePuzzleDay } from '@/entities/play/daily-puzzle';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
 
 import type { GuessGameState } from '../../context';
@@ -19,8 +19,8 @@ export const useGuessGameState = (): GuessGameState => {
   const { day, refreshDay } = usePuzzleDay();
   const { guessIds, streak, setBoard, setStreak } = useDailyStorage<number>({
     day,
-    storageKey: GUESS_TANK.storageKey,
-    streakKey: GUESS_TANK.streakKey
+    storageKey: DAILY_PUZZLES.guessTank.storageKey,
+    streakKey: DAILY_PUZZLES.guessTank.streakKey
   });
 
   const target = day === null ? null : pickDailyTank({ vehicles, day });
@@ -69,7 +69,7 @@ export const useGuessGameState = (): GuessGameState => {
     kind: 'ready',
     game: {
       day,
-      number: puzzleNumber({ epoch: GUESS_TANK.epoch, day }),
+      number: puzzleNumber({ epoch: DAILY_PUZZLES.guessTank.epoch, day }),
       target,
       targetDetail: intel.get(target.tankId),
       guesses,

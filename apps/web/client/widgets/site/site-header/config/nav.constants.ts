@@ -8,8 +8,7 @@ export const NAV_ALIASES = [
   { prefix: '/s', href: ROUTES.streamers.list },
   { prefix: '/competitions', href: ROUTES.tournaments.list },
   { prefix: ROUTES.social.feed, href: ROUTES.social.leagues },
-  { prefix: ROUTES.social.challenges, href: ROUTES.social.leagues },
-  { prefix: '/play', href: ROUTES.tools }
+  { prefix: ROUTES.social.challenges, href: ROUTES.social.leagues }
 ] as const;
 
 export const NAV_MENU = {

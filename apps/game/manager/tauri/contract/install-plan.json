@@ -348,8 +348,7 @@
       }
     ],
     "previewsDir": null,
-    "schemaVersion": 1,
-    "source": "downloaded"
+    "schemaVersion": 1
   },
   "client": {
     "branch": "release",

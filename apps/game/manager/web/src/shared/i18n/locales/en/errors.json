@@ -31,5 +31,6 @@
   "set_limit": "The set limit is reached: delete one you no longer need",
   "set_name": "Enter a name for the set",
   "set_missing": "The set was not found",
-  "set_code": "This is not a Three Marks set code or file"
+  "set_code": "This is not a Three Marks set code or file",
+  "offline": "No connection — the modpack cannot be installed right now, try again later"
 }

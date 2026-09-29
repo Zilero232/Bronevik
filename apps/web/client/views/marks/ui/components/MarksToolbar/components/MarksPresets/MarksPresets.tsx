@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import { LabeledChips } from '@/ui-kit';
+import { ToggleChips } from '@/ui-kit';
 
 import type { MarksPresetId } from '../../../../../model/hooks';
 
@@ -12,5 +12,5 @@ export const MarksPresets = () => {
   const t = useTranslations('marks.presets');
   const { options, active, onChange } = useMarksPresets();
 
-  return <LabeledChips<MarksPresetId> label={t('label')} options={options} size='sm' value={active} onChange={onChange} />;
+  return <ToggleChips<MarksPresetId> aria-label={t('label')} options={options} value={active} onChange={onChange} />;
 };

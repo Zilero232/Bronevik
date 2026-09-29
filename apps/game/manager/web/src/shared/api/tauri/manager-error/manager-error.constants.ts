@@ -30,6 +30,7 @@ export const MANAGER_ERROR_CODES = [
   'set_name',
   'set_missing',
   'set_code',
+  'offline',
   'contract',
   'unknown'
 ] as const;

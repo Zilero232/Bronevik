@@ -18,9 +18,9 @@
   "selectedCount": "{count} of {total} selected",
   "required": "Required",
   "source": {
-    "bundled": "The packages ship with the manager",
     "release": "Version {version} is downloaded from the server; every package is checked against its sha256",
-    "unavailable": "No packages: the server is unreachable and the manager ships none"
+    "offline": "No connection — the modpack cannot be installed right now, try again later",
+    "unavailable": "No modpack release supports this client version yet"
   },
   "otherModsDescription": "Mods by other authors stay in place. Tick what you want removed: a snapshot is taken first.",
   "removeOthers": "Remove the ticked mods",
@@ -40,7 +40,7 @@
   "confirmRemoveTitle": "Remove {count} other mods?",
   "confirmRemoveDescription": "Exactly the ticked files and folders are removed. The snapshot brings them back on the Backups page.",
   "installed": "The modpack is installed",
-  "noCatalog": "The component catalogue is not loaded: the server is unreachable and the manager ships none",
+  "noCatalog": "The component catalogue has not been downloaded from the server yet",
   "clientUnsupported": "The modpack cannot be installed into this client — choose Lesta's Мир танков at a supported version",
   "dependencies": {
     "title": "Required libraries",

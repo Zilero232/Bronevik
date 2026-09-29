@@ -2,20 +2,22 @@
 
 import { useTranslations } from 'next-intl';
 
-import { SegmentedControl, Select } from '@/ui-kit';
+import { FilterBar, FilterField, SegmentedControl, TierPicker } from '@/ui-kit';
 
 import { useMapStatsFilters } from '../../../model/hooks';
 
-import s from './StatsFilters.module.scss';
-
 export const StatsFilters = () => {
   const t = useTranslations('mapStats.filters');
-  const { mode, modeOptions, tierItems, tierValue, onModeChange, onTierChange } = useMapStatsFilters();
+  const { mode, modeOptions, tierOptions, tierValue, activeCount, onModeChange, onTierChange, onReset } = useMapStatsFilters();
 
   return (
-    <div className={s.root}>
-      <SegmentedControl aria-label={t('mode')} className={s.modes} options={modeOptions} size='sm' value={mode} onChange={onModeChange} />
-      <Select className={s.tier} items={tierItems} label={t('tier')} value={tierValue} onValueChange={onTierChange} />
-    </div>
+    <FilterBar activeCount={activeCount} onReset={onReset}>
+      <FilterField label={t('mode')}>
+        <SegmentedControl aria-label={t('mode')} options={modeOptions} value={mode} onChange={onModeChange} />
+      </FilterField>
+      <FilterField count={tierValue.length} label={t('tier')}>
+        <TierPicker aria-label={t('tier')} mode='single' options={tierOptions} value={tierValue} onChange={onTierChange} />
+      </FilterField>
+    </FilterBar>
   );
 };

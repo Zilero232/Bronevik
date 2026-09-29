@@ -1,1 +1,7 @@
-export { ModpackLatestQueryDto, ModpackLatestReleaseDto, ModpackManagerUpdateDto, ModpackManagerUpdateQueryDto } from './modpack-releases.dto';
+export {
+  ModpackLatestQueryDto,
+  ModpackLatestReleaseDto,
+  ModpackManagerUpdateDto,
+  ModpackManagerUpdateQueryDto,
+  ModpackReleasesStatusDto
+} from './modpack-releases.dto';

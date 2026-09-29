@@ -7,7 +7,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { sortBy } from 'remeda';
 
 import type { BestBattleMetric, BestBattlePeriod } from '@/entities/battle/best-battle';
-import type { SegmentedOption, SelectItem } from '@/ui-kit';
+import type { ActiveFilter, SegmentedOption, SelectItem } from '@/ui-kit';
 
 import { BEST_BATTLE_METRICS, BEST_BATTLE_PERIODS, getBestBattleFacets } from '@/entities/battle/best-battle';
 import { mapQueries } from '@/entities/map/map';
@@ -20,6 +20,7 @@ import { useBestBattlesState } from '../use-best-battles-state';
 
 export const useBestBattlesFilters = () => {
   const t = useTranslations('bestBattles');
+  const tFilters = useTranslations('common.filters');
   const locale = useLocale();
   const [state, setState] = useBestBattlesState();
   const catalog = useVehicleCatalog();
@@ -35,12 +36,36 @@ export const useBestBattlesFilters = () => {
   const metricItems: SelectItem<BestBattleMetric>[] = BEST_BATTLE_METRICS.map((value) => ({ value, label: t(`metrics.${value}`) }));
   const mapItems: SelectItem[] = [any, ...sortBy(maps.data ?? [], (map) => map.name).map((map) => ({ value: map.arenaId, label: map.name }))];
 
+  const vehicle = state.tank === null ? null : (catalog.data?.find(({ tankId }) => tankId === state.tank) ?? null);
+  const medals = facets.data?.medals ?? [];
+  const mapName = (maps.data ?? []).find((map) => map.arenaId === state.map)?.name ?? state.map;
+  const medalTitle = medals.find((medal) => medal.name === state.medal)?.title ?? state.medal;
+
+  const active: ActiveFilter[] = [
+    ...(state.tank === null
+      ? []
+      : [
+          {
+            id: 'tank',
+            label: tFilters('span', { label: t('filters.tank'), value: vehicle?.shortName ?? String(state.tank) }),
+            onRemove: () => void setState({ tank: null })
+          }
+        ]),
+    ...(mapName
+      ? [{ id: 'map', label: tFilters('span', { label: t('filters.map'), value: mapName }), onRemove: () => void setState({ map: null }) }]
+      : []),
+    ...(medalTitle
+      ? [{ id: 'medal', label: tFilters('span', { label: t('filters.medals'), value: medalTitle }), onRemove: () => void setState({ medal: null }) }]
+      : [])
+  ];
+
   return {
     period: state.period,
     metric: state.metric,
-    vehicle: state.tank === null ? null : (catalog.data?.find(({ tankId }) => tankId === state.tank) ?? null),
+    vehicle,
     mapValue: state.map ?? BEST_BATTLES_VIEW.anyValue,
-    medals: facets.data?.medals ?? [],
+    medals,
+    active,
     medalValue: state.medal === null ? [] : [state.medal],
     periodOptions,
     metricItems,

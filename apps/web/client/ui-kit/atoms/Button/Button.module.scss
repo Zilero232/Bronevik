@@ -34,7 +34,7 @@
 .sm {
   @include touch-target;
 
-  height: 28px;
+  height: var(--control-h-sm);
   padding: 0 12px;
   font-size: var(--text-sm);
 }
@@ -42,7 +42,7 @@
 .md {
   @include touch-target;
 
-  height: 32px;
+  height: var(--control-h);
   padding: 0 14px;
   font-size: var(--text-sm);
 }

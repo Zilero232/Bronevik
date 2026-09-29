@@ -20,3 +20,7 @@ export const MAP_FILTER_PARSERS = {
 export const MAPS_TABLE = {
   pinWidth: 40
 } as const;
+
+export const MAPS_VIEW = {
+  chipItems: 2
+} as const;

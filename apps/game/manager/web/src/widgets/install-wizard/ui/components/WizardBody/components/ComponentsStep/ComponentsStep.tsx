@@ -11,11 +11,23 @@ import s from './ComponentsStep.module.scss';
 
 export const ComponentsStep = () => {
   const t = useTranslations();
-  const { presetId, presetOptions, groups, preview, selectedCount, totalCount, isLoadingProfile, onPresetChange, onToggle, onFocus, onLoadProfile } =
-    useInstallWizard();
+  const {
+    presetId,
+    presetOptions,
+    groups,
+    preview,
+    selectedCount,
+    totalCount,
+    isOffline,
+    isLoadingProfile,
+    onPresetChange,
+    onToggle,
+    onFocus,
+    onLoadProfile
+  } = useInstallWizard();
 
   if (totalCount === 0) {
-    return <EmptyState title={t('install.noCatalog')} />;
+    return <EmptyState title={isOffline ? t('install.source.offline') : t('install.noCatalog')} />;
   }
 
   return (

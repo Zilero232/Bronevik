@@ -33,7 +33,9 @@ export const ForStreamersPage = () => {
         lead={t('lead')}
         title={t('pageTitle')}
       />
-      <StreamersHubNav />
+      <div className={s.nav}>
+        <StreamersHubNav />
+      </div>
       <ToolsSection />
       <ConnectBand />
       <FlowSection />

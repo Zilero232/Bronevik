@@ -1,0 +1,51 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  --tier-gap: 3px;
+
+  display: flex;
+  min-width: 0;
+  max-width: 100%;
+  flex-wrap: wrap;
+  gap: var(--tier-gap);
+}
+
+.chip {
+  @include chip;
+  @include tier-tint;
+
+  position: relative;
+  min-width: 30px;
+  padding: 0 var(--space-2);
+  box-shadow: inset 0 2px 0 color-mix(in srgb, var(--tier) 55%, transparent);
+  font-size: var(--text-sm);
+  letter-spacing: 0.02em;
+
+  &[data-pressed] {
+    @include chip-selected;
+
+    box-shadow:
+      inset 0 2px 0 var(--tier),
+      inset 0 -2px 0 var(--color-accent);
+  }
+
+  &[data-run='middle'],
+  &[data-run='end'] {
+    &:before {
+      position: absolute;
+      top: 50%;
+      left: calc(-1 * var(--tier-gap) - 1px);
+      width: calc(var(--tier-gap) + 1px);
+      height: 2px;
+      background-color: var(--color-accent);
+      content: '';
+      transform: translateY(-50%);
+    }
+  }
+}
+
+.sm .chip {
+  min-width: 26px;
+  height: var(--control-h-sm);
+  font-size: var(--text-xs);
+}

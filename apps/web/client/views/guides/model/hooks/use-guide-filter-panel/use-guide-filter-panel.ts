@@ -13,7 +13,6 @@ import { useVehicleCatalog } from '@/features/tank/pick-tank';
 import type { GuideKindFilter } from '../use-guide-filters';
 
 import { GUIDE_KIND_FILTERS, GUIDE_LIST, GUIDE_SORTS } from '../../../config';
-import { hasActiveFilters } from '../../../lib/guide-filters';
 import { useGuideFilters } from '../use-guide-filters';
 
 export const useGuideFilterPanel = () => {
@@ -43,7 +42,7 @@ export const useGuideFilterPanel = () => {
     mapItems: [{ value: GUIDE_LIST.anyMap, label: t('list.filters.anyMap') }, ...mapItems],
     isTankShown: filters.kind === 'tank' || filters.tank !== null,
     isMapShown: filters.kind === 'map' || filters.map !== null,
-    hasFilters: hasActiveFilters(filters),
+    activeCount: Number(kind !== 'all') + Number(filters.tank !== null) + Number(filters.map !== null),
     setKind,
     setSort,
     onTankChange: (vehicle: VehicleSummary | null) => setTank(vehicle?.tankId ?? null),

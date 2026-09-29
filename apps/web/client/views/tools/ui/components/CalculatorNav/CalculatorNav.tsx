@@ -1,10 +1,12 @@
 'use client';
 
+import { ArrowRight, Gamepad2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 
-import { CALCULATOR_IDS, TOOL_GAMES, TOOLS_LAYOUT } from '../../../config';
+import { CALCULATOR_IDS, TOOLS_LAYOUT } from '../../../config';
 import { useActiveCalculator } from '../../../model/hooks';
 
 import s from './CalculatorNav.module.scss';
@@ -24,17 +26,11 @@ export const CalculatorNav = () => {
           </li>
         ))}
       </ul>
-      <span className={s.heading}>{t('games.label')}</span>
-      <ul className={s.list}>
-        {TOOL_GAMES.map((game) => (
-          <li key={game.key}>
-            <Link className={s.item} href={game.href}>
-              <game.icon aria-hidden className={s.icon} size={15} />
-              {t(`games.${game.key}`)}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <Link className={s.games} href={ROUTES.play.hub}>
+        <Gamepad2 aria-hidden className={s.icon} size={15} />
+        {t('games')}
+        <ArrowRight aria-hidden className={s.arrow} size={14} />
+      </Link>
     </nav>
   );
 };

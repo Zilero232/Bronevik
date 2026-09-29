@@ -47,6 +47,7 @@ export const ROUTES = {
     detail: (id: string) => `/maps/${encodeURIComponent(id)}`
   },
   play: {
+    hub: '/play',
     guessTank: '/play/guess-tank',
     guessMap: '/play/guess-map'
   },

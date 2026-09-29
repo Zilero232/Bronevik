@@ -12,3 +12,7 @@ export const CATALOG_TABLE = {
   rowHeight: 44,
   iconSize: 24
 } as const;
+
+export const BUILDS_CATALOG_VIEW = {
+  chipItems: 2
+} as const;

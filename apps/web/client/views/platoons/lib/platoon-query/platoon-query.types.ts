@@ -12,8 +12,3 @@ export type PlatoonFilters = {
   maxWn8: number | null;
   at: string | null;
 };
-
-export type NextSingleTierInput = {
-  next: readonly string[];
-  current: number | null;
-};

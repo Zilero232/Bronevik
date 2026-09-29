@@ -13,6 +13,7 @@ export const useRosterFilters = () => {
     role,
     idle,
     isFiltered: role !== 'all' || idle !== 'all',
+    activeCount: Number(role !== 'all') + Number(idle !== 'all'),
     onRoleChange: (next: RoleFilter) => void setFilters({ role: next }),
     onIdleChange: (next: InactiveFilter) => void setFilters({ idle: next }),
     onReset: () => void setFilters(null)

@@ -1,79 +1,56 @@
 'use client';
 
-import type { RatingKind, RatingPeriod, VehicleType } from '@otmetki/schemas';
+import type { RatingKind, RatingPeriod } from '@otmetki/schemas';
 
-import { TANK_CLASS_ICONS, TANK_CLASSES } from '@otmetki/icons';
-import { X } from 'lucide-react';
+import { TANK_CLASSES } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
-import { TankIdentity, vehicleIdentity } from '@/entities/tank/tank';
-import { EntityPicker } from '@/features/search/pick-entity';
-import { IconButton, Select } from '@/ui-kit';
+import { TankPicker } from '@/features/tank/pick-tank';
+import { FilterBar, FilterField, IconFilter, SegmentedControl, Select, TierPicker } from '@/ui-kit';
 
 import { useTopFilters } from '../../../model/hooks';
 
-import s from './TopFilters.module.scss';
-
 export const TopFilters = () => {
   const t = useTranslations('top');
-  const tGame = useTranslations('game.classes');
   const {
     metrics,
     periods,
-    tiers,
     metric,
     period,
-    tier,
-    type,
+    tiers,
+    types,
+    active,
     tank,
     hasTank,
     onMetricChange,
     onPeriodChange,
-    onTierChange,
-    onTypeChange,
-    onTankChange
+    onTiersChange,
+    onTypesChange,
+    onTankChange,
+    onReset
   } = useTopFilters();
 
-  const types = [
-    { value: 'all' as const, label: t('allTypes') },
-    ...TANK_CLASSES.map((value) => {
-      const Icon = TANK_CLASS_ICONS[value];
-
-      return { value, label: tGame(value), icon: <Icon size={16} /> };
-    })
-  ];
-
   return (
-    <div className={s.root}>
+    <FilterBar active={active} variant='bare' onReset={onReset}>
       {metrics.length > 0 && (
-        <div className={s.field}>
-          <Select<RatingKind> items={metrics} label={t('metric')} value={metric} onValueChange={onMetricChange} />
-        </div>
+        <FilterField label={t('metric')} size='md'>
+          <Select<RatingKind> items={metrics} value={metric} onValueChange={onMetricChange} />
+        </FilterField>
       )}
-      <div className={s.field}>
-        <Select<RatingPeriod> items={periods} label={t('period')} value={period} onValueChange={onPeriodChange} />
-      </div>
-      <div className={s.field}>
-        <Select<string> items={tiers} label={t('tier')} value={tier} onValueChange={onTierChange} />
-      </div>
-      <div className={s.field}>
-        <Select<'all' | VehicleType> items={types} label={t('type')} value={type} onValueChange={onTypeChange} />
-      </div>
+      <FilterField label={t('period')}>
+        <SegmentedControl<RatingPeriod> aria-label={t('period')} options={periods} value={period} onChange={onPeriodChange} />
+      </FilterField>
+      <FilterField count={tiers.length} label={t('tier')}>
+        <TierPicker aria-label={t('tier')} mode='single' value={tiers} onChange={onTiersChange} />
+      </FilterField>
+      <FilterField count={types.length} label={t('type')}>
+        <IconFilter aria-label={t('type')} kind='class' options={TANK_CLASSES} value={types} onChange={onTypesChange} />
+      </FilterField>
       {hasTank && (
-        <div className={s.tank}>
-          <span className={s.label}>{t('tank')}</span>
-          {tank ? (
-            <span className={s.picked}>
-              <TankIdentity image='contour' tank={vehicleIdentity(tank)} withNation={false} />
-              <IconButton aria-label={t('clearTank')} size='sm' onClick={() => onTankChange(null)}>
-                <X size={14} />
-              </IconButton>
-            </span>
-          ) : (
-            <EntityPicker kind='tank' placeholder={t('tankPlaceholder')} onPick={({ vehicle }) => onTankChange(vehicle)} />
-          )}
-        </div>
+        <FilterField label={t('tank')} size='lg'>
+          <TankPicker placeholder={t('tankPlaceholder')} value={tank} onChange={onTankChange} />
+        </FilterField>
       )}
-    </div>
+    </FilterBar>
   );
 };

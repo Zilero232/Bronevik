@@ -67,6 +67,7 @@ entities/
 ├── guide/        # guide
 ├── map/          # map
 ├── mission/      # mission
+├── mod/          # modpack-release
 ├── mode/         # mode
 ├── notification/ # inbox
 ├── play/         # daily-puzzle
@@ -102,7 +103,7 @@ widgets/
 | account | `login`, `telegram-login`, `telegram-link`, `me`, `billing`, `plus`, `notifications`, `watchlist`, `my-analytics`, `my-battle`, `progression`, `cosmetics` |
 | players | `players`, `player-profile`, `player-session`, `player-signature`, `player-wrapped`, `compare-players`, `top`, `best-battles`, `achievements` |
 | clans | `clan`, `clans`, `clan-workspace` |
-| tanks | `tank`, `tank-armor`, `tanks`, `vehicle-catalog`, `compare-tanks`, `build`, `builds-catalog`, `marks`, `tree`, `supertest`, `tools`, `play`, `guess-map` |
+| tanks | `tank`, `tank-armor`, `tanks`, `vehicle-catalog`, `compare-tanks`, `build`, `builds-catalog`, `marks`, `tree`, `supertest`, `tools`, `play-hub`, `play`, `guess-map` |
 | maps, modes, missions | `map`, `maps`, `modes`, `mode`, `missions`, `mission-operation`, `honest-rng`, `pulse`, `events` |
 | shop and news | `shop`, `codes`, `news` |
 | community | `social-feed`, `leagues`, `challenges`, `replays`, `replay`, `tactics`, `tactic-board`, `guides`, `guide`, `guide-editor`, `platoons`, `recruiting`, `coaching`, `coach`, `tournaments`, `tournament`, `competitions`, `competition` |

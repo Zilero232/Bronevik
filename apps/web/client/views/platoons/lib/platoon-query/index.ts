@@ -1,2 +1,2 @@
-export { hasActiveFilters, isPlatoonMode, nextSingleTier, toPlatoonQuery, toWn8Bound } from './platoon-query';
-export type { NextSingleTierInput, PlatoonFilters, PlatoonMode, PlatoonVoiceFilter } from './platoon-query.types';
+export { hasActiveFilters, isPlatoonMode, toPlatoonQuery, toWn8Bound } from './platoon-query';
+export type { PlatoonFilters, PlatoonMode, PlatoonVoiceFilter } from './platoon-query.types';

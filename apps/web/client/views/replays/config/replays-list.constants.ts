@@ -14,7 +14,8 @@ export const REPLAY_LIST = {
   playerDebounceMs: 400,
   slugPattern: /^[\w-]{1,64}$/,
   hiddenModes: ['bootcamp', 'maps_training'],
-  clanPattern: /^[\w-]{1,5}$/
+  clanPattern: /^[\w-]{1,5}$/,
+  chipItems: 2
 } as const;
 
 export const REPLAY_TIERS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] as const;

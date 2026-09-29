@@ -1,5 +1,5 @@
 import { CrewCommanderIcon, Mark3Icon, RadioIcon, StrongholdIcon } from '@otmetki/icons';
-import { Activity, Download, ListChecks, Newspaper, NotebookPen, ScrollText, Swords, Tag, Ticket, Wrench } from 'lucide-react';
+import { Activity, ListChecks, Newspaper, NotebookPen, PackageCheck, ScrollText, ShieldCheck, Swords, Tag, Ticket, Wrench } from 'lucide-react';
 
 import { ROUTES } from '@/shared/constants';
 
@@ -17,7 +17,22 @@ export const HOME_FIGURES = {
   version: { icon: Tag, tone: 'sky' }
 } as const;
 
-export const HOME_CTA = { href: ROUTES.mod, icon: Download } as const;
+export const HOME_MODPACK = {
+  href: ROUTES.mod,
+  details: `${ROUTES.mod}#features`,
+  props: [
+    { key: 'marks', icon: Mark3Icon, tone: 'gold' },
+    { key: 'results', icon: ScrollText, tone: 'sky' },
+    { key: 'manager', icon: PackageCheck, tone: 'olive' },
+    { key: 'fairPlay', icon: ShieldCheck, tone: 'steel' }
+  ],
+  preview: [
+    { key: 'marks', isOn: true },
+    { key: 'results', isOn: true },
+    { key: 'session', isOn: true },
+    { key: 'sync', isOn: false }
+  ]
+} as const;
 
 export const HOME_COMMUNITY = [
   { key: 'streamers', href: ROUTES.streamers.list, icon: RadioIcon },
@@ -30,4 +45,15 @@ export const NEWS_KIND_ICON = {
   dev_blog: NotebookPen
 } as const;
 
-export const HOME_ICON = { action: 18, cta: 18, emblem: 160, community: 220, figure: 16, more: 14 } as const;
+export const HOME_ICON = {
+  action: 18,
+  emblem: 160,
+  heroMark: 240,
+  heroMarkStroke: 1.25,
+  community: 220,
+  figure: 16,
+  more: 14,
+  modpack: 18,
+  modpackProp: 20,
+  toggle: 12
+} as const;

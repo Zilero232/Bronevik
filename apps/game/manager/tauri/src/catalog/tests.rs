@@ -59,32 +59,20 @@ fn matches_wildcards_like_inno() {
 }
 
 #[test]
-fn prefers_the_newer_of_the_downloaded_and_bundled_catalogs() {
+fn loads_the_downloaded_catalog() {
     let dir = tempfile::tempdir().unwrap();
     let cache = dir.path().join("cache.json");
-    let bundled = dir.path().join("bundled.json");
-    let mut newer = catalog_json();
 
-    newer["modpackVersion"] = "0.2.0".into();
     fs::write(&cache, catalog_json().to_string()).unwrap();
-    fs::write(&bundled, newer.to_string()).unwrap();
 
-    let loaded = load(LoadInput { cache: &cache, bundled: Some(&bundled) }).unwrap();
-
-    assert_eq!(loaded.source, CatalogSource::Bundled);
-    assert_eq!(loaded.catalog.modpack_version, "0.2.0");
+    assert_eq!(load(&cache).unwrap().catalog, catalog());
 }
 
 #[test]
-fn falls_back_to_the_bundled_catalog_without_a_download() {
+fn has_no_catalog_before_the_first_download() {
     let dir = tempfile::tempdir().unwrap();
-    let bundled = dir.path().join("bundled.json");
 
-    fs::write(&bundled, catalog_json().to_string()).unwrap();
-
-    let loaded = load(LoadInput { cache: &dir.path().join("absent.json"), bundled: Some(&bundled) }).unwrap();
-
-    assert_eq!(loaded.source, CatalogSource::Bundled);
+    assert!(load(&dir.path().join("absent.json")).is_none());
 }
 
 #[test]
@@ -94,7 +82,7 @@ fn has_no_catalog_when_nothing_parses() {
 
     fs::write(&broken, "{").unwrap();
 
-    assert!(load(LoadInput { cache: &broken, bundled: None }).is_none());
+    assert!(load(&broken).is_none());
 }
 
 #[test]

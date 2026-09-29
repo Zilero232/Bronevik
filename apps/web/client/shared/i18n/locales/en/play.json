@@ -162,5 +162,57 @@
       "unavailableTitle": "Maps are not loaded yet",
       "unavailableDescription": "The puzzle needs minimaps from the game client data. They appear after the game data import."
     }
+  },
+  "hub": {
+    "meta": {
+      "title": "Mir Tankov mini-games",
+      "description": "Daily Mir Tankov puzzles: guess the tank from its silhouette and stats, and the map from a minimap fragment. A new puzzle every day, win streaks and a result to share."
+    },
+    "head": {
+      "title": "Mini-games",
+      "description": "Daily Mir Tankov puzzles: the same one for everybody, six tries, and a win streak that builds day by day.",
+      "reset": "New puzzles at 00:00 Moscow time"
+    },
+    "crumbs": {
+      "home": "Home",
+      "hub": "Mini-games"
+    },
+    "games": {
+      "guessTank": {
+        "title": "Guess the tank",
+        "description": "The target is classified: work out the tank from its silhouette and the hints after every miss, in six shots."
+      },
+      "guessMap": {
+        "title": "Guess the map",
+        "description": "A minimap fragment from the game client that widens with every try. Name the map in six tries."
+      }
+    },
+    "card": {
+      "mark": "?",
+      "kicker": "Puzzle of the day",
+      "kickerNumber": "Puzzle #{number}",
+      "cta": {
+        "fresh": "Play",
+        "playing": "Continue",
+        "solved": "See the result",
+        "failed": "See the result"
+      }
+    },
+    "status": {
+      "fresh": "Not solved yet",
+      "playing": "{attempts, plural, one {# try} other {# tries}}",
+      "solved": "Solved today",
+      "failed": "Missed today",
+      "streak": "Streak {count}",
+      "next": "New in"
+    },
+    "shelf": {
+      "title": "More mini-games",
+      "all": "All mini-games"
+    },
+    "upcoming": {
+      "title": "More games coming",
+      "description": "More puzzles about vehicles and maps are on the way — they will show up here."
+    }
   }
 }

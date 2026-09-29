@@ -1,7 +1,62 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include stack(var(--space-4));
+  @include panel;
+  @include stack(var(--space-5));
+
+  position: relative;
+  padding: var(--space-7);
+  border-radius: var(--radius-md);
+
+  &:before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 96px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-accent) 0 70%, var(--color-gold) 70% 100%);
+    clip-path: polygon(0 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
+    content: '';
+  }
+
+  @include below(md) {
+    padding: var(--space-5) var(--space-4);
+  }
+}
+
+.head {
+  @include stack(var(--space-2));
+}
+
+.kicker {
+  @include label;
+
+  color: var(--color-accent);
+}
+
+.title {
+  @include heading(var(--text-3xl));
+
+  &:before {
+    display: inline-block;
+    width: 6px;
+    height: 0.78em;
+    margin-right: 0.42em;
+    background: linear-gradient(180deg, var(--color-accent) 0 55%, var(--color-gold) 55% 100%);
+    content: '';
+    transform: skewX(-18deg);
+  }
+
+  @include below(md) {
+    font-size: var(--text-2xl);
+  }
+}
+
+.lead {
+  max-width: 52ch;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  line-height: var(--leading-body);
 }
 
 .error {
@@ -18,6 +73,14 @@
   color: var(--color-success);
   font-size: var(--text-sm);
   gap: var(--space-2);
+}
+
+.methods {
+  @include stack(var(--space-3));
+}
+
+.methodsLabel {
+  @include label;
 }
 
 .hint {
@@ -38,5 +101,48 @@
     flex: 1;
     background-color: var(--color-border);
     content: '';
+  }
+}
+
+.foot {
+  @include stack(var(--space-3));
+
+  padding-top: var(--space-4);
+  border-top: 1px dashed var(--color-border);
+  margin-top: auto;
+}
+
+.safety {
+  display: flex;
+  align-items: flex-start;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  gap: var(--space-2);
+  line-height: var(--leading-body);
+}
+
+.safetyIcon {
+  flex: none;
+  color: var(--color-success);
+}
+
+.consent {
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+  line-height: var(--leading-body);
+}
+
+.legal {
+  color: var(--color-text-muted);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--color-accent) 60%, transparent);
+  text-underline-offset: 2px;
+
+  @include hover {
+    color: var(--color-accent);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
   }
 }

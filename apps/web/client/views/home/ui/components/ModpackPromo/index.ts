@@ -1,0 +1,1 @@
+export { ModpackPromo } from './ModpackPromo';

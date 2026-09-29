@@ -14,7 +14,7 @@ use serde::Serialize;
 pub use check::CheckOutcome;
 pub use setup::{InstallPlan, InstallRequest, UninstallRequest};
 
-use crate::catalog::{self, Catalog, LoadInput, LoadedCatalog};
+use crate::catalog::{self, Catalog, LoadedCatalog};
 use crate::components::ClientContext;
 use crate::deep_link::DeepLink;
 use crate::detect::{self, DetectInput, GameClient};
@@ -36,7 +36,6 @@ pub struct ClientsView {
 
 pub struct Manager {
     pub layout: Layout,
-    pub bundled: BundledResources,
     pub releases: ReleasesClient,
     settings: Mutex<ManagerSettings>,
     report: Mutex<PatchReport>,
@@ -44,12 +43,6 @@ pub struct Manager {
     pending_link: Mutex<Option<DeepLink>>,
     check_lock: tokio::sync::Mutex<()>,
     write_lock: tokio::sync::Mutex<()>,
-}
-
-#[derive(Debug, Clone, Default)]
-pub struct BundledResources {
-    pub catalog: Option<PathBuf>,
-    pub packages: Option<PathBuf>,
 }
 
 pub struct ClientScope {
@@ -81,12 +74,11 @@ pub fn busy() -> AppError {
 }
 
 impl Manager {
-    pub fn new(layout: Layout, bundled: BundledResources, releases: ReleasesClient) -> Self {
+    pub fn new(layout: Layout, releases: ReleasesClient) -> Self {
         let settings = ManagerSettings::load(&layout.settings_file());
 
         Self {
             layout,
-            bundled,
             releases,
             settings: Mutex::new(settings),
             report: Mutex::new(PatchReport::default()),
@@ -193,7 +185,7 @@ impl Manager {
     }
 
     pub fn catalog(&self) -> Option<LoadedCatalog> {
-        catalog::load(LoadInput { cache: &self.layout.catalog_cache(), bundled: self.bundled.catalog.as_deref() })
+        catalog::load(&self.layout.catalog_cache())
     }
 
     pub fn client(&self, path: Option<&Path>) -> AppResult<GameClient> {

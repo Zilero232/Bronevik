@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { PlatoonFilters } from '../platoon-query.types';
 
-import { hasActiveFilters, isPlatoonMode, nextSingleTier, toPlatoonQuery, toWn8Bound } from '../platoon-query';
+import { hasActiveFilters, isPlatoonMode, toPlatoonQuery, toWn8Bound } from '../platoon-query';
 
 const NONE: PlatoonFilters = { tier: null, mode: null, voice: 'any', minWn8: null, maxWn8: null, at: null };
 
@@ -53,20 +53,6 @@ describe('toWn8Bound', () => {
     expect(toWn8Bound('')).toBeNull();
     expect(toWn8Bound('-5')).toBeNull();
     expect(toWn8Bound('12.5')).toBeNull();
-  });
-});
-
-describe('nextSingleTier', () => {
-  it('picks the newly clicked tier even when it sorts before the current one', () => {
-    expect(nextSingleTier({ next: ['8', '10'], current: 10 })).toBe(8);
-  });
-
-  it('selects a tier when none was set', () => {
-    expect(nextSingleTier({ next: ['6'], current: null })).toBe(6);
-  });
-
-  it('clears the tier when the current chip is toggled off', () => {
-    expect(nextSingleTier({ next: [], current: 6 })).toBeNull();
   });
 });
 

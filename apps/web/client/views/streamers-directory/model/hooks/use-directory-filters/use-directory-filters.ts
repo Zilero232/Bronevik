@@ -12,9 +12,12 @@ export const useDirectoryFilters = () => {
 
   const platform: DirectoryPlatformFilter = filters.platform ?? 'all';
 
+  const toggles = activeToggles(filters);
+
   return {
     filters,
-    toggles: activeToggles(filters),
+    toggles,
+    activeCount: toggles.length + Number(platform !== 'all'),
     platform,
     hasFilters: hasDirectoryFilters(filters),
     setToggles: (values: DirectoryToggle[]) =>

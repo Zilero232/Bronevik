@@ -7,5 +7,8 @@
   "copyright": "© {year} Three Marks",
   "label": "Site map",
   "legalLabel": "Documents",
-  "gameSite": "tanki.su"
+  "gameSite": "tanki.su",
+  "telegram": "Telegram bot",
+  "actionsLabel": "Quick actions",
+  "version": "v{version}"
 }

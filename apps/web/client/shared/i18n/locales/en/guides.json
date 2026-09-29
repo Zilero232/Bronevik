@@ -55,7 +55,8 @@
       "anyMap": "Any map",
       "map": "Map",
       "sort": "Sort",
-      "reset": "Reset"
+      "reset": "Reset",
+      "tankLabel": "Tank"
     },
     "columns": {
       "title": "Guide",

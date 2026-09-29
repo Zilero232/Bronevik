@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import { DataSourceNote, DataTable, EmptyState, QueryState, SegmentedControl, Select } from '@/ui-kit';
+import { DataSourceNote, DataTable, EmptyState, FilterBar, FilterField, QueryState, SegmentedControl, Select } from '@/ui-kit';
 
 import { MEDAL_SORTS } from '../../../config';
 import { useMedalColumns, useMedals } from '../../../model/hooks';
@@ -16,16 +16,19 @@ export const MedalsTab = () => {
 
   return (
     <div className={s.root}>
-      <div className={s.toolbar}>
-        <Select aria-label={t('section')} items={sections} value={section} onValueChange={onSectionChange} />
-        <SegmentedControl
-          aria-label={t('sort')}
-          options={MEDAL_SORTS.map((value) => ({ value, label: t(`sorts.${value}`) }))}
-          size='sm'
-          value={sort}
-          onChange={onSortChange}
-        />
-      </div>
+      <FilterBar>
+        <FilterField label={t('section')} size='lg'>
+          <Select aria-label={t('section')} items={sections} value={section} onValueChange={onSectionChange} />
+        </FilterField>
+        <FilterField label={t('sort')}>
+          <SegmentedControl
+            aria-label={t('sort')}
+            options={MEDAL_SORTS.map((value) => ({ value, label: t(`sorts.${value}`) }))}
+            value={sort}
+            onChange={onSortChange}
+          />
+        </FilterField>
+      </FilterBar>
       <QueryState
         empty={<EmptyState description={t('emptyDescription')} title={t('empty')} />}
         errorTitle={t('error')}

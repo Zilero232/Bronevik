@@ -12,9 +12,10 @@
     "download": "Download the manager",
     "manual": "Download the packages manually",
     "most": "Open on MOST",
+    "preparing": "The first release is on its way — downloads open as soon as the files are published.",
     "mostPending": "Coming to MOST",
-    "file": "{file} · Windows 10 and 11 · finds the client and the mods folder itself",
-    "manualFile": "By hand: drop {file} into mods/'<'client version'>'/"
+    "file": "{file} · version {version} · {size} · Windows 10 and 11 · finds the client and the mods folder itself",
+    "manualFile": "Manual: put {file} (version {version}, {size}) into mods/'<'client version'>'/"
   },
   "features": {
     "title": "What the mod does",
@@ -62,7 +63,7 @@
     "steps": {
       "download": {
         "title": "Download the manager",
-        "text": "The manager installer is behind the button above. It is not code-signed, so Windows may show a warning: «More info» → «Run anyway»."
+        "text": "Get the installer with the «Download the manager» button at the top of the page. It is not code-signed, so Windows may show a warning: «More info» → «Run anyway»."
       },
       "install": {
         "title": "Install the modpack",

@@ -6,13 +6,30 @@ import { Minus, Plus } from 'lucide-react';
 import { useLocale } from 'next-intl';
 import { useId } from 'react';
 
+import { useFormControl } from '@/shared/lib';
+
 import type { NumberFieldProps } from './NumberField.types';
 
 import s from './NumberField.module.scss';
 
-export const NumberField = ({ value, label, min, max, step = 1, suffix, hint, format, className, onValueChange }: NumberFieldProps) => {
-  const id = useId();
+export const NumberField = ({
+  value,
+  label,
+  min,
+  max,
+  step = 1,
+  suffix,
+  hint,
+  format,
+  className,
+  'aria-label': ariaLabel,
+  onValueChange
+}: NumberFieldProps) => {
+  const ownId = useId();
   const locale = useLocale();
+  const control = useFormControl();
+
+  const id = control.id ?? ownId;
 
   return (
     <BaseNumberField.Root
@@ -26,14 +43,16 @@ export const NumberField = ({ value, label, min, max, step = 1, suffix, hint, fo
       value={value}
       onValueChange={onValueChange}
     >
-      <label className={s.label} htmlFor={id}>
-        {label}
-      </label>
+      {label && (
+        <label className={s.label} htmlFor={id}>
+          {label}
+        </label>
+      )}
       <BaseNumberField.Group className={s.group}>
         <BaseNumberField.Decrement aria-label='−' className={s.step}>
           <Minus size={14} />
         </BaseNumberField.Decrement>
-        <BaseNumberField.Input className={s.input} />
+        <BaseNumberField.Input aria-describedby={control['aria-describedby']} aria-label={ariaLabel} className={s.input} />
         {suffix && <span className={s.suffix}>{suffix}</span>}
         <BaseNumberField.Increment aria-label='+' className={s.step}>
           <Plus size={14} />

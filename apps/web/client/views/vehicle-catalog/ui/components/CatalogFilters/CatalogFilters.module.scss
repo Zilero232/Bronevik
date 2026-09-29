@@ -1,37 +1,16 @@
 @use '@/shared/styles/mixins' as *;
 
-.root {
-  @include panel;
-  @include stack(var(--space-4));
-
-  padding: var(--space-5);
-
-  @include below(md) {
-    padding: var(--space-4);
-  }
-}
-
-.row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-3) var(--space-4);
-}
-
 .search {
   width: min(100%, 360px);
-
-  @include below(md) {
-    width: 100%;
-  }
 }
 
 .shown {
-  @include label;
+  @include source-line;
+  @include numeric;
 
-  margin-left: auto;
-}
+  white-space: nowrap;
 
-.filters {
-  width: 100%;
+  @include below(lg) {
+    display: none;
+  }
 }

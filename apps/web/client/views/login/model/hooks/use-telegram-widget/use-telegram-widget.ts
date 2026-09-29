@@ -1,23 +1,22 @@
 'use client';
 
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 
-import { QUERY_KEYS } from '@/shared/constants';
-
 import type { TelegramAuthHandler } from './use-telegram-widget.types';
 
-import { getTelegramWidget, signInWithTelegram } from '../../../api';
+import { signInWithTelegram } from '../../../api';
 import { LOGIN } from '../../../config';
 import { useCompleteSignIn } from '../use-complete-sign-in';
+import { useTelegramWidgetConfig } from '../use-telegram-widget-config';
 
 export const useTelegramWidget = () => {
   const t = useTranslations('auth');
   const completeSignIn = useCompleteSignIn();
   const containerRef = useRef<HTMLDivElement>(null);
-  const { data: config, isError } = useQuery({ queryKey: QUERY_KEYS.auth.telegramWidget, queryFn: getTelegramWidget, staleTime: Infinity });
+  const { data: config, isError } = useTelegramWidgetConfig();
   const signIn = useMutation({
     mutationFn: signInWithTelegram,
     onSuccess: completeSignIn,

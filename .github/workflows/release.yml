@@ -1,18 +1,9 @@
 name: release
 
-# Publishes a modpack release and the manager to the VPS (docs/ops/deploy.md §4).
+# Publishes whichever of the modpack and the manager has an unpublished version to the VPS (docs/ops/deploy.md §4).
 
 on:
   workflow_dispatch:
-    inputs:
-      force:
-        description: Publish even if this modpack version is already released (replaces it)
-        type: boolean
-        default: false
-      dry_run:
-        description: Build everything, publish nothing
-        type: boolean
-        default: false
 
 concurrency:
   group: release
@@ -33,6 +24,9 @@ jobs:
     outputs:
       version: ${{ steps.source.outputs.version }}
       games: ${{ steps.source.outputs.games }}
+      manager_version: ${{ steps.source.outputs.manager_version }}
+      modpack_needed: ${{ steps.source.outputs.modpack_needed }}
+      manager_needed: ${{ steps.source.outputs.manager_needed }}
 
     steps:
       - name: Check the secrets
@@ -66,35 +60,43 @@ jobs:
 
       - uses: ./.github/actions/setup
 
-      # 404 means nothing is published yet.
+      # 404 means nothing is published yet; any other error stops: a fresh index would drop every release.
       - name: Read the published index
         env:
           SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
         run: |
           url="${SITE_URL%/}/downloads/releases.json"
-          status=$(curl -sS --retry 3 -o "$RUNNER_TEMP/current.json" -w '%{http_code}' "$url")
+          mkdir -p dist/index
+          status=$(curl -sS --retry 3 -o dist/index/current.json -w '%{http_code}' "$url")
 
           case "$status" in
             200) ;;
-            404) rm -f "$RUNNER_TEMP/current.json" && echo "no index at $url yet" ;;
+            404) rm -f dist/index/current.json && echo "no index at $url yet" ;;
             *) echo "::error::GET $url answered $status" && exit 1 ;;
           esac
 
-      - name: Read the version and the supported clients
+      - name: Compare the versions with the index
         id: source
-        env:
-          FORCE: ${{ inputs.force }}
-          DRY_RUN: ${{ inputs.dry_run }}
-        run: |
-          args=(--current "$RUNNER_TEMP/current.json")
-          if [ "$FORCE" = true ] || [ "$DRY_RUN" = true ]; then
-            args+=(--force)
-          fi
+        run: bun apps/web/server/scripts/modpack-release.ts source --current dist/index/current.json | tee -a "$GITHUB_OUTPUT"
 
-          bun apps/web/server/scripts/modpack-release.ts source "${args[@]}" | tee -a "$GITHUB_OUTPUT"
+      - name: Nothing to release
+        if: steps.source.outputs.modpack_needed != 'true' && steps.source.outputs.manager_needed != 'true'
+        env:
+          VERSION: ${{ steps.source.outputs.version }}
+          MANAGER_VERSION: ${{ steps.source.outputs.manager_version }}
+        run: |
+          echo "::notice::nothing to release: modpack $VERSION and manager $MANAGER_VERSION are already on the VPS"
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: index
+          path: dist/index/
+          if-no-files-found: ignore
+          retention-days: 1
 
   modpack:
     needs: check
+    if: needs.check.outputs.modpack_needed == 'true'
 
     permissions:
       contents: read
@@ -124,18 +126,15 @@ jobs:
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: release-modpack
-          path: dist/modpack/
-          retention-days: 1
-
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: release-catalog
-          path: dist/catalog/
+          name: modpack
+          path: |
+            dist/modpack/
+            dist/catalog/
           retention-days: 1
 
   manager:
-    needs: modpack
+    needs: check
+    if: needs.check.outputs.manager_needed == 'true'
 
     permissions:
       contents: read
@@ -160,12 +159,6 @@ jobs:
         with:
           workspaces: apps/game/manager/tauri -> target
 
-      # Ship this release's catalogue so a fresh install needs no download.
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-        with:
-          name: release-catalog
-          path: apps/game/manager/tauri/resources
-
       - name: Build the installer
         shell: bash
         working-directory: apps/game/manager
@@ -185,7 +178,7 @@ jobs:
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: release-manager
+          name: manager
           path: |
             apps/game/manager/tauri/target/release/bundle/nsis/*-setup.exe
             apps/game/manager/tauri/target/release/bundle/nsis/*-setup.exe.sig
@@ -193,7 +186,9 @@ jobs:
 
   publish:
     needs: [check, modpack, manager]
-    if: ${{ !inputs.dry_run }}
+    if: >-
+      !cancelled() && !contains(needs.*.result, 'failure')
+      && (needs.check.outputs.modpack_needed == 'true' || needs.check.outputs.manager_needed == 'true')
 
     permissions:
       contents: read
@@ -206,6 +201,9 @@ jobs:
     env:
       VERSION: ${{ needs.check.outputs.version }}
       GAMES: ${{ needs.check.outputs.games }}
+      MANAGER_VERSION: ${{ needs.check.outputs.manager_version }}
+      MODPACK_NEEDED: ${{ needs.check.outputs.modpack_needed }}
+      MANAGER_NEEDED: ${{ needs.check.outputs.manager_needed }}
       SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
       STAGING: ${{ github.run_id }}-${{ github.run_attempt }}
 
@@ -216,54 +214,21 @@ jobs:
 
       - uses: ./.github/actions/setup
 
+      # Every artifact of the run into dist/<name>: index, and modpack / manager when built.
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
-          name: release-modpack
-          path: dist/modpack
+          path: dist
 
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-        with:
-          name: release-catalog
-          path: dist/catalog
-
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-        with:
-          name: release-manager
-          path: dist/manager
-
-      # Any error but 404 stops: a fresh index would drop every published release.
-      - name: Read the published index
-        run: |
-          url="${SITE_URL%/}/downloads/releases.json"
-          status=$(curl -sS --retry 3 -o dist/current.json -w '%{http_code}' "$url")
-
-          case "$status" in
-            200) echo "extending $url" ;;
-            404) rm -f dist/current.json && echo "no index at $url yet: starting a new one" ;;
-            *) echo "::error::GET $url answered $status" && exit 1 ;;
-          esac
-
-      - name: Describe the release
-        run: |
-          downloads="${SITE_URL%/}/downloads"
-          manager_version=$(jq -r .version apps/game/manager/package.json)
-          installer=$(find dist/manager -name '*-setup.exe' -print -quit)
-
-          {
-            echo "DOWNLOADS=$downloads"
-            echo "MANAGER_VERSION=$manager_version"
-            echo "MANAGER_FILE=otmetki-manager_${manager_version}_x64-setup.exe"
-            echo "INSTALLER=$installer"
-          } >> "$GITHUB_ENV"
-
-      - name: Build the release entry and its payload
+      - name: Build the modpack release entry and its payload
+        if: env.MODPACK_NEEDED == 'true'
         run: |
           bun apps/web/server/scripts/modpack-release.ts prepare \
             --version "$VERSION" --games "$GAMES" \
-            --catalog dist/catalog/components.json --packages dist/modpack \
-            --base-url "$DOWNLOADS/modpack/$VERSION" --out dist/release
+            --catalog dist/modpack/catalog/components.json --packages dist/modpack/modpack \
+            --base-url "${SITE_URL%/}/downloads/modpack/$VERSION" --out dist/release
 
       - name: Sign the payload
+        if: env.MODPACK_NEEDED == 'true'
         working-directory: apps/game/manager
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
@@ -273,22 +238,29 @@ jobs:
       - name: Lay out the downloads folder
         run: |
           publish=dist/publish
-          mkdir -p "$publish/modpack/$VERSION/catalog" "$publish/manager/$MANAGER_VERSION"
+          args=(--current dist/index/current.json --out "$publish/releases.json")
+          mkdir -p "$publish"
 
-          cp dist/modpack/*.mtmod "$publish/modpack/$VERSION/"
-          cp -R dist/catalog/. "$publish/modpack/$VERSION/catalog/"
-          cp "dist/modpack/otmetki.$VERSION.mtmod" "$publish/otmetki.mtmod"
-          cp "$INSTALLER" "$publish/manager/$MANAGER_VERSION/$MANAGER_FILE"
-          cp "$INSTALLER.sig" "$publish/manager/$MANAGER_VERSION/$MANAGER_FILE.sig"
-          cp "$INSTALLER" "$publish/otmetki-manager-setup.exe"
+          if [ "$MODPACK_NEEDED" = true ]; then
+            mkdir -p "$publish/modpack/$VERSION/catalog"
+            cp dist/modpack/modpack/*.mtmod "$publish/modpack/$VERSION/"
+            cp -R dist/modpack/catalog/. "$publish/modpack/$VERSION/catalog/"
+            cp "dist/modpack/modpack/otmetki.$VERSION.mtmod" "$publish/otmetki.mtmod"
+            args+=(--release dist/release/release.json --signature dist/release/release.txt.sig)
+          fi
 
-          bun apps/web/server/scripts/modpack-release.ts index \
-            --current dist/current.json \
-            --release dist/release/release.json --signature dist/release/release.txt.sig \
-            --manager-version "$MANAGER_VERSION" --manager-url "$DOWNLOADS/manager/$MANAGER_VERSION/$MANAGER_FILE" \
-            --manager-signature "$INSTALLER.sig" \
-            --out "$publish/releases.json"
+          if [ "$MANAGER_NEEDED" = true ]; then
+            file="otmetki-manager_${MANAGER_VERSION}_x64-setup.exe"
+            installer=$(find dist/manager -name '*-setup.exe' -print -quit)
+            mkdir -p "$publish/manager/$MANAGER_VERSION"
+            cp "$installer" "$publish/manager/$MANAGER_VERSION/$file"
+            cp "$installer.sig" "$publish/manager/$MANAGER_VERSION/$file.sig"
+            cp "$installer" "$publish/otmetki-manager-setup.exe"
+            args+=(--manager-version "$MANAGER_VERSION" --manager-signature "$installer.sig")
+            args+=(--manager-url "${SITE_URL%/}/downloads/manager/$MANAGER_VERSION/$file")
+          fi
 
+          bun apps/web/server/scripts/modpack-release.ts index "${args[@]}"
           find "$publish" -type f | sort
 
       - name: Upload to the VPS
@@ -303,7 +275,7 @@ jobs:
           strip_components: 2
           overwrite: true
 
-      # Same-filesystem renames, releases.json last: the index never names a missing file.
+      # Same-filesystem renames of whatever was staged, releases.json last: the index never names a missing file.
       - name: Publish
         uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1
         env:
@@ -330,16 +302,17 @@ jobs:
             mkdir -p "$downloads/modpack" "$downloads/manager"
 
             for dir in "modpack/$VERSION" "manager/$MANAGER_VERSION"; do
+              [ -d "$staging/$dir" ] || continue
               rm -rf "$downloads/$dir.old"
               if [ -e "$downloads/$dir" ]; then
                 mv "$downloads/$dir" "$downloads/$dir.old"
               fi
               mv "$staging/$dir" "$downloads/$dir"
               rm -rf "$downloads/$dir.old"
+              echo "published $dir"
             done
 
             for file in otmetki.mtmod otmetki-manager-setup.exe releases.json; do
+              [ -f "$staging/$file" ] || continue
               mv -f "$staging/$file" "$downloads/$file"
             done
-
-            echo "published modpack $VERSION and manager $MANAGER_VERSION to $downloads"

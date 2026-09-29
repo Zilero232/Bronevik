@@ -1,35 +1,24 @@
 @use '@/shared/styles/mixins' as *;
 
-.root {
-  @include stack(var(--space-2));
-}
-
-.row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--space-2);
-}
-
 .search {
   width: min(320px, 100%);
 }
 
 .sort {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+  margin-left: auto;
   gap: var(--space-2);
 
-  @include below(md) {
-    width: 100%;
+  @include below(lg) {
+    margin-left: 0;
   }
 }
 
 .select {
-  min-width: 200px;
+  min-width: 220px;
 
-  @include below(md) {
+  @include below(lg) {
     min-width: 0;
     flex: 1;
   }

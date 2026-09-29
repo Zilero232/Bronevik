@@ -1,5 +1,6 @@
 'use client';
 
+import { Send } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button, Skeleton } from '@/ui-kit';
@@ -19,6 +20,7 @@ export const TelegramLogin = () => {
       {isLoaded && !isEnabled && (
         <>
           <Button block disabled variant='secondary'>
+            <Send aria-hidden size={14} />
             {t('telegram')}
           </Button>
           <p className={s.hint}>{t('telegramDisabled')}</p>

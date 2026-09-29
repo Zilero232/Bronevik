@@ -25,7 +25,7 @@ features/     # app/{pin-rows,rating-palette,rating-patterns,switch-locale,switc
               #   search/{command-palette,pick-entity}, stats/select-period, streamer/{apply-settings,claim-profile,follow-streamer},
               #   tank/{filter-vehicles,pick-tank}
 entities/     # app/{lesta-notice,locale}, armor/armor-model, auth/session, battle/best-battle, clan/clan, coaching/coach,
-              #   competition/competition, developer/developer, event/calendar, guide/guide, map/map, mission/mission,
+              #   competition/competition, developer/developer, event/calendar, guide/guide, map/map, mission/mission, mod/modpack-release,
               #   mode/mode, notification/inbox, play/daily-puzzle, player/{analytics,cosmetics,leaderboard,marks,player,profile,recent-players,stats},
               #   plus/{subscription,usage}, pulse/pulse, reference/{game-status,service-health}, replay/replay, search/search,
               #   social/{challenge,league},
@@ -38,7 +38,7 @@ ui-kit/       # the design system: atoms/ molecules/ organisms/ (ChartKit + char
 config/       # build-time helpers for next.config.ts (security headers / CSP, redirects, root env, dev-server settings, panel script) — not imported by the app
 ```
 
-Inside a slice: `index.ts`, `ui/`, `model/hooks/`, `model/context/<name>/` (context + `useX` consumer; the Provider is a `ui/` component fed by `model/hooks/use-<x>-state/`), `api/<resource>/` (+ `api/mappers/<name>/`), `lib/<concern>/`, `config/`. No runtime import cycles — `_tests/import-cycles.test.ts` (madge) guards it; rules in [client/structure/fsd-layers.md](../../../.claude/rules/client/structure/fsd-layers.md).
+Inside a slice: `index.ts`, `ui/`, `model/hooks/`, `model/context/<name>/` (context + `useX` consumer; the Provider is a `ui/` component fed by `model/hooks/use-<x>-state/`), `api/<resource>/` (+ `api/mappers/<name>/`), `lib/<concern>/`, `config/`. No runtime import cycles — `bun run lint:cycles` (madge, part of `verify`) guards it; rules in [client/structure/fsd-layers.md](../../../.claude/rules/client/structure/fsd-layers.md).
 
 **Every thing is a folder.** A file with companions (`x.ts` + `x.types.ts` / `x.constants.ts` / `_tests/`) lives in its own `x/` with an `index.ts`; nothing lies flat next to another concern. `shared/lib` is flat, one folder per concern — helpers `shared/lib/<concern>/`, hooks `shared/lib/use-<x>/` — and `shared/constants` is `routes/`, `site-nav/`, `account-nav/`, `periods/`, `query-keys/`, `storage-keys/`. `ROUTES` is nested per page family (`ROUTES.tanks.detail(slug)`, `ROUTES.players.session({ nickname, sessionId })`, `ROUTES.account.overview`). Details: [fsd.md §4](../../../docs/architecture/fsd.md).
 

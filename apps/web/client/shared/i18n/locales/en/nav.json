@@ -32,6 +32,7 @@
     "news": "News",
     "maps": "Maps",
     "honestRng": "Honest RNG",
+    "play": "Mini-games",
     "replays": "Replays",
     "guides": "Guides",
     "tactics": "Tactics",
@@ -73,6 +74,7 @@
     "news": "Game updates and news",
     "maps": "Maps, positions and modes",
     "honestRng": "Real damage rolls against ±25%",
+    "play": "Guess the tank and the map, a new puzzle every day",
     "replays": "Battle reviews from uploaded replays",
     "guides": "Guides by players",
     "tactics": "Tactical plans on maps",
@@ -82,7 +84,7 @@
     "tournaments": "Bracket and points tournaments",
     "competitions": "Bronze to Diamond divisions, weekly challenges and the friends feed",
     "streamers": "Who is live, on which tank and with what settings",
-    "tools": "Calculators and mini-games",
+    "tools": "XP, credits, marks, crew and the battle pass",
     "plus": "Deeper analytics and cosmetics",
     "forStreamers": "Overlays and challenges for your stream",
     "developers": "The project's open API",
@@ -103,7 +105,7 @@
   },
   "utility": {
     "label": "Game status",
-    "mod": "Download the mod"
+    "mod": "Modpack"
   },
   "account": {
     "signIn": "Sign in",

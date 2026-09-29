@@ -45,15 +45,15 @@
 .sm {
   @include touch-target;
 
-  width: 28px;
-  height: 28px;
+  width: var(--control-h-sm);
+  height: var(--control-h-sm);
 }
 
 .md {
   @include touch-target;
 
-  width: 32px;
-  height: 32px;
+  width: var(--control-h);
+  height: var(--control-h);
 }
 
 .lg {

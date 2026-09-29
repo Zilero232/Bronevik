@@ -52,7 +52,6 @@ export const EventsPage = () => {
           <ToggleChips
             aria-label={t('filters.label')}
             options={EVENTS.kinds.map((kind) => ({ value: kind, label: t(`kinds.${kind}`) }))}
-            size='sm'
             value={kinds}
             onChange={setKinds}
           />

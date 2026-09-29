@@ -53,5 +53,41 @@
     "column": "Pin",
     "pin": "Pin “{name}” to the top",
     "unpin": "Unpin “{name}”"
+  },
+  "filters": {
+    "title": "Filters",
+    "open": "Filters",
+    "reset": "Reset",
+    "apply": "Show",
+    "active": "Active filters",
+    "remove": "Remove filter “{label}”",
+    "more": "Advanced search",
+    "from": "from",
+    "to": "to",
+    "rangeFrom": "{label}, from",
+    "rangeTo": "{label}, to",
+    "span": "{label}: {value}",
+    "tiers": "Tiers {value}",
+    "atLeast": "from {value}",
+    "atMost": "up to {value}",
+    "between": "{from}–{to}",
+    "pair": "{label} {value}"
+  },
+  "dateTime": {
+    "placeholder": "Any time",
+    "clear": "Clear",
+    "now": "Now",
+    "done": "Done",
+    "time": "Time",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "hoursUp": "Next hour",
+    "hoursDown": "Previous hour",
+    "minutesUp": "Later",
+    "minutesDown": "Earlier",
+    "nextMonth": "Next month",
+    "previousMonth": "Previous month",
+    "zone": "MSK",
+    "zoneHint": "Times are Moscow time"
   }
 }

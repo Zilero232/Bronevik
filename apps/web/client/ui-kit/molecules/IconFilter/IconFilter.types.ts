@@ -3,7 +3,6 @@ import type { Nation, TankClass } from '@otmetki/icons';
 export type IconFilterValues = {
   class: TankClass;
   nation: Nation;
-  tier: number;
 };
 
 export type IconFilterKind = keyof IconFilterValues;

@@ -6,6 +6,7 @@ export default defineConfig({
   },
   test: {
     name: 'server',
+    pool: 'threads',
     isolate: false,
     clearMocks: true,
     restoreMocks: true,

@@ -18,7 +18,6 @@
   "filters": {
     "title": "Filters",
     "tier": "Tier",
-    "tierTitle": "Tier {tier}",
     "mode": "Mode",
     "anyMode": "Any mode",
     "voice": "Voice",
@@ -27,10 +26,7 @@
       "yes": "With voice",
       "no": "No voice"
     },
-    "minWn8": "WN8 from",
-    "maxWn8": "WN8 to",
     "at": "Free at",
-    "atHint": "Your local time",
     "reset": "Reset"
   },
   "board": {

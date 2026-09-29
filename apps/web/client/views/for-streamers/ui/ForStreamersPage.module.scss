@@ -5,3 +5,7 @@
 
   padding-bottom: var(--space-9);
 }
+
+.nav {
+  @include shell;
+}

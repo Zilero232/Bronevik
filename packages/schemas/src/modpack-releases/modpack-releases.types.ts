@@ -1,6 +1,7 @@
 import type { z } from 'zod';
 
 import type {
+  modpackDownloadSchema,
   modpackLatestQuerySchema,
   modpackLatestReleaseSchema,
   modpackManagerReleaseSchema,
@@ -9,6 +10,7 @@ import type {
   modpackReleaseIndexSchema,
   modpackReleasePackageSchema,
   modpackReleaseSchema,
+  modpackReleasesStatusSchema,
   modpackReleaseStatusSchema
 } from './modpack-releases.schemas';
 
@@ -22,3 +24,5 @@ export type ModpackReleaseStatus = z.infer<typeof modpackReleaseStatusSchema>;
 export type ModpackLatestRelease = z.infer<typeof modpackLatestReleaseSchema>;
 export type ModpackManagerUpdateQuery = z.infer<typeof modpackManagerUpdateQuerySchema>;
 export type ModpackManagerUpdate = z.infer<typeof modpackManagerUpdateSchema>;
+export type ModpackDownload = z.infer<typeof modpackDownloadSchema>;
+export type ModpackReleasesStatus = z.infer<typeof modpackReleasesStatusSchema>;

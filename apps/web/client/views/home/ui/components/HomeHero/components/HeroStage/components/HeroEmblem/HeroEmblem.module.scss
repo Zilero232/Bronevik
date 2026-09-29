@@ -1,0 +1,64 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: relative;
+  display: grid;
+  width: min(100%, 440px);
+  aspect-ratio: 1;
+  margin-inline-start: auto;
+  place-items: center;
+
+  @include below(2xl) {
+    display: none;
+  }
+}
+
+.rings {
+  --rule: color-mix(in srgb, var(--color-text) 14%, transparent);
+
+  position: absolute;
+  border-radius: 50%;
+  background:
+    linear-gradient(90deg, transparent calc(50% - 0.5px), var(--rule) 50%, transparent calc(50% + 0.5px)),
+    linear-gradient(180deg, transparent calc(50% - 0.5px), var(--rule) 50%, transparent calc(50% + 0.5px)),
+    repeating-radial-gradient(circle, transparent 0 43px, var(--rule) 44px 45px);
+  inset: 0;
+  mask-image: radial-gradient(closest-side, #000 55%, transparent 100%);
+}
+
+.sweep {
+  @include spin(12s);
+
+  position: absolute;
+  border-radius: 50%;
+  background: conic-gradient(transparent 0 75%, color-mix(in srgb, var(--color-accent) 28%, transparent) 100%);
+  inset: 0;
+  mask-image: radial-gradient(closest-side, #000 70%, transparent 100%);
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+.plate {
+  position: relative;
+  display: grid;
+  width: 58%;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 50%;
+  aspect-ratio: 1;
+  background: radial-gradient(circle at 35% 30%, var(--color-surface-raised), var(--color-surface-sunken) 75%);
+  box-shadow:
+    inset 0 0 0 6px color-mix(in srgb, var(--color-accent) 10%, transparent),
+    inset 0 0 48px color-mix(in srgb, var(--color-accent) 18%, transparent),
+    var(--elev-2);
+  place-items: center;
+}
+
+.mark {
+  width: 72%;
+  height: auto;
+  color: var(--color-accent);
+  filter: drop-shadow(0 0 12px color-mix(in srgb, var(--color-accent) 35%, transparent));
+  transform: rotate(-8deg);
+}

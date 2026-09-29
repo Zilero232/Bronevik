@@ -5,7 +5,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 
 import { MarkProgress } from '@/entities/player/marks';
 import { TankShowcaseCard, WinRateCell } from '@/entities/tank/tank';
-import { IconFilter, Podium, PodiumCard } from '@/ui-kit';
+import { IconFilter, Podium, PodiumCard, TierPicker } from '@/ui-kit';
 
 import { PATTERN_SPECIMENS } from '../../../config';
 import { useDesignTankStats, usePatternFilters } from '../../../model/hooks';
@@ -49,7 +49,7 @@ export const CardsSection = () => {
         <MarkProgress percent={PATTERN_SPECIMENS.doneMark} size={48} />
       </DesignRow>
       <DesignRow label={t('iconFilter')}>
-        <IconFilter aria-label={t('tier')} kind='tier' options={PATTERN_SPECIMENS.tiers} value={tiers} onChange={setTiers} />
+        <TierPicker aria-label={t('tier')} options={PATTERN_SPECIMENS.tiers} value={tiers} onChange={setTiers} />
         <IconFilter aria-label={t('class')} kind='class' options={TANK_CLASSES} value={classes} onChange={setClasses} />
         <IconFilter aria-label={t('nation')} kind='nation' options={NATIONS} size='sm' value={nations} onChange={setNations} />
       </DesignRow>

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { isoToZonedInput, zonedInputToIso } from '../zoned-time';
+import { composeZonedInput, isoToZonedInput, roundedZonedInput, zonedInputParts, zonedInputToIso } from '../zoned-time';
 
 describe('zonedInputToIso', () => {
   it('reads the picker value as Moscow wall time', () => {
@@ -42,5 +42,43 @@ describe('isoToZonedInput', () => {
 
     expect(isoToZonedInput({ value: zonedInputToIso({ value }) })).toBe(value);
     expect(zonedInputToIso({ value: isoToZonedInput({ value: '2026-12-31T21:00:00.000Z' }) })).toBe('2026-12-31T21:00:00.000Z');
+  });
+});
+
+describe('zonedInputParts', () => {
+  it('splits the value into the zoned day and the wall-clock time', () => {
+    const parts = zonedInputParts({ value: '2026-10-10T18:05' });
+
+    expect(parts?.hours).toBe(18);
+    expect(parts?.minutes).toBe(5);
+    expect(composeZonedInput({ day: parts?.day ?? new Date(0), hours: 0, minutes: 0 })).toBe('2026-10-10T00:00');
+  });
+
+  it('returns null for an empty or broken value', () => {
+    expect(zonedInputParts({ value: '' })).toBeNull();
+    expect(zonedInputParts({ value: 'soon' })).toBeNull();
+  });
+});
+
+describe('composeZonedInput', () => {
+  it('round-trips through zonedInputParts', () => {
+    const value = '2026-12-31T23:45';
+    const parts = zonedInputParts({ value });
+
+    expect(parts && composeZonedInput(parts)).toBe(value);
+  });
+});
+
+describe('roundedZonedInput', () => {
+  it('rounds the zoned now up to the next step', () => {
+    expect(roundedZonedInput({ now: new Date('2026-10-10T15:07:00.000Z'), stepMinutes: 15 })).toBe('2026-10-10T18:15');
+  });
+
+  it('keeps a time that already sits on the step', () => {
+    expect(roundedZonedInput({ now: new Date('2026-10-10T15:30:00.000Z'), stepMinutes: 15 })).toBe('2026-10-10T18:30');
+  });
+
+  it('rolls over midnight in the zone', () => {
+    expect(roundedZonedInput({ now: new Date('2026-10-10T20:55:00.000Z'), stepMinutes: 15 })).toBe('2026-10-11T00:00');
   });
 });

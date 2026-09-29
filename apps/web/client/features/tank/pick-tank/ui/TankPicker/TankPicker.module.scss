@@ -10,24 +10,22 @@
   @include label;
 }
 
-.failure {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  color: var(--color-danger);
-  font-size: var(--text-sm);
-  gap: var(--space-2);
-}
-
 .group {
   @include field-box;
 
   display: flex;
-  height: 32px;
+  height: var(--control-h);
   align-items: center;
   padding: 0 var(--space-1) 0 var(--space-3);
   gap: var(--space-2);
+
+  &[data-invalid] {
+    border-color: var(--color-danger);
+
+    .input::placeholder {
+      color: var(--color-danger);
+    }
+  }
 }
 
 .icon {
@@ -104,4 +102,8 @@
   &:empty {
     display: none;
   }
+}
+
+.alert {
+  @include sr-only;
 }

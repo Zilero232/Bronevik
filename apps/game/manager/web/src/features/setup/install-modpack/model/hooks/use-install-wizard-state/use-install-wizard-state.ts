@@ -17,6 +17,7 @@ import { INSTALL_WIZARD } from '../../../config';
 import {
   closeDependencies,
   dependencyRows,
+  installBlocker,
   installedDependencies,
   matchingPreset,
   needsClientRestart,
@@ -103,7 +104,8 @@ export const useInstallWizardState = ({ initialPreset, initialComponents }: UseI
   const step = INSTALL_WIZARD.steps[stepIndex] ?? INSTALL_WIZARD.steps[0];
   const takeSnapshot = snapshotWanted || removeOthers.size > 0;
   const isClientSupported = plan !== null && plan.client.problem === null;
-  const canInstall = clientPath !== null && isClientSupported && catalog !== null && components.length > 0 && plan.source !== 'unavailable';
+  const blocker = plan && installBlocker(plan);
+  const canInstall = clientPath !== null && plan !== null && blocker === null;
 
   const install = useMutation({
     mutationFn: () =>
@@ -152,6 +154,7 @@ export const useInstallWizardState = ({ initialPreset, initialComponents }: UseI
     needsRestart: needsClientRestart(rows),
     isReinstall,
     isClientSupported,
+    isOffline: blocker === 'offline',
     parkedCount: plan?.parkedComponents.filter((id) => selection.has(id)).length ?? 0,
     takeSnapshot,
     isSnapshotForced: removeOthers.size > 0,

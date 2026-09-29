@@ -8,12 +8,13 @@ import { MODPACK_RELEASES_SOURCE } from '../src/modules/modpack-releases/config'
 import {
   buildRelease,
   catalogPackages,
-  isPublished,
+  managerReleaseManifestSchema,
   mergeReleaseIndex,
   modpackCatalogSchema,
   modpackReleaseManifestSchema,
   RELEASE_BUILD,
   RELEASE_SOURCE,
+  releaseNeeds,
   releasePayload
 } from '../src/modules/modpack-releases/lib';
 
@@ -33,11 +34,11 @@ const { positionals, values } = parseArgs({
     'manager-url': { type: 'string' },
     'manager-signature': { type: 'string' },
     manifest: { type: 'string', default: RELEASE_SOURCE.manifestFile },
-    force: { type: 'boolean', default: false }
+    'manager-manifest': { type: 'string', default: RELEASE_SOURCE.managerManifestFile }
   }
 });
 
-const required = (name: Exclude<keyof typeof values, 'force'>): string => {
+const required = (name: keyof typeof values): string => {
   const value = values[name]?.trim();
 
   if (!value) {
@@ -69,25 +70,24 @@ const readIndex = async (path: string) => {
   return modpackReleaseIndexSchema.parse(current.trim() === '' ? MODPACK_RELEASES_SOURCE.emptyIndex : JSON.parse(current));
 };
 
-// Prints version=… and games=… (the lines release.yml appends to $GITHUB_OUTPUT) from the modpack
-// package.json; with --current, refuses a version that is already published unless --force.
+const readJson = async (path: string): Promise<unknown> => JSON.parse(await readFile(path, 'utf8'));
+
+// Prints the lines release.yml appends to $GITHUB_OUTPUT: both versions, the supported clients and
+// which of the two the published index (--current, absent = empty) still lacks.
 const source = async () => {
   const {
     version,
     otmetki: { games }
-  } = modpackReleaseManifestSchema.parse(JSON.parse(await readFile(required('manifest'), 'utf8')));
+  } = modpackReleaseManifestSchema.parse(await readJson(required('manifest')));
 
-  if (values.current && isPublished({ index: await readIndex(values.current), version })) {
-    if (!values.force) {
-      console.error(`modpack ${version} is already published: bump "version" in ${required('manifest')} or run with force`);
-      process.exit(1);
-    }
-
-    console.error(`modpack ${version} is already published: force replaces it`);
-  }
+  const { version: managerVersion } = managerReleaseManifestSchema.parse(await readJson(required('manager-manifest')));
+  const needs = releaseNeeds({ index: await readIndex(required('current')), modpackVersion: version, managerVersion });
 
   console.log(`version=${version}`);
   console.log(`games=${games.join(',')}`);
+  console.log(`manager_version=${managerVersion}`);
+  console.log(`modpack_needed=${needs.modpack}`);
+  console.log(`manager_needed=${needs.manager}`);
 };
 
 const prepare = async () => {
@@ -131,24 +131,34 @@ const prepare = async () => {
   console.log(`✓ modpack ${release.version}: ${release.packages.length} packages, payload in ${join(out, 'release.txt')}`);
 };
 
-const index = async () => {
-  const previous = await readIndex(required('current'));
-  const release = unsignedReleaseSchema.parse(JSON.parse(await readText(required('release'))));
+const signedRelease = async (path: string) => ({
+  ...unsignedReleaseSchema.parse(JSON.parse(await readText(path))),
+  signature: await readText(required('signature'))
+});
 
-  const manager = modpackManagerReleaseSchema.parse({
-    version: required('manager-version'),
+const managerRelease = async (version: string) =>
+  modpackManagerReleaseSchema.parse({
+    version,
     publishedAt: new Date().toISOString(),
     notes: '',
     platforms: { [RELEASE_BUILD.managerPlatform]: { url: required('manager-url'), signature: await readText(required('manager-signature')) } }
   });
 
-  const merged = modpackReleaseIndexSchema.parse(
-    mergeReleaseIndex({ index: previous, release: { ...release, signature: await readText(required('signature')) }, manager })
-  );
+const index = async () => {
+  const previous = await readIndex(required('current'));
+  const release = values.release ? await signedRelease(values.release) : undefined;
+  const manager = values['manager-version'] ? await managerRelease(values['manager-version']) : undefined;
+
+  if (!release && !manager) {
+    console.error('pass --release and/or --manager-version');
+    process.exit(1);
+  }
+
+  const merged = modpackReleaseIndexSchema.parse(mergeReleaseIndex({ index: previous, release, manager }));
 
   await writeFile(required('out'), `${JSON.stringify(merged, null, 2)}\n`);
 
-  console.log(`✓ release index: ${merged.releases.map((item) => item.version).join(', ')}; manager ${manager.version}`);
+  console.log(`✓ release index: ${merged.releases.map((item) => item.version).join(', ')}; manager ${merged.manager?.version ?? 'none'}`);
 };
 
 const commands = { source, prepare, index };

@@ -2,7 +2,6 @@ import type { TwitchPanel } from '@otmetki/schemas';
 
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { runInThisContext } from 'node:vm';
 import { fromKeys } from 'remeda';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -30,7 +29,8 @@ const mount = (html: string) => {
 
   document.body.replaceChildren(...(panel ? [panel] : []));
 
-  return () => runInThisContext(script);
+  // eslint-disable-next-line no-eval -- the shipped static script must run in the jsdom window, as a browser would
+  return () => window.eval(script);
 };
 
 afterEach(() => {

@@ -75,6 +75,7 @@
     "lint": "eslint . --cache --cache-location node_modules/.cache/.eslintcache",
     "lint:css": "stylelint \"{apps/web/client,apps/game/modpack/ui-web,apps/game/manager/web,packages/design-tokens}/**/*.scss\" --cache --cache-location node_modules/.cache/.stylelintcache",
     "lint:css:fix": "stylelint \"{apps/web/client,apps/game/modpack/ui-web,apps/game/manager/web,packages/design-tokens}/**/*.scss\" --fix --cache --cache-location node_modules/.cache/.stylelintcache",
+    "lint:cycles": "bun --filter @otmetki/client lint:cycles",
     "lint:dupes": "jscpd",
     "lint:encoding": "node scripts/check-utf8.mjs",
     "lint:fix": "eslint . --fix --cache --cache-location node_modules/.cache/.eslintcache",
@@ -86,7 +87,7 @@
     "test:e2e:ui": "playwright test --ui",
     "test:modpack": "bun --filter @otmetki/modpack test",
     "typecheck": "bun --filter '*' typecheck",
-    "verify": "bun run typecheck && bun run lint && bun run lint:encoding && bun run format:check && bun run lint:css"
+    "verify": "bun run typecheck && bun run lint && bun run lint:cycles && bun run lint:encoding && bun run format:check && bun run lint:css"
   },
   "lint-staged": {
     "*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}": [

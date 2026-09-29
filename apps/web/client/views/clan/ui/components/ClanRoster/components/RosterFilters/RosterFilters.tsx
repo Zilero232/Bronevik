@@ -1,51 +1,36 @@
 'use client';
 
-import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Button, SegmentedControl } from '@/ui-kit';
+import { FilterBar, FilterField, SegmentedControl } from '@/ui-kit';
 
 import type { InactiveFilter, RoleFilter } from '../../../../../lib/roster';
 
 import { INACTIVE_FILTERS, ROLE_FILTERS } from '../../../../../config';
 import { useRosterFilters } from '../../../../../model/hooks';
 
-import s from './RosterFilters.module.scss';
-
 export const RosterFilters = () => {
   const t = useTranslations('clans.roster.filters');
-  const { role, idle, isFiltered, onRoleChange, onIdleChange, onReset } = useRosterFilters();
+  const { role, idle, activeCount, onRoleChange, onIdleChange, onReset } = useRosterFilters();
 
   return (
-    <div className={s.root}>
-      <div className={s.group}>
-        <span className={s.label}>{t('role')}</span>
+    <FilterBar activeCount={activeCount} onReset={onReset}>
+      <FilterField label={t('role')}>
         <SegmentedControl<RoleFilter>
           aria-label={t('role')}
-          className={s.control}
           options={ROLE_FILTERS.map((value) => ({ value, label: t(`roles.${value}`) }))}
-          size='sm'
           value={role}
           onChange={onRoleChange}
         />
-      </div>
-      <div className={s.group}>
-        <span className={s.label}>{t('idle')}</span>
+      </FilterField>
+      <FilterField label={t('idle')}>
         <SegmentedControl<InactiveFilter>
           aria-label={t('idle')}
-          className={s.control}
           options={INACTIVE_FILTERS.map((value) => ({ value, label: value === 'all' ? t('idleAll') : t('idleDays', { days: Number(value) }) }))}
-          size='sm'
           value={idle}
           onChange={onIdleChange}
         />
-      </div>
-      {isFiltered && (
-        <Button className={s.reset} size='sm' variant='ghost' onClick={onReset}>
-          <X size={14} />
-          {t('reset')}
-        </Button>
-      )}
-    </div>
+      </FilterField>
+    </FilterBar>
   );
 };

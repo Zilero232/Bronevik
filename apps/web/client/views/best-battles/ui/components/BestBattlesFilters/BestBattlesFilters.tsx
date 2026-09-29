@@ -1,58 +1,41 @@
 'use client';
 
-import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { BestBattleMetric, BestBattlePeriod } from '@/entities/battle/best-battle';
 
 import { BattleMedal } from '@/entities/battle/best-battle';
 import { TankPicker } from '@/features/tank/pick-tank';
-import { Button, SegmentedControl, Select, ToggleChips } from '@/ui-kit';
+import { FilterBar, FilterField, SegmentedControl, Select, ToggleChips } from '@/ui-kit';
 
 import { BEST_BATTLES_VIEW } from '../../../config';
 import { useBestBattlesFilters } from '../../../model/hooks';
-
-import s from './BestBattlesFilters.module.scss';
 
 export const BestBattlesFilters = () => {
   const t = useTranslations('bestBattles.filters');
   const filters = useBestBattlesFilters();
 
   return (
-    <div className={s.root} role='search'>
-      <div className={s.row}>
+    <FilterBar active={filters.active} variant='bare' onReset={filters.onReset}>
+      <FilterField label={t('period')}>
         <SegmentedControl<BestBattlePeriod>
           aria-label={t('period')}
           options={filters.periodOptions}
-          size='sm'
           value={filters.period}
           onChange={filters.onPeriodChange}
         />
-        <Select<BestBattleMetric>
-          className={s.select}
-          items={filters.metricItems}
-          label={t('metric')}
-          value={filters.metric}
-          onValueChange={filters.onMetricChange}
-        />
-        <TankPicker
-          className={s.tank}
-          label={t('tank')}
-          placeholder={t('tankPlaceholder')}
-          value={filters.vehicle}
-          onChange={filters.onVehicleChange}
-        />
-        <Select className={s.select} items={filters.mapItems} label={t('map')} value={filters.mapValue} onValueChange={filters.onMapChange} />
-        {filters.isFiltered && (
-          <Button className={s.reset} size='sm' variant='ghost' onClick={filters.onReset}>
-            <X size={14} />
-            {t('reset')}
-          </Button>
-        )}
-      </div>
+      </FilterField>
+      <FilterField label={t('metric')} size='md'>
+        <Select<BestBattleMetric> items={filters.metricItems} value={filters.metric} onValueChange={filters.onMetricChange} />
+      </FilterField>
+      <FilterField label={t('tank')} size='lg'>
+        <TankPicker placeholder={t('tankPlaceholder')} value={filters.vehicle} onChange={filters.onVehicleChange} />
+      </FilterField>
+      <FilterField label={t('map')} size='md'>
+        <Select items={filters.mapItems} value={filters.mapValue} onValueChange={filters.onMapChange} />
+      </FilterField>
       {filters.medals.length > 0 && (
-        <div className={s.medals}>
-          <span className={s.label}>{t('medals')}</span>
+        <FilterField count={filters.medalValue.length} label={t('medals')}>
           <ToggleChips
             options={filters.medals.map((medal) => ({
               value: medal.name,
@@ -61,12 +44,11 @@ export const BestBattlesFilters = () => {
               icon: <BattleMedal medal={medal} size={BEST_BATTLES_VIEW.chipMedalSize} />
             }))}
             aria-label={t('medals')}
-            size='sm'
             value={filters.medalValue}
             onChange={filters.onMedalsChange}
           />
-        </div>
+        </FilterField>
       )}
-    </div>
+    </FilterBar>
   );
 };

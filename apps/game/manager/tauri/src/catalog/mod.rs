@@ -228,25 +228,12 @@ pub struct Catalog {
     pub conflicts: Vec<ConflictRule>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
-#[serde(rename_all = "snake_case")]
-pub enum CatalogSource {
-    Downloaded,
-    Bundled,
-}
-
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LoadedCatalog {
     #[serde(flatten)]
     pub catalog: Catalog,
-    pub source: CatalogSource,
     pub previews_dir: Option<PathBuf>,
-}
-
-pub struct LoadInput<'a> {
-    pub cache: &'a Path,
-    pub bundled: Option<&'a Path>,
 }
 
 pub fn is_our_name(name: &str) -> bool {
@@ -303,24 +290,11 @@ pub fn read_catalog(path: &Path) -> Option<Catalog> {
     fs::read_to_string(path).ok().and_then(|text| parse(&text).ok())
 }
 
-fn newer(left: &Catalog, right: &Catalog) -> bool {
-    match (semver::Version::parse(&left.modpack_version), semver::Version::parse(&right.modpack_version)) {
-        (Ok(left), Ok(right)) => left >= right,
-        _ => true,
-    }
-}
+pub fn load(cache: &Path) -> Option<LoadedCatalog> {
+    let catalog = read_catalog(cache)?;
+    let previews_dir = cache.parent().map(Path::to_path_buf).filter(|dir| dir.join("previews").is_dir());
 
-pub fn load(input: LoadInput) -> Option<LoadedCatalog> {
-    let downloaded = read_catalog(input.cache).map(|catalog| (catalog, CatalogSource::Downloaded, input.cache));
-    let bundled = input.bundled.and_then(|path| read_catalog(path).map(|catalog| (catalog, CatalogSource::Bundled, path)));
-    let (catalog, source, path) = match (downloaded, bundled) {
-        (Some(downloaded), Some(bundled)) if !newer(&downloaded.0, &bundled.0) => bundled,
-        (Some(downloaded), _) => downloaded,
-        (None, bundled) => bundled?,
-    };
-    let previews_dir = path.parent().map(Path::to_path_buf).filter(|dir| dir.join("previews").is_dir());
-
-    Some(LoadedCatalog { catalog, source, previews_dir })
+    Some(LoadedCatalog { catalog, previews_dir })
 }
 
 impl Catalog {

@@ -1,6 +1,6 @@
 import type { ComponentType } from 'react';
 
-import type { SITE_FOOTER_GROUPS, SITE_NAV } from './site-nav';
+import type { SITE_FOOTER_ACTION_KEYS, SITE_FOOTER_GROUPS, SITE_NAV } from './site-nav';
 
 type SiteNavIconProps = {
   size?: number | string;
@@ -28,3 +28,5 @@ export type SiteNavGroupEntry = (typeof SITE_NAV.groups)[number];
 
 export type SiteNavItem =
   (typeof SITE_FOOTER_GROUPS)[number]['items'][number] | SiteNavGroupEntry['items'][number] | typeof SITE_NAV.plus | typeof SITE_NAV.tools;
+
+export type SiteFooterAction = Extract<(typeof SITE_FOOTER_GROUPS)[number]['items'][number], { key: (typeof SITE_FOOTER_ACTION_KEYS)[number] }>;

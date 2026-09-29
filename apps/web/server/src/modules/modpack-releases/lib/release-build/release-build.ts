@@ -1,4 +1,4 @@
-import type { ModpackReleaseIndex } from '@otmetki/schemas';
+import type { ModpackRelease, ModpackReleaseIndex } from '@otmetki/schemas';
 
 import { sortBy } from 'remeda';
 import semver from 'semver';
@@ -47,16 +47,25 @@ export const buildRelease = ({
   };
 };
 
+const withRelease = (releases: ModpackReleaseIndex['releases'], release: ModpackRelease): ModpackReleaseIndex['releases'] => {
+  const previous = releases.find((candidate) => candidate.version === release.version);
+  const others = releases.filter((candidate) => candidate.version !== release.version);
+
+  return [...others, { ...release, publishedAt: previous?.publishedAt ?? release.publishedAt }].toSorted((left, right) =>
+    semver.rcompare(left.version, right.version)
+  );
+};
+
 export const mergeReleaseIndex = ({ index, release, manager }: MergeReleaseIndexInput): ModpackReleaseIndex => {
-  const previous = index.releases.find((candidate) => candidate.version === release.version);
-  const others = index.releases.filter((candidate) => candidate.version !== release.version);
-  const managerPublishedAt = index.manager?.version === manager.version ? index.manager.publishedAt : manager.publishedAt;
+  if (!release && !manager) {
+    throw new Error('Nothing to merge: pass a modpack release, a manager release or both');
+  }
 
   return {
     schemaVersion: index.schemaVersion,
-    releases: [...others, { ...release, publishedAt: previous?.publishedAt ?? release.publishedAt }].toSorted((left, right) =>
-      semver.rcompare(left.version, right.version)
-    ),
-    manager: { ...manager, publishedAt: managerPublishedAt }
+    releases: release ? withRelease(index.releases, release) : index.releases,
+    manager: manager
+      ? { ...manager, publishedAt: index.manager?.version === manager.version ? index.manager.publishedAt : manager.publishedAt }
+      : index.manager
   };
 };

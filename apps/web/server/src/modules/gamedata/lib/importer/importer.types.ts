@@ -129,7 +129,10 @@ export type CrewSkillRow = Pick<CrewSkill, 'isCommon' | 'name' | 'roles' | 'skil
   data: Record<string, unknown>;
 };
 
-export type ArenaRow = Pick<Arena, 'arenaId' | 'modes' | 'name' | 'slug'> & {
+export type LocalizedArenaFields = Partial<Pick<Arena, 'description' | 'name'>>;
+
+export type ArenaRow = Pick<Arena, 'arenaId' | 'description' | 'descriptionKey' | 'modes' | 'name' | 'nameEn' | 'nameKey' | 'slug'> & {
+  localized: LocalizedArenaFields;
   camouflageType?: string;
   sizeMeters: number;
   image: string;
@@ -168,6 +171,11 @@ export type BuildVehicleRowsInput = {
 
 export type LocalizeVehicleInput = {
   vehicle: VehicleSpec;
+  messages?: LocalizedMessages;
+};
+
+export type LocalizeArenaInput = {
+  arena: GameData['arenas'][number];
   messages?: LocalizedMessages;
 };
 

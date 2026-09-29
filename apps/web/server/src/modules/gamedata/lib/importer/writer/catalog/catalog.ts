@@ -149,12 +149,18 @@ export const writeCatalog = async ({ prisma, plan }: Omit<PlanWriteInput, 'gameV
       )
   });
 
+  const arenasWithEnglish = new Set(
+    (await prisma.arena.findMany({ where: { nameEn: { not: null } }, select: { arenaId: true } })).map(({ arenaId }) => arenaId)
+  );
+
   const arenas = await inBatches({
     items: plan.arenas,
     run: (batch) =>
       prisma.$transaction(
         batch.map((row) => {
           const fields = {
+            nameKey: row.nameKey,
+            descriptionKey: row.descriptionKey,
             camouflageType: row.camouflageType ?? null,
             sizeMeters: row.sizeMeters,
             modes: row.modes,
@@ -162,10 +168,12 @@ export const writeCatalog = async ({ prisma, plan }: Omit<PlanWriteInput, 'gameV
             data: toStoredJson(row.data)
           };
 
+          const update = { ...fields, ...row.localized };
+
           return prisma.arena.upsert({
             where: { arenaId: row.arenaId },
-            create: { arenaId: row.arenaId, name: row.name, slug: row.slug, ...fields },
-            update: fields
+            create: { arenaId: row.arenaId, name: row.name, nameEn: row.nameEn, description: row.description, slug: row.slug, ...fields },
+            update: arenasWithEnglish.has(row.arenaId) ? update : { ...update, nameEn: row.nameEn }
           });
         })
       )

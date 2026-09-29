@@ -83,6 +83,28 @@ describe('createImportPlan', () => {
     expect(find(plan.provisions, modification?.provisionId)).toMatchObject({ localized: {} });
   });
 
+  it('names arenas from the arenas localization and keeps the geometry name as the English fallback', () => {
+    const [arena] = data.arenas;
+    const messages = { [arena?.nameKey ?? '']: 'Карелия', [arena?.descriptionKey ?? '']: 'Скалистые холмы' };
+    const [row] = createImportPlan({ data, messages }).arenas;
+
+    expect(importLocalizationKeys(data)).toEqual(expect.arrayContaining([arena?.nameKey, arena?.descriptionKey]));
+
+    expect(row).toMatchObject({
+      name: 'Карелия',
+      nameEn: arena?.displayName,
+      description: 'Скалистые холмы',
+      nameKey: arena?.nameKey,
+      localized: { name: 'Карелия', description: 'Скалистые холмы' }
+    });
+  });
+
+  it('falls back to the geometry name for an arena without a message and marks nothing as localized', () => {
+    const [arena] = data.arenas;
+
+    expect(plan.arenas[0]).toMatchObject({ name: arena?.displayName, nameEn: arena?.displayName, description: null, localized: {} });
+  });
+
   it('points provision icons at the Lesta GUI assets mirror', () => {
     const pair = data.postProgression.modifications.find((item) => item.imgName !== undefined);
     const device = data.optionalDevices.find((item) => item.icon !== undefined);

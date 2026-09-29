@@ -18,8 +18,24 @@ import s from './ReplayBrowser.module.scss';
 export const ReplayBrowser = () => {
   const t = useTranslations('replays.list');
   const titleId = useId();
-  const { tab, isSignedIn, isMine, query, total, pager, isFiltered, isPaging, empty, columns, vehicleOf, setTab, resetFilters, goPrev, goNext } =
-    useReplayBrowser();
+  const {
+    tab,
+    isSignedIn,
+    isMine,
+    query,
+    total,
+    pager,
+    isFiltered,
+    isPaging,
+    empty,
+    columns,
+    vehicleOf,
+    mapNameOf,
+    setTab,
+    resetFilters,
+    goPrev,
+    goNext
+  } = useReplayBrowser();
 
   return (
     <Card aria-labelledby={titleId} className={s.root} padding='none'>
@@ -63,7 +79,7 @@ export const ReplayBrowser = () => {
             data={items}
             density='media'
             getRowId={(row) => row.id}
-            getRowLink={(row) => ({ href: ROUTES.replays.detail(row.id), label: row.mapName ?? row.arenaId ?? t('unknownMap') })}
+            getRowLink={(row) => ({ href: ROUTES.replays.detail(row.id), label: mapNameOf(row) ?? t('unknownMap') })}
             renderCard={(row) => <ReplayCard replay={row} vehicle={vehicleOf(row)} />}
           />
         )}

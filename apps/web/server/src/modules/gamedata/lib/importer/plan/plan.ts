@@ -3,7 +3,6 @@ import type { FinalStats } from '@otmetki/gamedata';
 import { calculateLoadout } from '@otmetki/gamedata';
 
 import type {
-  ArenaRow,
   CreateImportPlanInput,
   CrewRoleRow,
   CrewSkillRow,
@@ -14,10 +13,10 @@ import type {
   TryLoadoutInput
 } from '../importer.types';
 
-import { errorMessage, slugify } from '../../../../../common/lib';
-import { minimapUrl } from '../../source';
+import { errorMessage } from '../../../../../common/lib';
 import { ENTRY_KIND, PROFILE } from '../importer.constants';
 import { profileStats, summarizeVehicle } from '../summary';
+import { arenaLocalizationKeys, buildArenaRows } from './arena-rows';
 import { buildModuleRows } from './module-rows';
 import { buildProvisionRows, provisionLocalizationKeys } from './provision-rows';
 import { buildVehicleRows } from './vehicle-rows';
@@ -34,7 +33,8 @@ const tryLoadout = ({ vehicle, preset, warnings }: TryLoadoutInput): FinalStats 
 
 export const importLocalizationKeys = (data: CreateImportPlanInput['data']): (string | undefined)[] => [
   ...data.vehicles.flatMap((vehicle) => [vehicle.nameKey, vehicle.shortNameKey, vehicle.descriptionKey]),
-  ...provisionLocalizationKeys(data)
+  ...provisionLocalizationKeys(data),
+  ...arenaLocalizationKeys(data)
 ];
 
 export const createImportPlan = ({ data, messages }: CreateImportPlanInput): ImportPlan => {
@@ -76,17 +76,6 @@ export const createImportPlan = ({ data, messages }: CreateImportPlanInput): Imp
     data: { ...skill }
   }));
 
-  const arenas: ArenaRow[] = data.arenas.map((arena) => ({
-    arenaId: arena.arenaId,
-    name: arena.displayName,
-    slug: slugify(arena.arenaId),
-    camouflageType: arena.camouflageKind,
-    sizeMeters: arena.sizeMeters,
-    modes: arena.gameplayTypes,
-    image: minimapUrl({ sourceId: data.revision.sourceId, path: arena.minimapImage }),
-    data: { ...arena }
-  }));
-
   const entries: EntryRow[] = [
     { kind: ENTRY_KIND.meta, key: 'revision', data: { ...data.revision, version, warnings: warnings.length } },
     ...data.vehicles.map((vehicle) => ({ kind: ENTRY_KIND.vehicle, key: vehicle.tag, data: vehicle })),
@@ -111,7 +100,7 @@ export const createImportPlan = ({ data, messages }: CreateImportPlanInput): Imp
     provisions: buildProvisionRows({ data, messages }),
     crewRoles,
     crewSkills,
-    arenas,
+    arenas: buildArenaRows({ data, messages }),
     entries,
     summaries,
     warnings

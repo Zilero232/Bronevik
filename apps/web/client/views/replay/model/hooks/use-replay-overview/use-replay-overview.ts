@@ -3,7 +3,7 @@
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { vehicleIndex } from '@/entities/tank/tank';
-import { useReplayModeLabel } from '@/features/community/replay-meta';
+import { useReplayMapName, useReplayModeLabel } from '@/features/community/replay-meta';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
 import { minutesClock, safeWebHref } from '@/shared/lib';
 
@@ -14,13 +14,14 @@ export const useReplayOverview = () => {
   const t = useTranslations('replays.detail');
   const format = useFormatter();
   const modeLabel = useReplayModeLabel();
+  const mapNameOf = useReplayMapName();
   const { data: catalog } = useVehicleCatalog();
 
   const vehicles = vehicleIndex(catalog);
   const owner = replay.owner;
 
   return {
-    title: replay.mapName ?? replay.arenaId ?? t('untitled'),
+    title: mapNameOf(replay) ?? t('untitled'),
     vehicle: owner ? (vehicles[owner.tankId] ?? null) : null,
     owner,
     mode: replay.battleType,

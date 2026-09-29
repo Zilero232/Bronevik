@@ -5,7 +5,6 @@ import { useId } from 'react';
 
 import { Card, CardBody, CardHeader, EmptyState, QueryState, Skeleton } from '@/ui-kit';
 
-import { useReplay } from '../../../model/context';
 import { useReplayHeatmap } from '../../../model/hooks';
 import { HeatmapControls } from './components';
 
@@ -13,14 +12,13 @@ import s from './ReplayHeatmap.module.scss';
 
 export const ReplayHeatmap = () => {
   const t = useTranslations('replays.heatmap');
-  const replay = useReplay();
   const titleId = useId();
   const format = useFormatter();
-  const { hasArena, hasReplayMode, modeChoice, scope, levels, query, setModeChoice, setScope } = useReplayHeatmap();
+  const { mapName, hasArena, hasReplayMode, modeChoice, scope, levels, query, setModeChoice, setScope } = useReplayHeatmap();
 
   return (
     <Card aria-labelledby={titleId} padding='none'>
-      <CardHeader meta={replay.mapName ?? replay.arenaId} title={<span id={titleId}>{t('title')}</span>} />
+      <CardHeader meta={mapName} title={<span id={titleId}>{t('title')}</span>} />
       <CardBody className={s.body}>
         {!hasArena && <EmptyState isCompact description={t('noArenaDescription')} title={t('noArenaTitle')} />}
         {hasArena && (
@@ -42,12 +40,7 @@ export const ReplayHeatmap = () => {
             >
               {({ gridSize, samples, cells, gridLines }) => (
                 <figure className={s.figure}>
-                  <svg
-                    aria-label={t('chartLabel', { map: replay.mapName ?? replay.arenaId ?? '' })}
-                    className={s.map}
-                    role='img'
-                    viewBox={`0 0 ${gridSize} ${gridSize}`}
-                  >
+                  <svg aria-label={t('chartLabel', { map: mapName ?? '' })} className={s.map} role='img' viewBox={`0 0 ${gridSize} ${gridSize}`}>
                     <rect className={s.ground} height={gridSize} width={gridSize} x={0} y={0} />
                     {cells.map((cell) => (
                       <rect key={`${cell.x}-${cell.y}`} className={s.cell} data-level={cell.level} height={1} width={1} x={cell.x} y={cell.y} />

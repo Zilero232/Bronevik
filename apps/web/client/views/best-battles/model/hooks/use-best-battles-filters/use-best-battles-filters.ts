@@ -3,7 +3,7 @@
 import type { VehicleSummary } from '@otmetki/schemas';
 
 import { useQuery } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { sortBy } from 'remeda';
 
 import type { BestBattleMetric, BestBattlePeriod } from '@/entities/battle/best-battle';
@@ -20,9 +20,10 @@ import { useBestBattlesState } from '../use-best-battles-state';
 
 export const useBestBattlesFilters = () => {
   const t = useTranslations('bestBattles');
+  const locale = useLocale();
   const [state, setState] = useBestBattlesState();
   const catalog = useVehicleCatalog();
-  const maps = useQuery(mapQueries.list());
+  const maps = useQuery(mapQueries.localizedList(locale));
   const facets = useQuery({
     queryKey: QUERY_KEYS.bestBattles.facets(state.period),
     queryFn: ({ signal }) => getBestBattleFacets({ period: state.period, signal }),

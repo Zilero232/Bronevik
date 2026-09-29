@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 import type { SelectItem } from '@/ui-kit';
 
@@ -12,8 +12,9 @@ import { boardModeOptions, findBoardMap } from '../../../lib/board-settings';
 
 export const useTacticMaps = () => {
   const t = useTranslations('tactics.settings');
+  const locale = useLocale();
   const labels = useMapLabels();
-  const { data: maps = [], isPending } = useQuery(mapQueries.list());
+  const { data: maps = [], isPending } = useQuery(mapQueries.localizedList(locale));
 
   const none: SelectItem = { value: BOARD_SETTINGS.none, label: t('none') };
   const mapItems: SelectItem[] = [none, ...maps.map(({ arenaId, name }) => ({ value: arenaId, label: name }))];

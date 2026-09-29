@@ -39,7 +39,7 @@ export const useGuideEditorForm = (guide: Guide | null) => {
   const [kind, tankId, arenaId, title] = useWatch({ control: form.control, name: ['kind', 'tankId', 'arenaId', 'title'] });
 
   const { data: maps } = useQuery({
-    ...mapQueries.list(),
+    ...mapQueries.localizedList(locale),
     enabled: kind === 'map'
   });
 

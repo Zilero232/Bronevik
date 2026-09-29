@@ -5,7 +5,7 @@ import type { ReplayTag, VehicleSummary } from '@otmetki/schemas';
 
 import { REPLAY_MASTERY_LEVELS, REPLAY_TAG_RULES, REPLAY_TAGS } from '@otmetki/schemas';
 import { useQuery } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { sortBy } from 'remeda';
 
 import type { SelectItem } from '@/ui-kit';
@@ -25,11 +25,12 @@ import { useReplayFilters } from '../use-replay-filters';
 
 export const useReplayFilterPanel = () => {
   const t = useTranslations('replays.filters');
+  const locale = useLocale();
   const tTags = useTranslations('replays.tags');
   const modeLabel = useReplayModeLabel();
   const { filters, playerDraft, clanDraft, update, reset } = useReplayFilters();
   const catalog = useVehicleCatalog();
-  const maps = useQuery(mapQueries.list());
+  const maps = useQuery(mapQueries.localizedList(locale));
   const versions = useQuery(replayVersionsQuery());
 
   const mapList = maps.data ?? [];

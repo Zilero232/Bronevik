@@ -6,7 +6,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import type { Replay } from '@/entities/replay/replay';
 import type { TableColumn } from '@/ui-kit';
 
-import { ReplayResultBadge, useReplayModeLabel } from '@/features/community/replay-meta';
+import { ReplayResultBadge, useReplayMapName, useReplayModeLabel } from '@/features/community/replay-meta';
 import { ROUTES } from '@/shared/constants';
 import { RelativeTime } from '@/ui-kit';
 
@@ -20,6 +20,7 @@ export const useReplayColumns = (): TableColumn<Replay>[] => {
   const format = useFormatter();
   const modeLabel = useReplayModeLabel();
   const vehicleOf = useReplayVehicle();
+  const mapNameOf = useReplayMapName();
   const numberOrDash = (value: number | null) => (value === null ? '—' : format.number(value));
 
   return [
@@ -36,7 +37,7 @@ export const useReplayColumns = (): TableColumn<Replay>[] => {
         <ReplayMapCell
           href={ROUTES.replays.detail(original.id)}
           isFailed={original.status === 'failed'}
-          mapName={original.mapName ?? original.arenaId ?? t('unknownMap')}
+          mapName={mapNameOf(original) ?? t('unknownMap')}
           mode={original.battleType}
           modeLabel={original.battleType ? modeLabel(original.battleType) : null}
           statusLabel={original.status === 'parsed' ? null : t(`status.${original.status}`)}

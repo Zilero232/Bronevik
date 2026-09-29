@@ -20,7 +20,10 @@
     "**/index.ts",
     "**/shared/i18n/locales/**",
     "**/shared/api/openapi/**",
-    "**/sdk/openapi/**"
+    "**/sdk/openapi/**",
+    "**/vendor/**",
+    "**/fixtures/**",
+    "**/*.fixtures.ts"
   ],
   "gitignore": true,
   "absolute": false

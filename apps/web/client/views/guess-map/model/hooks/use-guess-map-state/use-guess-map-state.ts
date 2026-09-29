@@ -5,7 +5,7 @@ import type { MapSummary } from '@otmetki/schemas';
 import { useQuery } from '@tanstack/react-query';
 import { useLocale } from 'next-intl';
 
-import { localizedMap, mapQueries } from '@/entities/map/map';
+import { mapQueries } from '@/entities/map/map';
 import { activeStreak, puzzleNumber, recordResult, useDailyStorage, usePuzzleDay } from '@/entities/play/daily-puzzle';
 
 import type { GuessMapState } from '../../context';
@@ -16,16 +16,7 @@ import { compareMaps } from '../../../lib/map-hints';
 
 export const useGuessMapState = (): GuessMapState => {
   const locale = useLocale();
-  const {
-    data: maps = [],
-    isLoading,
-    isError,
-    isFetching,
-    refetch
-  } = useQuery({
-    ...mapQueries.list(),
-    select: (list) => list.map((map) => localizedMap({ map, locale }))
-  });
+  const { data: maps = [], isLoading, isError, isFetching, refetch } = useQuery(mapQueries.localizedList(locale));
 
   const { day, refreshDay } = usePuzzleDay();
   const { guessIds, streak, setBoard, setStreak } = useDailyStorage<string>({

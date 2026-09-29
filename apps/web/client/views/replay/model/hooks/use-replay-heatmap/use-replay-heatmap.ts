@@ -4,6 +4,7 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
 import { getHeatmap } from '@/entities/replay/replay';
+import { useReplayMapName } from '@/features/community/replay-meta';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { HeatmapModeChoice, HeatmapScope } from './use-replay-heatmap.types';
@@ -14,6 +15,7 @@ import { useReplay } from '../../context';
 
 export const useReplayHeatmap = () => {
   const replay = useReplay();
+  const mapNameOf = useReplayMapName();
   const [modeChoice, setModeChoice] = useState<HeatmapModeChoice>('replay');
   const [scope, setScope] = useState<HeatmapScope>(HEATMAP_VIEW.allScope);
 
@@ -35,6 +37,7 @@ export const useReplayHeatmap = () => {
   });
 
   return {
+    mapName: mapNameOf(replay),
     hasArena: replay.arenaId !== null,
     hasReplayMode: replay.battleType !== null,
     modeChoice,

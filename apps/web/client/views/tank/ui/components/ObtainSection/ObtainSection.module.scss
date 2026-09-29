@@ -33,37 +33,6 @@
   margin: 0;
 }
 
-.block {
-  @include stack(var(--space-1));
-}
-
-.title {
-  @include label;
-
-  margin: 0;
-}
-
-.list {
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
-.row {
-  @include data-list-row;
-
-  justify-content: space-between;
-  font-size: var(--text-sm);
-  gap: var(--space-3);
-}
-
-.value {
-  @include numeric;
-
-  flex-shrink: 0;
-  color: var(--color-text-muted);
-}
-
 .note {
   @include source-line;
 

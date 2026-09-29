@@ -22,6 +22,17 @@ $accent-tones: (
   margin-inline: auto;
 }
 
+@mixin page($gap: var(--space-5), $top: var(--space-7)) {
+  @include shell;
+  @include stack($gap);
+
+  padding-block: $top var(--space-8);
+
+  @include below(md) {
+    padding-top: var(--space-5);
+  }
+}
+
 @mixin panel {
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-sm);

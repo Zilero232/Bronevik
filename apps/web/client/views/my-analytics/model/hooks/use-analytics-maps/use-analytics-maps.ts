@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import { useMapLabels } from '@/entities/map/map';
+import { useMapLabels, useMapNameOf } from '@/entities/map/map';
 import { getAnalyticsMaps } from '@/entities/player/analytics';
 import { QUERY_KEYS } from '@/shared/constants';
 
@@ -14,6 +14,7 @@ import { useMapsColumns } from '../use-maps-columns';
 export const useAnalyticsMaps = () => {
   const t = useTranslations('analytics.maps');
   const labels = useMapLabels();
+  const mapNameOf = useMapNameOf();
   const { account, period } = useAnalyticsFilters();
   const { data, status, isRetrying, retry } = useAnalyticsQuery({
     queryKey: QUERY_KEYS.me.analytics.maps({ account, period }),
@@ -25,7 +26,7 @@ export const useAnalyticsMaps = () => {
   const rowsColumns = useMapRowsColumns();
 
   const names = new Map((data?.maps ?? []).map((map) => [map.arenaId, labels.name(map.name)]));
-  const nameOf = (arenaId: string) => names.get(arenaId) ?? labels.name(null);
+  const nameOf = (arenaId: string) => mapNameOf(arenaId) ?? names.get(arenaId) ?? labels.name(null);
 
   return {
     data,

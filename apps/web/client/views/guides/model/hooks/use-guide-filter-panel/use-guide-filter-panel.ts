@@ -3,7 +3,7 @@
 import type { VehicleSummary } from '@otmetki/schemas';
 
 import { useQuery } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { sortBy } from 'remeda';
 
 import { mapQueries, useMapLabels } from '@/entities/map/map';
@@ -18,11 +18,12 @@ import { useGuideFilters } from '../use-guide-filters';
 
 export const useGuideFilterPanel = () => {
   const t = useTranslations('guides');
+  const locale = useLocale();
   const labels = useMapLabels();
   const { filters, setKind, setTank, setMap, setSort, reset } = useGuideFilters();
   const { data: catalog } = useVehicleCatalog();
   const { data: maps } = useQuery({
-    ...mapQueries.list(),
+    ...mapQueries.localizedList(locale),
     enabled: filters.kind === 'map' || filters.map !== null
   });
 

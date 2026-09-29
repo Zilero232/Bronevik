@@ -1,9 +1,8 @@
-import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { SectionHeader } from '@/ui-kit';
+import { FaqList, SectionHeader } from '@/ui-kit';
 
 import { MOD_FAQ } from '../../../config';
 
@@ -15,14 +14,12 @@ export const ModFaq = () => {
   return (
     <section className={s.root}>
       <SectionHeader title={t('title')} variant='display' />
-      <div className={s.list}>
-        {MOD_FAQ.map((id) => (
-          <details key={id} className={s.item}>
-            <summary className={s.question}>
-              {t(`items.${id}.question`)}
-              <ChevronDown aria-hidden className={s.chevron} size={16} />
-            </summary>
-            <p className={s.answer}>
+      <FaqList
+        items={MOD_FAQ.map((id) => ({
+          id,
+          question: t(`items.${id}.question`),
+          answer: (
+            <>
               {t(`items.${id}.answer`)}
               {id === 'replays' && (
                 <Link className={s.link} href={ROUTES.replays.list}>
@@ -34,10 +31,10 @@ export const ModFaq = () => {
                   {t('accountLink')}
                 </Link>
               )}
-            </p>
-          </details>
-        ))}
-      </div>
+            </>
+          )
+        }))}
+      />
     </section>
   );
 };

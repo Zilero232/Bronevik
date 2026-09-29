@@ -1,0 +1,1 @@
+export { FeaturedLink } from './FeaturedLink';

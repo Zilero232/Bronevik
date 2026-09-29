@@ -7,7 +7,7 @@ import { Card, CardHeader } from '@/ui-kit';
 
 import { TANK_PAGE, TANK_SECTIONS } from '../../../config';
 import { useObtainSection } from '../../../model/hooks';
-import { ObtainEditorial, ObtainLinks, ObtainMissions, ReturnAlert } from './components';
+import { ObtainEditorial, ObtainLinks, ObtainList, ObtainMissions, ReturnAlert } from './components';
 
 import s from './ObtainSection.module.scss';
 
@@ -38,17 +38,14 @@ export const ObtainSection = () => {
           </p>
         )}
         {obtain.researchFrom.length > 0 && (
-          <div className={s.block}>
-            <h3 className={s.title}>{t('researchFrom')}</h3>
-            <ul className={s.list}>
-              {obtain.researchFrom.map(({ vehicle, xp }) => (
-                <li key={vehicle.tankId} className={s.row}>
-                  <TankLink image={TANK_PAGE.researchImage} vehicle={vehicle} />
-                  {xp !== null && <span className={s.value}>{t('xp', { value: format.number(xp) })}</span>}
-                </li>
-              ))}
-            </ul>
-          </div>
+          <ObtainList
+            rows={obtain.researchFrom.map(({ vehicle, xp }) => ({
+              key: vehicle.tankId,
+              label: <TankLink image={TANK_PAGE.researchImage} vehicle={vehicle} />,
+              value: xp === null ? null : t('xp', { value: format.number(xp) })
+            }))}
+            title={t('researchFrom')}
+          />
         )}
         {missions.length > 0 && <ObtainMissions items={missions} />}
         {editorial.length > 0 && <ObtainEditorial items={editorial} />}

@@ -130,9 +130,11 @@ const messages = localeReader
 const plan = createImportPlan({ data, messages });
 const localizedVehicles = plan.vehicles.filter((vehicle) => vehicle.localized.name !== undefined).length;
 const localizedProvisions = plan.provisions.filter((provision) => provision.localized.name !== undefined).length;
+const localizedArenas = plan.arenas.filter((arena) => arena.localized.name !== undefined).length;
 
 console.log(
-  `→ localization: ${localizedVehicles} of ${plan.vehicles.length} vehicle names, ${localizedProvisions} of ${plan.provisions.length} provision names ` +
+  `→ localization: ${localizedVehicles} of ${plan.vehicles.length} vehicle names, ${localizedProvisions} of ${plan.provisions.length} provision names, ` +
+    `${localizedArenas} of ${plan.arenas.length} map names ` +
     `from ${localeReader?.revision.repo ?? 'nowhere'}`
 );
 

@@ -4,6 +4,23 @@ export const HUD_PROTOCOL = {
   mouseEvents: ['hover', 'down', 'wheel'],
   kinds: ['label', 'button'],
   widgetVersion: 1,
-  tones: ['text', 'muted', 'ally', 'enemy', 'gold', 'accent', 'radio', 'track', 'stun', 'blocked', 'received', 'success', 'warning', 'good', 'bad'],
+  tones: [
+    'text',
+    'muted',
+    'dim',
+    'ally',
+    'enemy',
+    'gold',
+    'accent',
+    'radio',
+    'track',
+    'stun',
+    'blocked',
+    'received',
+    'success',
+    'warning',
+    'good',
+    'bad'
+  ],
   scale: { min: 0.5, max: 3, step: 0.1 }
 } as const;

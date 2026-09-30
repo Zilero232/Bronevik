@@ -20,7 +20,7 @@ export const useSectionPage = ({ section, columns }: UseSectionPageInput) => {
     enabled: all.filter(isEnabled).length,
     empty: all.length === 0,
     filteredEmpty: all.length > 0 && shown.length === 0,
-    showFilter: all.some(({ context }) => context === 'hangar') && all.some(({ context }) => context === 'battle'),
+    showFilter: new Set(all.map(({ context }) => context)).size > 1,
     context: view.context,
     contextItems: CONTEXT_CHOICES.map((choice) => ({ value: choice.value, label: t(choice.label) })),
     setContext: (context: ContextFilter) => setContextFilter(context),

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { clampRect, dragRect, dragTo, moveMessage, panelRect, placementOf, stageScale } from '../hud-geometry';
+import { clampRect, dragRect, dragTo, moveMessage, panelRect, pastSlop, placementOf, stageScale } from '../hud-geometry';
 
 const SCREEN = { width: 1920, height: 1080 };
 const STAGE = { width: 640, height: 360 };
@@ -102,5 +102,19 @@ describe(moveMessage, () => {
     const message = moveMessage({ id: 'damage_log', rect: TOP_RIGHT_RECT, screen: SCREEN });
 
     expect(message).toEqual({ type: 'hud_move', panel: 'damage_log', x: -20, y: 30, align_x: 'right', align_y: 'top' });
+  });
+});
+
+describe(pastSlop, () => {
+  it('keeps a pointer within the slop a press', () => {
+    const isPast = pastSlop({ from: { x: 100, y: 100 }, to: { x: 103, y: 104 }, slop: 5 });
+
+    expect(isPast).toBe(false);
+  });
+
+  it('counts the slop along the diagonal', () => {
+    const isPast = pastSlop({ from: { x: 100, y: 100 }, to: { x: 104, y: 104 }, slop: 5 });
+
+    expect(isPast).toBe(true);
   });
 });

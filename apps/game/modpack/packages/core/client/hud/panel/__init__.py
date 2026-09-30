@@ -5,7 +5,7 @@ from ....log import log
 from ....vendor import attr
 from ...battle import BattleHooks
 from ...component import FeatureComponent
-from .. import hud_layer, stock_control
+from .. import hud_layer, panel_report, stock_control
 from ..modes import current_mode
 from ..stock.constants import EXTENDED_INFO_EVENT
 
@@ -46,9 +46,11 @@ class BattlePanel(FeatureComponent):
     def __init__(self, app, spec):
         self.hud = hud_layer(app)
         self.stock = stock_control(app)
+        self.report = panel_report(app)
         self.spec = spec
         self.running = False
         FeatureComponent.__init__(self, app, spec.panel_id, spec.schema, spec.switch, spec.strings)
+        self.report.track(spec.panel_id, self.enabled)
         self.hooks = BattleHooks()
         self.preview = HudPreview(
             self.hud,
@@ -75,6 +77,7 @@ class BattlePanel(FeatureComponent):
         if mode != self.hud.mode:
             log('HUD: battle type %s' % mode)
         self.hud.enter_mode(mode)
+        self.wait(None)
         if self.enabled() and self.hud.allows(self.component_id):
             self.running = True
             self.start(*args)
@@ -127,6 +130,11 @@ class BattlePanel(FeatureComponent):
 
     def hide(self):
         self.hud.hide(self.component_id)
+
+    def wait(self, reason):
+        """Say why the panel shows nothing (None: it will show, or has nothing to explain); the battle's HUD report
+        logs it."""
+        self.report.note(self.component_id, reason)
 
     def start(self, *args):
         pass

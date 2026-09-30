@@ -26,7 +26,7 @@ DEFAULTS = {
     'color': COLOR_WARN,
     'icon_set': 'lamp',
     'icon': '',
-    'icon_size': 64,
+    'icon_size': 56,
     'pulse': True,
     'lamp_sound': NATIVE,
     'sound_event': '',

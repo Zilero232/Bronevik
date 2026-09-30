@@ -27,6 +27,10 @@ FLAGS = ('bonus', 'boosted', 'attention', 'active', 'used')
 
 PREVIEW_SIZE = (400, 60)
 
+# The log line of a battle's first read and of every read that finds something else.
+SUMMARY = 'battle_loadout: %d devices, %d directives, icons found %d'
+SUMMARY_EMPTY = 'battle_loadout: nothing to show, %s'
+
 KIND = 'battle_loadout'
 PREVIEW_DEVICES = [
     {

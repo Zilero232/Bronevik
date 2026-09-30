@@ -266,6 +266,10 @@ def install_gameface_stubs(test):
     module('openwg_gameface', ModDynAccessor=lambda key: (lambda: 'layout:' + key), gf_mod_inject=inject)
 
 
+def card_of(state, component_id):
+    return [item for item in state['components'] if item['id'] == component_id][0]
+
+
 class UiSmokeTest(unittest.TestCase):
 
     def setUp(self):
@@ -462,6 +466,52 @@ class UiSmokeTest(unittest.TestCase):
 
             assert self.core.applied[-1]['arcade']['custom'] == 3
             assert self.core.applied[-1]['arcade']['net'] == 0
+
+    def test_a_fresh_install_writes_the_recommended_reticle_once_and_keeps_the_old_one(self):
+        for seed in LOAD_ORDER_SEEDS:
+            self.restart()
+
+            app = self.open_hangar(seed)
+
+            assert self.core.values['arcade']['net'] == 0
+            assert app.state['native_backup']['crosshair']['settings']['arcade'] == {'net': 100, 'custom': 3}
+            assert app.state['native_initial_applied']['crosshair'] == 3
+
+    def test_the_hangar_again_writes_nothing_more(self):
+        self.open_hangar(0)
+        written = len(self.core.applied)
+
+        self.events.onAccountShowGUI()
+
+        assert len(self.core.applied) == written
+
+    def test_restore_writes_the_old_reticle_back_and_leaves_it_to_the_game(self):
+        app = self.open_window(0)
+
+        self.send(type='action', component='crosshair', action='native_restore')
+
+        crosshair = card_of(self.state(), 'crosshair')
+        assert self.core.values['arcade'] == {'net': 100, 'custom': 3}
+        assert [field['value'] for field in crosshair['fields'] if field['key'] == 'preset'] == ['native']
+        assert 'crosshair' not in app.state['native_backup']
+
+    def test_after_a_restore_the_card_offers_the_recommended_reticle(self):
+        self.open_window(0)
+
+        self.send(type='action', component='crosshair', action='native_restore')
+
+        actions = card_of(self.state(), 'crosshair')['actions']
+        assert [action['id'] for action in actions] == ['native_recommended']
+
+    def test_an_existing_install_writes_no_client_setting(self):
+        config_dir = os.path.join(self.game_dir, 'mods', 'configs', 'otmetki')
+        os.makedirs(config_dir)
+        with open(os.path.join(config_dir, 'config.json'), 'w') as handle:
+            json.dump({'enabled': True}, handle)
+
+        self.open_hangar(0)
+
+        assert self.core.applied == []
 
     def test_a_companion_switch_reaches_the_app_config(self):
         for seed in LOAD_ORDER_SEEDS:

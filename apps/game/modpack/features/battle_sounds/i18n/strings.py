@@ -13,6 +13,8 @@ STRINGS = {
         'battle_sounds_first_blood': u'Первая кровь',
         'battle_sounds_own_frag': u'Вы уничтожили танк',
         'battle_sounds_own_death': u'Ваш танк уничтожен',
+        'battle_sounds_own_crit': u'Вы повредили модуль врага',
+        'battle_sounds_stock_alerts': u'Громче стандартные сигналы: пожар и крит, если своего звука нет',
         'battle_sounds_cooldown_s': u'Пауза между повторами, с',
     },
     'en': {
@@ -26,6 +28,8 @@ STRINGS = {
         'battle_sounds_first_blood': u'First blood',
         'battle_sounds_own_frag': u'You destroyed a tank',
         'battle_sounds_own_death': u'Your tank is destroyed',
+        'battle_sounds_own_crit': u'You damaged an enemy module',
+        'battle_sounds_stock_alerts': u'Louder stock alerts: fire and crits, when no sound of your own is set',
         'battle_sounds_cooldown_s': u'Pause between repeats, s',
     },
 }

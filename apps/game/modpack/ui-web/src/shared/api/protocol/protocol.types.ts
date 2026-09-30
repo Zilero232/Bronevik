@@ -4,6 +4,7 @@ import type {
   actionSchema,
   componentSchema,
   detailSchema,
+  editorSchema,
   feedSchema,
   fieldSchema,
   figureSchema,
@@ -26,6 +27,7 @@ export type UiFeedItem = NonNullable<UiFeed['items']>[number];
 export type UiStatus = z.infer<typeof statusSchema>;
 export type UiComponent = z.infer<typeof componentSchema>;
 export type UiField = z.infer<typeof fieldSchema>;
+export type UiEditor = z.infer<typeof editorSchema>;
 export type UiAction = z.infer<typeof actionSchema>;
 export type UiPage = z.infer<typeof pageSchema>;
 export type UiRow = z.infer<typeof rowSchema>;

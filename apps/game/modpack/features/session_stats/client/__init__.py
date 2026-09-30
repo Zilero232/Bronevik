@@ -2,17 +2,41 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import time
 
-from ....core.client.me import can_read, post_signed
+from ....core.client.component import FeatureComponent
+from ....core.client.game import vehicle_short_name
+from ....core.client.me import SignedRead, can_read, post_signed, signed_body, signed_read
+from ....core.client.sound import play_mp3
 from ....core.errors import ReasonError
 from ....core.hud import HangarLabel
-from ....core.events import EVENT_COMPONENT_SETTINGS
 from ....core.log import log
-from .. import FEATURE_ID
+from ....core.moe import rating_change, rating_to_percent
 from ..i18n import STRINGS
-from ..model import SessionAggregator, format_session_panel, format_session_plain, session_widget
+from ..model import (
+    Announced,
+    SessionAggregator,
+    SessionMoe,
+    SessionView,
+    SiteData,
+    format_session_panel,
+    format_session_plain,
+    goal_done_notice,
+    parse_goals,
+    parse_overview,
+    session_widget,
+)
 from ..model.constants import (
+    ACTION_REFRESH,
     ACTION_RESET,
     ACTION_SHARE,
+    ACTION_SITE,
+    GOAL_SOUND,
+    GOALS_KEY,
+    GOALS_PATH,
+    GOALS_STATE_KEY,
+    MOE_ROWS,
+    MOE_STATE_KEY,
+    OVERVIEW_KEY,
+    OVERVIEW_PATH,
     SHARE_PATH,
     SHARE_REFUSED,
     SHARE_REFUSED_NOTICE,
@@ -20,6 +44,7 @@ from ..model.constants import (
     SHARE_SEND_PATH,
     SHARE_STATE_KEY,
     SHARE_SYNCED,
+    SITE_PATH,
 )
 from ..model.share import (
     preference_body,
@@ -29,20 +54,25 @@ from ..model.share import (
     send_body,
     send_failure_key,
 )
-from ..settings import IDLE_MINUTES, SHARE, SHARE_CHANNEL, SWITCH
+from ..settings import IDLE_MINUTES, SCHEMA, SECTION, SHARE, SHARE_CHANNEL, SWITCH
 from .constants import HANGAR_PANEL, LAYOUT, SENT_STATUSES, STATE_KEY
 
 
-class SessionStats(object):
+class SessionStats(FeatureComponent):
 
     def __init__(self, app):
-        self.app = app
+        FeatureComponent.__init__(self, app, SECTION, SCHEMA, SWITCH, STRINGS)
         self.label = HangarLabel(app, HANGAR_PANEL)
-        app.translate.catalog.add(STRINGS)
 
         self.session = SessionAggregator(idle_seconds=app.config.get(IDLE_MINUTES) * 60)
         self.session.load(app.state.get(STATE_KEY))
         app.register_state(STATE_KEY, self.session.to_dict)
+        self.moe = SessionMoe(app.state.get(MOE_STATE_KEY))
+        app.register_state(MOE_STATE_KEY, self.moe.to_dict)
+
+        self.site = SiteData(app.account_id)
+        self.announced = Announced(app.state.get(GOALS_STATE_KEY))
+        app.register_state(GOALS_STATE_KEY, self.announced.to_list)
 
         self.share_synced = restore_synced(app.state.get(SHARE_STATE_KEY))
         self.share_sending = False
@@ -51,6 +81,7 @@ class SessionStats(object):
         app.register_state(SHARE_STATE_KEY, self._stored_share)
 
         bus = app.bus
+        bus.on('account', self._on_account)
         bus.on('hangar', self._on_hangar)
         bus.on('battle_enter', self._on_battle_enter)
         bus.on('battle_ready', self._on_battle_ready)
@@ -60,16 +91,21 @@ class SessionStats(object):
         bus.on('ingest_response', self._on_ingest_response)
         bus.on('rebind', self._on_rebind)
         bus.on('tick', self._on_tick)
-        bus.on(EVENT_COMPONENT_SETTINGS, self._on_settings)
 
     def _stored_share(self):
         if not self.share_synced:
             return None
         return list(self.share_synced)
 
-    def _on_hangar(self):
+    def _on_account(self, account_id):
+        self.site.reset(account_id)
         self.show(False)
-        self.sync_share(time.time())
+
+    def _on_hangar(self):
+        now = time.time()
+        self.read_site(now)
+        self.show(False)
+        self.sync_share(now)
 
     def _on_battle_enter(self):
         self.label.hide()
@@ -86,11 +122,22 @@ class SessionStats(object):
 
     def _on_battle_event(self, event, now):
         event['session_id'] = self.session.add(event, now)
+        self.site.after_battle(now)
+        if self.session.counts(event):
+            self._record_moe(event)
+
+    def _record_moe(self, event):
+        tank_id = (event.get('vehicle') or {}).get('tank_id')
+        before = self.app.marks.before_battle(event.get('arena_unique_id'), tank_id) or {}
+        after = (event.get('moe') or {}).get('damage_rating')
+        change = rating_change(before.get('damage_rating'), after)
+        self.moe.add(self.session.session_id, tank_id, change, rating_to_percent(after))
 
     def _on_battle_recorded(self):
         self.show(True)
 
     def _on_ingest_response(self, data):
+        self.site.expedite(OVERVIEW_KEY)
         summary = data.get('session')
         if not isinstance(summary, dict):
             return
@@ -103,56 +150,103 @@ class SessionStats(object):
     def _on_rebind(self):
         self.share_synced = None
         self.share_refused = None
+        self._on_account(self.app.account_id)
 
     def _on_tick(self, now):
+        self.read_site(now)
         if now >= self.share_retry_at:
             self.sync_share(now)
 
-    def _on_settings(self, component_id, changed):
-        if component_id != FEATURE_ID:
-            return
-        if SHARE not in changed and SHARE_CHANNEL not in changed:
+    def settings_changed(self, changed):
+        if SHARE in changed or SHARE_CHANNEL in changed:
+            self.share_retry_at = 0.0
+            self.sync_share(time.time())
+
+        self.read_site(time.time())
+        self.show(False)
+
+    def read_site(self, now):
+        if not self.enabled() or not can_read(self.app):
             return
 
-        self.share_retry_at = 0.0
-        self.sync_share(time.time())
+        settings = self.settings
+        wants_goals = settings.get('show_goals') or settings.get('goal_sound')
+        if wants_goals and self.site.wants(GOALS_KEY, now):
+            self._read(GOALS_KEY, GOALS_PATH, self._on_goals)
+        if settings.get('show_account') and self.site.wants(OVERVIEW_KEY, now):
+            self._read(OVERVIEW_KEY, OVERVIEW_PATH, self._on_overview)
+
+    def _read(self, key, path, on_data):
+        app = self.app
+        read = SignedRead(
+            reads=self.site,
+            key=key,
+            path=path,
+            build=lambda: signed_body(app),
+            account_of=lambda: self.site.account_id,
+        )
+        signed_read(app, read, on_data)
+
+    def _on_goals(self, data, account_id):
+        self.site.goals = parse_goals(data, account_id)
+        self._announce(self.announced.newly_done(self.site.goals))
+        self.show(False)
+
+    def _on_overview(self, data, account_id):
+        self.site.store_overview(parse_overview(data, account_id))
+        self.show(False)
+
+    def _announce(self, goals):
+        if not goals:
+            return
+
+        app = self.app
+        app.save_state()
+        for goal in goals:
+            app.ui.notify(goal_done_notice(goal, app.translate, vehicle_short_name(goal.get('tank_id'))))
+        if self.settings.get('goal_sound'):
+            play_mp3(GOAL_SOUND)
+
+    def view(self):
+        settings = self.settings
+        is_bound = self.app.is_bound()
+        goals = self.site.goals[:settings.get('max_goals')] if is_bound and settings.get('show_goals') else []
+        overview = self.site.overview if is_bound and settings.get('show_account') else None
+        summary = self.current_summary()
+        moe = self.moe.rows(summary.get('session_id'), MOE_ROWS) if settings.get('show_moe') else []
+        tank_ids = [goal['tank_id'] for goal in goals if goal.get('tank_id')] + [entry['tank_id'] for entry in moe]
+        names = dict((tank_id, vehicle_short_name(tank_id)) for tank_id in tank_ids)
+
+        return SessionView(summary, goals, overview, names, moe)
 
     def show(self, after_battle):
         app = self.app
         if app.in_battle:
             return
-        if not app.config.is_enabled(SWITCH):
-            return
-
-        summary = self.current_summary()
-        if summary is None:
+        if not self.enabled():
             self.label.clear()
             return
 
+        view = self.view()
         translate = app.translate
         if app.ui.has_panels:
-            text = format_session_panel(summary, translate)
-            self.label.show(text, LAYOUT, widget=session_widget(summary, translate))
-        elif after_battle:
-            app.ui.notify(format_session_plain(summary, translate))
+            text = format_session_panel(view, self.settings, translate)
+            self.label.show(text, LAYOUT, widget=session_widget(view, self.settings, translate))
+        elif after_battle and view.summary.get('battles'):
+            app.ui.notify(format_session_plain(view.summary, translate))
 
     def current_summary(self):
         now = time.time()
         if self.session.is_expired(now):
-            return None
-
-        summary = self.session.summary(now)
-        if summary['battles'] or summary['pending']:
-            return summary
-
-        return None
+            return {}
+        return self.session.summary(now)
 
     def reset(self):
         self.session.reset(time.time())
         self.app.save_state()
         self.show(False)
 
-        return {'kind': 'info', 'text': self.app.translate('session_reset_done')}
+        return self.notice_info('session_reset_done')
 
     def sync_share(self, now):
         wanted = preference_of(self.app.config)
@@ -200,52 +294,53 @@ class SessionStats(object):
 
     def ui_actions(self):
         translate = self.app.translate
-        reset = {
+        actions = [{
             'id': ACTION_RESET,
             'label': translate('session_reset'),
             'confirm': translate('session_reset_confirm'),
-        }
-        if not self.app.config.get(SHARE):
-            return [reset]
+        }]
+        if self.app.config.get(SHARE):
+            actions.append({
+                'id': ACTION_SHARE,
+                'label': translate('session_share_now'),
+                'confirm': translate('session_share_confirm'),
+            })
 
-        share = {
-            'id': ACTION_SHARE,
-            'label': translate('session_share_now'),
-            'confirm': translate('session_share_confirm'),
-        }
-
-        return [reset, share]
+        actions.append({'id': ACTION_REFRESH, 'label': translate('session_refresh'), 'confirm': None})
+        actions.append({'id': ACTION_SITE, 'label': translate('session_site'), 'link': SITE_PATH, 'confirm': None})
+        return actions
 
     def ui_action(self, action, row=None, value=None):
         if action == ACTION_RESET:
             return self.reset()
         if action == ACTION_SHARE:
             return self._share_now()
-        return None
+        return self.refresh_action(action, 'session_unbound', 'session_refreshing', self._refresh)
+
+    def _refresh(self):
+        self.site.refresh_all()
+        self.read_site(time.time())
 
     def _share_refusal(self):
         if not self.app.config.get(SHARE):
             return 'session_share_off'
         if not self.app.is_bound():
             return 'session_share_unbound'
-
-        now = time.time()
-        if self.session.is_expired(now) or not self.session.summary(now)['battles']:
+        if not self.current_summary().get('battles'):
             return 'session_share_empty'
         return None
 
     def _share_now(self):
         app = self.app
-        translate = app.translate
         refusal = self._share_refusal()
         if refusal:
-            return {'kind': 'error', 'text': translate(refusal)}
+            return self.notice_error(refusal)
 
         payload = send_body(app.current_credentials(), self.session.session_id, app.config.get(SHARE_CHANNEL))
 
         def done(status, data, retry_after):
             if status not in SENT_STATUSES:
-                app.ui.notify(translate(send_failure_key(status), status=status))
+                app.ui.notify(app.translate(send_failure_key(status), status=status))
 
         post_signed(app, SHARE_SEND_PATH, payload, done)
-        return {'kind': 'info', 'text': translate('session_share_sent')}
+        return self.notice_info('session_share_sent')

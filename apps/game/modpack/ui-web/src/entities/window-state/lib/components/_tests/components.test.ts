@@ -46,7 +46,7 @@ describe(componentsOf, () => {
   it('keeps a page to its own cards, sorted by title', () => {
     const titles = componentsOf({ components: components(), section: 'battle', context: 'all' }).map(({ title }) => title);
 
-    expect(titles).toEqual(['Лог урона', 'minimap']);
+    expect(titles).toEqual(['Журнал боя', 'minimap']);
   });
 
   it('sorts Cyrillic titles first, ignoring case and ё, the same on every machine', () => {
@@ -61,7 +61,7 @@ describe(componentsOf, () => {
   it('keeps the hangar filter to the cards shown in the hangar', () => {
     const cards = componentsOf({ components: components(), section: 'marks', context: 'hangar' });
 
-    expect(idsOf(cards)).toEqual(['session_stats']);
+    expect(idsOf(cards)).toEqual(['marks_panel', 'session_stats']);
   });
 
   it('keeps the battle filter to the cards shown in battle', () => {

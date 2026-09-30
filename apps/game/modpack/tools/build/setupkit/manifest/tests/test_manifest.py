@@ -162,7 +162,7 @@ class CatalogTest(unittest.TestCase):
 
         with_audio = set(entry.id for entry in catalog.components if entry.preview.audio)
 
-        self.assertEqual(with_audio, {'sixth_sense', 'personal_best', 'session_goals'})
+        self.assertEqual(with_audio, {'sixth_sense', 'session_stats'})
 
     def test_catalog_owns_the_scripts_folder_and_lists_the_xvm_conflict(self):
         catalog = load_catalog()
@@ -213,7 +213,7 @@ class ManifestTest(unittest.TestCase):
         self.assertTrue(panel.catalogued)
         self.assertFalse(panel.required)
         self.assertEqual(panel.preview.image, 'previews/marks_panel.png')
-        self.assertEqual(panel.title.ru, 'Отметка в бою')
+        self.assertEqual(panel.title.ru, 'Отметки')
 
     def test_a_required_component_is_in_every_preset(self):
         core = self.component('core')
@@ -241,8 +241,8 @@ class ManifestTest(unittest.TestCase):
         self.assertEqual(data['schemaVersion'], 1)
         self.assertEqual(sorted(panel), sorted(COMPONENT_KEYS))
         self.assertEqual(panel['perf'], 'low')
-        self.assertEqual(panel['context'], 'battle')
-        self.assertEqual(panel['title'], {'ru': 'Отметка в бою', 'en': 'MoE panel in battle'})
+        self.assertEqual(panel['context'], 'any')
+        self.assertEqual(panel['title'], {'ru': 'Отметки', 'en': 'Marks of Excellence'})
         self.assertEqual(data['components'][3]['preview']['audio'], 'previews/sixth_sense.mp3')
 
     def test_json_keeps_the_conflicts_and_owned_paths(self):

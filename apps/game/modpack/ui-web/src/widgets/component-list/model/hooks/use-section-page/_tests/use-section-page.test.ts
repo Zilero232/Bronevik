@@ -28,7 +28,7 @@ describe(useSectionPage, () => {
     expect(ids).toEqual([['marks_panel'], ['session_stats']]);
   });
 
-  it('offers the context filter on a page that mixes battle and hangar components', () => {
+  it('offers the context filter on a page whose cards work in different places', () => {
     expect(mountPage('marks').result.current.showFilter).toBe(true);
   });
 
@@ -46,7 +46,7 @@ describe(useSectionPage, () => {
     act(() => marks.result.current.setContext(CONTEXT_FILTER.hangar));
     await act(async () => {});
 
-    expect(marks.result.current.columns[0]?.items.map(({ component }) => component.id)).toEqual(['session_stats']);
+    expect(marks.result.current.columns[0]?.items.map(({ component }) => component.id)).toEqual(['marks_panel', 'session_stats']);
   });
 
   it('tells an empty page from an empty filter', () => {

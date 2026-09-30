@@ -3,7 +3,7 @@
 [project]
 name = "otmetki-feature-marks-panel"
 version = "0.3.1"
-description = "Feature: in-battle marks-of-excellence panel with the projected percentage and the damage still needed."
+description = "Feature: marks of excellence: the battle panel, the hangar Tank card and the per-tank history."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }
 authors = [{ name = "Alexandr Artemev" }]

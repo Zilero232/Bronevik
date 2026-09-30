@@ -74,7 +74,9 @@ class BattleCapture(object):
             return
 
         self.app.bus.emit('battle_start', arena_id)
-        self.loadouts.battle_started(arena_id, player_tank_id(player))
+        tank_id = player_tank_id(player)
+        self.loadouts.battle_started(arena_id, tank_id)
+        self.app.marks.battle_started(arena_id, tank_id)
         if wait is not None:
             self.queue_wait_by_arena[arena_id] = wait
         self._track_arena(arena_id)
@@ -187,7 +189,7 @@ class BattleCapture(object):
         app = self.app
         app.bus.emit('battle_event', event, time.time())
         self.seen_arenas.append(arena_id)
-        app.marks.after_battle(event['vehicle']['tank_id'], event.get('moe'))
+        app.marks.after_battle(event['vehicle']['tank_id'], event.get('moe'), arena_id)
         app.save_state()
         if app.config.is_enabled('send_battle_results') and app.enqueue(event):
             app.flush_requested = True

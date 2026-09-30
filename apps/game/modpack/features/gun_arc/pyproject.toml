@@ -3,7 +3,7 @@
 [project]
 name = "otmetki-feature-gun-arc"
 version = "0.2.0"
-description = "Feature: how far the own gun can still turn left and right before the traverse limits (УГН)."
+description = "Feature: a traverse scale of the own gun with the degrees left to each limit."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }
 authors = [{ name = "Alexandr Artemev" }]

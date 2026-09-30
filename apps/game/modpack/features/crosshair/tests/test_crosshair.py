@@ -6,11 +6,18 @@ import os
 import unittest
 
 import _support
-from otmetki.core.native_settings import merge_value
+from otmetki.core.native_settings import client_keys, merge_value, native_choices
 from otmetki.core.settings import Settings
 from otmetki.features.crosshair.i18n import STRINGS
 from otmetki.features.crosshair.model import mark_html, mark_image, mark_offset, shows_in, to_native
-from otmetki.features.crosshair.model.constants import MARK_COLORS, MARK_FILES, MARK_RENDITIONS, PRESET_PARTS
+from otmetki.features.crosshair.model.constants import (
+    EDITOR_GROUPS,
+    MARK_COLORS,
+    MARK_FILES,
+    MARK_RENDITIONS,
+    PRESET_PARTS,
+)
+from otmetki.features.crosshair.model.editor import editor
 from otmetki.features.crosshair.model.preview import preview_text, preview_widget
 from otmetki.features.crosshair.settings import SCHEMA, SETTINGS
 from otmetki.features.crosshair.settings.constants import MARKS
@@ -30,6 +37,8 @@ OPACITY_PARTS = (
     'cassette',
     'zoomIndicator',
 )
+# The fields the settings window shows: the schema without the panel position keys (packages/ui PANEL_POSITION_KEYS).
+FIELD_KEYS = ('preset', 'modes', 'server_reticle', 'mark', 'mark_size', 'mark_color', 'mark_hides_centre')
 STYLE_COUNTS = {'netType': 4, 'centralTagType': 14, 'mixingType': 4, 'gunTagType': 15}
 
 
@@ -46,7 +55,9 @@ def shipped_images():
 
 
 def native(values):
-    return to_native(Settings(values, SCHEMA).to_dict())
+    chosen = native_choices(client_keys(SCHEMA))
+    chosen.update(values)
+    return to_native(Settings(chosen, SCHEMA).to_dict())
 
 
 def is_valid_part_value(part, value):
@@ -59,8 +70,32 @@ def is_valid_part_value(part, value):
 
 class PresetTest(unittest.TestCase):
 
-    def test_defaults_change_nothing(self):
-        assert native(None) == {}
+    def test_native_values_change_nothing(self):
+        assert native({}) == {}
+
+    def test_the_default_is_the_minimal_preset_on_both_reticles(self):
+        result = to_native(Settings(None, SCHEMA).to_dict())
+
+        assert result == {'arcade': PRESET_PARTS['minimal'], 'sniper': PRESET_PARTS['minimal']}
+
+    def test_the_client_values_are_the_preset_and_the_server_reticle(self):
+        assert client_keys(SCHEMA) == ('preset', 'server_reticle')
+
+    def test_the_minimal_preset_is_the_recommended_reticle(self):
+        expected = {
+            'net': 0,
+            'centralTag': 100,
+            'centralTagType': 0,
+            'mixing': 60,
+            'gunTag': 100,
+            'reloader': 60,
+            'reloaderTimer': 100,
+            'condition': 0,
+            'cassette': 100,
+            'zoomIndicator': 0,
+        }
+
+        assert PRESET_PARTS['minimal'] == expected
 
     def test_the_component_switch_is_crosshair_presets(self):
         assert SETTINGS == ('crosshair_presets',)
@@ -225,6 +260,39 @@ class PreviewWidgetTest(unittest.TestCase):
         widget = preview_widget(Settings({'mark': 'ring', 'mark_size': 48}, SCHEMA), None)
 
         assert _support.widget_fixture('crosshair', widget)
+
+
+class EditorTest(unittest.TestCase):
+
+    def test_the_groups_cover_every_field_once(self):
+        keys = [key for _group, group_keys in EDITOR_GROUPS for key in group_keys]
+
+        assert sorted(keys) == sorted(FIELD_KEYS)
+
+    def test_the_groups_are_translated_in_order(self):
+        described = editor(Settings(None, SCHEMA), lambda key: 'T:' + key)
+
+        assert [group['id'] for group in described['groups']] == ['shape', 'colour', 'size', 'reticle']
+        assert described['groups'][0] == {'id': 'shape', 'label': 'T:crosshair_group_shape', 'keys': ['mark']}
+
+    def test_every_group_has_a_label_in_both_languages(self):
+        for group, _keys in EDITOR_GROUPS:
+            assert 'crosshair_group_' + group in STRINGS['ru']
+            assert 'crosshair_group_' + group in STRINGS['en']
+
+    def test_every_mark_has_a_shipped_thumbnail_in_the_chosen_colour(self):
+        icons = editor(Settings({'mark_color': 'cyan'}, SCHEMA), str)['icons']['mark']
+        shipped = shipped_images()
+
+        assert sorted(icons) == sorted(MARK_FILES)
+        assert icons['tint_dot'] == 'img://gui/maps/icons/otmetki/crosshair/tinted/tint_dot_cyan_64.png'
+        for value in icons.values():
+            assert value[len('img://'):] in shipped
+
+    def test_every_colour_has_a_swatch(self):
+        swatches = editor(Settings(None, SCHEMA), str)['swatches']['mark_color']
+
+        assert sorted(swatches) == sorted(MARK_COLORS)
 
 
 if __name__ == '__main__':

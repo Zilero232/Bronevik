@@ -3,40 +3,37 @@
 .plate {
   display: flex;
   flex-direction: column;
-  padding: 4px 8px;
-  border-radius: token(radius-sm);
-  border-top: 1px solid rgb(255 255 255 / 6%);
-  background-image: linear-gradient(180deg, rgb(20 20 23 / 78%) 0%, rgb(14 14 16 / 62%) 100%);
-  color: token(color-text);
+  border-radius: token(hud-radius);
+  color: token(hud-text);
 
   @include hud-text;
 }
 
-.plain {
-  border-top-color: rgb(0 0 0 / 0%);
-  background-image: none;
+.solid {
+  border-top: 1px solid token(hud-plate-line);
+  background-image: token(hud-plate-solid);
+
+  @include hud-plate-padding(solid);
 }
 
-.flash {
-  background-image: linear-gradient(180deg, rgb(241 112 91 / 35%) 0%, rgb(241 112 91 / 18%) 100%);
+.edge {
+  background-image: token(hud-plate-edge);
+
+  @include hud-plate-padding(edge);
 }
 
-.rail {
-  border-left: 2px solid rgb(255 255 255 / 18%);
+.edge-end {
+  background-image: token(hud-plate-edge-end);
+
+  @include hud-plate-padding(edge-end);
 }
 
-.damage {
-  border-left-color: token(color-accent);
+.centre {
+  background-image: token(hud-plate-centre);
+
+  @include hud-plate-padding(centre);
 }
 
-.incoming {
-  border-left-color: token(color-danger);
-}
-
-.progress {
-  border-left-color: token(color-gold);
-}
-
-.info {
-  border-left-color: rgb(255 255 255 / 18%);
+.none {
+  padding: 0;
 }

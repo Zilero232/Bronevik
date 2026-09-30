@@ -17,7 +17,6 @@ from .constants import (
     CARD_LIMITS,
     CARD_OPTIONS,
     HEX_COLOR,
-    RAILS,
     ROW_OPTIONS,
     STATUSES,
     TONES,
@@ -26,13 +25,13 @@ from .constants import (
 
 __all__ = (
     'CARD_KIND',
-    'RAILS',
     'STATUSES',
     'TONES',
     'WIDGET_VERSION',
     'card',
     'card_chip',
     'card_row',
+    'color_override',
     'tone',
     'widget',
 )
@@ -76,6 +75,15 @@ def _color(value):
     if isinstance(value, string_types) and HEX_COLOR.match(value):
         return to_text(value).upper()
     return None
+
+
+def color_override(value, default):
+    """`value` (`#RRGGBB`, upper-cased) when the player set a colour other than `default`, else None: the page then
+    paints the tone the payload names."""
+    color = _color(value)
+    if color is None or color == _color(default):
+        return None
+    return color
 
 
 def _width(value):
@@ -128,8 +136,8 @@ def card(title=None, icon=None, rows=(), **layout):
     """The `card` widget: `title` in caps with `icon`, then `rows`.
 
     `layout` takes `subtitle` (next to the title), `value` big on the right with its `value_tone`, `chips`, `strip` (a
-    row of small marks, one tone each, e.g. the last battles' results; the newest kept), `footer`, `rail` (the plate's
-    category, RAILS, the colour of its left edge) and `width` (design px, fixes the plate's width)."""
+    row of small marks, one tone each, e.g. the last battles' results; the newest kept), `footer` and `width` (design
+    px, fixes the plate's width). A battle panel leaves `title` out: battle plates carry no caps titles."""
     layout = keyword_options(layout, CARD_OPTIONS)
     return widget(CARD_KIND, {
         'title': _text(title, CARD_LIMITS['title']),
@@ -137,7 +145,6 @@ def card(title=None, icon=None, rows=(), **layout):
         'subtitle': _text(layout['subtitle'], CARD_LIMITS['title']),
         'value': _text(layout['value'], CARD_LIMITS['value']),
         'value_tone': tone(layout['value_tone']),
-        'rail': layout['rail'] if layout['rail'] in RAILS else 'info',
         'chips': [chip for chip in layout['chips'] if chip][:CARD_LIMITS['chips']],
         'strip': _strip(layout['strip']),
         'rows': [row for row in rows if row][:CARD_LIMITS['rows']],

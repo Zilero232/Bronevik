@@ -15,6 +15,9 @@ from .constants import (
     BAR_TRACK,
     LIMIT_REACHED_DEG,
     TONE_COLORS,
+    VIEW_OFFSETS,
+    YAW_DEGREES,
+    ZERO_YAW,
 )
 
 # Fair play: the own gun's traverse limits (the vehicle's own parameters, VehicleDescriptor.gun.turretYawLimits) and
@@ -36,6 +39,8 @@ def arc_state(yaw, limits):
         'left': math.degrees(yaw - low),
         'right': math.degrees(high - yaw),
         'position': (yaw - low) / (high - low),
+        'centre': -low / (high - low),
+        'yaw': math.degrees(yaw),
     }
 
 
@@ -57,6 +62,25 @@ def left_label(degrees):
 
 def right_label(degrees):
     return u'%d° %s' % (int(round(degrees)), ARROW_RIGHT)
+
+
+def yaw_label(degrees):
+    rounded = int(round(degrees))
+    return YAW_DEGREES % rounded if rounded else ZERO_YAW
+
+
+def view_offset(view, settings):
+    key = VIEW_OFFSETS.get(view)
+    return settings.get(key) if key is not None else None
+
+
+# The panel is centre-aligned, so its x/y is the reticle's scaled position (CrosshairDataProxy.getScaledPosition,
+# RU 1.45) relative to the screen centre, `offset` design px under it.
+def reticle_place(position, size, scale, offset):
+    width, height = size
+    factor = max(scale, 1.0)
+    reticle_x, reticle_y = position
+    return reticle_x - int(0.5 * width / factor), reticle_y - int(0.5 * height / factor) + offset
 
 
 def bar(position):
@@ -81,4 +105,6 @@ def format_panel(state, settings, translate):
         parts.append(font(bar(state['position']), COLOR_MUTED, size))
     if shows_degrees:
         parts.append(font(right_label(right), side_color(right, warn), size))
+    if settings.get('show_yaw'):
+        parts.append(font(yaw_label(state['yaw']), COLOR_MUTED, size))
     return u' '.join(parts)

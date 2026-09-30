@@ -261,6 +261,22 @@ describe(useHudOverlay, () => {
     expect(sentAfterReady(mock)).toEqual([{ type: 'pressed', id: LABEL_ID }]);
   });
 
+  it('reports a press on a fixed button while the battle cursor is out', async () => {
+    const { mock, hook } = await mount(withState({ patch: { edit: true }, panel: { kind: 'button', drag: false } }));
+
+    act(() => hook.result.current.labels[0]?.onClick());
+
+    expect(sentAfterReady(mock)).toEqual([{ type: 'pressed', id: LABEL_ID }]);
+  });
+
+  it('never presses a button that is being moved in an edit', async () => {
+    const { mock, hook } = await mount(withState({ patch: { edit: true }, panel: { kind: 'button', drag: true } }));
+
+    act(() => hook.result.current.labels[0]?.onClick());
+
+    expect(sentAfterReady(mock)).toEqual([]);
+  });
+
   it('lets every click through outside an edit when no panel is clickable', async () => {
     const { mock } = await mount(OUTSIDE_EDIT);
 

@@ -6,6 +6,8 @@ from ...core.events import EVENT_COMPONENT_SETTINGS  # noqa: F401
 
 EVENT_LANGUAGE = 'language'
 CONFIG_COMPONENT = 'config'
+# The `kind` of a component's config.json source (components.sources.ConfigSource).
+CONFIG_KIND = 'config'
 
 LANGUAGES = ('ru', 'en')
 LANGUAGE_CHOICES = ('auto',) + LANGUAGES

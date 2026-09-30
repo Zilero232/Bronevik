@@ -3,7 +3,7 @@
 [project]
 name = "otmetki-feature-battle-results"
 version = "0.1.0"
-description = "Feature: extended post-battle summary in hangar notifications (XP, credits, damage, assist, marks delta)."
+description = "Feature: extended post-battle summary in hangar notifications (XP, credits, damage, assist, marks delta) and the battle list with the hits on the own tank (a schematic and a list)."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }
 authors = [{ name = "Alexandr Artemev" }]

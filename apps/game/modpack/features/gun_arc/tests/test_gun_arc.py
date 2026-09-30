@@ -8,9 +8,18 @@ import _support
 from otmetki.core.format import COLOR_DOWN, COLOR_NEUTRAL, COLOR_WARN
 from otmetki.core.settings import Settings
 from otmetki.features.gun_arc.i18n import STRINGS
-from otmetki.features.gun_arc.model import arc_state, bar, format_panel, side_color
-from otmetki.features.gun_arc.model.constants import BAR_CELLS
-from otmetki.features.gun_arc.model.preview import preview_text
+from otmetki.features.gun_arc.model import (
+    arc_state,
+    bar,
+    format_panel,
+    reticle_place,
+    side_color,
+    view_offset,
+    yaw_label,
+)
+from otmetki.features.gun_arc.model.constants import BAR_CELLS, PLACEMENTS
+from otmetki.features.gun_arc.model.preview import preview_text, preview_widget
+from otmetki.features.gun_arc.model.widget import panel_widget
 from otmetki.features.gun_arc.settings import SCHEMA, SETTINGS
 
 
@@ -42,6 +51,11 @@ class ArcTest(unittest.TestCase):
         state = arc_state(math.radians(5), LIMITS)
 
         assert abs(state['position'] - 20 / 30.0) < 1e-9
+
+    def test_the_centre_is_the_hull_axis_on_the_arc(self):
+        state = arc_state(0.0, (math.radians(-10), math.radians(30)))
+
+        assert state['centre'] == 0.25
 
     def test_a_yaw_past_the_limit_is_held_at_it(self):
         assert arc_state(math.radians(40), LIMITS)['right'] == 0
@@ -104,10 +118,119 @@ class FormatTest(unittest.TestCase):
         assert format_panel(None, Settings({}, SCHEMA), translator()) is None
 
 
+def widget_data(yaw_degrees, values=None):
+    state = arc_state(math.radians(yaw_degrees), LIMITS)
+    return panel_widget(state, Settings(values or {}, SCHEMA))['data']
+
+
+class WidgetTest(unittest.TestCase):
+
+    def test_the_scale_carries_the_gun_position_and_the_hull_axis(self):
+        data = widget_data(5)
+
+        assert data['position'] == 0.667
+        assert data['centre'] == 0.5
+
+    def test_the_degrees_sit_at_both_ends(self):
+        data = widget_data(5)
+
+        assert [data['left'], data['right']] == [u'20°', u'10°']
+
+    def test_a_side_at_the_warning_limit_turns_warning(self):
+        data = widget_data(10)
+
+        assert [data['left_tone'], data['right_tone']] == ['text', 'warning']
+
+    def test_a_side_under_half_a_degree_turns_bad(self):
+        data = widget_data(14.8)
+
+        assert data['right_tone'] == 'bad'
+
+    def test_the_gun_takes_the_tone_of_the_nearer_limit(self):
+        data = widget_data(-12)
+
+        assert data['gun_tone'] == 'warning'
+
+    def test_the_degrees_can_be_switched_off(self):
+        data = widget_data(5, {'show_degrees': False})
+
+        assert [data['left'], data['right']] == ['', '']
+
+    def test_the_scale_can_be_switched_off(self):
+        data = widget_data(5, {'show_bar': False})
+
+        assert data['scale'] is False
+
+    def test_no_state_has_no_widget(self):
+        assert panel_widget(None, Settings({}, SCHEMA)) is None
+
+    def test_the_preview_is_a_fixture_for_the_page(self):
+        assert _support.widget_fixture('gun_arc', preview_widget(Settings({}, SCHEMA), translator()))
+
+
+class YawTest(unittest.TestCase):
+
+    def test_the_gun_angle_is_read_from_the_hull_axis(self):
+        assert round(arc_state(math.radians(-8), LIMITS)['yaw']) == -8
+
+    def test_a_gun_to_the_right_reads_with_a_plus(self):
+        assert yaw_label(12.4) == u'+12°'
+
+    def test_a_gun_to_the_left_reads_with_a_minus(self):
+        assert yaw_label(-7.6) == u'-8°'
+
+    def test_a_gun_on_the_axis_reads_zero_without_a_sign(self):
+        assert yaw_label(0.3) == u'0°'
+
+    def test_the_panel_shows_the_gun_angle(self):
+        assert u'+12°' in panel_text(12)
+
+    def test_the_gun_angle_can_be_switched_off(self):
+        assert u'+12°' not in panel_text(12, {'show_yaw': False})
+
+    def test_the_widget_carries_the_gun_angle(self):
+        assert widget_data(-8)['yaw'] == u'-8°'
+
+    def test_the_widget_leaves_the_angle_out_when_switched_off(self):
+        assert widget_data(-8, {'show_yaw': False})['yaw'] == u''
+
+
+class PlacementTest(unittest.TestCase):
+
+    def test_each_camera_mode_has_its_own_offset(self):
+        settings = Settings({'arcade_offset': 80, 'sniper_offset': 120, 'strategic_offset': 40}, SCHEMA)
+
+        assert [view_offset(view, settings) for view in (1, 2, 3)] == [80, 120, 40]
+
+    def test_another_view_has_no_offset(self):
+        assert view_offset(4, Settings({}, SCHEMA)) is None
+
+    def test_the_scale_sits_under_the_reticle_by_its_offset(self):
+        assert reticle_place((960, 400), (1920, 1080), 1.0, 96) == (0, -44)
+
+    def test_the_screen_centre_is_divided_by_the_interface_scale(self):
+        assert reticle_place((640, 360), (1920, 1080), 1.5, 50) == (0, 50)
+
+    def test_the_scale_follows_the_reticle_by_default(self):
+        assert Settings({}, SCHEMA).get('placement') == 'reticle'
+
+    def test_every_placement_has_a_label(self):
+        for placement in PLACEMENTS:
+            assert 'gun_arc_placement_' + placement in STRINGS['ru']
+
+    def test_the_offset_is_capped(self):
+        assert Settings({'sniper_offset': 999}, SCHEMA).get('sniper_offset') == 300
+
+
 class SettingsTest(unittest.TestCase):
 
     def test_the_preview_is_a_panel(self):
         assert u'УГН' in preview_text(Settings({}, SCHEMA), translator())
+
+    def test_the_scale_sits_under_the_reticle(self):
+        place = [SCHEMA.defaults[key] for key in ('x', 'y', 'align_x', 'align_y')]
+
+        assert place == [0, 96, 'center', 'center']
 
     def test_the_component_switch_is_battle_gun_arc(self):
         assert SETTINGS == ('battle_gun_arc',)

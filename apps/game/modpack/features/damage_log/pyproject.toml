@@ -3,7 +3,7 @@
 [project]
 name = "otmetki-feature-damage-log"
 version = "0.3.1"
-description = "Feature: battle damage log panel with dealt, blocked, assisted and received damage, template-formatted."
+description = "Feature: the battle log: totals, the own shots and assist, and the hits on the player."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }
 authors = [{ name = "Alexandr Artemev" }]

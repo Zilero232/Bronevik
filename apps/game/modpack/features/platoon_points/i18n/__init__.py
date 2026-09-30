@@ -12,6 +12,8 @@ STRINGS = {
         'platoon_points_show_platoon': u'Показывать союзников по взводу',
         'platoon_points_show_solo': u'Показывать и без взвода',
         'platoon_points_total': u'Итого {points}',
+        'platoon_points_title': u'Очки взвода',
+        'platoon_points_frags': u'фр. {frags}',
         'platoon_points_row': u'{name}: {points} (фраги {frags})',
     },
     'en': {
@@ -24,6 +26,8 @@ STRINGS = {
         'platoon_points_show_platoon': u'Show the platoon mates',
         'platoon_points_show_solo': u'Show without a platoon too',
         'platoon_points_total': u'Total {points}',
+        'platoon_points_title': u'Platoon points',
+        'platoon_points_frags': u'fr. {frags}',
         'platoon_points_row': u'{name}: {points} ({frags} frags)',
     },
 }

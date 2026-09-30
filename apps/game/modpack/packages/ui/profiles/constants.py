@@ -7,7 +7,11 @@ FILE_VERSION = 1
 MAX_PROFILES = 12
 NAME_MAX_LENGTH = 40
 
+# user_set and defaults_revision describe this install's history of choices and default upgrades: a profile loaded
+# later must not roll them back.
 EXCLUDED_CONFIG_KEYS = (
+    'user_set',
+    'defaults_revision',
     'server_url',
     'bind_code',
     'settings_action',

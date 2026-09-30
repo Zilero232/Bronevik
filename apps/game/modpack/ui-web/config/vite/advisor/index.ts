@@ -1,0 +1,1 @@
+export { advisorConfig } from './advisor';

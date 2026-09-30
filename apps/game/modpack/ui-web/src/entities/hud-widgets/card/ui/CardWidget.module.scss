@@ -1,20 +1,28 @@
 @use '../../../../shared/styles/gameface' as *;
 
-.plate {
-  padding: 5px 9px 6px;
+.hangar {
+  @include hud-plate-padding(card);
+}
+
+.battle {
+  @include hud-plate-padding(solid);
 }
 
 .box {
   display: flex;
-  min-width: 190px;
+  min-width: 230px;
   max-width: 340px;
   flex-direction: column;
 }
 
-.footer {
-  margin-top: 3px;
-  color: token(color-text-muted);
-  font-size: 11px;
+.wide {
+  min-width: 264px;
+}
 
+.footer {
+  margin-top: 4px;
+  color: token(hud-dim);
+
+  @include hud-type(caption);
   @include ellipsis;
 }

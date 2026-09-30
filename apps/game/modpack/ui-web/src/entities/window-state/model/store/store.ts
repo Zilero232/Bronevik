@@ -15,6 +15,7 @@ export const $view = map<View>({ section: SECTION_NAV.first, expanded: [], conte
 export const $query = atom('');
 export const $undo = atom<UndoEntry[]>([]);
 export const $focusSeq = atom(0);
+export const $editor = atom<string | null>(null);
 
 export const $components = computed($state, (state) => state?.components ?? []);
 export const $summaries = computed($components, summarize);
@@ -22,6 +23,7 @@ export const $hits = computed([$components, $query], (components, query) => sear
 
 export const openSection = (section: Section): void => {
   $query.set('');
+  $editor.set(null);
   $view.set({ ...$view.get(), section, context: CONTEXT_FILTER.all });
 };
 
@@ -67,6 +69,14 @@ export const toggleExpanded = (componentId: string): void => {
   const open = view.expanded.includes(componentId);
 
   $view.setKey('expanded', open ? view.expanded.filter((id) => id !== componentId) : [...view.expanded, componentId]);
+};
+
+export const openEditor = (componentId: string): void => {
+  $editor.set(componentId);
+};
+
+export const closeEditor = (): void => {
+  $editor.set(null);
 };
 
 export const setQuery = (query: string): void => {

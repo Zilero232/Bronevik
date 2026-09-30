@@ -18,7 +18,7 @@ from otmetki.features.sixth_sense.settings.constants import ICON_SETS
 
 ASSETS_DIR = os.path.join(_support.MODPACK_DIR, 'assets')
 SHIPPED_ICON_SETS = ICON_SETS[1:]
-LAMP_64 = '<img src="img://gui/maps/icons/otmetki/sixth_sense/icons/lamp_64.png" width="64" height="64"/>'
+DEFAULT_LAMP = '<img src="img://gui/maps/icons/otmetki/sixth_sense/icons/lamp_64.png" width="56" height="56"/>'
 
 
 def shipped_files():
@@ -169,7 +169,7 @@ class FormatTest(unittest.TestCase):
 
         text = format_sixth_sense(lamp_lit_at(100.0), settings, translator(), 100.2)
 
-        assert text == LAMP_64
+        assert text == DEFAULT_LAMP
 
     def test_the_second_half_second_shows_the_dimmed_frame(self):
         settings = settings_with(show_timer=False)

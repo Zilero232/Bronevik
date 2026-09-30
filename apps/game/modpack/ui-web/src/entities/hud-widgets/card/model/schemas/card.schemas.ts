@@ -1,7 +1,6 @@
 import * as z from 'zod/mini';
 
 import { hudIconSchema, hudToneSchema } from '../../../../../shared/api/hud-protocol';
-import { HUD_RAILS } from '../../../../../shared/config';
 import { CARD } from '../../config';
 
 const text = z.nullable(z.string());
@@ -29,7 +28,6 @@ export const cardSchema = z.object({
   subtitle: text,
   value: text,
   value_tone: hudToneSchema,
-  rail: z.nullable(z.enum(HUD_RAILS)),
   chips: z.array(cardChipSchema),
   strip: z.array(hudToneSchema),
   rows: z.array(cardRowSchema),

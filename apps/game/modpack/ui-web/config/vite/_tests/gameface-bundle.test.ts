@@ -4,11 +4,12 @@ import path from 'node:path';
 import { build, mergeConfig } from 'vite';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
+import { advisorConfig } from '../advisor';
 import { hudConfig } from '../hud';
 import { settingsConfig } from '../settings';
 import { UI_BUILD } from '../vite.constants';
 
-const BUNDLE_FILES = ['hud.html', 'icon.png', 'icons.png', 'index.html'];
+const BUNDLE_FILES = ['hud.html', 'icon.png', 'icons.png', 'index.html', 'preset_advisor.js'];
 const CLASSIC_SCRIPT_AT_BODY_END = /<script>\(function\(\)\{[\s\S]*\}\)\(\);<\/script>\s*<\/body>\s*<\/html>\s*$/;
 const POLYFILLED_ELEMENTS = /\.jsxs?\)\([`'"](?:ul|ol|li|dl|dt|dd|select|option)[`'"],/;
 
@@ -20,7 +21,7 @@ beforeAll(async () => {
   outDir = await mkdtemp(path.join(tmpdir(), 'otmetki-ui-'));
   vi.stubEnv('NODE_ENV', 'production');
 
-  for (const config of [settingsConfig(), hudConfig()]) {
+  for (const config of [settingsConfig(), hudConfig(), advisorConfig()]) {
     await build(mergeConfig(config, { configFile: false, logLevel: 'silent', build: { outDir } }));
   }
 }, 60_000);
@@ -56,5 +57,12 @@ describe('committed Gameface bundle', () => {
     const files = await Promise.all(['index.html', 'hud.html'].map((file) => read(outDir, file)));
 
     files.forEach((source) => expect(source).not.toMatch(POLYFILLED_ELEMENTS));
+  });
+
+  it('ships the preset advisor script as one classic IIFE without React', async () => {
+    const script = await read(outDir, 'preset_advisor.js');
+
+    expect(script).not.toMatch(/^\s*(?:import|export)\s/m);
+    expect(script).not.toContain('react.transitional.element');
   });
 });

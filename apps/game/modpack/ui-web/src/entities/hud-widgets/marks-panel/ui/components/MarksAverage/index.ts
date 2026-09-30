@@ -1,0 +1,1 @@
+export { MarksAverage } from './MarksAverage';

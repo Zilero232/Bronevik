@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.compat import is_int, is_number
 from ....core.format import format_epoch, format_number, format_percent, format_timer
 from .constants import ACTION_CLEAR, COST_KEYS, HISTORY_KEYS, SESSION_ROW, SITE_BATTLES_PATH
+from .hits import hits_row, with_hits
 from .text import result_label, signed
 
 
@@ -152,16 +153,34 @@ def battle_row(index, entry, translate):
     }
 
 
-def build_page(entries, translate, idle_s):
+def _newest_first(dated):
+    return [row for _, row in sorted(dated, key=lambda pair: -pair[0] if is_number(pair[0]) else 0)]
+
+
+def _battle_rows(entries, translate, hit_battles, show_attacker):
+    unmatched = dict((battle['id'], battle) for battle in hit_battles)
+    dated = []
+    for index, entry in reversed(list(enumerate(entries))):
+        row = battle_row(index, entry, translate)
+        battle = unmatched.pop(row['id'], None)
+        if battle is not None:
+            row = with_hits(row, battle, translate, show_attacker)
+        dated.append((entry.get('time'), row))
+
+    hits_only = [battle for battle in reversed(hit_battles) if battle['id'] in unmatched]
+    dated += [(battle.get('t'), hits_row(battle, translate, show_attacker)) for battle in hits_only]
+    return _newest_first(dated)
+
+
+# `hit_battles`: the recorded hits on the own tank (HitBook.battles, oldest first), shown when the hits tab is on.
+def build_page(entries, translate, idle_s, hit_battles=(), show_attacker=True):
     rows = []
 
     session = session_of(entries, idle_s)
     if session:
         rows.append(session_row(session, translate))
 
-    for index, entry in reversed(list(enumerate(entries))):
-        rows.append(battle_row(index, entry, translate))
-
+    rows += _battle_rows(entries, translate, hit_battles, show_attacker)
     return {'kind': 'list', 'empty': translate('br_empty'), 'rows': rows}
 
 

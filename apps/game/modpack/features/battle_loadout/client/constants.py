@@ -5,3 +5,10 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 # setup switch to AmmoController.updateForNewSetup, which fires onGunSettingsSet.
 DEVICE_EVENTS = ('onDescriptorDevicesChanged', 'onOptionalDeviceAdded', 'onOptionalDeviceUpdated')
 SETUP_EVENT = 'onGunSettingsSet'
+# RU 1.45 client_common/ClientArena.py: the own vehicle's entry of the arena's vehicle list may come after the avatar is
+# ready; onVehicleUpdated(vehicleID) fires when an entry changes, onPeriodChange when the battle moves on.
+VEHICLE_UPDATED_EVENT = 'onVehicleUpdated'
+PERIOD_EVENT = 'onPeriodChange'
+
+NO_VEHICLE = 'the own vehicle is not in the arena list yet'
+NOTHING_INSTALLED = 'the own vehicle has no equipment and no directives'

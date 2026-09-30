@@ -30,7 +30,7 @@
     },
     "marksPanel": {
       "kicker": "Mod",
-      "title": "“MoE panel in battle”",
+      "title": "“Marks of Excellence”",
       "lead": "Your MoE percent at the start of the battle and projected after it, <hl>damage to 65, 85 and 95%</hl> and battles to the next mark.",
       "cta": "About the mod"
     },
@@ -42,8 +42,8 @@
     },
     "damageLog": {
       "kicker": "Mod",
-      "title": "“Damage log”",
-      "lead": "Damage dealt, blocked and assisted in the battle and <hl>the latest entries with the shell type</hl>.",
+      "title": "“Battle log”",
+      "lead": "Your hits with the outcome and the target HP left, assistance and <hl>the hits on you with the shell type</hl>.",
       "cta": "About the mod"
     },
     "crosshair": {
@@ -54,14 +54,14 @@
     },
     "gear": {
       "kicker": "Mod",
-      "title": "“Equipment and reload”",
-      "lead": "Your equipment icons above the game's panel and <hl>your own gun's reload timer</hl> with the magazine.",
+      "title": "“Equipment in battle”",
+      "lead": "Your equipment and directive icons from the game itself next to the shells panel, with <hl>a tooltip on hover</hl>.",
       "cta": "About the mod"
     },
     "hits": {
       "kicker": "Mod",
-      "title": "“Hits on you”",
-      "lead": "Who fired, with which shell and how it ended: <hl>penetration, critical, no pen or ricochet</hl>.",
+      "title": "“Battle log”: hits on you",
+      "lead": "Who fired, with which shell and how it ended: <hl>damage, no pen or ricochet</hl>.",
       "cta": "About the mod"
     },
     "plus": {

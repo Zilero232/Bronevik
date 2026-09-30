@@ -1,15 +1,5 @@
-@use '../../../../../shared/styles/gameface' as *;
-
 .hint {
   position: absolute;
-  max-width: 280px;
-  padding: 5px 8px;
-  border-radius: token(radius-sm);
-  border-top: 1px solid rgb(255 255 255 / 10%);
-  background-color: rgb(14 14 16 / 92%);
-  color: token(color-text);
-  font-family: $font-family;
-  font-size: 12px;
+  display: flex;
   pointer-events: none;
-  white-space: normal;
 }

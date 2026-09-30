@@ -1,6 +1,8 @@
+import clsx from 'clsx';
+
 import type { SixthSenseWidgetProps } from './SixthSenseWidget.types';
 
-import { ClientIcon, RadialTimer } from '../../../../shared/ui/hud';
+import { ClientIcon, RadialTimer, toneClass } from '../../../../shared/ui/hud';
 import { SIXTH_SENSE } from '../config';
 import { lampView } from '../lib/lamp-view';
 
@@ -17,12 +19,12 @@ export const SixthSenseWidget = ({ data }: SixthSenseWidgetProps) => {
         </RadialTimer>
       </div>
       {data.text && (
-        <span className={s.text} style={{ color: data.color }}>
+        <span className={clsx(s.text, toneClass(view.tone))} style={view.color}>
           {data.text}
         </span>
       )}
       {view.seconds && (
-        <span className={s.seconds} style={{ color: data.color }}>
+        <span className={clsx(s.seconds, toneClass(view.tone))} style={view.color}>
           {view.seconds}
         </span>
       )}

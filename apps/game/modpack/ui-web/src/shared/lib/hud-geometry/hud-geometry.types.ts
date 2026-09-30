@@ -34,6 +34,8 @@ export type AnchorInput = { align: AlignX | AlignY; size: number; extent: number
 
 export type ThirdInput = { center: number; extent: number };
 
+export type PastSlopInput = { from: Point; to: Point; slop: number };
+
 export type PercentInput = { value: number; extent: number };
 
 export type Step = { dx: number; dy: number };

@@ -18,6 +18,7 @@ from .constants import (
     ALIAS_PREFIX,
     DOCK_ANCHORS,
     DOCKS,
+    FIT_AXES,
     GAMEFACE_PROPS,
     HEX_COLOR,
     HINT_COMPONENTS,
@@ -48,6 +49,7 @@ __all__ = (
     'component_schema',
     'dock_layout',
     'dock_of',
+    'fit_place',
     'hex_color',
     'is_pinned',
     'layout_props',
@@ -100,6 +102,20 @@ def retired_reset(settings):
     if place_of(settings) not in getattr(schema, 'retired', ()) or place_of(settings) == place_of(defaults):
         return {}
     return dict((key, defaults[key]) for key in PLACE_KEYS)
+
+
+def fit_place(values):
+    """The values that bring back a panel whose saved offset points off the screen from its anchor edge (moved there
+    by an older renderer or by hand): the offset goes to that edge. Empty when the place is on screen at every size."""
+    fixed = {}
+    for key, align_key, near, far in FIT_AXES:
+        value = values.get(key)
+        align = values.get(align_key)
+        if not is_number(value):
+            continue
+        if (align == near and value < 0) or (align == far and value > 0):
+            fixed[key] = 0
+    return fixed
 
 
 def is_pinned(settings):

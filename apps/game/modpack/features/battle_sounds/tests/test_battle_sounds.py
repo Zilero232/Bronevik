@@ -6,6 +6,7 @@ import _support  # noqa: F401
 from otmetki.core.settings import Settings
 from otmetki.features.battle_sounds.i18n import STRINGS
 from otmetki.features.battle_sounds.model import KillFeed, SoundPicker, device_change, device_event
+from otmetki.features.battle_sounds.model.constants import STOCK_ALERTS
 from otmetki.features.battle_sounds.settings import EVENTS, SCHEMA, SETTINGS
 
 
@@ -87,6 +88,36 @@ class PickerTest(unittest.TestCase):
 
     def test_an_event_without_a_sound_plays_nothing(self):
         assert picker_after_fire().pick('ammo_rack', 13.5) is None
+
+
+class StockAlertTest(unittest.TestCase):
+
+    def test_the_stock_alert_plays_for_an_empty_event_when_turned_on(self):
+        picker = SoundPicker(Settings({'stock_alerts': True}, SCHEMA))
+
+        assert picker.pick('own_crit', 10.0) == STOCK_ALERTS['own_crit']
+
+    def test_the_players_own_sound_wins_over_the_stock_alert(self):
+        picker = SoundPicker(Settings({'stock_alerts': True, 'fire': 'mod_fire'}, SCHEMA))
+
+        assert picker.pick('fire', 10.0) == 'mod_fire'
+
+    def test_no_stock_alert_plays_while_it_is_off(self):
+        picker = SoundPicker(Settings({}, SCHEMA))
+
+        assert picker.pick('fire', 10.0) is None
+
+    def test_an_event_without_a_stock_alert_stays_silent(self):
+        picker = SoundPicker(Settings({'stock_alerts': True}, SCHEMA))
+
+        assert picker.pick('own_frag', 10.0) is None
+
+    def test_the_stock_alerts_are_off_by_default(self):
+        assert Settings({}, SCHEMA).get('stock_alerts') is False
+
+    def test_every_stock_alert_is_a_sound_event(self):
+        for key in STOCK_ALERTS:
+            assert key in EVENTS
 
 
 class SettingsTest(unittest.TestCase):

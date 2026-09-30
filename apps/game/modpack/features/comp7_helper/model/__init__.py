@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.compat import is_int, string_types, to_text
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, COLOR_UP, counted, font, format_number
+from .battles import battle_lines
 from .constants import DIVISION_LETTERS, LEGEND_RANK, MAX_SKILL, RANK_IDS, THRESHOLD_RANKS, TITLE_SIZE_STEP
 
 # Fair play: only what the Onslaught hangar already shows the player: their own rating, their division, the division
@@ -138,4 +139,6 @@ def format_hangar(state, settings, translate):
             lines.append(font(line, COLOR_UP if status != 'idle' else COLOR_MUTED, size))
     if settings.get('show_skill') and state['skill']:
         lines.append(font(translate('comp7_helper_skill_line', skill=state['skill']), COLOR_MUTED, size))
+    if settings.get('show_battles'):
+        lines.extend(font(line, COLOR_MUTED, size) for line in battle_lines(state.get('battles') or [], translate))
     return u'\n'.join(lines)

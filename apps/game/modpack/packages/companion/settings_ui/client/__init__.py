@@ -10,7 +10,7 @@ client (2.4.1+), so on Lesta it works only with an older compatible release. A G
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.log import log, safe
-from .. import BIND_CODE_VAR, LINKAGE, build_template, settings_to_config
+from .. import BIND_CODE_VAR, LINKAGE, build_template, record_user_set, settings_to_config
 
 try:
     from gui.modsSettingsApi import g_modsSettingsApi
@@ -37,6 +37,13 @@ class SettingsView(object):
 
     def apply(self, values):
         if self.app.config.update(settings_to_config(values)):
+            self.app.save_config()
+
+    def apply_chosen(self, values):
+        """`apply` of values the player changed in the window: the changed switches join config.json's `user_set`."""
+        changed = self.app.config.update(settings_to_config(values))
+        if changed:
+            record_user_set(self.app.config, changed)
             self.app.save_config()
 
 
@@ -84,7 +91,7 @@ class ModsSettingsApiView(SettingsView):
     @safe
     def _on_changed(self, linkage, values):
         if linkage == LINKAGE:
-            self.apply(values)
+            self.apply_chosen(values)
 
     @safe
     def _on_button(self, linkage, var_name, value):

@@ -17,24 +17,15 @@ ROOT_PACKAGE = 'otmetki'
 RES_PREFIX = 'res/'
 # The components whose catalog preview is their HUD panel, and the backdrop it is drawn over.
 HUD_PREVIEWS = {
-    'arty_meter': 'battle',
-    'battle_clock': 'battle',
-    'battle_efficiency': 'battle',
+    'battle_hotkeys': 'battle',
     'battle_loadout': 'battle',
+    'battle_progress': 'battle',
     'crosshair': 'battle',
     'damage_log': 'battle',
-    'death_card': 'battle',
     'gun_arc': 'battle',
-    'hangar_marks': 'hangar',
-    'hit_log': 'battle',
-    'main_gun': 'battle',
     'marks_panel': 'battle',
-    'personal_best': 'battle',
-    'personal_missions': 'battle',
+    'personal_missions': 'hangar',
     'platoon_points': 'battle',
-    'received_hits': 'battle',
-    'reload_timer': 'battle',
-    'session_goals': 'battle',
     'sixth_sense': 'battle',
     'team_hp': 'battle',
 }

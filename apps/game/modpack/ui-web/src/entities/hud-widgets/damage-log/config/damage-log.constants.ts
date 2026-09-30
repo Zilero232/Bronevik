@@ -1,7 +1,5 @@
 export const DAMAGE_LOG = {
   iconSize: 16,
-  shellSize: 18,
-  totalWidth: 40,
-  amountWidth: 42,
-  lastHit: { classSize: 24, shellSize: 20 }
+  hitsPrefix: 'x',
+  bar: { width: 32, height: 3 }
 } as const;

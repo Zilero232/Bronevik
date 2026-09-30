@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { UiAction, UiComponent } from '../../../../../../shared/api/protocol';
 
+import { $editor } from '../../../../../../entities/window-state';
 import { send } from '../../../../../../shared/api/protocol/protocol';
 import { useComponentCard } from '../use-component-card';
 
@@ -36,9 +37,18 @@ const WITH_CONFIRMED_ACTION = component({ actions: [action({ confirm: 'Sure?' })
 
 beforeEach(() => {
   vi.mocked(send).mockClear();
+  $editor.set(null);
 });
 
 describe(useComponentCard, () => {
+  it('opens the editor of a card that has one instead of expanding it', () => {
+    const card = mountCard({ component: component({ editor: { groups: [], icons: {}, swatches: {} } }) });
+
+    act(() => card.result.current.toggleOpen());
+
+    expect($editor.get()).toBe('replay_manager');
+  });
+
   it('runs an action without a confirmation at once', () => {
     const card = mountCard({ component: component({ actions: [action()] }) });
 

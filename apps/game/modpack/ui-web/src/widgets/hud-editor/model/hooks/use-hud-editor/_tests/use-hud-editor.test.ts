@@ -27,6 +27,19 @@ const key = (name: string) => ({ key: name, preventDefault: vi.fn() });
 
 const mountEditor = (panels: UiPanel[] = [panel()]) => renderHook(() => useHudEditor(panels));
 
+const mouse = (type: string, clientX: number, clientY: number) => window.dispatchEvent(new MouseEvent(type, { clientX, clientY }));
+
+const mountOnStage = () => {
+  const hook = mountEditor();
+  const stage = document.createElement('div');
+
+  stage.getBoundingClientRect = () => DOMRect.fromRect({ width: 1920, height: 1080 });
+  hook.result.current.stageRef.current = stage;
+  act(() => hook.result.current.panels[0]?.onMouseDown({ clientX: 100, clientY: 100 }));
+
+  return hook;
+};
+
 beforeEach(() => {
   vi.mocked(send).mockClear();
 });
@@ -90,5 +103,33 @@ describe(useHudEditor, () => {
     const hook = mountEditor([panel({ x: 192 })]);
 
     expect(hook.result.current.panels[0]?.style.left).toBe('10%');
+  });
+
+  it('keeps a press moved by less than the drag slop where it was', () => {
+    mountOnStage();
+
+    act(() => mouse('mousemove', 103, 103));
+    act(() => mouse('mouseup', 103, 103));
+
+    expect(send).not.toHaveBeenCalled();
+  });
+
+  it('sends nothing while a panel is dragged', () => {
+    mountOnStage();
+
+    act(() => mouse('mousemove', 160, 100));
+
+    expect(send).not.toHaveBeenCalled();
+  });
+
+  it('sends the new placement once, on mouse-up', () => {
+    mountOnStage();
+
+    act(() => mouse('mousemove', 140, 100));
+    act(() => mouse('mousemove', 160, 100));
+    act(() => mouse('mouseup', 160, 100));
+
+    expect(send).toHaveBeenCalledOnce();
+    expect(send).toHaveBeenCalledWith(expect.objectContaining({ type: 'hud_move', panel: 'damage_log', x: 80 }));
   });
 });

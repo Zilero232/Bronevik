@@ -8,5 +8,6 @@ DEFAULTS = {
     'font_size': 14,
     'show_thresholds': True,
     'show_skill': True,
+    'show_battles': True,
 }
 LIMITS = {'font_size': (8, 32)}

@@ -6,7 +6,14 @@ import unittest
 import _support
 from otmetki.core.settings import Settings
 from otmetki.features.battle_loadout.i18n import STRINGS
-from otmetki.features.battle_loadout.model import clean_device, clean_devices, format_panel, overlay_of
+from otmetki.features.battle_loadout.model import (
+    clean_device,
+    clean_devices,
+    format_panel,
+    icons_found,
+    loadout_summary,
+    overlay_of,
+)
 from otmetki.features.battle_loadout.model.preview import preview_text
 from otmetki.features.battle_loadout.settings import SCHEMA, SETTINGS
 
@@ -144,7 +151,7 @@ class FormatTest(unittest.TestCase):
     def test_the_row_is_the_client_icons_alone(self):
         text = format_panel(clean_devices([turbocharger(bonus=False)]), Settings({}, SCHEMA))
 
-        assert text == u'<img src="img://gui/maps/icons/artefact/turbocharger.png" width="45" height="45"/>'
+        assert text == u'<img src="img://gui/maps/icons/artefact/turbocharger.png" width="40" height="40"/>'
 
     def test_a_device_without_an_icon_keeps_a_mark_and_no_name(self):
         devices = clean_devices([turbocharger(icon=None, bonus=False)])
@@ -187,8 +194,31 @@ class SettingsTest(unittest.TestCase):
     def test_an_older_default_place_is_retired(self):
         assert (-200, -66, 'center', 'bottom') in SCHEMA.retired
 
-    def test_icons_the_size_of_the_stock_equipment_icons(self):
-        assert SCHEMA.defaults['icon_size'] == 45
+    def test_icons_fill_the_44_px_slot_of_the_design(self):
+        assert SCHEMA.defaults['icon_size'] == 40
+
+
+class SummaryTest(unittest.TestCase):
+
+    def test_a_read_counts_the_devices_the_directives_and_the_icons_the_client_has(self):
+        loadout = {'devices': [turbocharger(), ventilation()], 'directives': [directive()], 'reason': None}
+        devices = clean_devices(loadout['devices'] + loadout['directives'])
+
+        summary = loadout_summary(loadout, devices, lambda path: 'rammer' not in path)
+
+        assert summary == 'battle_loadout: 2 devices, 1 directives, icons found 2'
+
+    def test_an_empty_read_says_why(self):
+        loadout = {'devices': [], 'directives': [], 'reason': 'no vehicle yet'}
+
+        summary = loadout_summary(loadout, [], lambda path: True)
+
+        assert summary == 'battle_loadout: nothing to show, no vehicle yet'
+
+    def test_a_glyph_without_a_client_image_is_not_a_found_icon(self):
+        devices = clean_devices([turbocharger(icon=None)])
+
+        assert icons_found(devices, lambda path: True) == 0
 
 
 if __name__ == '__main__':

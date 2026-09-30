@@ -18,6 +18,8 @@ class Component(object):
     panel = attr.ib(default=False)
     instance = attr.ib(default=None)
     fallback_title = attr.ib(default=None)
+    config_keys = attr.ib(default=(), converter=tuple)
+    config_source = attr.ib(default=None)
 
     def __attrs_post_init__(self):
         self.switch_source = self.switch_source or self.source
@@ -33,7 +35,11 @@ class Component(object):
         return key == self.switch or key in self.field_keys()
 
     def source_of(self, key):
-        return self.switch_source if key == self.switch else self.source
+        if key == self.switch:
+            return self.switch_source
+        if key in self.config_keys:
+            return self.config_source
+        return self.source
 
     def update(self, key, value):
         if not self.editable(key):
@@ -48,10 +54,12 @@ class Component(object):
         return {'key': self.switch, 'value': bool(switch_settings.get(self.switch))}
 
     def _describe_fields(self, labels):
-        settings = self.source.settings
-        if settings is None:
-            return []
-        return describe_fields(settings, self.field_keys(), self.id, labels)
+        fields = []
+        for key in self.field_keys():
+            settings = self.source_of(key).settings
+            if settings is not None:
+                fields.extend(describe_fields(settings, [key], self.id, labels))
+        return fields
 
     def describe(self, labels):
         section, context = placement_of(self.id, self.group, self.panel)
@@ -73,6 +81,8 @@ class Component(object):
             described['actions'] = list(instance.ui_actions() or [])
         if instance is not None and hasattr(instance, 'ui_page'):
             described['page'] = instance.ui_page()
+        if instance is not None and hasattr(instance, 'ui_editor'):
+            described['editor'] = instance.ui_editor()
         return described
 
 

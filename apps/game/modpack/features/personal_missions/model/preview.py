@@ -1,18 +1,19 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from . import clean_missions, format_battle
-from .constants import PREVIEW_MISSIONS, PREVIEW_VEHICLE_CLASS
-from .widget import battle_widget
+from . import clean_missions, format_hangar
+from .constants import PREVIEW_MISSIONS
+from .widget import hangar_widget
 
 
 def _preview_missions():
-    missions, _totals = clean_missions(PREVIEW_MISSIONS)
-    return missions
+    return clean_missions(PREVIEW_MISSIONS)
 
 
 def preview_text(settings, translate):
-    return format_battle(_preview_missions(), PREVIEW_VEHICLE_CLASS, settings, translate) or u''
+    missions, totals = _preview_missions()
+    return format_hangar(missions, settings, translate, totals) or u''
 
 
 def preview_widget(settings, translate):
-    return battle_widget(_preview_missions(), PREVIEW_VEHICLE_CLASS, settings, translate)
+    missions, totals = _preview_missions()
+    return hangar_widget(missions, settings, translate, totals)

@@ -2,14 +2,18 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import BigWorld
 
-from ....core.client.battle import controls_own_vehicle, optional_devices, player, session_provider
+from ....core.client.battle import arena, controls_own_vehicle, optional_devices, player, session_provider
 from ....core.log import log_exception
+from .constants import NO_VEHICLE, NOTHING_INSTALLED
 
-# RU 1.45 client source: PlayerAvatar.getVehicleDescriptor() (the own vehicle's descriptor, with the chosen
-# specialisation slot), VehicleDescriptor.iterOptDevsWithSlots() (each installed device with its slot, in slot order; a
-# device in a slot of one of its categories gets the slot's bonus, SupplySlotFilter's plain set intersection), and the
-# stock battle tooltip of a device (gui/shared/tooltips/battle_opt_devices.py): the name from
-# artefacts/<tierlessName>/name, the effect from artefacts/<groupName>/battle_descr or the device's
+# RU 1.45 client source: the own vehicle's descriptor in the arena's vehicle list (ClientArena
+# vehicles[id]['vehicleType'], what OptionalDevicesController reads through
+# vehicle_getter.getOptionalDevicesByVehID), not PlayerAvatar.getVehicleDescriptor(): that is the Vehicle entity's
+# descriptor, built from publicInfo.compDescr (entity_defs/Vehicle.def PUBLIC_VEHICLE_INFO, ALL_CLIENTS), which every
+# client gets alike and so carries no equipment. VehicleDescriptor.iterOptDevsWithSlots() gives each installed device
+# with its slot, in slot order (a device in a slot of one of its categories gets the slot's bonus, SupplySlotFilter's
+# plain set intersection), and the stock battle tooltip of a device (gui/shared/tooltips/battle_opt_devices.py) names
+# it from artefacts/<tierlessName>/name, its effect from artefacts/<groupName>/battle_descr or the device's
 # shortDescriptionSpecial.
 
 
@@ -79,14 +83,14 @@ def _device(device, slot, boosted):
 # (entity_defs/Vehicle.def: setups, setupsIndexes, crewCompactDescrs, customRoleSlotTypeId, vehPostProgression,
 # disabledSwitches). Vehicle.__init__ reads the role slot from the extra data (veh_post_progression_controller
 # processVehExtData), so the builder needs it, and the arena's modifiers the way PrebattleSetupsController passes them.
-def _gui_vehicle():
+def _gui_vehicle(descriptor):
     from gui.battle_control.gui_vehicle_builder import VehicleBuilder
 
     entity = BigWorld.entity(player().playerVehicleID)
     if entity is None or getattr(entity, 'setups', None) is None:
         return None
 
-    compact_descr = entity.typeDescriptor.makeCompactDescr()
+    compact_descr = descriptor.makeCompactDescr()
     builder = VehicleBuilder()
     builder.setStrCD(compact_descr)
     builder.setShells(compact_descr, entity.setups)
@@ -140,8 +144,8 @@ def _boosted(boosters, vehicle):
     return set(device.intCD for device in devices if _is_boosted(device, boosters))
 
 
-def _setups():
-    vehicle = _gui_vehicle()
+def _setups(descriptor):
+    vehicle = _gui_vehicle(descriptor)
     if vehicle is None:
         return set(), []
 
@@ -164,23 +168,38 @@ def _read_device(device, slot, boosted):
         return _plain_device(device)
 
 
-def _devices(boosted):
-    installed = player().getVehicleDescriptor().iterOptDevsWithSlots()
+def _devices(descriptor, boosted):
+    installed = descriptor.iterOptDevsWithSlots()
     return [_read_device(device, slot, boosted) for device, slot in installed if device is not None]
 
 
+def _own_descriptor():
+    vehicles = getattr(arena(), 'vehicles', None) or {}
+    info = vehicles.get(getattr(player(), 'playerVehicleID', None)) or {}
+    return info.get('vehicleType')
+
+
+def _empty(reason):
+    return {'devices': [], 'directives': [], 'reason': reason}
+
+
 # The GUI vehicle only adds the directives and the boosted marks: when the client cannot build it, the row still
-# shows the devices from the descriptor.
+# shows the devices from the descriptor. `reason` says why nothing was read (None once something was).
 def own_loadout():
+    descriptor = _own_descriptor()
+    if descriptor is None:
+        return _empty(NO_VEHICLE)
+
     try:
-        boosted, directives = _setups()
+        boosted, directives = _setups(descriptor)
     except Exception:
         log_exception('battle loadout: own setups')
         boosted, directives = set(), []
 
     try:
-        devices = _devices(boosted)
+        devices = _devices(descriptor, boosted)
     except Exception:
         log_exception('battle loadout: own devices')
         devices = []
-    return devices + directives
+    reason = None if devices or directives else NOTHING_INSTALLED
+    return {'devices': devices, 'directives': directives, 'reason': reason}

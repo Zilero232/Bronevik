@@ -44,7 +44,7 @@ export const useHudOverlay = () => {
     dragging: live?.id === id,
     measureRef: measureRef(id),
     onClick: () => {
-      if (button && !edit) {
+      if (button && !movable) {
         sendHud({ type: 'pressed', id });
       }
     }

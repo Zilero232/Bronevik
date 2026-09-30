@@ -5,15 +5,24 @@
 - `pace`: `PaceBook`, the combined damage of the player's last own battles per tank;
 - `targets`: `moe_state`, every value a marks view shows;
 - `macros`: `moe_macros` (the state as template text) and `moe_color` (the colour ramp);
-- `cache`: `ThresholdCache`, the curves per tank with their read time.
+- `cache`: `ThresholdCache`, the curves per tank with their read time;
+- `mastery`: the mastery badges' XP per battle from the same answer.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from .cache import ThresholdCache
-from .constants import EMA_K, EMA_WINDOW, MARK_LEVELS, TARGET_LEVELS
+from .constants import EMA_K, EMA_WINDOW, MARK_LEVELS, MASTERY_CLASSES, TARGET_LEVELS
 from .curve import ThresholdCurve, next_level
 from .macros import moe_color, moe_macros
-from .ema import battles_to_reach, combined_damage, project_moving_avg, rating_to_percent, required_battle_damage
+from .mastery import mastery_from_api, mastery_state
+from .ema import (
+    battles_to_reach,
+    combined_damage,
+    project_moving_avg,
+    rating_change,
+    rating_to_percent,
+    required_battle_damage,
+)
 from .pace import PaceBook, battle_combined
 from .targets import moe_state, next_whole_percent
 
@@ -21,6 +30,7 @@ __all__ = (
     'EMA_K',
     'EMA_WINDOW',
     'MARK_LEVELS',
+    'MASTERY_CLASSES',
     'PaceBook',
     'TARGET_LEVELS',
     'ThresholdCache',
@@ -28,12 +38,15 @@ __all__ = (
     'battle_combined',
     'battles_to_reach',
     'combined_damage',
+    'mastery_from_api',
+    'mastery_state',
     'moe_color',
     'moe_macros',
     'moe_state',
     'next_level',
     'next_whole_percent',
     'project_moving_avg',
+    'rating_change',
     'rating_to_percent',
     'required_battle_damage',
 )

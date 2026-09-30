@@ -3,7 +3,7 @@ effects drawn on the player's own vehicle."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from .hooks import BattleHooks
-from .own_vehicle import EXPLOSION_METHOD, SHOT_METHOD, on_own_shot, on_own_vehicle_effect
+from .own_vehicle import SHOT_METHOD, on_own_shot, on_own_vehicle_effect
 from .session import (
     ammo,
     arena,
@@ -16,7 +16,6 @@ from .session import (
     feedback,
     is_enemy,
     optional_devices,
-    own_hull_yaw,
     personal_efficiency,
     player,
     server_time,
@@ -30,7 +29,6 @@ from .session import (
 )
 
 __all__ = (
-    'EXPLOSION_METHOD',
     'SHOT_METHOD',
     'BattleHooks',
     'ammo',
@@ -46,7 +44,6 @@ __all__ = (
     'on_own_shot',
     'on_own_vehicle_effect',
     'optional_devices',
-    'own_hull_yaw',
     'personal_efficiency',
     'player',
     'server_time',

@@ -9,14 +9,14 @@ import { BattleClockWidget } from '../BattleClockWidget';
 const data = battleClockSchema.parse(readWidgetFixture('battle_clock'));
 
 describe(BattleClockWidget, () => {
-  it('shows the local time under the stock timer and the battle timer beside it', () => {
-    const html = render(<BattleClockWidget data={data} />).container;
+  it('shows only the local time under the stock timer', () => {
+    const html = render(<BattleClockWidget data={{ ...data, timer: '' }} />).container;
 
-    expect(html.textContent).toBe('21:4707:00');
+    expect(html.textContent).toBe('21:47');
   });
 
-  it('puts the timer in front when it replaces the stock one', () => {
-    const html = render(<BattleClockWidget data={{ ...data, big_timer: true }} />).container;
+  it('puts the battle timer above the clock when it replaces the stock one', () => {
+    const html = render(<BattleClockWidget data={data} />).container;
 
     expect(html.textContent).toBe('07:0021:47');
   });

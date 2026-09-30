@@ -15,6 +15,13 @@ STRINGS = {
         'minimap_view_range': u'Круг обзора своей техники',
         'minimap_max_view_range': u'Круг максимального обзора',
         'minimap_draw_range': u'Круг отрисовки',
+        'minimap_native_restore': u'Вернуть как было',
+        'minimap_native_restore_confirm': u'Мод включил круги обзора и названия техники по Alt. '
+                                          u'Вернуть настройки миникарты, которые были до мода?',
+        'minimap_native_recommended': u'Рекомендуемые настройки',
+        'minimap_native_recommended_confirm': u'Круг своего обзора и круг 445 м, названия техники по Alt, '
+                                              u'без круга отрисовки. Текущие настройки сохранятся, их можно вернуть.',
+        'minimap_native_failed': u'Не удалось изменить настройки игры, попробуйте ещё раз.',
     },
     'en': {
         'component_minimap': u'Minimap',
@@ -29,5 +36,12 @@ STRINGS = {
         'minimap_view_range': u'Own view range circle',
         'minimap_max_view_range': u'Maximum view range circle',
         'minimap_draw_range': u'Draw distance circle',
+        'minimap_native_restore': u'Restore my settings',
+        'minimap_native_restore_confirm': u'The mod turned the view range circles and vehicle names on Alt on. '
+                                          u'Restore the minimap settings you had before the mod?',
+        'minimap_native_recommended': u'Recommended settings',
+        'minimap_native_recommended_confirm': u'Own view range and the 445 m circle, vehicle names on Alt, no draw '
+                                              u'distance circle. Your current settings are kept so you can restore them.',
+        'minimap_native_failed': u'Could not change the game settings, please try again.',
     },
 }

@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { CONTEXT_FILTER, SECTION, SECTION_NAV } from '../../../config';
 import {
+  $editor,
   $focusSeq,
   $hits,
   $invalid,
@@ -11,6 +12,8 @@ import {
   $state,
   $summaries,
   $view,
+  closeEditor,
+  openEditor,
   openSection,
   receiveState,
   setContextFilter,
@@ -29,6 +32,7 @@ beforeEach(() => {
   $invalid.set(false);
   $query.set('');
   $focusSeq.set(0);
+  $editor.set(null);
   $view.set({ section: SECTION_NAV.first, expanded: [], context: CONTEXT_FILTER.all });
 });
 
@@ -127,5 +131,29 @@ describe(toggleExpanded, () => {
     openSection(SECTION.profiles);
 
     expect($view.get().expanded).toEqual(['damage_log']);
+  });
+});
+
+describe(openEditor, () => {
+  it('opens the editor of a component', () => {
+    openEditor('crosshair');
+
+    expect($editor.get()).toBe('crosshair');
+  });
+
+  it('closes it', () => {
+    openEditor('crosshair');
+
+    closeEditor();
+
+    expect($editor.get()).toBeNull();
+  });
+
+  it('closes it when another section opens', () => {
+    openEditor('crosshair');
+
+    openSection(SECTION.hud);
+
+    expect($editor.get()).toBeNull();
   });
 });

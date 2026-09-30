@@ -6,7 +6,7 @@ export const sixthSenseSchema = z.object({
   icon: hudIconSchema,
   size: z.number(),
   text: z.string(),
-  color: z.string(),
+  color: z.nullable(z.string()),
   elapsed: z.number(),
   duration: z.number(),
   timer: z.boolean(),

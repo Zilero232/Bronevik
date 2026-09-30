@@ -8,17 +8,20 @@ Gameface window.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import BigWorld
+
 from ...durable import open_config
 from ...hud import BackendChain, ComponentConfig, HudLayer
-from ...log import log
-from .constants import CONFIG_NAME
+from ...hud.report import PanelReport
+from ...log import log, safe
+from .constants import CONFIG_NAME, REPORT_DELAY_S
 from .gameface import GamefaceBackend
 from .guiflash import GuiFlashBackend
 from .stock import StockControl
 
 BACKENDS = (GamefaceBackend, GuiFlashBackend)
 
-_state = {'layer': None, 'config': None, 'backend': None, 'stock': None}
+_state = {'layer': None, 'config': None, 'backend': None, 'stock': None, 'report': None}
 
 
 def build_backend(backends=BACKENDS, log_missing=True):
@@ -59,3 +62,21 @@ def stock_control(app):
         _state['stock'] = StockControl(hud_layer(app), app.bus)
         _state['stock'].install()
     return _state['stock']
+
+
+def panel_report(app):
+    """The battle panels' report (`core.hud.report`), logged once per battle REPORT_DELAY_S after the avatar is
+    ready."""
+    layer = hud_layer(app)
+    report = _state['report']
+    if report is None or report.layer is not layer:
+        report = PanelReport(layer)
+        _state['report'] = report
+        app.bus.on('battle_ready', lambda *args: BigWorld.callback(REPORT_DELAY_S, lambda: _log_report(report)))
+    return report
+
+
+@safe
+def _log_report(report):
+    if report.layer.mode is not None:
+        log(report.text(report.layer.mode))

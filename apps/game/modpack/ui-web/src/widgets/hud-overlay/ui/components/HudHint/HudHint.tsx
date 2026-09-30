@@ -1,5 +1,6 @@
 import type { HudHintProps } from './HudHint.types';
 
+import { HudTip } from '../../../../../shared/ui/hud';
 import { HUD_OVERLAY } from '../../../config';
 
 import s from './HudHint.module.scss';
@@ -16,6 +17,6 @@ const placeOf = ({ hint, screen }: HudHintProps) => {
 
 export const HudHint = ({ hint, screen }: HudHintProps) => (
   <div className={s.hint} role='tooltip' style={placeOf({ hint, screen })}>
-    {hint.text}
+    <HudTip text={hint.text} />
   </div>
 );

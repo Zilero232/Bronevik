@@ -12,7 +12,7 @@ import { remember } from '../../../lib/share-panels';
 export const usePanelContent = (state: HudState | null) => {
   const linesCacheRef = useRef(new WeakMap<HudPanel, RichLine[]>());
   const widgetsCacheRef = useRef(new WeakMap<HudPanel, ResolvedWidget | null>());
-  const panels = useMemo(() => (state?.panels ?? []).filter((panel) => panel.visible), [state]);
+  const panels = useMemo(() => state?.panels ?? [], [state]);
 
   const lines = useMemo(
     () =>

@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import time
 
 from ...payload import build_moe_snapshot_event
+from ..ledger import BattleSnapshots
 from .dossier import current_vehicle_moe
 
 # The MoE thresholds come from public data only: the player's own dossier (damageRating, movingAvgDamage,
@@ -16,6 +17,7 @@ class MarksCapture(object):
     def __init__(self, app):
         self.app = app
         self.hangar_moe = {}
+        self.battles = BattleSnapshots()
         self.moe_sent = dict(app.state.get('moe_sent') or {})
         app.register_state('moe_sent', lambda: self.moe_sent)
 
@@ -28,7 +30,14 @@ class MarksCapture(object):
         self._send_snapshot(snapshot)
         self.app.bus.emit('vehicle_moe', snapshot)
 
-    def after_battle(self, tank_id, moe):
+    def battle_started(self, arena_id, tank_id):
+        self.battles.battle_started(arena_id, self.hangar_moe.get(tank_id))
+
+    def before_battle(self, arena_id, tank_id):
+        return self.battles.before(arena_id, tank_id)
+
+    def after_battle(self, tank_id, moe, arena_id=None):
+        self.battles.finished(arena_id)
         if moe is not None and tank_id in self.hangar_moe:
             self.hangar_moe[tank_id].update({
                 'damage_rating': moe['damage_rating'],

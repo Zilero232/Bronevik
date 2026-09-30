@@ -24,16 +24,6 @@ def settings(**values):
     return Settings(values, SCHEMA)
 
 
-def vehicle_info(**values):
-    info = dict(INFO, vehicle=u'T-34', tiers=(5, 7), crew_xp=12400, crew_role=u'Наводчик', accelerated=True)
-    info.update(values)
-    return info
-
-
-def vehicle_line(info, language='ru'):
-    return format_info(info, settings(), translator(language), NOW).splitlines()[-1]
-
-
 class TankSlugTest(unittest.TestCase):
 
     def test_the_slug_is_the_lower_case_tag(self):
@@ -70,15 +60,15 @@ class PanelTest(unittest.TestCase):
     def test_default_panel(self):
         text = format_info(INFO, settings(), translator(), NOW)
 
-        assert '18:05:09' in text
-        assert '27.09.2026' in text
+        assert '18:05' in text
+        assert '27.09' in text
         assert 'RU4' in text
         assert u'42 мс' in text
         assert '81 234' in text
         assert PING_GOOD_COLOR in text
 
     def test_switches_and_missing_values(self):
-        switches = settings(show_server=False, show_online=False, date_format='', clock_format='%H:%M')
+        switches = settings(show_server=False, show_online=False, date_format='')
 
         text = format_info({'server': 'RU4', 'ping': -1}, switches, translator('en'), NOW)
 
@@ -92,65 +82,42 @@ class PanelTest(unittest.TestCase):
 
         text = format_info(INFO, template, translator('en'), NOW)
 
-        assert text == '18:05:09 RU4 42 ms {x}'
-
-
-class VehicleLineTest(unittest.TestCase):
-
-    def test_selected_vehicle_line(self):
-        last = vehicle_line(vehicle_info())
-
-        assert u'T-34' in last
-        assert u'бои 5–7 ур.' in last
-        assert u'до навыка 12 400 опыта (Наводчик)' in last
-        assert u'ускоренное обучение' in last
-
-    def test_one_tier_crew_without_a_role_and_no_training(self):
-        info = vehicle_info(tiers=[10, 10], crew_role=None, accelerated=False)
-
-        text = format_info(info, settings(), translator('en'), NOW)
-
-        assert 'battles tier 10' in text
-        assert '12 400 XP to a skill' in text
-        assert 'no accelerated training' in text
-
-    def test_no_vehicle_line_without_details(self):
-        info = dict(INFO, vehicle=u'T-34', tiers='x', crew_xp=None, accelerated=None)
-
-        text = format_info(info, settings(), translator(), NOW)
-
-        assert u'T-34' not in text
-
-    def test_vehicle_macros_in_a_template(self):
-        template = settings(template='{vehicle} {tiers} | {crew}')
-
-        text = format_info(vehicle_info(), template, translator('en'), NOW)
-
-        assert text == u'T-34 battles tiers 5–7 | 12 400 XP to a skill (Наводчик)'
+        assert text == '18:05 RU4 42 ms {x}'
 
 
 class WidgetTest(unittest.TestCase):
 
-    def test_the_card_carries_the_time_and_the_date(self):
+    def test_the_strip_carries_the_time_and_the_date(self):
         data = format_widget(INFO, settings(), translator(), NOW)['data']
 
-        assert data['value'] == '18:05:09'
-        assert data['title'] == '27.09.2026'
+        assert data['time'] == '18:05'
+        assert data['date'] == '27.09'
 
-    def test_the_ping_chip_takes_the_band_tone(self):
+    def test_the_strip_carries_the_server_and_the_online_count(self):
         data = format_widget(INFO, settings(), translator(), NOW)['data']
 
-        assert [chip['tone'] for chip in data['chips']] == ['text', 'good', 'text']
+        assert data['server'] == 'RU4'
+        assert data['online'] == '81 234'
+        assert data['online_label'] == u'онлайн'
 
-    def test_the_vehicle_rows_carry_the_vehicle_as_subtitle(self):
-        data = format_widget(vehicle_info(), settings(), translator(), NOW)['data']
+    def test_the_ping_takes_the_band_tone(self):
+        data = format_widget(dict(INFO, ping=80), settings(), translator(), NOW)['data']
 
-        assert data['subtitle'] == u'T-34'
-        assert len(data['rows']) == 3
-        assert data['rows'][2]['status'] == 'done'
+        assert data['ping'] == u'80 мс'
+        assert data['ping_tone'] == 'warning'
 
-    def test_no_card_with_a_custom_template(self):
+    def test_switched_off_values_are_empty(self):
+        switches = settings(show_server=False, show_ping=False, show_online=False)
+
+        data = format_widget(INFO, switches, translator(), NOW)['data']
+
+        assert [data['server'], data['ping'], data['online'], data['online_label']] == ['', '', '', '']
+
+    def test_no_strip_with_a_custom_template(self):
         assert format_widget(INFO, settings(template='{time}'), translator(), NOW) is None
+
+    def test_the_strip_is_a_fixture_for_the_page(self):
+        assert _support.widget_fixture('clock_strip', format_widget(INFO, settings(), translator(), NOW))
 
 
 class PingTest(unittest.TestCase):
@@ -180,12 +147,15 @@ class PingTest(unittest.TestCase):
 class SettingsTest(unittest.TestCase):
 
     def test_an_unknown_clock_format_falls_back_to_the_default(self):
-        assert settings(clock_format='%s').get('clock_format') == '%H:%M:%S'
+        assert settings(clock_format='%s').get('clock_format') == '%H:%M'
+
+    def test_the_date_shows_the_day_and_the_month_by_default(self):
+        assert settings().get('date_format') == '%d.%m'
 
     def test_layout_clamps_the_position(self):
         layout = layout_of(settings(x=99999, align_x='middle'))
 
-        assert layout == {'x': 4000, 'y': 76, 'alignX': 'right', 'alignY': 'top', 'scale': 1.0}
+        assert layout == {'x': 4000, 'y': -196, 'alignX': 'left', 'alignY': 'bottom', 'scale': 1.0}
 
     def test_the_config_switch(self):
         assert SETTINGS == ('hangar_info',)

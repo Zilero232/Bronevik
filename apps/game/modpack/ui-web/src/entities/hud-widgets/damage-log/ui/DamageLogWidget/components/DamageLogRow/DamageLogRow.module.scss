@@ -1,0 +1,76 @@
+@use '../../../../../../../shared/styles/gameface' as *;
+
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.row {
+  display: flex;
+  height: 18px;
+  flex-direction: row;
+  align-items: center;
+}
+
+.enter {
+  animation: row-in 200ms ease-out;
+}
+
+.amount {
+  @include hud-type(value);
+
+  min-width: 40px;
+  margin-right: 8px;
+  text-align: right;
+}
+
+.icon {
+  margin-right: 4px;
+}
+
+.shell {
+  display: flex;
+  min-width: 20px;
+  flex-shrink: 0;
+  margin-right: 4px;
+}
+
+.name {
+  @include hud-type(body);
+  @include ellipsis;
+
+  max-width: 96px;
+  color: token(hud-text);
+}
+
+.muted {
+  color: token(hud-muted);
+}
+
+.hits {
+  @include hud-type(caption);
+
+  margin-left: 4px;
+  color: token(hud-muted);
+}
+
+.extra {
+  display: flex;
+  margin-left: 8px;
+}
+
+.note {
+  @include hud-type(caption);
+  @include ellipsis;
+
+  max-width: 120px;
+  margin-left: 8px;
+  color: token(hud-muted);
+}

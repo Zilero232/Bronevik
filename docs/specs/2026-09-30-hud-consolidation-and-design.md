@@ -7,6 +7,75 @@ The modpack grew one component per idea: 47 catalogue entries, 20 battle panels 
 
 It extends [2026-09-29-hud-visual-redesign.md](2026-09-29-hud-visual-redesign.md). That spec's icon inventory (§2.4), stock-replacement mechanism (§3), number formatting (§4.3), motion (§4.6), z-order (§4.7) and edit mode (§4.8) still apply. Where the two disagree, this spec wins: the plate, the type scale, colours, shell icons, default places, and which components exist.
 
+**§0 is what was built.** It was written before the implementation and adjusts §3–§5 to what had already shipped that day (modpack 0.1.6–0.1.8: `consumables` deleted outright, `battle_loadout` shows equipment icons only, `reload_timer` became its own widget, every panel has a hover hint, the catalogue previews are drawn by the HUD widgets) and to one more rule from the player: **no component repeats another one or the stock client**. Before keeping a component, ask «does the stock client already show this?»; if it does, the component is deleted, not switched off. Where §0 and the later sections disagree, §0 wins.
+
+## 0. Decisions
+
+### 0.1 Per component
+
+«Merge → X»: the package is deleted and X shows what was left of it. «Delete»: the package, its catalogue entry, preview, dock slot, strings, tests and changelog entries go; the manager removes the installed `.mtmod` on update (`RETIRED_SUFFIX`, modpack 0.1.8).
+
+| Component | Decision | Default | Preset / values | Why |
+|---|---|---|---|---|
+| damage_log «Журнал боя» | **keep**, absorbs hit_log and received_hits | on | `style full`, `sections both`, `dealt_lines 6`, `received_lines 4`, `group_by_target on`, `show_hp on`, `show_misses on`, `show_received_blocked on`, `show_assist_rows on`, `alt_mode on`, `palette graphite` | One place per shot: dealt section (own shots with outcome, shell, class, target, HP left; assist rows) and received section, replacing the stock log |
+| hit_log | merge → damage_log (dealt section) | — | — | Showed the same own shots as the log's dealt rows |
+| received_hits | merge → damage_log (received section) | — | — | Showed the same hits on you as the log's received rows |
+| last_hit (panel of damage_log) | **delete** | — | — | The newest received row of the log, drawn a second time |
+| death_card | **delete** | — | — | Stock: the post-mortem panel names the killer and the vehicle; the stock damage panel shows the damaged modules and crew |
+| arty_meter | **delete** | — | — | Stock log and the received section already list SPG hits with the SPG class icon; the thermometer was the biggest block for the rarest event |
+| battle_progress «Прогресс боя» (new) | **new**, absorbs main_gun, battle_efficiency, personal_best | off | rows `main gun`, `record`, `WN8` on; `main_gun_share off`, `record_metric damage`, `colored on` | One titleless plate instead of three titled cards; packs disagree on main gun (BO on, Lebwa off) and WN8 needs binding |
+| main_gun, battle_efficiency | merge → battle_progress | — | — | — |
+| personal_best | merge → battle_progress (record row); the post-battle card and sound are **deleted** | — | — | The record row already shows it during the battle; the per-tank record store is kept by battle_progress |
+| session_goals | merge → session_stats (goal rows and the «goal done» sound); the battle row is **deleted** | — | — | A site goal is a session number; the Session card shows it between battles, and the progress rows already answer «how much damage is left» in battle |
+| personal_missions | **keep** hangar card and window list; battle panel **deleted** | on | `max_missions` = | Stock: the quest-progress panel under the capture bars shows the ЛБЗ conditions in battle |
+| marks_panel «Отметки» | **keep**, absorbs hangar_marks and marks_history, tank row of hangar_ratings | on | `style compact`, `show_battle_panel on`, `hangar_card on`, `show_trend on`, `trend_battles 5`, `show_tank_ratings on` | The product's core; one tank name and one MoE percent in the hangar instead of three |
+| hangar_marks, marks_history | merge → marks_panel (Tank card, history page) | — | — | Three cards with the same MoE percent |
+| team_hp | keep | on | `style full`, `show_diff on`, `replace_stock on` = | Replaces the stock score strip (not shown twice), adds team HP and the difference |
+| sixth_sense | keep | on | `icon_set lamp`, `show_timer on` = | Replaces the stock lamp, adds the timer |
+| battle_loadout | keep | on | `icon_size 40` | The stock bar shows only devices with a live state, not the equipment set, ★ slots or directives |
+| reload_timer | **delete** | — | — | Stock: the reticle's reload indicator, reload timer and cassette (the `minimal` crosshair preset turns them on) |
+| gun_arc «Углы наводки» | keep, restyled as a traverse scale | off | `show_degrees on`, `warn_deg 5` = | No stock equivalent; only limited-traverse vehicles |
+| battle_clock | merge → hangar_info (`battle_clock` key) | on | `battle_clock_format %H:%M`, `replace_timer off` | The clock is one component in the hangar and in battle |
+| platoon_points | keep | off | = | Tournament niche |
+| bush_circle | keep | off | = | Niche |
+| hud_layouts | keep | on | = | Invisible, a layout per battle type |
+| crosshair | keep | **on** | `preset minimal` on a fresh install: no grid, the circle, gun marker and reload readout kept | Lebwa, Near_You and Jove all drop the grid; the one-time apply keeps a backup and «Вернуть как было» |
+| camera | keep | on | `dynamic_camera off`, `horizontal_stabilization on` on a fresh install | The stock camera shake is the most common complaint; Lebwa ships the same |
+| minimap | keep | on | `max_view_range on`, `view_range on`, `vehicle_names alt` on a fresh install | Jove's and BO's minimap circles, all game options |
+| chat_filter | keep | **off** | = | Overrides a client view; no pack filters by default |
+| streamer_mode | keep | **off** | = | Niche |
+| battle_sounds | keep | **off** | = | Needs a sound mod with Wwise events |
+| session_stats «Сессия» | **keep**, absorbs session_goals (hangar), hangar_ratings (account line, session WN8) | on | `show_goals on`, `goal_sound on`, `show_account on` | Stock «Статистика сессии» is a pop-up behind a button without WN8 or goals; the card is glanceable |
+| hangar_ratings | merge → session_stats (account line) and marks_panel (tank row) | — | — | The session numbers were shown twice |
+| tilt_guard | **delete** | — | — | The Session card's results strip already shows a loss streak; a nag card on top is noise |
+| platoon_helper | **delete** | — | — | Stock: the platoon window shows who pressed «Готов»; the platoon session rows were a niche copy of the Session card |
+| battle_results | **keep**, absorbs battle_hits | on | `hits_tab on`; = | Post-battle MoE change and the session list; the hits figure moves to its window page |
+| battle_hits | merge → battle_results (window page «Попадания по мне»); the hangar card is **deleted** | — | — | The card repeated the tank name and the last battle next to the Tank card |
+| hangar_info «Часы и сервер» | **keep**, absorbs battle_clock; the tank rows are **deleted** | on | `clock_format %H:%M`, `date_format %d.%m`, `battle_clock on` | Stock: the vehicle tooltip shows the battle tiers and the crew panel the crew XP |
+| comp7_helper | keep | on | = | Shows only in Onslaught; the Champion/Legend cut-offs are otherwise behind the leaderboard page |
+| event_trackers | keep | off | = | Shows only during an event |
+| replay_manager | keep | on | = | A window page |
+| hangar_tweaks | keep | **off** | = | Packs disagree on the carousel |
+| auto_resupply | keep | **off** | = | Sends client requests |
+| notification_filter, hangar_cleaner | keep | **off** | = | Override client views; no pack does it by default |
+| replay_upload | keep | off | = | Privacy |
+| core, companion, ui | keep (required) | on | — | — |
+
+Result: 47 catalogue entries → 31; battle panels with everything on 20 → 8 (team_hp, damage_log, marks_panel, battle_progress, battle_loadout, sixth_sense, gun_arc, platoon_points) plus the battle clock; hangar cards 10 → 2 (Tank, Session) plus the context cards (ЛБЗ, Натиск, events) and the clock strip.
+
+### 0.2 Existing players
+
+- **Switches** (`config.json`, `DEFAULTS_REVISION` 3): a switch whose default turned off moves only when it still holds the old default **and** its component was never configured (its `components.json` section equals the schema defaults); from now on the window records every switch and value the player changes in `user_set`, and later revisions skip those keys. Revision 3 turns off hangar_tweaks, battle_sounds, battle_chat_filter, hangar_auto_resupply, hangar_notification_filter, hangar_cleaner, streamer_mode and battle_bush_circle this way.
+- **Merged switches:** a survivor is on if it or any merged switch was on (damage_log ← hit_log, received_hits; marks ← hangar_marks, marks_history; battle_progress ← main_gun, battle_efficiency, personal_best; session ← session_goals, hangar_ratings; battle_results ← battle_hits; hangar_info ← battle_clock). Deleted switches drop out of the file on the next save.
+- **Values** (`components.json`): a moved key is copied only when it differs from its old default; a key whose default changed moves only when it still holds the old default and is not in `user_set` (`RETIRED_VALUES`).
+- **Client settings** (crosshair, camera, minimap): applied once on a fresh install only, with the replaced values kept in `state.json` and a «Вернуть как было» button; an existing player's `native` values stay untouched.
+
+### 0.3 Design
+
+§6 as written, with two adjustments: the tone names stay those the Python side already sends (`accent` is the dealt tone, `success` = `good`, `warning` = `warn`; `dim` is new), and there are no rails and no `flash` state (the incoming card is gone).
+
+---
+
 Sources: every `features/*` package and `catalog/catalog.json` (read on 2026-09-30), `ui-web/src/entities/hud-widgets/*`, `ui-web/src/shared/ui/hud/*`, `packages/core/hud/*`, `packages/companion/config/constants.py`, `packages/design-tokens/scss/*`, the harness screenshots, and the competitor code study ([2026-09-30-modpacks-code.md](../research/competitors/2026-09-30-modpacks-code.md)) plus the packs extracted for it (Jove, Lebwa, Near_You, Battle Observer, pmod, XVM configs).
 
 ---

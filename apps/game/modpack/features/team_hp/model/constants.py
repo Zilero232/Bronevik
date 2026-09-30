@@ -12,6 +12,10 @@ PAIR_PARTS = {
     'compact': {'bars': False, 'numbers': True},
 }
 SIDE_COLORS = {'allies': 'ally_color', 'enemies': 'enemy_color'}
+# The HUD tones the page paints each side in (docs/specs/2026-09-30-hud-consolidation-and-design.md section 6.4); a
+# colour the player set other than the default (`ally_color`, `enemy_color`) overrides its tone.
+SIDE_TONES = {'ally': 'ally', 'enemy': 'enemy'}
+SIDE_COLOR_KEYS = (('ally', 'ally_color'), ('enemy', 'enemy_color'))
 # The class icon tint of each side, keyed by whether it is the allies, as on the stock strip.
 SIDE_TINTS = {True: 'green', False: 'red'}
 # The difference line under the bars: this much smaller than the bars, never below the smallest readable size.

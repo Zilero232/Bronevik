@@ -14,7 +14,8 @@ const data = (style: TeamHpData['style']): TeamHpData => ({
   show_score: true,
   score_alive: false,
   diff: 2300,
-  colors: { ally: '#7CD35B', enemy: '#E3564A' },
+  tones: { ally: 'ally', enemy: 'enemy' },
+  colors: { ally: null, enemy: null },
   vehicles: {
     allies: [vehicle(1800, 1200), vehicle(1500, 0)],
     enemies: [vehicle(1700, 900)]
@@ -39,22 +40,21 @@ const enemiesOnly = (style: TeamHpData['style'], enemies: TeamHpVehicle[]): Team
 const stripLabels = (strip: ReturnType<typeof teamHpView>['allies']['strip']) => strip.map((item) => (item.kind === 'tier' ? item.label : item.kind));
 
 describe(teamHpView, () => {
-  it('shows the numbers, the bars, the frag score and the signed difference in the full style', () => {
+  it('shows the numbers, the bars, the score and the signed difference in the full style', () => {
     const view = teamHpView(data('full'));
 
-    expect(view).toMatchObject({ numbers: 'inside', showBars: true, showStrip: false, score: '2 : 1', diff: '+2 300', diffAhead: true });
+    expect(view).toMatchObject({ numbers: true, bars: true, strip: false, secondRow: true, score: { allies: '2', enemies: '1' }, diff: '+2 300' });
   });
 
-  it('writes the HP inside bars tall enough for it in the full style', () => {
-    const view = teamHpView(data('full'));
-
-    expect(view.barHeight).toBe(TEAM_HP.barHeight.labelled);
+  it('paints a lead good and a gap bad', () => {
+    expect(teamHpView(data('full')).diffTone).toBe('good');
+    expect(teamHpView({ ...data('full'), diff: -400 }).diffTone).toBe('bad');
   });
 
-  it('keeps the plain bar styles thin and without numbers', () => {
+  it('keeps the bar styles without numbers', () => {
     const view = teamHpView(data('bars'));
 
-    expect(view).toMatchObject({ numbers: 'none', barHeight: TEAM_HP.barHeight.plain });
+    expect(view).toMatchObject({ numbers: false, bars: true });
   });
 
   it('leaves no centre block without a score or a difference', () => {
@@ -66,28 +66,41 @@ describe(teamHpView, () => {
   it('fills the bar by the share of HP left and writes the HP', () => {
     const view = teamHpView(data('full'));
 
-    expect(view.allies.fill).toBe(97);
+    expect(view.allies.fill).toBe(Math.round((3200 / 5300) * TEAM_HP.barWidth));
     expect(view.allies.hp).toBe('3 200');
+  });
+
+  it('paints the sides with the tones of the payload', () => {
+    const view = teamHpView(data('full'));
+
+    expect(view.allies.paint).toEqual({ tone: 'ally', text: undefined, fill: undefined });
+    expect(view.enemies.paint.tone).toBe('enemy');
+  });
+
+  it('paints a side in the colour the player set instead of its tone', () => {
+    const view = teamHpView({ ...data('full'), colors: { ally: '#00FF00', enemy: null } });
+
+    expect(view.allies.paint).toEqual({ tone: null, text: { color: '#00FF00' }, fill: { backgroundColor: '#00FF00' } });
   });
 
   it('keeps the frags in the score without the alive toggle', () => {
     const view = teamHpView(withAlliesAlive(3));
 
-    expect(view.score).toBe('2 : 1');
+    expect(view.score).toEqual({ allies: '2', enemies: '1' });
   });
 
   it('puts the alive count, not the frags, in the score once toggled', () => {
     const view = teamHpView({ ...withAlliesAlive(3), score_alive: true });
 
-    expect(view.score).toBe('3 : 1');
+    expect(view.score).toEqual({ allies: '3', enemies: '1' });
   });
 
   it('splits the bar into one segment per tank, sized by its max HP', () => {
     const { enemies } = teamHpView(enemiesOnly('segments', [vehicle(1800, 1200), vehicle(1500, 0)]));
 
     expect(enemies.segments).toMatchObject([
-      { kind: 'segment', width: 103 },
-      { kind: 'segment', width: 86, fill: 0, alive: false }
+      { kind: 'segment', width: 91 },
+      { kind: 'segment', width: 76, fill: 0, alive: false }
     ]);
   });
 
@@ -110,21 +123,21 @@ describe(teamHpView, () => {
     expect(stripLabels(allies.strip)).toEqual(['vehicle', 'IX', 'vehicle', 'vehicle', 'X']);
   });
 
-  it('dims the dead in the icon strip', () => {
+  it('marks the dead in the icon strip', () => {
     const { enemies } = teamHpView(enemiesOnly('icons', [vehicle(1500, 0)]));
 
-    expect(enemies.strip[0]).toMatchObject({ alpha: TEAM_HP.deadAlpha, bar: 0 });
+    expect(enemies.strip[0]).toMatchObject({ kind: 'vehicle', alive: false });
   });
 
-  it('keeps the compact style to one line without bars or the difference', () => {
-    const view = teamHpView(data('compact'));
+  it('keeps the compact style to one row of numbers and the score', () => {
+    const view = teamHpView({ ...data('compact'), show_score: false });
 
-    expect(view).toMatchObject({ showBars: false, diff: null, numbers: 'outside' });
+    expect(view).toMatchObject({ numbers: true, bars: false, secondRow: false, diff: null, score: { allies: '2', enemies: '1' } });
   });
 
-  it('keeps the minimal style to thin bars without numbers', () => {
+  it('keeps the minimal style to one row of bars without numbers', () => {
     const view = teamHpView(data('minimal'));
 
-    expect(view).toMatchObject({ numbers: 'none', barHeight: TEAM_HP.barHeight.thin });
+    expect(view).toMatchObject({ numbers: false, bars: true, secondRow: false });
   });
 });

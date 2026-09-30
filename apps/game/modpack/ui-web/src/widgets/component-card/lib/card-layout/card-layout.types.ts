@@ -1,4 +1,5 @@
 import type { UiComponent, UiField, UiState } from '../../../../shared/api/protocol';
+import type { UiIconName } from '../../../../shared/lib/icon-sprite';
 
 export type CardLayoutInput = {
   component: UiComponent;
@@ -12,6 +13,12 @@ export type CardLayout = {
   expandable: boolean;
   open: boolean;
   showEmpty: boolean;
+  chevron: UiIconName;
+};
+
+export type ChevronInput = {
+  hasEditor: boolean;
+  open: boolean;
 };
 
 export type PreviewPanel = UiState['hud']['panels'][number];

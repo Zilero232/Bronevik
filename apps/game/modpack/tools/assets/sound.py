@@ -27,20 +27,12 @@ PEAK = 0.7
 CHIMES = {
     'sixthSense': ((0.0, 659.26, 0.9, 1.0), (0.11, 987.77, 0.8, 0.9), (0.11, 1318.51, 0.5, 0.25)),
     'sixthSense_off': ((0.0, 987.77, 0.5, 0.55), (0.09, 659.26, 0.6, 0.5)),
-    # A goal from the site met (session_goals): a rising major arpeggio.
+    # A goal from the site met (session_stats): a rising major arpeggio.
     'otmetki_goal': (
         (0.0, 523.25, 0.7, 0.8),
         (0.1, 659.26, 0.7, 0.8),
         (0.2, 783.99, 0.7, 0.85),
         (0.3, 1046.5, 0.9, 0.9),
-    ),
-    # A new personal best on the tank (personal_best): a short fanfare that lands on a held chord.
-    'otmetki_record': (
-        (0.0, 392.0, 0.25, 0.7),
-        (0.14, 523.25, 0.25, 0.75),
-        (0.28, 659.26, 1.0, 0.9),
-        (0.28, 783.99, 1.0, 0.8),
-        (0.28, 1046.5, 0.9, 0.35),
     ),
     # A second of the sixth-sense countdown (sixth_sense tick_sound): one short high click.
     'otmetki_tick': ((0.0, 1760.0, 0.12, 1.0),),

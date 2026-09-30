@@ -41,7 +41,6 @@ def sample_card():
         value=u'79.53%',
         value_tone='gold',
         subtitle=u'EBR 105',
-        rail='progress',
         chips=sample_chips(),
         footer=u'ср. урон 2 781',
         width=260,
@@ -59,25 +58,15 @@ def oversized_card_data():
 
 
 def docked_feature_schemas():
-    from otmetki.features.battle_efficiency.settings import SCHEMA as BATTLE_EFFICIENCY
     from otmetki.features.battle_loadout.settings import SCHEMA as BATTLE_LOADOUT
-    from otmetki.features.damage_log.settings import LAST_HIT_SCHEMA
-    from otmetki.features.hangar_marks.settings import SCHEMA as HANGAR_MARKS
-    from otmetki.features.hangar_ratings.settings import SCHEMA as HANGAR_RATINGS
-    from otmetki.features.hit_log.settings import SCHEMA as HIT_LOG
+    from otmetki.features.damage_log.settings import SCHEMA as DAMAGE_LOG
+    from otmetki.features.marks_panel.settings import CARD_SCHEMA as HANGAR_MARKS
     from otmetki.features.marks_panel.settings import SCHEMA as MARKS_PANEL
-    from otmetki.features.personal_best.settings import SCHEMA as PERSONAL_BEST
-    from otmetki.features.received_hits.settings import SCHEMA as RECEIVED_HITS
     return (
         ('otmetki.hud.hangar_marks', HANGAR_MARKS),
-        ('otmetki.hangar_ratings', HANGAR_RATINGS),
         ('otmetki.hud.marks_panel', MARKS_PANEL),
-        ('otmetki.hud.personal_best', PERSONAL_BEST),
-        ('otmetki.hud.received_hits', RECEIVED_HITS),
-        ('otmetki.hud.hit_log', HIT_LOG),
-        ('otmetki.hud.last_hit', LAST_HIT_SCHEMA),
+        ('otmetki.hud.damage_log', DAMAGE_LOG),
         ('otmetki.hud.battle_loadout', BATTLE_LOADOUT),
-        ('otmetki.hud.battle_efficiency', BATTLE_EFFICIENCY),
     )
 
 
@@ -211,7 +200,7 @@ class DockTest(unittest.TestCase):
 
         dock = dock_of('otmetki.personal_missions', layout)
 
-        assert dock == {'group': 'hangar_right', 'order': 2, 'reserve': 190}
+        assert dock == {'group': 'hangar_right', 'order': 1, 'reserve': 190}
 
     def test_a_moved_panel_leaves_its_column(self):
         moved = dict(dock_layout('hangar_right'), x=-40)

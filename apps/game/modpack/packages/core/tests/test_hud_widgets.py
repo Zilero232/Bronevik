@@ -19,13 +19,12 @@ from otmetki.core.hud.icons import (
     outcome_icon,
     resolve,
     shell_icon,
-    shell_icon_of,
     split,
     tier_icon,
 )
 from otmetki.core.hud.stock import BATTLE_DAMAGE_LOG_PANEL, FRAG_CORRELATION_BAR, SIXTH_SENSE, StockSuppression
 from otmetki.core.hud.surface import SPACE_BATTLE, HudSurface
-from otmetki.core.hud.widget import TONES, WIDGET_VERSION, tone, widget
+from otmetki.core.hud.widget import TONES, WIDGET_VERSION, color_override, tone, widget
 from otmetki.core.storage import MemoryFile
 
 HUD_PROTOCOL_CONSTANTS = os.path.join(
@@ -121,6 +120,15 @@ class WidgetPayloadTest(unittest.TestCase):
 
     def test_missing_tone_takes_the_given_fallback(self):
         assert tone(None, 'muted') == 'muted'
+
+    def test_a_colour_other_than_the_default_overrides_the_tone(self):
+        assert color_override('#00ff00', '#7CD35B') == '#00FF00'
+
+    def test_the_default_colour_leaves_the_tone(self):
+        assert color_override('#7cd35b', '#7CD35B') is None
+
+    def test_a_bad_colour_leaves_the_tone(self):
+        assert color_override('green', '#7CD35B') is None
 
     def test_tones_match_the_page(self):
         source = read_hud_protocol_constants()
@@ -249,14 +257,8 @@ class ShellIconTest(unittest.TestCase):
 
         assert icon.startswith('img://gui/maps/icons/ammopanel/battle_ammo/ARMOR_PIERCING_CR_PREMIUM.png')
 
-    def test_shell_code(self):
-        assert shell_icon_of('heat').startswith('img://gui/maps/icons/shell/small/HOLLOW_CHARGE.png')
-
     def test_bad_name_has_no_icon(self):
         assert shell_icon('bad name') is None
-
-    def test_unknown_code_has_no_icon(self):
-        assert shell_icon_of('smoke') is None
 
     def test_missing_name_has_no_icon(self):
         assert shell_icon(None) is None

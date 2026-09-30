@@ -22,7 +22,7 @@ COMPANION_KEYS = (
     'hud_modifier',
 )
 # Never editable in the window: connection, one-shot actions and the language (the header switches it).
-HIDDEN_CONFIG_KEYS = ('server_url', 'bind_code', 'settings_action', 'language')
+HIDDEN_CONFIG_KEYS = ('server_url', 'bind_code', 'settings_action', 'language', 'user_set', 'defaults_revision')
 
 ACTION_SETTINGS_EXPORT = 'settings_export'
 ACTION_SETTINGS_RESTORE = 'settings_restore'
@@ -51,23 +51,19 @@ CONTEXTS = (CONTEXT_HANGAR, CONTEXT_BATTLE, CONTEXT_ANY)
 
 PLACEMENT = {
     'companion': (SECTION_DATA, CONTEXT_ANY),
-    'marks_panel': (SECTION_MARKS, CONTEXT_BATTLE),
+    'marks_panel': (SECTION_MARKS, CONTEXT_ANY),
+    'battle_progress': (SECTION_MARKS, CONTEXT_BATTLE),
     'damage_log': (SECTION_BATTLE, CONTEXT_BATTLE),
-    'last_hit': (SECTION_BATTLE, CONTEXT_BATTLE),
-    'hit_log': (SECTION_BATTLE, CONTEXT_BATTLE),
     'team_hp': (SECTION_BATTLE, CONTEXT_BATTLE),
     'sixth_sense': (SECTION_BATTLE, CONTEXT_BATTLE),
     'battle_clock': (SECTION_BATTLE, CONTEXT_ANY),
-    'personal_best': (SECTION_MARKS, CONTEXT_ANY),
-    'main_gun': (SECTION_MARKS, CONTEXT_BATTLE),
-    'battle_efficiency': (SECTION_MARKS, CONTEXT_BATTLE),
-    'reload_timer': (SECTION_BATTLE, CONTEXT_BATTLE),
     'gun_arc': (SECTION_BATTLE, CONTEXT_BATTLE),
-    'received_hits': (SECTION_BATTLE, CONTEXT_BATTLE),
-    'death_card': (SECTION_BATTLE, CONTEXT_BATTLE),
     'bush_circle': (SECTION_BATTLE, CONTEXT_BATTLE),
-    'arty_meter': (SECTION_BATTLE, CONTEXT_ANY),
+    'aim_info': (SECTION_BATTLE, CONTEXT_BATTLE),
     'platoon_points': (SECTION_BATTLE, CONTEXT_BATTLE),
+    'responsive_reticle': (SECTION_BATTLE, CONTEXT_BATTLE),
+    'battle_hotkeys': (SECTION_BATTLE, CONTEXT_BATTLE),
+    'battle_menu': (SECTION_BATTLE, CONTEXT_BATTLE),
     'battle_loadout': (SECTION_BATTLE, CONTEXT_BATTLE),
     'minimap': (SECTION_BATTLE, CONTEXT_BATTLE),
     'crosshair': (SECTION_BATTLE, CONTEXT_BATTLE),
@@ -78,16 +74,10 @@ PLACEMENT = {
     'hangar_cleaner': (SECTION_STREAMER, CONTEXT_HANGAR),
     'session_stats': (SECTION_MARKS, CONTEXT_HANGAR),
     'battle_results': (SECTION_MARKS, CONTEXT_HANGAR),
-    'marks_history': (SECTION_MARKS, CONTEXT_HANGAR),
-    'hangar_ratings': (SECTION_MARKS, CONTEXT_HANGAR),
     'hangar_marks': (SECTION_MARKS, CONTEXT_HANGAR),
-    'session_goals': (SECTION_MARKS, CONTEXT_ANY),
-    'tilt_guard': (SECTION_MARKS, CONTEXT_HANGAR),
     'hangar_tweaks': (SECTION_HANGAR, CONTEXT_HANGAR),
-    'hangar_info': (SECTION_HANGAR, CONTEXT_HANGAR),
-    'battle_hits': (SECTION_HANGAR, CONTEXT_HANGAR),
-    'personal_missions': (SECTION_HANGAR, CONTEXT_ANY),
-    'platoon_helper': (SECTION_HANGAR, CONTEXT_HANGAR),
+    'hangar_info': (SECTION_HANGAR, CONTEXT_ANY),
+    'personal_missions': (SECTION_HANGAR, CONTEXT_HANGAR),
     'auto_resupply': (SECTION_HANGAR, CONTEXT_HANGAR),
     'notification_filter': (SECTION_HANGAR, CONTEXT_HANGAR),
     'replay_manager': (SECTION_REPLAYS, CONTEXT_HANGAR),
@@ -95,4 +85,13 @@ PLACEMENT = {
     'hud_layouts': (SECTION_HUD, CONTEXT_BATTLE),
     'comp7_helper': (SECTION_HANGAR, CONTEXT_HANGAR),
     'event_trackers': (SECTION_HANGAR, CONTEXT_HANGAR),
+    'depot_seller': (SECTION_HANGAR, CONTEXT_HANGAR),
+    'auto_reserves': (SECTION_HANGAR, CONTEXT_HANGAR),
+    'crew_xp': (SECTION_HANGAR, CONTEXT_HANGAR),
+    'hangar_space': (SECTION_HANGAR, CONTEXT_HANGAR),
+    'update_notice': (SECTION_HANGAR, CONTEXT_HANGAR),
+    'config_backup': (SECTION_DATA, CONTEXT_ANY),
+    'preset_advisor': (SECTION_HANGAR, CONTEXT_HANGAR),
+    'free_camera': (SECTION_REPLAYS, CONTEXT_ANY),
+    'quick_demount': (SECTION_HANGAR, CONTEXT_HANGAR),
 }

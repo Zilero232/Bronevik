@@ -3,20 +3,30 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import unittest
 
 import _support  # noqa: F401
-from otmetki.core.native_settings import setting_names
+from otmetki.core.native_settings import client_keys, native_choices, setting_names
 from otmetki.core.settings import Settings
 from otmetki.features.camera.model import FIELDS, to_native
 from otmetki.features.camera.settings import SCHEMA, SETTINGS
 
 
 def native(values):
-    return to_native(Settings(values, SCHEMA).to_dict())
+    chosen = native_choices(client_keys(SCHEMA))
+    chosen.update(values)
+    return to_native(Settings(chosen, SCHEMA).to_dict())
 
 
 class CameraTest(unittest.TestCase):
 
-    def test_defaults_change_nothing(self):
-        assert native(None) == {}
+    def test_native_values_change_nothing(self):
+        assert native({}) == {}
+
+    def test_the_defaults_are_the_recommended_camera(self):
+        result = to_native(Settings(None, SCHEMA).to_dict())
+
+        assert result == {'sniperZoom': 0, 'dynamicCamera': False, 'horStabilizationSnp': True}
+
+    def test_every_camera_value_is_a_client_setting(self):
+        assert client_keys(SCHEMA) == ('dynamic_camera', 'horizontal_stabilization', 'preset', 'sniper_zoom')
 
     def test_the_component_switch_is_camera_tweaks(self):
         assert SETTINGS == ('camera_tweaks',)
@@ -38,8 +48,8 @@ class NoCameraConfigTest(unittest.TestCase):
     def test_the_settings_are_the_preset_and_the_games_options(self):
         assert set(SCHEMA.defaults) == set(['preset', 'sniper_zoom', 'dynamic_camera', 'horizontal_stabilization'])
 
-    def test_a_zoom_the_game_does_not_offer_falls_back_to_native(self):
-        assert Settings({'sniper_zoom': 'x25'}, SCHEMA).get('sniper_zoom') == 'native'
+    def test_a_zoom_the_game_does_not_offer_falls_back_to_the_default(self):
+        assert Settings({'sniper_zoom': 'x25'}, SCHEMA).get('sniper_zoom') == 'remember'
 
 
 class PresetTest(unittest.TestCase):

@@ -43,6 +43,7 @@ from ...battles.client import BattleCapture
 from ...binding import CredentialStore
 from ...binding.client import Binder
 from ...config import Config
+from ...config.client import migrate_stored
 from ...i18n import Translator, resolve_language
 from ...marks.client import MarksCapture
 from ...outbox import Outbox
@@ -65,7 +66,9 @@ class OtmetkiApp(object):
         self.bus = EventBus()
         self.hooks = Subscriptions()
         self.config_file = open_config(CONFIG_DIR, 'config.json', pretty=True)
-        self.config = Config(self.config_file.read({}))
+        stored_config = self.config_file.read({})
+        self.fresh_install = not stored_config
+        self.config = Config(migrate_stored(CONFIG_DIR, stored_config))
         self.save_config()
         self.translate = Translator(resolve_language(self.config.get('language'), client_language()))
         self.credentials = CredentialStore(open_config(CONFIG_DIR, 'credentials.json'))

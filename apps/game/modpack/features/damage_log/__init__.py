@@ -2,8 +2,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 FEATURE_ID = 'damage_log'
 PACKAGE_ID = 'net.triotmetki.damage_log'
-PACKAGE_NAME = 'Three Marks: damage log'
-VERSION = '0.4.0'
+PACKAGE_NAME = 'Three Marks: battle log'
+VERSION = '0.5.0'
 
 
 def create(app):

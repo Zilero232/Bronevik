@@ -7,9 +7,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....hooks import override
 from ....log import log_exception
 from ...game import client_attr
-from .constants import EXPLOSION_METHOD, OWN_VEHICLE_ATTR, SHOT_METHOD, VEHICLE_CLASS, VEHICLE_MODULE
+from .constants import OWN_VEHICLE_ATTR, SHOT_METHOD, VEHICLE_CLASS, VEHICLE_MODULE
 
-__all__ = ('EXPLOSION_METHOD', 'SHOT_METHOD', 'on_own_shot', 'on_own_vehicle_effect')
+__all__ = ('SHOT_METHOD', 'on_own_shot', 'on_own_vehicle_effect')
 
 
 def on_own_vehicle_effect(method, callback):

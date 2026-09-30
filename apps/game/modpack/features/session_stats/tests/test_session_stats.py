@@ -4,16 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import unittest
 
 import _support  # noqa: F401
-from otmetki.companion.i18n import STRINGS as COMPANION_STRINGS
-from otmetki.companion.i18n import Translator
-from otmetki.core.i18n import Catalog
-from otmetki.features.session_stats.i18n import STRINGS
-from otmetki.features.session_stats.model import (
-    SessionAggregator,
-    format_session_panel,
-    format_session_plain,
-    session_widget,
-)
+from otmetki.features.session_stats.model import SessionAggregator
 
 
 def battle(result='win', damage=1000, bonus_type=1, tank_id=1, alive=True, arena_id=None):
@@ -50,16 +41,6 @@ def three_battle_session():
 
 def saved_session(totals):
     return {'session_id': 'x', 'started_at': 0, 'last_activity_at': 0, 'totals': totals}
-
-
-def english():
-    return Translator('en', Catalog(COMPANION_STRINGS, STRINGS))
-
-
-def panel_summary(**fields):
-    summary = {'battles': 2, 'win_rate': 50.0, 'avg_damage': 1000.0, 'wn8': None}
-    summary.update(fields)
-    return summary
 
 
 class SessionTest(unittest.TestCase):
@@ -359,75 +340,6 @@ class ResetTest(unittest.TestCase):
         session.add(battle('win', arena_id=11), 5100)
 
         assert session.summary(5100)['battles'] == 1
-
-
-class SessionPanelTest(unittest.TestCase):
-
-    def test_strings_are_in_sync(self):
-        assert sorted(STRINGS['ru']) == sorted(STRINGS['en'])
-
-    def test_panel_shows_the_win_rate(self):
-        summary = panel_summary(battles=5, win_rate=60.0, avg_damage=2100.0)
-
-        text = format_session_panel(summary, english())
-
-        assert u'60.00%' in text
-
-    def test_plain_line_lists_every_value(self):
-        summary = panel_summary(battles=5, win_rate=60.0, avg_damage=2100.0)
-
-        text = format_session_plain(summary, english())
-
-        assert text == u'Session: Battles 5, Win rate 60.00%, Avg dmg 2 100, WN8 -'
-
-    def test_panel_shows_the_strip(self):
-        summary = panel_summary(recent=['win', 'loss'])
-
-        text = format_session_panel(summary, english())
-
-        assert u'Last</font>: <font color="#7CD35B">W</font> <font color="#E3564A">L</font>' in text
-
-    def test_panel_shows_the_pending_count(self):
-        summary = panel_summary(pending=3)
-
-        text = format_session_panel(summary, english())
-
-        assert u'Awaiting results: 3' in text
-
-    def test_panel_without_recent_battles_has_no_strip(self):
-        summary = panel_summary(recent=[], pending=0)
-
-        text = format_session_panel(summary, english())
-
-        assert u'Last' not in text
-
-    def test_panel_without_waiting_battles_has_no_pending_line(self):
-        summary = panel_summary(recent=[], pending=0)
-
-        text = format_session_panel(summary, english())
-
-        assert u'Awaiting' not in text
-
-    def test_widget_draws_the_strip(self):
-        summary = {'battles': 2, 'recent': ['win', 'draw', 'loss'], 'pending': 0}
-
-        data = session_widget(summary, english())['data']
-
-        assert data['strip'] == ['good', 'muted', 'bad']
-
-    def test_widget_adds_the_pending_row(self):
-        summary = {'battles': 2, 'recent': [], 'pending': 1}
-
-        data = session_widget(summary, english())['data']
-
-        assert [row['text'] for row in data['rows']] == [u'Awaiting results: 1']
-
-    def test_widget_without_waiting_battles_has_no_rows(self):
-        summary = {'battles': 2, 'recent': [], 'pending': 0}
-
-        data = session_widget(summary, english())['data']
-
-        assert data['rows'] == []
 
 
 if __name__ == '__main__':

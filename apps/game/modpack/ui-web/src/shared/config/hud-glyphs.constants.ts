@@ -32,7 +32,6 @@ export const HUD_GLYPHS = {
     class_spg: ['M7 7h18v18H7z'],
     clock: ['M16 4a12 12 0 1 1 0 24 12 12 0 0 1 0-24z'],
     lamp: ['M16 3a9 9 0 0 1 5 16v3H11v-3a9 9 0 0 1 5-16z', 'M12 24h8v2h-8z', 'M13 27h6v2h-6z'],
-    arty: ['M22 3l7 7-11 11-7-7z', 'M4 28l5-9 3 4 4-1-4 6z'],
     platoon: [
       'M9 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8z',
       'M23 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8z',

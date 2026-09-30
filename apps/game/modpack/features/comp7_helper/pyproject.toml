@@ -2,7 +2,7 @@
 
 [project]
 name = "otmetki-feature-comp7-helper"
-version = "0.1.0"
+version = "0.3.0"
 description = "Feature: the own Onslaught rating against the division thresholds (Champion and Legend C/B/A) and the vehicle's role skill, in the Onslaught hangar."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }

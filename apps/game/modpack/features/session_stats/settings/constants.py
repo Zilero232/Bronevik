@@ -2,6 +2,20 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 GROUP = 'hangar'
 SWITCH = 'hangar_session_panel'
+SECTION = 'session_stats'
 IDLE_MINUTES = 'session_idle_minutes'
 SHARE = 'share_session_report'
 SHARE_CHANNEL = 'share_session_channel'
+
+DEFAULTS = {
+    'show_moe': True,
+    'show_goals': True,
+    'max_goals': 3,
+    'goal_sound': True,
+    'show_account': True,
+    'metric_wn8': True,
+    'metric_win_rate': True,
+    'metric_avg_damage': True,
+    'metric_eff': False,
+}
+LIMITS = {'max_goals': (1, 5)}

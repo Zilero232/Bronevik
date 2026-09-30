@@ -1,50 +1,51 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from . import DamageLog, Hit, format_damage_log, format_last_hit
-from .constants import PREVIEW_ENTRIES, PREVIEW_LAST_HIT, PREVIEW_SHELLS
-from .widget import damage_log_widget, last_hit_widget
+import itertools
+
+from . import DamageLog, Hit
+from .constants import PREVIEW_ASSIST, PREVIEW_RECEIVED, PREVIEW_SHOTS, PREVIEW_STEP_S
+from .text import format_damage_log
+from .widget import damage_log_widget
+
+# The edit mode shows a panel in its Alt state (docs/specs/2026-09-30-hud-consolidation-and-design.md section 6.6).
 
 
-def preview_hit_details(vehicle, shell, source, vehicle_class):
-    shell_name, gold = PREVIEW_SHELLS.get(shell, (None, False))
-    return Hit(
-        vehicle=vehicle,
-        shell=shell,
-        source=source,
-        vehicle_class=vehicle_class,
-        shell_name=shell_name,
-        gold=gold,
-    )
+def _add_shot(log, moment, shot):
+    target, vehicle, vehicle_class, max_hp, outcome, damage, shell, gold, crits, hp = shot
+    log.shots.describe(target, vehicle_class, max_hp)
+    log.shots.add_result(target, outcome, moment, vehicle)
+    hit = Hit(vehicle_id=target, vehicle=vehicle, shell=shell, gold=gold, source='shot', at=moment)
+    log.add('damage', damage, hit)
+    log.shots.add_crits(target, crits, moment)
+    log.shots.set_health(target, hp, moment)
+
+
+def _add_received(log, moment, received):
+    attacker, vehicle, vehicle_class, kind, amount, shell, gold, source = received
+    hit = Hit(attacker, vehicle, vehicle_class, shell, gold, source, moment)
+    log.add(kind, amount, hit)
 
 
 def preview_log():
     log = DamageLog()
-    for kind, amount, vehicle, shell, source, vehicle_class in PREVIEW_ENTRIES:
-        log.add(kind, amount, preview_hit_details(vehicle, shell, source, vehicle_class))
+    moments = itertools.count(0.0, PREVIEW_STEP_S)
+    for shot in PREVIEW_SHOTS:
+        _add_shot(log, next(moments), shot)
 
-    log.entries[-1]['ammo_rack'] = True
+    target, vehicle, vehicle_class, kind, amount = PREVIEW_ASSIST
+    log.add(kind, amount, Hit(vehicle_id=target, vehicle=vehicle, vehicle_class=vehicle_class))
+
+    moment = None
+    for received in PREVIEW_RECEIVED:
+        moment = next(moments)
+        _add_received(log, moment, received)
+    log.received.ammo_rack_hit(moment)
     return log
 
 
-def preview_hit():
-    kind, amount, vehicle, shell, source, vehicle_class = PREVIEW_LAST_HIT
-
-    log = DamageLog()
-    log.add(kind, amount, preview_hit_details(vehicle, shell, source, vehicle_class))
-    return log.last('received')
-
-
 def preview_text(settings, translate):
-    return format_damage_log(preview_log(), settings, translate)
-
-
-def preview_last_hit(settings, translate):
-    return format_last_hit(preview_hit(), settings, translate)
+    return format_damage_log(preview_log(), settings, translate, extended=True)
 
 
 def preview_widget(settings, translate):
-    return damage_log_widget(preview_log(), settings, translate)
-
-
-def preview_last_hit_widget(settings, translate):
-    return last_hit_widget(preview_hit(), settings)
+    return damage_log_widget(preview_log(), settings, translate, extended=True)

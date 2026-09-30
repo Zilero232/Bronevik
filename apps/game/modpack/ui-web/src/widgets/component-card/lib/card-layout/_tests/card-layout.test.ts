@@ -41,13 +41,13 @@ describe(cardLayout, () => {
   it('shows the empty note for a card with nothing to set', () => {
     const layout = cardLayout({ component: component(), fields: undefined, isExpanded: true, forceOpen: false });
 
-    expect(layout).toEqual({ fields: [], expandable: false, open: false, showEmpty: true });
+    expect(layout).toEqual({ fields: [], expandable: false, open: false, showEmpty: true, chevron: 'chevron-down' });
   });
 
   it('opens an expanded card with fields', () => {
     const layout = cardLayout({ component: component({ fields: [field] }), fields: undefined, isExpanded: true, forceOpen: false });
 
-    expect(layout).toEqual({ fields: [field], expandable: true, open: true, showEmpty: false });
+    expect(layout).toEqual({ fields: [field], expandable: true, open: true, showEmpty: false, chevron: 'chevron-up' });
   });
 
   it('keeps a collapsed card closed', () => {
@@ -62,6 +62,14 @@ describe(cardLayout, () => {
     expect(layout.open).toBe(true);
   });
 
+  it('points into the editor of a card that has one', () => {
+    const editor = { groups: [], icons: {}, swatches: {} };
+
+    const layout = cardLayout({ component: component({ fields: [field], editor }), fields: undefined, isExpanded: true, forceOpen: false });
+
+    expect(layout.chevron).toBe('chevron-right');
+  });
+
   it('shows only the fields it is given instead of all of the component', () => {
     const layout = cardLayout({ component: component({ fields: [field] }), fields: [], isExpanded: true, forceOpen: false });
 
@@ -71,7 +79,7 @@ describe(cardLayout, () => {
   it('lets a HUD panel card expand for its preview while it still shows the empty note', () => {
     const layout = cardLayout({ component: component({ panel: true }), fields: undefined, isExpanded: true, forceOpen: false });
 
-    expect(layout).toEqual({ fields: [], expandable: true, open: true, showEmpty: true });
+    expect(layout).toEqual({ fields: [], expandable: true, open: true, showEmpty: true, chevron: 'chevron-up' });
   });
 });
 

@@ -13,7 +13,9 @@ from .constants import (  # noqa: F401
     ONE_TIME_SWITCHES,
     OPT_IN_FEATURES,
     RETIRED_DEFAULTS,
+    USER_SET_KEY,
 )
+from .user_set import normalize_user_set, user_set_tokens, with_user_set  # noqa: F401
 
 
 def is_valid_server_url(url):
@@ -33,7 +35,12 @@ def normalize_server_url(url):
     return url.rstrip('/') if is_valid_server_url(url) else None
 
 
-SCHEMA = Schema(DEFAULTS, choices=CHOICES, limits=LIMITS, normalizers={'server_url': normalize_server_url})
+SCHEMA = Schema(
+    DEFAULTS,
+    choices=CHOICES,
+    limits=LIMITS,
+    normalizers={'server_url': normalize_server_url, USER_SET_KEY: normalize_user_set},
+)
 
 
 def _stored_revision(values):
@@ -48,8 +55,9 @@ def upgraded(values):
 
     revision = _stored_revision(values)
     upgraded_values = dict(values, defaults_revision=DEFAULTS_REVISION)
+    chosen = user_set_tokens(values.get(USER_SET_KEY))
     for since, key, old, new in RETIRED_DEFAULTS:
-        if revision < since and values.get(key) == old:
+        if revision < since and values.get(key) == old and key not in chosen:
             upgraded_values[key] = new
     for since, key, value in ONE_TIME_SWITCHES:
         if revision < since:

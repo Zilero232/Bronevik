@@ -1,32 +1,34 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+# Row kinds: own damage, the three assist kinds, hits on the player blocked by the own armour, damage to the player.
 KINDS = ('damage', 'radio', 'track', 'stun', 'blocked', 'received')
-MAX_ENTRIES = 50
-MIN_ENTRY_FONT_SIZE = 8
+ASSIST_KINDS = ('radio', 'track', 'stun')
 # The totals the stock client reports (summary feedback, personal efficiency), in DamageLog.apply_summary order.
 SUMMARY_KEYS = ('damage', 'assist', 'blocked', 'stun')
+MAX_ENTRIES = 60
 
-# How much a log line tells: always everything (`alt_mode` off), or with `alt_mode` on the short line of the stock log's
-# SHORT record style (the amount and its icon) until Alt is held, then the full line with the kind, shell and source
-# (damage_log_panel _RECORD_STYLE and _handleShowExtendedInfo, RU 1.45 client source).
-DETAIL_FULL = 'full'
-DETAIL_SHORT = 'short'
-DETAIL_EXTENDED = 'extended'
-# The line template per detail: (the setting with the player's own, the built-in one).
-ENTRY_TEMPLATES = {
-    DETAIL_FULL: ('entry_template', 'dlog_entry_template'),
-    DETAIL_SHORT: ('entry_template', 'dlog_entry_template_short'),
-    DETAIL_EXTENDED: ('alt_entry_template', 'dlog_entry_template'),
-}
+# The own hit markers (core.battle_tally MARKER_OUTCOMES) a shot row can carry.
+OUTCOMES = ('pen', 'crit', 'no_pen', 'ricochet', 'spaced', 'tracks', 'missed_armor')
+# The markers a damaging shot can carry (feedback_adaptor.__getHitResultEventID, RU 1.45 client source): the others
+# (ricochet, spaced armour, tracks, missed armour) come only with damageFactor 0. no_pen takes an HE splash.
+DAMAGE_OUTCOMES = ('pen', 'crit', 'no_pen')
+# The marker and the damage event of one shot (batched by the server, BATTLE_EVENTS_PROCESSING_TIMEOUT 0.2 s) and its
+# crits and HP change arrive within this many seconds of each other, in any order.
+MERGE_WINDOW_S = 2.0
 
-LOG_KIND_FILTER = {
-    'all': KINDS,
-    'dealt': ('damage', 'radio', 'track', 'stun', 'blocked'),
-    'received': ('received',),
-}
+# Hits on the player the armour stopped: blocked, and a blocked hit the client drew as a ricochet. The others are damage
+# (pen) and a crit without damage.
+BLOCKED_OUTCOMES = ('blocked', 'ricochet')
+# A hit's crits arrive as a separate RECEIVED_CRIT event right after its damage: they join that row.
+RECEIVED_MERGE_WINDOW_S = 1.0
+# RU 1.45 common/constants.VEHICLE_HIT_EFFECT.RICOCHETS (INTERMEDIATE_RICOCHET, FINAL_RICOCHET): the hit effect code of
+# a shot's last point (Vehicle.showDamageFromShot, VehicleEffects.DamageFromShotDecoder.decodeSegment: the low byte)
+# tells a ricochet apart; the own feedback's TANKING does not. The two arrive close together, in either order.
+RICOCHET_CODES = (1, 2)
 
-# Where received damage came from, as the own feedback event's extra tells it (feedback_events._DamageExtra, RU 1.45:
-# isShot / isFire / isRam / isWorldCollision / isDeathZone); anything else (artillery strikes, mines, ...) is `other`.
+# Where damage came from, as the feedback event's extra tells it (feedback_events._DamageExtra, RU 1.45: isShot /
+# isFire / isRam / isWorldCollision / isDeathZone); anything else (artillery strikes, mines, ...) is `other`.
 SOURCES = ('shot', 'fire', 'ram', 'world', 'other')
 # The own ammo rack reported damaged (the damage panel's DEVICES state 'ammoBay') within this many seconds of a
 # received hit marks that hit as the one that reached the ammo rack.
@@ -41,25 +43,91 @@ CLASS_GLYPHS = {
     'SPG': 'class_spg',
 }
 
-PREVIEW_ENTRIES = (
-    ('damage', 390, 'Pz. IV', 'ap', None, 'mediumTank'),
-    ('radio', 480, None, None, None, None),
-    ('damage', 320, 'T-34', 'apcr', None, 'mediumTank'),
-    ('blocked', 240, 'IS', 'heat', None, 'heavyTank'),
-    ('received', 310, 'KV-1', 'he', 'shot', 'heavyTank'),
-)
-PREVIEW_SIZE = (300, 130)
-PREVIEW_SHELLS = {
-    'ap': ('ARMOR_PIERCING', False),
-    'apcr': ('ARMOR_PIERCING_CR', True),
-    'heat': ('HOLLOW_CHARGE', False),
-    'he': ('HE_MODERN', False),
+# How much a row tells: the notes (outcome words, crits, ammo rack, HP left) always (`alt_mode` off), or with
+# `alt_mode` on only while Alt, the stock client's extended-info key, is held (damage_log_panel _RECORD_STYLE and
+# _handleShowExtendedInfo, RU 1.45 client source).
+DETAIL_FULL = 'full'
+DETAIL_SHORT = 'short'
+DETAIL_EXTENDED = 'extended'
+NOTED_DETAILS = (DETAIL_FULL, DETAIL_EXTENDED)
+# The player's own text line template per detail (with Alt held, the Alt one); empty keys fall back to the built-in.
+ENTRY_TEMPLATE_KEYS = {
+    DETAIL_FULL: 'entry_template',
+    DETAIL_SHORT: 'entry_template',
+    DETAIL_EXTENDED: 'alt_entry_template',
 }
-PREVIEW_LAST_HIT = ('received', 310, 'KV-1', 'he', 'shot', 'heavyTank')
-PREVIEW_LAST_HIT_SIZE = (260, 30)
+NOTE_SEPARATOR = ' · '
+# The outcomes a note leaves out of its words: a plain penetration and a crit say it with their icon and crits count.
+SILENT_OUTCOMES = (None, 'pen', 'crit')
+MINUS = '−'
+MIN_ENTRY_FONT_SIZE = 8
 
-# Totals colours per palette: (dealt, blocked, assisted, received). graphite is @otmetki/design-tokens (accent,
-# steel, gold, danger); colorblind is the Okabe-Ito set.
+# The sections a player shows; `both` shows the dealt rows above the received ones (the received nearest the anchor).
+SECTIONS = {
+    'both': ('dealt', 'received'),
+    'dealt': ('dealt',),
+    'received': ('received',),
+}
+# Styles that show only the totals until Alt is held; `minimal` keeps only the dealt and received totals.
+COMPACT_STYLES = ('compact', 'minimal')
+MINIMAL_TOTALS = ('dealt', 'received')
+# The totals in their order with the section each belongs to; a total is shown once it is above zero.
+TOTALS = (
+    ('dealt', 'dealt'),
+    ('assist', 'dealt'),
+    ('stun', 'dealt'),
+    ('blocked', 'received'),
+    ('received', 'received'),
+)
+# Per total: the post-battle efficiency icon (None: our glyph), the widget tone and the text line's colour macro.
+TOTAL_ICONS = {'dealt': 'damage', 'assist': 'help', 'stun': 'stun', 'blocked': 'armor', 'received': None}
+TOTAL_TONES = {'dealt': 'accent', 'assist': 'radio', 'stun': 'stun', 'blocked': 'blocked', 'received': 'received'}
+TOTAL_COLORS = {
+    'dealt': 'c_dealt',
+    'assist': 'c_assisted',
+    'stun': 'c_assisted',
+    'blocked': 'c_blocked',
+    'received': 'c_received',
+}
+TOTALS_SEPARATOR = '   '
+COMPACT_TOTALS_SEPARATOR = ' / '
+KIND_TONES = {
+    'damage': 'accent',
+    'radio': 'radio',
+    'track': 'track',
+    'stun': 'stun',
+    'blocked': 'blocked',
+    'received': 'received',
+}
+# The icon of a hit on the player by its outcome: our glyph for damage, the hit marker files for the rest.
+RECEIVED_ICONS = {
+    'pen': ('glyph', 'received'),
+    'crit': ('outcome', 'crit'),
+    'blocked': ('outcome', 'no_pen'),
+    'ricochet': ('outcome', 'ricochet'),
+}
+SOURCE_ICONS = {'fire': ('efficiency', 'fire'), 'ram': ('efficiency', 'ram'), 'world': ('glyph', 'fall')}
+# Shells with a premium label of their own (ОФ-П, КС-П); the other premium shells keep their label in gold.
+GOLD_LABELS = ('he', 'heat')
+
+PREVIEW_SIZE = (330, 190)
+PREVIEW_STEP_S = 10.0
+# (target id, name, class, max HP, outcome, damage, shell, gold, crits, HP left)
+PREVIEW_SHOTS = (
+    (1, 'Pz. IV', 'mediumTank', 900, 'pen', 390, 'ap', False, 0, 510),
+    (2, 'T-34', 'mediumTank', 1100, 'ricochet', None, 'ap', False, 0, None),
+    (2, 'T-34', 'mediumTank', 1100, 'ricochet', None, 'ap', False, 0, None),
+    (3, 'IS', 'heavyTank', 1500, 'crit', 320, 'apcr', True, 1, 1180),
+)
+PREVIEW_ASSIST = (3, 'IS', 'heavyTank', 'radio', 480)
+# (attacker id, name, class, kind, amount, shell, gold, source)
+PREVIEW_RECEIVED = (
+    (11, 'IS', 'heavyTank', 'blocked', 240, 'heat', False, 'shot'),
+    (12, 'KV-1', 'heavyTank', 'received', 310, 'he', False, 'shot'),
+)
+
+# Totals colours of the text lines per palette: (dealt, blocked, assisted, received). graphite is
+# @otmetki/design-tokens (accent, steel, gold, danger); colorblind is the Okabe-Ito set.
 PALETTES = {
     'classic': ('#E3564A', '#9EC9F5', '#7CD35B', '#F2B25B'),
     'graphite': ('#FF7A1A', '#8EA4B5', '#E8B84A', '#EF5B43'),
@@ -67,7 +135,7 @@ PALETTES = {
     'colorblind': ('#E69F00', '#56B4E9', '#009E73', '#CC79A7'),
 }
 COLOR_MACROS = ('c_dealt', 'c_blocked', 'c_assisted', 'c_received')
-# Entry colours: each kind takes its totals colour (or the player's own colour key when set).
+# Text line colours: each kind takes its totals colour (or the player's own colour key when set).
 KIND_COLOR = {
     'damage': ('c_dealt', 'color_damage'),
     'radio': ('c_assisted', 'color_assist'),
@@ -81,23 +149,3 @@ ICON_ROOT = 'gui/maps/icons/otmetki/damage_log/icons'
 ICON_RENDITION = 32
 
 KIND = 'damage_log'
-LAST_HIT_KIND = 'last_hit'
-# Totals of the widget: (key, efficiency icon or our glyph, colour role, shown when zero).
-TOTALS = (
-    ('dealt', 'damage', 'accent', True),
-    ('blocked', 'armor', 'blocked', True),
-    ('assisted', 'help', 'radio', True),
-    ('assist_stun', 'stun', 'stun', False),
-    ('received', None, 'received', False),
-)
-KIND_TONES = {
-    'damage': 'accent',
-    'radio': 'radio',
-    'track': 'track',
-    'stun': 'stun',
-    'blocked': 'blocked',
-    'received': 'received',
-}
-SHELL_KINDS = ('damage', 'blocked', 'received')
-SOURCE_ICONS = {'fire': ('efficiency', 'fire'), 'ram': ('efficiency', 'ram'), 'world': ('glyph', 'fall')}
-COMPACT_STYLES = ('compact', 'minimal')

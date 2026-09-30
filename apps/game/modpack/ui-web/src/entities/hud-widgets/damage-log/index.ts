@@ -1,4 +1,4 @@
-export { damageLogSchema, lastHitSchema } from './model/schemas';
-export type { DamageLogData, DamageLogRow, LastHitData } from './model/schemas';
+export { damageLogSchema } from './model/schemas';
+export type { DamageLogData } from './model/schemas';
 
-export { DamageLogWidget, LastHitWidget } from './ui';
+export { DamageLogWidget } from './ui';

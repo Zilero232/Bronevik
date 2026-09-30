@@ -10,18 +10,30 @@ is never hidden (`page.components`, the DAAPI components the page registered). A
 once (`as_setComponentsVisibilityS`), or handed to the page's full-stats set while Tab is open so it comes back with the
 rest.
 
-`GameEvent.GUI_VISIBILITY` (V) hides our battle panels with the stock GUI; `GameEvent.FULL_STATS` (Tab) keeps them and
-has the page dim the ones under the full stats (`HudLayer.set_full_stats`). `GameEvent.SHOW_EXTENDED_INFO` (Alt held,
-the key the stock markers, players panel and damage log expand on) goes out as `battle_extended_info(held)` on the app
-bus for the panels with an alternate mode.
+One cover rule (`HudLayer.set_cover`): `GameEvent.GUI_VISIBILITY` (V) hides our battle panels with the stock GUI, and so
+do the post-mortem camera on the killer (`inputHandler.onPostmortemKillerVisionEnter` / `Exit`) and the battle loading
+screen with the team lists (`GameEvent.BATTLE_LOADING`); `GameEvent.FULL_STATS` (Tab) keeps them and has the page dim
+the ones under the full stats. The panels are never recreated, so nothing jumps when the view comes back.
+`GameEvent.SHOW_EXTENDED_INFO` (Alt held, the key the stock markers, players panel and damage log expand on) goes out as
+`battle_extended_info(held)` on the app bus for the panels with an alternate mode.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....hooks import override
+from functools import partial
+
+from ....hooks import Subscriptions, override
+from ....hud.layer.constants import COVER_KILLCAM, COVER_LOADING
 from ....hud.modes import suppresses
 from ....hud.stock import StockSuppression
 from ....log import log, log_exception, safe
-from .constants import EXTENDED_INFO_DOWN, EXTENDED_INFO_EVENT, FULL_STATS_DOWN, GUI_VISIBLE
+from .constants import (
+    EXTENDED_INFO_DOWN,
+    EXTENDED_INFO_EVENT,
+    FULL_STATS_DOWN,
+    GUI_VISIBLE,
+    KILLER_VISION_EVENTS,
+    LOADING_SHOWN,
+)
 
 try:
     from gui.Scaleform.daapi.view.battle.classic.page import ClassicPage
@@ -42,6 +54,9 @@ class StockControl(object):
         self.installed = False
         self.gui_visible = True
         self.full_stats = False
+        self.killcam = False
+        self.loading = False
+        self.killer_hooks = Subscriptions()
         self.extended = False
         self.hidden = frozenset()
 
@@ -82,6 +97,8 @@ class StockControl(object):
         self.hidden = frozenset()
         self.gui_visible = True
         self.full_stats = False
+        self.killcam = False
+        self._follow_killer()
         self._follow()
         self._set_extended(False)
         self.sync()
@@ -90,6 +107,9 @@ class StockControl(object):
         if page is self.page:
             self.page = None
             self.hidden = frozenset()
+            self.killer_hooks.clear()
+            self.killcam = False
+            self.loading = False
             self._follow()
             self._set_extended(False)
 
@@ -151,6 +171,7 @@ class StockControl(object):
         handlers = (
             ('GUI_VISIBILITY', self._on_gui_visibility),
             ('FULL_STATS', self._on_full_stats),
+            ('BATTLE_LOADING', self._on_loading),
             ('SHOW_EXTENDED_INFO', self._on_extended_info),
         )
         for name, handler in handlers:
@@ -169,6 +190,22 @@ class StockControl(object):
         self._follow()
 
     @safe
+    def _on_loading(self, event):
+        self.loading = _event_flag(event, LOADING_SHOWN, False)
+        self._follow()
+
+    def _follow_killer(self):
+        self.killer_hooks.clear()
+        handler = getattr(_player(), 'inputHandler', None)
+        for name, shown in KILLER_VISION_EVENTS:
+            if getattr(handler, name, None) is not None:
+                self.killer_hooks.add(handler, name, partial(self._on_killer_vision, shown))
+
+    def _on_killer_vision(self, shown, *args):
+        self.killcam = shown
+        self._follow()
+
+    @safe
     def _on_extended_info(self, event):
         self._set_extended(_event_flag(event, EXTENDED_INFO_DOWN, False))
 
@@ -181,6 +218,16 @@ class StockControl(object):
         on_page = self.page is not None
         self.layer.set_gui_hidden(on_page and not self.gui_visible)
         self.layer.set_full_stats(on_page and self.full_stats)
+        self.layer.set_cover(COVER_KILLCAM, on_page and self.killcam)
+        self.layer.set_cover(COVER_LOADING, on_page and self.loading)
+
+
+def _player():
+    try:
+        import BigWorld
+        return BigWorld.player()
+    except Exception:  # no avatar outside a battle (or no client in the checks)
+        return None
 
 
 def _event_flag(event, key, default):

@@ -58,6 +58,37 @@ class Event(object):
         self.ctx = ctx
 
 
+class ClientEvent(object):
+
+    def __init__(self):
+        self.handlers = []
+
+    def __iadd__(self, handler):
+        self.handlers.append(handler)
+        return self
+
+    def __isub__(self, handler):
+        self.handlers.remove(handler)
+        return self
+
+    def __call__(self, *args):
+        for handler in list(self.handlers):
+            handler(*args)
+
+
+class InputHandler(object):
+
+    def __init__(self):
+        self.onPostmortemKillerVisionEnter = ClientEvent()
+        self.onPostmortemKillerVisionExit = ClientEvent()
+
+
+class Avatar(object):
+
+    def __init__(self):
+        self.inputHandler = InputHandler()
+
+
 class Backend(HudBackend):
 
     def available(self):
@@ -251,6 +282,56 @@ class StockControlTest(unittest.TestCase):
 
         assert not self.layer.full_stats
         assert self.control.page is None
+
+    def page_with_avatar(self):
+        avatar = Avatar()
+        sys.modules['BigWorld'].player = lambda: avatar
+        self.populated_page()
+        self.layer.show('panel', 'text')
+        return avatar
+
+    def test_panels_hide_while_the_camera_is_on_the_killer(self):
+        avatar = self.page_with_avatar()
+
+        avatar.inputHandler.onPostmortemKillerVisionEnter(42)
+
+        assert self.layer.gui_hidden
+
+    def test_panels_come_back_when_the_camera_leaves_the_killer(self):
+        avatar = self.page_with_avatar()
+        avatar.inputHandler.onPostmortemKillerVisionEnter(42)
+
+        avatar.inputHandler.onPostmortemKillerVisionExit()
+
+        assert not self.layer.gui_hidden
+
+    def test_the_page_end_stops_following_the_killer_camera(self):
+        avatar = self.page_with_avatar()
+        self.control.page._dispose()
+
+        assert avatar.inputHandler.onPostmortemKillerVisionEnter.handlers == []
+
+    def test_panels_hide_under_the_loading_screen(self):
+        self.page_with_avatar()
+
+        self.control._on_loading(Event({'isShown': True}))
+
+        assert self.layer.gui_hidden
+
+    def test_panels_come_back_when_the_loading_screen_goes(self):
+        self.page_with_avatar()
+        self.control._on_loading(Event({'isShown': True}))
+
+        self.control._on_loading(Event({'isShown': False}))
+
+        assert not self.layer.gui_hidden
+
+    def test_a_loading_screen_before_the_page_hides_the_panels_once_it_is_up(self):
+        self.control._on_loading(Event({'isShown': True}))
+
+        self.page_with_avatar()
+
+        assert self.layer.gui_hidden
 
     def test_alt_down_goes_out_on_the_bus_once(self):
         held = []

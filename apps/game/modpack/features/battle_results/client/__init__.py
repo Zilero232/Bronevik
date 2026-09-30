@@ -6,6 +6,7 @@ from ..i18n import STRINGS
 from ..model import build_page, build_summary, compact, counts, format_summary, page_actions, restore_history
 from ..model.constants import ACTION_CLEAR, STATE_KEY
 from ..settings import SCHEMA, SECTION, SWITCH
+from .hits import HitRecorder
 
 
 class BattleResultsSummary(FeatureComponent):
@@ -15,8 +16,13 @@ class BattleResultsSummary(FeatureComponent):
         self.pending = []
         self.history = restore_history(app.state.get(STATE_KEY))
         app.register_state(STATE_KEY, lambda: self.history)
+        self.hits = HitRecorder(self)
         app.bus.on('battle_event', self._on_battle_event)
         app.bus.on('hangar', self._on_hangar)
+
+    def settings_changed(self, changed):
+        if 'hits_keep_battles' in changed:
+            self.hits.resize()
 
     def _on_battle_event(self, event, now):
         if not self.enabled():
@@ -31,7 +37,7 @@ class BattleResultsSummary(FeatureComponent):
 
     def _summary_of(self, event):
         tank_id = (event.get('vehicle') or {}).get('tank_id')
-        moe_before = dict(self.app.marks.hangar_moe.get(tank_id) or {})
+        moe_before = self.app.marks.before_battle(event.get('arena_unique_id'), tank_id) or {}
         return build_summary(event, moe_before, map_label(event.get('arena_type_id')))
 
     def _remember(self, summary):
@@ -57,11 +63,19 @@ class BattleResultsSummary(FeatureComponent):
         if not self.enabled():
             return None
         idle_s = self.app.config.get('session_idle_minutes') * 60
-        return build_page(self.history, self.app.translate, idle_s)
+        hit_battles = self.hits.battles() if self.settings.get('hits_tab') else ()
+        return build_page(
+            self.history,
+            self.app.translate,
+            idle_s,
+            hit_battles=hit_battles,
+            show_attacker=self.settings.get('hits_show_attacker'),
+        )
 
     def ui_action(self, action, row=None, value=None):
         if action != ACTION_CLEAR:
             return None
         self.history = []
         self.app.save_state()
+        self.hits.clear()
         return self.notice_info('br_cleared')

@@ -2,10 +2,11 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.client.battle import call, crosshair
 from ....core.client.hud.panel import BattlePanel, PanelSpec
-from ....core.client.native import apply_changed
+from ....core.client.native import ClientDefaults, apply_changed, section_is_new
 from ..i18n import STRINGS
 from ..model import mark_html, mark_offset, shows_in, to_native
 from ..model.constants import PREVIEW_SIZE
+from ..model.editor import editor
 from ..model.preview import preview_text, preview_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
 from .constants import VIEW_ARCADE, VIEW_SNIPER
@@ -27,15 +28,29 @@ PANEL_SPEC = PanelSpec(
 class CrosshairComponent(BattlePanel):
 
     def __init__(self, app):
+        is_new_section = section_is_new(app, PANEL_ID)
         BattlePanel.__init__(self, app, PANEL_SPEC)
         self.view = None
+        self.client_defaults = ClientDefaults(self, is_new_section)
 
-    def desired(self):
-        return to_native(self.settings.to_dict())
+    def client_values(self, values):
+        return to_native(values), {}
+
+    def apply(self):
+        return apply_changed(to_native(self.settings.to_dict()))
 
     def settings_changed(self, changed):
         if self.enabled_in_hangar():
-            apply_changed(self.desired())
+            self.apply()
+
+    def ui_actions(self):
+        return self.client_defaults.ui_actions()
+
+    def ui_action(self, action, row=None, value=None):
+        return self.client_defaults.ui_action(action)
+
+    def ui_editor(self):
+        return editor(self.settings, self.app.translate)
 
     def _in_hangar(self):
         return BattlePanel._in_hangar(self) and bool(self.mark())

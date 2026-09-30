@@ -25,7 +25,7 @@ describe(TeamHpWidget, () => {
   it('shows the frag score', () => {
     const html = mount(fixture);
 
-    expect(html.textContent).toContain('2 : 1');
+    expect(html.textContent).toContain('2:1');
   });
 
   it('labels the tier groups of the icon strip', () => {
@@ -45,30 +45,45 @@ describe(TeamHpWidget, () => {
   it('shows the alive vehicles in the score with the alive toggle', () => {
     const html = mount({ ...fixture, score_alive: true, enemies: { ...fixture.enemies, alive: 0 } });
 
-    expect(html.textContent).toContain('2 : 0');
+    expect(html.textContent).toContain('2:0');
   });
 
   it('shows the numbers and the difference without icons in the bar pair style', () => {
     const html = mount({ ...fixture, style: 'full', vehicles: { allies: [], enemies: [] } });
 
     expect(html.textContent).toContain('3 200');
-    expect(html.textContent).toContain('Δ +2 300');
+    expect(html.textContent).toContain('+2 300');
     expect(html.querySelectorAll('img')).toHaveLength(0);
   });
 
-  it('puts the difference under the score, in the row of the bars', () => {
+  it('puts the difference under the score', () => {
     const html = mount({ ...fixture, style: 'full' });
 
-    const diff = [...html.querySelectorAll('span')].find((span) => span.textContent?.startsWith('Δ'));
+    const diff = [...html.querySelectorAll('span')].find((span) => span.textContent === '+2 300');
 
-    expect(diff?.parentElement?.textContent).toContain('2 : 1');
-    expect(diff?.parentElement?.parentElement).toBe(html.firstElementChild?.firstElementChild);
+    expect(diff?.parentElement?.textContent).toBe('2:1+2 300');
   });
 
-  it('draws one row for a style without the icon strip', () => {
-    const html = mount({ ...fixture, style: 'full' });
+  it('keeps the compact style to the numbers and the score', () => {
+    const html = mount({ ...fixture, style: 'compact' });
 
-    expect(html.firstElementChild?.children).toHaveLength(1);
+    expect(html.textContent).toBe('3 2002:1900');
+  });
+
+  it('paints the HP in the side tones', () => {
+    const html = mount({ ...fixture, style: 'compact' });
+
+    const hp = [...html.querySelectorAll('span')].filter((span) => span.textContent === '3 200' || span.textContent === '900');
+
+    expect(hp.map((span) => span.getAttribute('style'))).toEqual([null, null]);
+  });
+
+  it('paints the HP in the colour the player set', () => {
+    const html = mount({ ...fixture, style: 'compact', colors: { ally: '#00FF00', enemy: null } });
+
+    const ally = [...html.querySelectorAll('span')].find((span) => span.textContent === '3 200');
+
+    expect(ally?.getAttribute('style')).toContain('color');
   });
 
   it('leaves the numbers out of the minimal style', () => {

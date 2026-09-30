@@ -2,16 +2,20 @@ import type { ContentProps } from './Content.types';
 
 import { SECTION } from '../../../../../entities/window-state';
 import { AccountCard } from '../../../../../widgets/account';
-import { ComponentCard } from '../../../../../widgets/component-card';
+import { ComponentCard, ComponentEditor } from '../../../../../widgets/component-card';
 import { SearchPage, SectionCards, SectionPage } from '../../../../../widgets/component-list';
 import { HudEditor } from '../../../../../widgets/hud-editor';
 import { Profiles } from '../../../../../widgets/profiles';
 import { ReplaysIntro } from '../ReplaysIntro';
 import { ToolPage } from '../ToolPage';
 
-export const Content = ({ state, section, searching, columns }: ContentProps) => {
+export const Content = ({ state, section, searching, editing, columns }: ContentProps) => {
   if (searching) {
     return <SearchPage card={ComponentCard} columns={columns} />;
+  }
+
+  if (editing?.editor) {
+    return <ComponentEditor key={editing.id} component={editing} editor={editing.editor} />;
   }
 
   if (section === SECTION.profiles) {

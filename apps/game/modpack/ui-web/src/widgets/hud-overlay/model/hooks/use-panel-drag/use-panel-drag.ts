@@ -63,7 +63,10 @@ export const usePanelDrag = ({ edit, targets, onMoved, report }: UsePanelDragInp
 
     drag.moved = drag.moved || beyondSlop({ drag, press: event });
     lastRef.current = { clientX: event.clientX, clientY: event.clientY };
-    setLive(liveAt({ drag, press: event, screen: readScreen() }));
+
+    if (drag.moved) {
+      setLive(liveAt({ drag, press: event, screen: readScreen() }));
+    }
   };
 
   const blockImageDrag = (event: DragEvent): void => {

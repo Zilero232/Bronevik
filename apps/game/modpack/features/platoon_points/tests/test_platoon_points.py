@@ -39,8 +39,8 @@ def fought_platoon():
     return platoon
 
 
-def preview_data():
-    return points_widget(preview_platoon(), Settings({}, SCHEMA))['data']
+def preview_data(extended=False):
+    return points_widget(preview_platoon(), Settings({}, SCHEMA), translator(), extended)['data']
 
 
 class PointsTest(unittest.TestCase):
@@ -154,8 +154,21 @@ class WidgetTest(unittest.TestCase):
     def test_a_mate_row_has_no_damage(self):
         assert preview_data()['rows'][1]['damage'] is None
 
+    def test_the_header_names_the_block(self):
+        assert preview_data()['title'] == u'Очки взвода'
+
+    def test_a_row_carries_its_frags_as_a_caption(self):
+        assert preview_data()['rows'][0]['frags_text'] == u'фр. 2'
+
+    def test_the_hp_bars_wait_for_alt(self):
+        assert preview_data()['extended'] is False
+        assert preview_data(extended=True)['extended'] is True
+
+    def test_the_edit_mode_sample_shows_the_alt_state(self):
+        assert preview_widget(Settings({}, SCHEMA), translator())['data']['extended'] is True
+
     def test_fixture_for_the_page(self):
-        assert _support.widget_fixture('platoon_points', preview_widget(Settings({}, SCHEMA), None))
+        assert _support.widget_fixture('platoon_points', preview_widget(Settings({}, SCHEMA), translator()))
 
 
 class SettingsTest(unittest.TestCase):

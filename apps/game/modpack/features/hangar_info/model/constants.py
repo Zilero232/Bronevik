@@ -39,5 +39,5 @@ SLUG_SEPARATORS = re.compile(r'[^a-z0-9]+')
 CLOCK_SIZE_STEP = 4
 DETAIL_SEPARATOR = u' | '
 
-# The hangar card (model/widget.py), design px.
-CARD_WIDTH = 260
+# The hangar strip's widget (ui-web entities/hud-widgets/clock-strip).
+STRIP_KIND = 'clock_strip'

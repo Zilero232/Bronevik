@@ -8,7 +8,7 @@ from otmetki.core.moe import ThresholdCurve
 from otmetki.core.settings import Settings
 from otmetki.features.marks_panel.i18n import STRINGS
 from otmetki.features.marks_panel.model import PanelView, panel_state
-from otmetki.features.marks_panel.model.constants import PREVIEW_THRESHOLDS
+from otmetki.features.marks_panel.model.constants import MARK_TONES, PREVIEW_THRESHOLDS
 from otmetki.features.marks_panel.model.preview import preview_state, preview_widget
 from otmetki.features.marks_panel.model.widget import marks_widget
 from otmetki.features.marks_panel.settings import SCHEMA
@@ -22,9 +22,9 @@ def preview_curve():
     return ThresholdCurve.from_api(PREVIEW_THRESHOLDS)
 
 
-def widget_data(values):
-    settings = Settings(values, SCHEMA)
-    return marks_widget(preview_state(settings), settings, translator())['data']
+def widget_data(values, held=False):
+    view = PanelView(Settings(values, SCHEMA), held)
+    return marks_widget(preview_state(view), view, translator())['data']
 
 
 def curveless_widget():
@@ -40,24 +40,70 @@ def unrated_widget(curve):
     return marks_widget(state, PanelView(settings), translator())['data']
 
 
-def alt_widget(held):
-    view = PanelView(Settings({'alt_detail': True, 'show_targets': False}, SCHEMA), held)
-    return marks_widget(preview_state(view), view, translator())['data']
+class MainRowTest(unittest.TestCase):
 
+    def test_shows_the_projected_percent_and_the_mark(self):
+        data = widget_data({})
 
-class MarksWidgetTest(unittest.TestCase):
-
-    def test_extended_shows_the_projected_percent_and_the_mark(self):
-        data = widget_data({'style': 'extended'})
-
-        assert data['has_curve'] is True
         assert data['percent'] == 86.3
         assert data['delta'] == 0.18
-        assert data['marks'] == 2
         assert data['mark'] == 'img://gui/maps/icons/library/marksOnGun/mark_2.png|otmetki:target'
-        assert data['color'] == '#7CD35B'
 
-    def test_extended_lists_the_thresholds_up_to_the_next_mark(self):
+    def test_a_rise_is_toned_good(self):
+        assert widget_data({})['tone'] == 'good'
+
+    def test_colour_off_keeps_the_text_tone(self):
+        assert widget_data({'color_mode': 'off'})['tone'] == 'text'
+
+    def test_colour_by_mark_follows_the_levels_passed(self):
+        assert widget_data({'color_mode': 'mark'})['tone'] == MARK_TONES[2]
+
+    def test_the_goal_is_the_next_whole_percent(self):
+        assert widget_data({})['goal'] == {'level': 87, 'need': 2107}
+
+    def test_without_the_whole_percent_the_goal_is_the_next_mark(self):
+        assert widget_data({'show_up': False})['goal'] == {'level': 95, 'need': 25195}
+
+    def test_minimal_has_no_goal(self):
+        assert widget_data({'style': 'minimal'})['goal'] is None
+
+    def test_a_verified_percent_is_not_approximate(self):
+        assert widget_data({})['estimated'] is False
+
+    def test_an_estimated_percent_is_approximate(self):
+        assert unrated_widget(preview_curve())['estimated'] is True
+
+
+class CompactTest(unittest.TestCase):
+
+    def test_compact_rests_on_the_main_row(self):
+        data = widget_data({'style': 'compact'})
+
+        assert data['thresholds'] == []
+        assert data['step'] is None
+        assert data['average'] is None
+        assert data['battles'] is None
+
+    def test_alt_adds_the_detail_rows(self):
+        data = widget_data({'style': 'compact'}, held=True)
+
+        assert data['style'] == 'extended'
+        assert [item['level'] for item in data['thresholds']] == [65, 85, 95]
+
+    def test_alt_changes_nothing_with_alt_details_off(self):
+        data = widget_data({'style': 'compact', 'alt_detail': False}, held=True)
+
+        assert data['thresholds'] == []
+
+    def test_minimal_grows_on_alt_too(self):
+        data = widget_data({'style': 'minimal'}, held=True)
+
+        assert data['average'] is not None
+
+
+class ExtendedTest(unittest.TestCase):
+
+    def test_lists_the_thresholds_up_to_the_next_mark(self):
         data = widget_data({'style': 'extended'})
 
         assert data['thresholds'] == [
@@ -66,81 +112,56 @@ class MarksWidgetTest(unittest.TestCase):
             {'level': 95, 'need': 25195, 'reached': False},
         ]
 
-    def test_extended_shows_the_step_and_the_battles_to_the_next_mark(self):
-        data = widget_data({'style': 'extended'})
+    def test_shows_the_step(self):
+        assert widget_data({'style': 'extended'})['step'] == {'step': 0.5, 'need': 955}
 
-        assert data['step'] == {'step': 0.5, 'need': 955}
-        assert data['battles'] == {'level': 95, 'count': 45}
+    def test_shows_the_average_before_and_after(self):
+        average = widget_data({'style': 'extended'})['average']
 
-    def test_switches_hide_the_thresholds_the_step_and_the_battles(self):
-        data = widget_data({'show_targets': False, 'show_step': False, 'show_battles': False})
+        assert average == {'label': u'ср.', 'ema': 2540, 'ema_projected': 2551}
+
+    def test_counts_the_battles_to_the_next_mark(self):
+        battles = widget_data({'style': 'extended'})['battles']
+
+        assert battles == {'level': 95, 'text': u'~45 боёв'}
+
+    def test_switches_hide_the_rows(self):
+        data = widget_data({'style': 'extended', 'show_targets': False, 'show_step': False, 'show_battles': False})
 
         assert data['thresholds'] == []
         assert data['step'] is None
         assert data['battles'] is None
 
-    def test_custom_template_renders_in_the_extended_frame(self):
+
+class CustomTest(unittest.TestCase):
+
+    def test_renders_the_template(self):
         data = widget_data({'style': 'custom', 'template': '{percent}'})
 
-        assert data['style'] == 'extended'
+        assert data['style'] == 'custom'
         assert data['text'] == u'86.12'
 
-    def test_without_a_curve_shows_the_dossier_percent_only(self):
+    def test_an_empty_template_falls_back_to_extended(self):
+        assert widget_data({'style': 'custom'})['style'] == 'extended'
+
+
+class EmptyTest(unittest.TestCase):
+
+    def test_without_a_curve_shows_the_dossier_percent_and_a_note(self):
         data = curveless_widget()
 
         assert data['has_curve'] is False
         assert data['percent'] == 50.0
-        assert data['mark'] is None
+        assert data['note'] == u'нет порогов'
 
-    def test_next_whole_percent(self):
-        data = preview_widget(Settings({}, SCHEMA), translator())['data']
+    def test_without_a_curve_there_is_no_goal(self):
+        assert curveless_widget()['goal'] is None
 
-        assert data['up'] == {'level': 87, 'need': 2107}
 
-    def test_next_whole_percent_switched_off(self):
-        data = preview_widget(Settings({'show_up': False}, SCHEMA), translator())['data']
-
-        assert data['up'] is None
-
-    def test_verified_badge(self):
-        data = preview_widget(Settings({}, SCHEMA), translator())['data']
-
-        assert data['source'] == {'kind': 'verified', 'label': u'проверено'}
-
-    def test_estimated_badge_without_the_dossier_rating(self):
-        data = unrated_widget(preview_curve())
-
-        assert data['source'] == {'kind': 'estimated', 'label': u'оценка'}
-
-    def test_no_badge_without_a_rating_and_a_curve(self):
-        data = unrated_widget(None)
-
-        assert data['source'] is None
-
-    def test_alt_mode_rests_compact_without_the_detail(self):
-        data = alt_widget(held=False)
-
-        assert data['style'] == 'compact'
-        assert data['thresholds'] == []
-        assert data['detail'] is None
-
-    def test_alt_held_shows_the_thresholds_and_the_detail(self):
-        data = alt_widget(held=True)
-
-        assert data['style'] == 'extended'
-        assert [item['level'] for item in data['thresholds']] == [65, 85, 95]
-        assert data['detail'] == {
-            'label': u'среднее',
-            'ema': 2540,
-            'ema_projected': 2551,
-            'level': 95,
-            'target': 3050,
-        }
+class FixtureTest(unittest.TestCase):
 
     def test_fixture_for_the_page(self):
-        view = PanelView(Settings({'alt_detail': True}, SCHEMA), held=True)
-
-        payload = marks_widget(preview_state(view), view, translator())
+        payload = preview_widget(Settings({}, SCHEMA), translator())
 
         assert _support.widget_fixture('marks_panel', payload)
 

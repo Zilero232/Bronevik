@@ -1,15 +1,19 @@
 import type { HudTone } from '../../../../../shared/ui/hud';
 
+export type LevelNeedView = { level: number; label: string; value: string; reached: boolean };
+
 export type MarksPanelView = {
-  extended: boolean;
+  text: string | null;
   mark: string;
+  approx: boolean;
   percent: string;
+  tone: HudTone;
   delta: string | null;
   deltaTone: HudTone;
-  thresholds: { level: number; label: string; value: string; reached: boolean }[];
+  goal: LevelNeedView | null;
+  thresholds: LevelNeedView[];
   step: string | null;
-  battles: string | null;
-  up: { label: string; value: string; reached: boolean } | null;
-  source: { label: string; tone: HudTone } | null;
-  detail: { label: string; average: string; target: string | null } | null;
+  average: { label: string; value: string } | null;
+  battles: { label: string; value: string } | null;
+  note: string | null;
 };

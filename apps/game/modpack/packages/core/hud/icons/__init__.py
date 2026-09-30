@@ -30,7 +30,6 @@ from .constants import (
     OUTCOME_GLYPHS,
     PREMIUM_SHELLS,
     PREMIUM_SUFFIX,
-    SHELL_CODE_FILES,
     SHELL_FILES,
     SHELL_STEM,
 )
@@ -47,7 +46,6 @@ __all__ = (
     'outcome_icon',
     'resolve',
     'shell_icon',
-    'shell_icon_of',
     'split',
     'tier_icon',
 )
@@ -114,12 +112,6 @@ def _shell_stem(name):
     if isinstance(name, string_types) and SHELL_STEM.match(name):
         return item_name(name)
     return None
-
-
-def shell_icon_of(code, premium=False, kind='small'):
-    """A shell icon from our short code (`core.shells`: ap, apcr, heat, he, flame)."""
-    stem = SHELL_CODE_FILES.get(code)
-    return shell_icon(stem, premium, kind) if stem else None
 
 
 def artefact_icon(name, fallback=None):

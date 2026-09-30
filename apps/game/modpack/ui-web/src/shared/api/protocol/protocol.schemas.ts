@@ -86,6 +86,12 @@ export const pageSchema = z.object({ kind: z.literal('list'), empty: text, rows:
 
 const replaysPageSchema = z.looseObject({ kind: z.literal('replays') });
 
+export const editorSchema = z.object({
+  groups: z.array(z.object({ id: text, label: text, keys: z.array(text) })),
+  icons: z.record(text, z.record(text, z.nullable(z.string()))),
+  swatches: z.record(text, z.record(text, text))
+});
+
 export const componentSchema = z.object({
   id: text,
   group: text,
@@ -97,7 +103,8 @@ export const componentSchema = z.object({
   fields: z.array(fieldSchema),
   panel: z.boolean(),
   actions: z.array(actionSchema),
-  page: z.nullable(z.discriminatedUnion('kind', [pageSchema, replaysPageSchema]))
+  page: z.nullable(z.discriminatedUnion('kind', [pageSchema, replaysPageSchema])),
+  editor: z.optional(editorSchema)
 });
 
 export const widgetSchema = z.object({ kind: z.string(), v: z.number(), data: z.unknown() });

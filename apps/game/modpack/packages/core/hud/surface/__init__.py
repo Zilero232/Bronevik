@@ -42,6 +42,10 @@ from .constants import (
     SCALE_LIMITS,
     SPACE_BATTLE,
     SPACE_LOBBY,
+    SUMMARY_ENTRY,
+    SUMMARY_HIDDEN,
+    SUMMARY_PREFIXES,
+    SUMMARY_TEXT,
 )
 from .push import FramePush
 
@@ -168,6 +172,20 @@ def decode_hud_message(raw):
     return command, fields
 
 
+def _short_alias(alias):
+    for prefix in SUMMARY_PREFIXES:
+        if alias.startswith(prefix):
+            return alias[len(prefix):]
+    return alias
+
+
+def _summary_entry(panel):
+    name = _short_alias(panel['id'])
+    kind = panel['widget']['kind'] if panel['widget'] and 'kind' in panel['widget'] else SUMMARY_TEXT
+    entry = SUMMARY_ENTRY % (name, kind)
+    return entry if panel['visible'] else entry + SUMMARY_HIDDEN
+
+
 class HudSurface(object):
 
     def __init__(self):
@@ -194,6 +212,11 @@ class HudSurface(object):
 
     def aliases(self, space):
         return [alias for alias in self.order if self.labels[alias]['space'] == space]
+
+    def summary(self, space):
+        """The labels of `space` for a log line: each alias without the common prefix, with its widget kind (or
+        `text`) and `hidden` when it is not visible."""
+        return [_summary_entry(self.panel(alias)) for alias in self.aliases(space)]
 
     def panel(self, alias):
         props = self.labels[alias]['props']

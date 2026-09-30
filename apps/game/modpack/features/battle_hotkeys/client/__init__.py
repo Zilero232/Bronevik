@@ -1,0 +1,83 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+from ....core.client.hotkey import HotkeyChoice
+from ....core.client.hud.panel import BattlePanel, PanelSpec
+from ....core.client.native import apply_settings, read_settings
+from ....core.client.timer import Ticker
+from ....core.log import log, safe
+from ..i18n import STRINGS
+from ..model import notice_text, toggled, wanted_toggles
+from ..model.constants import HOTKEYS, PREVIEW_SIZE
+from ..model.preview import preview_text, preview_widget
+from ..model.widget import notice_widget
+from ..settings import PANEL_ID, SCHEMA, SWITCH
+
+PANEL_SPEC = PanelSpec(
+    panel_id=PANEL_ID,
+    schema=SCHEMA,
+    switch=SWITCH,
+    strings=STRINGS,
+    preview_size=PREVIEW_SIZE,
+    preview_text=preview_text,
+    preview_widget=preview_widget,
+)
+
+
+def _option_hotkey(option, on_toggle):
+    return HotkeyChoice(HOTKEYS, lambda: on_toggle(option))
+
+
+# A key press is the player's own change of a game option, written the way the game's settings window writes it; the
+# hotkeys live only while the player's own battle runs, and the notice panel shows the option's new state for a moment.
+class BattleHotkeys(BattlePanel):
+
+    def __init__(self, app):
+        self.hotkeys = {}
+        self.ticker = None
+        BattlePanel.__init__(self, app, PANEL_SPEC)
+
+    def start(self, battle_player):
+        self._install()
+
+    def stop(self):
+        for hotkey in self.hotkeys.values():
+            hotkey.remove()
+        self.hotkeys = {}
+        self._stop_notice()
+
+    def settings_changed(self, changed):
+        if self.running:
+            self._install()
+
+    def _install(self):
+        for choice, option in wanted_toggles(self.settings):
+            hotkey = self.hotkeys.get(option) or _option_hotkey(option, self.toggle)
+            self.hotkeys[option] = hotkey
+            hotkey.set(choice)
+
+    @safe
+    def toggle(self, option):
+        if not self.running:
+            return
+        current = (read_settings([option]) or {}).get(option)
+        value = None
+        if current is not None and apply_settings({option: toggled(current)}):
+            value = toggled(current)
+            log('battle hotkeys: %s %s' % (option, 'on' if value else 'off'))
+        self._notice(option, value)
+
+    def _notice(self, option, value):
+        translate = self.app.translate
+        self.show(notice_text(option, value, self.settings, translate), notice_widget(option, value, translate))
+        self._stop_notice()
+        self.ticker = Ticker(self.settings.get('notice_s'), self._expire)
+        self.ticker.start()
+
+    def _stop_notice(self):
+        if self.ticker is not None:
+            self.ticker.stop()
+            self.ticker = None
+
+    def _expire(self):
+        self.hide()
+        return False

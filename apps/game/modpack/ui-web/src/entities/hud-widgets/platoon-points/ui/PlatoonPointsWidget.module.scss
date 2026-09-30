@@ -1,7 +1,7 @@
 @use '../../../../shared/styles/gameface' as *;
 
 .plate {
-  min-width: 220px;
+  width: 230px;
 }
 
 .header {
@@ -9,47 +9,64 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  color: token(color-gold);
+}
+
+.title {
+  color: token(hud-muted);
+
+  @include hud-type(body);
 }
 
 .total {
-  color: token(color-gold);
-  font-size: 22px;
-  font-weight: 700;
+  color: token(hud-gold);
+
+  @include hud-type(key);
 }
 
 .row {
   display: flex;
-  height: 26px;
+  min-height: 18px;
   flex-direction: row;
   align-items: center;
-  margin-top: 2px;
+}
+
+.dead {
+  opacity: 0.5;
 }
 
 .member {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  flex-shrink: 1;
   margin: 0 8px 0 4px;
 }
 
 .name {
-  @include ellipsis;
+  color: token(hud-text);
 
-  max-width: 110px;
-  color: token(color-text);
-  font-size: 13px;
+  @include hud-type(body);
+  @include ellipsis;
 }
 
 .own {
-  color: token(color-gold);
-  font-weight: 700;
+  color: token(hud-gold);
+}
+
+.frags {
+  flex-shrink: 0;
+  margin-right: 8px;
+  color: token(hud-muted);
+  white-space: nowrap;
+
+  @include hud-type(caption);
 }
 
 .points {
   min-width: 28px;
-  color: token(color-text);
-  font-size: 15px;
-  font-weight: 700;
+  flex-shrink: 0;
+  color: token(hud-text);
   text-align: right;
+
+  @include hud-type(value);
 }

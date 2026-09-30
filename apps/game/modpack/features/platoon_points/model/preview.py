@@ -22,4 +22,4 @@ def preview_text(settings, translate):
 
 
 def preview_widget(settings, translate):
-    return points_widget(preview_platoon(), settings)
+    return points_widget(preview_platoon(), settings, translate, extended=True)

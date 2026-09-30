@@ -1,3 +1,3 @@
 import type { MarksPanelView } from '../../../lib/marks-panel-view';
 
-export type MarksThresholdsProps = { thresholds: MarksPanelView['thresholds'] };
+export type MarksThresholdsProps = Pick<MarksPanelView, 'step' | 'thresholds'>;

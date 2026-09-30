@@ -2,7 +2,16 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import time
 
-from ....core.client.battle import BattleHooks, arena, controls_own_vehicle, player, vehicle_state
+from ....core.client.battle import (
+    BattleHooks,
+    arena,
+    call,
+    controls_own_vehicle,
+    feedback,
+    is_enemy,
+    player,
+    vehicle_state,
+)
 from ....core.client.component import FeatureComponent
 from ....core.client.sound import play_sound
 from .. import FEATURE_ID
@@ -15,6 +24,11 @@ try:
 except ImportError:
     VEHICLE_VIEW_STATE = None
 
+try:
+    from BattleFeedbackCommon import BATTLE_EVENT_TYPE
+except ImportError:
+    BATTLE_EVENT_TYPE = None
+
 
 class BattleSounds(FeatureComponent):
 
@@ -22,6 +36,7 @@ class BattleSounds(FeatureComponent):
         FeatureComponent.__init__(self, app, FEATURE_ID, SCHEMA, SWITCH, STRINGS)
         self.fire_state = getattr(VEHICLE_VIEW_STATE, 'FIRE', None)
         self.devices_state = getattr(VEHICLE_VIEW_STATE, 'DEVICES', None)
+        self.crit_event = getattr(BATTLE_EVENT_TYPE, 'CRIT', None)
         self.hooks = BattleHooks()
         self.picker = None
         self.feed = None
@@ -37,6 +52,7 @@ class BattleSounds(FeatureComponent):
         self.feed = KillFeed(getattr(battle_player, 'playerVehicleID', None))
         self.hooks.add(vehicle_state, 'onVehicleStateUpdated', self._on_vehicle_state)
         self.hooks.add(arena, 'onVehicleKilled', self._on_vehicle_killed)
+        self.hooks.add(feedback, 'onPlayerFeedbackReceived', self._on_feedback)
 
     def _on_battle_leave(self):
         self.hooks.clear()
@@ -76,3 +92,13 @@ class BattleSounds(FeatureComponent):
             self.feed.own_vehicle_id = getattr(player(), 'playerVehicleID', None)
         for key in self.feed.killed(victim_id, killer_id):
             self.play(key)
+
+    # onPlayerFeedbackReceived carries only the player's own events (feedback_adaptor, RU 1.45): CRIT is a module of
+    # an enemy the own shot damaged, the same event the stock damage log lists.
+    def _on_feedback(self, events):
+        if self.picker is None or self.crit_event is None:
+            return
+        for event in events:
+            if call(event, 'getBattleEventType') == self.crit_event and is_enemy(call(event, 'getTargetID')):
+                self.play('own_crit')
+                return

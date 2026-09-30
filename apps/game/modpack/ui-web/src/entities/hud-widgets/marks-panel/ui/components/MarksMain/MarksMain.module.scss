@@ -1,3 +1,5 @@
+@use '../../../../../../shared/styles/gameface' as *;
+
 .main {
   display: flex;
   height: 24px;
@@ -5,26 +7,42 @@
   align-items: center;
 }
 
+.mark {
+  margin-right: 4px;
+}
+
+.approx {
+  margin-right: 2px;
+  color: token(hud-dim);
+
+  @include hud-type(caption);
+}
+
 .percent {
-  min-width: 78px;
-  margin: 0 6px;
-  font-size: 18px;
-  font-weight: 700;
+  min-width: 76px;
+
+  @include hud-type(key);
 }
 
 .delta {
-  font-size: 13px;
+  margin-left: 4px;
+
+  @include hud-type(body);
 }
 
-.up {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-left: 8px;
-  font-size: 11px;
+.goal {
+  margin-left: auto;
 }
 
-.badge {
-  margin-left: 8px;
-  font-size: 10px;
+.need {
+  padding-left: 4px;
+
+  @include hud-type(value);
+}
+
+.note {
+  margin-left: auto;
+  color: token(hud-dim);
+
+  @include hud-type(caption);
 }

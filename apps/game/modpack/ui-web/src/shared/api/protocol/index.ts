@@ -9,6 +9,7 @@ export type {
   UiComponent,
   UiContext,
   UiDetail,
+  UiEditor,
   UiFeed,
   UiFeedItem,
   UiField,

@@ -1,7 +1,8 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.hud.icons import glyph, image
-from ....core.hud.widget import widget
+from ....core.hud.widget import color_override, widget
+from ..settings.constants import DEFAULTS
 from . import icon_path
 from .constants import KIND
 
@@ -25,7 +26,7 @@ def sixth_sense_widget(state, settings, translate, now):
         'icon': lamp_icon(settings),
         'size': settings.get('icon_size'),
         'text': settings.get('text'),
-        'color': settings.get('color'),
+        'color': color_override(settings.get('color'), DEFAULTS['color']),
         'elapsed': round(state.duration - seconds_left, 1),
         'duration': state.duration,
         'timer': bool(settings.get('show_timer')),

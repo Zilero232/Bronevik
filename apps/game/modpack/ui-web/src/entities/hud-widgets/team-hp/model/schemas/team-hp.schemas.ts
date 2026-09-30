@@ -1,6 +1,6 @@
 import * as z from 'zod/mini';
 
-import { hudIconSchema } from '../../../../../shared/api/hud-protocol';
+import { hudIconSchema, hudToneSchema } from '../../../../../shared/api/hud-protocol';
 import { TEAM_HP } from '../../config';
 
 const side = z.object({ hp: z.number(), max: z.number(), alive: z.number(), count: z.number(), frags: z.number() });
@@ -14,6 +14,7 @@ export const teamHpSchema = z.object({
   show_score: z.boolean(),
   score_alive: z.boolean(),
   diff: z.nullable(z.number()),
-  colors: z.object({ ally: z.string(), enemy: z.string() }),
+  tones: z.object({ ally: hudToneSchema, enemy: hudToneSchema }),
+  colors: z.object({ ally: z.nullable(z.string()), enemy: z.nullable(z.string()) }),
   vehicles: z.object({ allies: z.array(vehicle), enemies: z.array(vehicle) })
 });

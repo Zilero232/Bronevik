@@ -17,8 +17,13 @@ from otmetki.core.hud import ComponentConfig, HudLayer, NullBackend
 from otmetki.core.i18n import Catalog
 from otmetki.core.settings import Schema
 from otmetki.core.storage import MemoryFile
+from otmetki.features.damage_log.i18n import STRINGS as DAMAGE_LOG_STRINGS
+from otmetki.features.marks_panel.i18n import STRINGS as MARKS_STRINGS
+from otmetki.features.session_stats.i18n import STRINGS as SESSION_STRINGS
 from otmetki.ui.bridge import SettingsBridge, site_link, site_url
 from otmetki.ui.components import COMPANION_ID, COMPANION_KEYS, FeatureInfo, load_features, root_package
+from otmetki.ui.components.component import Component
+from otmetki.ui.fields import Labels
 from otmetki.ui.hud_edit import HudEditor
 from otmetki.ui.i18n import STRINGS
 from otmetki.ui.profiles import ProfileStore
@@ -122,6 +127,17 @@ class ReplayPage(object):
         return {'kind': 'info', 'text': 'done'}
 
 
+EDITOR = {'groups': [{'id': 'shape', 'label': 'Shape', 'keys': ['mark']}], 'icons': {}, 'swatches': {}}
+
+
+class EditorFeature(object):
+
+    settings = None
+
+    def ui_editor(self):
+        return EDITOR
+
+
 def fake_features(page):
     return [
         FeatureInfo('marks_panel', settings_module(SETTINGS=('battle_moe_panel',), GROUP='battle')),
@@ -153,7 +169,7 @@ class FakeContext(object):
         self.config = Config({})
         self.saved = 0
         self.bus = EventBus(on_error=self._raise)
-        self.catalog = Catalog(COMPANION_STRINGS, STRINGS)
+        self.catalog = Catalog(COMPANION_STRINGS, STRINGS, DAMAGE_LOG_STRINGS, MARKS_STRINGS, SESSION_STRINGS)
         self.current_language = 'ru'
         self.component_config = ComponentConfig(MemoryFile({'uninstalled': {'enabled': False}}))
         self.backend = RecordingBackend()
@@ -312,7 +328,7 @@ class BridgeStateTest(BridgeTestCase):
         session = card(self.bridge.state(), 'session_stats')
 
         assert session['switch'] == {'key': 'hangar_session_panel', 'value': True}
-        assert session['title'] == u'Сессия в ангаре'
+        assert session['title'] == u'Сессия'
 
     def test_config_feature_card_uses_the_schema_limits(self):
         idle = card(self.bridge.state(), 'session_stats')['fields'][0]
@@ -357,11 +373,24 @@ class BridgeStateTest(BridgeTestCase):
         assert replays['page']['kind'] == 'list'
         assert replays['actions'][0]['id'] == 'refresh'
 
+    def test_a_card_without_an_editor_sends_none(self):
+        replays = card(self.bridge.state(), 'replay_manager')
+
+        assert 'editor' not in replays
+
+    def test_the_editor_comes_from_the_instance(self):
+        feature = EditorFeature()
+        component = Component('crosshair', 'battle', feature, (), instance=feature)
+
+        described = component.describe(Labels(Catalog(), 'en'))
+
+        assert described['editor'] == EDITOR
+
     def test_cards_carry_their_page_and_context(self):
         state = self.bridge.state()
 
         assert placement(state, COMPANION_ID) == ('data', 'any')
-        assert placement(state, 'marks_panel') == ('marks', 'battle')
+        assert placement(state, 'marks_panel') == ('marks', 'any')
         assert placement(state, 'replay_manager') == ('replays', 'hangar')
 
     def test_window_layout_defaults_to_centred(self):
@@ -439,7 +468,7 @@ class SetMessageTest(BridgeTestCase):
         send(self.bridge, type='set', component=COMPANION_ID, key='send_shots', value=False)
 
         assert self.context.config.get('send_shots') is False
-        assert self.context.saved == 1
+        assert self.context.saved == 2
         assert self.context.events == [(COMPANION_ID, ['send_shots'])]
         assert self.context.refreshed == [['send_shots']]
 
@@ -491,7 +520,7 @@ class SetManyMessageTest(BridgeTestCase):
         send(self.bridge, type='set_many', component=COMPANION_ID, values=values)
 
         assert self.context.refreshed[-1] == ['flush_interval_seconds', 'send_shots']
-        assert self.context.saved == 2
+        assert self.context.saved == 3
 
     def test_set_many_refuses_keys_outside_the_card(self):
         refused = []
@@ -501,6 +530,90 @@ class SetManyMessageTest(BridgeTestCase):
 
         assert refused == ['error', 'error', 'error']
         assert self.context.config.get('send_shots') is True
+
+
+class SectionWithConfigKeysTest(BridgeTestCase):
+
+    def setUp(self):
+        BridgeTestCase.setUp(self)
+        self.context.component_config.section('session_stats', Schema({'show_goals': True}))
+
+    def test_the_card_shows_its_section_and_its_config_keys(self):
+        session = card(self.bridge.state(), 'session_stats')
+
+        assert field_keys(session) == ['show_goals', 'session_idle_minutes']
+
+    def test_a_config_key_keeps_its_config_limits(self):
+        idle = card(self.bridge.state(), 'session_stats')['fields'][1]
+
+        assert idle['max'] == 24 * 60
+
+    def test_a_config_key_of_the_card_is_saved_in_config(self):
+        send(self.bridge, type='set', component='session_stats', key='session_idle_minutes', value=30)
+
+        assert self.context.config.get('session_idle_minutes') == 30
+        assert self.context.refreshed == [['session_idle_minutes']]
+
+    def test_a_section_key_of_the_card_stays_in_its_section(self):
+        send(self.bridge, type='set', component='session_stats', key='show_goals', value=False)
+
+        assert self.context.component_config.get('session_stats').get('show_goals') is False
+
+    def test_the_switch_stays_in_config(self):
+        session = card(self.bridge.state(), 'session_stats')
+
+        assert session['switch'] == {'key': 'hangar_session_panel', 'value': True}
+
+
+class UserSetTest(BridgeTestCase):
+
+    def user_set(self):
+        return self.context.config.get('user_set')
+
+    def test_a_changed_switch_is_recorded_by_name(self):
+        send(self.bridge, type='set', component=COMPANION_ID, key='send_shots', value=False)
+
+        assert self.user_set() == 'send_shots'
+
+    def test_a_changed_section_value_is_recorded_with_its_section(self):
+        send(self.bridge, type='set', component='minimap', key='zoom', value='x2')
+
+        assert self.user_set() == 'minimap.zoom'
+
+    def test_every_change_joins_the_recorded_keys_once(self):
+        send(self.bridge, type='set', component='minimap', key='zoom', value='x2')
+        send(self.bridge, type='set', component='damage_log', key='upload_replays', value=True)
+        send(self.bridge, type='set', component='minimap', key='zoom', value='native')
+
+        assert self.user_set() == 'minimap.zoom upload_replays'
+
+    def test_a_card_reset_records_each_changed_key(self):
+        send(self.bridge, type='set_many', component='minimap', values={'zoom': 'x2', 'enabled': False})
+
+        assert self.user_set() == 'minimap.enabled minimap.zoom'
+
+    def test_a_refused_value_records_nothing(self):
+        send(self.bridge, type='set', component='minimap', key='zoom', value='x99')
+
+        assert self.user_set() == ''
+
+    def test_a_value_set_again_unchanged_records_nothing(self):
+        send(self.bridge, type='set', component='minimap', key='zoom', value='native')
+
+        assert self.user_set() == ''
+
+    def test_a_hud_move_records_nothing(self):
+        send(self.bridge, type='hud_move', panel='damage_log', x=50, y=60)
+
+        assert self.user_set() == ''
+
+    def test_a_profile_load_records_nothing(self):
+        send(self.bridge, type='profile_save', name='A')
+        self.context.profiles.get('p1')['data']['config']['flush_interval_seconds'] = 30
+
+        send(self.bridge, type='profile_load', id='p1')
+
+        assert self.user_set() == ''
 
 
 class QuietMessageTest(BridgeTestCase):
@@ -801,6 +914,14 @@ class BridgeProfilesTest(BridgeTestCase):
         assert self.minimap().get('zoom') == 'native'
         assert self.damage_log().get('x') == 10
         assert sorted(event[0] for event in self.context.events) == ['config', 'damage_log', 'minimap']
+
+    def test_profile_never_carries_the_install_history(self):
+        send(self.bridge, type='set', component='minimap', key='zoom', value='x2')
+
+        data = self.saved_profile()
+
+        assert 'user_set' not in data['config']
+        assert 'defaults_revision' not in data['config']
 
     def test_profile_never_carries_the_connection(self):
         data = self.saved_profile()

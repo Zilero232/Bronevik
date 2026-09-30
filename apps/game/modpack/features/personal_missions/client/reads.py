@@ -4,7 +4,6 @@ from ....core.client.battle import call
 from ....core.client.game import client_attr, service
 from ....core.log import log_exception
 from .constants import (
-    CLASS_ALIAS,
     CONDITIONS_ATTR,
     CONDITIONS_MODULE,
     CONDITIONS_SEPARATOR,
@@ -16,10 +15,8 @@ from .constants import (
 
 # RU 1.45 client source: IEventsCache.getPersonalMissions().getAllQuests() -> {id: PersonalMission}
 # (gui/server_events/event_items.py) with getUserName(), getUserDescription() (a #personal_missions_details key, the
-# mission's flavour text), getQuestClassifier().getAllClassificationAttrs() (common/pm_quests.py: 'vehType' is the
-# class tag, other classifiers an alliance or a level group), getVehMinLevel()/getVehMaxLevel(), isInProgress(),
-# isCompleted(), isMainCompleted(), isFullCompleted(). The main and 'with honours' conditions are the lines the
-# missions map tooltip shows:
+# mission's flavour text), isInProgress(), isCompleted(), isMainCompleted(), isFullCompleted(). The main and 'with
+# honours' conditions are the lines the missions map tooltip shows:
 # gui/server_events/personal_progress/formatters.PMTooltipConditionsFormatters().format(quest, isMain)
 # -> [(icon, title, isInOrGroup)].
 
@@ -32,16 +29,6 @@ def _state(quest):
     if call(quest, 'isInProgress', False):
         return 'in_progress'
     return None
-
-
-def _classes(quest):
-    attrs = call(call(quest, 'getQuestClassifier'), 'getAllClassificationAttrs', {}) or {}
-    tag = attrs.get(CLASS_ALIAS) if isinstance(attrs, dict) else None
-    return [tag] if tag else []
-
-
-def _levels(quest):
-    return [call(quest, 'getVehMinLevel'), call(quest, 'getVehMaxLevel')]
 
 
 def _conditions(formatter, quest, is_main):
@@ -69,8 +56,6 @@ def _mission(quest_id, quest, state, formatter):
         'main': None,
         'extra': None,
         'state': state,
-        'classes': _classes(quest),
-        'levels': _levels(quest),
     }
     # The conditions are built per mission from its config: only for the ones in progress, what the labels show.
     if state == 'in_progress':

@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
-import type { HUD_RAILS } from '../../../config';
+import type { HUD_PLATE_FILLS } from '../../../config';
 
-export type HudRail = (typeof HUD_RAILS)[number];
+export type HudPlateFill = (typeof HUD_PLATE_FILLS)[number];
 
-export type HudPlateProps = { rail?: HudRail | null; plain?: boolean; flash?: boolean; className?: string; children: ReactNode };
+export type HudPlateProps = { fill?: HudPlateFill; className?: string; children: ReactNode };

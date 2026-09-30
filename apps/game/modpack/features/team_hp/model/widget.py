@@ -1,8 +1,9 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.hud.icons import class_icon
-from ....core.hud.widget import widget
-from .constants import KIND, SIDE_TINTS, STRIP_STYLES
+from ....core.hud.widget import color_override, widget
+from ..settings.constants import DEFAULTS
+from .constants import KIND, SIDE_COLOR_KEYS, SIDE_TINTS, SIDE_TONES, STRIP_STYLES
 from .strip import strip_rows
 
 # Fair play: the class icons, tiers, alive state and HP the stock score strip, player panels and markers already show;
@@ -55,6 +56,7 @@ def team_hp_widget(teams, settings, options):
         'show_score': bool(settings.get('show_score')),
         'score_alive': bool(settings.get('show_alive')),
         'diff': values['diff'] if settings.get('show_diff') else None,
-        'colors': {'ally': settings.get('ally_color'), 'enemy': settings.get('enemy_color')},
+        'tones': dict(SIDE_TONES),
+        'colors': dict((side, color_override(settings.get(key), DEFAULTS[key])) for side, key in SIDE_COLOR_KEYS),
         'vehicles': strip_sides(teams, settings, options),
     })

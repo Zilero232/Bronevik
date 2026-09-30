@@ -3,7 +3,7 @@
 [project]
 name = "otmetki-feature-session-stats"
 version = "0.3.0"
-description = "Feature: hangar session panel (battles, win rate, average damage, WN8) and the session id on battle results."
+description = "Feature: the hangar Session card (battles, win rate, average damage, WN8, last results, site goals, account line) and the session id on battle results."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }
 authors = [{ name = "Alexandr Artemev" }]

@@ -37,7 +37,7 @@ SESSION = alias_of('session')
 class ComponentOfTest(unittest.TestCase):
 
     def test_a_battle_panel_belongs_to_the_component_of_its_id(self):
-        assert component_of('otmetki.hud.last_hit') == 'last_hit'
+        assert component_of('otmetki.hud.damage_log') == 'damage_log'
 
     def test_a_hangar_label_belongs_to_the_component_before_its_part(self):
         assert component_of('otmetki.event_trackers.caravan') == 'event_trackers'

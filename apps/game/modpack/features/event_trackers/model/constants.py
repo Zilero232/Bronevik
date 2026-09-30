@@ -34,8 +34,8 @@ CARAVAN_PANEL = 'otmetki.event_trackers.caravan'
 HANGAR_LAYOUT = dock_layout('hangar_right')
 TITLE_SIZE_STEP = 2
 
-# The hangar cards (model/widget.py), design px.
-CARD_WIDTH = 260
+# The hangar cards (model/widget.py), design px: the hangar card width of the HUD design (spec 2026-09-30 section 6.3).
+CARD_WIDTH = 264
 TIER_NUMERALS = {
     1: u'I',
     2: u'II',

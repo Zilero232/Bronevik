@@ -18,6 +18,13 @@ STRINGS = {
         'camera_sniper_zoom_x8': u'x8',
         'camera_dynamic_camera': u'Динамическая камера',
         'camera_horizontal_stabilization': u'Горизонтальная стабилизация в снайперском режиме',
+        'camera_native_restore': u'Вернуть как было',
+        'camera_native_restore_confirm': u'Мод выключил динамическую камеру и включил стабилизацию. '
+                                         u'Вернуть настройки камеры, которые были до мода?',
+        'camera_native_recommended': u'Рекомендуемые настройки',
+        'camera_native_recommended_confirm': u'Без динамической камеры, со стабилизацией в снайперском режиме, '
+                                             u'зум запоминается. Текущие настройки сохранятся, их можно вернуть.',
+        'camera_native_failed': u'Не удалось изменить настройки игры, попробуйте ещё раз.',
     },
     'en': {
         'component_camera': u'Zoom and camera',
@@ -35,5 +42,12 @@ STRINGS = {
         'camera_sniper_zoom_x8': u'x8',
         'camera_dynamic_camera': u'Dynamic camera',
         'camera_horizontal_stabilization': u'Horizontal stabilisation in sniper mode',
+        'camera_native_restore': u'Restore my settings',
+        'camera_native_restore_confirm': u'The mod turned the dynamic camera off and the stabilisation on. '
+                                         u'Restore the camera settings you had before the mod?',
+        'camera_native_recommended': u'Recommended settings',
+        'camera_native_recommended_confirm': u'No dynamic camera, stabilisation in sniper mode, the last zoom '
+                                             u'remembered. Your current settings are kept so you can restore them.',
+        'camera_native_failed': u'Could not change the game settings, please try again.',
     },
 }

@@ -24,7 +24,7 @@ const panel = (overrides: Partial<HudPanel>): HudPanel => ({
   ...overrides
 });
 
-const opacityOf = (shown: HudPanel): number | undefined =>
+const layoutOf = (shown: HudPanel, edit = false) =>
   layoutLabels({
     panels: [shown],
     sizes: { [shown.id]: { lines: 1, width: 200, height: 40 } },
@@ -32,9 +32,11 @@ const opacityOf = (shown: HudPanel): number | undefined =>
     overrides: {},
     screen: SCREEN,
     live: null,
-    edit: false,
+    edit,
     widgets: new Map()
-  })[0]?.style.opacity;
+  })[0];
+
+const opacityOf = (shown: HudPanel): number | undefined => layoutOf(shown)?.style.opacity;
 
 describe(labelStyle, () => {
   it('places a label at full size without a transform', () => {
@@ -61,5 +63,21 @@ describe(layoutLabels, () => {
 
   it('draws a panel at full opacity once Tab is released', () => {
     expect(opacityOf(panel({ dim: false }))).toBe(1);
+  });
+
+  it('keeps a hidden panel laid out in its place, drawn transparent', () => {
+    const shown = layoutOf(panel({}));
+    const hidden = layoutOf(panel({ visible: false }));
+
+    expect(hidden?.rect).toEqual(shown?.rect);
+    expect(hidden?.style.opacity).toBe(HUD_OVERLAY.hidden);
+  });
+
+  it('takes no drag on a hidden panel', () => {
+    expect(layoutOf(panel({ visible: false, drag: true }), true)?.movable).toBe(false);
+  });
+
+  it('takes no click on a hidden button', () => {
+    expect(layoutOf(panel({ visible: false, kind: 'button' }))?.button).toBe(false);
   });
 });

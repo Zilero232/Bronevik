@@ -1,27 +1,24 @@
 {
   "data": {
-    "battles": {
-      "count": 45,
-      "level": 95
-    },
-    "color": "#7CD35B",
-    "damage": 3100,
-    "delta": 0.18,
-    "detail": {
+    "average": {
       "ema": 2540,
       "ema_projected": 2551,
-      "label": "среднее",
+      "label": "ср."
+    },
+    "battles": {
       "level": 95,
-      "target": 3050
+      "text": "~45 боёв"
+    },
+    "delta": 0.18,
+    "estimated": false,
+    "goal": {
+      "level": 87,
+      "need": 2107
     },
     "has_curve": true,
     "mark": "img://gui/maps/icons/library/marksOnGun/mark_2.png|otmetki:target",
-    "marks": 2,
+    "note": null,
     "percent": 86.3,
-    "source": {
-      "kind": "verified",
-      "label": "проверено"
-    },
     "step": {
       "need": 955,
       "step": 0.5
@@ -45,10 +42,7 @@
         "reached": false
       }
     ],
-    "up": {
-      "level": 87,
-      "need": 2107
-    }
+    "tone": "good"
   },
   "kind": "marks_panel",
   "v": 1

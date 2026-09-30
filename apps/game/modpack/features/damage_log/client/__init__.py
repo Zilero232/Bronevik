@@ -1,32 +1,45 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import time
+
 from BattleFeedbackCommon import BATTLE_EVENT_TYPE
 
-from ....core.battle_tally import EFFICIENCY_KEYS, efficiency_totals
+from ....core.battle_tally import EFFICIENCY_KEYS, MARKER_OUTCOMES, efficiency_totals
 from ....core.client.battle import (
+    SHOT_METHOD,
     call,
     controls_own_vehicle,
     damage_source,
     feedback,
     is_enemy,
+    on_own_shot,
     personal_efficiency,
+    player,
     vehicle_class,
+    vehicle_info,
     vehicle_name,
     vehicle_state,
 )
 from ....core.client.game import values_by_name
 from ....core.client.hud.panel import BattlePanel, PanelSpec
-from ....core.client.timer import Ticker, game_time
-from ....core.log import safe
 from ....core.hud.stock import BATTLE_DAMAGE_LOG_PANEL
-from ....core.shells import shell_code, shell_name
+from ....core.log import log, safe
+from ....core.shells import shell_code
 from ..i18n import STRINGS
-from ..model import DamageLog, Hit, format_damage_log, format_last_hit
-from ..model.constants import PREVIEW_LAST_HIT_SIZE, PREVIEW_SIZE
-from ..model.preview import preview_last_hit, preview_last_hit_widget, preview_text, preview_widget
-from ..model.widget import damage_log_widget, last_hit_widget
-from ..settings import LAST_HIT_PANEL_ID, LAST_HIT_SCHEMA, PANEL_ID, SCHEMA, SWITCH
-from .constants import AMMO_RACK_DEVICE, AMMO_RACK_STATES, EVENT_KINDS
+from ..model import DamageLog, Hit
+from ..model.constants import PREVIEW_SIZE
+from ..model.preview import preview_text, preview_widget
+from ..model.received import is_ricochet
+from ..model.shots import own_shot_health
+from ..model.text import format_damage_log
+from ..model.widget import damage_log_widget
+from ..settings import PANEL_ID, SCHEMA, SWITCH
+from .constants import AMMO_RACK_DEVICE, AMMO_RACK_STATES, CRIT_KINDS, DEALT_KINDS, EVENT_KINDS
+
+try:
+    from gui.battle_control.battle_constants import FEEDBACK_EVENT_ID
+except ImportError:
+    FEEDBACK_EVENT_ID = None
 
 try:
     from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
@@ -47,46 +60,16 @@ def is_ammo_rack_damage(value):
     return device == AMMO_RACK_DEVICE and device_state in AMMO_RACK_STATES
 
 
-LAST_HIT_PANEL_SPEC = PanelSpec(
-    panel_id=LAST_HIT_PANEL_ID,
-    schema=LAST_HIT_SCHEMA,
-    switch=SWITCH,
-    strings=STRINGS,
-    preview_size=PREVIEW_LAST_HIT_SIZE,
-    preview_text=preview_last_hit,
-    preview_widget=preview_last_hit_widget,
-)
-
-
-class LastHitPanel(BattlePanel):
-
-    def __init__(self, app):
-        self.ticker = None
-        BattlePanel.__init__(self, app, LAST_HIT_PANEL_SPEC)
-
-    def enabled(self):
-        return BattlePanel.enabled(self) and bool(self.settings.get('enabled'))
-
-    def stop(self):
-        if self.ticker is not None:
-            self.ticker.stop()
-            self.ticker = None
-
-    @safe
-    def show_hit(self, entry):
-        if not self.enabled() or entry is None:
-            return
-
-        text = format_last_hit(entry, self.settings, self.app.translate)
-        self.show(text, last_hit_widget(entry, self.settings))
-
-        self.stop()
-        self.ticker = Ticker(self.settings.get('timeout_s'), self._expire)
-        self.ticker.start()
-
-    def _expire(self):
-        self.hide()
-        return False
+def event_hit(vehicle_id, extra, now):
+    return Hit(
+        vehicle_id=vehicle_id,
+        vehicle=vehicle_name(vehicle_id),
+        vehicle_class=vehicle_class(vehicle_id),
+        shell=shell_code(call(extra, 'getShellType')),
+        gold=call(extra, 'isShellGold', False),
+        source=damage_source(extra),
+        at=now,
+    )
 
 
 PANEL_SPEC = PanelSpec(
@@ -104,16 +87,20 @@ class DamageLogPanel(BattlePanel):
 
     def __init__(self, app):
         self.kinds = values_by_name(BATTLE_EVENT_TYPE, EVENT_KINDS)
+        self.outcomes = values_by_name(FEEDBACK_EVENT_ID, MARKER_OUTCOMES)
+        self.health_event = getattr(FEEDBACK_EVENT_ID, 'VEHICLE_HEALTH', None)
         self.devices_state = getattr(VEHICLE_VIEW_STATE, 'DEVICES', None)
         self.efficiency = values_by_name(PERSONAL_EFFICIENCY_TYPE, EFFICIENCY_KEYS)
         self.log = None
-        self.last_hit = LastHitPanel(app)
         BattlePanel.__init__(self, app, PANEL_SPEC)
+        if not on_own_shot(self.on_own_shot):
+            log('damage log: Vehicle.%s not hooked, ricochets on you stay blocked hits' % SHOT_METHOD)
 
     def start(self, player):
         self.log = DamageLog()
         self.hooks.add(feedback, 'onPlayerFeedbackReceived', self._on_feedback)
         self.hooks.add(feedback, 'onPlayerSummaryFeedbackReceived', self._on_summary)
+        self.hooks.add(feedback, 'onVehicleFeedbackReceived', self._on_vehicle_feedback)
         self.hooks.add(vehicle_state, 'onVehicleStateUpdated', self._on_vehicle_state)
         self.hooks.add(personal_efficiency, 'onTotalEfficiencyUpdated', self._on_efficiency)
         self.render()
@@ -126,47 +113,80 @@ class DamageLogPanel(BattlePanel):
 
     # No controls_own_vehicle() guard: Avatar.onBattleEvents hands the events to the feedback only while the camera
     # follows the own vehicle (RU 1.45 Avatar.py:1623-1627), so onPlayerFeedbackReceived carries the player's own events
-    # and nothing while an ally is followed after death, as in the vanilla damage log. For received damage the target is
-    # the attacker, whose name and class the player panels and the vanilla damage log show.
+    # and nothing while an ally is followed after death, as in the stock damage log.
     def _on_feedback(self, events):
         if self.log is None:
             return
 
+        now = time.time()
         changed = False
-        received = None
         for event in events:
-            kind = self.kinds.get(event.getBattleEventType())
-            if not self._add_event(kind, event):
-                continue
-            changed = True
-            if kind == 'received':
-                received = self.log.last('received')
+            changed = self._add_event(event, now) or changed
 
         if changed:
             self.render()
-        if received is not None:
-            self.last_hit.show_hit(received)
 
-    def _add_event(self, kind, event):
+    def _add_event(self, event, now):
+        kind = self.kinds.get(event.getBattleEventType())
         extra = event.getExtra() if kind is not None else None
-        if extra is None:
-            return False
-
         vehicle_id = event.getTargetID()
-        if kind == 'damage' and not is_enemy(vehicle_id):
+        if extra is None or (kind in DEALT_KINDS and not is_enemy(vehicle_id)):
             return False
 
-        shell = call(extra, 'getShellType')
-        hit = Hit(
-            vehicle=vehicle_name(vehicle_id),
-            shell=shell_code(shell),
-            source=damage_source(extra) if kind == 'received' else None,
-            vehicle_class=vehicle_class(vehicle_id),
-            at=game_time(),
-            shell_name=shell_name(shell),
-            gold=call(extra, 'isShellGold', False),
-        )
-        return self.log.add(kind, call(extra, 'getDamage', 0), hit)
+        hit = event_hit(vehicle_id, extra, now)
+        if kind in CRIT_KINDS:
+            return self.log.add_crits(kind, call(extra, 'getCritsCount', 0), hit)
+
+        added = self.log.add(kind, call(extra, 'getDamage', 0), hit)
+        if added and kind == 'damage':
+            self._describe(vehicle_id)
+        return added
+
+    # The class and max HP the enemy's marker and the player panels already show.
+    def _describe(self, vehicle_id):
+        if vehicle_id in self.log.shots.targets:
+            return
+
+        vehicle_type = getattr(vehicle_info(vehicle_id), 'vehicleType', None)
+        self.log.shots.describe(vehicle_id, vehicle_class(vehicle_id), getattr(vehicle_type, 'maxHealth', None))
+
+    def _on_vehicle_feedback(self, event_id, vehicle_id, value):
+        if self.log is None or not controls_own_vehicle():
+            return
+
+        if event_id == self.health_event:
+            changed = self._set_health(vehicle_id, value)
+        else:
+            changed = self._add_marker(event_id, vehicle_id)
+
+        if changed:
+            self.render()
+
+    def _set_health(self, vehicle_id, value):
+        health = own_shot_health(value, getattr(player(), 'playerVehicleID', None))
+        return self.log.shots.set_health(vehicle_id, health, time.time())
+
+    def _add_marker(self, event_id, vehicle_id):
+        outcome = self.outcomes.get(event_id)
+        if outcome is None or not is_enemy(vehicle_id):
+            return False
+
+        added = self.log.shots.add_result(vehicle_id, outcome, time.time(), vehicle_name(vehicle_id))
+        if added:
+            self._describe(vehicle_id)
+        return added
+
+    # The feedback does not tell a ricochet on the own tank apart, so the hit effect of the shot the client drew on the
+    # own vehicle (Vehicle.showDamageFromShot) marks it.
+    @safe
+    def on_own_shot(self, attacker_id, points):
+        if self.log is None or not is_ricochet(points):
+            return
+
+        name, tag = vehicle_name(attacker_id), vehicle_class(attacker_id)
+        hit = Hit(vehicle_id=attacker_id, vehicle=name, vehicle_class=tag, at=time.time())
+        if self.log.received.ricochet(hit):
+            self.render()
 
     # DEVICES follows the controlled vehicle: after death it reports the ally the camera follows
     # (Avatar.showVehicleDamageInfo, RU 1.45), so only the own vehicle's ammo rack counts.
@@ -176,9 +196,8 @@ class DamageLogPanel(BattlePanel):
         if not controls_own_vehicle() or not is_ammo_rack_damage(value):
             return
 
-        if self.log.ammo_rack_hit(game_time()):
+        if self.log.received.ammo_rack_hit(time.time()):
             self.render()
-            self.last_hit.show_hit(self.log.last('received'))
 
     def _on_summary(self, event):
         self._apply_summary(
@@ -188,7 +207,7 @@ class DamageLogPanel(BattlePanel):
             call(event, 'getTotalStunDamage'),
         )
 
-    # The vanilla damage log's own totals (personal_efficiency_ctrl, RU 1.45 client source): the same numbers the
+    # The stock damage log's own totals (personal_efficiency_ctrl, RU 1.45 client source): the same numbers the
     # game shows, kept as a floor under the sums of the events.
     def _on_efficiency(self, totals):
         picked = efficiency_totals(totals, self.efficiency)
@@ -205,6 +224,9 @@ class DamageLogPanel(BattlePanel):
     @safe
     def render(self):
         if self.log is None:
+            return
+        if self.log.is_empty():
+            self.hide()
             return
 
         translate = self.app.translate

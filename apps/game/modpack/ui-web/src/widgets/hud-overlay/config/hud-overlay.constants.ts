@@ -4,7 +4,7 @@ export const HUD_OVERLAY = {
   defaultScreen: { width: 1920, height: 1080 },
   screenCheckMs: 1000,
   hoverPollMs: 50,
-  clickSlop: 3,
+  clickSlop: 5,
   buttonSize: 36,
   buttonIcon: 'icon.png',
   scaleOrigin: '0 0',

@@ -19,8 +19,10 @@ from ..model import (
     to_native,
     with_interface_scale,
 )
+from ..model.scale import exact_scale, needs_scale
 from ..settings import SCHEMA, SWITCH
 from .processors import demount, remove_style, return_crew, unload_crew
+from .scale import apply_scale, current_scale, on_scale_changed, restore_scale
 from .vehicle import device_in, free_berths, summary
 
 
@@ -35,6 +37,28 @@ class HangarTweaks(NativeSettingsComponent):
 
     def __init__(self, app):
         NativeSettingsComponent.__init__(self, app, FEATURE_ID, SCHEMA, SWITCH, STRINGS, to_native)
+        self.exact_on = False
+        app.bus.on('hangar', self.apply_exact_scale)
+        on_scale_changed(self.apply_exact_scale)
+
+    def settings_changed(self, changed):
+        NativeSettingsComponent.settings_changed(self, changed)
+        self.apply_exact_scale()
+
+    # The exact scale is put back after anything that set another one (the game's own option, a resolution change), in
+    # the hangar only; switched off, the scale saved in the game's preferences returns.
+    def apply_exact_scale(self, *args):
+        if not self.enabled_in_hangar():
+            return
+        wanted = exact_scale(self.settings.get('interface_scale_exact'))
+        if wanted is None:
+            if self.exact_on:
+                self.exact_on = False
+                restore_scale()
+            return
+        self.exact_on = True
+        if needs_scale(current_scale(), wanted):
+            apply_scale(wanted)
 
     def desired(self):
         values = self.settings.to_dict()

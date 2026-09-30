@@ -9,17 +9,9 @@ from ....core.log import safe
 from ..i18n import STRINGS
 from ..model import armor_actions, format_info, format_widget, layout_of
 from ..settings import SCHEMA, SECTION, SWITCH
+from .battle_clock import BattleClockPanel
 from .constants import HANGAR_PANEL, LAYOUT_KEYS, PING_REQUEST_S
-from .reads import (
-    accelerated_training,
-    battle_tiers,
-    crew_next_skill,
-    online,
-    ping,
-    request_ping,
-    server_name,
-    vehicle_name,
-)
+from .reads import online, ping, request_ping, server_name
 
 
 class HangarInfo(FeatureComponent):
@@ -27,6 +19,7 @@ class HangarInfo(FeatureComponent):
     def __init__(self, app):
         FeatureComponent.__init__(self, app, SECTION, SCHEMA, SWITCH, STRINGS)
         self.label = HangarLabel(app, HANGAR_PANEL)
+        self.clock = BattleClockPanel(app, self.settings)
         self.pinged_at = 0.0
         app.bus.on('hangar', self._on_hangar)
         app.bus.on('tick', self._on_tick)
@@ -40,6 +33,7 @@ class HangarInfo(FeatureComponent):
         self.render(now)
 
     def settings_changed(self, changed):
+        self.clock.info_changed()
         self.label.hide()
         self.render(time.time())
 
@@ -57,37 +51,10 @@ class HangarInfo(FeatureComponent):
             return None, None
         return online()
 
-    def _crew(self, vehicle):
-        if not self.settings.get('show_crew') or vehicle is None:
-            return None, None
-        return crew_next_skill(vehicle)
-
-    def _tiers(self, vehicle):
-        if not self.settings.get('show_tiers') or vehicle is None:
-            return None
-        return battle_tiers(vehicle)
-
-    def _accelerated(self, vehicle):
-        if not self.settings.get('show_training'):
-            return None
-        return accelerated_training(vehicle)
-
     def info(self, now):
         self._request_ping(now)
         cluster, region = self._online()
-        vehicle = selected_vehicle()
-        crew_xp, crew_role = self._crew(vehicle)
-        return {
-            'server': server_name(),
-            'ping': ping(),
-            'online': cluster,
-            'region_online': region,
-            'vehicle': vehicle_name(vehicle),
-            'tiers': self._tiers(vehicle),
-            'crew_xp': crew_xp,
-            'crew_role': crew_role,
-            'accelerated': self._accelerated(vehicle),
-        }
+        return {'server': server_name(), 'ping': ping(), 'online': cluster, 'region_online': region}
 
     def ui_actions(self):
         if not self.enabled():

@@ -1,3 +1,3 @@
-import type { MarksPanelView } from '../../../lib/marks-panel-view';
+import type { LevelNeedView } from '../../../lib/marks-panel-view';
 
-export type LevelNeedProps = { level: NonNullable<MarksPanelView['up']> };
+export type LevelNeedProps = { level: LevelNeedView; needClassName?: string };

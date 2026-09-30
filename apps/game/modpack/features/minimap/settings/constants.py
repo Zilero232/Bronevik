@@ -9,13 +9,15 @@ SIZES = (NATIVE, '0', '1', '2', '3', '4', '5')
 TRANSPARENCIES = (NATIVE, '0', '20', '40', '60', '80')
 VEHICLE_NAMES = (NATIVE, 'never', 'alt', 'always')
 
+# The recommended client values (core.client.native.RecommendedSettingsComponent): the own and the 445 m view circles,
+# tank names on Alt; size and transparency stay the game's.
 DEFAULTS = {
     'size': NATIVE,
     'transparency': NATIVE,
-    'vehicle_names': NATIVE,
-    'view_range': NATIVE,
-    'max_view_range': NATIVE,
-    'draw_range': NATIVE,
+    'vehicle_names': 'alt',
+    'view_range': 'on',
+    'max_view_range': 'on',
+    'draw_range': 'off',
 }
 
 CHOICES = {

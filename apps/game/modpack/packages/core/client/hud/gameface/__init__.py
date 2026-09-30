@@ -214,8 +214,8 @@ class GamefaceBackend(HudBackend):
             return self.surface.encode(space, True, self.modifier.held)
         return self.surface.encode(space, self.cursor, self.cursor)
 
-    # Every label change of a frame (a 10 Hz reload timer next to the clock and the logs) becomes one push of the whole
-    # state on the next frame, and an unchanged state is not pushed again.
+    # Every label change of a frame (a 10 Hz gun traverse scale next to the clock and the logs) becomes one push of the
+    # whole state on the next frame, and an unchanged state is not pushed again.
     def push_state(self):
         if self.view is not None:
             self.pusher.request()
@@ -322,7 +322,8 @@ class GamefaceBackend(HudBackend):
 
     def _on_page_ready(self, fields):
         self.answered = True
-        log('HUD: Gameface page ready (%d labels)' % len(self.surface.aliases(current_space())))
+        labels = self.surface.summary(current_space())
+        log('HUD: Gameface page ready (%d labels: %s)' % (len(labels), ', '.join(labels)))
         self.pusher.forget()
         self.push_state()
 

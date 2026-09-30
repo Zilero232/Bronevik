@@ -36,7 +36,7 @@ const overlaps = (rect: Rect, other: Rect): boolean =>
   other.top < rect.top + rect.height;
 
 const opacityOf = ({ panel, rect, screen, settled }: OpacityOfInput): number => {
-  if (!settled) {
+  if (!settled || !panel.visible) {
     return HUD_OVERLAY.hidden;
   }
 
@@ -72,9 +72,9 @@ export const layoutLabels = (input: LayoutLabelsInput): LabelLayout[] => {
       id: panel.id,
       rect,
       scale,
-      button: panel.kind === 'button',
-      movable: edit && panel.drag,
-      pointer: edit && Boolean(widgets.get(panel.id)?.pointer),
+      button: panel.visible && panel.kind === 'button',
+      movable: panel.visible && edit && panel.drag,
+      pointer: panel.visible && edit && Boolean(widgets.get(panel.id)?.pointer),
       style: labelStyle({ rect, scale, opacity })
     };
   };

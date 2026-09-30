@@ -1,1 +1,0 @@
-export { MarksDetail } from './MarksDetail';

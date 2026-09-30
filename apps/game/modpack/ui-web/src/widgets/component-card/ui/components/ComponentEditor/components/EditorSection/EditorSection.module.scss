@@ -1,0 +1,17 @@
+@use '../../../../../../../shared/styles/gameface' as *;
+
+.section {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 14px;
+}
+
+.title {
+  padding-bottom: 6px;
+  border-bottom: 1px solid token(color-border-strong);
+  margin-bottom: 2px;
+  color: token(color-text-dim);
+  font-size: 11px;
+
+  @include caps(0.6px);
+}

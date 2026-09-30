@@ -1,1 +1,0 @@
-export { MarksProgress } from './MarksProgress';

@@ -1,119 +1,109 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.hud.icons import class_icon, efficiency_icon, glyph, shell_icon, shell_icon_of
+from ....core.hud.icons import class_icon, efficiency_icon, glyph, outcome_icon
 from ....core.hud.widget import widget
-from . import detail_mode, entry_note
+from . import detail_mode, section_rows, shown_totals
 from .constants import (
-    COMPACT_STYLES,
-    DETAIL_EXTENDED,
+    ASSIST_KINDS,
     KIND,
     KIND_TONES,
-    KINDS,
-    LAST_HIT_KIND,
-    LOG_KIND_FILTER,
-    SHELL_KINDS,
+    NOTED_DETAILS,
+    RECEIVED_ICONS,
     SOURCE_ICONS,
-    TOTALS,
+    TOTAL_ICONS,
+    TOTAL_TONES,
 )
+from .words import row_note, shell_label
 
-# Fair play: the player's own damage, assist, blocked and received damage, what the stock damage log shows; for
-# received damage the attacker's name and class, as the stock log names it.
+# Fair play: the player's own shots with their hit markers, damage, crits and the target's HP after the own shot (as
+# its marker shows it), the own assist, and the hits on the player with the attacker's name and class as the stock
+# damage log names them.
 
-
-def total_icon(icon):
-    return efficiency_icon(icon) if icon else glyph('received')
-
-
-def totals(log):
-    values = log.values()
-    return [
-        {'key': key, 'icon': total_icon(icon), 'value': values[key], 'tone': tone}
-        for key, icon, tone, shown_when_zero in TOTALS
-        if shown_when_zero or values[key] > 0
-    ]
+ICON_SETS = {'efficiency': efficiency_icon, 'glyph': glyph, 'outcome': outcome_icon}
 
 
-def entry_shell(entry):
-    if entry.get('shell_name'):
-        return shell_icon(entry['shell_name'], entry.get('gold'))
-    return shell_icon_of(entry.get('shell'), entry.get('gold'))
-
-
-def source_icon(source):
-    found = SOURCE_ICONS.get(source)
+def _icon_of(found):
     if found is None:
         return None
 
     icon_set, name = found
-    if icon_set == 'efficiency':
-        return efficiency_icon(name)
-
-    return glyph(name)
+    return ICON_SETS[icon_set](name)
 
 
-def ammo_rack_icon(entry):
-    return glyph('ammo_rack') if entry.get('ammo_rack') else None
+def total_icon(key):
+    icon = TOTAL_ICONS[key]
+    return efficiency_icon(icon) if icon else glyph('received')
 
 
-def row(entry, note=''):
-    kind = entry['kind']
-    shell = entry_shell(entry) if kind in SHELL_KINDS else None
+def totals(log, settings):
+    return [
+        {'key': key, 'icon': total_icon(key), 'value': value, 'tone': TOTAL_TONES[key]}
+        for key, value in shown_totals(log, settings)
+    ]
+
+
+def row_icon(row):
+    source_icon = _icon_of(SOURCE_ICONS.get(row.get('source')))
+    if source_icon is not None:
+        return source_icon
+    if row['kind'] in ASSIST_KINDS:
+        return glyph(row['kind'])
+    if row['kind'] == 'damage':
+        return outcome_icon(row['outcome'])
+    return _icon_of(RECEIVED_ICONS.get(row['outcome']))
+
+
+def row_shell(row, translate):
+    label = shell_label(row, translate)
+    if not label:
+        return None
+
+    return {'code': row['shell'], 'label': label, 'gold': bool(row.get('gold'))}
+
+
+def signed_amount(row):
+    damage = row.get('damage')
+    if not damage:
+        return None
+
+    return -damage if row['kind'] == 'received' else damage
+
+
+def row_bar(row, show_hp):
+    if not show_hp or row.get('hp') is None or not row.get('max'):
+        return None, None
+
+    return row['hp'], row['max']
+
+
+def row_widget(row, translate, looks):
+    hp, max_hp = row_bar(row, looks['show_hp'])
     return {
-        'kind': kind,
-        'amount': entry['amount'],
-        'tone': KIND_TONES[kind],
-        'received': kind == 'received',
-        'icon': shell or glyph(kind),
-        'gold': bool(entry.get('gold')) and shell is not None,
-        'cls': class_icon(entry.get('class')),
-        'name': entry.get('vehicle') or '',
-        'source': source_icon(entry.get('source')),
-        'ammo_rack': ammo_rack_icon(entry),
-        'note': note,
+        'id': row['id'],
+        'amount': signed_amount(row),
+        'tone': KIND_TONES[row['kind']],
+        'icon': row_icon(row),
+        'shell': row_shell(row, translate),
+        'cls': class_icon(row.get('class'), 'red'),
+        'name': row.get('vehicle') or '',
+        'hits': row.get('hits', 1),
+        'hp': hp,
+        'max': max_hp,
+        'ammo_rack': glyph('ammo_rack') if row.get('ammo_rack') else None,
+        'note': row_note(row, translate, looks['show_hp']) if looks['noted'] else '',
     }
 
 
-def is_compact(settings):
-    return settings.get('style') in COMPACT_STYLES
-
-
-# Holding Alt shows the rows the compact styles leave out (model shows_log).
-def shows_rows(settings, detail):
-    if detail == DETAIL_EXTENDED:
-        return True
-
-    return bool(settings.get('show_log')) and not is_compact(settings)
-
-
-def log_rows(log, settings, translate, detail):
-    if not shows_rows(settings, detail):
-        return []
-
-    kinds = LOG_KIND_FILTER.get(settings.get('log_kinds'), KINDS)
-    entries = log.recent(settings.get('log_lines'), kinds)
-    return [row(entry, entry_note(entry, translate, detail)) for entry in entries]
-
-
-# `detail` is the row detail (model detail_mode): the page leaves the class, name and source out of a short row and
-# adds the `note` (kind, shell, source in words) to an extended one.
+# `wide` is the row detail (model detail_mode) the page lays out 330 px wide: the notes (outcome words, crits, ammo
+# rack, HP left) are in the rows then.
 def damage_log_widget(log, settings, translate, extended=False):
     detail = detail_mode(settings, extended)
+    rows = section_rows(log, settings, detail)
+    looks = {'show_hp': settings.get('show_hp'), 'noted': detail in NOTED_DETAILS}
 
     return widget(KIND, {
-        'style': 'compact' if is_compact(settings) else 'full',
-        'detail': detail,
-        'totals': totals(log),
-        'rows': log_rows(log, settings, translate, detail),
-    })
-
-
-def last_hit_widget(entry, settings):
-    return widget(LAST_HIT_KIND, {
-        'amount': entry['amount'],
-        'name': entry.get('vehicle') or '',
-        'cls': class_icon(entry.get('class'), 'red') if settings.get('show_class') else None,
-        'shell': entry_shell(entry),
-        'source': source_icon(entry.get('source')),
-        'ammo_rack': ammo_rack_icon(entry),
-        'timeout_s': settings.get('timeout_s'),
+        'wide': detail in NOTED_DETAILS,
+        'totals': totals(log, settings),
+        'dealt': [row_widget(row, translate, looks) for row in rows['dealt']],
+        'received': [row_widget(row, translate, looks) for row in rows['received']],
     })

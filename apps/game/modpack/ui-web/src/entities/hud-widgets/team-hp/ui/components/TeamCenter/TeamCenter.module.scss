@@ -2,11 +2,10 @@
 
 .center {
   display: flex;
-  width: 76px;
+  width: 92px;
   flex-direction: column;
   flex-shrink: 0;
   align-items: center;
-  justify-content: center;
 }
 
 .split {
@@ -14,26 +13,27 @@
   flex-shrink: 0;
 }
 
-.score {
-  color: token(color-text);
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 1;
+.top {
+  display: flex;
+  height: 26px;
+  flex-direction: row;
+  align-items: center;
+  color: token(hud-text);
   white-space: nowrap;
+
+  @include hud-type(key);
 }
 
-.diff {
-  margin-top: 2px;
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 1;
+.colon {
+  margin: 0 4px;
+  color: token(hud-muted);
+}
+
+.bottom {
+  display: flex;
+  height: 18px;
+  align-items: center;
   white-space: nowrap;
-}
 
-.ahead {
-  color: token(color-ally);
-}
-
-.behind {
-  color: token(color-enemy);
+  @include hud-type(caption);
 }

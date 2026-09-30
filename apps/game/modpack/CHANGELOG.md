@@ -4,6 +4,34 @@ The modpack's release notes. Every package has its own entry, `## <id> <version>
 
 Add the new entry on top of the component's previous ones when you bump a `VERSION`.
 
+## 0.2.0
+
+### ru
+
+Один компонент на одну задачу: повторы друг друга и стандартного клиента убраны, у панелей один стиль, лучшие настройки стоят сразу.
+
+- «Журнал боя» заменил лог урона, хит-лог и «Попадания по вам»: сверху итоги, ниже ваши выстрелы с исходом и остатком прочности цели и помощь, внизу попадания по вам.
+- «Прогресс боя» — одна плашка без заголовка вместо «Основного калибра», «Эффективности боя» и «Личного рекорда» (выключена по умолчанию).
+- «Отметки» объединили отметку в бою, отметки в ангаре и историю отметок; «Сессия» — цели с сайта и строку аккаунта; «Итоги боёв» — «Боевые раны»; «Часы и сервер» — часы в бою.
+- Удалены компоненты, которые повторяли стандартный клиент: перезарядка (есть в прицеле игры), карточка уничтожения (панель после гибели), артометр, помощник взвода (окно взвода), антитилт (полоска боёв сессии), строка ЛБЗ в бою (панель задач игры), строки танка в «Часах и сервере» (подсказка танка и панель экипажа), всплывающее «Последнее попадание».
+- Единый вид панелей: одна плашка, пять размеров текста, одна палитра, без цветных полос и заголовков в бою.
+- По умолчанию выключены: «Удобный ангар», автопополнение, фильтры чата и уведомлений, чистый ангар, режим стримера, звуки событий, круг 15 м. Кто их уже настраивал или включал в окне мода, у того они остаются включёнными.
+- На новой установке прицел, камера и мини-карта один раз получают рекомендуемые настройки; прежние сохраняются, кнопка «Вернуть как было» в карточке. У остальных ничего не меняется, в карточке есть «Рекомендуемые настройки».
+- Настройки объединённых компонентов переносятся сами: включённый переключатель, изменённые значения и места панелей; до переноса `components.json` сохраняется рядом как `components.json.r2.bak`.
+
+### en
+
+One component per job: the copies of one another and of the stock client are gone, the panels share one style, and the best settings come preset.
+
+- The «Battle log» replaces the damage log, the hit log and «Hits on you»: the totals on top, then your shots with the outcome and the target HP left and your assistance, and the hits on you at the bottom.
+- «Battle progress» is one titleless plate instead of «High Caliber», «Battle efficiency» and «Personal best» (off by default).
+- «Marks of Excellence» merges the battle panel, the hangar marks and the marks history; «Session» takes the site goals and the account line; «Battle results» takes «Battle wounds»; «Clock and server» takes the battle clock.
+- Removed, because the stock client already shows them: the reload timer (the game's reticle), the death card (the post-mortem panel), the arty meter, the platoon helper (the platoon window), the tilt guard (the session results strip), the battle line of personal missions (the game's quest panel), the tank rows of «Clock and server» (the vehicle tooltip and the crew panel) and the «Last hit» pop-up.
+- One look for every panel: one plate, five text sizes, one palette, no colour rails and no titles in battle.
+- Off by default now: «Hangar tweaks», auto-resupply, the chat and notification filters, the clean hangar, streamer mode, event sounds and the 15 m circle. Whoever set them up or switched them in the mod window keeps them on.
+- A fresh install gives the crosshair, the camera and the minimap the recommended settings once; the previous ones are kept for «Restore my settings» on the card. Nothing changes for everyone else; the card offers «Recommended settings».
+- The settings of merged components move over by themselves: switches that were on, changed values and panel places; `components.json` is kept next to it as `components.json.r2.bak` before the move.
+
 ## 0.1.8
 
 ### ru
@@ -182,6 +210,130 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 - The Gameface settings window with profiles and an on-screen HUD editor; ModsSettingsAPI stays the fallback.
 - Settings survive a wiped `mods/configs`: the binding, config.json, components.json, profiles.json and the app state are mirrored into `%APPDATA%\TriOtmetki` and restored on the next start.
 
+## battle_progress 0.1.0
+
+### ru
+
+- Новый компонент «Прогресс боя»: одна плашка без заголовка вместо трёх карточек — строка «Основной калибр» (порог, провален, недостижим; доля команды на Alt), рекорд танка (урон, помощь или фраги) и WN8 боя цветом шкалы рейтинга. Заменяет «Основной калибр», «Эффективность боя» и «Личный рекорд»; рекорды танков сохранены, карточка и звук нового рекорда после боя убраны. Выключен по умолчанию.
+
+### en
+
+- New component «Battle progress»: one titleless plate instead of three cards — the High Caliber row (threshold, failed, out of reach; team share on Alt), the tank record (damage, assist or frags) and this battle’s WN8 in the rating scale colour. Replaces High Caliber, Battle efficiency and Personal best; tank records are kept, the post-battle new-record card and sound are gone. Off by default.
+
+## config_backup 0.1.0
+
+### ru
+
+Новый компонент: резервная копия настроек.
+
+- Все файлы настроек мода из `mods/configs/otmetki` копируются в папку `otmetki_backup` рядом с `preferences.xml` игры при каждом сохранении.
+- Если установщик модпака стёр `mods/configs`, при следующем запуске недостающие файлы возвращаются сами, а в ангаре появляется сообщение со списком.
+- В окне мода есть кнопки «Сохранить копию сейчас» и «Вернуть удалённые файлы». Очередь неотправленных боёв не копируется.
+
+### en
+
+A new component: the settings backup.
+
+- Every mod settings file of `mods/configs/otmetki` is copied to the `otmetki_backup` folder next to the game's `preferences.xml` on every save.
+- When a modpack installer wiped `mods/configs`, the missing files come back on the next start, and the hangar shows a message listing them.
+- The mod window has «Back up now» and «Restore deleted files» buttons. The queue of battles waiting to be sent is not copied.
+
+## preset_advisor 0.1.0
+
+### ru
+
+Новый компонент: подсказка сборки в окне «Снаряжение».
+
+- В штатном окне снаряжения танка подсвечиваются оборудование и инструкции, которые чаще всего ставят лучшие 10 % игроков на этом танке по данным triotmetki.ru; расходники можно включить отдельно.
+- Мод спрашивает у сайта только номер выбранного танка и ничего не ставит и не покупает сам. Работает только в ангаре.
+
+### en
+
+A new component: build hints in the loadout setup.
+
+- The game's own loadout window marks the equipment and directives the top 10 % of players fit on this tank, from triotmetki.ru; consumables can be switched on separately.
+- The mod sends the site only the id of the selected tank and never fits or buys anything itself. Hangar only.
+
+## free_camera 0.1.0
+
+### ru
+
+Новый компонент: свободная камера (выключен по умолчанию).
+
+- Игровая видеокамера по клавише (по умолчанию Ctrl+Shift+F) в реплеях и в ангаре: WASD, Q/E, мышь и колесо; Esc или та же клавиша — выход.
+- В полёте интерфейс игры и панели мода прячутся (отключается в настройках).
+- В живом бою камера не включается никогда.
+
+### en
+
+A new component: the free camera (off by default).
+
+- The game's own video camera on a key (Ctrl+Shift+F by default) in replays and in the hangar: WASD, Q/E, the mouse and the wheel; Esc or the same key leaves it.
+- While flying, the game interface and the mod panels hide (can be turned off in the settings).
+- It never works in a live battle.
+
+## aim_info 0.1.0
+
+### ru
+
+- Прицел и снаряды: дистанция у прицела до любой техники под ним, а не только до той, у чьего маркера дистанция скрыта.
+- Подсказка снаряда на панели боеприпасов дополнена уроном модулям; если техническая информация в игре выключена, в ней появляются урон, пробитие и скорость снаряда.
+- По желанию — круг сведения меньше стандартного (40–100 %, по умолчанию 70 %), ближе к реальному разбросу. Выключен по умолчанию; в реплей пишется настоящий размер, наведение и разброс не меняются.
+
+### en
+
+- Aim and shells: the reticle distance to any vehicle under it, not only to the ones whose markers hide the distance.
+- The shell tooltip on the ammo panel gains the module damage; with the game's technical info off it also lists the damage, penetration and shell speed.
+- Optionally an aim circle smaller than the stock one (40–100 %, 70 % by default), closer to the real dispersion. Off by default; the replay records the real size, and the aim and the dispersion do not change.
+
+## responsive_reticle 0.1.0
+
+### ru
+
+- Отзывчивый прицел: маркер орудия двигается за орудием каждый кадр, а не десять раз в секунду, поэтому прицел больше не «плывёт» за мышью. Сведение и цвет пробития по-прежнему считаются раз в серверный тик, наведение уходит на сервер как раньше.
+- Можно выбрать, догоняет ли маркер орудие сразу или плавно за полтика.
+- Включён по умолчанию: это только плавность отрисовки. Сам выключается для арты, в реплеях и у орудий без горизонтальной наводки.
+
+### en
+
+- Responsive reticle: the gun marker follows the gun every frame instead of ten times a second, so the reticle no longer lags behind the mouse. The dispersion and the penetration colour are still worked out once per server tick, and the aim goes to the server as before.
+- Choose whether the marker catches up with the gun at once or smoothly over half a tick.
+- On by default: it only smooths the drawing. It turns itself off for SPGs, in replays and on guns without horizontal traverse.
+
+## battle_hotkeys 0.1.0
+
+### ru
+
+- Клавиши опций в бою: серверный прицел и увеличенный зум (x16/x25) переключаются горячими клавишами прямо в бою (по умолчанию Ctrl+Shift+J и Ctrl+Shift+K), над прицелом на пару секунд появляется подсказка, что включено.
+- Выключен по умолчанию: он меняет ваши настройки игры, поэтому включается только вашим решением.
+
+### en
+
+- Option hotkeys in battle: the server reticle and the extended zoom (x16/x25) switch with hotkeys right in battle (Ctrl+Shift+J and Ctrl+Shift+K by default), and a notice over the reticle says for a couple of seconds what is on.
+- Off by default: it changes your game settings, so only you turn it on.
+
+## battle_menu 0.1.0
+
+### ru
+
+- Настройки мода из боя: под меню Esc появляется кнопка «///», она закрывает меню игры и открывает окно настроек мода на странице «Бой». Ctrl+Shift+T делает то же с клавиатуры.
+- Включена по умолчанию: кнопка есть только вместе с меню Esc.
+
+### en
+
+- Mod settings from battle: a «///» button shows up under the Esc menu; it closes the game's menu and opens the mod's settings window at the Battle page. Ctrl+Shift+T does the same from the keyboard.
+- On by default: the button is there only with the Esc menu.
+
+## quick_demount 0.1.0
+
+### ru
+
+- В меню оборудования при настройке танка — пункт «Быстрый демонтаж»: список ваших танков, на которых стоит это оборудование, от высшего уровня к низшему. Выбор снимает его с танка во всех комплектах без переключения комплекта через стандартное действие игры; если демонтаж платный, игра спрашивает подтверждение в своём окне. Танки в бою и во взводе показаны без выбора. Выключено по умолчанию.
+
+### en
+
+- A «Quick demount» entry in the equipment menu of the tank setup: your tanks that carry this device, highest tier first. Picking one takes it off that tank in every setup, with no setup switch, through the game's own action; when the demount costs gold or a demount kit, the game asks in its own dialog. Tanks in battle or in a platoon are listed but cannot be picked. Off by default.
+
 ## hud_layouts 0.1.0
 
 ### ru
@@ -200,6 +352,118 @@ A new component: Layout per battle type.
 - A panel moved in a battle of a type other than random stays in its new place only in battles of that type; «Reset places per battle type» and «Reset layout» in the HUD editor bring back the shared places.
 - It is set on the «HUD editor» page of the mod window.
 
+## depot_seller 0.1.0
+
+### ru
+
+Новый компонент «Продажа со склада».
+
+- Продаёт со склада снаряды, модули, оборудование и снаряжение, которые не подходят ни к одной вашей машине, и демобилизует танкистов без навыков из резерва.
+- Все категории выключены; дополнительно можно разрешить то, что подходит к вашим машинам, улучшенное, трофейное, модернизированное и купленное за золото, и танкистов с навыками. Премиум-экипаж не демобилизуется никогда.
+- Страница компонента показывает весь список; «Продать» спрашивает подтверждение со списком и суммой в кредитах и отправляет те же запросы, что кнопки склада игры. Если склад изменился после показа, продажа отменяется.
+
+### en
+
+A new component: Depot seller.
+
+- Sells the shells, modules, equipment and consumables in the depot that fit none of your vehicles and dismisses reserve crew without skills.
+- Every category is off; you can also allow what fits your vehicles, improved, trophy, modernised and gold-bought items, and crew with skills. Premium crew is never dismissed.
+- The component page lists everything; «Sell» asks for a confirmation with the items and the credits and sends the same requests as the game's depot buttons. When the depot changed after it was shown, the sale is called off.
+
+## auto_reserves 0.1.0
+
+### ru
+
+Новый компонент «Автоактивация резервов».
+
+- Включает выбранные личные резервы (кредиты, опыт, опыт экипажа, свободный опыт) в первом ангаре после запуска игры и, если выбрано, каждый раз, когда резерв закончился.
+- Сначала самый сильный резерв, из равных — тот, что раньше сгорает; не больше свободных слотов. Резерв, который игра не включила, до конца сеанса не повторяется.
+- По умолчанию выключен; есть кнопка «Включить выбранные сейчас».
+
+### en
+
+A new component: Auto personal reserves.
+
+- Turns the chosen personal reserves (credits, XP, crew XP, free XP) on in the first hangar after the game starts and, when chosen, every time one runs out.
+- The strongest reserve first, among equals the one that expires first; never more than the free slots. A reserve the game refused is not tried again in the same session.
+- Off by default; a «Turn the chosen ones on now» button.
+
+## crew_xp 0.1.0
+
+### ru
+
+Новый компонент «Опыт экипажа».
+
+- Карточка под экипажем в ангаре: сколько опыта и примерно боёв осталось каждому члену экипажа выбранной машины до конца изучаемого навыка, с полосой уровня; «Новый навык», когда навык можно выбрать.
+- Та же строка в подсказке танкиста (не проверено на клиенте Lesta 1.45).
+- Бои считаются по среднему опыту машины и множителю опыта экипажа, как в экранах экипажа игры.
+
+### en
+
+A new component: Crew XP.
+
+- A card under the crew in the hangar: the XP and roughly the battles each crew member of the selected vehicle needs to finish the skill in training, with a level bar; «New skill» when one can be picked.
+- The same line in the crew member tooltip (not verified on the Lesta 1.45 client).
+- Battles come from the vehicle's average XP and crew XP factor, as in the game's crew screens.
+
+## hangar_space 0.1.0
+
+### ru
+
+Новый компонент «Выбор ангара».
+
+- Страница компонента перечисляет ангары, которые уже есть в игре; «Выбрать» ставит выбранный вместо стандартного, «Как в игре» возвращает стандартный.
+- Событийные ангары сервера и ангары других режимов остаются как в игре.
+- По умолчанию выключен.
+
+### en
+
+A new component: Hangar switcher.
+
+- The component page lists the hangars the game already has; «Choose» puts one in place of the standard hangar, «As in the game» brings the standard one back.
+- The server's event hangars and the hangars of other modes stay as in the game.
+- Off by default.
+
+## update_notice 0.1.0
+
+### ru
+
+Новый компонент «Новая версия мода».
+
+- Раз за запуск игры сверяет установленные пакеты с опубликованными релизами для вашего клиента и, если вышла новая версия, показывает карточку в ангаре и одно уведомление.
+- «Пропустить эту версию» в окне мода прячет её до следующего релиза, «Скачать на сайте» открывает страницу загрузки, «Проверить сейчас» спрашивает снова.
+- В запросе только версия игры.
+
+### en
+
+A new component: New mod version.
+
+- Once per game start it compares the installed packages with the published releases for your client and, when a new version is out, shows a hangar card and one notification.
+- «Skip this version» in the mod window hides it until the next release, «Download on the site» opens the download page, «Check now» asks again.
+- The request carries only the game version.
+
+## comp7_helper 0.3.0
+
+### ru
+
+- Статистика «Натиска»: серия побед или поражений и последние 5 боёв с изменением рейтинга, полосой отметок на карточке. Бои записываются из ваших итогов боёв, по аккаунту.
+- Настройка «Серия и последние 5 боёв».
+
+### en
+
+- Onslaught statistics: the win or loss streak and the last 5 battles with the rating change, as a strip of marks on the card. Battles are recorded from your own battle results, per account.
+- A «Streak and the last 5 battles» setting.
+
+## comp7_helper 0.2.1
+
+### ru
+
+- Карточка в ширину остальных карточек ангара (264 px), в общем стиле карточек.
+
+### en
+
+- The card matches the other hangar cards (264 px) in the shared card style.
+
 ## comp7_helper 0.1.0
 
 ### ru
@@ -215,6 +479,16 @@ A new component: Onslaught divisions.
 
 - A card in the Onslaught hangar: your rating and division, the points to the next division with a progress bar, the Champion and Legend thresholds (C, B, A) from the game's rank tooltips and the role skill of the selected vehicle.
 - Hidden outside Onslaught; during qualification it shows only the rating.
+
+## event_trackers 0.1.1
+
+### ru
+
+- Карточка в ширину остальных карточек ангара (264 px), в общем стиле карточек.
+
+### en
+
+- The card matches the other hangar cards (264 px) in the shared card style.
 
 ## event_trackers 0.1.0
 
@@ -234,39 +508,15 @@ A new component: Event trackers (off by default).
 - Trading Caravan: your tokens and the time to the end of the event; no card outside it.
 - Only your own battles and data: the Triathlon rivals' places are only on the game's own event page.
 
-## arty_meter 0.1.2
+## platoon_points 0.2.0
 
 ### ru
 
-- Новое место по умолчанию: в колонке слева от правого списка команд.
-- Панель, которую вы не двигали, переезжает с места по умолчанию прошлых версий на новое: оно больше не наезжает на списки команд, чат и миникарту на любом разрешении и масштабе интерфейса.
+- Заголовок «Очки взвода» и итог золотом, фраги подписью «фр. N»; полоски прочности — только с Alt.
 
 ### en
 
-- New default place: in the column left of the right team list.
-- A panel you never moved leaves the default place of earlier versions for the new one, which no longer covers the team lists, the chat or the minimap at any resolution and interface scale.
-
-## arty_meter 0.1.1
-
-### ru
-
-- По умолчанию стоит в колонке слева под списком команды; «За день: 7 боёв, по вам 6 раз» с правильными формами слов.
-- Выключен по умолчанию: стандартный набор боя — только ХП команд, лог урона, лог попаданий, отметка, расходники с перезарядкой и лампа. Включается в окне настроек.
-
-### en
-
-- By default it sits in the left column under the team list; correct word forms in the day line.
-- Off by default: the default battle set is team HP, the damage log, the hit log, marks, consumables with reload and the lamp only. Turn it on in the settings window.
-
-## arty_meter 0.1.0
-
-### ru
-
-- «Артометр»: прямые попадания, накрытия, повреждённые модули, оглушения и урон от арты по вашей машине в бою («градусник» 0–10) и за день; в ангаре — список последних боёв. Только огонь по своей машине, без позиций и трассеров.
-
-### en
-
-- Artillery meter: direct hits, splash, damaged modules, stuns and damage from artillery on your vehicle in battle (a 0-10 thermometer) and over the day; in the hangar, a list of recent battles. Only fire on your own vehicle, no positions or tracers.
+- A «Platoon points» header with the total in gold, frags as «fr. N»; HP bars only while Alt is held.
 
 ## platoon_points 0.1.2
 
@@ -302,29 +552,29 @@ A new component: Event trackers (off by default).
 
 - Platoon points: tournament-style points for damage, assist, frags and survival by your own rules, with the platoon's HP bars. For mates only the frags and HP the game already shows.
 
-## battle_hits 0.2.0
+## gun_arc 0.3.1
 
 ### ru
 
-- «Боевые раны» в ангаре — карточка: полученный урон крупно, пробития, непробития и рикошеты значками исходов клиента, попадания по частям и сторонам.
-- Подпись в ангаре видна только в самом ангаре: на экране очереди в бой, в других разделах, в окне настроек и в полноэкранных окнах клиента она скрыта.
-- Правильные формы слов: «2 попадания», «5 попаданий».
+- Шкала без плашки: жёлтая у упора, красная в упоре; компонент выключен по умолчанию, нужен только машинам с ограниченной наводкой.
 
 ### en
 
-- Battle wounds in the hangar is a card: the damage taken in big type, penetrations, no pens and ricochets with the client's outcome icons, hits by part and side.
-- The hangar label shows only in the hangar itself: on the battle queue screen, in other lobby sections, in the settings window and in the client's full-screen windows it is hidden.
-- Correct word forms for the hit count.
+- The scale has no plate: yellow near a limit, red at it; the component is off by default, it only matters for limited-traverse vehicles.
 
-## battle_hits 0.1.0
+## gun_arc 0.3.0
 
 ### ru
 
-- «Боевые раны»: попадания по вашему танку записываются в бою (только своя машина) и показываются в ангаре после боя — итог последнего боя и схема сверху (корпус, башня, орудие, ходовая) с точками попаданий, стороной, исходом, уроном и стрелявшим в окне модпака. Хранятся последние бои (до 30), каждый можно удалить.
+- Углы наводки — теперь шкала: метки упоров, ось корпуса и точка орудия, градусы до каждого упора.
+- Рядом виден текущий угол орудия от оси корпуса.
+- Шкала держится под прицелом в аркадном, снайперском и артиллерийском режимах, у каждого режима свой отступ; можно оставить её на своём месте.
 
 ### en
 
-- «Battle wounds»: the hits on your tank are recorded in battle (your own vehicle only) and shown in the hangar after it: the last battle's summary and, in the modpack window, a schematic from above (hull, turret, gun, running gear) with the hit points, the side, the outcome, the damage and who fired. The last battles are kept (up to 30), each can be deleted.
+- Gun traverse is now a scale: the limit ticks, the hull axis and the gun dot, with the degrees left to each limit.
+- The gun's current angle from the hull axis shows beside it.
+- The scale stays under the reticle in arcade, sniper and artillery view, each with its own offset; or leave it at its own place.
 
 ## gun_arc 0.2.1
 
@@ -370,6 +620,18 @@ A new component: Event trackers (off by default).
 
 - A 15 m circle on the ground around your tank: always on or by a hotkey (Ctrl+Shift+B, Ctrl+Shift+C, F7, F8), four colours; gone when the tank is destroyed.
 
+## hangar_info 0.5.0
+
+### ru
+
+- «Часы и сервер»: полоса над каруселью (время, дата, сервер, пинг, онлайн) и часы в бою под стандартным таймером вместо отдельного компонента.
+- Строки танка удалены — их показывают подсказка танка и панель экипажа; по умолчанию время без секунд и дата без года.
+
+### en
+
+- «Clock and server»: a strip above the carousel (time, date, server, ping, online) and the battle clock under the stock timer instead of a component of its own.
+- The tank rows are gone (the vehicle tooltip and crew panel show them); time without seconds and date without the year by default.
+
 ## hangar_info 0.4.0
 
 ### ru
@@ -394,63 +656,29 @@ A new component: Event trackers (off by default).
 
 - An «Armour on the site» button in the modpack window: opens the selected tank's 3D armour on triotmetki.ru.
 
-## received_hits 0.2.1
+## battle_loadout 0.6.0
 
 ### ru
 
-- Новое место по умолчанию: под отметкой справа от левого списка команд.
-- Панель, которую вы не двигали, переезжает с места по умолчанию прошлых версий на новое: оно больше не наезжает на списки команд, чат и миникарту на любом разрешении и масштабе интерфейса.
+- Ячейки как у стандартной панели (44 px, значок 40), разделитель перед директивами, подсказка по Ctrl в общем стиле; размер значков по умолчанию 40.
 
 ### en
 
-- New default place: under the marks panel, right of the left team list.
-- A panel you never moved leaves the default place of earlier versions for the new one, which no longer covers the team lists, the chat or the minimap at any resolution and interface scale.
+- Slots like the stock panel (44 px, 40 px icons), a divider before the directives, the Ctrl tooltip in the shared style; default icon size 40.
 
-## received_hits 0.2.0
+## battle_loadout 0.5.1
 
 ### ru
 
-- «По вам» — карточка: урон крупно, попадания, пробития и заблокированный урон значками, строка на выстрел со значком класса стрелявшего и исходом цветом.
-- По умолчанию стоит в колонке над логом урона и отметкой, а не поверх них.
-- По умолчанию стоит слева вверху под отметкой, а не над чатом.
-- Выключен по умолчанию: стандартный набор боя — только ХП команд, лог урона, лог попаданий, отметка, расходники с перезарядкой и лампа. Включается в окне настроек.
+- Оборудование снова видно в бою: ряд читает его из списка машин боя, как стандартная панель игры. Раньше он брал описание своей машины, которое клиент получает без оборудования, и ряд оставался пустым без единой ошибки.
+- Если своя машина появляется в списке боя позже, ряд достраивается сам, когда она придёт или начнётся бой.
+- В `otmetki.log` одна строка о том, что найдено (`battle_loadout: N devices, M directives, icons found K`), или почему ряд пуст.
 
 ### en
 
-- Hits on you is a card: the damage in big type, hits, penetrations and blocked damage as icons, a line per shot with the shooter's class icon and the outcome in colour.
-- By default it sits in the column above the damage log and the marks, not over them.
-- By default it sits top left under the marks, not over the chat.
-- Off by default: the default battle set is team HP, the damage log, the hit log, marks, consumables with reload and the lamp only. Turn it on in the settings window.
-
-## received_hits 0.1.0
-
-### ru
-
-- Лог попаданий по вашему танку: класс и название стрелявшей машины, снаряд, урон и исход (пробитие, крит, не пробил, рикошет), криты присоединяются к своему выстрелу; итог за бой и свой шаблон строки.
-
-### en
-
-- A log of the hits on your tank: the class and name of the vehicle that fired, the shell, the damage and the outcome (penetrated, critical, no pen, ricochet); crits join their shot; battle totals and a custom line template.
-
-## death_card 0.2.0
-
-### ru
-
-- Карточка гибели: значок класса стрелявшего, его имя, урон крупно, снаряд значком, повреждённые модули и сторона выстрела.
-
-### en
-
-- The death card: the shooter's class icon and name, the damage in big type, the shell as an icon, the damaged modules and the side of the shot.
-
-## death_card 0.1.0
-
-### ru
-
-- Карточка после уничтожения вашего танка: кто сделал последний выстрел (или кого назвала лента убийств), снаряд или причина (пожар, таран), урон, повреждённые модули и экипаж и сторона корпуса, как её показал индикатор попаданий игры. Пока танк жив, ничего не рисуется; ни позиций, ни траекторий.
-
-### en
-
-- A card after your tank is destroyed: who fired the last shot (or whom the kill feed named), the shell or the cause (fire, ram), the damage, the damaged modules and crew and the side of the hull as the game's hit indicator showed it. Nothing is drawn while the tank is alive; no positions, no trajectories.
+- The equipment shows in battle again: the row reads it from the battle's vehicle list, as the game's stock panel does. It used to take the own vehicle's descriptor, which the client gets without the equipment, so the row stayed empty without a single error.
+- When the own vehicle joins the battle's list later, the row fills in by itself once it comes or the battle starts.
+- `otmetki.log` gets one line with what was found (`battle_loadout: N devices, M directives, icons found K`) or why the row is empty.
 
 ## battle_loadout 0.5.0
 
@@ -544,6 +772,16 @@ A new component: Event trackers (off by default).
 
 - Your tank's equipment in battle with the game's item icons (★: in a slot with its own bonus), field modifications and directives; a compact icon row or a detailed list by group, placed in the HUD editor.
 
+## personal_missions 0.3.0
+
+### ru
+
+- Строка в бою убрана: условия ЛБЗ в бою показывает панель прогресса задач самой игры. Остались карточка в ангаре и список в окне мода.
+
+### en
+
+- The battle line is gone: in battle the game’s own quest progress panel shows the conditions. The hangar card and the window list stay.
+
 ## personal_missions 0.2.1
 
 ### ru
@@ -582,6 +820,16 @@ A new component: Event trackers (off by default).
 
 - Personal missions helper: the missions in progress with their main and «with honours» conditions: a hangar label, a battle line for the missions of your tank's class and every mission with its state in the mod window.
 
+## streamer_mode 0.1.1
+
+### ru
+
+- Приватный режим прячет карточку «Сессия», ЛБЗ и карточку танка. Выключен по умолчанию.
+
+### en
+
+- Private mode hides the Session card, the missions and the tank card. Off by default.
+
 ## streamer_mode 0.1.0
 
 ### ru
@@ -594,39 +842,25 @@ A new component: Event trackers (off by default).
 - A key (Ctrl+Shift+H by default) takes every panel and hangar label of the mod off the screen and brings them back with their latest text; optionally the panels stay hidden in the next battle too.
 - Private mode: the battle chat of other players is not drawn and the hangar labels with your numbers (ratings, session, goals, personal missions, marks history) are hidden. Your name and clan in the game's interface stay.
 
-## platoon_helper 0.2.0
+## crosshair 0.4.0
 
 ### ru
 
-- Взвод в ангаре — карточка: готовность напарников значками и число «2/3», свои бои во взводе и в клане.
-- Подпись в ангаре видна только в самом ангаре: на экране очереди в бой, в других разделах, в окне настроек и в полноэкранных окнах клиента она скрыта.
-- Правильные формы слова «бой».
+- На новой установке один раз ставится пресет «Минимальный» (без сетки); прежний прицел сохраняется, кнопка «Вернуть как было». Тем, кто уже играл с модом, ничего не меняется, в карточке есть кнопка «Рекомендуемые настройки».
 
 ### en
 
-- The platoon label is a card: the mates' ready marks and «2/3», the own platoon and clan battles.
-- The hangar label shows only in the hangar itself: on the battle queue screen, in other lobby sections, in the settings window and in the client's full-screen windows it is hidden.
-- Correct word forms for the battle count.
+- A fresh install sets the Minimal preset (no grid) once; the previous reticle is kept and «Restore my settings» brings it back. Existing players keep theirs, with a «Recommended settings» button on the card.
 
-## platoon_helper 0.1.0
+## crosshair 0.3.2
 
 ### ru
 
-- Подпись в ангаре: кто во взводе нажал «Готов», как в окне взвода, и ваши бои за сессию во взводе и в клановых режимах (боёв, процент побед, средний урон).
+- Прицелы настраиваются в новом редакторе: галерея всех центральных меток миниатюрами в выбранном цвете, цвет — образцами, размер и пресет игры — рядом с живым превью. У каждой настройки появилась подсказка.
 
 ### en
 
-- A hangar label: who in the platoon pressed «Ready», as in the platoon window, and your battles of the session in a platoon and in clan modes (battles, win rate, average damage).
-
-## tilt_guard 0.1.0
-
-### ru
-
-- Мягкое напоминание в ангаре сделать перерыв: после серии поражений, после долгой сессии и при заметном падении урона в последних боях; пороги настраиваются, каждое напоминание — один раз.
-
-### en
-
-- A gentle hangar reminder to take a break: after a losing streak, after a long session and on a clear drop in the damage of the last battles; the thresholds are yours, each reminder comes once.
+- Crosshairs are set up in the new editor: a gallery of every centre mark as thumbnails in the chosen colour, the colour as swatches, the size and the game preset next to the live preview. Every setting has a hint now.
 
 ## crosshair 0.3.1
 
@@ -658,211 +892,31 @@ A new component: Event trackers (off by default).
 
 - Five new one-colour centre marks of our own (dot, cross, dashed ring, brackets, diamond) and a choice of their colour: white, green, yellow, cyan, magenta, red.
 
-## personal_best 0.2.1
+## core 0.7.0
 
 ### ru
 
-- Новое место по умолчанию: в колонке справа от левого списка команд, а не на нём.
-- Панель, которую вы не двигали, переезжает с места по умолчанию прошлых версий на новое: оно больше не наезжает на списки команд, чат и миникарту на любом разрешении и масштабе интерфейса.
+- Единый стиль HUD: токены `hud-*` (одна плашка, пять размеров текста, палитра), без цветных полос; общая подсказка HUD и плашка снаряда.
 
 ### en
 
-- New default place: in the column right of the left team list, not on it.
-- A panel you never moved leaves the default place of earlier versions for the new one, which no longer covers the team lists, the chat or the minimap at any resolution and interface scale.
+- One HUD style: the `hud-*` tokens (one plate, five text sizes, one palette), no colour rails; a shared HUD tooltip and the shell chip.
 
-## personal_best 0.2.0
+## core 0.6.8
 
 ### ru
 
-- Рекорд танка — карточка со значками урона, помощи и фрагов и полосой до рекорда; побитый рекорд золотом. По умолчанию слева под списком команды.
-- По умолчанию стоит в колонке под полосой ХП команд.
-- Выключен по умолчанию: стандартный набор боя — только ХП команд, лог урона, лог попаданий, отметка, расходники с перезарядкой и лампа. Включается в окне настроек.
+- Одно правило скрытия панелей: V, камера на убийце после гибели и экран загрузки боя прячут панели, Tab приглушает их под таблицей. Панели остаются на своих местах и не пересоздаются, поэтому ничего не прыгает.
+- Место панели, сохранённое за краем экрана (например, после старого перетаскивания), при запуске возвращается к краю.
+- Диагностика в `otmetki.log`: при готовности страницы HUD — список полученных ею панелей с видом виджета, а через 15 секунд боя — строка «HUD report» с состоянием каждой боевой панели: выключена, показана, спрятана, за краем экрана, придержана (стример, раскладка режима) или ждёт данных с причиной.
+- Отметки: пороги знаков классности с сайта (опыт за бой на 3, 2, 1 степень и «Мастер») читаются вместе с порогами отметок; точное изменение отметки за бой считается по двум значениям `damageRating` (до боя и из итогов боя), без оценки.
 
 ### en
 
-- The tank record is a card with the damage, assist and frags icons and a bar to the record; a beaten record in gold. By default on the left under the team list.
-- By default it sits in the column under the team HP strip.
-- Off by default: the default battle set is team HP, the damage log, the hit log, marks, consumables with reload and the lamp only. Turn it on in the settings window.
-
-## personal_best 0.1.0
-
-### ru
-
-- Рекорд урона, помощи и фрагов на танке в бою: «рекорд 6 812, осталось 1 200», после рекорда — «Новый рекорд».
-- После боя, побившего рекорд, — уведомление-карточка в ангаре и наш звук.
-- Рекорды берутся из досье своего танка, своих итогов боёв и копии рекордов на сайте (`/mod/me/tanks`); при переполнении забывается танк, который дольше всех не встречался.
-
-### en
-
-- The tank's damage, assist and frags record in battle: «record 6,812, 1,200 to go», then «New record».
-- After a battle that beat a record, a card notification in the hangar and our sound.
-- Records come from the own tank dossier, the own battle results and the site's copy of them (`/mod/me/tanks`); when full, the tank not seen for the longest is forgotten.
-
-## session_goals 0.2.1
-
-### ru
-
-- Новое место по умолчанию в бою: в колонке слева от правого списка команд.
-- Панель, которую вы не двигали, переезжает с места по умолчанию прошлых версий на новое: оно больше не наезжает на списки команд, чат и миникарту на любом разрешении и масштабе интерфейса.
-
-### en
-
-- New default place in battle: in the column left of the right team list.
-- A panel you never moved leaves the default place of earlier versions for the new one, which no longer covers the team lists, the chat or the minimap at any resolution and interface scale.
-
-## session_goals 0.2.0
-
-### ru
-
-- Цели в ангаре и в бою — карточки со значками статуса и полосой прогресса.
-- Подпись в ангаре видна только в самом ангаре: на экране очереди в бой, в других разделах, в окне настроек и в полноэкранных окнах клиента она скрыта.
-- Строка целей в бою выключена по умолчанию (включается в окне настроек).
-
-### en
-
-- Goals in the hangar and in battle are cards with status marks and a progress bar.
-- The hangar label shows only in the hangar itself: on the battle queue screen, in other lobby sections, in the settings window and in the client's full-screen windows it is hidden.
-- The battle line of goals is off by default (turn it on in the settings window).
-
-## session_goals 0.1.0
-
-### ru
-
-- Цели из кабинета на сайте: прогресс в ангаре, строка в бою (для цели по среднему урону — сколько урона нужно в этом бою) и звук, когда сайт отметил цель выполненной.
-- Чтение `/mod/me/goals` после привязки, в ангаре; сервер ещё не отдаёт этот запрос (контракт `contract/goals.schema.json`).
-
-### en
-
-- Goals from your site dashboard: progress in the hangar, a battle line (for an average-damage goal, the damage this battle needs) and a sound when the site marks a goal met.
-- Reads `/mod/me/goals` once bound, in the hangar; the server does not serve it yet (contract `contract/goals.schema.json`).
-
-## main_gun 0.3.0
-
-### ru
-
-- «Недостижим»: когда у противников осталось меньше ХП, чем вам не хватает до порога, счётчик говорит, что медаль уже не взять.
-- «Провален»: после попадания вашего выстрела в союзника (то же «Попадание в союзника», что пишет клиент) медаль не выдаётся, и счётчик это показывает.
-- ХП противников — те же числа, что у стандартной панели счёта.
-- По умолчанию панель стоит в правой верхней колонке, у списка команды, и больше не закрывает полосы захвата базы и прогресс задач под панелью счёта. Панель, которую вы не двигали, переезжает сама.
-
-### en
-
-- «Out of reach»: when the enemies have less HP left than you still need for the threshold, the counter says the medal can no longer be earned.
-- «Failed»: after your shot hits an ally (the same «Ally hit» the client reports) the medal is not awarded, and the counter shows it.
-- The enemy HP is the same number the stock score strip shows.
-- By default the panel sits in the right top column by the team list and no longer covers the base capture bars and the mission progress under the score strip. A panel you never moved moves by itself.
-
-## main_gun 0.2.1
-
-### ru
-
-- «Основной калибр» по умолчанию под полосой ХП команд, а не на правом списке команд.
-- Панель, которую вы не двигали, переезжает с места по умолчанию прошлых версий на новое: оно больше не наезжает на списки команд, чат и миникарту на любом разрешении и масштабе интерфейса.
-
-### en
-
-- «High Caliber» sits under the team HP strip by default, not on the right team list.
-- A panel you never moved leaves the default place of earlier versions for the new one, which no longer covers the team lists, the chat or the minimap at any resolution and interface scale.
-
-## main_gun 0.2.0
-
-### ru
-
-- «Основной калибр» — карточка с полосой прогресса до порога; по умолчанию стоит под полосой ХП команд.
-- Выключен по умолчанию: стандартный набор боя — только ХП команд, лог урона, лог попаданий, отметка, расходники с перезарядкой и лампа. Включается в окне настроек.
-
-### en
-
-- High Caliber is a card with a progress bar to the threshold; by default it sits under the team HP strip.
-- Off by default: the default battle set is team HP, the damage log, the hit log, marks, consumables with reload and the lamp only. Turn it on in the settings window.
-
-## main_gun 0.1.0
-
-### ru
-
-- Счётчик «Основного калибра»: ваш урон против порога медали (20% ХП противника, не меньше 1 000), урон команды и ваша доля.
-
-### en
-
-- The High Caliber counter: your damage against the medal threshold (20% of the enemy HP, at least 1,000), the team damage and your share.
-
-## battle_efficiency 0.2.2
-
-### ru
-
-- По умолчанию в левой колонке под отметкой, а не посередине под панелью счёта: панель больше не закрывает полосы захвата баз и прогресс боевых задач.
-- Панель, которую вы не двигали, переезжает на новое место сама.
-
-### en
-
-- Sits in the left column under the marks by default, not in the middle under the score strip, so it no longer covers the base capture bars and the quest progress.
-- A panel you never moved moves to the new place on its own.
-
-## battle_efficiency 0.2.1
-
-### ru
-
-- По умолчанию под полосой ХП команд, а не на правом списке команд.
-- Панель, которую вы не двигали, переезжает с места по умолчанию прошлых версий на новое: оно больше не наезжает на списки команд, чат и миникарту на любом разрешении и масштабе интерфейса.
-
-### en
-
-- Sits under the team HP strip by default, not on the right team list.
-- A panel you never moved leaves the default place of earlier versions for the new one, which no longer covers the team lists, the chat or the minimap at any resolution and interface scale.
-
-## battle_efficiency 0.2.0
-
-### ru
-
-- WN8 боя — карточка: оценка крупно цветом, WN8 на танке и урон против среднего; по умолчанию под «Основным калибром».
-- Выключен по умолчанию: стандартный набор боя — только ХП команд, лог урона, лог попаданий, отметка, расходники с перезарядкой и лампа. Включается в окне настроек.
-
-### en
-
-- Battle WN8 is a card: the estimate in big type and colour, the tank's WN8 and the damage against the average; by default under High Caliber.
-- Off by default: the default battle set is team HP, the damage log, the hit log, marks, consumables with reload and the lamp only. Turn it on in the settings window.
-
-## battle_efficiency 0.1.0
-
-### ru
-
-- Эффективность боя: оценка WN8 этого боя по ожидаемым значениям танка и урон против своего среднего на нём, цветом выше или ниже своего.
-- Без известного среднего урона (0 или нет данных) строка урона не показывается.
-
-### en
-
-- Battle efficiency: a WN8 estimate of this battle from the tank's expected values and the damage against your own average on it, coloured above or below your own.
-- Without a known average damage (0 or missing) the damage line is left out.
-
-## reload_timer 0.2.1
-
-### ru
-
-- Панель, которую вы не двигали, переезжает с места по умолчанию прошлых версий на новое: оно больше не наезжает на списки команд, чат и миникарту на любом разрешении и масштабе интерфейса.
-
-### en
-
-- A panel you never moved leaves the default place of earlier versions for the new one, which no longer covers the team lists, the chat or the minimap at any resolution and interface scale.
-
-## reload_timer 0.2.0
-
-### ru
-
-- Полоса перезарядки с секундами и кассетой под прицелом.
-
-### en
-
-- A reload bar with seconds and the magazine under the reticle.
-
-## reload_timer 0.1.0
-
-### ru
-
-- Отсчёт перезарядки своего орудия с полоской и снаряды в кассете; только своё орудие. Отсчёт идёт по времени игры и не отстаёт от прицела.
-
-### en
-
-- Your gun's reload countdown with a bar and the shells in the magazine; your own gun only. It counts by game time and keeps pace with the reticle.
+- One rule for hiding the panels: V, the camera on the killer after death and the battle loading screen hide them, Tab dims them under the table. The panels keep their places and are never recreated, so nothing jumps.
+- A panel place saved past the screen edge (after an old drag, say) is brought back to that edge on start.
+- Diagnostics in `otmetki.log`: when the HUD page is ready, the list of the panels it got with their widget kinds, and 15 seconds into a battle a «HUD report» line with every battle panel's state: off, shown, hidden, off-screen, held (streamer, the battle type's layout) or waiting for data, with the reason.
+- Marks: the site's mastery badge thresholds (base XP per battle for the 3rd, 2nd, 1st class and Ace) are read along with the MoE thresholds; the exact MoE change of a battle comes from two `damageRating` values (before the battle and from its results), with no estimate.
 
 ## core 0.6.7
 
@@ -1056,6 +1110,30 @@ A new component: Event trackers (off by default).
 - Durable settings: the files a player cannot recreate are mirrored into `%APPDATA%\TriOtmetki`, and a missing or older copy in `mods/configs/otmetki` is restored on load.
 - Pinned Python 2.7 libraries: six, blinker, attrs, enum34.
 
+## companion 0.7.0
+
+### ru
+
+- Ревизия настроек 3: переключатели объединённых компонентов, перенос их значений и мест, удаление секций удалённых компонентов; новые значения по умолчанию только для того, что игрок не менял (`user_set`), настроенные компоненты остаются включёнными. Копия `components.json.r2.bak` до переноса.
+
+### en
+
+- Settings revision 3: the switches of merged components, their values and places moved over, the sections of removed components dropped; new defaults only where the player changed nothing (`user_set`), components that were set up stay on. A `components.json.r2.bak` copy before the move.
+
+## companion 0.6.4
+
+### ru
+
+- Переключатель компонента «Прицел и снаряды» (`battle_aim_info`, включён по умолчанию).
+- Отметка танка перед каждым боем запоминается при входе в бой: изменение за бой сравнивается с ней, а не со значением досье, которое игра обновляет после боя иногда раньше, чем приходят итоги. Досье танка теперь сообщает и ваш знак классности.
+- Переключатель компонента «Быстрый демонтаж» (`hangar_quick_demount`, выключен по умолчанию).
+
+### en
+
+- The switch of the «Aim and shells» component (`battle_aim_info`, on by default).
+- The tank's MoE is remembered on the way into every battle: a battle's change is compared with it, not with the dossier value the game refreshes after the battle, sometimes before the results arrive. The tank dossier read now carries your mastery badge too.
+- The switch of the «Quick demount» component (`hangar_quick_demount`, off by default).
+
 ## companion 0.6.3
 
 ### ru
@@ -1165,6 +1243,52 @@ A new component: Event trackers (off by default).
 - Binding to triotmetki.ru with a one-time code from the site; nothing is collected or sent before it.
 - After each own battle: the `personal` block of the battle results, MoE snapshots and distribution, queue times, the loadout and shots, sent in signed batches through an outbox that survives a restart and backs off on errors.
 - Per-feature data switches in `config.json`, the ModsSettingsAPI window as the fallback settings UI, and the streamer settings share (export, apply with a confirmation, restore).
+
+## ui 0.7.0
+
+### ru
+
+- Окно настроек запоминает, какие переключатели и значения вы меняли (`user_set`), и обновления значений по умолчанию их не трогают; профили больше не переносят эту историю.
+- Карточка компонента с собственной секцией снова показывает его настройки из config.json.
+- Общая подсказка HUD, рамки режима правки в фирменном оранжевом, текст панелей с тенью HUD.
+
+### en
+
+- The settings window records which switches and values you changed (`user_set`), so default updates leave them alone; profiles no longer carry that history.
+- A component card with its own section shows its config.json settings again.
+- A shared HUD tooltip, edit-mode frames in the brand orange, panel text with the HUD shadow.
+
+## ui 0.6.7
+
+### ru
+
+- Визуальные компоненты открываются в своём редакторе на весь экран окна: слева большое живое превью на тёмном «игровом» фоне с увеличением 1×/2×, справа настройки по группам в своей прокрутке — превью видно всё время, листать между ним и настройками больше не нужно.
+- Варианты с картинками выбираются из галереи миниатюр в один клик, цвета — кружками-образцами, остальные варианты — компактными кнопками.
+- Наведение на настройку или вариант показывает его подсказку под превью; «Сбросить к стандартным», «Двигать на экране» и действия компонента — там же. Esc или крестик закрывают редактор.
+
+### en
+
+- Visual components open in their own editor that fills the window: a large live preview on a dark game-like backdrop with 1×/2× zoom on the left, the settings in groups with their own scroll on the right, so the preview stays in sight and there is no scrolling between it and the settings.
+- Options with pictures are picked from a thumbnail gallery in one click, colours from round swatches, other options from compact chips.
+- Pointing at a setting or an option shows its hint under the preview; «Reset to defaults», «Move on screen» and the component's actions sit there too. Esc or the cross closes the editor.
+
+## ui 0.6.6
+
+### ru
+
+- Окно настроек открывается и в бою — по кнопке под меню Esc или по Ctrl+Shift+T. Пока окно открыто, курсор на экране, а танк стоит; после боя окно закрывается само.
+- Кнопки на странице HUD нажимаются и в бою, когда курсор на экране.
+- Нажатие на панель становится перетаскиванием только после сдвига на 5 пикселей, и в бою, и в редакторе HUD.
+- Редактор HUD сохраняет положение панели один раз, когда кнопку мыши отпустили, а не во время перетаскивания.
+- Скрытая панель (V, камера на убийце, экран загрузки) остаётся на своём месте в колонке, поэтому соседи не сдвигаются.
+
+### en
+
+- The settings window opens in battle too, from the button under the Esc menu or with Ctrl+Shift+T. While it is open the cursor is on screen and the tank holds still; the window closes by itself when the battle ends.
+- Buttons on the HUD page can be pressed in battle while the cursor is out.
+- A press on a panel turns into a drag only after 5 px, in battle and in the HUD editor.
+- The HUD editor saves a panel's place once, on mouse-up, not while it is dragged.
+- A hidden panel (V, the killer camera, the loading screen) keeps its place in its column, so its neighbours do not move.
 
 ## ui 0.6.5
 
@@ -1390,6 +1514,30 @@ A new component: Event trackers (off by default).
 - The Gameface settings window (OpenWG Gameface): a card per installed component built from its own schema, list pages, profiles (save, load, rename, export and import as a code) and the on-screen HUD editor.
 - Entry points: the «///» button in the hangar, a ModsList entry and the hotkey Ctrl+Shift+T.
 
+## marks_panel 0.6.0
+
+### ru
+
+- «Отметки» объединяют отметку в бою, отметки в ангаре и историю отметок. В бою — одна строка (значок, процент, изменение, урон до следующей цели), по Alt ниже появляются пороги 65/85/95 %, шаг, среднее и боёв до отметки.
+- В ангаре — карточка танка: процент, тренд последних боёв, урон за бой до отметок, прогноз боёв и WN8 танка с сайта по Alt. История отметок и расчёт отметок — в окне мода; файлы истории сохранены.
+
+### en
+
+- «Marks of Excellence» merges the battle panel, the hangar marks and the marks history. In battle it is one line (mark, percent, change, damage to the next goal); on Alt the 65/85/95% thresholds, the step, the average and battles to the mark appear under it.
+- In the hangar a tank card shows the percent, the trend of the last battles, the damage per battle to each mark, the battles forecast and the tank’s WN8 from the site on Alt. The marks history and the marks report are in the mod window; history files are kept.
+
+## marks_panel 0.5.0
+
+### ru
+
+- Карточка танка в ангаре показывает порог 100 % рядом с 65/85/95 %, если он есть на сайте.
+- По Alt (и в подробном виде) карточка показывает опыт за бой на знаки классности — 3, 2, 1 степень и «Мастер» с сайта, ближайший ещё не полученный крупно, и опыт до элиты и до следующих танков (с модулями, которые нужны сначала, и ценой с учётом чертежей) с числом боёв при вашем среднем опыте на этом танке. Свободный опыт не учитывается. Два новых переключателя: «Опыт на знаки классности» и «Опыт до элиты и до следующих танков».
+
+### en
+
+- The hangar tank card shows the 100% threshold next to 65/85/95% when the site has it.
+- On Alt (and in the extended style) the card shows the XP per battle for the mastery badges (3rd, 2nd, 1st class and Ace from the site, the next one not yet earned in large type) and the XP to elite and to the next tanks (with the modules they need first, at the blueprint price) with the battles it takes at your average XP on this tank. Free XP is not counted. Two new switches: «XP for the mastery badges» and «XP to elite and to the next tanks».
+
 ## marks_panel 0.4.0
 
 ### ru
@@ -1454,30 +1602,6 @@ A new component: Event trackers (off by default).
 - Styles «Extended», «Compact», «Minimal» and your own macro template; colour by change, by mark or none.
 - Spotting and tracking assist earned after the tank is destroyed now counts; the client's end-of-life summary raises the damage and stun to its values.
 
-## hangar_marks 0.2.0
-
-### ru
-
-- Отметка в ангаре — карточка: значок отметки, процент крупно, среднее и темп, урон за бой до 65/85/95 % с галочкой у взятых порогов и прогноз «до 95 %: ~12 боёв». Строка «+0,5 %: -» убрана.
-- Скрывается вне обычного вида ангара, как и подписи ангара; по умолчанию стоит первой в левой колонке.
-- Правильные формы слов: «2 боя», «5 боёв».
-
-### en
-
-- Hangar marks is a card: the mark icon, the percent in big type, the average and the pace, the damage per battle to 65/85/95 % with a check at the reached ones, and the forecast «to 95 %: ~12 battles». The «+0.5 %: -» line is gone.
-- It hides outside the plain hangar view like the hangar labels; by default it is the first of the left column.
-- Correct word forms for the battle count.
-
-## hangar_marks 0.1.0
-
-### ru
-
-- В ангаре для выбранного танка: процент отметки и звёзды, среднее, темп последних боёв, урон за бой до 65/85/95 % и на +0,5 %, прогноз боёв до следующей отметки. Перетаскивается в редакторе HUD, три вида и свой шаблон.
-
-### en
-
-- In the hangar for the selected tank: the MoE percent and stars, the average, the pace of your last battles, the damage per battle to 65/85/95% and for +0.5%, and a forecast of the battles to the next mark. Movable in the HUD editor, three styles and your own template.
-
 ## marks_panel 0.1.0
 
 ### ru
@@ -1487,6 +1611,28 @@ A new component: Event trackers (off by default).
 ### en
 
 - In battle: the current MoE percentage, the projection after the battle and the damage still needed for the next mark; team damage is not counted.
+
+## session_stats 0.6.0
+
+### ru
+
+- Карточка «Сессия» объединяет цели с сайта (прогресс, ✓ и звук выполненной цели) и строку аккаунта (WN8, процент побед, средний урон); одна граница сессии для всего.
+- Компоненты «Цели с сайта», «Мои рейтинги в ангаре», «Антитилт» и «Помощник взвода» удалены: полоска последних боёв уже показывает серию поражений, а готовность взвода видна в окне взвода.
+
+### en
+
+- The Session card takes in the site goals (progress, ✓ and the goal-done sound) and the account line (WN8, win rate, average damage); one session boundary for everything.
+- The «Goals from the site», «My ratings in the hangar», «Tilt guard» and «Platoon helper» components are removed: the last-results strip already shows a loss streak, and the platoon window shows who is ready.
+
+## session_stats 0.5.0
+
+### ru
+
+- Строки «Отметка»: для каждого танка сессии (до трёх, последний сыгранный сверху) точное изменение процента отметки за сессию, например «+0.42%», и текущий процент. Каждое изменение взято из итогов боя против досье до боя, без оценки. Переключатель «Изменение отметки по танкам сессии».
+
+### en
+
+- «MoE» rows: for each tank of the session (up to three, the last played on top) the exact change of its MoE percent over the session, «+0.42%» say, and the current percent. Each change comes from the battle results against the dossier before the battle, with no estimate. Switch «MoE change per tank of the session».
 
 ## session_stats 0.4.0
 
@@ -1572,6 +1718,22 @@ A new component: Event trackers (off by default).
 
 - Opt-in, off by default: uploads the replays the game itself recorded of the player's own battles, matched by the replay header, private unless `publish_replays` is on. Never turns replay recording on; files above 50 MiB are refused.
 
+## damage_log 0.5.0
+
+### ru
+
+- «Журнал боя» вместо лога урона, хит-лога и «Попаданий по вам»: итоги (урон, помощь, оглушение, блок, получено; нули скрыты, до первого числа журнал скрыт), раздел нанесённого — ваши выстрелы с исходом по маркерам, уроном, снарядом, классом, целью и полоской её прочности, одна строка на цель, строки помощи; раздел полученного — урон по вам со снарядом, стрелявшим, пожаром, тараном и боеукладкой, криты и попадания, которые выдержала броня.
+- Снаряд — плашка ББ/БП/КС/ОФ, премиум золотом. По Alt журнал шире и добавляет исход словами, криты и остаток прочности (Alt включён по умолчанию).
+- Панель «Последнее попадание» удалена: это та же строка, что верхняя в разделе полученного.
+- Новые настройки: разделы, строк нанесённого и полученного, одна строка на цель, прочность цели, выстрелы без урона, заблокированные попадания, строки помощи.
+
+### en
+
+- The «Battle log» replaces the damage log, the hit log and «Hits on you»: totals (damage, assist, stun, blocked, received; zeros hidden, and the log stays hidden until the first number), a dealt section with your shots (outcome from the hit markers, damage, shell, class, target and its HP bar, one row per target) and assist rows, and a received section with the damage to you (shell, shooter, fire, ram, ammo rack), crits and the hits your armour stopped.
+- The shell is an AP/APCR/HEAT/HE chip, premium in gold. Alt widens the log and adds the outcome in words, crits and the HP left (Alt is on by default).
+- The «Last hit» panel is removed: it was the top row of the received section again.
+- New settings: sections, dealt and received rows, one row per target, target HP, shots without damage, blocked hits, assist rows.
+
 ## damage_log 0.4.0
 
 ### ru
@@ -1648,107 +1810,15 @@ A new component: Event trackers (off by default).
 - Palettes `classic`, `graphite`, `contrast`, `colorblind` (macros `{c_dealt}`, `{c_blocked}`, `{c_assisted}`, `{c_received}`) and our own damage-kind icons (`{icon}`).
 - Assist earned after death, while the camera follows an ally, still counts.
 
-## hit_log 0.3.0
+## team_hp 0.6.0
 
 ### ru
 
-- «Подробности по Alt» (выключено по умолчанию): строки короткие — исход, урон и танк; пока зажат Alt, они полные: класс, остаток прочности, снаряд и число критов.
-- Свой шаблон строки для Alt (`alt_line_template`, макросы `{crits_text}` и `{hp_left}`); в режиме правки панелей видна короткая версия.
+- Новый вид: полупрозрачная полоса по центру, полосы 170×8 от центра, счёт крупно, разница под счётом; цвета сторон — из палитры HUD, свой цвет в настройках по-прежнему главнее.
 
 ### en
 
-- «Details on Alt» (off by default): the lines are short, the outcome, damage and tank; while Alt is held they are full: class, HP left, shell and the crit count.
-- A custom line template for Alt (`alt_line_template`, macros `{crits_text}` and `{hp_left}`); the HUD edit mode shows the short version.
-
-## hit_log 0.2.2
-
-### ru
-
-- Новое место по умолчанию: слева от правого списка команд, а не поверх него.
-- Панель, которую вы не двигали, переезжает с места по умолчанию прошлых версий на новое: оно больше не наезжает на списки команд, чат и миникарту на любом разрешении и масштабе интерфейса.
-
-### en
-
-- New default place: left of the right team list, not over it.
-- A panel you never moved leaves the default place of earlier versions for the new one, which no longer covers the team lists, the chat or the minimap at any resolution and interface scale.
-
-## hit_log 0.2.1
-
-### ru
-
-- По умолчанию стоит справа вверху сразу под таймером боя, выше списка команды, и больше не заходит на миникарту.
-
-### en
-
-- By default it sits top right right under the battle timer, above the team list, and no longer runs into the minimap.
-
-## hit_log 0.2.0
-
-### ru
-
-- Иконки исхода попадания, класс цели, полоска и ХП после вашего выстрела; панель над мини-картой.
-
-### en
-
-- Hit outcome icons, the target class, a bar and the HP left after your shot; the panel sits above the minimap.
-
-## hit_log 0.1.0
-
-### ru
-
-- В бою: каждое собственное попадание по противнику (пробитие, крит, непробитие, рикошет и остальные) с уроном, снарядом, критами и HP цели после попадания — ровно как показывает маркер противника; по желанию с группировкой по цели.
-- Цвет исхода по палитре (`{c_outcome}`: `classic`, `graphite`, `contrast`, `colorblind`); HP цели берётся только из собственного попадания.
-
-### en
-
-- In battle: each own hit on an enemy (penetration, critical, no penetration, ricochet and the rest) with damage, shell, crits and the target's HP after the hit, exactly as the enemy marker shows it; optionally grouped by target.
-- Outcome colour by palette (`{c_outcome}`: `classic`, `graphite`, `contrast`, `colorblind`); the target's HP is taken only from the player's own hit.
-
-## battle_clock 0.2.2
-
-### ru
-
-- Новое место по умолчанию: левее стандартного таймера боя во всю его ширину.
-- Панель, которую вы не двигали, переезжает с места по умолчанию прошлых версий на новое: оно больше не наезжает на списки команд, чат и миникарту на любом разрешении и масштабе интерфейса.
-
-### en
-
-- New default place: left of the stock battle timer across its full width.
-- A panel you never moved leaves the default place of earlier versions for the new one, which no longer covers the team lists, the chat or the minimap at any resolution and interface scale.
-
-## battle_clock 0.2.1
-
-### ru
-
-- Таймер боя отбрасывает доли секунды, как стандартный таймер, и больше не опережает его на секунду.
-- По умолчанию стоит слева от стандартного таймера.
-- Выключен по умолчанию: стандартный набор боя — только ХП команд, лог урона, лог попаданий, отметка, расходники с перезарядкой и лампа. Включается в окне настроек.
-
-### en
-
-- The battle timer drops the fraction of a second like the stock timer and no longer runs a second ahead of it.
-- By default it sits left of the stock timer.
-- Off by default: the default battle set is team HP, the damage log, the hit log, marks, consumables with reload and the lamp only. Turn it on in the settings window.
-
-## battle_clock 0.2.0
-
-### ru
-
-- Часы со значком под стандартным таймером; по выбору заменяют стандартный таймер боя.
-
-### en
-
-- The clock with an icon under the stock timer; optionally replaces the stock battle timer.
-
-## battle_clock 0.1.0
-
-### ru
-
-- В бою: местное время, по желанию дата, и время до конца текущего этапа боя.
-
-### en
-
-- In battle: the local time, optionally the date, and the time left in the current arena period.
+- New look: a centre-faded strip, 170×8 bars filling from the centre, a large score with the difference under it; side colours come from the HUD palette, a colour you set still wins.
 
 ## team_hp 0.5.1
 
@@ -1818,6 +1888,16 @@ A new component: Event trackers (off by default).
 
 - In battle: each team's HP against its maximum as bars and/or numbers, the frag score and the HP difference, from the values the client already shows on markers and team panels.
 
+## sixth_sense 0.4.0
+
+### ru
+
+- Кольцо 84 px с тёмной подложкой, лампа 56 px, секунды крупнее и в цвете нанесённого урона; размер значка по умолчанию 56.
+
+### en
+
+- An 84 px ring on a dark track, a 56 px lamp, larger seconds in the dealt-damage colour; default icon size 56.
+
 ## sixth_sense 0.3.0
 
 ### ru
@@ -1864,6 +1944,26 @@ A new component: Event trackers (off by default).
 - In battle: a text or icon with the seconds since the client's own sixth-sense lamp lit, and an optional sound from a sound mod. No direction, distance or "nearest enemy".
 - Four icons of our own (lamp, eye, «!» badge, «///») with a pulse, and our own chime (CC0) through the game's user detection-sound slot, no Wwise.
 
+## battle_results 0.2.0
+
+### ru
+
+- «Итоги боёв» забрали «Боевые раны»: у боя в списке — схема и список попаданий по вам (часть, сторона, исход, урон, кто стрелял); отдельная карточка в ангаре удалена, история попаданий сохранена.
+
+### en
+
+- Battle results take over Battle wounds: a battle in the list shows the schematic and the hits on you (part, side, outcome, damage, who fired); the separate hangar card is gone, the recorded hits are kept.
+
+## battle_results 0.1.1
+
+### ru
+
+- Изменение отметки в уведомлении после боя точное: итоги боя сравниваются с отметкой танка на входе в бой. Раньше, если игра успевала обновить досье до прихода итогов, изменение показывалось как 0.
+
+### en
+
+- The MoE change in the post-battle notification is exact: the battle results are compared with the tank's MoE on the way into the battle. Before, when the game refreshed the dossier before the results arrived, the change showed as 0.
+
 ## battle_results 0.1.0
 
 ### ru
@@ -1873,6 +1973,18 @@ A new component: Event trackers (off by default).
 ### en
 
 - In the hangar: a notification after each own battle with the result, XP and credits, combat stats and the MoE change; the mod window lists the session's battles with details.
+
+## battle_sounds 0.2.0
+
+### ru
+
+- Новое событие «Вы повредили модуль врага»: звук, когда ваш выстрел критует модуль противника.
+- Настройка «Громче стандартные сигналы»: без звукового мода повторяет звуки самой игры на пожар и крит. Выключена по умолчанию.
+
+### en
+
+- A new event, «You damaged an enemy module»: a sound when your shot crits an enemy module.
+- «Louder stock alerts»: without a sound mod, plays the game's own fire and crit sounds once more. Off by default.
 
 ## battle_sounds 0.1.0
 
@@ -1968,6 +2080,16 @@ A new component: Event trackers (off by default).
 
 - In the hangar: the player's own replays with map, vehicle, date and size; rename, delete, open the folder, and a link to the uploaded replay on the site. Optional auto names from a template.
 
+## hangar_tweaks 0.3.0
+
+### ru
+
+- Точный масштаб интерфейса: любое значение от 50 до 300 % между шагами игры (0 — выключен, по умолчанию). Применяется только в ангаре и не сохраняется в настройки игры; при выключении возвращается масштаб из настроек.
+
+### en
+
+- An exact interface scale: any value from 50 to 300 % between the game's steps (0: off, the default). Applied in the hangar only and never saved into the game settings; switched off, the game's own scale returns.
+
 ## hangar_tweaks 0.2.0
 
 ### ru
@@ -2000,6 +2122,16 @@ A new component: Event trackers (off by default).
 
 - The client's own carousel options (rows, tile size) and three confirmed quick actions on the selected vehicle: demount removable equipment, crew to the barracks, return the previous crew.
 
+## minimap 0.2.0
+
+### ru
+
+- На новой установке один раз включаются круги обзора и 445 м и названия техники по Alt, круг отрисовки выключается; прежние настройки сохраняются, кнопка «Вернуть как было». У остальных ничего не меняется, в карточке есть «Рекомендуемые настройки».
+
+### en
+
+- A fresh install turns on the view range and 445 m circles and vehicle names on Alt, and the draw distance circle off, once, keeping the previous settings for «Restore my settings»; existing players get a «Recommended settings» button instead.
+
 ## minimap 0.1.1
 
 ### ru
@@ -2019,6 +2151,16 @@ A new component: Event trackers (off by default).
 ### en
 
 - The game's own minimap options: size, transparency, vehicle names and the player's own range circles.
+
+## camera 0.3.0
+
+### ru
+
+- На новой установке один раз выключается динамическая камера, включается стабилизация и запоминается зум; прежние настройки сохраняются, кнопка «Вернуть как было». У остальных ничего не меняется, в карточке есть «Рекомендуемые настройки».
+
+### en
+
+- A fresh install turns the dynamic camera off, stabilisation on and the zoom to «remember» once, keeping the previous settings for «Restore my settings»; existing players get a «Recommended settings» button instead.
 
 ## camera 0.2.0
 
@@ -2071,74 +2213,6 @@ A new component: Event trackers (off by default).
 ### en
 
 - In the hangar: local time and date, the current server, the client's own ping to it and the online count.
-
-## marks_history 0.3.0
-
-### ru
-
-- Подпись в ангаре — карточка: процент крупно, прошлый бой и тренд со стрелками вверх и вниз.
-- Подпись в ангаре видна только в самом ангаре: на экране очереди в бой, в других разделах, в окне настроек и в полноэкранных окнах клиента она скрыта.
-- Исправлено «За 2 боёв»: теперь «За 2 боя».
-
-### en
-
-- The hangar label is a card: the percent in big type, the last battle and the trend with up and down arrows.
-- The hangar label shows only in the hangar itself: on the battle queue screen, in other lobby sections, in the settings window and in the client's full-screen windows it is hidden.
-- Fixed «2 battles» word forms in Russian.
-
-## marks_history 0.2.0
-
-### ru
-
-- «Расчёт отметок» по каждому танку: флаг, уровень, класс, процент, шкала 0–100, последний и лучший бой, динамика за 10 и 25 боёв, таблица боёв с Σ уроном и ±% и график процента.
-
-### en
-
-- «MoE calculator» per tank: flag, tier, class, percent, a 0-100 bar, the last and best battle, the 10 and 25 battle trend, a battles table with Σ damage and ±% and a chart of the percent.
-
-## marks_history 0.1.0
-
-### ru
-
-- Процент отметки, отметки и скользящий средний урон после каждого собственного боя по каждой технике с датой получения каждой отметки: подпись в ангаре для выбранного танка и список в окне мода.
-
-### en
-
-- The MoE percent, marks and moving-average damage after each own battle per vehicle, with the date each mark was reached: a hangar label for the selected tank and a list in the mod window.
-
-## hangar_ratings 0.2.0
-
-### ru
-
-- «Мои рейтинги» — карточка: рейтинги аккаунта цветами шкалы, строки сессии и выбранного танка с WN8 справа и остальным приглушённо.
-- Подпись в ангаре видна только в самом ангаре: на экране очереди в бой, в других разделах, в окне настроек и в полноэкранных окнах клиента она скрыта.
-- Место, куда вы перетащили подпись, по-прежнему запоминается; правильные формы слова «бой».
-
-### en
-
-- My ratings is a card: the account ratings in the rating scale colours, the session and selected tank rows with WN8 on the right and the rest dimmed.
-- The hangar label shows only in the hangar itself: on the battle queue screen, in other lobby sections, in the settings window and in the client's full-screen windows it is hidden.
-- Where you dragged the label is still remembered; correct word forms for the battle count.
-
-## hangar_ratings 0.1.1
-
-### ru
-
-- Строка выбранного танка читается общим чтением ядра, одним на все компоненты; поведение не изменилось.
-
-### en
-
-- The selected tank's row comes from the core's shared read, one for every component; the behaviour is unchanged.
-
-## hangar_ratings 0.1.0
-
-### ru
-
-- В ангаре после привязки: собственные рейтинги игрока с сайта по аккаунту, последней сессии и выбранному танку; запрашиваются подписанными запросами и кешируются на игровую сессию.
-
-### en
-
-- In the hangar, once bound: the player's own site ratings for the account, the latest session and the selected tank, read over signed requests and cached for the game session.
 
 ## auto_resupply 0.1.0
 

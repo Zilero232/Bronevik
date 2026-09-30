@@ -1,0 +1,41 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+STRINGS = {
+    'ru': {
+        'component_auto_reserves': u'Автоактивация резервов',
+        'component_auto_reserves_hint': u'Включает выбранные личные резервы сам: в первом ангаре после запуска игры и, если выбрано, каждый раз, когда резерв закончился. Сначала самый сильный, из равных — тот, что раньше сгорает. Всё выключено, пока вы не выберете резервы.',
+        'auto_reserves_reserve_credits': u'Резерв на кредиты',
+        'auto_reserves_reserve_xp': u'Резерв на опыт',
+        'auto_reserves_reserve_crew_xp': u'Резерв на опыт экипажа',
+        'auto_reserves_reserve_free_xp': u'Резерв на свободный опыт',
+        'auto_reserves_when': u'Когда включать',
+        'auto_reserves_when_session': u'При запуске игры',
+        'auto_reserves_when_expiry': u'При запуске и когда закончился',
+        'auto_reserves_activate_now': u'Включить выбранные сейчас',
+        'auto_reserves_sent': u'Запрос на активацию отправлен',
+        'auto_reserves_failed': u'Три отметки: игра не включила резерв',
+        'auto_reserves_refused_unset': u'Не выбрано ни одного резерва',
+        'auto_reserves_refused_nothing': u'Нечего включать: выбранные резервы уже работают или их нет на складе',
+        'auto_reserves_refused_full': u'Все слоты резервов заняты',
+        'auto_reserves_refused_busy': u'Предыдущий запрос ещё выполняется',
+    },
+    'en': {
+        'component_auto_reserves': u'Auto personal reserves',
+        'component_auto_reserves_hint': u'Turns the chosen personal reserves on by itself: in the first hangar after the game starts and, when chosen, whenever one runs out. The strongest first, among equals the one that expires first. Everything is off until you pick reserves.',
+        'auto_reserves_reserve_credits': u'Credit reserve',
+        'auto_reserves_reserve_xp': u'XP reserve',
+        'auto_reserves_reserve_crew_xp': u'Crew XP reserve',
+        'auto_reserves_reserve_free_xp': u'Free XP reserve',
+        'auto_reserves_when': u'When',
+        'auto_reserves_when_session': u'When the game starts',
+        'auto_reserves_when_expiry': u'At start and when one runs out',
+        'auto_reserves_activate_now': u'Turn the chosen ones on now',
+        'auto_reserves_sent': u'Activation request sent',
+        'auto_reserves_failed': u'Three Marks: the game did not turn the reserve on',
+        'auto_reserves_refused_unset': u'No reserve is chosen',
+        'auto_reserves_refused_nothing': u'Nothing to turn on: the chosen reserves are on or not in stock',
+        'auto_reserves_refused_full': u'Every reserve slot is taken',
+        'auto_reserves_refused_busy': u'The previous request is still running',
+    },
+}

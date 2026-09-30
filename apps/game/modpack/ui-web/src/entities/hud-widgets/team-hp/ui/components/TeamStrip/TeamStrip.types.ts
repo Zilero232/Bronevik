@@ -1,3 +1,3 @@
 import type { TeamHpSideView } from '../../../lib/team-hp-view';
 
-export type TeamStripProps = { items: TeamHpSideView['strip']; color: string; mirrored?: boolean };
+export type TeamStripProps = { items: TeamHpSideView['strip']; mirrored?: boolean };

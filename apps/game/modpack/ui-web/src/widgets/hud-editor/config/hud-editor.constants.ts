@@ -10,7 +10,7 @@ const NUDGE: NudgeSteps = {
 export const HUD_EDITOR = {
   grid: 4,
   defaultScreen: { width: 1920, height: 1080 },
-  moveThrottleMs: 150,
+  dragSlop: 5,
   nudge: NUDGE,
   resetActionId: 'reset',
   resetAllActionId: 'reset-all'

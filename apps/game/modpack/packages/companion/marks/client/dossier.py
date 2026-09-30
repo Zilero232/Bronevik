@@ -37,6 +37,7 @@ def current_vehicle_moe():
         'damage_rating': rating,
         'moving_avg_damage': moving_avg,
         'marks_on_gun': dossier.getRecordValue(ACHIEVEMENT_BLOCK.TOTAL, 'marksOnGun'),
+        'mastery': dossier.getRecordValue(ACHIEVEMENT_BLOCK.TOTAL, 'markOfMastery'),
         'battles': _battles(dossier),
     }
 

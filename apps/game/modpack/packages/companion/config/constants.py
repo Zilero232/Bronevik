@@ -1,6 +1,9 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ...core.hud.modes.constants import PLACES_SECTION as LAYOUT_PLACES_SECTION  # noqa: F401
 from ...core.hud.modifier import DEFAULT_MODIFIER, MODIFIER_CHOICES
+from ...core.hud.panel.constants import LAYOUT_KEYS as PLACE_KEYS  # noqa: F401
+from ...core.hud.panel.constants import PLACE_KEYS as PLACE_ORDER  # noqa: F401
 
 DEFAULT_SERVER_URL = 'https://api.triotmetki.ru'
 FEATURES = (
@@ -12,8 +15,6 @@ FEATURES = (
     'battle_moe_panel',
     'hangar_session_panel',
     'battle_damage_log',
-    'battle_hit_log',
-    'battle_clock',
     'battle_team_hp',
     'battle_sixth_sense',
     'hangar_battle_results',
@@ -28,60 +29,76 @@ FEATURES = (
     'hangar_auto_resupply',
     'hangar_notification_filter',
     'hangar_cleaner',
-    'hangar_marks_history',
-    'hangar_ratings',
-    'hangar_marks',
-    'battle_personal_best',
-    'hangar_session_goals',
-    'battle_main_gun',
-    'battle_efficiency',
-    'battle_reload_timer',
-    'battle_received_hits',
-    'battle_death_card',
+    'battle_progress',
     'battle_loadout',
     'hangar_personal_missions',
     'streamer_mode',
-    'hangar_platoon_helper',
-    'hangar_tilt_guard',
-    'hangar_battle_hits',
     'battle_gun_arc',
     'battle_bush_circle',
-    'battle_arty_meter',
     'battle_platoon_points',
+    'battle_responsive_reticle',
+    'battle_hotkeys',
+    'battle_menu_entry',
     'battle_hud_layouts',
+    'battle_aim_info',
     'hangar_comp7_helper',
     'hangar_event_trackers',
+    'hangar_depot_seller',
+    'hangar_auto_reserves',
+    'hangar_crew_xp',
+    'hangar_space',
+    'hangar_update_notice',
+    'hangar_quick_demount',
+    'config_backup',
+    'hangar_preset_advisor',
+    'free_camera',
     'share_settings',
     'upload_replays',
     'publish_replays',
     'share_session_report',
 )
-# Off until the player turns them on: the uploads (privacy) and the secondary battle panels, so a default
-# battle shows only the essentials (team HP, damage and hit logs, marks, the reload timer, the equipment over
-# the stock consumables panel, the sixth sense lamp, the death card).
+# Off until the player turns them on (docs/specs/2026-09-30-hud-consolidation-and-design.md section 0): the uploads
+# (privacy), what needs a site binding before it shows anything, the niche panels, and whatever overrides a client
+# view or sends client requests without a preset the leading packs agree on.
 OPT_IN_FEATURES = (
     'upload_replays',
     'publish_replays',
     'share_session_report',
-    'battle_main_gun',
-    'battle_efficiency',
-    'battle_personal_best',
+    'battle_progress',
     'battle_gun_arc',
-    'battle_arty_meter',
     'battle_platoon_points',
-    'battle_received_hits',
-    'battle_clock',
+    'battle_hotkeys',
+    'battle_bush_circle',
+    'battle_sounds',
+    'battle_chat_filter',
+    'streamer_mode',
+    'hangar_tweaks',
+    'hangar_auto_resupply',
+    'hangar_notification_filter',
+    'hangar_cleaner',
     'hangar_event_trackers',
+    'hangar_depot_seller',
+    'hangar_auto_reserves',
+    'hangar_space',
+    'hangar_quick_demount',
+    'free_camera',
 )
 SHARE_CHANNELS = ('telegram', 'discord', 'both')
 # config.json keeps every default it was written with: a switch whose default changed is moved to the new
 # one when it still holds the old default and the file predates the change (`defaults_revision`).
-# (revision, key, old default, new default). A switch of a removed component (the consumables bar,
-# `battle_consumables`, which repeated the stock panel) is left out of DEFAULTS: Settings ignores a key its schema
-# does not know, so the leftover drops out of the file on the next save.
-DEFAULTS_REVISION = 2
+# (revision, key, old default, new default). A switch of a removed component is left out of DEFAULTS: Settings ignores
+# a key its schema does not know, so the leftover drops out of the file on the next save.
+DEFAULTS_REVISION = 3
 RETIRED_DEFAULTS = (
     (1, 'battle_loadout', False, True),
+    (3, 'hangar_tweaks', True, False),
+    (3, 'battle_sounds', True, False),
+    (3, 'battle_chat_filter', True, False),
+    (3, 'hangar_auto_resupply', True, False),
+    (3, 'hangar_notification_filter', True, False),
+    (3, 'hangar_cleaner', True, False),
+    (3, 'streamer_mode', True, False),
+    (3, 'battle_bush_circle', True, False),
 )
 # Switches set once for every file older than the revision, whatever they hold: revision 1 missed the files already
 # stamped with it, so the equipment row stayed off. The stamp records it, and a switch the player turns off
@@ -89,6 +106,123 @@ RETIRED_DEFAULTS = (
 ONE_TIME_SWITCHES = (
     (2, 'battle_loadout', True),
 )
+# Revision 3 (docs/specs/2026-09-30-hud-consolidation-and-design.md section 0): the components merged into one another
+# and the ones removed. It runs on the stored config.json and components.json before any feature reads them.
+MIGRATION_REVISION = 3
+COMPONENTS_FILE = 'components.json'
+COMPONENTS_BACKUP = 'components.json.r2.bak'
+# The features' package next to the companion's (`gui.mods.otmetki` in the client), whose settings give the schema
+# defaults.
+FEATURES_PACKAGE = 'features'
+# A switch whose default turned off stays on for a player who set its component up: (switch, components.json section).
+GUARDED_SWITCHES = (
+    ('hangar_tweaks', 'hangar_tweaks'),
+    ('battle_chat_filter', 'chat_filter'),
+    ('hangar_auto_resupply', 'auto_resupply'),
+    ('hangar_notification_filter', 'notification_filter'),
+    ('hangar_cleaner', 'hangar_cleaner'),
+    ('battle_sounds', 'battle_sounds'),
+    ('battle_bush_circle', 'bush_circle'),
+    ('streamer_mode', 'streamer_mode'),
+)
+# (surviving switch, the switches of the components merged into it): on when any of them was on.
+MERGED_SWITCHES = (
+    ('battle_damage_log', ('battle_hit_log', 'battle_received_hits')),
+    ('battle_moe_panel', ('hangar_marks', 'hangar_marks_history')),
+    ('battle_progress', ('battle_main_gun', 'battle_efficiency', 'battle_personal_best')),
+    ('hangar_session_panel', ('hangar_session_goals', 'hangar_ratings')),
+    ('hangar_battle_results', ('hangar_battle_hits',)),
+    ('hangar_info', ('battle_clock',)),
+)
+# ((old section, old key, old default), (new section, new key)): copied only when the player changed it.
+MERGED_SECTIONS = (
+    (('hit_log', 'lines', 6), ('damage_log', 'dealt_lines')),
+    (('damage_log', 'log_lines', 5), ('damage_log', 'dealt_lines')),
+    (('received_hits', 'lines', 5), ('damage_log', 'received_lines')),
+    (('hit_log', 'group_by_target', False), ('damage_log', 'group_by_target')),
+    (('hit_log', 'alt_mode', False), ('damage_log', 'alt_mode')),
+    (('damage_log', 'log_kinds', 'all'), ('damage_log', 'sections')),
+    (('session_goals', 'show_hangar', True), ('session_stats', 'show_goals')),
+    (('session_goals', 'max_goals', 3), ('session_stats', 'max_goals')),
+    (('session_goals', 'sound', True), ('session_stats', 'goal_sound')),
+    (('hangar_ratings', 'show_account', True), ('session_stats', 'show_account')),
+    (('hangar_ratings', 'metric_wn8', True), ('session_stats', 'metric_wn8')),
+    (('hangar_ratings', 'metric_win_rate', True), ('session_stats', 'metric_win_rate')),
+    (('hangar_ratings', 'metric_avg_damage', True), ('session_stats', 'metric_avg_damage')),
+    (('hangar_ratings', 'metric_eff', False), ('session_stats', 'metric_eff')),
+    (('main_gun', 'show_team', True), ('battle_progress', 'main_gun_share')),
+    (('battle_efficiency', 'colored', True), ('battle_progress', 'colored')),
+    (('main_gun', 'x', -372), ('battle_progress', 'x')),
+    (('main_gun', 'y', 60), ('battle_progress', 'y')),
+    (('main_gun', 'align_x', 'right'), ('battle_progress', 'align_x')),
+    (('main_gun', 'align_y', 'top'), ('battle_progress', 'align_y')),
+    (('battle_hits', 'show_attacker', True), ('battle_results', 'hits_show_attacker')),
+    (('battle_hits', 'keep_battles', 10), ('battle_results', 'hits_keep_battles')),
+    (('battle_clock', 'clock_format', '%H:%M'), ('hangar_info', 'battle_clock_format')),
+    (('battle_clock', 'replace_timer', False), ('hangar_info', 'replace_timer')),
+    (('hangar_marks', 'style', 'extended'), ('marks_panel', 'hangar_style')),
+    (('marks_history', 'show_panel', True), ('marks_panel', 'show_trend')),
+    (('marks_history', 'trend_battles', 5), ('marks_panel', 'trend_battles')),
+    (('marks_history', 'max_entries', 100), ('marks_panel', 'max_entries')),
+    (('marks_history', 'page_rows', 50), ('marks_panel', 'page_rows')),
+    (('hangar_ratings', 'show_tank', True), ('marks_panel', 'show_tank_ratings')),
+)
+# (section, ((merged switch, key), ...)): when any merged switch was on, each key takes its switch's value, so the
+# survivor shows the parts the player had on.
+SWITCHED_PARTS = (
+    ('battle_progress', (
+        ('battle_main_gun', 'row_main_gun'),
+        ('battle_personal_best', 'row_record'),
+        ('battle_efficiency', 'row_wn8'),
+    )),
+)
+# (switches of the merged components, section, key): what the player had switched off (every one of the switches) stays
+# off as the part of its survivor that shows it. Read from the switches as stored, before the merge.
+SWITCHED_OFF_PARTS = (
+    (('hangar_session_goals',), 'session_stats', 'show_goals'),
+    (('hangar_ratings',), 'session_stats', 'show_account'),
+    (('hangar_battle_hits',), 'battle_results', 'hits_tab'),
+    (('battle_moe_panel',), 'marks_panel', 'show_battle_panel'),
+    (('hangar_marks', 'hangar_marks_history'), 'marks_panel', 'hangar_card'),
+)
+# (section, key, old default, new default): moved only while the key still holds the old default and the player never
+# set it in the window.
+RETIRED_VALUES = (
+    ('damage_log', 'alt_mode', False, True),
+    ('sixth_sense', 'icon_size', 64, 56),
+    ('battle_loadout', 'icon_size', 45, 40),
+    ('hangar_info', 'clock_format', '%H:%M:%S', '%H:%M'),
+    ('hangar_info', 'date_format', '%d.%m.%Y', '%d.%m'),
+    ('marks_panel', 'style', 'extended', 'compact'),
+    ('marks_panel', 'alt_detail', False, True),
+)
+# (section, old default place, new default place) as (x, y, align_x, align_y): a component that is not a HUD panel (no
+# RETIRED_PLACES of its own) moves only while it still sits at the old default.
+MOVED_PLACES = (
+    ('hangar_info', (-16, 76, 'right', 'top'), (0, -196, 'left', 'bottom')),
+)
+# The sections of the removed components and panels (ComponentConfig keeps unknown sections, so they go here).
+DROPPED_SECTIONS = (
+    'hit_log',
+    'received_hits',
+    'death_card',
+    'last_hit',
+    'arty_meter',
+    'session_goals',
+    'hangar_ratings',
+    'tilt_guard',
+    'platoon_helper',
+    'main_gun',
+    'battle_efficiency',
+    'personal_best',
+    'battle_hits',
+    'reload_timer',
+    'marks_history',
+)
+# The keys the player set in the settings window (config switches by name, component values as `<section>.<key>`),
+# space-separated: a later default change never moves them.
+USER_SET_KEY = 'user_set'
+MAX_USER_SET = 8000
 DEFAULTS = {
     'enabled': True,
     'server_url': DEFAULT_SERVER_URL,
@@ -104,45 +238,43 @@ DEFAULTS = {
     'battle_moe_panel': True,
     'hangar_session_panel': True,
     'battle_damage_log': True,
-    'battle_hit_log': True,
-    'battle_clock': False,
     'battle_team_hp': True,
     'battle_sixth_sense': True,
     'hangar_battle_results': True,
     'hangar_replay_manager': True,
-    'hangar_tweaks': True,
+    'hangar_tweaks': False,
     'minimap_tweaks': True,
     'camera_tweaks': True,
     'crosshair_presets': True,
     'hangar_info': True,
-    'battle_sounds': True,
-    'battle_chat_filter': True,
-    'hangar_auto_resupply': True,
-    'hangar_notification_filter': True,
-    'hangar_cleaner': True,
-    'hangar_marks_history': True,
-    'hangar_ratings': True,
-    'hangar_marks': True,
-    'battle_personal_best': False,
-    'hangar_session_goals': True,
-    'battle_main_gun': False,
-    'battle_efficiency': False,
-    'battle_reload_timer': True,
-    'battle_received_hits': False,
-    'battle_death_card': True,
+    'battle_sounds': False,
+    'battle_chat_filter': False,
+    'hangar_auto_resupply': False,
+    'hangar_notification_filter': False,
+    'hangar_cleaner': False,
+    'battle_progress': False,
     'battle_loadout': True,
     'hangar_personal_missions': True,
-    'streamer_mode': True,
-    'hangar_platoon_helper': True,
-    'hangar_tilt_guard': True,
-    'hangar_battle_hits': True,
+    'streamer_mode': False,
     'battle_gun_arc': False,
-    'battle_bush_circle': True,
-    'battle_arty_meter': False,
+    'battle_bush_circle': False,
     'battle_platoon_points': False,
+    'battle_responsive_reticle': True,
+    'battle_hotkeys': False,
+    'battle_menu_entry': True,
     'battle_hud_layouts': True,
+    'battle_aim_info': True,
     'hangar_comp7_helper': True,
     'hangar_event_trackers': False,
+    'hangar_depot_seller': False,
+    'hangar_auto_reserves': False,
+    'hangar_crew_xp': True,
+    'hangar_space': False,
+    'hangar_update_notice': True,
+    'hangar_quick_demount': False,
+    'config_backup': True,
+    'hangar_preset_advisor': True,
+    'free_camera': False,
     'share_settings': True,
     'upload_replays': False,
     'publish_replays': False,
@@ -155,6 +287,7 @@ DEFAULTS = {
     'settings_include_sensitivity': False,
     'hud_modifier': DEFAULT_MODIFIER,
     'defaults_revision': DEFAULTS_REVISION,
+    USER_SET_KEY: '',
 }
 CHOICES = {
     'settings_action': ('', 'export', 'restore'),

@@ -1,7 +1,15 @@
-import type { DamageLogRow } from '../../model/schemas';
+import type { DamageLogRow, DamageLogTotal } from '../../model/schemas';
 
-export type DamageLogRowView = DamageLogRow & { key: number; text: string };
+export type DamageLogTotalView = DamageLogTotal & { text: string };
 
-export type DamageLogTotalView = { key: string; icon: string | null; value: string; tone: DamageLogRow['tone'] };
+export type DamageLogRowView = Pick<DamageLogRow, 'cls' | 'icon' | 'id' | 'name' | 'note' | 'shell' | 'tone'> & {
+  amountText: string;
+  muted: boolean;
+  hitsText: string;
+  bar: { value: number; max: number } | null;
+  ammoRack: DamageLogRow['ammo_rack'];
+};
 
-export type DamageLogView = { compact: boolean; totals: DamageLogTotalView[]; rows: DamageLogRowView[] };
+export type DamageLogSectionView = { key: 'dealt' | 'received'; rows: DamageLogRowView[] };
+
+export type DamageLogView = { wide: boolean; totals: DamageLogTotalView[]; sections: DamageLogSectionView[] };

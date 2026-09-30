@@ -66,7 +66,7 @@ class PlacementTest(unittest.TestCase):
         assert placement_of('new_share', 'data') == ('data', 'hangar')
 
     def test_a_known_component_keeps_its_placement_whatever_its_group(self):
-        assert placement_of('marks_panel', 'hangar') == ('marks', 'battle')
+        assert placement_of('marks_panel', 'hangar') == ('marks', 'any')
 
 
 class HangarButtonLayoutTest(unittest.TestCase):

@@ -2,8 +2,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 FEATURE_ID = 'marks_panel'
 PACKAGE_ID = 'net.triotmetki.marks_panel'
-PACKAGE_NAME = 'Three Marks: MoE panel'
-VERSION = '0.4.0'
+PACKAGE_NAME = 'Three Marks: marks of excellence'
+VERSION = '0.6.0'
 
 
 def create(app):

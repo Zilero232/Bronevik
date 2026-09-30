@@ -7,7 +7,7 @@ import { TEAM_HP } from '../../../config';
 
 import s from './TeamStrip.module.scss';
 
-export const TeamStrip = ({ items, color, mirrored = false }: TeamStripProps) => (
+export const TeamStrip = ({ items, mirrored = false }: TeamStripProps) => (
   <div className={clsx(s.strip, mirrored && s.mirrored)}>
     {items.map((item) =>
       item.kind === 'tier' ? (
@@ -15,12 +15,9 @@ export const TeamStrip = ({ items, color, mirrored = false }: TeamStripProps) =>
           {item.label}
         </span>
       ) : (
-        <div key={item.key} className={s.vehicle} style={{ opacity: item.alpha }}>
+        <span key={item.key} className={clsx(s.vehicle, !item.alive && s.dead)}>
           <ClientIcon icon={item.icon} size={TEAM_HP.iconSize} />
-          <div className={s.track}>
-            <div className={s.fill} style={{ width: `${item.bar}rem`, backgroundColor: color }} />
-          </div>
-        </div>
+        </span>
       )
     )}
   </div>

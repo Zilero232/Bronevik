@@ -1,4 +1,4 @@
-export { clampRect, dragRect, dragTo, moveMessage, panelRect, placementOf, stageBox, stageScale } from './hud-geometry';
+export { clampRect, dragRect, dragTo, moveMessage, panelRect, pastSlop, placementOf, stageBox, stageScale } from './hud-geometry';
 
 export type {
   Drag,
@@ -8,6 +8,7 @@ export type {
   MoveMessageInput,
   NudgeSteps,
   PanelRectInput,
+  PastSlopInput,
   Placement,
   Point,
   Rect,

@@ -12,14 +12,26 @@ ARROW_LEFT = u'◄'
 ARROW_RIGHT = u'►'
 # Under half a degree left reads as the limit reached.
 LIMIT_REACHED_DEG = 0.5
-# A side's tone (the card's tone names) and its colour in the text panel.
+# A side's tone (the widget's tone names) and its colour in the text panel.
 TONE_COLORS = {'bad': COLOR_DOWN, 'warning': COLOR_WARN, 'text': COLOR_NEUTRAL}
 # The own turret turns smoothly; ten reads a second are enough for a readout and cost nothing.
 TICK_S = 0.1
 
 PREVIEW_SIZE = (260, 30)
 PREVIEW_LIMITS = (-0.35, 0.35)
-PREVIEW_YAW = 0.18
+PREVIEW_YAW = 0.28
 
-# The card (model/widget.py), design px.
-CARD_WIDTH = 200
+KIND = 'gun_arc'
+DEGREES = u'%d°'
+# The own turret's yaw from the hull axis, signed (UNVERIFIED on Lesta 1.45: a negative yaw is to the left).
+YAW_DEGREES = u'%+d°'
+ZERO_YAW = u'0°'
+
+# Where the scale sits: under the reticle wherever the camera puts it, or at the panel's own place.
+PLACEMENT_RETICLE = 'reticle'
+PLACEMENT_FIXED = 'fixed'
+PLACEMENTS = (PLACEMENT_RETICLE, PLACEMENT_FIXED)
+# CROSSHAIR_VIEW_ID (RU 1.45 client source, gui/battle_control/battle_constants): arcade 1, sniper 2, strategic 3 (the
+# SPG's top view); the settings key of the scale's offset under the reticle in each. Other views hide nothing and
+# leave the panel where it was.
+VIEW_OFFSETS = {1: 'arcade_offset', 2: 'sniper_offset', 3: 'strategic_offset'}

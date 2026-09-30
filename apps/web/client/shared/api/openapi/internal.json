@@ -25489,6 +25489,29 @@
               "minimum": 0
             }
           },
+          "mastery": {
+            "type": "object",
+            "properties": {
+              "class3": {
+                "type": "number",
+                "minimum": 0
+              },
+              "class2": {
+                "type": "number",
+                "minimum": 0
+              },
+              "class1": {
+                "type": "number",
+                "minimum": 0
+              },
+              "ace": {
+                "type": "number",
+                "minimum": 0
+              }
+            },
+            "required": ["class3", "class2", "class1", "ace"],
+            "additionalProperties": false
+          },
           "updated_at": {
             "type": "string"
           },

@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ..config import FEATURES
+from ..config import FEATURES, USER_SET_KEY, with_user_set
 from .constants import BIND_CODE_VAR, LINKAGE  # noqa: F401
 
 
@@ -34,6 +34,10 @@ def build_template(config, translate, status_text):
         'column1': column1,
         'column2': column2,
     }
+
+
+def record_user_set(config, keys):
+    return bool(config.update({USER_SET_KEY: with_user_set(config.get(USER_SET_KEY), keys)}))
 
 
 def settings_to_config(values):

@@ -132,7 +132,6 @@ class HangarWidgetTest(unittest.TestCase):
         assert widget['kind'] == 'card'
         assert widget['data']['value'] == '3 150'
         assert widget['data']['subtitle'] == 'Champion B'
-        assert widget['data']['rail'] == 'progress'
 
     def test_first_row_is_the_progress_to_the_next_division(self):
         row = champion_b_widget()['data']['rows'][0]

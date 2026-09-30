@@ -4,7 +4,7 @@ import re
 import unittest
 
 import _support  # noqa: F401
-from otmetki.core.native_settings import setting_names
+from otmetki.core.native_settings import client_keys, native_choices, setting_names
 from otmetki.core.settings import Settings
 from otmetki.features.minimap.model import ACCOUNT_FIELDS, FIELDS, to_account, to_native
 from otmetki.features.minimap.settings import SCHEMA, SETTINGS
@@ -25,8 +25,21 @@ def chosen_values():
 
 class MinimapTest(unittest.TestCase):
 
-    def test_defaults_change_nothing(self):
-        assert to_native(Settings(None, SCHEMA).to_dict()) == {}
+    def test_native_values_change_nothing(self):
+        assert to_native(native_choices(client_keys(SCHEMA))) == {}
+
+    def test_the_defaults_are_the_recommended_minimap(self):
+        assert to_native(Settings(None, SCHEMA).to_dict()) == {
+            'showVehModelsOnMap': 1,
+            'minimapViewRange': True,
+            'minimapMaxViewRange': True,
+            'minimapDrawRange': False,
+        }
+
+    def test_every_minimap_value_is_a_client_setting(self):
+        expected = ('draw_range', 'max_view_range', 'size', 'transparency', 'vehicle_names', 'view_range')
+
+        assert client_keys(SCHEMA) == expected
 
     def test_defaults_change_no_account_setting(self):
         assert to_account(Settings(None, SCHEMA).to_dict()) == {}

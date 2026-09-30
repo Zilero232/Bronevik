@@ -1,0 +1,102 @@
+@use '../../../../../../../shared/styles/gameface' as *;
+
+.stage {
+  display: flex;
+  width: 46%;
+  min-height: 0;
+  flex-direction: column;
+  flex-shrink: 0;
+  margin-right: 20px;
+}
+
+.screen {
+  position: relative;
+  display: flex;
+  min-height: 180px;
+  flex: 1 1 auto;
+  flex-direction: column;
+  border: 1px solid token(color-border-strong);
+  border-radius: token(radius-md);
+  background-color: token(color-bg-deep);
+  background-image: radial-gradient(circle at 50% 45%, rgb(92 104 70 / 55%) 0%, rgb(38 42 34 / 70%) 45%, rgb(10 10 12 / 100%) 100%);
+}
+
+.caption {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  color: token(color-text-dim);
+  font-size: 10px;
+
+  @include caps(0.5px);
+}
+
+.zoom {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+.view {
+  display: flex;
+  overflow: hidden;
+  min-height: 0;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+}
+
+.zoomed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: 50% 50%;
+}
+
+.hint {
+  display: flex;
+  min-height: 62px;
+  flex-direction: column;
+  flex-shrink: 0;
+  padding: 8px 12px;
+  border: 1px solid token(color-border);
+  border-radius: token(radius-md);
+  margin-top: 10px;
+  background-color: token(color-surface-sunken);
+}
+
+.hintLabel {
+  color: token(color-text);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.hintText {
+  margin-top: 3px;
+  color: token(color-text-dim);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.actions {
+  display: flex;
+  flex-direction: row;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.action {
+  margin-right: 8px;
+}
+
+.reset {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.resetIcon {
+  margin-right: 6px;
+}

@@ -47,6 +47,25 @@ STRINGS = {
         'crosshair_mark_kenney_scope': u'Kenney: прицельная рамка',
         'crosshair_mark_size': u'Размер метки, px',
         'crosshair_mark_hides_centre': u'Скрыть центральный маркер игры',
+        'crosshair_native_restore': u'Вернуть как было',
+        'crosshair_native_restore_confirm': u'Мод поставил прицел без сетки. '
+                                            u'Вернуть прицел, который был в игре до мода?',
+        'crosshair_native_recommended': u'Рекомендуемые настройки',
+        'crosshair_native_recommended_confirm': u'Прицел игры без сетки: круг сведения, маркер орудия и перезарядка '
+                                                u'остаются. Текущий прицел сохранится, его можно вернуть.',
+        'crosshair_native_failed': u'Не удалось изменить настройки игры, попробуйте ещё раз.',
+        'crosshair_group_shape': u'Метка',
+        'crosshair_group_colour': u'Цвет',
+        'crosshair_group_size': u'Размер',
+        'crosshair_group_reticle': u'Прицел игры',
+        'crosshair_mark_hint': u'Картинка поверх центра прицела игры. Следует за прицелом, ничего не рассчитывает.',
+        'crosshair_mark_color_hint': u'Цвет меток «свой цвет». Остальные метки рисуются своими цветами.',
+        'crosshair_mark_size_hint': u'Сторона метки в пикселях экрана, от 16 до 128.',
+        'crosshair_mark_hides_centre_hint': u'Прячет центральный маркер игры, чтобы он не наслаивался на метку.',
+        'crosshair_preset_hint': u'Прозрачность и стиль частей прицела из вкладки «Прицел» настроек игры. '
+                                 u'Меняется только в ангаре.',
+        'crosshair_modes_hint': u'К каким режимам прицела применить пресет и метку.',
+        'crosshair_server_reticle_hint': u'Тот же переключатель, что в настройках игры.',
     },
     'en': {
         'component_crosshair': u'Crosshairs',
@@ -93,5 +112,24 @@ STRINGS = {
         'crosshair_mark_kenney_scope': u'Kenney: scope frame',
         'crosshair_mark_size': u'Mark size, px',
         'crosshair_mark_hides_centre': u'Hide the game\'s centre marker',
+        'crosshair_native_restore': u'Restore my settings',
+        'crosshair_native_restore_confirm': u'The mod set the reticle without the grid. '
+                                            u'Restore the reticle you had before the mod?',
+        'crosshair_native_recommended': u'Recommended settings',
+        'crosshair_native_recommended_confirm': u'The game\'s reticle without the grid: the aiming circle, gun marker '
+                                                u'and reload stay. Your current reticle is kept so you can restore it.',
+        'crosshair_native_failed': u'Could not change the game settings, please try again.',
+        'crosshair_group_shape': u'Mark',
+        'crosshair_group_colour': u'Colour',
+        'crosshair_group_size': u'Size',
+        'crosshair_group_reticle': u'Game reticle',
+        'crosshair_mark_hint': u'An image over the game\'s reticle centre. It follows the reticle and computes nothing.',
+        'crosshair_mark_color_hint': u'The colour of the «your colour» marks. The other marks keep their own colours.',
+        'crosshair_mark_size_hint': u'The side of the mark in screen pixels, 16 to 128.',
+        'crosshair_mark_hides_centre_hint': u'Hides the game\'s centre marker so it does not overlap the mark.',
+        'crosshair_preset_hint': u'Opacity and style of the reticle parts from the game\'s Reticle settings tab. '
+                                 u'Changed in the hangar only.',
+        'crosshair_modes_hint': u'Which reticle views the preset and the mark apply to.',
+        'crosshair_server_reticle_hint': u'The same switch as in the game settings.',
     },
 }

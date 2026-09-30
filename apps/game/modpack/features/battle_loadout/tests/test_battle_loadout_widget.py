@@ -26,7 +26,7 @@ class EquipmentWidgetTest(unittest.TestCase):
     def test_icons_take_the_size_setting(self):
         data = preview_data()
 
-        assert data['size'] == 45
+        assert data['size'] == 40
 
     def test_every_sample_item_is_drawn(self):
         items = preview_data()['items']

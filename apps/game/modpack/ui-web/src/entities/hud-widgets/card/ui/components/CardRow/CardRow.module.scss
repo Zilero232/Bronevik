@@ -3,14 +3,12 @@
 .row {
   display: flex;
   flex-direction: column;
-  margin-top: 1px;
 }
 
 .detail {
-  margin-top: -1px;
-  color: token(color-text-muted);
-  font-size: 11px;
+  color: token(hud-muted);
 
+  @include hud-type(caption);
   @include ellipsis;
 }
 

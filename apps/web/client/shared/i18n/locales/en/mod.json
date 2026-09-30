@@ -75,22 +75,14 @@
       },
       "streamers": {
         "title": "For streamers",
-        "lead": "Streamer mode, a clock and records. The manager has a ready-made “Streamer” set with the panels viewers like to see."
+        "lead": "Streamer mode that hides every panel on a key. The manager has a ready-made “Streamer” set with the panels viewers like to see."
       }
     },
     "streamerPage": "Everything for streamers",
     "components": {
       "damage_log": {
-        "title": "Damage log",
-        "text": "Dealt, blocked and assisted damage with the shell type, plus a “last hit” pop-up."
-      },
-      "hit_log": {
-        "title": "Hit log",
-        "text": "Your hits: the target, the damage and the HP it has left."
-      },
-      "received_hits": {
-        "title": "Hits on you",
-        "text": "Who fired, which shell and how it ended: penetration, crit, no penetration or ricochet."
+        "title": "Battle log",
+        "text": "The whole battle in one place: your hits with the outcome, shell and target HP left, assistance and the hits on you."
       },
       "team_hp": {
         "title": "Team HP and score",
@@ -100,10 +92,6 @@
         "title": "Sixth sense lamp",
         "text": "A big icon and a sound when the skill fires. Replaces the stock lamp."
       },
-      "reload_timer": {
-        "title": "Gun reload",
-        "text": "Your own gun's reload countdown with a bar, and the shells left in the clip."
-      },
       "battle_loadout": {
         "title": "Equipment in battle",
         "text": "The game's own equipment and directive icons above the shell bar, no labels, with a tooltip on hover."
@@ -112,21 +100,29 @@
         "title": "Gun traverse",
         "text": "How many degrees your gun still turns left and right. Only on vehicles with limited traverse."
       },
-      "death_card": {
-        "title": "Death card",
-        "text": "Who finished you, with what and for how much, and which modules and crew were hit."
-      },
       "bush_circle": {
         "title": "15 m circle",
         "text": "A circle on the ground: move further from the bush and your shot gives you away. On a key or always."
       },
-      "arty_meter": {
-        "title": "Artillery meter",
-        "text": "How much artillery hit you: direct hits, splashes, stuns and damage, per battle and per day."
+      "aim_info": {
+        "title": "Aim and shells",
+        "text": "The distance to any target under the reticle; damage, penetration and module damage in the shell tooltip. Optionally a smaller aim circle."
       },
       "platoon_points": {
         "title": "Platoon points",
         "text": "Points like in a platoon tournament: for damage, assist, kills and survival, by your own rules."
+      },
+      "responsive_reticle": {
+        "title": "Responsive reticle",
+        "text": "The gun marker follows the gun every frame instead of ten times a second. Dispersion and penetration work as in the game."
+      },
+      "battle_hotkeys": {
+        "title": "Option hotkeys in battle",
+        "text": "The server reticle and the extended zoom on hotkeys right in battle, with a notice over the reticle."
+      },
+      "battle_menu": {
+        "title": "Settings from the Esc menu",
+        "text": "A button under the Esc menu opens the mod settings without leaving the battle."
       },
       "crosshair": {
         "title": "Crosshairs",
@@ -158,7 +154,7 @@
       },
       "hangar_info": {
         "title": "Clock and server",
-        "text": "Time, server, ping and online in the hangar corner, crew XP to the next skill."
+        "text": "Time, server, ping and online in the hangar and a clock in battle."
       },
       "hangar_cleaner": {
         "title": "Clean hangar",
@@ -172,17 +168,13 @@
         "title": "Auto-resupply",
         "text": "Repairs, shells, consumables and directives with one button — for a tank or the whole hangar."
       },
-      "battle_hits": {
-        "title": "Battle wounds",
-        "text": "Where you were hit: a tank diagram with the hits and a list of side, result and damage."
+      "quick_demount": {
+        "title": "Quick demount",
+        "text": "In the equipment menu: your tanks that carry the device. Pick one and it comes off in every setup."
       },
       "personal_missions": {
         "title": "Personal missions helper",
-        "text": "The conditions of your active missions, in the hangar and as a line in battle."
-      },
-      "platoon_helper": {
-        "title": "Platoon helper",
-        "text": "Who in the platoon pressed “Ready”, and your platoon battles this session."
+        "text": "The conditions of the missions in progress in the hangar and a list of all missions in the mod window."
       },
       "comp7_helper": {
         "title": "Onslaught divisions",
@@ -192,45 +184,53 @@
         "title": "Event trackers",
         "text": "The Triathlon round and the Trading Caravan tokens while the event runs."
       },
-      "tilt_guard": {
-        "title": "Tilt guard",
-        "text": "Suggests a break after a losing streak or a long session."
+      "depot_seller": {
+        "title": "Depot seller",
+        "text": "Unused shells, modules, equipment and reserve crew in one go. Everything is off; the sale lists the items and the credits first."
+      },
+      "auto_reserves": {
+        "title": "Auto personal reserves",
+        "text": "The chosen personal reserves turn on by themselves at the game start and when they run out."
+      },
+      "crew_xp": {
+        "title": "Crew XP",
+        "text": "The XP and battles each crew member needs to the next skill, in the hangar and the tooltip."
+      },
+      "hangar_space": {
+        "title": "Hangar switcher",
+        "text": "Any hangar the game already has; event hangars stay as in the game."
+      },
+      "update_notice": {
+        "title": "New mod version",
+        "text": "A hangar card when a release is out, with «Skip this version»."
+      },
+      "config_backup": {
+        "title": "Settings backup",
+        "text": "A copy of the mod settings next to the game's preferences.xml. An installer wiped mods/configs? The files come back."
+      },
+      "preset_advisor": {
+        "title": "Build hints in the loadout",
+        "text": "Marks the site's recommended equipment and directives for your tank in the loadout window."
+      },
+      "free_camera": {
+        "title": "Free camera",
+        "text": "The game's own video camera on a key in replays and the hangar. Never in a live battle."
       },
       "marks_panel": {
-        "title": "Marks in battle",
-        "text": "The percentage at the start and the forecast after, damage to 65, 85 and 95 % and battles to the next mark."
+        "title": "Marks of Excellence",
+        "text": "In battle the percent and the damage to the next threshold, in the hangar a tank card with thresholds up to 100%, XP for mastery badges and to elite, trend and history."
       },
-      "hangar_marks": {
-        "title": "Marks in the hangar",
-        "text": "For the selected tank: the percentage, damage per battle to each mark and a forecast at your pace."
-      },
-      "marks_history": {
-        "title": "Marks history",
-        "text": "The percentage after every battle, the trend and the date of each mark."
-      },
-      "hangar_ratings": {
-        "title": "My ratings",
-        "text": "WN8, EFF, Bronya Index and average damage from the site — per account, session and tank."
+      "battle_progress": {
+        "title": "Battle progress",
+        "text": "One plate: damage to High Caliber, to the tank record and the WN8 of this battle."
       },
       "session_stats": {
-        "title": "Session in the hangar",
-        "text": "Battles, win rate, average damage and WN8 for the session, with a strip of the last 10 battles."
+        "title": "Session",
+        "text": "Battles, win rate, damage and WN8 of the session, the MoE change per tank, the last battles, site goals and your account."
       },
       "battle_results": {
         "title": "Battle results",
-        "text": "A summary after every battle: damage, assist, economy after repairs, shots and marks."
-      },
-      "battle_efficiency": {
-        "title": "Battle efficiency",
-        "text": "This battle's WN8 and your damage against your own average on the tank."
-      },
-      "main_gun": {
-        "title": "High Caliber",
-        "text": "How much damage you still need for the medal, and when it is out of reach."
-      },
-      "session_goals": {
-        "title": "Goals from the site",
-        "text": "Goals from your account: progress in the hangar, a line in battle and a sound when one is done."
+        "text": "A summary after every battle and the map of hits on your tank in the mod window."
       },
       "replay_manager": {
         "title": "Replay manager",
@@ -243,14 +243,6 @@
       "streamer_mode": {
         "title": "Streamer mode",
         "text": "A key hides every mod panel for OBS scenes; the private mode hides the chat and your numbers."
-      },
-      "battle_clock": {
-        "title": "Clock",
-        "text": "The time of day in battle and in the hangar, optionally in place of the battle timer."
-      },
-      "personal_best": {
-        "title": "Personal best",
-        "text": "Your damage record on the tank during the battle, and a card with a sound when you beat it."
       }
     },
     "base": {

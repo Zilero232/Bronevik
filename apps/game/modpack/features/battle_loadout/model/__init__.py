@@ -5,7 +5,7 @@ from ....core.format import COLOR_WARN, font
 from ....core.hud.icons import artefact_icon, glyph, image, split
 from .constants import (ATTENTION_MARK, BONUS_MARK, BOOSTER_OVERLAY_PATH, BOOSTER_OVERLAYS, FLAGS, ICON_FALLBACK,
                         MAX_EFFECT, MAX_ITEMS, MAX_MODERNIZED_LEVEL, MAX_NAME, MISSING_ICON_MARK, OVERLAY_DELUXE,
-                        OVERLAY_MODERNIZED, OVERLAY_PATH, OVERLAY_TROPHIES)
+                        OVERLAY_MODERNIZED, OVERLAY_PATH, OVERLAY_TROPHIES, SUMMARY, SUMMARY_EMPTY)
 
 # Fair play: the player's own tank only, the equipment and directives its setups carry (what the stock equipment
 # tooltips and ammunition panels read) and the device states the client reports for the own vehicle. The client tells
@@ -78,3 +78,14 @@ def _icon_markup(device, size):
 def format_panel(devices, settings):
     size = settings.get('icon_size')
     return u' '.join(_icon_markup(device, size) + _mark(device) for device in devices)
+
+
+def icons_found(devices, exists):
+    paths = (split(device['icon'])[0] for device in devices)
+    return sum(1 for path in paths if path and exists(path))
+
+
+def loadout_summary(loadout, devices, exists):
+    if loadout['reason']:
+        return SUMMARY_EMPTY % loadout['reason']
+    return SUMMARY % (len(loadout['devices']), len(loadout['directives']), icons_found(devices, exists))

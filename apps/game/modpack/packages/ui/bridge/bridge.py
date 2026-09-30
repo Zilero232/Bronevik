@@ -1,5 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ...companion.settings_ui import record_user_set
 from ...core.compat import is_number, string_types, to_text
 from ...core.hud import EVENT_RESET_LAYOUT
 from ...core.log import log
@@ -13,6 +14,7 @@ from ..window_layout import WindowLayout
 from .companion import CompanionActions
 from .constants import (
     CONFIG_COMPONENT,
+    CONFIG_KIND,
     EVENT_COMPONENT_SETTINGS,
     LANGUAGE_CHOICES,
     LANGUAGES,
@@ -123,6 +125,10 @@ class SettingsBridge(object):
         if changed:
             self.context.bus.emit(EVENT_COMPONENT_SETTINGS, component_id, list(changed))
 
+    def _chosen(self, tokens):
+        if tokens and record_user_set(self.context.config, tokens):
+            self.context.save_config()
+
     def _on_ready(self, message):
         log('ui: settings page ready')
 
@@ -140,8 +146,9 @@ class SettingsBridge(object):
         if not changed:
             self._notice(NOTICE_ERROR, 'error_value')
             return
+        self._chosen(_chosen_tokens(component.id, changed, kind))
         self._changed(component.id, changed)
-        if kind == 'config':
+        if kind == CONFIG_KIND:
             self.context.config_changed(changed)
 
     def _on_set_many(self, message):
@@ -152,12 +159,14 @@ class SettingsBridge(object):
         if not all(_is_editable(component, key) for key in values):
             raise ProtocolError('unknown_setting')
 
-        changed, config_changed = [], []
+        changed, config_changed, tokens = [], [], []
         for key in sorted(values):
             keys, kind = component.update(key, values[key])
             changed.extend(keys)
-            if kind == 'config':
+            tokens.extend(_chosen_tokens(component.id, keys, kind))
+            if kind == CONFIG_KIND:
                 config_changed.extend(keys)
+        self._chosen(tokens)
         self._changed(component.id, sorted(set(changed)))
         if config_changed:
             self.context.config_changed(sorted(set(config_changed)))
@@ -292,6 +301,12 @@ class SettingsBridge(object):
             self._changed(panel_id, self.editor.reset(panel_id))
         self.context.bus.emit(EVENT_RESET_LAYOUT)
         self.context.reset_layout()
+
+
+def _chosen_tokens(component_id, keys, kind):
+    if kind == CONFIG_KIND:
+        return list(keys)
+    return ['%s.%s' % (component_id, key) for key in keys]
 
 
 def _is_editable(component, key):

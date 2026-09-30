@@ -1,0 +1,91 @@
+@use 'sass:list';
+@use 'sass:map';
+
+// The in-game HUD (the modpack's Gameface page): dark only, battle design px (1 rem = 1 px there, so no rem here).
+// docs/specs/2026-09-30-hud-consolidation-and-design.md section 6.
+$tones: (
+  'hud-text': #f4f1ea,
+  'hud-muted': #a8a49a,
+  'hud-dim': #6f6c64,
+  'hud-ally': #7cd35b,
+  'hud-enemy': #e3564a,
+  'hud-enemy-cb': #9188fe,
+  'hud-dealt': #ff9a3c,
+  'hud-received': #f1705b,
+  'hud-blocked': #8ea4b5,
+  'hud-radio': #80a6cc,
+  'hud-track': #a9b56c,
+  'hud-stun': #b774e0,
+  'hud-gold': #e8b84a,
+  'hud-good': #4cc36b,
+  'hud-bad': #eb7276,
+  'hud-warn': #d9b23c
+);
+$surfaces: (
+  'hud-plate-solid': 'linear-gradient(180deg, rgb(16 16 19 / 74%), rgb(16 16 19 / 56%))',
+  'hud-plate-line': 'rgb(255 255 255 / 7%)',
+  'hud-plate-edge': 'linear-gradient(90deg, rgb(10 10 12 / 62%) 0%, rgb(10 10 12 / 40%) 60%, rgb(10 10 12 / 0%) 100%)',
+  'hud-plate-edge-end': 'linear-gradient(270deg, rgb(10 10 12 / 62%) 0%, rgb(10 10 12 / 40%) 60%, rgb(10 10 12 / 0%) 100%)',
+  'hud-plate-centre':
+    'linear-gradient(90deg, rgb(10 10 12 / 0%) 0%, rgb(10 10 12 / 50%) 18%, rgb(10 10 12 / 62%) 50%, rgb(10 10 12 / 50%) 82%, rgb(10 10 12 / 0%) 100%)',
+  'hud-divider': 'rgb(255 255 255 / 8%)',
+  'hud-bar-track': 'rgb(255 255 255 / 10%)',
+  'hud-bar-line': 'rgb(0 0 0 / 50%)',
+  'hud-ring-track': 'rgb(10 10 12 / 35%)',
+  'hud-tip': 'rgb(14 14 16 / 92%)',
+  'hud-slot': 'rgb(8 8 10 / 45%)',
+  'hud-slot-line': 'rgb(255 255 255 / 14%)',
+  'hud-slot-bonus': 'rgb(232 184 74 / 55%)',
+  'hud-slot-active': 'rgb(76 195 107 / 18%)',
+  'hud-text-shadow': '0 0 2px rgb(0 0 0 / 90%), 1px 1px 1px rgb(0 0 0 / 90%)',
+  'hud-radius': 2px
+);
+
+// Five type steps: (size, line height, weight).
+$type-steps: (
+  caption: (
+    11px,
+    14px,
+    400
+  ),
+  body: (
+    13px,
+    18px,
+    400
+  ),
+  value: (
+    15px,
+    18px,
+    700
+  ),
+  key: (
+    20px,
+    24px,
+    700
+  ),
+  hero: (
+    28px,
+    32px,
+    700
+  )
+);
+$type: (
+  'hud-caption': 11px,
+  'hud-body': 13px,
+  'hud-value': 15px,
+  'hud-key': 20px,
+  'hud-hero': 28px
+);
+$root: map.merge(map.merge($tones, $surfaces), $type);
+
+@mixin hud-type($step) {
+  @if not map.has-key($type-steps, $step) {
+    @error "Unknown HUD type step `#{$step}`. Use one of: #{map.keys($type-steps)}.";
+  }
+
+  $values: map.get($type-steps, $step);
+
+  font-size: list.nth($values, 1);
+  font-weight: list.nth($values, 3);
+  line-height: list.nth($values, 2);
+}

@@ -2,10 +2,10 @@ import clsx from 'clsx';
 
 import type { BattleLoadoutWidgetProps } from './BattleLoadoutWidget.types';
 
-import { ClientIcon, Glyph, HudPlate } from '../../../../shared/ui/hud';
+import { ClientIcon, Glyph, HudTip } from '../../../../shared/ui/hud';
 import { BATTLE_LOADOUT } from '../config';
+import { loadoutEntries } from '../lib/loadout-view';
 import { useItemTooltip } from '../model/hooks';
-import { EquipmentTip } from './components';
 
 import s from './BattleLoadoutWidget.module.scss';
 
@@ -14,25 +14,40 @@ export const BattleLoadoutWidget = ({ data }: BattleLoadoutWidgetProps) => {
 
   return (
     <div className={s.root}>
-      {tip && <EquipmentTip item={tip} />}
-      <HudPlate className={s.plate} rail='info'>
-        <div className={s.row}>
-          {data.items.map((item, index) => (
+      {tip && (
+        <HudTip
+          className={s.tip}
+          mark={tip.bonus && <Glyph name={BATTLE_LOADOUT.bonusGlyph} size={BATTLE_LOADOUT.bonusSize} tone='gold' />}
+          text={tip.effect}
+          title={tip.name}
+        />
+      )}
+      <div className={s.row}>
+        {loadoutEntries(data.items).map((entry) =>
+          entry.kind === 'divider' ? (
+            <span key={entry.key} className={s.divider} />
+          ) : (
             <div
-              key={item.name}
-              className={clsx(s.cell, item.bonus && s.bonus, item.boosted && s.boosted, item.active && s.active, item.used && s.used)}
-              {...handlers(index)}
+              key={entry.key}
+              className={clsx(
+                s.cell,
+                entry.item.bonus && s.bonus,
+                entry.item.boosted && s.boosted,
+                entry.item.active && s.active,
+                entry.item.used && s.used
+              )}
+              {...handlers(entry.index)}
             >
-              <ClientIcon icon={item.icon} size={data.size} tone='muted' />
-              {item.overlay && <ClientIcon className={s.overlay} icon={item.overlay} size={data.size} />}
-              {item.bonus && <Glyph className={s.star} name={BATTLE_LOADOUT.bonusGlyph} size={BATTLE_LOADOUT.bonusSize} tone='gold' />}
-              {item.attention && (
+              <ClientIcon icon={entry.item.icon} size={data.size} tone='muted' />
+              {entry.item.overlay && <ClientIcon className={s.overlay} icon={entry.item.overlay} size={data.size} />}
+              {entry.item.bonus && <Glyph className={s.star} name={BATTLE_LOADOUT.bonusGlyph} size={BATTLE_LOADOUT.bonusSize} tone='gold' />}
+              {entry.item.attention && (
                 <Glyph className={s.attention} name={BATTLE_LOADOUT.attentionGlyph} size={BATTLE_LOADOUT.attentionSize} tone='warning' />
               )}
             </div>
-          ))}
-        </div>
-      </HudPlate>
+          )
+        )}
+      </div>
     </div>
   );
 };

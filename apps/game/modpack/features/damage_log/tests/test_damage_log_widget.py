@@ -7,48 +7,50 @@ import _support
 from otmetki.core.settings import Settings
 from otmetki.features.damage_log.i18n import STRINGS
 from otmetki.features.damage_log.model import DamageLog, Hit
-from otmetki.features.damage_log.model.preview import preview_last_hit_widget, preview_log, preview_widget
-from otmetki.features.damage_log.model.widget import damage_log_widget, last_hit_widget
-from otmetki.features.damage_log.settings import LAST_HIT_SCHEMA, SCHEMA
+from otmetki.features.damage_log.model.preview import preview_log, preview_widget
+from otmetki.features.damage_log.model.widget import damage_log_widget
+from otmetki.features.damage_log.settings import SCHEMA
 
 TRANSLATE = _support.translator(STRINGS)
+EN = _support.translator(STRINGS, 'en')
+KV = 17
+T34 = 18
 
 
-def assist_and_fire_log():
+def settings(**values):
+    return Settings(values, SCHEMA)
+
+
+def data_of(log, extended=False, translate=TRANSLATE, **values):
+    return damage_log_widget(log, settings(**values), translate, extended)['data']
+
+
+def preview_data(**values):
+    return data_of(preview_log(), **values)
+
+
+def fire_and_ram_log():
     log = DamageLog()
-    log.add('radio', 200, Hit(vehicle='T-34'))
-    log.add('received', 50, Hit(vehicle='KV-1', source='fire'))
+    log.add('damage', 30, Hit(vehicle_id=T34, vehicle='T-34', source='fire', at=1.0))
+    log.add('received', 50, Hit(vehicle_id=KV, vehicle='KV-1', source='ram', at=2.0))
     return log
 
 
-def gold_hit():
+def gold_he_log():
     log = DamageLog()
-    log.add('received', 390, Hit(
-        vehicle='Pz. IV',
-        shell='ap',
-        source='shot',
-        vehicle_class='mediumTank',
-        shell_name='ARMOR_PIERCING',
-        gold=True,
-    ))
-    return log.last('received')
+    log.add('received', 390, Hit(vehicle_id=KV, vehicle='KV-1', shell='he', gold=True, at=1.0))
+    return log
 
 
-def preview_rows(settings):
-    return damage_log_widget(preview_log(), settings, TRANSLATE)['data']['rows']
+class TotalsTest(unittest.TestCase):
 
+    def test_totals_are_keyed_in_order_without_the_zero_ones(self):
+        keys = [item['key'] for item in preview_data()['totals']]
 
-class DamageLogWidgetTest(unittest.TestCase):
-
-    def test_totals_are_keyed_in_order(self):
-        data = damage_log_widget(preview_log(), Settings({}, SCHEMA), TRANSLATE)['data']
-
-        assert [item['key'] for item in data['totals']] == ['dealt', 'blocked', 'assisted', 'received']
+        assert keys == ['dealt', 'assist', 'blocked', 'received']
 
     def test_a_total_is_an_icon_a_number_and_a_tone(self):
-        data = damage_log_widget(preview_log(), Settings({}, SCHEMA), TRANSLATE)['data']
-
-        assert data['totals'][0] == {
+        assert preview_data()['totals'][0] == {
             'key': 'dealt',
             'icon': 'img://gui/maps/icons/library/efficiency/48x48/damage.png|otmetki:damage',
             'value': 710,
@@ -56,116 +58,126 @@ class DamageLogWidgetTest(unittest.TestCase):
         }
 
     def test_the_received_total_takes_our_glyph(self):
-        data = damage_log_widget(preview_log(), Settings({}, SCHEMA), TRANSLATE)['data']
+        assert preview_data()['totals'][-1]['icon'] == 'otmetki:received'
 
-        assert data['totals'][-1]['icon'] == 'otmetki:received'
 
-    def test_received_row_carries_the_shell_class_and_ammo_rack(self):
-        received = preview_rows(Settings({'log_lines': 3}, SCHEMA))[0]
+class DealtRowsTest(unittest.TestCase):
 
-        assert received['received']
-        assert received['tone'] == 'received'
-        assert received['ammo_rack'] == 'otmetki:ammo_rack'
-        assert received['icon'].startswith('img://gui/maps/icons/shell/small/HIGH_EXPLOSIVE_MODERN.png')
-        assert received['cls'].startswith('img://gui/maps/icons/vehicleTypes/white/heavyTank.png')
+    def test_a_shot_row_carries_the_outcome_shell_class_and_hp(self):
+        pz = preview_data()['dealt'][-1]
 
-    def test_blocked_row_carries_its_shell(self):
-        blocked = preview_rows(Settings({'log_lines': 3}, SCHEMA))[1]
+        assert pz['amount'] == 390
+        assert pz['tone'] == 'accent'
+        assert pz['icon'] == 'otmetki:damage'
+        assert pz['shell'] == {'code': 'ap', 'label': u'ББ', 'gold': False}
+        assert pz['cls'].startswith('img://gui/maps/icons/vehicleTypes/red/mediumTank.png')
+        assert pz['hp'] == 510
+        assert pz['max'] == 900
 
+    def test_a_crit_row_takes_the_crit_marker_and_a_gold_shell(self):
+        crit = preview_data()['dealt'][1]
+
+        assert crit['icon'].startswith('img://gui/maps/icons/library/critical_damage/hit_critical.png')
+        assert crit['shell']['gold']
+
+    def test_grouped_ricochets_count_their_hits_without_an_amount(self):
+        ricochets = preview_data()['dealt'][2]
+
+        assert ricochets['hits'] == 2
+        assert ricochets['amount'] is None
+        assert ricochets['icon'].startswith('img://gui/maps/icons/library/critical_damage/hit_ricochet.png')
+
+    def test_an_assist_row_takes_its_glyph_and_the_targets_class(self):
+        assist = preview_data()['dealt'][0]
+
+        assert assist['icon'] == 'otmetki:radio'
+        assert assist['tone'] == 'radio'
+        assert assist['cls'].startswith('img://gui/maps/icons/vehicleTypes/red/heavyTank.png')
+
+    def test_fire_damage_takes_the_fire_icon_and_no_shell(self):
+        fire = data_of(fire_and_ram_log())['dealt'][0]
+
+        assert fire['icon'].startswith('img://gui/maps/icons/library/efficiency/48x48/fire.png')
+        assert fire['shell'] is None
+
+    def test_the_hp_can_be_left_out(self):
+        pz = preview_data(show_hp=False)['dealt'][-1]
+
+        assert pz['hp'] is None
+        assert pz['max'] is None
+
+
+class ReceivedRowsTest(unittest.TestCase):
+
+    def test_damage_to_the_player_is_negative_with_the_ammo_rack(self):
+        kv = preview_data()['received'][0]
+
+        assert kv['amount'] == -310
+        assert kv['tone'] == 'received'
+        assert kv['icon'] == 'otmetki:received'
+        assert kv['ammo_rack'] == 'otmetki:ammo_rack'
+
+    def test_a_blocked_hit_keeps_its_amount_in_the_blocked_tone(self):
+        blocked = preview_data()['received'][1]
+
+        assert blocked['amount'] == 240
         assert blocked['tone'] == 'blocked'
-        assert blocked['icon'].startswith('img://gui/maps/icons/shell/small/HOLLOW_CHARGE.png')
+        assert blocked['icon'].startswith('img://gui/maps/icons/library/critical_damage/hit_blocked.png')
 
-    def test_damage_row_marks_a_gold_shell(self):
-        damage = preview_rows(Settings({'log_lines': 3}, SCHEMA))[2]
+    def test_a_ram_takes_the_ram_icon(self):
+        ram = data_of(fire_and_ram_log())['received'][0]
 
-        assert damage['gold']
-        assert damage['icon'].startswith('img://gui/maps/icons/shell/small/ARMOR_PIERCING_CR_PREMIUM.png')
+        assert ram['icon'].startswith('img://gui/maps/icons/library/efficiency/48x48/ram.png')
 
-    def test_assist_row_uses_our_glyph_without_a_class(self):
-        rows = damage_log_widget(assist_and_fire_log(), Settings({}, SCHEMA), TRANSLATE)['data']['rows']
+    def test_a_premium_he_shell_has_its_own_label(self):
+        shell = data_of(gold_he_log())['received'][0]['shell']
 
-        assert rows[1]['icon'] == 'otmetki:radio'
-        assert rows[1]['cls'] is None
+        assert shell == {'code': 'he', 'label': u'ОФ-П', 'gold': True}
 
-    def test_received_row_shows_the_fire_source(self):
-        rows = damage_log_widget(assist_and_fire_log(), Settings({}, SCHEMA), TRANSLATE)['data']['rows']
+    def test_the_shell_label_follows_the_language(self):
+        shell = data_of(gold_he_log(), translate=EN)['received'][0]['shell']
 
-        assert rows[0]['source'].startswith('img://gui/maps/icons/library/efficiency/48x48/fire.png')
+        assert shell['label'] == 'HE'
 
-    def test_compact_style_has_no_rows(self):
-        data = damage_log_widget(assist_and_fire_log(), Settings({'style': 'compact'}, SCHEMA), TRANSLATE)['data']
 
-        assert data['rows'] == []
+class DetailTest(unittest.TestCase):
 
-    def test_hiding_the_log_keeps_the_full_style(self):
-        data = damage_log_widget(assist_and_fire_log(), Settings({'show_log': False}, SCHEMA), TRANSLATE)['data']
+    def test_rows_carry_no_notes_while_alt_is_up(self):
+        data = preview_data()
 
-        assert data['style'] == 'full'
+        assert not data['wide']
+        assert [row['note'] for row in data['dealt'] + data['received']] == [''] * 6
 
-    def test_rows_are_full_without_the_alt_mode(self):
-        settings = Settings({'log_lines': 3}, SCHEMA)
+    def test_alt_widens_the_log_and_adds_the_notes(self):
+        data = data_of(preview_log(), extended=True)
 
-        data = damage_log_widget(preview_log(), settings, TRANSLATE, extended=True)['data']
+        assert data['wide']
+        assert data['received'][0]['note'] == u'боеукладка'
+        assert data['dealt'][1]['note'] == u'+1 крит. · осталось 1 180'
+        assert data['dealt'][2]['note'] == u'рикошет'
 
-        assert data['detail'] == 'full'
-        assert [item['note'] for item in data['rows']] == ['', '', '']
+    def test_without_the_alt_mode_the_notes_are_always_there(self):
+        data = preview_data(alt_mode=False)
 
-    def test_alt_mode_rows_are_short_while_alt_is_up(self):
-        settings = Settings({'alt_mode': True, 'log_lines': 3}, SCHEMA)
+        assert data['wide']
+        assert data['received'][1]['note'] == u'не пробил'
 
-        data = damage_log_widget(preview_log(), settings, TRANSLATE)['data']
+    def test_the_compact_style_has_no_rows_while_alt_is_up(self):
+        data = preview_data(style='compact')
 
-        assert data['detail'] == 'short'
-        assert [item['note'] for item in data['rows']] == ['', '', '']
-
-    def test_alt_mode_rows_carry_the_note_while_alt_is_held(self):
-        settings = Settings({'alt_mode': True, 'log_lines': 3}, SCHEMA)
-
-        data = damage_log_widget(preview_log(), settings, TRANSLATE, extended=True)['data']
-
-        assert data['detail'] == 'extended'
-        assert [item['note'] for item in data['rows']] == [u'Получено ОФ боеукладка', u'Блок КС', u'Урон БП']
-
-    def test_compact_style_has_no_rows_while_alt_is_up(self):
-        settings = Settings({'alt_mode': True, 'style': 'compact'}, SCHEMA)
-
-        data = damage_log_widget(preview_log(), settings, TRANSLATE)['data']
-
-        assert data['rows'] == []
+        assert data['dealt'] == []
+        assert data['received'] == []
 
     def test_alt_shows_the_rows_the_compact_style_leaves_out(self):
-        settings = Settings({'alt_mode': True, 'style': 'compact'}, SCHEMA)
+        data = data_of(preview_log(), extended=True, style='compact')
 
-        data = damage_log_widget(preview_log(), settings, TRANSLATE, extended=True)['data']
+        assert len(data['dealt']) == 4
 
-        assert len(data['rows']) == 5
-
-    def test_edit_preview_is_the_short_one(self):
-        settings = Settings({'alt_mode': True}, SCHEMA)
-
-        data = preview_widget(settings, TRANSLATE)['data']
-
-        assert data['detail'] == 'short'
-
-    def test_last_hit_card_shows_the_hit(self):
-        data = last_hit_widget(gold_hit(), Settings({}, LAST_HIT_SCHEMA))['data']
-
-        assert data['amount'] == 390
-        assert data['name'] == 'Pz. IV'
-        assert data['timeout_s'] == 5
-        assert data['cls'].startswith('img://gui/maps/icons/vehicleTypes/red/mediumTank.png')
-        assert data['shell'].startswith('img://gui/maps/icons/shell/small/ARMOR_PIERCING_PREMIUM.png')
-
-    def test_last_hit_card_leaves_the_class_out_when_switched_off(self):
-        data = last_hit_widget(gold_hit(), Settings({'show_class': False}, LAST_HIT_SCHEMA))['data']
-
-        assert data['cls'] is None
+    def test_the_edit_preview_is_the_alt_one(self):
+        assert preview_widget(settings(), TRANSLATE)['data']['wide']
 
     def test_damage_log_fixture_for_the_page(self):
-        assert _support.widget_fixture('damage_log', preview_widget(Settings({}, SCHEMA), None))
-
-    def test_last_hit_fixture_for_the_page(self):
-        assert _support.widget_fixture('last_hit', preview_last_hit_widget(Settings({}, LAST_HIT_SCHEMA), None))
+        assert _support.widget_fixture('damage_log', preview_widget(settings(), TRANSLATE))
 
 
 if __name__ == '__main__':

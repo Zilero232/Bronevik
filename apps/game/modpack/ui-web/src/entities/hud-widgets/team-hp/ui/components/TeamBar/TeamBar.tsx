@@ -6,22 +6,26 @@ import { TEAM_HP } from '../../../config';
 
 import s from './TeamBar.module.scss';
 
-export const TeamBar = ({ view, side, color, height, mirrored = false }: TeamBarProps) =>
-  view.segmented ? (
-    <div className={clsx(s.bar, s.plain, mirrored && s.mirrored)} style={{ width: `${view.barWidth}rem`, height: `${height}rem` }}>
-      {side.segments.map((item) =>
-        item.kind === 'gap' ? (
-          <div key={item.key} className={s.gap} style={{ width: `${TEAM_HP.tierGap}rem` }} />
+export const TeamBar = ({ side, segmented, mirrored = false }: TeamBarProps) => {
+  const fill = clsx(s.fill, side.paint.tone && s[side.paint.tone]);
+
+  return (
+    <div className={s.frame}>
+      <div className={clsx(s.bar, segmented && s.plain, mirrored && s.mirrored)} style={{ width: `${TEAM_HP.barWidth}rem` }}>
+        {segmented ? (
+          side.segments.map((item) =>
+            item.kind === 'gap' ? (
+              <div key={item.key} className={s.gap} style={{ width: `${TEAM_HP.tierGap}rem` }} />
+            ) : (
+              <div key={item.key} className={clsx(s.segment, mirrored && s.mirrored)} style={{ width: `${item.width}rem` }}>
+                <div className={fill} style={{ ...side.paint.fill, width: `${item.fill}rem` }} />
+              </div>
+            )
+          )
         ) : (
-          <div key={item.key} className={clsx(s.segment, mirrored && s.mirrored, !item.alive && s.dead)} style={{ width: `${item.width}rem` }}>
-            <div className={s.fill} style={{ width: `${item.fill}rem`, backgroundColor: color }} />
-          </div>
-        )
-      )}
-    </div>
-  ) : (
-    <div className={clsx(s.bar, mirrored && s.mirrored)} style={{ width: `${view.barWidth}rem`, height: `${height}rem` }}>
-      <div className={s.fill} style={{ width: `${side.fill}rem`, backgroundColor: color }} />
-      {view.numbers === 'inside' && <span className={s.value}>{side.hp}</span>}
+          <div className={fill} style={{ ...side.paint.fill, width: `${side.fill}rem` }} />
+        )}
+      </div>
     </div>
   );
+};

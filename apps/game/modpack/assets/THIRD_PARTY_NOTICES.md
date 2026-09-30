@@ -13,8 +13,7 @@ under licences that allow redistribution in a paid product; each licence text sh
 | Sixth-sense icons | Три отметки | LicenseRef-TriOtmetki-Artwork | sixth_sense | `res/gui/maps/icons/otmetki/sixth_sense/icons` |
 | Sixth-sense chime | Три отметки | CC0-1.0 | sixth_sense | `res/audioww` |
 | Damage-log kind glyphs | Три отметки | LicenseRef-TriOtmetki-Artwork | damage_log | `res/gui/maps/icons/otmetki/damage_log/icons` |
-| Goal completion chime | Три отметки | CC0-1.0 | session_goals | `res/audioww` |
-| New personal best chime | Три отметки | CC0-1.0 | personal_best | `res/audioww` |
+| Goal completion chime | Три отметки | CC0-1.0 | session_stats | `res/audioww` |
 
 ## Third-party assets
 
@@ -90,18 +89,8 @@ visual reference only (layout, sizes, readability, colour conventions); nothing 
 - Licence: CC0-1.0 (`assets/otmetki/sounds/LICENSE.txt`)
 - Source: https://triotmetki.ru
 - Contents: otmetki_goal.mp3 (a goal from the site met): synthesised by tools/assets/sound.py, MP3 44.1 kHz mono
-- Ships in: `res/audioww` (component `session_goals`)
+- Ships in: `res/audioww` (component `session_stats`)
 - Fair play: Played in the hangar when the site reports one of the player's own goals met.
-
-### New personal best chime
-
-- Author: Три отметки
-- Copyright: Три отметки, dedicated to the public domain
-- Licence: CC0-1.0 (`assets/otmetki/sounds/LICENSE.txt`)
-- Source: https://triotmetki.ru
-- Contents: otmetki_record.mp3 (a new personal best on the tank): synthesised by tools/assets/sound.py, MP3 44.1 kHz mono
-- Ships in: `res/audioww` (component `personal_best`)
-- Fair play: Played in the hangar after a battle that beat the player's own record on the tank.
 
 ## Python libraries
 

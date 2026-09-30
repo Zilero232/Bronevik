@@ -79,18 +79,21 @@ def _config_keys(feature, sources):
     return [key for key in keys if sources.has_config_key(key)]
 
 
-def _section_component(feature, sources, section, config_switch):
+def _section_component(feature, sources, section, config_keys, config_switch):
     panel = feature.id in sources.panels()
+    config_fields = [key for key in config_keys if key != config_switch]
     return Component(
         feature.id,
         feature.group(panel),
         sources.section_source(feature.id),
-        sorted(section.schema.defaults),
+        sorted(section.schema.defaults) + config_fields,
         switch=config_switch or section_switch(section),
         switch_source=sources.config_source() if config_switch else None,
         panel=panel,
         instance=feature.instance,
         fallback_title=feature.title,
+        config_keys=config_fields,
+        config_source=sources.config_source(),
     )
 
 
@@ -99,7 +102,7 @@ def _feature_component(feature, sources):
     config_switch = switch_of(sources.config, keys, sources.switch_keys)
     section = sources.section(feature.id)
     if section is not None:
-        return _section_component(feature, sources, section, config_switch)
+        return _section_component(feature, sources, section, keys, config_switch)
     if not keys and feature.instance is None:
         return None
 

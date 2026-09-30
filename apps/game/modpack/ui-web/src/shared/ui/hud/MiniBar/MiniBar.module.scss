@@ -4,45 +4,49 @@
   display: flex;
   flex-direction: row;
   flex-shrink: 0;
-  background-color: rgb(255 255 255 / 8%);
+  background-color: token(hud-bar-track);
 }
 
 .fill {
-  background-color: token(color-text);
+  background-color: token(hud-text);
 }
 
 .ally {
-  background-color: token(color-ally);
+  background-color: token(hud-ally);
 }
 
 .enemy {
-  background-color: token(color-enemy);
+  background-color: token(hud-enemy);
 }
 
 .accent {
-  background-color: token(color-accent);
+  background-color: token(hud-dealt);
 }
 
 .gold {
-  background-color: token(color-gold);
+  background-color: token(hud-gold);
 }
 
 .success {
-  background-color: token(color-success);
+  background-color: token(hud-good);
+}
+
+.good {
+  background-color: token(hud-good);
 }
 
 .muted {
-  background-color: token(color-text-muted);
+  background-color: token(hud-muted);
 }
 
 .received {
-  background-color: token(color-danger);
+  background-color: token(hud-received);
 }
 
 .warning {
-  background-color: token(color-warning);
+  background-color: token(hud-warn);
 }
 
 .stun {
-  background-color: token(class-spg);
+  background-color: token(hud-stun);
 }

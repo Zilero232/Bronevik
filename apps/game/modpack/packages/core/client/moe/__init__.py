@@ -1,13 +1,14 @@
-"""The marks-of-excellence data the marks views share: the site curve per tank (GET /v1/moe/<tank_id>,
-cached) and the pace of the player's own last battles per tank (kept in the app state). One instance per
-process (`moe_service(app)`), so the in-battle panel and the hangar view read each curve once."""
+"""The marks-of-excellence data the marks views share: the site curve and the mastery badges' XP per
+tank (GET /v1/moe/<tank_id>, cached) and the pace of the player's own last battles per tank (kept in the app
+state). One instance per process (`moe_service(app)`), so the in-battle panel and the hangar view read each
+curve once."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import time
 
 from ...codec import parse_json_body
 from ...log import safe
-from ...moe import PaceBook, ThresholdCache, ThresholdCurve
+from ...moe import PaceBook, ThresholdCache, ThresholdCurve, mastery_from_api
 from ...net.signing import DEVICE_HEADER
 from .constants import MOE_PATH, STATE_KEY
 
@@ -19,6 +20,7 @@ class MoeService(object):
     def __init__(self, app):
         self.app = app
         self.cache = ThresholdCache()
+        self.masteries = {}
         self.pace_book = PaceBook((app.state or {}).get(STATE_KEY))
         self.listeners = []
         app.register_state(STATE_KEY, self.pace_book.to_dict)
@@ -33,6 +35,9 @@ class MoeService(object):
 
     def curve(self, tank_id):
         return self.cache.get(tank_id)
+
+    def mastery(self, tank_id):
+        return self.masteries.get(tank_id)
 
     def pace(self, tank_id):
         return self.pace_book.pace(tank_id)
@@ -55,8 +60,10 @@ class MoeService(object):
 
         @safe
         def done(status, body, response_headers):
-            curve = ThresholdCurve.from_api(parse_json_body(body)) if status == 200 else None
-            self.cache.store(tank_id, curve, time.time())
+            data = parse_json_body(body) if status == 200 else None
+            self.cache.store(tank_id, ThresholdCurve.from_api(data), time.time())
+            if status == 200:
+                self.masteries[tank_id] = mastery_from_api(data)
             for callback in list(self.listeners):
                 callback(tank_id)
 

@@ -1,11 +1,19 @@
 @use '../../../../../../shared/styles/gameface' as *;
 
+.item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 .level {
   margin-right: 4px;
-  color: token(color-text-muted);
+  color: token(hud-muted);
+
+  @include hud-type(caption);
 }
 
 .need {
-  color: token(color-text);
+  color: token(hud-text);
   font-weight: 700;
 }

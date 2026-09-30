@@ -22,6 +22,15 @@ def rating_to_percent(damage_rating):
     return round(damage_rating / 100.0, 2) if is_number(damage_rating) else None
 
 
+# The exact change of one battle: the client keeps damageRating as the percent times 100, so two dossier reads
+# (before the battle, and the battle results' post-battle value) differ by whole hundredths. A rating of 0 is
+# a tank with no MoE record yet, which has nothing to compare.
+def rating_change(rating_before, rating_after):
+    if not (is_number(rating_before) and is_number(rating_after)) or rating_before <= 0 or rating_after <= 0:
+        return None
+    return round((rating_after - rating_before) / 100.0, 2)
+
+
 def battles_to_reach(moving_avg, target_avg, pace):
     if not (is_number(moving_avg) and is_number(target_avg)):
         return None

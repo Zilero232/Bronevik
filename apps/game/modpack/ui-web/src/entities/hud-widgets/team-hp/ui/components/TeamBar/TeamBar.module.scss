@@ -1,12 +1,18 @@
 @use '../../../../../../shared/styles/gameface' as *;
 
-.bar {
-  position: relative;
+.frame {
   display: flex;
-  flex-direction: row;
   flex-shrink: 0;
+  padding: 1px;
+  background-color: token(hud-bar-line);
+}
+
+.bar {
+  display: flex;
+  height: 6px;
+  flex-direction: row;
   justify-content: flex-start;
-  background-color: rgb(255 255 255 / 10%);
+  background-color: token(hud-bar-track);
 }
 
 .plain {
@@ -24,34 +30,23 @@
   flex-direction: row;
   justify-content: flex-start;
   margin-right: 1px;
-  background-color: rgb(255 255 255 / 8%);
-}
-
-.dead {
-  background-color: rgb(255 255 255 / 4%);
+  background-color: token(hud-bar-track);
 }
 
 .fill {
   height: 100%;
+  background-color: token(hud-text);
+}
+
+.ally {
+  background-color: token(hud-ally);
+}
+
+.enemy {
+  background-color: token(hud-enemy);
 }
 
 .gap {
   height: 100%;
   flex-shrink: 0;
-}
-
-.value {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  width: 100%;
-  height: 100%;
-  align-items: center;
-  justify-content: center;
-  color: token(color-text);
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1;
-  white-space: nowrap;
 }

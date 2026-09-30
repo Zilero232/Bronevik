@@ -52,13 +52,6 @@ PREMIUM_SUFFIX = '_PREMIUM'
 # The stem of a shell descriptor icon (`descriptor.icon[0]`, e.g. ARMOR_PIERCING_CR_PREMIUM.png), the ammopanel file
 # name.
 SHELL_STEM = re.compile(r'^[A-Z0-9_]{2,60}(\.png)?$')
-SHELL_CODE_FILES = {
-    'ap': 'ARMOR_PIERCING',
-    'apcr': 'ARMOR_PIERCING_CR',
-    'heat': 'HOLLOW_CHARGE',
-    'he': 'HIGH_EXPLOSIVE',
-    'flame': 'FLAME',
-}
 
 # Efficiency kinds of the post-battle screen, 48x48 (library/efficiency).
 EFFICIENCY = (
@@ -76,7 +69,7 @@ EFFICIENCY = (
     'defence',
 )
 
-# Hit outcomes (hit_log, received hits) -> library/critical_damage files; a plain penetration has none (our glyph).
+# Hit outcomes (damage_log, battle_hits) -> library/critical_damage files; a plain penetration has none (our glyph).
 OUTCOME_FILES = {
     'crit': 'hit_critical',
     'no_pen': 'hit_blocked',

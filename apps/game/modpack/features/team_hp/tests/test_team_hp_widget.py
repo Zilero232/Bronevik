@@ -71,6 +71,21 @@ class TeamHpWidgetTest(unittest.TestCase):
 
         assert data['show_score'] is True
 
+    def test_sides_are_painted_by_tone_names(self):
+        data = bar_pair_data()
+
+        assert data['tones'] == {'ally': 'ally', 'enemy': 'enemy'}
+
+    def test_default_colours_leave_the_tones(self):
+        data = bar_pair_data()
+
+        assert data['colors'] == {'ally': None, 'enemy': None}
+
+    def test_a_colour_the_player_set_overrides_its_tone(self):
+        payload = team_hp_widget(preview_teams(), Settings({'enemy_color': '#9188fe'}, SCHEMA), ALL_ON)
+
+        assert payload['data']['colors'] == {'ally': None, 'enemy': '#9188FE'}
+
     def test_carries_the_alive_score_toggle(self):
         payload = team_hp_widget(preview_teams(), Settings({'show_alive': True}, SCHEMA), ALL_ON)
 

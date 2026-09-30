@@ -4,33 +4,26 @@ import { hudIconSchema, hudToneSchema } from '../../../../../shared/api/hud-prot
 
 const total = z.object({ key: z.string(), icon: hudIconSchema, value: z.number(), tone: hudToneSchema });
 
+const shell = z.object({ code: z.string(), label: z.string(), gold: z.boolean() });
+
 const row = z.object({
-  kind: z.string(),
-  amount: z.number(),
+  id: z.string(),
+  amount: z.nullable(z.number()),
   tone: hudToneSchema,
-  received: z.boolean(),
   icon: hudIconSchema,
-  gold: z.boolean(),
+  shell: z.nullable(shell),
   cls: hudIconSchema,
   name: z.string(),
-  source: hudIconSchema,
+  hits: z.number(),
+  hp: z.nullable(z.number()),
+  max: z.nullable(z.number()),
   ammo_rack: hudIconSchema,
   note: z.string()
 });
 
 export const damageLogSchema = z.object({
-  style: z.enum(['full', 'compact']),
-  detail: z.enum(['full', 'short', 'extended']),
+  wide: z.boolean(),
   totals: z.array(total),
-  rows: z.array(row)
-});
-
-export const lastHitSchema = z.object({
-  amount: z.number(),
-  name: z.string(),
-  cls: hudIconSchema,
-  shell: hudIconSchema,
-  source: hudIconSchema,
-  ammo_rack: hudIconSchema,
-  timeout_s: z.number()
+  dealt: z.array(row),
+  received: z.array(row)
 });

@@ -13,7 +13,7 @@ from ..protocol import encode_state
 from .constants import MODIFIER_KEY
 from .context import UiContext
 from .entry_points import HangarButton, ModsListButton
-from .window import WindowController
+from .window import BattleCursor, WindowController
 
 
 def _hotkey(on_press):
@@ -51,6 +51,7 @@ class UiHost(object):
         self.profiles = ProfileStore(open_config(app.config_dir, FILE_NAME, pretty=True), time.time)
         self.bridge = SettingsBridge(UiContext(app, self))
         self.window = WindowController(self.on_message, self.state_text, self.on_escape)
+        self.cursor = BattleCursor()
         self.button = HangarButton(app, self.open)
         self.mods_list = ModsListButton(self.open)
         self.hotkey = _hotkey(self.on_hotkey)
@@ -59,6 +60,7 @@ class UiHost(object):
         self.held = False
         bus = app.bus
         bus.on('battle_enter', self.on_battle_enter)
+        bus.on('battle_leave', self.close)
         bus.on('hangar', self.on_hangar)
         bus.on('component_settings', self._on_changed)
         bus.on('tick', self._on_tick)
@@ -102,6 +104,7 @@ class UiHost(object):
     @safe
     def open(self, *args):
         if self.app.in_battle:
+            self.open_in_battle()
             return
         log('ui: open the settings window')
         if self.on_screen_editing:
@@ -111,6 +114,18 @@ class UiHost(object):
             self.bridge.stop_feed()
         if not self.window.open():
             self.app.ui.notify(self.app.translate('ui_gameface_missing'))
+
+    # In battle the window opens only on the player's request (the Esc menu entry, the hotkey), over the battle with the
+    # client's GUI control mode on: the cursor shown and the vehicle held while it is open.
+    def open_in_battle(self):
+        log('ui: open the settings window in battle')
+        if self.window.is_open:
+            self.window.open()
+            return
+        self.bridge.stop_feed()
+        self.cursor.hold()
+        if not self.window.open():
+            self.cursor.release()
 
     @safe
     def open_at(self, page):
@@ -126,6 +141,7 @@ class UiHost(object):
         self.bridge.clear_focus()
         self.bridge.stop_feed()
         self.window.close()
+        self.cursor.release()
 
     @safe
     def on_hotkey(self):

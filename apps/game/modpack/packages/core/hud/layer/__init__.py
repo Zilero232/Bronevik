@@ -6,9 +6,9 @@ unchanged text is not sent again (a Flash or Gameface re-layout per call is the 
 
 `set_muted(True)` (the streamer hotkey) and `set_blocked(panel_ids)` (the streamer's private panels) take panels off
 the screen without the features knowing: their texts are held and come back when the panel is allowed again.
-`set_gui_hidden(True)` (the stock battle GUI hidden with V) only makes the shown panels invisible, and
-`set_full_stats(True)` (Tab held) marks them `dim`: the page keeps every panel where it was, so nothing moves when they
-come back.
+`set_cover(reason, on)` is the one rule for what covers the battle view (`constants.COVER_EFFECTS`): V, the killer
+camera and the loading screen make the shown panels invisible, Tab marks them `dim`; the page keeps every panel drawn
+where it was, so nothing moves when they come back. `set_gui_hidden` and `set_full_stats` are its V and Tab reasons.
 
 `enter_mode(mode)` (a battle type, `core.hud.modes`) asks the layout policy a component set with `set_policy(policy)`
 which panels the type shows and whether it keeps places of its own: a panel the type leaves out is held like a muted
@@ -25,6 +25,7 @@ from ..backend import NullBackend
 from ..modes import MODE_RANDOM, ModePlaces
 from ..panel import (
     LAYOUT_KEYS,
+    fit_place,
     alias_of,
     dock_of,
     is_pinned,
@@ -35,6 +36,7 @@ from ..panel import (
     pinned_values,
     retired_reset,
 )
+from .constants import COVER_DIM, COVER_EFFECTS, COVER_FULL_STATS, COVER_GUI, COVER_HIDE
 
 
 class HudLayer(object):
@@ -50,8 +52,7 @@ class HudLayer(object):
         self.widgets = {}
         self.places = {}
         self.muted = False
-        self.gui_hidden = False
-        self.full_stats = False
+        self.covers = frozenset()
         self.blocked = frozenset()
         self.held = {}
         self.mode = None
@@ -60,6 +61,17 @@ class HudLayer(object):
         self.policy = None
         self.mode_places = ModePlaces(config)
         self.backend.listen(self.on_moved)
+
+    @property
+    def gui_hidden(self):
+        return self._covered(COVER_HIDE)
+
+    @property
+    def full_stats(self):
+        return self._covered(COVER_DIM)
+
+    def _covered(self, effect):
+        return any(COVER_EFFECTS.get(reason) == effect for reason in self.covers)
 
     @property
     def has_panels(self):
@@ -73,7 +85,7 @@ class HudLayer(object):
         """Declare a panel; returns its settings (a `Settings` over `schema`, stored in components.json). A panel still
         at a default place of an older version moves to today's default (`panel.retired_reset`)."""
         settings = self.config.section(panel_id, schema)
-        reset = retired_reset(settings)
+        reset = retired_reset(settings) or fit_place(settings)
         if reset:
             self.config.update(panel_id, reset)
         self.panels[panel_id] = settings
@@ -216,19 +228,29 @@ class HudLayer(object):
         self.blocked = frozenset(panel_ids or ())
         self._apply()
 
+    def set_cover(self, reason, on):
+        """A view covers the battle (True) or went (False): the shown panels stay in place, hidden or dimmed as
+        `COVER_EFFECTS` says; only the props that changed are sent."""
+        if reason not in COVER_EFFECTS:
+            return False
+        before = self._cover_props()
+        self.covers = self.covers | {reason} if on else self.covers - {reason}
+        after = self._cover_props()
+        changed = dict((key, value) for key, value in after.items() if before[key] != value)
+        if changed:
+            self._update_shown(changed)
+        return bool(changed)
+
+    def _cover_props(self):
+        return {'visible': not self.gui_hidden, 'dim': self.full_stats}
+
     def set_gui_hidden(self, hidden):
         """Follow the stock battle GUI hidden with V (True) and shown again (False); the panels stay in place."""
-        hidden = bool(hidden)
-        if hidden != self.gui_hidden:
-            self.gui_hidden = hidden
-            self._update_shown({'visible': not hidden})
+        self.set_cover(COVER_GUI, bool(hidden))
 
     def set_full_stats(self, shown):
         """Follow the full stats held open with Tab: the panels stay, marked `dim` for the page (True), or not."""
-        shown = bool(shown)
-        if shown != self.full_stats:
-            self.full_stats = shown
-            self._update_shown({'dim': shown})
+        self.set_cover(COVER_FULL_STATS, bool(shown))
 
     def _update_shown(self, props):
         for alias in sorted(self.shown):

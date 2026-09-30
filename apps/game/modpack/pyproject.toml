@@ -17,8 +17,7 @@ dependencies = [
   "otmetki-feature-session-stats",
   "otmetki-feature-replay-upload",
   "otmetki-feature-damage-log",
-  "otmetki-feature-hit-log",
-  "otmetki-feature-battle-clock",
+  "otmetki-feature-battle-progress",
   "otmetki-feature-team-hp",
   "otmetki-feature-battle-results",
   "otmetki-feature-sixth-sense",
@@ -34,29 +33,25 @@ dependencies = [
   "otmetki-feature-auto-resupply",
   "otmetki-feature-notification-filter",
   "otmetki-feature-hangar-cleaner",
-  "otmetki-feature-marks-history",
-  "otmetki-feature-hangar-ratings",
-  "otmetki-feature-hangar-marks",
-  "otmetki-feature-personal-best",
-  "otmetki-feature-session-goals",
-  "otmetki-feature-main-gun",
-  "otmetki-feature-battle-efficiency",
-  "otmetki-feature-reload-timer",
-  "otmetki-feature-received-hits",
-  "otmetki-feature-death-card",
   "otmetki-feature-battle-loadout",
   "otmetki-feature-personal-missions",
   "otmetki-feature-streamer-mode",
-  "otmetki-feature-platoon-helper",
-  "otmetki-feature-tilt-guard",
-  "otmetki-feature-battle-hits",
   "otmetki-feature-gun-arc",
   "otmetki-feature-bush-circle",
-  "otmetki-feature-arty-meter",
+  "otmetki-feature-aim-info",
   "otmetki-feature-platoon-points",
+  "otmetki-feature-responsive-reticle",
+  "otmetki-feature-battle-hotkeys",
+  "otmetki-feature-battle-menu",
   "otmetki-feature-hud-layouts",
   "otmetki-feature-comp7-helper",
   "otmetki-feature-event-trackers",
+  "otmetki-feature-quick-demount",
+  "otmetki-feature-depot-seller",
+  "otmetki-feature-auto-reserves",
+  "otmetki-feature-crew-xp",
+  "otmetki-feature-hangar-space",
+  "otmetki-feature-update-notice",
 ]
 
 [project.urls]
@@ -91,8 +86,7 @@ otmetki-feature-marks-panel = { workspace = true }
 otmetki-feature-session-stats = { workspace = true }
 otmetki-feature-replay-upload = { workspace = true }
 otmetki-feature-damage-log = { workspace = true }
-otmetki-feature-hit-log = { workspace = true }
-otmetki-feature-battle-clock = { workspace = true }
+otmetki-feature-battle-progress = { workspace = true }
 otmetki-feature-team-hp = { workspace = true }
 otmetki-feature-battle-results = { workspace = true }
 otmetki-feature-sixth-sense = { workspace = true }
@@ -108,29 +102,25 @@ otmetki-feature-chat-filter = { workspace = true }
 otmetki-feature-auto-resupply = { workspace = true }
 otmetki-feature-notification-filter = { workspace = true }
 otmetki-feature-hangar-cleaner = { workspace = true }
-otmetki-feature-marks-history = { workspace = true }
-otmetki-feature-hangar-ratings = { workspace = true }
-otmetki-feature-hangar-marks = { workspace = true }
-otmetki-feature-personal-best = { workspace = true }
-otmetki-feature-session-goals = { workspace = true }
-otmetki-feature-main-gun = { workspace = true }
-otmetki-feature-battle-efficiency = { workspace = true }
-otmetki-feature-reload-timer = { workspace = true }
-otmetki-feature-received-hits = { workspace = true }
-otmetki-feature-death-card = { workspace = true }
 otmetki-feature-battle-loadout = { workspace = true }
 otmetki-feature-personal-missions = { workspace = true }
 otmetki-feature-streamer-mode = { workspace = true }
-otmetki-feature-platoon-helper = { workspace = true }
-otmetki-feature-tilt-guard = { workspace = true }
-otmetki-feature-battle-hits = { workspace = true }
 otmetki-feature-gun-arc = { workspace = true }
 otmetki-feature-bush-circle = { workspace = true }
-otmetki-feature-arty-meter = { workspace = true }
+otmetki-feature-aim-info = { workspace = true }
 otmetki-feature-platoon-points = { workspace = true }
+otmetki-feature-responsive-reticle = { workspace = true }
+otmetki-feature-battle-hotkeys = { workspace = true }
+otmetki-feature-battle-menu = { workspace = true }
 otmetki-feature-hud-layouts = { workspace = true }
 otmetki-feature-comp7-helper = { workspace = true }
 otmetki-feature-event-trackers = { workspace = true }
+otmetki-feature-quick-demount = { workspace = true }
+otmetki-feature-depot-seller = { workspace = true }
+otmetki-feature-auto-reserves = { workspace = true }
+otmetki-feature-crew-xp = { workspace = true }
+otmetki-feature-hangar-space = { workspace = true }
+otmetki-feature-update-notice = { workspace = true }
 
 [tool.pytest.ini_options]
 testpaths = ["packages", "features", "tools"]

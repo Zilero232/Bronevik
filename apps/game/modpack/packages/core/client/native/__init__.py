@@ -4,15 +4,19 @@ an unknown name reads as missing and is never written."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from .account_settings import apply_account_changed, read_account_settings
-from .component import NativeSettingsComponent
+from .component import NativeSettingsComponent, RecommendedSettingsComponent
+from .defaults import ClientDefaults, section_is_new
 from .settings_core import apply_changed, apply_settings, read_settings, settings_core
 
 __all__ = (
+    'ClientDefaults',
     'NativeSettingsComponent',
+    'RecommendedSettingsComponent',
     'apply_account_changed',
     'apply_changed',
     'apply_settings',
     'read_account_settings',
     'read_settings',
+    'section_is_new',
     'settings_core',
 )

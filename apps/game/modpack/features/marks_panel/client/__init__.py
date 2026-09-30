@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from BattleFeedbackCommon import BATTLE_EVENT_TYPE
@@ -13,7 +14,8 @@ from ..model.constants import PREVIEW_SIZE
 from ..model.preview import preview_text, preview_widget
 from ..model.widget import marks_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
-from .constants import KIND_BY_EVENT
+from .card import TankCardPanel
+from .constants import KIND_BY_EVENT, NO_SNAPSHOT
 
 
 PANEL_SPEC = PanelSpec(
@@ -27,6 +29,8 @@ PANEL_SPEC = PanelSpec(
 )
 
 
+# The «Отметки» component: this battle panel, the hangar Tank card (`card`) and the marks history page of the window.
+#
 # Fair play: `onPlayerFeedbackReceived` carries only the player's own events. Avatar.onBattleEvents and
 # battleEventsSummary reach the feedback only while the camera follows the own vehicle (RU 1.45 Avatar.py:1623-1642),
 # as in the vanilla damage log; the summary raises the totals.
@@ -41,12 +45,17 @@ class MarksPanel(BattlePanel):
         self.curve = None
         self.pace = None
         BattlePanel.__init__(self, app, PANEL_SPEC)
+        self.card = TankCardPanel(app, self.settings)
         self.moe.listen(self._on_curve)
+
+    def enabled(self):
+        return BattlePanel.enabled(self) and bool(self.settings.get('show_battle_panel'))
 
     def start(self, player):
         tank_id = player_tank_id(player)
         snapshot = self.moe.snapshot(tank_id)
         if snapshot is None:
+            self.wait(NO_SNAPSHOT % tank_id)
             return
         self.snapshot = snapshot
         self.tank_id = tank_id
@@ -64,6 +73,7 @@ class MarksPanel(BattlePanel):
 
     def settings_changed(self, changed):
         self.render()
+        self.card.options_changed()
 
     def extended_changed(self, held):
         if self.settings.get('alt_detail'):
@@ -109,3 +119,15 @@ class MarksPanel(BattlePanel):
 
         text = format_panel(state, view, self.app.translate)
         self.show(text, marks_widget(state, view, self.app.translate))
+
+    def ui_actions(self):
+        return self.card.history.actions()
+
+    def ui_page(self):
+        return self.card.history.page()
+
+    def ui_action(self, action, row=None, value=None):
+        if not self.card.history.clear(action, row):
+            return None
+        self.card.render()
+        return self.notice_info('marks_panel_history_cleared')

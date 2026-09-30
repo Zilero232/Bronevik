@@ -2,7 +2,7 @@
 
 [project]
 name = "otmetki-feature-battle-sounds"
-version = "0.1.0"
+version = "0.2.0"
 description = "Feature: sounds for own-vehicle events (fire, crits, ammo rack, first blood)."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }

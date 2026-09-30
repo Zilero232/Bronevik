@@ -1,3 +1,3 @@
-import type { TeamHpSideView, TeamHpView } from '../../../lib/team-hp-view';
+import type { TeamHpSideView } from '../../../lib/team-hp-view';
 
-export type TeamBarProps = { view: TeamHpView; side: TeamHpSideView; color: string; height: number; mirrored?: boolean };
+export type TeamBarProps = { side: TeamHpSideView; segmented: boolean; mirrored?: boolean };

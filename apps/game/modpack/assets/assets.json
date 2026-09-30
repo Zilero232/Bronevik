@@ -123,7 +123,7 @@
     },
     {
       "id": "otmetki_goal_sound",
-      "feature": "session_goals",
+      "feature": "session_stats",
       "title": "Goal completion chime",
       "origin": "original",
       "author": "Три отметки",
@@ -134,26 +134,9 @@
       "files": "otmetki/sounds",
       "include": ["otmetki_goal.mp3"],
       "target": "res/audioww",
-      "license_target": "res/gui/maps/icons/otmetki/session_goals/sound/LICENSE.txt",
+      "license_target": "res/gui/maps/icons/otmetki/session_stats/sound/LICENSE.txt",
       "contents": "otmetki_goal.mp3 (a goal from the site met): synthesised by tools/assets/sound.py, MP3 44.1 kHz mono",
       "fair_play": "Played in the hangar when the site reports one of the player's own goals met."
-    },
-    {
-      "id": "otmetki_record_sound",
-      "feature": "personal_best",
-      "title": "New personal best chime",
-      "origin": "original",
-      "author": "Три отметки",
-      "copyright": "Три отметки, dedicated to the public domain",
-      "license": "CC0-1.0",
-      "license_file": "otmetki/sounds/LICENSE.txt",
-      "url": "https://triotmetki.ru",
-      "files": "otmetki/sounds",
-      "include": ["otmetki_record.mp3"],
-      "target": "res/audioww",
-      "license_target": "res/gui/maps/icons/otmetki/personal_best/sound/LICENSE.txt",
-      "contents": "otmetki_record.mp3 (a new personal best on the tank): synthesised by tools/assets/sound.py, MP3 44.1 kHz mono",
-      "fair_play": "Played in the hangar after a battle that beat the player's own record on the tank."
     }
   ]
 }

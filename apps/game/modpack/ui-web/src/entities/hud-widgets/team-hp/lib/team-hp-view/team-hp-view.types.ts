@@ -1,38 +1,42 @@
+import type { CSSProperties } from 'react';
+
+import type { HudTone } from '../../../../../shared/ui/hud';
 import type { TeamHpData, TeamHpVehicle } from '../../model/schemas';
 
 export type TeamHpSegment = { kind: 'segment'; key: string; width: number; fill: number; alive: boolean };
 
 export type TeamHpGap = { kind: 'gap'; key: string };
 
-export type TeamHpStripVehicle = { kind: 'vehicle'; key: string; icon: TeamHpVehicle['icon']; bar: number; alpha: number };
+export type TeamHpStripVehicle = { kind: 'vehicle'; key: string; icon: TeamHpVehicle['icon']; alive: boolean };
 
 export type TeamHpTierLabel = { kind: 'tier'; key: string; label: string };
+
+export type TeamHpPaint = { tone: HudTone | null; text: CSSProperties | undefined; fill: CSSProperties | undefined };
 
 export type TeamHpSideView = {
   hp: string;
   fill: number;
   segments: (TeamHpGap | TeamHpSegment)[];
   strip: (TeamHpStripVehicle | TeamHpTierLabel)[];
+  paint: TeamHpPaint;
 };
 
-export type TeamHpNumbers = 'inside' | 'none' | 'outside';
+export type TeamHpScore = { allies: string; enemies: string };
 
 export type TeamHpView = {
-  numbers: TeamHpNumbers;
-  showBars: boolean;
-  showStrip: boolean;
+  numbers: boolean;
+  bars: boolean;
   segmented: boolean;
-  barWidth: number;
-  barHeight: number;
-  score: string | null;
+  strip: boolean;
+  secondRow: boolean;
+  score: TeamHpScore | null;
   diff: string | null;
-  diffAhead: boolean;
+  diffTone: HudTone;
   hasCenter: boolean;
   allies: TeamHpSideView;
   enemies: TeamHpSideView;
-  colors: TeamHpData['colors'];
 };
 
-export type SideViewInput = { side: TeamHpData['allies']; vehicles: TeamHpVehicle[]; width: number; mirrored: boolean };
+export type SideViewInput = { side: TeamHpData['allies']; vehicles: TeamHpVehicle[]; tone: HudTone; color: string | null; mirrored: boolean };
 
-export type SegmentsInput = { vehicles: TeamHpVehicle[]; width: number };
+export type PaintInput = { tone: HudTone; color: string | null };

@@ -7,6 +7,7 @@ from ....core.moe import combined_damage, moe_color, moe_macros, moe_state, rati
 from ....core.templates import render
 from .constants import (
     APPROX,
+    CARD_STEP,
     KINDS,
     LINE_SEPARATOR,
     SOURCE_ESTIMATED,
@@ -16,7 +17,16 @@ from .constants import (
 )
 from .view import PanelView
 
-__all__ = ('BattleTotals', 'PanelView', 'format_panel', 'panel_state', 'percent_source', 'target_levels')
+__all__ = (
+    'BattleTotals',
+    'PanelView',
+    'format_panel',
+    'hangar_state',
+    'macro_values',
+    'panel_state',
+    'percent_source',
+    'target_levels',
+)
 
 
 # The player's own damage and assist of this battle, raised to the client's summary of the server's totals.
@@ -76,6 +86,19 @@ def panel_state(snapshot, combined, curve, pace, settings):
     return state
 
 
+# The Tank card's view of the selected tank between battles: nothing projected, the needs are the next battle's.
+def hangar_state(snapshot, curve, pace):
+    return moe_state(
+        snapshot['moving_avg_damage'],
+        rating_to_percent(snapshot.get('damage_rating')),
+        None,
+        curve,
+        pace,
+        CARD_STEP,
+        snapshot.get('marks_on_gun'),
+    )
+
+
 def _shows_up(state, settings):
     if not settings.get('show_up'):
         return False
@@ -114,32 +137,24 @@ def _extended(state, values, settings, translate):
         extra.append(render(translate('marks_panel_line_battles'), values))
     if extra:
         lines.append(font(TARGET_SEPARATOR.join(extra), COLOR_MUTED, size))
-    if settings.get('detail'):
-        lines.append(font(_detail(state, values, translate), COLOR_MUTED, size))
     return lines
 
 
-def _detail(state, values, translate):
-    items = [values['source']] if values['source'] else []
-    if state['next_level'] in state['target_avg']:
-        items.append(render(translate('marks_panel_line_target_avg'), values))
-    return TARGET_SEPARATOR.join(items)
-
-
-def _values(state, translate):
+def macro_values(state, translate):
     values = moe_macros(state)
     values['title'] = translate('marks_panel_title')
     if state['battles'] is not None:
         values['battles_count'] = counted(state['battles'], 'battles', translate)
     else:
         values['battles_count'] = values['battles']
-    values['source'] = translate('marks_panel_source_%s' % state['source']) if state['source'] else u''
-    values['approx'] = APPROX if state['source'] == SOURCE_ESTIMATED else u''
+    source = state.get('source')
+    values['source'] = translate('marks_panel_source_%s' % source) if source else u''
+    values['approx'] = APPROX if source == SOURCE_ESTIMATED else u''
     return values
 
 
 def format_panel(state, settings, translate):
-    values = _values(state, translate)
+    values = macro_values(state, translate)
     color = moe_color(state, settings.get('color_mode'))
     size = settings.get('font_size')
     style = settings.get('style')

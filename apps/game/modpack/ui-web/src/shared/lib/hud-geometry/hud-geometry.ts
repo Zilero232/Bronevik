@@ -8,6 +8,7 @@ import type {
   LiveRect,
   MoveMessageInput,
   PanelRectInput,
+  PastSlopInput,
   PercentInput,
   Placement,
   Rect,
@@ -71,6 +72,8 @@ export const placementOf = ({ rect, screen }: RectOnScreen): Placement => {
     align_y: alignY
   };
 };
+
+export const pastSlop = ({ from, to, slop }: PastSlopInput): boolean => Math.hypot(to.x - from.x, to.y - from.y) > slop;
 
 export const stageScale = ({ screen, stage }: ScaleInput): number =>
   Math.min(stage.width / Math.max(screen.width, 1), stage.height / Math.max(screen.height, 1));

@@ -1,0 +1,145 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+import unittest
+
+import _support  # noqa: F401
+from otmetki.core.settings import Settings
+from otmetki.features.depot_seller.i18n import STRINGS
+from otmetki.features.depot_seller.model import (
+    REFUSE_NOTHING,
+    REFUSE_UNSET,
+    build_page,
+    confirm_text,
+    plan,
+    signature,
+)
+from otmetki.features.depot_seller.settings import DEFAULTS, SCHEMA, SETTINGS
+
+
+def translate(key, **params):
+    return STRINGS['ru'][key].format(**params)
+
+
+def item(cd, kind='modules', count=1, price=1000, **flags):
+    base = {'cd': cd, 'type_id': 3, 'kind': kind, 'name': 'item %d' % cd, 'count': count, 'price': price}
+    base.update(flags)
+    return base
+
+
+def member(inv_id, skills=0, premium=False):
+    return {'inv_id': inv_id, 'name': 'crew %d' % inv_id, 'role': 'gunner', 'skills': skills, 'premium': premium}
+
+
+def chosen(**values):
+    return Settings(values, SCHEMA).to_dict()
+
+
+class DefaultsTest(unittest.TestCase):
+
+    def test_every_flag_is_off(self):
+        assert not any(DEFAULTS.values())
+
+    def test_nothing_is_on_sale_by_default(self):
+        assert plan([item(1)], [member(1)], chosen()) == (None, REFUSE_UNSET)
+
+    def test_the_component_switch_is_hangar_depot_seller(self):
+        assert SETTINGS == ('hangar_depot_seller',)
+
+    def test_both_languages_have_the_same_strings(self):
+        assert sorted(STRINGS['ru']) == sorted(STRINGS['en'])
+
+
+class PlanTest(unittest.TestCase):
+
+    def test_only_the_switched_on_kinds_go_on_sale(self):
+        sale, refusal = plan([item(1), item(2, kind='shells')], [], chosen(sell_shells=True))
+
+        assert refusal is None
+        assert [entry['cd'] for entry in sale['items']] == [2]
+
+    def test_items_that_fit_an_own_vehicle_stay_unless_widened(self):
+        items = [item(1, fits=True), item(2)]
+
+        assert [entry['cd'] for entry in plan(items, [], chosen(sell_modules=True))[0]['items']] == [2]
+        widened = plan(items, [], chosen(sell_modules=True, include_fitting=True))[0]
+        assert sorted(entry['cd'] for entry in widened['items']) == [1, 2]
+
+    def test_special_items_stay_unless_widened(self):
+        items = [item(1, kind='equipment', special=True)]
+
+        assert plan(items, [], chosen(sell_equipment=True)) == (None, REFUSE_NOTHING)
+        assert plan(items, [], chosen(sell_equipment=True, include_special=True))[0]['items']
+
+    def test_items_the_game_does_not_sell_never_go(self):
+        items = [item(1, for_sale=False)]
+
+        assert plan(items, [], chosen(sell_modules=True, include_fitting=True, include_special=True)) == (
+            None,
+            REFUSE_NOTHING,
+        )
+
+    def test_credits_add_up_every_copy(self):
+        sale = plan([item(1, count=3, price=500), item(2, price=4000)], [], chosen(sell_modules=True))[0]
+
+        assert sale['credits'] == 5500
+        assert [entry['cd'] for entry in sale['items']] == [2, 1]
+
+    def test_crew_with_skills_and_premium_crew_stay(self):
+        crew = [member(1), member(2, skills=2), member(3, premium=True)]
+
+        assert [entry['inv_id'] for entry in plan([], crew, chosen(dismiss_crew=True))[0]['crew']] == [1]
+        widened = plan([], crew, chosen(dismiss_crew=True, crew_with_skills=True))[0]
+        assert [entry['inv_id'] for entry in widened['crew']] == [1, 2]
+
+    def test_broken_rows_are_dropped(self):
+        items = [None, {'kind': 'modules', 'cd': 0, 'count': 1}, item(3, count=0), {'kind': 'tanks', 'cd': 1}]
+
+        assert plan(items, [None, {'inv_id': 'x'}], chosen(sell_modules=True, dismiss_crew=True)) == (
+            None,
+            REFUSE_NOTHING,
+        )
+
+
+class ConfirmationTest(unittest.TestCase):
+
+    def test_the_confirmation_names_the_items_the_crew_and_the_credits(self):
+        values = chosen(sell_modules=True, dismiss_crew=True)
+        sale = plan([item(1, count=2, price=1500)], [member(1), member(2)], values)[0]
+
+        text = confirm_text(sale, translate)
+
+        assert text == u'Продать за 3 000 кредитов: 2× item 1, демобилизовать 2 танкистов?'
+
+    def test_a_long_list_ends_with_how_many_more(self):
+        items = [item(cd, price=1000 + cd) for cd in range(1, 10)]
+        sale = plan(items, [], chosen(sell_modules=True))[0]
+
+        assert confirm_text(sale, translate).endswith(u'и ещё 3?')
+
+    def test_the_signature_changes_with_the_stock(self):
+        values = chosen(sell_modules=True)
+        before = signature(plan([item(1)], [], values)[0])
+
+        assert before == signature(plan([item(1)], [], values)[0])
+        assert before != signature(plan([item(1, count=2)], [], values)[0])
+        assert signature(None) is None
+
+
+class PageTest(unittest.TestCase):
+
+    def test_the_page_lists_items_then_crew(self):
+        values = chosen(sell_modules=True, include_fitting=True, dismiss_crew=True)
+        sale = plan([item(1, fits=True)], [member(7)], values)[0]
+
+        rows = build_page(sale, None, translate)['rows']
+
+        assert [row['id'] for row in rows] == ['item:1', 'crew:7']
+        assert rows[0]['badge'] == u'Подходит к машине'
+
+    def test_an_empty_page_says_why(self):
+        assert build_page(None, REFUSE_UNSET, translate)['empty'].startswith(u'Включите')
+
+
+if __name__ == '__main__':
+    unittest.main()

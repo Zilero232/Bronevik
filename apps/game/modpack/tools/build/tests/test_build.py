@@ -55,7 +55,7 @@ class LayoutTest(unittest.TestCase):
         self.assertEqual(self.by_key['ui'].package_id, 'net.triotmetki.ui')
         self.assertEqual(self.by_key['core'].package_id, 'net.triotmetki.core')
         self.assertEqual(self.by_key['replay_upload'].package_id, 'net.triotmetki.replay_upload')
-        for key in ('damage_log', 'hit_log', 'battle_clock', 'team_hp', 'battle_results', 'sixth_sense'):
+        for key in ('damage_log', 'hangar_info', 'team_hp', 'battle_results', 'sixth_sense'):
             self.assertEqual(self.by_key[key].package_id, 'net.triotmetki.' + key)
 
     def test_the_companion_keeps_its_historic_id(self):

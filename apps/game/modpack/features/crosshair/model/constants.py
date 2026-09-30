@@ -104,3 +104,22 @@ CENTRE_PART = 'centralTag'
 PREVIEW_SIZE = (128, 128)
 # The preview widget: a sketch of the game's own reticle with the chosen centre mark over it (ui-web crosshair).
 KIND = 'crosshair'
+# The settings window's crosshair editor (ui-web component-card editor): its control groups in order, the size of the
+# gallery thumbnails (the 64 px rendition) and the colour each tinted rendition is recoloured to (assets.json).
+EDITOR_GROUPS = (
+    ('shape', ('mark',)),
+    ('colour', ('mark_color',)),
+    ('size', ('mark_size', 'mark_hides_centre')),
+    ('reticle', ('preset', 'modes', 'server_reticle')),
+)
+EDITOR_GALLERY_KEY = 'mark'
+EDITOR_SWATCH_KEY = 'mark_color'
+THUMB_SIZE = 64
+MARK_SWATCHES = {
+    'white': '#f2f2f3',
+    'green': '#7cd35b',
+    'yellow': '#ffd23f',
+    'cyan': '#40c8ff',
+    'magenta': '#ff3df2',
+    'red': '#ff4a3d',
+}

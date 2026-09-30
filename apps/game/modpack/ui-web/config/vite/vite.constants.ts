@@ -6,9 +6,13 @@ export const UI_BUILD = {
   root: UI_WEB_ROOT,
   outDir: path.resolve(UI_WEB_ROOT, '../packages/ui/gameface'),
   hudMode: 'hud',
+  advisorMode: 'advisor',
   pages: {
     settings: path.resolve(UI_WEB_ROOT, 'index.html'),
     hud: path.resolve(UI_WEB_ROOT, 'hud.html')
+  },
+  scripts: {
+    advisor: { entry: path.resolve(UI_WEB_ROOT, 'src/app/preset-advisor/main.ts'), file: 'preset_advisor.js' }
   },
   script: {
     target: 'chrome94'

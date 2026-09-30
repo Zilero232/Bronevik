@@ -46,3 +46,9 @@ PANEL_KEYS = (
 )
 # The optional int keys of a panel's `dock` (core.hud.panel.dock_of).
 DOCK_NUMBERS = ('reserve', 'ceiling')
+
+# A label in the page-ready log line: its alias without the common prefix and its widget kind (or `text`).
+SUMMARY_PREFIXES = ('otmetki.hud.', 'otmetki.')
+SUMMARY_ENTRY = '%s[%s]'
+SUMMARY_TEXT = 'text'
+SUMMARY_HIDDEN = ' hidden'

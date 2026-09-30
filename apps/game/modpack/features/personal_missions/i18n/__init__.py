@@ -4,9 +4,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 STRINGS = {
     'ru': {
         'component_personal_missions': u'Помощник ЛБЗ',
-        'component_personal_missions_hint': u'Личные боевые задачи, которые вы сейчас выполняете, с основным и дополнительным условием: подпись в ангаре, строка в бою для задач класса вашего танка и список всех задач в окне мода. Данные — из экрана задач самой игры.',
-        'personal_missions_show_hangar': u'Подпись в ангаре',
-        'personal_missions_show_battle': u'Строка в бою',
+        'component_personal_missions_hint': u'Личные боевые задачи, которые вы сейчас выполняете, с основным и дополнительным условием: карточка в ангаре и список всех задач в окне мода. В бою условия показывает панель прогресса задач самой игры. Данные — из экрана задач игры.',
+        'personal_missions_show_hangar': u'Карточка в ангаре',
         'personal_missions_show_conditions': u'Условия задач',
         'personal_missions_max_missions': u'Сколько задач показывать',
         'pm_title': u'ЛБЗ: в работе {active}, выполнено {done}, с отличием {honors}',
@@ -27,9 +26,8 @@ STRINGS = {
     },
     'en': {
         'component_personal_missions': u'Personal missions helper',
-        'component_personal_missions_hint': u'The personal missions you are working on, with their main and «with honours» conditions: a hangar label, a battle line for the missions of your tank\'s class and a list of every mission in the mod window. The data comes from the game\'s own missions screen.',
-        'personal_missions_show_hangar': u'Hangar label',
-        'personal_missions_show_battle': u'Battle line',
+        'component_personal_missions_hint': u'The personal missions you are working on, with their main and «with honours» conditions: a hangar card and a list of every mission in the mod window. In battle the game\'s own quest progress panel shows the conditions. The data comes from the game\'s missions screen.',
+        'personal_missions_show_hangar': u'Hangar card',
         'personal_missions_show_conditions': u'Mission conditions',
         'personal_missions_max_missions': u'Missions to show',
         'pm_title': u'Personal missions: {active} in progress, {done} done, {honors} with honours',

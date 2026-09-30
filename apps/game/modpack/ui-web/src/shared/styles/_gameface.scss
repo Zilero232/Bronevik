@@ -14,9 +14,28 @@ $font-family: warhelios, 'Arial Narrow', arial, sans-serif;
 
 @mixin hud-text {
   font-family: $font-family;
-  text-shadow:
-    0 0 2px rgb(0 0 0 / 90%),
-    1px 1px 1px rgb(0 0 0 / 90%);
+  text-shadow: token(hud-text-shadow);
+}
+
+// One of the HUD type steps (caption, body, value, key, hero): size, line height and weight.
+@mixin hud-type($step) {
+  @include tokens.hud-type($step);
+}
+
+// A plate's padding: solid battle plates 4/8, hangar cards 8/12 (10 at the bottom), edge-fade plates 4/24/4/8 with
+// the fade side taking the 24.
+@mixin hud-plate-padding($kind: solid) {
+  @if $kind == card {
+    padding: 8px 12px 10px;
+  } @else if $kind == edge {
+    padding: 4px 24px 4px 8px;
+  } @else if $kind == edge-end {
+    padding: 4px 8px 4px 24px;
+  } @else if $kind == centre {
+    padding: 4px 24px;
+  } @else {
+    padding: 4px 8px;
+  }
 }
 
 @mixin hud-stack {

@@ -224,7 +224,7 @@
     },
     "tankRecords": {
       "type": ["object", "null"],
-      "description": "Optional: the tank's career records in random battles (the dossier max15x15 block the site already stores): the highest damage, assistance (radio + tracking), frags and base XP of one battle. null until the server fills it. Read by the personal_best component; the mod keeps the larger of these, the hangar dossier and its own battle results.",
+      "description": "Optional: the tank's career records in random battles (the dossier max15x15 block the site already stores): the highest damage, assistance (radio + tracking), frags and base XP of one battle. null until the server fills it. Read by the battle_progress component (its record row); the mod keeps the larger of these, the hangar dossier and its own battle results.",
       "required": ["max_damage", "max_assist", "max_frags", "max_xp"],
       "properties": {
         "max_damage": {
@@ -247,7 +247,7 @@
     },
     "tankExpected": {
       "type": ["object", "null"],
-      "description": "Optional: the WN8 expected values of the tank the site uses (per battle: damage, spotted, frags, defence points, win rate in percent). null until the server fills it. Read by the battle_efficiency component for its live WN8 estimate.",
+      "description": "Optional: the WN8 expected values of the tank the site uses (per battle: damage, spotted, frags, defence points, win rate in percent). null until the server fills it. Read by the battle_progress component for its live WN8 estimate.",
       "required": ["damage", "spot", "frag", "def", "win_rate"],
       "properties": {
         "damage": {

@@ -12,4 +12,4 @@ def preview_text(settings, translate):
 
 def preview_widget(settings, translate):
     state = arc_state(PREVIEW_YAW, PREVIEW_LIMITS)
-    return panel_widget(state, settings, translate)
+    return panel_widget(state, settings)

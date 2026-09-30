@@ -3,7 +3,7 @@
 [project]
 name = "otmetki-feature-hangar-info"
 version = "0.4.0"
-description = "Feature: hangar clock, date, server, ping and online."
+description = "Feature: hangar clock strip (time, date, server, ping, online) and the battle clock under the stock timer."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }
 authors = [{ name = "Alexandr Artemev" }]

@@ -1,11 +1,11 @@
 {
   "data": {
-    "color": "#F2B25B",
+    "color": null,
     "dim": false,
     "duration": 10,
     "elapsed": 3,
     "icon": "img://gui/maps/icons/otmetki/sixth_sense/icons/lamp_64.png|otmetki:lamp",
-    "size": 64,
+    "size": 56,
     "text": "",
     "timer": true
   },

@@ -35,10 +35,11 @@ MARKS = (
     'kenney_scope',
 )
 
+# preset: the recommended client value (core.client.native.ClientDefaults), the game's own reticle without the grid.
 # x/y are the mark's offset from the reticle centre, not a screen position: the mark follows the reticle,
 # so it is not dragged (a drag would save a screen position).
 DEFAULTS = {
-    'preset': NATIVE,
+    'preset': 'minimal',
     'modes': 'both',
     'server_reticle': NATIVE,
     'mark': 'none',

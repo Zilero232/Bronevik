@@ -1,7 +1,7 @@
 import type { LiveRect } from '../../../../shared/lib/hud-geometry';
 import type { DragMotionInput, DragOutcome, OverlayDrag, PressDragInput } from './drag-motion.types';
 
-import { dragTo, placementOf } from '../../../../shared/lib/hud-geometry';
+import { dragTo, pastSlop, placementOf } from '../../../../shared/lib/hud-geometry';
 import { HUD_OVERLAY } from '../../config';
 
 export const pressDrag = ({ target, press, scale }: PressDragInput): OverlayDrag => ({
@@ -17,12 +17,8 @@ export const pressDrag = ({ target, press, scale }: PressDragInput): OverlayDrag
 export const liveAt = ({ drag, press, screen }: DragMotionInput): LiveRect =>
   dragTo({ drag, pointer: { x: press.clientX, y: press.clientY }, screen, grid: HUD_OVERLAY.grid }) ?? { id: drag.id, rect: drag.rect };
 
-export const beyondSlop = ({ drag, press }: Omit<DragMotionInput, 'screen'>): boolean => {
-  const dx = Math.abs(press.clientX - drag.mouseX);
-  const dy = Math.abs(press.clientY - drag.mouseY);
-
-  return dx > HUD_OVERLAY.clickSlop || dy > HUD_OVERLAY.clickSlop;
-};
+export const beyondSlop = ({ drag, press }: Omit<DragMotionInput, 'screen'>): boolean =>
+  pastSlop({ from: { x: drag.mouseX, y: drag.mouseY }, to: { x: press.clientX, y: press.clientY }, slop: HUD_OVERLAY.clickSlop });
 
 export const dragOutcome = ({ drag, press, screen }: DragMotionInput): DragOutcome => {
   const moved = drag.moved || beyondSlop({ drag, press });

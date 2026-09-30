@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.client.battle import controls_own_vehicle, player
+from ....core.client.battle import call, controls_own_vehicle, crosshair, player
 from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.client.timer import Ticker
 from ....core.log import safe
 from ..i18n import STRINGS
-from ..model import arc_state, format_panel
-from ..model.constants import PREVIEW_SIZE, TICK_S
+from ..model import arc_state, format_panel, reticle_place, view_offset
+from ..model.constants import PLACEMENT_RETICLE, PREVIEW_SIZE, TICK_S
 from ..model.preview import preview_text, preview_widget
 from ..model.widget import panel_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
@@ -42,20 +42,20 @@ class GunArcPanel(BattlePanel):
 
     def __init__(self, app):
         self.limits = None
-        self.text = None
+        self.shown = None
         self.ticker = Ticker(TICK_S, self._on_tick)
         BattlePanel.__init__(self, app, PANEL_SPEC)
 
     def start(self, battle_player):
         self.limits = yaw_limits(battle_player)
-        self.text = None
+        self.shown = None
         if self.limits:
             self.ticker.start()
 
     def stop(self):
         self.ticker.stop()
         self.limits = None
-        self.text = None
+        self.shown = None
 
     def _on_tick(self):
         if not self.limits:
@@ -69,11 +69,25 @@ class GunArcPanel(BattlePanel):
         if controls_own_vehicle():
             state = arc_state(turret_yaw(), self.limits)
         text = format_panel(state, self.settings, self.app.translate)
-        if text == self.text:
-            return
+        shown = (text, panel_widget(state, self.settings))
+        if shown != self.shown:
+            self.shown = shown
+            if text:
+                self.show(*shown)
+            else:
+                self.hide()
+        self._follow_reticle()
 
-        self.text = text
-        if text:
-            self.show(text, panel_widget(state, self.settings, self.app.translate))
-        else:
-            self.hide()
+    # The camera mode decides where the reticle is (the arcade reticle sits above the centre, the sniper one in it, the
+    # SPG's top view moves it with the mouse): the scale keeps its offset under the reticle of the mode on screen.
+    def _follow_reticle(self):
+        if self.settings.get('placement') != PLACEMENT_RETICLE:
+            return
+        ctrl = crosshair()
+        offset = view_offset(call(ctrl, 'getViewID'), self.settings)
+        if ctrl is None or offset is None:
+            return
+        position = call(ctrl, 'getScaledPosition', (0, 0))
+        size = call(ctrl, 'getSize', (0, 0))
+        x, y = reticle_place(position, size, call(ctrl, 'getScaleFactor', 1.0), offset)
+        self.hud.place(PANEL_ID, x, y)

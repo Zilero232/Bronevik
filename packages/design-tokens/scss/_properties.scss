@@ -2,6 +2,7 @@
 @use 'sass:meta';
 @use 'sass:string';
 @use './colors';
+@use './hud';
 @use './motion';
 @use './palette';
 @use './ratings';
@@ -28,7 +29,8 @@ $root: merge-maps(
   palette.$shades,
   palette.$game,
   palette.$aliases,
-  textures.$root
+  textures.$root,
+  hud.$root
 );
 $themes: (
   dark: merge-maps(colors.$dark, surfaces.$dark, map.get(ratings.$default, dark), textures.$dark, colors.$charts),

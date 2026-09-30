@@ -1,5 +1,6 @@
 export {
   $components,
+  $editor,
   $hits,
   $invalid,
   $query,
@@ -7,6 +8,8 @@ export {
   $summaries,
   $undo,
   $view,
+  closeEditor,
+  openEditor,
   openSection,
   receiveState,
   setContextFilter,

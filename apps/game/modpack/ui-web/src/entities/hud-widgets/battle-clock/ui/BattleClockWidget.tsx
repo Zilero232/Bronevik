@@ -6,12 +6,10 @@ import s from './BattleClockWidget.module.scss';
 
 export const BattleClockWidget = ({ data }: BattleClockWidgetProps) => (
   <div className={s.clock}>
-    {data.big_timer && data.timer && <span className={s.timer}>{data.timer}</span>}
+    {data.timer && <span className={s.timer}>{data.timer}</span>}
     <div className={s.row}>
-      <ClientIcon icon={data.icon} size={14} />
+      <ClientIcon icon={data.icon} size={16} tone='muted' />
       <span className={s.time}>{data.time}</span>
-      {data.date && <span className={s.muted}>{data.date}</span>}
-      {!data.big_timer && data.timer && <span className={s.small}>{data.timer}</span>}
     </div>
   </div>
 );

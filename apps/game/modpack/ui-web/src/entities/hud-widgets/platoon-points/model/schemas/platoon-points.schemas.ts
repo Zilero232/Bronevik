@@ -9,6 +9,7 @@ const row = z.object({
   damage: z.nullable(z.number()),
   assist: z.nullable(z.number()),
   frags: z.number(),
+  frags_text: z.string(),
   hp: z.number(),
   max: z.number(),
   alive: z.boolean(),
@@ -16,8 +17,9 @@ const row = z.object({
 });
 
 export const platoonPointsSchema = z.object({
+  title: z.string(),
   rows: z.array(row),
   total: z.number(),
   rules: z.object({ damage: z.number(), assist: z.number(), frag: z.number(), alive: z.number() }),
-  icon: hudIconSchema
+  extended: z.boolean()
 });

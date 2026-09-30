@@ -1,36 +1,11 @@
 .plate {
-  align-items: center;
-  padding: 4px 8px;
+  padding-top: 2px;
+  padding-bottom: 2px;
 }
 
 .row {
   display: flex;
   flex-direction: row;
-  align-items: center;
-  justify-content: center;
-}
-
-.strips {
-  display: flex;
-  flex-direction: row;
   align-items: flex-start;
   justify-content: center;
-}
-
-.hp {
-  flex-shrink: 0;
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1;
-  white-space: nowrap;
-}
-
-.left {
-  margin-right: 8px;
-  text-align: right;
-}
-
-.right {
-  margin-left: 8px;
-  text-align: left;
 }

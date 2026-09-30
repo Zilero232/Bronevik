@@ -11,6 +11,7 @@ import {
   changeSetting,
   componentIcon,
   isEnabled,
+  openEditor,
   resetComponent,
   toggleExpanded,
   toggleSwitch
@@ -37,7 +38,15 @@ export const useComponentCard = ({ component, fields, forceOpen = false }: UseCo
     switchLabelKey,
     preview: panelPreview({ component, panels: state?.hud.panels ?? [] }),
     toggle: () => toggleSwitch(component),
+    hasEditor: Boolean(component.editor),
+    openEditor: () => openEditor(component.id),
     toggleOpen: () => {
+      if (component.editor) {
+        openEditor(component.id);
+
+        return;
+      }
+
       if (layout.expandable && !forceOpen) {
         toggleExpanded(component.id);
       }

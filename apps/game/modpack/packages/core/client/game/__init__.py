@@ -6,6 +6,7 @@ import importlib  # novermin
 from ...compat import is_int, string_types
 from ...hooks import subscribe
 from ...log import log_exception
+from ...vendor import six
 
 
 def client_version():
@@ -20,6 +21,16 @@ def client_language():
     try:
         from helpers import getClientLanguage
         return getClientLanguage()
+    except Exception:
+        return None
+
+
+def preferences_path():
+    """The client's preferences.xml as text, or None. RU 1.45 source: BigWorld.getPreferencesFilePath() is UTF-8
+    (helpers.local_cache decodes it with unicode_from_utf8)."""
+    try:
+        import BigWorld
+        return six.ensure_text(BigWorld.getPreferencesFilePath(), 'utf-8') or None
     except Exception:
         return None
 

@@ -1,6 +1,6 @@
 {
   "data": {
-    "icon": "otmetki:points",
+    "extended": true,
     "rows": [
       {
         "alive": true,
@@ -8,6 +8,7 @@
         "cls": "img://gui/maps/icons/vehicleTypes/green/heavyTank.png|otmetki:class_heavy",
         "damage": 2450,
         "frags": 2,
+        "frags_text": "фр. 2",
         "hp": 1340,
         "max": 2000,
         "name": "Вы",
@@ -20,6 +21,7 @@
         "cls": "img://gui/maps/icons/vehicleTypes/green/mediumTank.png|otmetki:class_medium",
         "damage": null,
         "frags": 1,
+        "frags_text": "фр. 1",
         "hp": 0,
         "max": 1600,
         "name": "Союзник",
@@ -33,6 +35,7 @@
       "damage": 100,
       "frag": 2
     },
+    "title": "Очки взвода",
     "total": 34
   },
   "kind": "platoon_points",

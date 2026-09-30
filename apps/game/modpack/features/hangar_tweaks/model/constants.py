@@ -25,6 +25,12 @@ ACTION_KEYS = (
 INTERFACE_SCALE = 'interfaceScale'
 INTERFACE_SCALES = {'auto': 0.0, 'x1': 1.0, 'x1_25': 1.25, 'x1_5': 1.5, 'x1_75': 1.75, 'x2': 2.0}
 SCALE_TOLERANCE = 1e-3
+# The exact scale in percent (settings `interface_scale_exact`, 0 = off): applied at run time through the setting's own
+# InterfaceScaleSetting.setSystemValue(scale) (the stage and the glyph cache) and
+# InterfaceScaleManager.changeScale(scale) (onScaleChanged, BigWorld), never saved into the player's preferences, so
+# the game's own scale comes back when it is switched off or the mod is removed.
+EXACT_SCALE_RANGE = (50, 300)
+PERCENT = 100.0
 
 REFUSE_LOCKED = 'locked'
 REFUSE_NOTHING = 'nothing'

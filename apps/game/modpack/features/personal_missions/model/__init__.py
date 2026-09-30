@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.compat import is_int, string_types, to_text
+from ....core.compat import string_types, to_text
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, COLOR_UP, font, single_spaces, strip_tags
 from .constants import MARK_OF, MAX_MISSIONS, MAX_TEXT, STATES, TITLE_SIZE_STEP
 
 # Fair play: the player's own personal missions as the client's missions screen holds them (names, conditions, the
-# own progress state). Nothing about other players; in battle only the snapshot taken in the hangar is shown.
+# own progress state). Nothing about other players.
 
 
 def clean_text(value):
@@ -21,37 +21,13 @@ def clean_mission(item):
     name = clean_text(item.get('name'))
     if not name:
         return None
-    classes = [to_text(tag) for tag in (item.get('classes') or []) if isinstance(tag, string_types)]
     return {
         'id': item.get('id'),
         'name': name,
         'main': clean_text(item.get('main')),
         'extra': clean_text(item.get('extra')),
         'state': item['state'],
-        'classes': classes,
-        'levels': clean_levels(item.get('levels')),
     }
-
-
-def clean_levels(value):
-    if not isinstance(value, (list, tuple)) or len(value) != 2:
-        return None
-    if not all(is_int(level) and level > 0 for level in value):
-        return None
-    return [min(value), max(value)]
-
-
-def fits_level(mission, vehicle_level):
-    levels = mission.get('levels')
-    if vehicle_level is None or levels is None:
-        return True
-    return levels[0] <= vehicle_level <= levels[1]
-
-
-def fits_class(mission, vehicle_class):
-    if vehicle_class is None or not mission['classes']:
-        return True
-    return vehicle_class in mission['classes']
 
 
 def by_state(missions):
@@ -67,17 +43,12 @@ def clean_missions(items):
     return missions[:MAX_MISSIONS], counts(missions)
 
 
-def in_progress(missions, vehicle_class=None, vehicle_level=None):
-    return [
-        mission for mission in missions
-        if mission['state'] == 'in_progress'
-        and fits_class(mission, vehicle_class)
-        and fits_level(mission, vehicle_level)
-    ]
+def in_progress(missions):
+    return [mission for mission in missions if mission['state'] == 'in_progress']
 
 
-def shown_missions(missions, settings, vehicle_class=None, vehicle_level=None):
-    return in_progress(missions, vehicle_class, vehicle_level)[:settings.get('max_missions')]
+def shown_missions(missions, settings):
+    return in_progress(missions)[:settings.get('max_missions')]
 
 
 def counts(missions):
@@ -112,18 +83,6 @@ def format_hangar(missions, settings, translate, totals=None):
         lines.extend(mission_lines(mission, settings, translate, size))
     if not shown:
         lines.append(font(translate('pm_none_active'), COLOR_UP, size))
-    return u'\n'.join(lines)
-
-
-def format_battle(missions, vehicle_class, settings, translate, vehicle_level=None):
-    shown = shown_missions(missions, settings, vehicle_class, vehicle_level)
-    if not shown:
-        return None
-    size = settings.get('font_size')
-
-    lines = []
-    for mission in shown:
-        lines.extend(mission_lines(mission, settings, translate, size))
     return u'\n'.join(lines)
 
 

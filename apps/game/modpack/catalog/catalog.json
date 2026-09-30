@@ -22,7 +22,7 @@
         "en": "XVM"
       },
       "patterns": ["com.modxvm.*", "*xvm*"],
-      "components": ["damage_log", "hit_log", "received_hits", "sixth_sense", "minimap"],
+      "components": ["damage_log", "sixth_sense", "minimap"],
       "note": {
         "ru": "Свой лог урона, лог попаданий, лампа и мини-карта: при включённых наших панелях выйдут две одинаковые.",
         "en": "Its own damage log, hit log, lamp and minimap: with our panels on you get two of each."
@@ -48,7 +48,7 @@
         "en": "Battle Observer"
       },
       "patterns": ["*battleobserver*", "*battle_observer*", "armagomen.*"],
-      "components": ["team_hp", "damage_log", "main_gun", "battle_clock", "sixth_sense", "battle_efficiency", "session_stats"],
+      "components": ["team_hp", "damage_log", "battle_progress", "hangar_info", "sixth_sense", "session_stats"],
       "note": {
         "ru": "ХП команд, лог урона, «Основной калибр», часы и сессия: две версии одних панелей, известны падения клиента.",
         "en": "Team HP, damage log, High Caliber, clock and session: two copies of the same panels; client crashes are known."
@@ -61,7 +61,7 @@
         "en": "Marks calculator"
       },
       "patterns": ["*marksongun*", "*marks_on_gun*", "*marksonguns*", "*gunmarks*", "*markofexcellence*"],
-      "components": ["marks_panel", "hangar_marks"],
+      "components": ["marks_panel"],
       "note": {
         "ru": "Второй калькулятор отметок: две панели с процентом в бою и в ангаре.",
         "en": "A second marks calculator: two MoE panels in battle and in the hangar."
@@ -87,7 +87,7 @@
         "en": "Damage log"
       },
       "patterns": ["*damagelog*", "*damage_log*", "*hitlog*", "*hit_log*"],
-      "components": ["damage_log", "hit_log", "received_hits"],
+      "components": ["damage_log"],
       "note": {
         "ru": "Второй лог урона или попаданий.",
         "en": "A second damage or hit log."
@@ -294,15 +294,15 @@
     {
       "id": "marks_panel",
       "category": "battle",
-      "context": "battle",
+      "context": "any",
       "presets": ["recommended", "minimal", "streamer"],
       "title": {
-        "ru": "Отметка в бою",
-        "en": "MoE panel in battle"
+        "ru": "Отметки",
+        "en": "Marks of Excellence"
       },
       "description": {
-        "ru": "Процент отметки в бою: на начало боя и прогноз после него, урон до 65/85/95 %, на +0,5 % и до следующего целого процента, среднее и боёв до следующей отметки, проверено ли значение по досье; подробности по Alt. Четыре вида и свой шаблон с макросами, цвет по изменению или по отметке, перетаскивается в редакторе HUD.",
-        "en": "Your MoE percent in battle: at the start and projected after it, damage to 65/85/95%, for +0.5% and for the next whole percent, the average and battles to the next mark, whether the value is verified by the dossier; details on Alt. Four styles and your own macro template, colour by change or by mark, movable in the HUD editor."
+        "ru": "Отметка на орудии везде, где она нужна: в бою — процент и прогноз после боя, урон до следующей цели одной строкой, по Alt — пороги 65/85/95 %, среднее и боёв до отметки; в ангаре — карточка танка с тем же процентом, трендом последних боёв, уроном до отметок, включая 100 %, а по Alt — WN8 танка с сайта, опытом за бой на знаки классности и опытом до элиты и следующих танков; в окне мода — история по каждому танку и расчёт отметок.",
+        "en": "Marks of excellence wherever you need them: in battle the percent and its projection with the damage to the next goal in one line, and on Alt the 65/85/95% thresholds, the average and battles to the mark; in the hangar a tank card with the same percent, the trend of the last battles, the damage to each mark, 100% included, and on Alt the tank’s WN8 from the site, the XP per battle for the mastery badges and the XP to elite and to the next tanks; in the mod window the history per tank and the marks report."
       },
       "fairPlay": {
         "ru": "Считается по вашему урону и помощи, как в итогах боя.",
@@ -319,12 +319,12 @@
       "context": "battle",
       "presets": ["recommended", "streamer"],
       "title": {
-        "ru": "Лог урона",
-        "en": "Damage log"
+        "ru": "Журнал боя",
+        "en": "Battle log"
       },
       "description": {
-        "ru": "Нанесённый, заблокированный, ассистированный и полученный урон за бой и последние записи с типом снаряда. Источник полученного урона (пожар, таран, падение, боеукладка) и класс техники противника, цвета по виду урона и отдельная всплывающая строка «Последнее попадание». Заменяет стандартную панель урона (можно оставить стандартную).",
-        "en": "Damage dealt, blocked, assisted and received in the battle and the latest entries with the shell type. The source of received damage (fire, ram, a fall, the ammo rack) and the enemy vehicle class, colours by damage kind and a separate “Last hit” pop-up. Replaces the stock damage log (the stock one can be kept)."
+        "ru": "Итоги боя и два раздела вместо стандартного лога урона: ваши выстрелы с исходом, уроном, снарядом, целью и остатком её прочности плюс помощь; попадания по вам с уроном, снарядом, стрелявшим, пожаром, тараном и боеукладкой плюс попадания, которые выдержала броня. По Alt — пояснения.",
+        "en": "The battle totals and two sections in place of the stock damage log: your shots with the outcome, damage, shell, target and its HP left plus your assist; the hits on you with the damage, shell, shooter, fire, ramming and ammo rack plus the hits your armour stopped. Alt adds the notes."
       },
       "fairPlay": {
         "ru": "Только события, которые игра уже показывает вам.",
@@ -336,25 +336,25 @@
       }
     },
     {
-      "id": "hit_log",
+      "id": "battle_progress",
       "category": "battle",
       "context": "battle",
-      "presets": ["recommended"],
+      "presets": ["streamer"],
       "title": {
-        "ru": "Хит-лог",
-        "en": "Hit log"
+        "ru": "Прогресс боя",
+        "en": "Battle progress"
       },
       "description": {
-        "ru": "Ваши попадания: цель, урон и сколько прочности у неё осталось.",
-        "en": "Your hits: the target, the damage and the hit points it has left."
+        "ru": "Одна плашка со строкой на каждую цель боя: урон до порога «Основного калибра», рекорд танка и WN8 этого боя. Строка видна, пока цель актуальна.",
+        "en": "One plate with a row per battle target: damage to the High Caliber threshold, the tank record and this battle's WN8. A row shows while its target applies."
       },
       "fairPlay": {
-        "ru": "Только ваши попадания по видимым целям.",
-        "en": "Only your own hits on visible targets."
+        "ru": "Только свои данные: свой урон, помощь и фраги из событий клиента, ХП команды противника как в стандартной полосе счёта, свои рекорды из досье, итогов боя и сайта.",
+        "en": "Own data only: own damage, assist and frags from the client's feedback, the enemy team HP as the stock score strip shows it, own records from the dossier, battle results and the site."
       },
       "perf": "low",
       "preview": {
-        "image": "previews/hit_log.png"
+        "image": "previews/battle_progress.png"
       }
     },
     {
@@ -403,128 +403,17 @@
       }
     },
     {
-      "id": "battle_clock",
-      "category": "battle",
-      "context": "any",
-      "presets": ["streamer"],
-      "title": {
-        "ru": "Часы",
-        "en": "Clock"
-      },
-      "description": {
-        "ru": "Текущее время в бою и в ангаре. По выбору заменяет стандартный таймер боя.",
-        "en": "The current time in battle and in the hangar. Optionally replaces the stock battle timer."
-      },
-      "fairPlay": {
-        "ru": "Не читает данные боя.",
-        "en": "Reads no battle data."
-      },
-      "perf": "low",
-      "preview": {
-        "image": "previews/battle_clock.png"
-      }
-    },
-    {
-      "id": "personal_best",
-      "category": "battle",
-      "context": "any",
-      "presets": ["streamer"],
-      "title": {
-        "ru": "Личный рекорд",
-        "en": "Personal best"
-      },
-      "description": {
-        "ru": "Рекорд урона (помощи, фрагов) на танке в бою: «рекорд 6 812, осталось 1 200»; после боя карточка нового рекорда и звук.",
-        "en": "The tank's damage (assist, frags) record in battle: “record 6,812, 1,200 to go”; after the battle a new-record card and a sound."
-      },
-      "fairPlay": {
-        "ru": "Только ваши рекорды: свои итоги боёв, досье своего танка и их копия на сайте.",
-        "en": "Only your own records: your battle results, your tank's dossier and the site's copy of them."
-      },
-      "perf": "low",
-      "preview": {
-        "image": "previews/personal_best.png",
-        "audio": "otmetki/sounds/otmetki_record.mp3"
-      }
-    },
-    {
-      "id": "main_gun",
+      "id": "gun_arc",
       "category": "battle",
       "context": "battle",
       "presets": [],
       "title": {
-        "ru": "Основной калибр",
-        "en": "High Caliber counter"
+        "ru": "Углы наводки",
+        "en": "Gun traverse"
       },
       "description": {
-        "ru": "Сколько вашего урона не хватает до порога медали «Основной калибр», ваша доля урона команды и когда медаль уже недостижима или провалена попаданием в союзника.",
-        "en": "How much of your damage the High Caliber medal threshold still needs, your share of the team damage, and when the medal is out of reach or failed by hitting an ally."
-      },
-      "fairPlay": {
-        "ru": "Ваш урон, ХП противников, которые клиент уже показывает на маркерах и в панели счёта, и его же сообщение о попадании вашего выстрела в союзника.",
-        "en": "Your damage, the enemy HP the client already shows on markers and the score strip, and its own message about your shot hitting an ally."
-      },
-      "perf": "low",
-      "preview": {
-        "image": "previews/main_gun.png"
-      }
-    },
-    {
-      "id": "battle_efficiency",
-      "category": "battle",
-      "context": "battle",
-      "presets": ["streamer"],
-      "title": {
-        "ru": "Эффективность боя",
-        "en": "Battle efficiency"
-      },
-      "description": {
-        "ru": "Оценка WN8 этого боя и ваш урон против своего среднего на этом танке, по данным сайта.",
-        "en": "A WN8 estimate of this battle and your damage against your own average on this tank, from the site's data."
-      },
-      "fairPlay": {
-        "ru": "Ваши события боя и ваши же средние с сайта; ничего о других игроках.",
-        "en": "Your own battle events and your own averages from the site; nothing about other players."
-      },
-      "perf": "low",
-      "preview": {
-        "image": "previews/battle_efficiency.png"
-      }
-    },
-    {
-      "id": "reload_timer",
-      "category": "battle",
-      "context": "battle",
-      "presets": ["recommended", "streamer"],
-      "title": {
-        "ru": "Перезарядка орудия",
-        "en": "Gun reload"
-      },
-      "description": {
-        "ru": "Отсчёт перезарядки своего орудия с полоской и снаряды в кассете.",
-        "en": "Your gun's reload countdown with a bar and the shells in the magazine."
-      },
-      "fairPlay": {
-        "ru": "Только своё орудие; перезарядка противников запрещена правилами и не читается.",
-        "en": "Your own gun only; the reload of enemies is forbidden and never read."
-      },
-      "perf": "medium",
-      "preview": {
-        "image": "previews/reload_timer.png"
-      }
-    },
-    {
-      "id": "gun_arc",
-      "category": "battle",
-      "context": "battle",
-      "presets": ["streamer"],
-      "title": {
-        "ru": "УГН орудия",
-        "en": "Gun traverse limits"
-      },
-      "description": {
-        "ru": "Сколько градусов ваше орудие ещё повернётся влево и вправо до упора: «УГН ◄ 12° ├───●──┤ 8° ►», с подсветкой, когда до упора осталось мало. Появляется только на машинах с ограниченной горизонтальной наводкой — ПТ, САУ и части танков.",
-        "en": "How many degrees your gun can still turn left and right before its limits: “Traverse ◄ 12° ├───●──┤ 8° ►”, highlighted when little is left. Shows only on vehicles with a limited traverse: tank destroyers, SPGs and some tanks."
+        "ru": "Шкала под прицелом для машин с ограниченной горизонтальной наводкой: где орудие между упорами, сколько градусов до каждого и текущий угол орудия от оси корпуса. Сторона у упора жёлтая, в упоре — красная. Шкала держится под прицелом в аркадном, снайперском и артиллерийском режимах, у каждого свой отступ.",
+        "en": "A scale under the reticle for vehicles with limited traverse: where the gun sits between its limits, the degrees to each and the gun's current angle from the hull axis. The side near its limit turns yellow, at the limit red. The scale stays under the reticle in arcade, sniper and artillery view, each with its own offset."
       },
       "fairPlay": {
         "ru": "Только параметры своей машины и положение своей башни; ничего не наводит и не меняет.",
@@ -536,54 +425,10 @@
       }
     },
     {
-      "id": "received_hits",
-      "category": "battle",
-      "context": "battle",
-      "presets": ["streamer"],
-      "title": {
-        "ru": "Попадания по вам",
-        "en": "Hits on you"
-      },
-      "description": {
-        "ru": "Лог попаданий по вашему танку: класс и название стрелявшей машины, снаряд, урон и исход — пробитие, крит, не пробил или рикошет, с итогом за бой.",
-        "en": "A log of the hits on your tank: the class and name of the vehicle that fired, the shell, the damage and the outcome (penetrated, critical, no pen or ricochet), with battle totals."
-      },
-      "fairPlay": {
-        "ru": "Только попадания по вашему танку из событий, которые игра уже показывает в своём логе урона.",
-        "en": "Only the hits on your own tank, from the events the game already shows in its damage log."
-      },
-      "perf": "low",
-      "preview": {
-        "image": "previews/received_hits.png"
-      }
-    },
-    {
-      "id": "death_card",
-      "category": "battle",
-      "context": "battle",
-      "presets": ["recommended"],
-      "title": {
-        "ru": "Карточка уничтожения",
-        "en": "Death card"
-      },
-      "description": {
-        "ru": "После уничтожения вашего танка: кто сделал последний выстрел, снаряд и урон, повреждённые модули и экипаж и сторона корпуса, с которой пришёл выстрел.",
-        "en": "After your tank is destroyed: who fired the last shot, the shell and damage, the damaged modules and crew and the side of the hull the shot came from."
-      },
-      "fairPlay": {
-        "ru": "Только после гибели и только то, что игра уже показала: стрелявший из ленты убийств, сторона как у индикатора попаданий. Ни позиций, ни траекторий.",
-        "en": "Only after your death and only what the game already showed: the shooter from the kill feed, the side as the hit indicator drew it. No positions, no trajectories."
-      },
-      "perf": "low",
-      "preview": {
-        "image": "previews/death_card.png"
-      }
-    },
-    {
       "id": "bush_circle",
       "category": "battle",
       "context": "battle",
-      "presets": ["recommended"],
+      "presets": [],
       "title": {
         "ru": "Круг 15 м",
         "en": "15 m circle"
@@ -602,25 +447,25 @@
       }
     },
     {
-      "id": "arty_meter",
+      "id": "aim_info",
       "category": "battle",
-      "context": "any",
-      "presets": [],
+      "context": "battle",
+      "presets": ["recommended", "streamer"],
       "title": {
-        "ru": "Артометр",
-        "en": "Artillery meter"
+        "ru": "Прицел и снаряды",
+        "en": "Aim and shells"
       },
       "description": {
-        "ru": "Сколько вас обстреляла арта: прямые попадания, накрытия, повреждённые модули, оглушения и урон — в бою «градусником» 0–10 с итогом за день, в ангаре — список последних боёв (карта, танк, сколько раз прилетело).",
-        "en": "How much artillery fire you took: direct hits, splash, damaged modules, stuns and damage — in battle as a 0–10 thermometer with the day total, in the hangar as a list of recent battles (map, tank, how many shells landed)."
+        "ru": "Дистанция у прицела до любой техники под ним, а не только до той, у чьего маркера дистанция скрыта. Подсказка снаряда на панели боеприпасов: урон, пробитие, скорость и урон модулям. По желанию — круг сведения меньше стандартного (40–100 %), ближе к реальному разбросу; по умолчанию выключен.",
+        "en": "The reticle distance to any vehicle under it, not only to the ones whose markers hide the distance. A shell tooltip on the ammo panel: damage, penetration, speed and module damage. If you want, an aim circle smaller than the stock one (40–100 %), closer to the real dispersion; off by default."
       },
       "fairPlay": {
-        "ru": "Только огонь по вашей машине: свой лог полученного урона и эффекты попаданий по своему танку; класс стрелявшего — как в штатном логе. Позиции САУ, трассеры и засвет не читаются (запрещённый «артометр по трассерам» — другое).",
-        "en": "Only fire on your own vehicle: the own received-damage feedback and the hit effects on your own tank; the shooter's class as the stock log shows it. SPG positions, tracers and spotting are never read (the banned tracer-based meter is something else)."
+        "ru": "Дистанцию до цели под прицелом клиент и так показывает на маркерах; подсказки — параметры своих снарядов. Круг сведения только рисуется меньше: наведение, выстрел и разброс не меняются, в реплей пишется настоящий размер.",
+        "en": "The client already shows the distance to the target under the reticle on its markers; the tooltips are your own shells' parameters. The aim circle is only drawn smaller: the aim, the shot and the dispersion stay as they are, and the replay records the real size."
       },
       "perf": "low",
       "preview": {
-        "image": "previews/arty_meter.png"
+        "image": "previews/aim_info.svg"
       }
     },
     {
@@ -643,6 +488,72 @@
       "perf": "low",
       "preview": {
         "image": "previews/platoon_points.png"
+      }
+    },
+    {
+      "id": "responsive_reticle",
+      "category": "battle",
+      "context": "battle",
+      "presets": ["recommended", "streamer"],
+      "title": {
+        "ru": "Отзывчивый прицел",
+        "en": "Responsive reticle"
+      },
+      "description": {
+        "ru": "Маркер орудия двигается за орудием каждый кадр, а не десять раз в секунду: прицел не «плывёт» за мышью. Сведение и цвет пробития по-прежнему считаются раз в серверный тик. Включён по умолчанию: это только плавность отрисовки; выключен сам для арты, в реплеях и у орудий без горизонтальной наводки.",
+        "en": "The gun marker follows the gun every frame instead of ten times a second, so the reticle no longer lags behind the mouse. The dispersion and the penetration colour are still worked out once per server tick. On by default: it only smooths the drawing; it turns itself off for SPGs, in replays and on guns without horizontal traverse."
+      },
+      "fairPlay": {
+        "ru": "Только отрисовка своего маркера по прогнозу своего орудия, который клиент и так считает. Наведение, отправляемое на сервер, выстрел и разброс не меняются; о других машинах ничего не читается.",
+        "en": "Only the drawing of your own marker from the prediction of your own gun the client already makes. The aim sent to the server, the shot and the dispersion stay as they are; nothing about other vehicles is read."
+      },
+      "perf": "medium",
+      "preview": {
+        "image": "previews/responsive_reticle.svg"
+      }
+    },
+    {
+      "id": "battle_hotkeys",
+      "category": "battle",
+      "context": "battle",
+      "presets": [],
+      "title": {
+        "ru": "Клавиши опций в бою",
+        "en": "Option hotkeys in battle"
+      },
+      "description": {
+        "ru": "Горячие клавиши прямо в бою для двух опций самой игры: серверный прицел и увеличенный зум (x16/x25), с короткой подсказкой над прицелом, что включено. Клавиши настраиваются. Выключен по умолчанию: он меняет ваши настройки игры, поэтому включается только вашим решением.",
+        "en": "Hotkeys right in battle for two of the game's own options, the server reticle and the extended zoom (x16/x25), with a short notice over the reticle saying what is on. The keys are yours to pick. Off by default: it changes your game settings, so only you turn it on."
+      },
+      "fairPlay": {
+        "ru": "Только две опции из настроек самой игры, по вашему нажатию; ничего сверх того, что даёт окно настроек игры.",
+        "en": "Only two options of the game's own settings, on your key press; nothing beyond what the game's settings window offers."
+      },
+      "perf": "low",
+      "preview": {
+        "image": "previews/battle_hotkeys.png"
+      }
+    },
+    {
+      "id": "battle_menu",
+      "category": "battle",
+      "context": "battle",
+      "presets": ["recommended", "minimal", "streamer"],
+      "title": {
+        "ru": "Настройки мода из меню Esc",
+        "en": "Mod settings from the Esc menu"
+      },
+      "description": {
+        "ru": "Кнопка «///» под меню Esc в бою открывает окно настроек мода, не выходя из боя; Ctrl+Shift+T делает то же с клавиатуры. Включена по умолчанию: появляется только вместе с меню Esc и больше ничего не меняет.",
+        "en": "The «///» button under the Esc menu in battle opens the mod's settings window without leaving the battle; Ctrl+Shift+T does the same from the keyboard. On by default: it shows up only with the Esc menu and changes nothing else."
+      },
+      "fairPlay": {
+        "ru": "Только кнопка окна настроек; о бою ничего не читает.",
+        "en": "Only a settings window button; it reads nothing about the battle."
+      },
+      "perf": "low",
+      "preview": {
+        "image": "previews/battle_menu.svg"
       }
     },
     {
@@ -737,7 +648,7 @@
       "id": "camera",
       "category": "battle",
       "context": "battle",
-      "presets": ["recommended"],
+      "presets": ["recommended", "streamer"],
       "title": {
         "ru": "Зум и камера",
         "en": "Zoom and camera"
@@ -759,7 +670,7 @@
       "id": "chat_filter",
       "category": "battle",
       "context": "battle",
-      "presets": ["recommended", "streamer"],
+      "presets": [],
       "title": {
         "ru": "Фильтр чата",
         "en": "Chat filter"
@@ -808,12 +719,12 @@
         "en": "Event sounds"
       },
       "description": {
-        "ru": "Свой звук на пожар, криты модулей и боеукладки, контузию экипажа, первую кровь, свой фраг и уничтожение своего танка. Нужен звуковой мод с событиями Wwise.",
-        "en": "Your own sound for fire, module and ammo rack crits, injured crew, first blood, your frag and your tank's destruction. Needs a sound mod with Wwise events."
+        "ru": "Свой звук на пожар, криты модулей и боеукладки, контузию экипажа, первую кровь, свой фраг, уничтожение своего танка и повреждённый вами модуль врага. Нужен звуковой мод с событиями Wwise; без него можно включить «громче стандартные сигналы» — повтор звуков самой игры на пожар и крит.",
+        "en": "Your own sound for fire, module and ammo rack crits, injured crew, first blood, your frag, your tank's destruction and an enemy module you damaged. Needs a sound mod with Wwise events; without one, «louder stock alerts» plays the game's own fire and crit sounds once more."
       },
       "fairPlay": {
-        "ru": "Только события вашего танка и общая лента уничтожений.",
-        "en": "Only your own tank's events and the public kill feed."
+        "ru": "Только события вашего танка, ваши собственные попадания и общая лента уничтожений.",
+        "en": "Only your own tank's events, your own hits and the public kill feed."
       },
       "perf": "low",
       "preview": {
@@ -826,34 +737,35 @@
       "context": "hangar",
       "presets": ["recommended", "streamer"],
       "title": {
-        "ru": "Сессия в ангаре",
-        "en": "Hangar session stats"
+        "ru": "Сессия",
+        "en": "Session"
       },
       "description": {
-        "ru": "Бои, процент побед, средний урон и WN8 за текущую сессию, полоска последних 10 боёв, счётчик боёв, которые ждут итогов, и кнопка «Новая сессия». По желанию отчёт о сессии в свой Telegram или Discord через сайт (выключено по умолчанию).",
-        "en": "Battles, win rate, average damage and WN8 for the current session, a strip of the last 10 battles, a count of battles awaiting results and a «New session» button. Optionally the session report to your own Telegram or Discord through the site (off by default)."
+        "ru": "Бои, процент побед, средний урон и WN8 за сессию, полоска последних 10 боёв, точное изменение отметки по танкам сессии и сколько боёв ждут итогов. После привязки мода — цели из «Моего кабинета» с прогрессом и звуком выполненной цели и строка аккаунта (WN8, процент побед, средний урон). По желанию отчёт о сессии в свой Telegram или Discord через сайт (выключено по умолчанию).",
+        "en": "Battles, win rate, average damage and WN8 for the session, a strip of the last 10 battles, the exact MoE change per tank of the session and how many battles await results. Once the mod is bound, your goals from the site dashboard with progress and a sound when one is met, and the account line (WN8, win rate, average damage). Optionally the session report to your own Telegram or Discord through the site (off by default)."
       },
       "fairPlay": {
-        "ru": "Только ваши итоги боёв.",
-        "en": "Only your own battle results."
+        "ru": "Только ваши бои, ваши цели и рейтинги вашего аккаунта.",
+        "en": "Only your own battles, goals and account ratings."
       },
       "perf": "low",
       "preview": {
-        "image": "previews/session_stats.svg"
+        "image": "previews/session_stats.svg",
+        "audio": "otmetki/sounds/otmetki_goal.mp3"
       }
     },
     {
       "id": "battle_results",
       "category": "hangar",
       "context": "hangar",
-      "presets": ["recommended"],
+      "presets": ["recommended", "streamer"],
       "title": {
-        "ru": "Итоги боя",
-        "en": "Battle summary"
+        "ru": "Итоги боёв",
+        "en": "Battle results"
       },
       "description": {
-        "ru": "Сводка после каждого боя в уведомлениях и список боёв сессии в окне мода: урон, помощь, экономика с ремонтом, выстрелы, отметка.",
-        "en": "A summary after each battle in the notifications and the session battles in the mod window: damage, assist, economy with repair costs, shots, MoE."
+        "ru": "Сводка после каждого боя в уведомлениях с точным изменением отметки и список боёв сессии в окне мода. У боя — «Попадания по мне»: схема танка сверху с местами попаданий и список с исходом, уроном и тем, кто стрелял.",
+        "en": "A summary after each battle in the notifications with the exact MoE change and the session battles in the mod window. Each battle shows «Hits on me»: a top-down schematic with the hit spots and a list with the outcome, the damage and who fired."
       },
       "fairPlay": {
         "ru": "Только ваша часть итогов боя.",
@@ -868,7 +780,7 @@
       "id": "hangar_tweaks",
       "category": "hangar",
       "context": "hangar",
-      "presets": ["recommended", "streamer"],
+      "presets": [],
       "title": {
         "ru": "Удобный ангар",
         "en": "Hangar tweaks"
@@ -890,7 +802,7 @@
       "id": "replay_manager",
       "category": "hangar",
       "context": "hangar",
-      "presets": ["recommended"],
+      "presets": ["recommended", "streamer"],
       "title": {
         "ru": "Менеджер реплеев",
         "en": "Replay manager"
@@ -909,128 +821,17 @@
       }
     },
     {
-      "id": "marks_history",
-      "category": "hangar",
-      "context": "hangar",
-      "presets": ["recommended", "streamer"],
-      "title": {
-        "ru": "История отметок",
-        "en": "Marks history"
-      },
-      "description": {
-        "ru": "Процент отметки после каждого боя по каждому танку, тренд за последние бои и дата получения каждой отметки: панель в ангаре и список в окне мода.",
-        "en": "The MoE percent after each battle per tank, the trend over the last battles and the date each mark was reached: a hangar panel and a list in the mod window."
-      },
-      "fairPlay": {
-        "ru": "Только ваши итоги боёв и досье, хранится у вас на компьютере.",
-        "en": "Only your own battle results and dossier, stored on your computer."
-      },
-      "perf": "low",
-      "preview": {
-        "image": "previews/marks_history.svg"
-      }
-    },
-    {
-      "id": "battle_hits",
-      "category": "hangar",
-      "context": "hangar",
-      "presets": ["recommended"],
-      "title": {
-        "ru": "Боевые раны",
-        "en": "Battle wounds"
-      },
-      "description": {
-        "ru": "Куда попадали по вашему танку: после боя в ангаре — итог последнего боя, а в окне мода — схема сверху (корпус, башня, орудие, ходовая) с точками попаданий и список: сторона, исход, урон, кто стрелял. Хранятся последние бои.",
-        "en": "Where your tank was hit: after the battle the hangar shows the last battle's summary, and the mod window a schematic from above (hull, turret, gun, running gear) with the hit points and a list: side, outcome, damage, who fired. The last battles are kept."
-      },
-      "fairPlay": {
-        "ru": "Только попадания по своему танку и только после боя; где был стрелявший, не записывается.",
-        "en": "Only the hits on your own tank, shown only after the battle; where the shooter was is never recorded."
-      },
-      "perf": "low",
-      "preview": {
-        "image": "previews/battle_hits.svg"
-      }
-    },
-    {
-      "id": "hangar_ratings",
-      "category": "hangar",
-      "context": "hangar",
-      "presets": ["recommended", "streamer"],
-      "title": {
-        "ru": "Мои рейтинги в ангаре",
-        "en": "My ratings in the hangar"
-      },
-      "description": {
-        "ru": "Ваши WN8, ЭФФ, Броня-Индекс, процент побед и средний урон с сайта: по аккаунту, за последнюю сессию и по выбранному танку с отметкой и классностью. Обновляется после каждого боя.",
-        "en": "Your WN8, EFF, Bronya Index, win rate and average damage from the site: for the account, the latest session and the selected tank with its MoE and mastery. Refreshed after every battle."
-      },
-      "fairPlay": {
-        "ru": "Только ваши собственные рейтинги с сайта, после привязки мода; ничего о других игроках.",
-        "en": "Only your own ratings from the site, once the mod is bound; nothing about other players."
-      },
-      "perf": "low",
-      "preview": {
-        "image": "previews/hangar_ratings.svg"
-      }
-    },
-    {
-      "id": "hangar_marks",
-      "category": "hangar",
-      "context": "hangar",
-      "presets": ["recommended", "streamer"],
-      "title": {
-        "ru": "Отметки в ангаре",
-        "en": "Marks in the hangar"
-      },
-      "description": {
-        "ru": "Для выбранного танка: процент отметки, среднее, урон за бой до 65/85/95 % и прогноз, через сколько боёв будет следующая отметка при вашем темпе.",
-        "en": "For the selected tank: the MoE percent, the average, the damage per battle to 65/85/95% and a forecast of how many battles the next mark takes at your pace."
-      },
-      "fairPlay": {
-        "ru": "Только в ангаре и только по вашим данным: досье танка, ваши бои и пороги отметок с сайта.",
-        "en": "Hangar only, from your own data: the tank dossier, your battles and the site's mark thresholds."
-      },
-      "perf": "low",
-      "preview": {
-        "image": "previews/hangar_marks.png"
-      }
-    },
-    {
-      "id": "session_goals",
-      "category": "hangar",
-      "context": "any",
-      "presets": ["recommended", "streamer"],
-      "title": {
-        "ru": "Цели с сайта",
-        "en": "Goals from the site"
-      },
-      "description": {
-        "ru": "Цели из кабинета на сайте: прогресс в ангаре, строка в бою («нужно 3 900 урона») и звук, когда цель выполнена.",
-        "en": "Goals from your site dashboard: progress in the hangar, a battle line (“3,900 damage needed”) and a sound when a goal is met."
-      },
-      "fairPlay": {
-        "ru": "Только ваши цели и ваш прогресс, после привязки мода.",
-        "en": "Only your own goals and progress, once the mod is bound."
-      },
-      "perf": "low",
-      "preview": {
-        "image": "previews/session_goals.png",
-        "audio": "otmetki/sounds/otmetki_goal.mp3"
-      }
-    },
-    {
       "id": "personal_missions",
       "category": "hangar",
-      "context": "any",
-      "presets": ["recommended"],
+      "context": "hangar",
+      "presets": ["recommended", "streamer"],
       "title": {
         "ru": "Помощник ЛБЗ",
         "en": "Personal missions helper"
       },
       "description": {
-        "ru": "Личные боевые задачи в работе с основным условием и условием «с отличием»: подпись в ангаре, строка в бою для задач вашего класса и список всех задач в окне мода.",
-        "en": "The personal missions in progress with their main and “with honours” conditions: a hangar label, a battle line for your class and a list of every mission in the mod window."
+        "ru": "Личные боевые задачи в работе с основным условием и условием «с отличием»: подпись в ангаре и список всех задач в окне мода. В бою условия показывает панель прогресса задач самой игры.",
+        "en": "The personal missions in progress with their main and “with honours” conditions: a hangar label and a list of every mission in the mod window. In battle the game's own quest progress panel shows the conditions."
       },
       "fairPlay": {
         "ru": "Ваши задачи из экрана ЛБЗ самой игры; ничего о других игроках.",
@@ -1042,54 +843,10 @@
       }
     },
     {
-      "id": "platoon_helper",
-      "category": "hangar",
-      "context": "hangar",
-      "presets": ["recommended"],
-      "title": {
-        "ru": "Помощник взвода",
-        "en": "Platoon helper"
-      },
-      "description": {
-        "ru": "Кто во взводе нажал «Готов» — как в окне взвода, и ваши бои за сессию во взводе и в клановых режимах: боёв, процент побед, средний урон.",
-        "en": "Who in the platoon pressed “Ready”, as in the platoon window, and your battles of the session in a platoon and in clan modes: battles, win rate, average damage."
-      },
-      "fairPlay": {
-        "ru": "Только имена и отметки готовности из окна взвода и ваши собственные бои; статистику напарников мод не читает.",
-        "en": "Only the names and ready marks of the platoon window and your own battles; the mod reads no statistics of your mates."
-      },
-      "perf": "low",
-      "preview": {
-        "image": "previews/platoon_helper.svg"
-      }
-    },
-    {
-      "id": "tilt_guard",
-      "category": "hangar",
-      "context": "hangar",
-      "presets": ["recommended"],
-      "title": {
-        "ru": "Антитилт",
-        "en": "Tilt guard"
-      },
-      "description": {
-        "ru": "Мягкое напоминание в ангаре сделать перерыв: после серии поражений, долгой сессии или заметного падения урона. Пороги настраиваются.",
-        "en": "A gentle hangar reminder to take a break: after a losing streak, a long session or a clear drop in your damage. The thresholds are yours to set."
-      },
-      "fairPlay": {
-        "ru": "Только ваши случайные бои этой сессии; ничего не блокирует.",
-        "en": "Only your own random battles of this session; blocks nothing."
-      },
-      "perf": "low",
-      "preview": {
-        "image": "previews/tilt_guard.svg"
-      }
-    },
-    {
       "id": "comp7_helper",
       "category": "hangar",
       "context": "hangar",
-      "presets": ["recommended"],
+      "presets": ["recommended", "streamer"],
       "title": {
         "ru": "Натиск: дивизионы",
         "en": "Onslaught: divisions"
@@ -1130,17 +887,149 @@
       }
     },
     {
-      "id": "hangar_info",
+      "id": "depot_seller",
       "category": "hangar",
       "context": "hangar",
-      "presets": ["recommended", "streamer"],
+      "presets": [],
       "title": {
-        "ru": "Часы и сервер в ангаре",
-        "en": "Hangar clock and server"
+        "ru": "Продажа со склада",
+        "en": "Depot seller"
       },
       "description": {
-        "ru": "Время и дата, ваш сервер, пинг до него и онлайн в углу ангара; для выбранного танка — уровни боёв, опыт экипажа до следующего навыка и ускоренное обучение.",
-        "en": "Time and date, your server, the ping to it and the online count in a corner of the hangar; for the selected tank, its battle tiers, crew XP to the next skill and accelerated training."
+        "ru": "Продаёт со склада снаряды, модули, оборудование и снаряжение, которые не подходят ни к одной вашей машине, и демобилизует танкистов без навыков из резерва. По умолчанию всё выключено: продажа — это необратимая трата, поэтому каждую категорию включаете вы, а перед продажей окно показывает список и сумму в кредитах.",
+        "en": "Sells the shells, modules, equipment and consumables in the depot that fit none of your vehicles and dismisses reserve crew without skills. Everything is off by default: a sale cannot be undone, so you turn each category on yourself, and before the sale the window lists the items and the credits."
+      },
+      "fairPlay": {
+        "ru": "Только ваш склад и казарма, запросы — те же, что у кнопок склада игры; ничего не продаётся без подтверждения.",
+        "en": "Only your own depot and barracks, with the same requests as the game's depot buttons; nothing is sold without a confirmation."
+      },
+      "perf": "low",
+      "preview": {
+        "image": "previews/depot_seller.svg"
+      }
+    },
+    {
+      "id": "auto_reserves",
+      "category": "hangar",
+      "context": "hangar",
+      "presets": [],
+      "title": {
+        "ru": "Автоактивация резервов",
+        "en": "Auto personal reserves"
+      },
+      "description": {
+        "ru": "Сам включает выбранные личные резервы при запуске игры и, если выбрано, когда резерв закончился. По умолчанию выключен: резервы тратятся, поэтому какие включать, выбираете вы.",
+        "en": "Turns the chosen personal reserves on at the game start and, when chosen, whenever one runs out. Off by default: reserves get spent, so you pick which ones."
+      },
+      "fairPlay": {
+        "ru": "Только ваши личные резервы, тем же запросом, что кнопка «Активировать» игры; клановые и событийные не трогает.",
+        "en": "Only your own personal reserves, with the same request as the game's «Activate» button; clan and event reserves are left alone."
+      },
+      "perf": "low",
+      "preview": {
+        "image": "previews/auto_reserves.svg"
+      }
+    },
+    {
+      "id": "crew_xp",
+      "category": "hangar",
+      "context": "hangar",
+      "presets": ["recommended"],
+      "title": {
+        "ru": "Опыт экипажа",
+        "en": "Crew XP"
+      },
+      "description": {
+        "ru": "Сколько опыта и примерно боёв осталось каждому члену экипажа выбранной машины до конца изучаемого навыка: карточка под экипажем и строка в подсказке танкиста. Включён по умолчанию: только показывает.",
+        "en": "The XP and roughly the battles each crew member of the selected vehicle needs to finish the skill in training: a card under the crew and a line in the crew member tooltip. On by default: it only shows."
+      },
+      "fairPlay": {
+        "ru": "Только ваш экипаж и средний опыт вашей машины.",
+        "en": "Only your own crew and your vehicle's average XP."
+      },
+      "perf": "low",
+      "preview": {
+        "image": "previews/crew_xp.svg"
+      }
+    },
+    {
+      "id": "hangar_space",
+      "category": "hangar",
+      "context": "hangar",
+      "presets": [],
+      "title": {
+        "ru": "Выбор ангара",
+        "en": "Hangar switcher"
+      },
+      "description": {
+        "ru": "Ангар из тех, что уже есть в игре, вместо стандартного; событийные ангары и ангары режимов остаются как в игре. По умолчанию выключен: меняет вид ангара, который игра выбирает сама.",
+        "en": "A hangar the game already has instead of the standard one; event and mode hangars stay as in the game. Off by default: it changes the hangar the game picks itself."
+      },
+      "fairPlay": {
+        "ru": "Только вид вашего ангара из файлов игры.",
+        "en": "Only the look of your hangar, from the game's own files."
+      },
+      "perf": "low",
+      "preview": {
+        "image": "previews/hangar_space.svg"
+      }
+    },
+    {
+      "id": "update_notice",
+      "category": "hangar",
+      "context": "hangar",
+      "presets": ["recommended"],
+      "title": {
+        "ru": "Новая версия мода",
+        "en": "New mod version"
+      },
+      "description": {
+        "ru": "Карточка в ангаре и одно уведомление, когда для вашего клиента вышла новая версия «Трёх отметок», с кнопкой «Пропустить эту версию». Включён по умолчанию: раз за запуск спрашивает публичный список релизов, передавая только версию игры.",
+        "en": "A hangar card and one notification when a new Three Marks version for your client is out, with «Skip this version». On by default: once per game start it asks the public release list, sending only the game version."
+      },
+      "fairPlay": {
+        "ru": "Ничего не читает из боя и не отправляет о вас: только версия игры в запросе.",
+        "en": "Reads nothing from battle and sends nothing about you: only the game version in the request."
+      },
+      "perf": "low",
+      "preview": {
+        "image": "previews/update_notice.svg"
+      }
+    },
+    {
+      "id": "quick_demount",
+      "category": "hangar",
+      "context": "hangar",
+      "presets": [],
+      "title": {
+        "ru": "Быстрый демонтаж",
+        "en": "Quick demount"
+      },
+      "description": {
+        "ru": "Пункт «Быстрый демонтаж» в меню оборудования при настройке танка: ваши танки, на которых стоит это оборудование, от высшего уровня к низшему. Выбор снимает его с танка во всех комплектах, без переключения комплекта; платный демонтаж игра подтверждает в своём окне.",
+        "en": "A “Quick demount” entry in the equipment menu of the tank setup: your tanks that carry this device, highest tier first. Picking one takes it off that tank in every setup, with no setup switch; a paid demount is confirmed in the game's own dialog."
+      },
+      "fairPlay": {
+        "ru": "Только ваш гараж и только по вашему выбору: мод вызывает то же действие демонтажа, что и игра.",
+        "en": "Your own garage only, on your pick: the mod runs the game's own demount action."
+      },
+      "perf": "low",
+      "preview": {
+        "image": "previews/quick_demount.svg"
+      }
+    },
+    {
+      "id": "hangar_info",
+      "category": "hangar",
+      "context": "any",
+      "presets": ["recommended", "streamer"],
+      "title": {
+        "ru": "Часы и сервер",
+        "en": "Clock and server"
+      },
+      "description": {
+        "ru": "В ангаре — полоса над каруселью: время, дата, сервер, пинг по качеству связи и онлайн. В бою — часы под стандартным таймером; по желанию заменяют таймер боя.",
+        "en": "In the hangar a strip above the carousel: time, date, server, ping coloured by quality and online. In battle a clock under the stock timer that can replace the battle timer."
       },
       "fairPlay": {
         "ru": "Работает только в ангаре и читает только ваше подключение.",
@@ -1155,7 +1044,7 @@
       "id": "auto_resupply",
       "category": "hangar",
       "context": "hangar",
-      "presets": ["recommended"],
+      "presets": [],
       "title": {
         "ru": "Автопополнение",
         "en": "Auto resupply"
@@ -1177,7 +1066,7 @@
       "id": "notification_filter",
       "category": "hangar",
       "context": "hangar",
-      "presets": ["recommended", "streamer"],
+      "presets": [],
       "title": {
         "ru": "Фильтр уведомлений",
         "en": "Notification filter"
@@ -1199,7 +1088,7 @@
       "id": "hangar_cleaner",
       "category": "hangar",
       "context": "hangar",
-      "presets": ["recommended", "minimal", "streamer"],
+      "presets": ["minimal"],
       "title": {
         "ru": "Чистый ангар",
         "en": "Clean hangar"
@@ -1239,6 +1128,71 @@
       }
     },
     {
+      "id": "config_backup",
+      "category": "hangar",
+      "context": "any",
+      "presets": ["recommended", "streamer"],
+      "title": {
+        "ru": "Резервная копия настроек",
+        "en": "Settings backup"
+      },
+      "description": {
+        "ru": "Копия всех настроек мода рядом с preferences.xml игры, обновляется при каждом сохранении. Если установщик модпака стёр mods/configs, при запуске удалённые файлы вернутся сами.",
+        "en": "A copy of every mod setting next to the game's preferences.xml, refreshed on every save. When a modpack installer wiped mods/configs, the deleted files come back on the next start."
+      },
+      "fairPlay": {
+        "ru": "Работает только с файлами настроек мода, ничего не читает из боя и ничего не отправляет.",
+        "en": "Touches only the mod's own settings files; reads nothing from battles and sends nothing."
+      },
+      "perf": "low",
+      "preview": {
+        "image": "previews/config_backup.svg"
+      }
+    },
+    {
+      "id": "preset_advisor",
+      "category": "hangar",
+      "context": "hangar",
+      "presets": ["recommended", "streamer"],
+      "title": {
+        "ru": "Подсказка сборки в «Снаряжении»",
+        "en": "Build hints in the loadout setup"
+      },
+      "description": {
+        "ru": "В окне снаряжения танка подсвечивает оборудование и инструкции, которые чаще всего ставят лучшие игроки на этом танке, по сборкам triotmetki.ru. Ничего не ставит и не покупает сам.",
+        "en": "Marks, in the tank's loadout window, the equipment and directives the best players fit on this tank, from the triotmetki.ru builds. It never fits or buys anything itself."
+      },
+      "fairPlay": {
+        "ru": "Только ангар и только ваш танк: сайту уходит лишь номер выбранного танка.",
+        "en": "Hangar only and only your own tank: the site receives just the id of the selected tank."
+      },
+      "perf": "low",
+      "preview": {
+        "image": "previews/preset_advisor.svg"
+      }
+    },
+    {
+      "id": "free_camera",
+      "category": "hangar",
+      "context": "any",
+      "title": {
+        "ru": "Свободная камера",
+        "en": "Free camera"
+      },
+      "description": {
+        "ru": "Игровая видеокамера по клавише в реплеях и в ангаре: полёт на WASD, Q/E и мыши, интерфейс прячется. Выключено по умолчанию: это камера сверх обычных настроек игры.",
+        "en": "The game's own video camera on a key in replays and in the hangar: fly with WASD, Q/E and the mouse, the interface hides. Off by default: it is a camera beyond the game's usual settings."
+      },
+      "fairPlay": {
+        "ru": "Никогда не включается в живом бою: только реплеи и ангар.",
+        "en": "Never works in a live battle: replays and the hangar only."
+      },
+      "perf": "low",
+      "preview": {
+        "image": "previews/free_camera.svg"
+      }
+    },
+    {
       "id": "openwg_gameface",
       "kind": "dependency",
       "packageId": "net.openwg.gameface",
@@ -1268,34 +1222,24 @@
         "ui",
         "marks_panel",
         "damage_log",
-        "hit_log",
+        "battle_progress",
         "team_hp",
         "sixth_sense",
-        "battle_clock",
-        "personal_best",
-        "main_gun",
-        "battle_efficiency",
-        "reload_timer",
         "gun_arc",
-        "received_hits",
-        "death_card",
-        "arty_meter",
         "platoon_points",
+        "battle_hotkeys",
         "hud_layouts",
         "battle_loadout",
         "crosshair",
         "streamer_mode",
         "session_stats",
-        "marks_history",
-        "battle_hits",
-        "hangar_ratings",
-        "hangar_marks",
-        "session_goals",
         "personal_missions",
-        "platoon_helper",
         "comp7_helper",
         "event_trackers",
-        "hangar_info"
+        "crew_xp",
+        "update_notice",
+        "hangar_info",
+        "free_camera"
       ],
       "optional": false,
       "restartRequired": true
@@ -1329,34 +1273,24 @@
       "requiredBy": [
         "marks_panel",
         "damage_log",
-        "hit_log",
+        "battle_progress",
         "team_hp",
         "sixth_sense",
-        "battle_clock",
-        "personal_best",
-        "main_gun",
-        "battle_efficiency",
-        "reload_timer",
         "gun_arc",
-        "received_hits",
-        "death_card",
-        "arty_meter",
         "platoon_points",
+        "battle_hotkeys",
         "hud_layouts",
         "battle_loadout",
         "crosshair",
         "streamer_mode",
         "session_stats",
-        "marks_history",
-        "battle_hits",
-        "hangar_ratings",
-        "hangar_marks",
-        "session_goals",
         "personal_missions",
-        "platoon_helper",
         "comp7_helper",
         "event_trackers",
-        "hangar_info"
+        "crew_xp",
+        "update_notice",
+        "hangar_info",
+        "free_camera"
       ],
       "optional": false,
       "restartRequired": false

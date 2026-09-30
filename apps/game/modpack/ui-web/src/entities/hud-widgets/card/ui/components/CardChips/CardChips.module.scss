@@ -5,12 +5,11 @@
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
-  margin-bottom: 1px;
 }
 
 .chip {
   display: flex;
-  height: 22px;
+  height: 20px;
   flex-direction: row;
   align-items: center;
   margin-right: 12px;
@@ -22,12 +21,13 @@
 
 .label {
   margin-right: 4px;
-  color: token(color-text-muted);
-  font-size: 11px;
+  color: token(hud-muted);
+
+  @include hud-type(caption);
 }
 
 .value {
-  font-size: 16px;
-  font-weight: 700;
   white-space: nowrap;
+
+  @include hud-type(value);
 }

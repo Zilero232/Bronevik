@@ -12,6 +12,7 @@ CLIENT_PREFIX = 'otmetki.core.client'
 STUBBED = ('BigWorld', 'Vehicle')
 ENEMY = 7
 POINTS = [0x1234]
+EXPLOSION_METHOD = 'showDamageFromExplosion'
 
 
 def vehicle_class(with_explosion=True):
@@ -108,7 +109,7 @@ class OwnVehicleEffectTest(unittest.TestCase):
     def test_a_splash_on_the_own_vehicle_reaches_the_callback_with_its_details(self):
         vehicle = vehicle_class()
         battle = load_own_vehicle(vehicle)
-        battle.on_own_vehicle_effect(battle.EXPLOSION_METHOD, lambda *args: self.effects.append(args))
+        battle.on_own_vehicle_effect(EXPLOSION_METHOD, lambda *args: self.effects.append(args))
 
         vehicle(True).showDamageFromExplosion(ENEMY, (1, 2, 3), 0, 1.0)
 
@@ -117,7 +118,7 @@ class OwnVehicleEffectTest(unittest.TestCase):
     def test_a_method_the_client_lacks_is_not_hooked(self):
         battle = load_own_vehicle(vehicle_class(with_explosion=False))
 
-        hooked = battle.on_own_vehicle_effect(battle.EXPLOSION_METHOD, self.effects.append)
+        hooked = battle.on_own_vehicle_effect(EXPLOSION_METHOD, self.effects.append)
 
         assert not hooked
 

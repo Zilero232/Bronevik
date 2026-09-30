@@ -19,13 +19,13 @@ const drag = (overrides: Partial<OverlayDrag> = {}): OverlayDrag => ({
 
 describe(beyondSlop, () => {
   it('keeps a press within the click slop a click', () => {
-    const isBeyond = beyondSlop({ drag: drag(), press: { clientX: 103, clientY: 97 } });
+    const isBeyond = beyondSlop({ drag: drag(), press: { clientX: 103, clientY: 96 } });
 
     expect(isBeyond).toBe(false);
   });
 
   it('turns a press past the click slop into a drag', () => {
-    const isBeyond = beyondSlop({ drag: drag(), press: { clientX: 104, clientY: 100 } });
+    const isBeyond = beyondSlop({ drag: drag(), press: { clientX: 106, clientY: 100 } });
 
     expect(isBeyond).toBe(true);
   });
@@ -48,6 +48,12 @@ describe(dragOutcome, () => {
     const outcome = dragOutcome({ drag: drag(), press: { clientX: 150, clientY: 130 }, screen: SCREEN });
 
     expect(outcome).toEqual({ kind: 'moved', placement: { x: 90, y: 90, align_x: 'left', align_y: 'top' } });
+  });
+
+  it('leaves a panel pressed and nudged by less than the slop in place', () => {
+    const outcome = dragOutcome({ drag: drag(), press: { clientX: 104, clientY: 102 }, screen: SCREEN });
+
+    expect(outcome).toEqual({ kind: 'still' });
   });
 
   it('moves a button that was dragged instead of pressing it', () => {

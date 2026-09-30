@@ -1,0 +1,81 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+import math
+
+from ....core.compat import is_int, is_number
+
+# Fair play: the selected tank's own research tree and its own dossier average XP; the izeberg «vehicle_exp» idea,
+# counted from the client's unlock table instead of the stock parameters panel.
+#
+# `info` is what client/research.py reads: the tank's `xp`, whether it is `elite`, its random-battle `avg_xp`, and the
+# `nodes` of its unlock table still locked, each {id, cost (XP, the blueprint discount applied), vehicle, name, tier,
+# required (the ids it needs first)}.
+
+
+def _locked(info):
+    return dict((node['id'], node) for node in info.get('nodes') or ())
+
+
+def _with_prerequisites(node_id, locked, seen=None):
+    seen = set() if seen is None else seen
+    if node_id in seen or node_id not in locked:
+        return seen
+    seen.add(node_id)
+    for required in locked[node_id].get('required') or ():
+        _with_prerequisites(required, locked, seen)
+    return seen
+
+
+def _remaining(cost, info):
+    return max(0, int(cost) - int(info.get('xp') or 0))
+
+
+def battles_left(need, avg_xp):
+    if not is_int(need) or need <= 0:
+        return 0
+    if not is_number(avg_xp) or avg_xp <= 0:
+        return None
+    return int(math.ceil(need / float(avg_xp)))
+
+
+def to_elite(info):
+    if info.get('elite'):
+        return None
+    locked = _locked(info)
+    if not locked:
+        return None
+    return _remaining(sum(node['cost'] for node in locked.values()), info)
+
+
+def next_vehicles(info):
+    locked = _locked(info)
+    rows = []
+    for node in locked.values():
+        if not node.get('vehicle'):
+            continue
+        path = _with_prerequisites(node['id'], locked)
+        need = _remaining(sum(locked[node_id]['cost'] for node_id in path), info)
+        rows.append({'id': node['id'], 'name': node['name'], 'tier': node.get('tier'), 'need': need})
+    return sorted(rows, key=lambda row: (row['need'], row['name']))
+
+
+# The XP still to earn on the tank: to elite (every module and next tank) and to each next tank with the modules
+# it needs first, each with the battles it takes at the tank's average XP; None when there is nothing left to
+# research. Free XP is left out: the player decides where it goes.
+def research_state(info):
+    if not isinstance(info, dict):
+        return None
+    elite = to_elite(info)
+    vehicles = next_vehicles(info)
+    if elite is None and not vehicles:
+        return None
+    avg_xp = info.get('avg_xp')
+    for row in vehicles:
+        row['battles'] = battles_left(row['need'], avg_xp)
+    return {
+        'xp': int(info.get('xp') or 0),
+        'elite': elite,
+        'elite_battles': battles_left(elite, avg_xp) if elite is not None else None,
+        'vehicles': vehicles,
+    }

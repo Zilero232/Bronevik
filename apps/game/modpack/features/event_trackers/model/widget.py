@@ -45,7 +45,6 @@ def triathlon_widget(view, translate):
         value=value,
         value_tone='gold',
         subtitle=view['state'],
-        rail='progress',
         footer=view['rule'],
         width=CARD_WIDTH,
     )
@@ -68,7 +67,6 @@ def caravan_widget(caravan, now, translate):
         rows,
         value=counted(caravan['coins'], 'tokens', translate),
         value_tone='gold',
-        rail='info',
         footer=translate('event_trackers_caravan_footer'),
         width=CARD_WIDTH,
     )

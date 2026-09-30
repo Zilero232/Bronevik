@@ -28,12 +28,4 @@ def hangar_widget(missions, settings, translate, totals=None):
         card_chip(format_number(totals['done']), glyph('check'), 'success', translate('pm_chip_done')),
         card_chip(format_number(totals['honors']), glyph('check_double'), 'gold', translate('pm_chip_honors')),
     ]
-    return card(translate('pm_card_title'), glyph('mission'), rows, chips=chips, rail='progress', width=CARD_WIDTH)
-
-
-def battle_widget(missions, vehicle_class, settings, translate, vehicle_level=None):
-    shown = shown_missions(missions, settings, vehicle_class, vehicle_level)
-    if not shown:
-        return None
-    rows = [mission_row(mission, settings) for mission in shown]
-    return card(translate('pm_card_title'), glyph('mission'), rows, rail='progress', width=CARD_WIDTH)
+    return card(translate('pm_card_title'), glyph('mission'), rows, chips=chips, width=CARD_WIDTH)

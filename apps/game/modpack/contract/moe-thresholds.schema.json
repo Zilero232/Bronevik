@@ -16,6 +16,18 @@
       },
       "additionalProperties": false
     },
+    "mastery": {
+      "type": "object",
+      "description": "Optional: the base XP one battle needs for each mastery badge (3rd, 2nd, 1st class, Ace Tanker) on this vehicle.",
+      "required": ["class3", "class2", "class1", "ace"],
+      "properties": {
+        "class3": { "type": "number", "minimum": 0 },
+        "class2": { "type": "number", "minimum": 0 },
+        "class1": { "type": "number", "minimum": 0 },
+        "ace": { "type": "number", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
     "curve": {
       "type": "array",
       "description": "Optional percentile curve, any number of points, will be sorted and made monotonic by the mod.",

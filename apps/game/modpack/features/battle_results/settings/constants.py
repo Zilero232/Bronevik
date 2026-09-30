@@ -13,6 +13,9 @@ DEFAULTS = {
     'bonus_types': 'all',
     'template': '',
     'history_size': 30,
+    'hits_tab': True,
+    'hits_keep_battles': 10,
+    'hits_show_attacker': True,
 }
 
-LIMITS = {'history_size': (10, 100)}
+LIMITS = {'history_size': (10, 100), 'hits_keep_battles': (1, 30)}

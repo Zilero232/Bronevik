@@ -1,22 +1,18 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from .constants import DETAIL_SWITCHES, REST_STYLE
+from .constants import DETAIL_SWITCHES
 
 
-# The settings one render reads. With `alt_detail` on the panel rests in its short style (compact instead of
-# extended) and shows the extended view with every line and the detail line while Alt is held.
+# The settings one render reads. With `alt_detail` on, holding Alt shows the extended view with every detail row,
+# whatever the style and the switches say; at rest the panel keeps its own style.
 class PanelView(object):
 
     def __init__(self, settings, held=False):
         self.settings = settings
-        self.overrides = {'detail': False}
-        if not settings.get('alt_detail'):
-            return
-        if held:
-            self.overrides = dict((key, True) for key in DETAIL_SWITCHES + ('detail',))
+        self.overrides = {}
+        if held and settings.get('alt_detail'):
+            self.overrides = dict((key, True) for key in DETAIL_SWITCHES)
             self.overrides['style'] = 'extended'
-        elif settings.get('style') == 'extended':
-            self.overrides['style'] = REST_STYLE
 
     def get(self, key):
         return self.overrides[key] if key in self.overrides else self.settings.get(key)

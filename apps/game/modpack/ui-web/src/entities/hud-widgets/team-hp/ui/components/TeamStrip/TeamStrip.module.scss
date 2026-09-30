@@ -2,10 +2,11 @@
 
 .strip {
   display: flex;
-  width: 160px;
+  height: 18px;
   flex-direction: row;
+  flex-shrink: 0;
+  align-items: center;
   justify-content: flex-start;
-  margin-top: 2px;
 }
 
 .mirrored {
@@ -14,28 +15,17 @@
 
 .vehicle {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 0 1px;
 }
 
-.track {
-  display: flex;
-  width: 16px;
-  height: 3px;
-  flex-direction: row;
-  margin-top: 1px;
-  background-color: rgb(255 255 255 / 8%);
-}
-
-.fill {
-  height: 3px;
+.dead {
+  filter: grayscale(100%);
+  opacity: 0.35;
 }
 
 .tier {
   margin: 0 2px;
-  color: token(color-text-muted);
-  font-size: 10px;
-  font-weight: 700;
+  color: token(hud-muted);
   white-space: nowrap;
+
+  @include hud-type(caption);
 }

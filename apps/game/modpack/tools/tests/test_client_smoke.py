@@ -17,9 +17,12 @@ from otmetki.core.shells.constants import BATTLE_LOG_SHELL_NAMES
 from otmetki.core.vendor.enum34 import IntEnum
 
 ACCOUNT = 12345678
+# The switches that are off by default and that the stories play: the opt-in panels and the components that override
+# client views or send client requests.
 BATTLE_OPT_INS = (
-    'battle_main_gun', 'battle_efficiency', 'battle_personal_best', 'battle_gun_arc', 'battle_arty_meter',
-    'battle_platoon_points', 'battle_received_hits', 'battle_clock',
+    'battle_progress', 'battle_gun_arc', 'battle_platoon_points', 'battle_bush_circle', 'battle_sounds',
+    'battle_chat_filter', 'streamer_mode', 'hangar_tweaks', 'hangar_auto_resupply', 'hangar_notification_filter',
+    'hangar_cleaner',
 )
 REGISTERED = tuple(_support.feature_ids()) + ('ui',)
 ENTRY_MODULES = ('mod_otmetki',) + tuple('mod_otmetki_' + key for key in REGISTERED)
@@ -62,23 +65,19 @@ NOTIFICATION_TYPES = {
 }
 BATTLE_SOUNDS = {'fire': 'otmetki_fire', 'ammo_rack': 'otmetki_ammo', 'first_blood': 'otmetki_first_blood'}
 HUD_OFF = (
-    'battle_damage_log', 'battle_hit_log', 'battle_clock', 'battle_team_hp', 'battle_sixth_sense',
-    'hangar_battle_results', 'battle_main_gun', 'battle_reload_timer', 'battle_efficiency',
-    'battle_personal_best', 'hangar_session_goals',
+    'battle_damage_log', 'hangar_info', 'battle_team_hp', 'battle_sixth_sense',
+    'hangar_battle_results', 'battle_progress',
 )
 BATTLE_PANELS = [
-    'battle_clock', 'damage_log', 'hit_log', 'last_hit', 'main_gun', 'received_hits', 'reload_timer', 'sixth_sense',
-    'team_hp',
+    'battle_clock', 'battle_progress', 'damage_log', 'sixth_sense', 'team_hp',
 ]
 DESCRIBED_PANELS = [
-    'arty_meter', 'battle_clock', 'battle_efficiency', 'battle_loadout', 'crosshair', 'damage_log',
-    'death_card', 'gun_arc', 'hangar_marks', 'hit_log', 'last_hit', 'main_gun', 'marks_panel', 'personal_best',
-    'personal_missions', 'platoon_points', 'received_hits', 'reload_timer', 'session_goals', 'sixth_sense', 'team_hp',
+    'battle_clock', 'battle_hotkeys', 'battle_loadout', 'battle_progress', 'crosshair', 'damage_log',
+    'gun_arc', 'hangar_marks', 'marks_panel', 'platoon_points', 'sixth_sense', 'team_hp',
 ]
 HUD_EDIT_PREVIEWS = [
-    'arty_meter', 'battle_clock', 'battle_efficiency', 'battle_loadout', 'damage_log', 'death_card',
-    'gun_arc', 'hangar_marks', 'hit_log', 'last_hit', 'main_gun', 'marks_panel', 'personal_best', 'personal_missions',
-    'platoon_points', 'received_hits', 'reload_timer', 'session_goals', 'sixth_sense',
+    'battle_clock', 'battle_loadout', 'battle_progress', 'damage_log', 'gun_arc', 'hangar_marks', 'marks_panel',
+    'platoon_points', 'sixth_sense',
 ]
 OWN_SHOT = {
     'damage': 390,
@@ -361,52 +360,11 @@ class ArenaDP(object):
         return 1
 
 
-class ReloadSnapshot(object):
-    # RU 1.45 ammo_ctrl.ReloadingTimeSnapshot.
-
-    def __init__(self, left, base):
-        self.left = left
-        self.base = base
-
-    def getTimeLeft(self):
-        return self.left
-
-    def getBaseValue(self):
-        return self.base
-
-
-class GunSettings(object):
-    # RU 1.45 ammo_ctrl.GunSettings: the clip.
-
-    def __init__(self):
-        self.clip = instance('Clip', {'size': 4, 'interval': 2.0})
-
-
 class Ammo(object):
-    # RU 1.45 ammo_ctrl.AmmoController: the gun settings' clip, the shells (quantity, quantityInClip) per intCD, the
-    # current shell and the reload snapshot.
-    EVENTS = ('onGunReloadTimeSet', 'onGunSettingsSet', 'onShellsAdded', 'onShellsUpdated', 'onCurrentShellChanged')
+    # RU 1.45 ammo_ctrl.AmmoController: the setup switch battle_loadout follows.
 
     def __init__(self):
-        self.gun = GunSettings()
-        self.shells = {11: (32, 3), 12: (6, 0)}
-        for name in self.EVENTS:
-            setattr(self, name, Event())
-
-    def getGunSettings(self):
-        return self.gun
-
-    def getCurrentShellCD(self):
-        return 11
-
-    def getShells(self, int_cd):
-        return self.shells[int_cd]
-
-    def getCurrentShells(self):
-        return self.shells[self.getCurrentShellCD()]
-
-    def getGunReloadingState(self):
-        return ReloadSnapshot(0.0, 7.8)
+        self.onGunSettingsSet = Event()
 
 
 class BattleSession(object):
@@ -429,6 +387,9 @@ class BattleSession(object):
         self.arena = instance('Arena', {'period': 3, 'periodEndTime': SERVER_TIME + 300})
         self.arena.onVehicleKilled = Event()
         self.arena.onVehicleAdded = Event()
+        self.arena.onVehicleUpdated = Event()
+        self.arena.onPeriodChange = Event()
+        self.arena.vehicles = {}
         self.arenaVisitor = instance('ArenaVisitor', {'getArenaModifiers': lambda visitor: ARENA_MODIFIERS})
 
     def getArenaDP(self):
@@ -498,6 +459,16 @@ class Device(object):
         self.shortDescriptionSpecial = u'{colorTagOpen}+10 %{colorTagClose} ' + name
 
 
+def public_descriptor(tank_id):
+    # RU 1.45 Vehicle.def publicInfo (PUBLIC_VEHICLE_INFO, ALL_CLIENTS): the Vehicle entity's descriptor, which
+    # Avatar.getVehicleDescriptor() returns, is the same for every client and carries no equipment.
+    return instance('Descriptor', {
+        'type': instance('VehicleType', {'compactDescr': tank_id}),
+        'iterOptDevsWithSlots': lambda descriptor: iter(()),
+        'makeCompactDescr': lambda descriptor: 'public-compact-descr',
+    })
+
+
 def device_slot(*categories):
     return instance('Slot', {'categories': set(categories)})
 
@@ -563,16 +534,6 @@ class DossierStats(object):
 
     def getMaxXp(self):
         return 1100
-
-
-class Tankman(object):
-
-    def __init__(self, cost, role):
-        self.cost = cost
-        self.roleUserName = role
-
-    def getNextSkillXpCost(self):
-        return self.cost
 
 
 class DossierCaps(object):
@@ -903,8 +864,6 @@ class Game(object):
         sys.modules['BigWorld'].isKeyDown = lambda key: True
 
     def install_avatar_and_device_stubs(self):
-        test = self
-        self.hit_directions = []
         self.install_hotkey_input(
             KEY_H=STREAMER_KEY,
             KEY_LCONTROL=LEFT_CONTROL,
@@ -913,13 +872,6 @@ class Game(object):
             KEY_RSHIFT=RIGHT_SHIFT,
         )
 
-        class PlayerAvatar(object):
-            # RU 1.45 Avatar.PlayerAvatar: the server's call behind the game's own hit direction indicator.
-
-            def showOwnVehicleHitDirection(self, hit_yaw, *args):
-                test.hit_directions.append(hit_yaw)
-
-        module('Avatar', PlayerAvatar=PlayerAvatar)
         impl = sys.modules.get('gui.impl') or package('gui.impl')
         impl.backport = module('gui.impl.backport', text=lambda resource: None)
         strings = instance('Strings', {'artefacts': Resource()})
@@ -929,7 +881,6 @@ class Game(object):
             (Device('vents', ['survivability'], True), device_slot('mobility')),
             (None, device_slot('firepower')),
         ]
-        return PlayerAvatar
 
     def install_failing_vehicle_builder(self):
         # RU 1.45 gui/battle_control/gui_vehicle_builder.VehicleBuilder: getResult builds the GUI Vehicle, which a
@@ -946,7 +897,7 @@ class Game(object):
 
         module('gui.battle_control.gui_vehicle_builder', VehicleBuilder=VehicleBuilder)
         own_vehicle = instance('OwnVehicle', {
-            'typeDescriptor': instance('Descriptor', {'makeCompactDescr': lambda descriptor: 'own-compact-descr'}),
+            'typeDescriptor': public_descriptor(1),
             'setups': {'shellsSetups': [], 'eqsSetups': [], 'boostersSetups': [], 'devicesSetups': []},
             'setupsIndexes': {},
             'crewCompactDescrs': [],
@@ -1166,12 +1117,6 @@ class Game(object):
         module('skeletons.gui.event_boards_controllers', IEventBoardController=boards)
         return shop
 
-    def install_demonstrator_levels(self, levels):
-        lobby = constants('ILobbyContext', {})
-        server_settings = instance('Settings', {'getRandomBattleLevelsForDemonstrator': lambda settings: levels})
-        self.services[lobby] = instance('LobbyContext', {'getServerSettings': lambda context: server_settings})
-        module('skeletons.gui.lobby_context', ILobbyContext=lobby)
-
     def load(self, entries):
         for name in entries:
             importlib.import_module('gui.mods.' + name)
@@ -1212,14 +1157,21 @@ class Game(object):
             session.arena.guiType = gui_type
         self.player = Player(ACCOUNT, results_arena)
         if tank_id is not None:
-            vehicle_type = instance('VehicleType', {'compactDescr': tank_id})
-            devices = getattr(self, 'own_devices', ())
-            self.player.vehicleTypeDescriptor = instance('Descriptor', {
-                'type': vehicle_type,
-                'iterOptDevsWithSlots': lambda descriptor: iter(devices),
-            })
+            self.player.vehicleTypeDescriptor = public_descriptor(tank_id)
+            if not getattr(self, 'own_vehicle_listed_late', False):
+                self.list_own_vehicle(session, tank_id)
         self.join(session)
         return session
+
+    def list_own_vehicle(self, session, tank_id):
+        # RU 1.45 ClientArena: the arena's vehicle list carries the own vehicle's full descriptor, the one the stock
+        # OptionalDevicesController reads the equipment from.
+        devices = getattr(self, 'own_devices', ())
+        session.arena.vehicles[OWN_VEHICLE] = {'vehicleType': instance('Descriptor', {
+            'type': instance('VehicleType', {'compactDescr': tank_id}),
+            'iterOptDevsWithSlots': lambda descriptor: iter(devices),
+            'makeCompactDescr': lambda descriptor: 'own-compact-descr',
+        })}
 
     def enter_battle_with_gun(self, yaw_limits):
         session = BattleSession()
@@ -1432,6 +1384,7 @@ class BattleHudTest(StoryTest):
         app.marks.hangar_moe[1] = dict(HANGAR_MOE)
         results = _support.battle_results()
         session = game.enter_battle(results['arenaUniqueID'])
+        app.marks.battle_started(results['arenaUniqueID'], 1)
         cls.fight(session)
         cls.panels = copy.deepcopy(game.hud_components())
         cls.sounds = list(game.sounds)
@@ -1490,15 +1443,11 @@ class BattleHudTest(StoryTest):
     def test_damage_log_takes_the_total_from_the_battle_summary(self):
         self.assertIn('2 150', self.damage_log_after_summary)
 
-    def test_hit_log_names_the_target_the_damage_and_the_ricochet(self):
-        hit_log = self.panels['hit_log']['text']
+    def test_damage_log_names_the_target_of_the_own_shot(self):
+        self.assertIn('Pz. IV', self.panels['damage_log']['text'])
 
-        self.assertIn('Pz. IV', hit_log)
-        self.assertIn('390', hit_log)
-        self.assertIn(u'рикошет', hit_log)
-
-    def test_battle_clock_shows_the_time_left(self):
-        self.assertIn('05:00', self.panels['battle_clock']['text'])
+    def test_battle_clock_leaves_the_battle_timer_to_the_stock_one(self):
+        self.assertNotIn('05:00', self.panels['battle_clock']['text'])
 
     def test_team_hp_shows_both_teams_and_the_score(self):
         team_hp = self.panels['team_hp']['text']
@@ -1551,12 +1500,14 @@ class EventBattleTest(StoryTest):
         game.install_hud_stubs()
         app = game.open_hangar()
         results = _support.battle_results()
-        game.enter_battle(results['arenaUniqueID'], gui_type=301)
+        session = game.enter_battle(results['arenaUniqueID'], gui_type=301)
+        session.own_feedback(Feedback(KINDS.DAMAGE, ENEMY_VEHICLE, Extra(390)))
         cls.event_panels = sorted(game.hud_components())
         game.component_updated('otmetki.hud.damage_log', {'x': 333, 'y': 44})
         cls.saved = game.saved_components(app)
         game.events.onAvatarBecomeNonPlayer()
-        game.enter_battle(results['arenaUniqueID'] + 1, gui_type=30)
+        session = game.enter_battle(results['arenaUniqueID'] + 1, gui_type=30)
+        session.own_feedback(Feedback(KINDS.DAMAGE, ENEMY_VEHICLE, Extra(390)))
         cls.random_panels = copy.deepcopy(game.hud_components())
 
     def test_event_battles_get_the_compact_layout(self):
@@ -1611,7 +1562,7 @@ class HudEditTest(StoryTest):
         for name, props in self.previews.items():
             self.assertTrue(props['lobby'], name)
             self.assertFalse(props['battle'], name)
-        self.assertIn('Pz. IV', self.previews['hit_log']['text'])
+        self.assertIn('Pz. IV', self.previews['damage_log']['text'])
 
     def test_leaving_hud_edit_removes_the_previews(self):
         self.assertEqual(self.panels_after_edit, {})
@@ -1632,11 +1583,11 @@ class OwnFeedbackTest(StoryTest):
         ally = session.dp.getVehicleInfo(ALLY_VEHICLE)
         session.hit('VEHICLE_ARMOR_PIERCED', ENEMY_VEHICLE)
         session.own_feedback(Feedback(KINDS.DAMAGE, ENEMY_VEHICLE, Extra(390)))
-        hit_log = game.registry().get('hit_log').log
+        shots = game.registry().get('damage_log').log.shots
         session.hit('VEHICLE_HEALTH', ENEMY_VEHICLE, (480, ally, 0))
-        cls.hp_after_ally_shot = hit_log.entries[-1]['hp']
+        cls.hp_after_ally_shot = shots.entries[-1]['hp']
         session.hit('VEHICLE_HEALTH', ENEMY_VEHICLE, (510, own, 0))
-        cls.hp_after_own_shot = hit_log.entries[-1]['hp']
+        cls.hp_after_own_shot = shots.entries[-1]['hp']
 
         session.control(ALLY_VEHICLE)
         session.own_feedback(Feedback(KINDS.RADIO_ASSIST, ENEMY_VEHICLE, Extra(640)))
@@ -1646,10 +1597,10 @@ class OwnFeedbackTest(StoryTest):
         # own ammo rack.
         damage_log = game.registry().get('damage_log').log
         session.state('DEVICES', ('ammoBay', 'critical', 'critical'))
-        cls.ammo_rack_while_following = damage_log.ammo_rack_at
+        cls.ammo_rack_while_following = damage_log.received.ammo_rack_at
         session.control(OWN_VEHICLE)
         session.state('DEVICES', ('ammoBay', 'critical', 'critical'))
-        cls.own_ammo_rack = damage_log.ammo_rack_at
+        cls.own_ammo_rack = damage_log.received.ammo_rack_at
 
         known = session.dp.getVehicleInfo
         # RU 1.45 arena_dp.getVehicleInfo: an unknown id gets a blank VehicleArenaInfoVO of team 0.
@@ -1657,7 +1608,7 @@ class OwnFeedbackTest(StoryTest):
         battle = sys.modules['gui.mods.otmetki.core.client.battle']
         cls.enemy_verdicts = [battle.is_enemy(vehicle_id) for vehicle_id in (ENEMY_VEHICLE, ALLY_VEHICLE, 999, None)]
 
-    def test_hit_log_takes_the_hp_left_only_from_own_shots(self):
+    def test_damage_log_takes_the_hp_left_only_from_own_shots(self):
         self.assertIsNone(self.hp_after_ally_shot)
         self.assertEqual(self.hp_after_own_shot, 510)
 
@@ -1752,9 +1703,9 @@ class HangarCardsTest(StoryTest):
         instances = game.instances()
         cls.actions = dict(
             (feature_id, instances[feature_id].ui_actions())
-            for feature_id in ('marks_history', 'battle_results', 'auto_resupply')
+            for feature_id in ('marks_panel', 'battle_results', 'auto_resupply')
         )
-        cls.history_rows = instances['marks_history'].ui_page()['rows']
+        cls.history_rows = instances['marks_panel'].ui_page()['rows']
         cls.results_rows_before = instances['battle_results'].ui_page()['rows']
         game.events.onBattleResultsReceived(True, _support.battle_results())
         cls.results_rows = copy.deepcopy(instances['battle_results'].ui_page()['rows'])
@@ -1806,14 +1757,13 @@ class SettingsBroadcastTest(StoryTest):
         self.assertIn('otmetki.hangar_info', self.components)
 
 
-class HangarRatingsTest(StoryTest):
+class SessionSiteReadsTest(StoryTest):
 
     @classmethod
     def play(cls, game):
         game.install_hud_stubs()
         app = game.load(list(ENTRY_MODULES))
         game.bind(app)
-        game.vehicle.item = instance('Vehicle', {'intCD': 1})
         game.player = Player(ACCOUNT)
         game.events.onAccountShowGUI()
         reads = dict(
@@ -1822,29 +1772,26 @@ class HangarRatingsTest(StoryTest):
             if method == 'POST' and '/mod/me/' in url
         )
         cls.reads = dict((name, (headers, body)) for name, (headers, body, _) in reads.items())
-        cls.tank_fetches = len(game.fetches_to('/mod/me/tanks'))
-        for name, example in (('overview', 'ratings-overview.example.json'), ('tanks', 'ratings-tanks.example.json')):
-            reads[name][2](response_json(contract_example(example)))
-        cls.text = game.components['otmetki.hangar_ratings']['text']
+        reads['overview'][2](response_json(contract_example('ratings-overview.example.json')))
+        cls.text = game.components['otmetki.session']['text']
+        cls.overview_fetches = len(game.fetches_to('/mod/me/overview'))
         game.enter_battle(1)
         cls.battle_components = sorted(game.components)
 
-    def test_hangar_ratings_asks_the_site_once_for_the_own_account(self):
-        self.assertEqual(sorted(self.reads), ['goals', 'overview', 'tanks'])
-        self.assertEqual(self.tank_fetches, 1)
-        for headers, body in self.reads.values():
+    def test_the_session_card_asks_the_site_for_the_own_goals_and_account(self):
+        self.assertIn('goals', self.reads)
+        self.assertIn('overview', self.reads)
+        self.assertEqual(self.overview_fetches, 1)
+        for name in ('goals', 'overview'):
+            headers, body = self.reads[name]
             self.assertTrue(headers['X-Otmetki-Signature'].startswith('sha256='))
             self.assertEqual(json.loads(body)['account_id'], ACCOUNT)
 
-    def test_hangar_ratings_asks_for_the_selected_tank(self):
-        self.assertEqual(json.loads(self.reads['tanks'][1])['tank_ids'], [1])
+    def test_the_session_card_shows_the_account_wn8(self):
+        self.assertIn(u'WN8 1 850', self.text)
 
-    def test_hangar_ratings_show_wn8_and_the_marks(self):
-        self.assertIn('WN8', self.text)
-        self.assertIn(u'★★', self.text)
-
-    def test_hangar_ratings_leave_with_the_hangar(self):
-        self.assertNotIn('otmetki.hangar_ratings', self.battle_components)
+    def test_the_session_card_leaves_with_the_hangar(self):
+        self.assertNotIn('otmetki.session', self.battle_components)
 
 
 class ControllerPanelsTest(StoryTest):
@@ -1852,60 +1799,39 @@ class ControllerPanelsTest(StoryTest):
     @classmethod
     def play(cls, game):
         game.install_hud_stubs()
-        game.open_hangar()
+        app = game.open_hangar()
         session = game.enter_battle(1)
         cls.panels = copy.deepcopy(game.hud_components())
 
-        ammo = session.shared.ammo
-        ammo.onGunReloadTimeSet(11, ReloadSnapshot(5.5, 7.8), False)
-        cls.reloading = game.hud_text('reload_timer')
-        ammo.onShellsUpdated(11, 31, 2, 0)
-        ammo.onShellsUpdated(12, 5, 0, 0)
-        cls.clip_used = game.hud_text('reload_timer')
-
+        game.hud_module().hud_layer(app).update_settings('battle_progress', {'main_gun_share': True})
+        game.hud_module().hud_layer(app).update_settings('damage_log', {'alt_mode': False})
         session.own_feedback(Feedback(KINDS.DAMAGE, ENEMY_VEHICLE, Extra(390)))
         session.hit('VEHICLE_HEALTH', ENEMY_VEHICLE, (510, None, 0))
-        cls.main_gun = game.hud_text('main_gun')
+        cls.main_gun = game.hud_text('battle_progress')
 
         game.clock[0] = 200.0
         session.own_feedback(Feedback(KINDS.RECEIVED_DAMAGE, ALLY_VEHICLE, Extra(140, 'HIGH_EXPLOSIVE', reason='ram')))
-        cls.rammed = game.hud_text('last_hit')
+        cls.rammed = game.hud_text('damage_log')
         game.clock[0] = 201.0
         session.own_feedback(Feedback(KINDS.RECEIVED_DAMAGE, ENEMY_VEHICLE, Extra(300, 'ARMOR_PIERCING')))
         session.state('DEVICES', ('ammoBay', 'critical', 'critical'))
-        cls.ammo_rack_last_hit = game.hud_text('last_hit')
         cls.ammo_rack_damage_log = game.hud_text('damage_log')
         game.events.onAvatarBecomeNonPlayer()
         cls.panels_after_battle = game.hud_components()
 
-    def test_reload_timer_shows_the_clip_while_loaded(self):
-        reload_timer = self.panels['reload_timer']['text']
-
-        self.assertIn(u'Кассета 3/4', reload_timer)
-        self.assertNotIn(u'Перезарядка', reload_timer)
-
     def test_main_gun_is_out_of_reach_before_any_damage(self):
-        expected = u'недостижим: нужно ещё 1 000, у противника осталось 900'
+        self.assertIn(u'Осн. калибр', self.panels['battle_progress']['text'])
+        self.assertIn(u'недостижим', self.panels['battle_progress']['text'])
 
-        self.assertIn(expected, self.panels['main_gun']['text'])
+    def test_main_gun_counts_the_own_share_of_the_team_damage(self):
+        self.assertIn(u'доля 100% · команда 390', self.main_gun)
 
-    def test_reload_timer_counts_down_the_reload(self):
-        self.assertIn(u'Перезарядка 5.5 с', self.reloading)
-
-    def test_reload_timer_follows_the_shells_left_in_the_clip(self):
-        self.assertIn(u'Кассета 2/4', self.clip_used)
-
-    def test_main_gun_counts_the_own_damage_and_the_enemy_hp_left(self):
-        self.assertIn(u'нужно ещё 610, у противника осталось 510', self.main_gun)
-        self.assertIn(u'урон команды 390', self.main_gun)
-
-    def test_last_hit_names_the_rammer_and_its_class(self):
-        self.assertIn(u'KV-1 −140', self.rammed)
-        self.assertIn(u'таран', self.rammed)
+    def test_damage_log_names_the_rammer_and_its_class(self):
+        self.assertIn(u'−140', self.rammed)
+        self.assertIn(u'KV-1 таран', self.rammed)
         self.assertIn('class_heavy_32.png', self.rammed)
 
-    def test_an_ammo_rack_hit_shows_in_the_last_hit_and_the_damage_log(self):
-        self.assertIn(u'боеукладка', self.ammo_rack_last_hit)
+    def test_an_ammo_rack_hit_shows_in_the_damage_log(self):
         self.assertIn(u'боеукладка', self.ammo_rack_damage_log)
 
     def test_leaving_the_battle_removes_the_controller_panels(self):
@@ -1917,7 +1843,7 @@ class LoadoutAndStreamerTest(StoryTest):
     @classmethod
     def play(cls, game):
         game.install_hud_stubs()
-        avatar = game.install_avatar_and_device_stubs()
+        game.install_avatar_and_device_stubs()
         game.open_hangar()
         session = game.enter_battle(1, tank_id=1)
         cls.loadout = copy.deepcopy(game.hud_components()['battle_loadout'])
@@ -1926,13 +1852,8 @@ class LoadoutAndStreamerTest(StoryTest):
             Feedback(KINDS.RECEIVED_DAMAGE, ENEMY_VEHICLE, Extra(310)),
             Feedback(KINDS.TANKING, ALLY_VEHICLE, Extra(200, SHELL_TYPES.HE_MODERN)),
         )
-        cls.received_hits = game.hud_text('received_hits')
-        avatar().showOwnVehicleHitDirection(3.1)
-        cls.hit_directions = list(game.hit_directions)
-        session.state('DEVICES', ('engine', 'critical', 'critical'))
-        cls.panels_after_crit = sorted(game.hud_components())
+        cls.received = game.hud_text('damage_log')
         session.arena.onVehicleKilled(OWN_VEHICLE, ENEMY_VEHICLE, 0, 0)
-        cls.death_card = game.hud_text('death_card')
 
         game.press(STREAMER_KEY)
         cls.panels_hidden = game.hud_components()
@@ -1963,33 +1884,22 @@ class LoadoutAndStreamerTest(StoryTest):
         self.assertEqual(self.loadout['text'].count(u'★'), 1)
         self.assertFalse(self.loadout['drag'])
 
-    def test_received_hits_name_the_shooter_and_the_blocked_damage(self):
-        self.assertIn(u'Pz. IV', self.received_hits)
-        self.assertIn(u'не пробил, заблокировано 200', self.received_hits)
-
-    def test_the_game_still_gets_its_hit_direction(self):
-        self.assertEqual(self.hit_directions, [3.1])
-
-    def test_a_crit_alone_shows_no_death_card(self):
-        self.assertNotIn('death_card', self.panels_after_crit)
-
-    def test_the_death_card_names_the_killer_the_damage_and_the_crits(self):
-        self.assertIn(u'Вас уничтожил: СТ Pz. IV', self.death_card)
-        self.assertIn(u'урон 310', self.death_card)
-        self.assertIn(u'двигатель', self.death_card)
+    def test_damage_log_names_the_shooter_and_the_blocked_damage(self):
+        self.assertIn(u'Pz. IV', self.received)
+        self.assertIn(u'−310', self.received)
+        self.assertIn(u'200 ОФ', self.received)
 
     def test_the_streamer_hotkey_hides_every_panel_and_what_comes_while_hidden(self):
         self.assertEqual(self.panels_hidden, {})
         self.assertEqual(self.panels_hidden_after_feedback, {})
 
     def test_the_streamer_hotkey_again_shows_the_panels_with_what_came_meanwhile(self):
-        self.assertIn(u'заблокировано 100', self.panels_shown_again['received_hits']['text'])
-        self.assertIn('death_card', self.panels_shown_again)
+        self.assertIn(u'Блок 300', self.panels_shown_again['damage_log']['text'])
 
     def test_the_streamer_hotkey_needs_control_and_shift_on_either_side(self):
-        self.assertIn('death_card', self.panels_with_control_only)
+        self.assertIn('damage_log', self.panels_with_control_only)
         self.assertEqual(self.panels_with_right_keys, {})
-        self.assertIn('death_card', self.panels_with_every_key)
+        self.assertIn('damage_log', self.panels_with_every_key)
 
     def test_leaving_the_battle_clears_the_loadout_panels(self):
         self.assertEqual(self.panels_after_battle, {})
@@ -2010,9 +1920,72 @@ class LoadoutWithoutGuiVehicleTest(StoryTest):
         self.assertIn(('setRoleSlot', ROLE_SLOT), self.builder_calls)
         self.assertIn(('setModifiers', ARENA_MODIFIERS), self.builder_calls)
 
+    def test_the_builder_gets_the_full_descriptor_of_the_arena_list_not_the_public_one(self):
+        self.assertIn(('setStrCD', 'own-compact-descr'), self.builder_calls)
+
     def test_the_devices_still_show_when_the_gui_vehicle_cannot_be_built(self):
         self.assertIn('img://gui/maps/icons/artefact/rammer.png', self.loadout['text'])
         self.assertIn('img://gui/maps/icons/artefact/vents.png', self.loadout['text'])
+
+
+def session_log():
+    with open(os.path.join('mods', 'configs', 'otmetki', 'otmetki.log'), 'rb') as handle:
+        return handle.read().decode('utf-8')
+
+
+class LoadoutFromTheArenaListTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        game.install_avatar_and_device_stubs()
+        game.open_hangar()
+        game.enter_battle(1, tank_id=1)
+        cls.loadout = copy.deepcopy(game.hud_components().get('battle_loadout'))
+        cls.log = session_log()
+
+    def test_the_row_shows_the_equipment_the_public_descriptor_lacks(self):
+        self.assertIn('img://gui/maps/icons/artefact/rammer.png', self.loadout['text'])
+
+    def test_the_read_is_logged_with_its_counts(self):
+        self.assertIn('battle_loadout: 2 devices, 0 directives, icons found 2', self.log)
+
+
+class LoadoutListedLateTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        game.install_avatar_and_device_stubs()
+        game.own_vehicle_listed_late = True
+        game.open_hangar()
+        session = game.enter_battle(1, tank_id=1)
+        cls.before = game.hud_components().get('battle_loadout')
+        cls.log_before = session_log()
+
+        game.list_own_vehicle(session, 1)
+        session.arena.onVehicleUpdated(ENEMY_VEHICLE)
+        cls.after_other_vehicle = game.hud_components().get('battle_loadout')
+        session.arena.onVehicleUpdated(OWN_VEHICLE)
+        cls.after = copy.deepcopy(game.hud_components().get('battle_loadout'))
+
+        game.run_callbacks()
+        cls.log = session_log()
+
+    def test_nothing_shows_before_the_own_vehicle_is_listed(self):
+        self.assertIsNone(self.before)
+
+    def test_the_empty_read_logs_its_reason(self):
+        self.assertIn('battle_loadout: nothing to show, the own vehicle is not in the arena list yet', self.log_before)
+
+    def test_another_vehicle_update_does_not_read_again(self):
+        self.assertIsNone(self.after_other_vehicle)
+
+    def test_the_own_vehicle_update_brings_the_row(self):
+        self.assertIn('img://gui/maps/icons/artefact/vents.png', self.after['text'])
+
+    def test_the_battle_report_names_the_shown_row(self):
+        self.assertIn('battle_loadout shown', self.log)
 
 
 class HangarHelpersTest(StoryTest):
@@ -2029,13 +2002,6 @@ class HangarHelpersTest(StoryTest):
         cls.components_private = sorted(game.components)
         cls.set_private_mode(game, app, False)
         cls.session_label = game.components['otmetki.session']['text']
-        for step in range(3):
-            results = _support.battle_results()
-            results['arenaUniqueID'] = 900 + step
-            results['common']['winnerTeam'] = 2
-            game.events.onBattleResultsReceived(True, results)
-        cls.tilt_messages = game.messages_with(u'поражений подряд')
-        cls.messages = list(game.messages)
 
     @staticmethod
     def set_private_mode(game, app, is_private):
@@ -2051,9 +2017,6 @@ class HangarHelpersTest(StoryTest):
 
     def test_leaving_private_mode_brings_the_session_label_back(self):
         self.assertEqual(self.session_label, 'mine')
-
-    def test_three_losses_in_a_row_bring_a_tilt_warning(self):
-        self.assertTrue(self.tilt_messages, self.messages)
 
 
 class GunAndWoundsTest(StoryTest):
@@ -2076,14 +2039,11 @@ class GunAndWoundsTest(StoryTest):
         vehicle_class(False).showDamageFromShot(ENEMY_VEHICLE, [FRONT_HULL_PEN], 0, 1.0, False)
         session.own_feedback(Feedback(KINDS.RECEIVED_DAMAGE, ENEMY_VEHICLE, Extra(390)))
         cls.shots = list(game.shots)
-        cls.components_in_battle = sorted(game.components)
         game.back_to_hangar()
-        cls.wounds_label = game.components['otmetki.battle_hits']['text']
-        cls.wounds_rows = copy.deepcopy(instances['battle_hits'].ui_page()['rows'])
+        cls.wounds_rows = copy.deepcopy(instances['battle_results'].ui_page()['rows'])
         cls.is_wounds_file_saved = os.path.isfile(os.path.join(app.config_dir, 'battle_hits_%d.json' % ACCOUNT))
-        instances['battle_hits'].ui_action('clear', '4242')
-        cls.wounds_rows_cleared = instances['battle_hits'].ui_page()['rows']
-        cls.components_cleared = sorted(game.components)
+        instances['battle_results'].ui_action('clear')
+        cls.wounds_rows_cleared = instances['battle_results'].ui_page()['rows']
 
     @classmethod
     def play_bush_circle(cls, game, session):
@@ -2122,15 +2082,10 @@ class GunAndWoundsTest(StoryTest):
     def test_the_bush_circle_goes_with_the_own_tank(self):
         self.assertEqual(self.models_after_death, [])
 
-    def test_battle_wounds_let_the_game_draw_every_shot_and_show_nothing_in_battle(self):
+    def test_the_hits_on_me_let_the_game_draw_every_shot(self):
         self.assertEqual(self.shots, [ENEMY_VEHICLE, ENEMY_VEHICLE])
-        self.assertNotIn('otmetki.battle_hits', self.components_in_battle)
 
-    def test_battle_wounds_show_in_the_hangar_after_the_battle(self):
-        self.assertIn(u'Боевые раны · T-34', self.wounds_label)
-        self.assertIn(u'Попаданий 1', self.wounds_label)
-
-    def test_battle_wounds_page_lists_the_battle_with_its_hits(self):
+    def test_the_battle_results_page_lists_the_battle_with_the_hits_on_me(self):
         row = self.wounds_rows[0]
 
         self.assertEqual(row['id'], '4242')
@@ -2138,9 +2093,8 @@ class GunAndWoundsTest(StoryTest):
         self.assertEqual([mark['tone'] for mark in row['figure']['marks']], ['pen'])
         self.assertTrue(self.is_wounds_file_saved)
 
-    def test_clearing_battle_wounds_empties_the_page_and_removes_the_label(self):
+    def test_clearing_the_battle_results_empties_the_hits_on_me(self):
         self.assertEqual(self.wounds_rows_cleared, [])
-        self.assertNotIn('otmetki.battle_hits', self.components_cleared)
 
 
 def open_shots_hangar(game):
@@ -2154,7 +2108,8 @@ class RicochetTest(StoryTest):
 
     @classmethod
     def play(cls, game):
-        _, vehicle_class = open_shots_hangar(game)
+        app, vehicle_class = open_shots_hangar(game)
+        game.hud_module().hud_layer(app).update_settings('damage_log', {'alt_mode': False})
         session = game.enter_battle_with_gun(None)
         vehicle_class(False).showDamageFromShot(ALLY_VEHICLE, [RICOCHET_POINT], 0, 0.0, False)
         game.own_vehicle.showDamageFromShot(ENEMY_VEHICLE, [RICOCHET_POINT], 0, 0.0, False)
@@ -2162,11 +2117,11 @@ class RicochetTest(StoryTest):
             Feedback(KINDS.TANKING, ENEMY_VEHICLE, Extra(240)),
             Feedback(KINDS.TANKING, ALLY_VEHICLE, Extra(100)),
         )
-        cls.hits = game.hud_text('received_hits')
+        cls.hits = game.hud_text('damage_log')
 
-    def test_received_hits_tell_a_ricochet_from_the_shot_drawn_on_the_own_tank(self):
-        self.assertIn(u'рикошет, заблокировано 240', self.hits)
-        self.assertIn(u'не пробил, заблокировано 100', self.hits)
+    def test_damage_log_tells_a_ricochet_from_the_shot_drawn_on_the_own_tank(self):
+        self.assertIn(u'Pz. IV рикошет', self.hits)
+        self.assertIn(u'KV-1 не пробил', self.hits)
 
 
 class BushCircleAfterBattleTest(StoryTest):
@@ -2205,8 +2160,8 @@ class SiteRecordsTest(StoryTest):
         goals = contract_example('goals.example.json')
         game.answer('tanks', contract_example('ratings-tanks.example.json'))
         game.answer('goals', goals)
-        cls.book = game.instances()['personal_best'].book.get(1)
-        cls.goals_label = game.components['otmetki.session_goals']['text']
+        cls.book = game.instances()['battle_progress'].book.get(1)
+        cls.goals_label = game.components['otmetki.session']['text']
         cls.hangar_sounds = list(game.sounds)
         cls.play_battle(game, app)
         cls.play_results(game, app, goals)
@@ -2214,7 +2169,6 @@ class SiteRecordsTest(StoryTest):
     @classmethod
     def play_battle(cls, game, app):
         layer = game.hud_module().hud_layer(app)
-        layer.update_settings('session_goals', {'show_battle': True})
         session = game.enter_battle(1, tank_id=1)
         session.own_feedback(
             Feedback(KINDS.DAMAGE, ENEMY_VEHICLE, Extra(1500)),
@@ -2225,11 +2179,11 @@ class SiteRecordsTest(StoryTest):
         cls.components_in_battle = sorted(game.components)
         # RU 1.45 dossiers2 battle_results_processors: maxAssisted is track + radio + stun, so an artillery player's
         # stun assist counts in battle; BattleSummaryFeedbackEvent keeps stun apart from getTotalAssistDamage().
-        layer.update_settings('personal_best', {'show_assist': True})
+        layer.update_settings('battle_progress', {'record_metric': 'assist'})
         session.own_feedback(Feedback(KINDS.STUN_ASSIST, ENEMY_VEHICLE, Extra(600)))
-        cls.personal_best_after_stun = game.hud_text('personal_best')
+        cls.record_after_stun = game.hud_text('battle_progress')
         session.feedback.onPlayerSummaryFeedbackReceived(summary_with_stun(5000))
-        cls.personal_best_after_summary = game.hud_text('personal_best')
+        cls.record_after_summary = game.hud_text('battle_progress')
         game.events.onAvatarBecomeNonPlayer()
 
     @classmethod
@@ -2239,8 +2193,7 @@ class SiteRecordsTest(StoryTest):
         results = _support.battle_results()
         results['personal'][1]['damageDealt'] = 7050
         game.events.onBattleResultsReceived(True, results)
-        cls.record_cards = game.messages_with(u'новый рекорд')
-        cls.record_sounds = list(game.sounds)
+        cls.record_notices = game.messages_with(u'новый рекорд')
         cls.stored = _support.load_json(os.path.join(app.config_dir, 'personal_best_%d.json' % ACCOUNT))
         for step in range(1, 30):
             app.bus.emit('tick', time.time() + step * 5)
@@ -2250,7 +2203,7 @@ class SiteRecordsTest(StoryTest):
         cls.last_sound = game.sounds[-1]
         cls.messages = list(game.messages)
 
-    def test_site_records_fill_the_personal_best_book(self):
+    def test_site_records_fill_the_record_book(self):
         self.assertEqual(self.book, {'damage': 6812, 'assist': 5120, 'frags': 6, 'xp': 2740})
 
     def test_site_goals_show_in_the_hangar_without_a_sound(self):
@@ -2260,22 +2213,18 @@ class SiteRecordsTest(StoryTest):
     def test_battle_panels_count_the_record_efficiency_and_goals_so_far(self):
         panels = self.battle_panels
 
-        self.assertIn(u'осталось 5 312', panels['personal_best']['text'])
-        self.assertIn(u'WN8 боя', panels['battle_efficiency']['text'])
-        self.assertIn(u'Урон 1 500 / ср. 1 20', panels['battle_efficiency']['text'])
-        self.assertIn(u'Ср. урон 3 000: нужно', panels['session_goals']['text'])
-        self.assertNotIn('otmetki.session_goals', self.components_in_battle)
+        self.assertIn(u'1 500 / 6 812', panels['battle_progress']['text'])
+        self.assertIn(u'WN8 боя', panels['battle_progress']['text'])
+        self.assertNotIn('otmetki.session', self.components_in_battle)
 
     def test_stun_assist_counts_towards_the_assist_record(self):
-        self.assertIn(u'осталось 4 520', self.personal_best_after_stun)
+        self.assertIn(u'600 / 5 120', self.record_after_stun)
 
-    def test_the_battle_summary_sets_a_new_assist_record_with_the_stun(self):
-        self.assertIn(u'Новый рекорд (помощь): 5 950 (+830)', self.personal_best_after_summary)
+    def test_the_battle_summary_beats_the_assist_record_with_the_stun(self):
+        self.assertIn(u'5 950 +830', self.record_after_summary)
 
-    def test_a_new_record_is_announced_played_and_stored_after_the_battle(self):
-        self.assertTrue(self.record_cards, self.messages)
-        self.assertIn(u'урон 7 050 (было 6 812)', self.record_cards[0])
-        self.assertEqual(self.record_sounds, ['mp3:sixthSense:otmetki_record.mp3'])
+    def test_a_new_record_is_stored_after_the_battle_without_a_notice(self):
+        self.assertEqual(self.record_notices, [])
         self.assertEqual(self.stored['tanks']['1']['damage'], 7050)
 
     def test_an_achieved_goal_is_announced_with_its_sound(self):
@@ -2283,7 +2232,7 @@ class SiteRecordsTest(StoryTest):
         self.assertEqual(self.last_sound, 'mp3:sixthSense:otmetki_goal.mp3')
 
 
-class PlatoonAndArtyTest(StoryTest):
+class PlatoonTest(StoryTest):
 
     @classmethod
     def play(cls, game):
@@ -2300,7 +2249,6 @@ class PlatoonAndArtyTest(StoryTest):
         game.open_hangar()
         session = game.enter_battle(1)
         platoon = game.instances()['platoon_points'].platoon
-        arty = game.instances()['arty_meter'].battle
         for stun in (stun_info(130.0, 12.0), stun_info(130.0, 11.0), stun_info(0.0, 0.0), stun_info(160.0, 10.0)):
             session.state('STUN', stun)
         session.state('HEALTH', 640)
@@ -2308,13 +2256,9 @@ class PlatoonAndArtyTest(StoryTest):
         session.control(ALLY_VEHICLE)
         session.state('STUN', stun_info(190.0, 10.0))
         session.state('HEALTH', 700)
-        cls.stuns = arty.values()['stuns']
         cls.own_hp = platoon.members[OWN_VEHICLE]['hp']
         cls.ally_hp = platoon.members[ALLY_VEHICLE]['hp']
         cls.own_totals = platoon.own_totals()
-
-    def test_the_arty_meter_counts_only_the_own_stuns(self):
-        self.assertEqual(self.stuns, 2)
 
     def test_platoon_points_keep_each_members_hp(self):
         self.assertEqual(self.own_hp, 640)
@@ -2330,18 +2274,18 @@ class DossierBonusTypesTest(StoryTest):
     def play(cls, game):
         game.install_hud_stubs()
         game.load(list(ENTRY_MODULES))
-        counts = sys.modules['gui.mods.otmetki.features.personal_best.client'].counts_in_dossier
+        counts = sys.modules['gui.mods.otmetki.features.battle_progress.client'].counts_in_dossier
         cls.without_caps = (counts(1), counts(29))
         module('arena_bonus_type_caps', ARENA_BONUS_TYPE_CAPS=DossierCaps)
         cls.with_caps = (counts(29), counts(22), counts(None))
 
-    def test_personal_best_counts_random_battles_without_the_caps_module(self):
+    def test_the_record_counts_random_battles_without_the_caps_module(self):
         counts_random, counts_29 = self.without_caps
 
         self.assertTrue(counts_random)
         self.assertFalse(counts_29)
 
-    def test_personal_best_asks_the_caps_module_by_the_native_cap_name(self):
+    def test_the_record_asks_the_caps_module_by_the_native_cap_name(self):
         counts_29, counts_22, counts_none = self.with_caps
 
         self.assertTrue(counts_29)
@@ -2403,8 +2347,8 @@ class ReplayAndShareTest(StoryTest):
     def test_a_ready_replay_analysis_is_announced(self):
         self.assertTrue(self.replay_messages, self.messages)
 
-    def test_session_stats_offer_only_a_new_session_while_sharing_is_off(self):
-        self.assertEqual(self.actions_before, ['new_session'])
+    def test_session_stats_offer_no_share_while_sharing_is_off(self):
+        self.assertEqual(self.actions_before, ['new_session', 'refresh', 'site'])
         self.assertEqual(self.shares_before, [])
 
     def test_turning_the_session_share_on_sends_both_channels(self):
@@ -2419,7 +2363,7 @@ class ReplayAndShareTest(StoryTest):
     def test_share_now_sends_the_current_session_after_a_battle(self):
         self.assertEqual(self.share_answer['kind'], 'info')
         self.assertEqual(self.sent['session_id'], self.shared_session_id)
-        self.assertEqual(self.actions_after, ['new_session', 'share_now'])
+        self.assertEqual(self.actions_after, ['new_session', 'share_now', 'refresh', 'site'])
 
     def test_a_new_session_starts_empty(self):
         self.assertEqual(self.new_session_answer['kind'], 'info')
@@ -2449,16 +2393,6 @@ class HangarSmallWinsTest(StoryTest):
         cls.outfits = list(game.outfits)
         cls.result_messages = list(game.result_messages)
 
-        game.install_demonstrator_levels({'ussr:R04_T-34': (5, 7)})
-        vehicle.name = 'ussr:R04_T-34'
-        vehicle.type = 'mediumTank'
-        vehicle.level = 5
-        vehicle.isElite = True
-        vehicle.shortUserName = u'Т-34'
-        vehicle.crew = [(0, Tankman(0, u'Командир')), (1, Tankman(8400, u'Наводчик')), (2, None)]
-        game.instances()['hangar_info'].render(SERVER_TIME)
-        cls.hangar_info = game.components['otmetki.hangar_info']['text']
-
     def test_removing_a_style_is_refused_when_none_is_installed(self):
         self.assertEqual(self.nothing_refusal, self.nothing_text)
 
@@ -2466,12 +2400,6 @@ class HangarSmallWinsTest(StoryTest):
         self.assertEqual(self.remove_answer['kind'], 'info')
         self.assertEqual(self.outfits, [((('outfit', 'empty-component', 'cd-1'), 7),)])
         self.assertEqual(self.result_messages, ['style removed'])
-
-    def test_hangar_info_shows_the_tank_its_battle_tiers_and_the_crew_progress(self):
-        self.assertIn(u'Т-34', self.hangar_info)
-        self.assertIn(u'бои 5–7 ур.', self.hangar_info)
-        self.assertIn(u'до навыка 8 400 опыта (Наводчик)', self.hangar_info)
-        self.assertIn(u'ускоренное обучение', self.hangar_info)
 
 
 class OnslaughtAndEventCardsTest(StoryTest):
@@ -2698,6 +2626,7 @@ class MarksTest(StoryTest):
         cls.curve_reads = len(reads)
         reads[0](response_json(MOE_CURVE))
         cls.hangar_marks = copy.deepcopy(game.hud_components()['hangar_marks'])
+        game.hud_module().component_config(app).get('marks_panel').update({'style': 'extended'})
         session = game.enter_battle(1, tank_id=1)
         cls.battle_panels = copy.deepcopy(game.hud_components())
         session.own_feedback(
@@ -2824,7 +2753,8 @@ class GamefaceSpacesTest(StoryTest):
         app = game.open_hangar()
         app.ui.show('otmetki.hangar_test', 'hangar only', HANGAR_LABEL_PLACE)
         cls.hangar_page = game.hud_page_ids()
-        game.enter_battle(1)
+        session = game.enter_battle(1)
+        session.own_feedback(Feedback(KINDS.DAMAGE, ENEMY_VEHICLE, Extra(390)))
         cls.battle_page = game.hud_page_ids()
         cls.battle_cursor = game.hud_page()['cursor']
 
@@ -2908,7 +2838,8 @@ class OldGuiFlashTest(StoryTest):
         app.bus.emit('hud_edit', True)
         cls.components_in_edit = dict(game.components)
         cls.has_panels_in_edit = app.ui.has_panels
-        game.enter_battle(1)
+        session = game.enter_battle(1)
+        session.own_feedback(Feedback(KINDS.DAMAGE, ENEMY_VEHICLE, Extra(390)))
         cls.battle_panels = copy.deepcopy(game.hud_components())
 
     def test_pre_06_guiflash_draws_nothing_in_the_hangar(self):
@@ -2918,6 +2849,290 @@ class OldGuiFlashTest(StoryTest):
     def test_pre_06_guiflash_draws_multiline_labels_in_battle(self):
         self.assertIn('damage_log', self.battle_panels)
         self.assertTrue(self.battle_panels['damage_log']['multiline'])
+
+
+RAMMER = 9001
+QUICK_DEMOUNT_MENU = 'gui.Scaleform.daapi.view.lobby.tank_setup.context_menu.opt_device'
+
+
+class DeviceSetup(object):
+    # RU 1.45 gui_items/vehicle_equipment: a setup (preset) layout lists the device of every slot as intCDs.
+
+    def __init__(self, *device_ids):
+        self.device_ids = list(device_ids)
+
+    def getIntCDs(self, default=0):
+        return [device_id or default for device_id in self.device_ids]
+
+
+def garage_tank(tank_id, name, tier, setups, **flags):
+    layouts = instance('SetupLayouts', {'setups': dict(enumerate(setups))})
+    devices = instance('OptDevices', {'setupLayouts': layouts})
+    attrs = {'intCD': tank_id, 'shortUserName': name, 'level': tier, 'optDevices': devices}
+    attrs.update(flags)
+    return instance('Vehicle', attrs)
+
+
+def device_menu_class():
+    # RU 1.45 tank_setup/context_menu/opt_device.OptDeviceItemContextMenu, reduced to what the feature touches.
+
+    class OptDeviceItemContextMenu(object):
+
+        def __init__(self, device_id, vehicle):
+            self._intCD = device_id
+            self.vehicle = vehicle
+            self.selected = []
+
+        @classmethod
+        def _makeItem(cls, optId, optLabel=None, optInitData=None, optSubMenu=None, linkage=None, iconType=''):
+            return {'id': optId, 'label': optLabel, 'initData': optInitData, 'submenu': optSubMenu}
+
+        def _generateOptions(self, ctx=None):
+            return [self._makeItem('information', 'Information')]
+
+        def onOptionSelect(self, optionId):
+            self.selected.append(optionId)
+
+        def _getVehicle(self):
+            return self.vehicle
+
+    return OptDeviceItemContextMenu
+
+
+class QuickDemountTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        actions = []
+        current = garage_tank(1, 'T-34', 5, [DeviceSetup(RAMMER, None, None)])
+        tanks = [
+            current,
+            garage_tank(2, 'T-44', 8, [DeviceSetup(None, None, None), DeviceSetup(None, RAMMER, None)]),
+            garage_tank(3, 'Obj. 140', 10, [DeviceSetup(None, None, RAMMER)]),
+            garage_tank(4, 'T-54', 9, [DeviceSetup(RAMMER, None, None)], isInBattle=True),
+            garage_tank(5, 'MS-1', 1, [DeviceSetup(None, None, None)]),
+        ]
+        by_id = dict((tank.intCD, tank) for tank in tanks)
+        rammer = instance('OptionalDevice', {'intCD': RAMMER})
+        by_id[RAMMER] = rammer
+        items = instance('Items', {
+            'getVehicles': lambda items, criteria: dict((tank.intCD, tank) for tank in tanks),
+            'getItemByCD': lambda items, item_id: by_id.get(item_id),
+        })
+        items_cache = constants('IItemsCache', {})
+        game.services[items_cache] = instance('ItemsCache', {'items': items})
+        package('skeletons.gui.shared').IItemsCache = items_cache
+        for name in ('gui.shared', 'gui.shared.utils', 'gui.shared.gui_items', 'gui.shared.gui_items.items_actions'):
+            package(name)
+        module('gui.shared.utils.requesters', REQ_CRITERIA=constants('REQ_CRITERIA', {'INVENTORY': 'inventory'}))
+        module(
+            'gui.shared.gui_items.items_actions.factory',
+            REMOVE_OPT_DEVICE='removeOptDevice',
+            doAction=lambda *args, **kwargs: actions.append((args, kwargs)),
+        )
+        for name in HANGAR_VIEW_PACKAGES[:5] + ('gui.Scaleform.daapi.view.lobby.tank_setup',
+                                                 'gui.Scaleform.daapi.view.lobby.tank_setup.context_menu'):
+            package(name)
+        menu_class = device_menu_class()
+        module(QUICK_DEMOUNT_MENU, OptDeviceItemContextMenu=menu_class)
+
+        app = game.open_hangar()
+        app.config.update({'hangar_quick_demount': True})
+        menu = menu_class(RAMMER, current)
+        cls.options = menu._generateOptions()
+        entry = cls.options[-1]
+        cls.submenu = [(item['id'], item['label'], item['initData']['enabled']) for item in entry['submenu']]
+        menu.onOptionSelect('information')
+        menu.onOptionSelect(entry['submenu'][1]['id'])
+        menu.onOptionSelect(entry['submenu'][2]['id'])
+        cls.selected = list(menu.selected)
+        cls.actions = list(actions)
+        app.config.update({'hangar_quick_demount': False})
+        cls.options_off = menu._generateOptions()
+
+    def test_the_device_menu_gets_the_quick_demount_entry_last(self):
+        self.assertEqual(self.options[0]['id'], 'information')
+        self.assertEqual(self.options[-1]['id'], 'otmetki_quick_demount')
+
+    def test_the_other_carriers_are_listed_by_tier_and_a_tank_in_battle_cannot_be_picked(self):
+        self.assertEqual([(entry_id, enabled) for entry_id, _, enabled in self.submenu], [
+            ('otmetki_quick_demount:3', True),
+            ('otmetki_quick_demount:4', False),
+            ('otmetki_quick_demount:2', True),
+        ])
+        self.assertEqual(self.submenu[0][1], u'X  Obj. 140')
+
+    def test_the_stock_options_still_reach_the_client(self):
+        self.assertEqual(self.selected, ['information'])
+
+    def test_picking_a_tank_runs_the_stock_demount_from_every_setup_and_a_tank_in_battle_is_refused(self):
+        (args, kwargs), = self.actions
+        action, vehicle, device, slot, destroy = args
+
+        self.assertEqual((action, vehicle.intCD, device.intCD, slot, destroy), ('removeOptDevice', 2, RAMMER, 1, False))
+        self.assertEqual(kwargs, {'forFitting': False, 'everywhere': True})
+
+    def test_the_switch_off_leaves_the_stock_menu(self):
+        self.assertEqual([option['id'] for option in self.options_off], ['information'])
+
+
+def research_tank():
+    # RU 1.45 Vehicle.getUnlocksDescrs: (index, xpCost, nodeCD, required set); 31 a gun, 32 an engine, 41 the next tank.
+    table = [(0, 20000, 31, set()), (1, 5000, 32, set()), (2, 60000, 41, {31})]
+
+    def unlocks(vehicle):
+        return iter(table)
+
+    return instance('Vehicle', {'intCD': 1, 'xp': 15000, 'isElite': False, 'getUnlocksDescrs': unlocks})
+
+
+class TankCardProgressTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        vehicle_type = 'vehicle'
+        nodes = {
+            31: instance('Gun', {'itemTypeID': 'gun', 'level': 8, 'shortUserName': 'D-10T'}),
+            32: instance('Engine', {'itemTypeID': 'engine', 'level': 8, 'shortUserName': 'V-2-54'}),
+            41: instance('Vehicle', {'itemTypeID': vehicle_type, 'level': 9, 'shortUserName': 'T-54'}),
+        }
+        stats = instance('RandomStats', {'getAvgXP': lambda stats: 1000})
+        dossier = instance('Dossier', {'getRandomStats': lambda dossier: stats})
+        items = instance('Items', {
+            'stats': instance('Stats', {'unlocks': {1}}),
+            'getItemByCD': lambda items, item_id: nodes.get(item_id),
+            'getVehicleDossier': lambda items, tank_id: dossier,
+        })
+        items_cache = constants('IItemsCache', {})
+        game.services[items_cache] = instance('ItemsCache', {'items': items})
+        package('skeletons.gui.shared').IItemsCache = items_cache
+        package('gui.shared')
+        package('gui.shared.gui_items').GUI_ITEM_TYPE = constants('GUI_ITEM_TYPE', {'VEHICLE': vehicle_type})
+        package('gui.techtree')
+        tree = instance('TechTree', {'getBlueprintDiscountData': lambda tree, node_id, level, cost: (10, cost - 6000)})
+        module('gui.techtree.techtree_dp', g_techTreeDP=tree)
+        game.vehicle.item = research_tank()
+
+        app = game.open_hangar(is_bound=True)
+        game.hud_module().component_config(app).get('marks_panel').update({'hangar_style': 'extended'})
+        snapshot = dict(MOE_SNAPSHOT, mastery=2)
+        app.marks.hangar_moe[1] = snapshot
+        app.bus.emit('vehicle_moe', snapshot)
+        read = [callback for method, url, headers, body, callback in game.fetches
+                if method == 'GET' and url.endswith('/v1/moe/1')][0]
+        read(response_json(dict(MOE_CURVE, mastery={'class3': 540, 'class2': 710, 'class1': 960, 'ace': 1320})))
+        cls.card_text = game.hud_text('hangar_marks')
+
+    def test_the_card_lists_the_xp_of_every_mastery_badge(self):
+        for xp in ('540', '710', '960', '1 320'):
+            self.assertIn(xp, self.card_text)
+
+    def test_the_card_counts_the_xp_to_elite_with_the_blueprint_price_of_the_next_tank(self):
+        self.assertIn('64 000 (~64', self.card_text)
+
+    def test_the_card_counts_the_xp_to_the_next_tank_with_its_gun_and_the_battles_at_the_average(self):
+        self.assertIn('T-54 59 000 (~59', self.card_text)
+
+
+class ExactMoeChangeTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        app = game.open_hangar(is_bound=True)
+        app.marks.hangar_moe[1] = dict(HANGAR_MOE)
+        results = _support.battle_results()
+        game.enter_battle(results['arenaUniqueID'], 1)
+        app.marks.hangar_moe[1] = dict(HANGAR_MOE, damage_rating=8712)
+        game.back_to_hangar()
+        game.events.onBattleResultsReceived(True, results)
+        cls.messages = list(game.messages)
+        cls.session_text = game.components['otmetki.session']['text']
+
+    def test_the_results_are_compared_with_the_dossier_read_before_the_battle(self):
+        self.assertTrue([text for text in self.messages if u'+1.12%' in text], self.messages)
+
+    def test_the_session_card_shows_the_tanks_exact_change(self):
+        self.assertIn(u'+1.12%', self.session_text)
+
+
+class AccountExtrasTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        app = game.open_hangar(is_bound=True)
+        app.config.update(dict((switch, True) for switch in (
+            'hangar_depot_seller', 'hangar_auto_reserves', 'hangar_space', 'hangar_update_notice',
+        )))
+        instances = game.instances()
+        cls.seller_actions = [action['id'] for action in instances['depot_seller'].ui_actions()]
+        cls.seller_empty = instances['depot_seller'].ui_page()['empty']
+        cls.seller_unset = app.translate('depot_seller_empty_unset')
+        cls.reserves_refusal = instances['auto_reserves'].ui_action('activate_now')
+        cls.space_rows = [row['id'] for row in instances['hangar_space'].ui_page()['rows']]
+        cls.check_without_mods = instances['update_notice'].check()
+        cls.play_update_check(game, instances['update_notice'])
+        cls.play_onslaught_battle(game, instances['comp7_helper'])
+
+    @classmethod
+    def play_update_check(cls, game, notice):
+        folder = os.path.join(game.game_dir, 'mods', '1.45.0.0')
+        os.makedirs(folder)
+        open(os.path.join(folder, 'net.triotmetki.core_0.1.0.mtmod'), 'w').close()
+        notice.check()
+        fetches = game.fetches_to('/modpack/releases/latest?game=1.45.0.0')
+        cls.update_fetches = len(fetches)
+        release = {'version': '0.2.0', 'notes': {'ru': u'Новое', 'en': u'New'}, 'packages': [
+            {'id': 'core', 'file': 'net.triotmetki.core_0.2.0.mtmod'},
+        ]}
+        fetches[0][4](response_json({'status': 'compatible', 'release': release}))
+        game.run_callbacks()
+        cls.update_label = game.components.get('otmetki.update_notice', {}).get('text')
+        cls.skip_notice = notice.ui_action('skip_version')
+        cls.label_after_skip = 'otmetki.update_notice' in game.components
+
+    @classmethod
+    def play_onslaught_battle(cls, game, helper):
+        comp7 = game.install_onslaught_services()
+        module('skeletons.gui.game_control', IComp7Controller=comp7)
+        results = _support.battle_results()
+        results['common'].pop('guiType', None)
+        results['common']['bonusType'] = 43
+        game.enter_battle(results['arenaUniqueID'], 1)
+        game.back_to_hangar()
+        game.events.onBattleResultsReceived(True, results)
+        game.vehicle.item = instance('Vehicle', {'intCD': 1})
+        helper.refresh()
+        cls.comp7_history = list(helper.history)
+        cls.comp7_text = game.components['otmetki.comp7_helper']['text']
+
+    def test_the_depot_seller_sells_nothing_until_a_category_is_on(self):
+        self.assertEqual(self.seller_actions, ['refresh'])
+        self.assertEqual(self.seller_empty, self.seller_unset)
+
+    def test_auto_reserves_refuse_without_a_chosen_reserve(self):
+        self.assertEqual(self.reserves_refusal['kind'], 'error')
+
+    def test_the_hangar_space_page_starts_with_the_game_hangar(self):
+        self.assertEqual(self.space_rows, ['native'])
+
+    def test_the_update_notice_needs_installed_packages(self):
+        self.assertFalse(self.check_without_mods)
+
+    def test_the_update_notice_asks_the_release_index_once_and_shows_the_version(self):
+        self.assertEqual(self.update_fetches, 1)
+        self.assertIn('0.2.0', self.update_label)
+
+    def test_a_skipped_version_takes_the_card_off(self):
+        self.assertEqual(self.skip_notice['kind'], 'info')
+        self.assertFalse(self.label_after_skip)
+
+    def test_an_onslaught_battle_is_kept_for_the_card(self):
+        self.assertEqual(len(self.comp7_history), 1)
+        self.assertIn('+', self.comp7_text)
 
 
 if __name__ == '__main__':

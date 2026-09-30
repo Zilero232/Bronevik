@@ -1,6 +1,7 @@
 export const BATTLE_LOADOUT = {
   bonusGlyph: 'points',
-  bonusSize: 12,
+  bonusSize: 11,
   attentionGlyph: 'shield_hit',
-  attentionSize: 14
+  attentionSize: 14,
+  directiveOverlay: 'battleBooster'
 } as const;

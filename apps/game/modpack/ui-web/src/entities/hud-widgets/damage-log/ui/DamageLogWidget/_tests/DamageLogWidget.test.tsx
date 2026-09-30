@@ -10,50 +10,45 @@ const sources = (html: HTMLElement) => [...html.querySelectorAll('img')].map((im
 
 const fixture = damageLogSchema.parse(readWidgetFixture('damage_log'));
 
-const withNote = (note: string) => fixture.rows.map((row) => ({ ...row, note }));
-
 describe(DamageLogWidget, () => {
   it('draws the totals as an icon and a number', () => {
     const html = render(<DamageLogWidget data={fixture} />).container;
 
     expect(sources(html)).toContain('img://gui/maps/icons/library/efficiency/48x48/damage.png');
-  });
-
-  it('draws one row per hit with its shell and attacker, received ones with a minus', () => {
-    const html = render(<DamageLogWidget data={fixture} />).container;
-
-    expect(sources(html)).toContain('img://gui/maps/icons/shell/small/ARMOR_PIERCING_CR_PREMIUM.png');
-    expect(html.textContent).toContain('-310');
-    expect(html.textContent).toContain('KV-1');
-  });
-
-  it('draws the hit glyphs as inline icons', () => {
-    const html = render(<DamageLogWidget data={fixture} />).container;
-
-    expect(html.querySelectorAll('svg').length).toBeGreaterThan(0);
-  });
-
-  it('keeps the compact style to the totals', () => {
-    const html = render(<DamageLogWidget data={{ ...fixture, style: 'compact' as const, rows: [] }} />).container;
-
-    expect(html.textContent).not.toContain('KV-1');
     expect(html.textContent).toContain('710');
   });
 
-  it('keeps a short row to the amount and its icon while Alt is up', () => {
-    const html = render(<DamageLogWidget data={{ ...fixture, detail: 'short' as const }} />).container;
+  it('draws the rows of both sections with the target and the attacker', () => {
+    const html = render(<DamageLogWidget data={fixture} />).container;
 
+    expect(html.textContent).toContain('Pz. IV');
     expect(html.textContent).toContain('-310');
-    expect(html.textContent).not.toContain('KV-1');
-    expect(sources(html)).not.toContain('img://gui/maps/icons/vehicleTypes/white/heavyTank.png');
+    expect(html.textContent).toContain('KV-1');
   });
 
-  it('keeps the full row and adds its note while Alt is held', () => {
-    const data = { ...fixture, detail: 'extended' as const, rows: withNote('Получено ОФ боеукладка') };
+  it('writes the shell label in a chip', () => {
+    const html = render(<DamageLogWidget data={fixture} />).container;
 
-    const html = render(<DamageLogWidget data={data} />).container;
+    expect(html.textContent).toContain('ОФ');
+  });
 
-    expect(html.textContent).toContain('KV-1');
-    expect(html.textContent).toContain('Получено ОФ боеукладка');
+  it('adds the notes the Python side sends', () => {
+    const html = render(<DamageLogWidget data={fixture} />).container;
+
+    expect(html.textContent).toContain('боеукладка');
+  });
+
+  it('is wider with the notes than without them', () => {
+    const wide = render(<DamageLogWidget data={fixture} />).container.firstElementChild?.className;
+    const narrow = render(<DamageLogWidget data={{ ...fixture, wide: false }} />).container.firstElementChild?.className;
+
+    expect(wide).not.toBe(narrow);
+  });
+
+  it('keeps to the totals when no section has rows', () => {
+    const html = render(<DamageLogWidget data={{ ...fixture, dealt: [], received: [] }} />).container;
+
+    expect(html.textContent).not.toContain('KV-1');
+    expect(html.textContent).toContain('710');
   });
 });

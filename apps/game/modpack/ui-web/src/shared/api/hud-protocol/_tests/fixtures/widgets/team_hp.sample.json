@@ -8,8 +8,8 @@
       "max": 5300
     },
     "colors": {
-      "ally": "#7CD35B",
-      "enemy": "#E3564A"
+      "ally": null,
+      "enemy": null
     },
     "diff": 2300,
     "enemies": {
@@ -22,6 +22,10 @@
     "score_alive": false,
     "show_score": true,
     "style": "icons",
+    "tones": {
+      "ally": "ally",
+      "enemy": "enemy"
+    },
     "vehicles": {
       "allies": [
         {

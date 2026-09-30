@@ -32,6 +32,10 @@ PANEL_LIMITS = {
 LAYOUT_KEYS = ('x', 'y', 'align_x', 'align_y', 'alpha', 'drag', 'border', 'scale')
 # The keys of a panel's place (its anchor and the offset from it).
 PLACE_KEYS = ('x', 'y', 'align_x', 'align_y')
+# (offset key, anchor key, near edge, far edge): an offset is in design px from its anchor edge, the unit the page
+# multiplies by the interface scale, so it points into the screen at every resolution unless it points past the edge
+# it is measured from (negative from the left or top, positive from the right or bottom).
+FIT_AXES = (('x', 'align_x', 'left', 'right'), ('y', 'align_y', 'top', 'bottom'))
 
 HEX_COLOR = re.compile(r'^#[0-9A-Fa-f]{6}$')
 SOUND_EVENT = re.compile(r'^[A-Za-z0-9_]*$')
@@ -87,27 +91,16 @@ DOCK_ANCHORS = {
 }
 DOCKS = {
     'otmetki.hud.damage_log': ('battle_left_bottom', 0),
-    'otmetki.hud.last_hit': ('battle_left_bottom', 1),
     'otmetki.hud.marks_panel': ('battle_left_top', 0),
-    'otmetki.hud.received_hits': ('battle_left_top', 1),
-    'otmetki.hud.platoon_points': ('battle_left_top', 2),
-    'otmetki.hud.personal_best': ('battle_left_top', 3),
-    'otmetki.hud.battle_efficiency': ('battle_left_top', 4),
-    'otmetki.hud.hit_log': ('battle_right_top', 0),
-    'otmetki.hud.arty_meter': ('battle_right_top', 1),
-    'otmetki.hud.session_goals': ('battle_right_top', 2),
-    'otmetki.hud.personal_missions': ('battle_right_top', 3),
-    'otmetki.hud.main_gun': ('battle_right_top', 4),
+    'otmetki.hud.platoon_points': ('battle_left_top', 1),
+    'otmetki.hud.battle_progress': ('battle_right_top', 0),
     'otmetki.hud.battle_loadout': ('battle_bottom_center', 0),
     'otmetki.hud.hangar_marks': ('hangar_left', 0),
-    'otmetki.marks_history': ('hangar_left', 1),
-    'otmetki.battle_hits': ('hangar_left', 2),
-    'otmetki.hangar_ratings': ('hangar_left', 3),
     'otmetki.session': ('hangar_right', 0),
-    'otmetki.session_goals': ('hangar_right', 1),
-    'otmetki.personal_missions': ('hangar_right', 2),
-    'otmetki.platoon_helper': ('hangar_right', 3),
-    'otmetki.comp7_helper': ('hangar_right', 4),
-    'otmetki.event_trackers.triathlon': ('hangar_right', 5),
-    'otmetki.event_trackers.caravan': ('hangar_right', 6),
+    'otmetki.personal_missions': ('hangar_right', 1),
+    'otmetki.comp7_helper': ('hangar_right', 2),
+    'otmetki.event_trackers.triathlon': ('hangar_right', 3),
+    'otmetki.event_trackers.caravan': ('hangar_right', 4),
+    'otmetki.update_notice': ('hangar_right', 5),
+    'otmetki.crew_xp': ('hangar_left', 1),
 }

@@ -2,43 +2,42 @@
 
 .header {
   display: flex;
-  height: 20px;
+  height: 24px;
   flex-direction: row;
   align-items: center;
 }
 
 .divided {
-  padding-bottom: 3px;
-  border-bottom: 1px solid rgb(255 255 255 / 8%);
-  margin-bottom: 3px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid token(hud-divider);
+  margin-bottom: 4px;
 }
 
 .icon {
-  margin-right: 6px;
+  margin-right: 8px;
 }
 
 .title {
   flex-shrink: 0;
-  color: token(color-text-muted);
-  font-size: 11px;
+  color: token(hud-muted);
 
+  @include hud-type(caption);
   @include caps;
 }
 
 .subtitle {
-  margin-left: 6px;
-  color: token(color-text);
-  font-size: 12px;
-  font-weight: 700;
+  margin-left: 8px;
+  color: token(hud-text);
 
+  @include hud-type(value);
   @include ellipsis;
 }
 
 .value {
   flex-shrink: 0;
-  padding-left: 10px;
+  padding-left: 12px;
   margin-left: auto;
-  font-size: 17px;
-  font-weight: 700;
   white-space: nowrap;
+
+  @include hud-type(key);
 }

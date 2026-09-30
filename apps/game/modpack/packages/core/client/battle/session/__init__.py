@@ -123,12 +123,3 @@ def damage_source(extra):
         if call(extra, check, False):
             return source
     return 'other'
-
-
-def own_hull_yaw():
-    """The world yaw (radians) of the player's own vehicle, or None. Only the own vehicle: never another entity."""
-    getter = getattr(BigWorld, 'entity', None)
-    vehicle_id = getattr(player(), 'playerVehicleID', None)
-    if getter is None or not vehicle_id:
-        return None
-    return getattr(getter(vehicle_id), 'yaw', None)

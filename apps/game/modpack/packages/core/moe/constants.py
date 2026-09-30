@@ -23,3 +23,7 @@ REACHED = u'✓'
 STAR = u'★'
 UNREACHABLE = u'∞'
 MACRO_MISSING = u'-'
+
+# The mastery badges of GET /v1/moe/<tank_id> `mastery` (base XP of one battle per badge), with the dossier's
+# markOfMastery value each one is: 1 third class, 2 second, 3 first, 4 Ace Tanker.
+MASTERY_CLASSES = (('class3', 1), ('class2', 2), ('class1', 3), ('ace', 4))

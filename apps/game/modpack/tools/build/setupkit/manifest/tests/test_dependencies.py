@@ -148,7 +148,7 @@ class RequiredByFollowsTheCodeTest(unittest.TestCase):
         labels = keys_using(HUD_USE)
 
         self.assertIn('marks_panel', labels)
-        self.assertIn('hangar_marks', labels)
+        self.assertIn('session_stats', labels)
         self.assert_required_by(GUIFLASH, labels)
 
     def test_only_the_ui_imports_gameface(self):

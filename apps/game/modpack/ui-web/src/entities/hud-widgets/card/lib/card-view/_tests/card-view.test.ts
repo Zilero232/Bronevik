@@ -26,7 +26,6 @@ const card = (overrides: Partial<CardData> = {}): CardData => ({
   subtitle: null,
   value: null,
   value_tone: 'text',
-  rail: null,
   chips: [],
   strip: [],
   rows: [],
@@ -83,6 +82,6 @@ describe(rowIcon, () => {
 
     const icon = rowIcon(done);
 
-    expect(icon).toEqual({ icon: 'otmetki:check', tone: 'success' });
+    expect(icon).toEqual({ icon: 'otmetki:check', tone: 'good' });
   });
 });

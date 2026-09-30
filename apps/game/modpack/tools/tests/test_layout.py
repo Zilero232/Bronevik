@@ -7,10 +7,10 @@ from otmetki.companion.config import DEFAULTS, FEATURES
 from otmetki.companion.i18n import STRINGS as COMPANION_STRINGS
 
 FEATURE_FILES = ('model', 'client', 'settings', 'i18n')
-HUD_FEATURES = ('battle_clock', 'battle_results', 'damage_log', 'hit_log', 'sixth_sense', 'team_hp')
+HUD_FEATURES = ('battle_progress', 'battle_results', 'damage_log', 'sixth_sense', 'team_hp')
 HANGAR_FEATURES = (
-    'auto_resupply', 'camera', 'crosshair', 'hangar_cleaner', 'hangar_info', 'hangar_marks', 'hangar_ratings',
-    'hangar_tweaks', 'marks_history', 'minimap', 'notification_filter', 'replay_manager',
+    'auto_resupply', 'camera', 'crosshair', 'hangar_cleaner', 'hangar_info', 'hangar_tweaks', 'minimap',
+    'notification_filter', 'replay_manager',
 )
 BATTLE_EXTRAS = ('battle_sounds', 'chat_filter')
 EXPECTED_FEATURES = ('marks_panel', 'replay_upload', 'session_stats') + HUD_FEATURES + HANGAR_FEATURES + BATTLE_EXTRAS

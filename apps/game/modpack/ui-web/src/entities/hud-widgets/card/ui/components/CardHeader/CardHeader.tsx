@@ -15,7 +15,7 @@ export const CardHeader = ({ data }: CardHeaderProps) => {
 
   return (
     <div className={clsx(s.header, hasCardBody(data) && s.divided)}>
-      {data.icon !== null && <ClientIcon className={s.icon} icon={data.icon} size={CARD.headerIcon} tone='accent' />}
+      {data.icon !== null && <ClientIcon className={s.icon} icon={data.icon} size={CARD.headerIcon} tone='muted' />}
       <HudText className={s.title} text={data.title} />
       <HudText className={s.subtitle} text={data.subtitle} />
       <HudText className={clsx(s.value, toneClass(data.value_tone))} text={data.value} />

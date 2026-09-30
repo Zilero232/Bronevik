@@ -1,9 +1,9 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from .constants import AMMO_RACK, CREW_ROLES, STATE_CRITICAL, STATE_DESTROYED
+from .constants import AMMO_RACK, CREW_ROLES, STATE_CRITICAL, STATE_DESTROYED, STOCK_ALERTS
 
-# Fair play: only the own vehicle's state and the public kill feed every player sees; nothing about enemies'
-# positions, reloads or aim.
+# Fair play: only the own vehicle's state, the player's own feedback (a module the own shot damaged) and the public
+# kill feed every player sees; nothing about enemies' positions, reloads or aim.
 
 
 def device_event(device, state):
@@ -52,8 +52,16 @@ class SoundPicker(object):
         self.settings = settings
         self.played = {}
 
-    def pick(self, key, now):
+    def sound_of(self, key):
         sound = self.settings.get(key)
+        if sound:
+            return sound
+        if self.settings.get('stock_alerts'):
+            return STOCK_ALERTS.get(key)
+        return None
+
+    def pick(self, key, now):
+        sound = self.sound_of(key)
         if not sound:
             return None
         last = self.played.get(key)

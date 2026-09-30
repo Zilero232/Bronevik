@@ -14,10 +14,16 @@ export const ComponentCard = ({ component, fields, forceOpen }: ComponentCardPro
   return (
     <article className={clsx(s.card, !card.enabled && s.off, card.open && s.open)}>
       <div className={s.head}>
-        <button aria-expanded={card.expandable ? card.open : undefined} className={s.main} type='button' onClick={card.toggleOpen}>
+        <button
+          aria-expanded={card.expandable && !card.hasEditor ? card.open : undefined}
+          aria-haspopup={card.hasEditor ? 'dialog' : undefined}
+          className={s.main}
+          type='button'
+          onClick={card.toggleOpen}
+        >
           <CardTile enabled={card.enabled} icon={card.icon} />
           <CardTitles card={card} component={component} />
-          {card.expandable && <Icon className={s.chevron} name={card.open ? 'chevron-up' : 'chevron-down'} tone='text' />}
+          {card.expandable && <Icon className={s.chevron} name={card.chevron} tone='text' />}
         </button>
         <CardSwitch card={card} component={component} />
       </div>

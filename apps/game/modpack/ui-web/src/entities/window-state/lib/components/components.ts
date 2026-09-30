@@ -7,6 +7,31 @@ import { COMPONENT_ICONS, FALLBACK_COMPONENT_ICON, WINDOW_VIEW } from '../../con
 
 const normalize = (text: string | null | undefined): string => (text ?? '').toLowerCase().replaceAll('ё', 'е').trim();
 
+const isCyrillic = (title: string): boolean => {
+  const code = title.charCodeAt(0);
+
+  return code >= WINDOW_VIEW.cyrillic.first && code <= WINDOW_VIEW.cyrillic.last;
+};
+
+const scriptRank = (title: string): number => (isCyrillic(title) ? 0 : 1);
+
+const compareTitles = (left: UiComponent, right: UiComponent): number => {
+  const byScript = scriptRank(left.title) - scriptRank(right.title);
+
+  if (byScript !== 0) {
+    return byScript;
+  }
+
+  const leftKey = normalize(left.title);
+  const rightKey = normalize(right.title);
+
+  if (leftKey === rightKey) {
+    return 0;
+  }
+
+  return leftKey < rightKey ? -1 : 1;
+};
+
 export const isEnabled = (component: UiComponent): boolean => component.switch?.value ?? true;
 
 export const componentIcon = (componentId: string): UiIconName => COMPONENT_ICONS[componentId] ?? FALLBACK_COMPONENT_ICON;
@@ -14,7 +39,7 @@ export const componentIcon = (componentId: string): UiIconName => COMPONENT_ICON
 export const componentsOf = ({ components, section, context }: ComponentsOfInput): UiComponent[] =>
   components
     .filter((component) => component.section === section && (context === 'all' || component.context === context || component.context === 'any'))
-    .sort((left, right) => left.title.localeCompare(right.title));
+    .sort(compareTitles);
 
 export const summarize = (components: UiComponent[]): SectionSummary[] =>
   PROTOCOL.sections.map((section) => {

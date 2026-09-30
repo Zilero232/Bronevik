@@ -49,6 +49,15 @@ describe(componentsOf, () => {
     expect(titles).toEqual(['Лог урона', 'minimap']);
   });
 
+  it('sorts Cyrillic titles first, ignoring case and ё, the same on every machine', () => {
+    const titled = (title: string): UiComponent => ({ ...byId('minimap'), title });
+    const list = ['zoom', 'Жук', 'Ёж', 'арта', 'Alpha'].map(titled);
+
+    const titles = componentsOf({ components: list, section: 'battle', context: 'all' }).map(({ title }) => title);
+
+    expect(titles).toEqual(['арта', 'Ёж', 'Жук', 'Alpha', 'zoom']);
+  });
+
   it('keeps the hangar filter to the cards shown in the hangar', () => {
     const cards = componentsOf({ components: components(), section: 'marks', context: 'hangar' });
 

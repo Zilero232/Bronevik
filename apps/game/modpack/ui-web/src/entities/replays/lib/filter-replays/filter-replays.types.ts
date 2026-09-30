@@ -1,0 +1,13 @@
+import type { ReplayFilters, ReplayItem } from '../../model';
+
+export type FilterReplaysInput = {
+  items: readonly ReplayItem[];
+  filters: ReplayFilters;
+  now: number;
+};
+
+export type MatchReplayInput = {
+  item: ReplayItem;
+  filters: ReplayFilters;
+  now: number;
+};

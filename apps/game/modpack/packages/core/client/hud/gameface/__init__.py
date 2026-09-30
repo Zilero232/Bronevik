@@ -10,8 +10,16 @@ has `pointer-events: none`. The window lives only in the hangar and the battle G
 space is left and opened again when the lobby or the battle is entered (a window opened on the login screen,
 before the lobby app, never showed in the 1.45.0.0 live test), and one the client destroyed is replaced on the
 next sync. Any failure to open marks the backend broken, and the chain moves on to GUIFlash.
+
+The window is opened a frame after the space was entered, never from inside the app loader's own space switch
+(onGUISpaceEntered fires while the lobby app is still being shown). On Lesta, OpenWG Gameface restarts the client
+once after an install or update changed its res_map (`restart_pending`): that session only logs it.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
+
+import os
+
+import BigWorld
 
 from ....hud import HudBackend
 from ....hud.icons import resolve
@@ -21,7 +29,7 @@ from ...game import main_window
 from ..icons import client_file_exists
 from ..modifier import ModifierWatch
 from ..space import current_space, cursor_events, gui_spaces
-from .constants import INVALID_RES_ID, READY_SPACES, WINDOW_LAYER
+from .constants import INVALID_RES_ID, READY_SPACES, RESTART_FLAG_FILE, WINDOW_LAYER
 
 try:
     from frameworks.wulf import ViewFlags, ViewModel, ViewSettings, WindowFlags, WindowLayer, WindowStatus
@@ -53,6 +61,13 @@ def layout_id():
     return found if isinstance(found, int) and found != INVALID_RES_ID else None
 
 
+def restart_pending():
+    """True while OpenWG Gameface restarts the client to apply a new res_map (it writes RESTART_FLAG_FILE, then
+    BigWorld.restartGame(), and deletes the flag once the restarted client validated the res_map)."""
+    manager = getattr(openwg_gameface, 'manager', None)
+    return manager is not None and getattr(manager, 'isResMapValidated', True) is False and os.path.isfile(RESTART_FLAG_FILE)
+
+
 if IMPORT_ERROR is None:
 
     class HudViewModel(ViewModel):
@@ -80,11 +95,9 @@ if IMPORT_ERROR is None:
 
         def _onLoading(self, *args, **kwargs):
             super(HudView, self)._onLoading(*args, **kwargs)
-            self.viewModel.send += self._on_send
             self.backend.on_loaded(self)
 
         def _finalize(self):
-            self.viewModel.send -= self._on_send
             self.backend.on_destroyed(self)
             super(HudView, self)._finalize()
 
@@ -117,9 +130,12 @@ class GamefaceBackend(HudBackend):
         self.modifier = ModifierWatch(self._on_modifier)
         self.loader, self.ready_spaces = None, ()
         self.waiting = False
+        self.settling = False
         self.answered = False
         self._listen_cursor()
         self._listen_spaces()
+        if self.usable() and restart_pending():
+            log('HUD: OpenWG Gameface is restarting the client to apply its res_map (the first start after an install or update)')
 
     @classmethod
     def usable(cls):
@@ -192,7 +208,7 @@ class GamefaceBackend(HudBackend):
         return True
 
     def gui_ready(self):
-        return self.loader is None or self.loader.getSpaceID() in self.ready_spaces
+        return not self.settling and (self.loader is None or self.loader.getSpaceID() in self.ready_spaces)
 
     def window_alive(self):
         window = self.window
@@ -235,11 +251,17 @@ class GamefaceBackend(HudBackend):
         window = self.window
         log('HUD: Gameface window %s status %s' % (window.uniqueID if window is not None else '?', status))
 
+    @safe
     def on_loaded(self, view):
+        log('HUD: Gameface page view loaded')
+        view.viewModel.send += view._on_send
         self.view = view
         view.viewModel.set_state(self.state_text())
 
+    @safe
     def on_destroyed(self, view):
+        log('HUD: Gameface page view destroyed')
+        view.viewModel.send -= view._on_send
         if self.view is view or self.view is None:
             self.view = None
             self.window = None
@@ -273,12 +295,20 @@ class GamefaceBackend(HudBackend):
 
     @safe
     def _on_space_entered(self, space_id):
+        log('HUD: GUI space %s entered' % space_id)
         if space_id in self.ready_spaces:
             self.close()
-            self.sync()
+            self.settling = True
+            BigWorld.callback(0, self._on_space_settled)
+
+    @safe
+    def _on_space_settled(self):
+        self.settling = False
+        self.sync()
 
     @safe
     def _on_space_left(self, space_id):
+        log('HUD: GUI space %s left' % space_id)
         self.close()
 
     def _listen_cursor(self):

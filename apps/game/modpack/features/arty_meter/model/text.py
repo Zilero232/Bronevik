@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, COLOR_WARN, font, format_number
+from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, COLOR_WARN, counted, font, format_number
 
 
 def arty_text(battle, day, settings, translate):
@@ -9,6 +9,7 @@ def arty_text(battle, day, settings, translate):
     if battle['modules'] or battle['stuns']:
         lines.append(font(translate('arty_meter_line_extra', **values), COLOR_MUTED))
     if settings.get('show_day') and day:
-        lines.append(font(translate('arty_meter_day', battles=day['battles'], total=format_number(day['hits'] + day['splash']),
+        lines.append(font(translate('arty_meter_day', battles=counted(day['battles'], 'battles', translate),
+                                    total=counted(day['hits'] + day['splash'], 'times', translate),
                                     damage=format_number(day['damage'])), COLOR_MUTED))
     return u'\n'.join(lines)

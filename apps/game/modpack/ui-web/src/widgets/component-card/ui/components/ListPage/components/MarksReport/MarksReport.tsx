@@ -4,7 +4,7 @@ import type { MarksReportProps } from './MarksReport.types';
 
 import { useT } from '../../../../../../../entities/window-state';
 import { ClientIcon } from '../../../../../../../shared/ui/hud';
-import { MARKS_REPORT, marksReportView } from '../../../../../lib/marks-report';
+import { marksReportView } from '../../../../../lib/marks-report';
 
 import s from './MarksReport.module.scss';
 
@@ -45,16 +45,10 @@ export const MarksReport = ({ report }: MarksReportProps) => {
       </div>
       {view.chart && (
         <div className={s.chart}>
-          <span className={s.chartBox} style={{ width: `${MARKS_REPORT.chart.width}rem`, height: `${MARKS_REPORT.chart.height}rem` }}>
-            <svg
-              height='100%'
-              preserveAspectRatio='none'
-              viewBox={`0 0 ${MARKS_REPORT.chart.width} ${MARKS_REPORT.chart.height}`}
-              width='100%'
-              xmlns='http://www.w3.org/2000/svg'
-            >
-              <polyline fill='none' points={view.chart.points} stroke='currentColor' stroke-linejoin='round' stroke-width={2} />
-            </svg>
+          <span aria-hidden='true' className={s.chartBox}>
+            {view.chart.bars.map((bar) => (
+              <span key={bar.key} className={s.bar} style={{ height: bar.height }} />
+            ))}
           </span>
           <div className={s.chartScale}>
             <span>{view.chart.max}</span>
@@ -67,7 +61,7 @@ export const MarksReport = ({ report }: MarksReportProps) => {
           <span className={s.cellDate}>{t('reportBattle')}</span>
           <span className={s.cell}>{t('reportDamage')}</span>
           <span className={s.cell}>%</span>
-          <span className={s.cell}>{'±%'}</span>
+          <span className={s.cell}>{t('reportDelta')}</span>
         </div>
         {view.rows.map((row) => (
           <div key={row.key} className={s.tableRow}>

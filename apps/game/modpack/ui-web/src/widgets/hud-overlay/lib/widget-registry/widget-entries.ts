@@ -1,6 +1,7 @@
 import { artyMeterSchema, ArtyMeterWidget } from '../../../../entities/hud-widgets/arty-meter';
 import { battleClockSchema, BattleClockWidget } from '../../../../entities/hud-widgets/battle-clock';
 import { battleLoadoutSchema, BattleLoadoutWidget } from '../../../../entities/hud-widgets/battle-loadout';
+import { cardSchema, CardWidget } from '../../../../entities/hud-widgets/card';
 import { consumablesSchema, ConsumablesWidget, reloadTimerSchema, ReloadTimerWidget } from '../../../../entities/hud-widgets/consumables';
 import { damageLogSchema, DamageLogWidget, lastHitSchema, LastHitWidget } from '../../../../entities/hud-widgets/damage-log';
 import { hitLogSchema, HitLogWidget } from '../../../../entities/hud-widgets/hit-log';
@@ -22,5 +23,6 @@ export const WIDGET_ENTRIES = [
   defineHudWidget({ kind: 'sixth_sense', schema: sixthSenseSchema, Component: SixthSenseWidget }),
   defineHudWidget({ kind: 'battle_clock', schema: battleClockSchema, Component: BattleClockWidget }),
   defineHudWidget({ kind: 'arty_meter', schema: artyMeterSchema, Component: ArtyMeterWidget }),
-  defineHudWidget({ kind: 'platoon_points', schema: platoonPointsSchema, Component: PlatoonPointsWidget })
+  defineHudWidget({ kind: 'platoon_points', schema: platoonPointsSchema, Component: PlatoonPointsWidget }),
+  defineHudWidget({ kind: 'card', schema: cardSchema, Component: CardWidget })
 ];

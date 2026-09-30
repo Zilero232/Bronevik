@@ -37,3 +37,7 @@ COUNTERS = (
     'direct_enemy_hits',
     'piercing_enemy_hits',
 )
+
+# The hangar card (model/widget.py): width in design px, the win rate from which it shows as good.
+CARD_WIDTH = 260
+EVEN_WIN_RATE = 50.0

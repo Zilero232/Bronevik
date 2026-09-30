@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import re
@@ -9,6 +10,18 @@ COLOR_MUTED = '#A09A8B'
 COLOR_WARN = '#F2B25B'
 
 MISSING = u'-'
+PLURAL_SEPARATOR = u'|'
+
+# Word forms by language for `plural`/`count_phrase` (core.format.plural): Russian one|few|many, English one|other.
+FORMS = {
+    'battles': {'ru': u'бой|боя|боёв', 'en': u'battle|battles'},
+    'hits': {'ru': u'попадание|попадания|попаданий', 'en': u'hit|hits'},
+    'missions': {'ru': u'задача|задачи|задач', 'en': u'mission|missions'},
+    'goals': {'ru': u'цель|цели|целей', 'en': u'goal|goals'},
+    'players': {'ru': u'игрок|игрока|игроков', 'en': u'player|players'},
+    'minutes': {'ru': u'минута|минуты|минут', 'en': u'minute|minutes'},
+    'times': {'ru': u'раз|раза|раз', 'en': u'time|times'},
+}
 DATE_TIME_FORMAT = '%d.%m.%Y %H:%M'
 
 TAGS = re.compile(r'<[^>]*>')

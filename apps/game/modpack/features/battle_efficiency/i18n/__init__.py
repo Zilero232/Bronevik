@@ -13,6 +13,9 @@ STRINGS = {
         'eff_wn8': u'WN8 боя ≈ {wn8}',
         'eff_tank_wn8': u'(на танке {wn8})',
         'eff_damage': u'Урон {damage} / ср. {average}',
+        'eff_card_title': u'WN8 боя',
+        'eff_row_tank': u'на танке',
+        'eff_row_damage': u'урон, ср. {average}',
     },
     'en': {
         'component_battle_efficiency': u'Battle efficiency',
@@ -25,5 +28,8 @@ STRINGS = {
         'eff_wn8': u'Battle WN8 ≈ {wn8}',
         'eff_tank_wn8': u'(tank {wn8})',
         'eff_damage': u'Damage {damage} / avg {average}',
+        'eff_card_title': u'Battle WN8',
+        'eff_row_tank': u'on the tank',
+        'eff_row_damage': u'damage, avg {average}',
     },
 }

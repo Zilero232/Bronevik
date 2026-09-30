@@ -2,7 +2,6 @@ import clsx from 'clsx';
 
 import type { HudLabelProps } from './HudLabel.types';
 
-import { LogoMark } from '../../../../../shared/ui/logo-mark';
 import { HUD_OVERLAY } from '../../../config';
 import { HudRun } from '../HudRun';
 
@@ -26,11 +25,9 @@ export const HudLabel = ({ label }: HudLabelProps) => (
     tabIndex={-1}
     type='button'
     onClick={label.onClick}
-    onMouseDown={label.onMouseDown}
-    onWheel={label.onWheel}
   >
     {label.button ? (
-      <LogoMark size={HUD_OVERLAY.logoSize} />
+      <img alt='' className={s.buttonIcon} draggable={false} src={HUD_OVERLAY.buttonIcon} />
     ) : label.widget ? (
       label.widget.node
     ) : (

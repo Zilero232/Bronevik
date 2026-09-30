@@ -1,0 +1,50 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+from ...core.compat import is_number
+from ...core.hud import component_schema
+from .constants import DEFAULTS, LIMITS, NUMBERS, SECTION
+
+
+def window_schema():
+    return component_schema(DEFAULTS, limits=LIMITS)
+
+
+def layout_values(message):
+    values = {}
+    for key in NUMBERS:
+        value = message.get(key)
+        if is_number(value) and not isinstance(value, bool):
+            values[key] = int(round(value))
+    placed = message.get('placed', True)
+    if isinstance(placed, bool):
+        values['placed'] = placed
+    return values
+
+
+class WindowLayout(object):
+
+    def __init__(self, component_config):
+        self.component_config = component_config
+
+    def settings(self):
+        config = self.component_config
+        if config is None:
+            return None
+        return config.get(SECTION) or config.section(SECTION, window_schema())
+
+    def describe(self):
+        settings = self.settings()
+        if settings is None:
+            return dict(DEFAULTS)
+        return dict((key, settings.get(key)) for key in DEFAULTS)
+
+    def update(self, message):
+        if self.settings() is None:
+            return []
+        return self.component_config.update(SECTION, layout_values(message))
+
+
+def unmoved_layout(stored, old_defaults, new_defaults):
+    if any(stored.get(key) != value for key, value in old_defaults.items()):
+        return {}
+    return dict((key, new_defaults[key]) for key in old_defaults)

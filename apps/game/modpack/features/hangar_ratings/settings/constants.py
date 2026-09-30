@@ -21,8 +21,8 @@ DEFAULTS = {
     'metric_mastery': True,
     'colored': True,
     'font_size': 13,
-    'x': 20,
-    'y': 140,
+    'x': 16,
+    'y': 440,
     'align_x': 'left',
     'align_y': 'top',
 }

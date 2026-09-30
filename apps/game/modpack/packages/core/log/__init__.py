@@ -1,5 +1,6 @@
-"""The mod's log lines in python.log. Messages are written as the interpreter's native `str`, so a Python 2
-traceback holding non-ASCII bytes (a Cyrillic game path) never breaks the logger itself."""
+"""The mod's log lines in python.log and in its own file (`open_file`, `LogFile`). Messages are written as the
+interpreter's native `str`, so a Python 2 traceback holding non-ASCII bytes (a Cyrillic game path) never breaks the
+logger itself."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import functools
@@ -9,16 +10,28 @@ import traceback
 from ..compat import to_native
 from .constants import PREFIX
 from .limiter import RepeatLimiter
+from .logfile import LogFile
 
 _repeats = RepeatLimiter(time.time)
+_file = LogFile()
 
 
 def _line(*parts):
     return to_native(' ').join(to_native(part) for part in parts)
 
 
+def _emit(text):
+    print(text)
+    _file.write(text)
+
+
+def open_file(path, header):
+    """Starts this session's own log file at `path` with the `header` lines; the lines logged before are kept for it."""
+    return _file.open(path, [_line(PREFIX, line) for line in header])
+
+
 def log(message):
-    print(_line(PREFIX, message))
+    _emit(_line(PREFIX, message))
 
 
 def log_exception(context):
@@ -32,7 +45,7 @@ def log_exception(context):
     if suppressed:
         lines.append(_line(PREFIX, 'the same error repeated %d more times' % suppressed))
     lines.append(to_native(trace))
-    print(to_native('\n').join(lines))
+    _emit(to_native('\n').join(lines))
 
 
 def safe(func):

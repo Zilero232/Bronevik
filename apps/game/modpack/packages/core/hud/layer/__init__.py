@@ -15,7 +15,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ...compat import is_number, string_types
 from ..backend import NullBackend
-from ..panel import LAYOUT_KEYS, alias_of, layout_props, moved_values, panel_of
+from ..panel import LAYOUT_KEYS, alias_of, dock_of, layout_props, moved_values, panel_of
 
 
 class HudLayer(object):
@@ -57,8 +57,9 @@ class HudLayer(object):
         return panel_id in self.panels
 
     def props(self, panel_id, text, widget=None):
-        props = layout_props(self.panels[panel_id])
-        props.update({'text': text, 'visible': True, 'widget': widget})
+        settings = self.panels[panel_id]
+        props = layout_props(settings)
+        props.update({'text': text, 'visible': True, 'widget': widget, 'dock': dock_of(alias_of(panel_id), settings)})
         return props
 
     def suppressed(self, panel_id):
@@ -155,7 +156,9 @@ class HudLayer(object):
         alias = alias_of(panel_id)
         if changed and alias in self.shown and set(changed) & set(LAYOUT_KEYS):
             self.places.pop(alias, None)
-            self.backend.update(alias, layout_props(self.panels[panel_id]))
+            props = layout_props(self.panels[panel_id])
+            props['dock'] = dock_of(alias, self.panels[panel_id])
+            self.backend.update(alias, props)
         return changed
 
     def on_moved(self, alias, props):
@@ -164,5 +167,7 @@ class HudLayer(object):
         panel_id = panel_of(alias)
         if panel_id not in self.panels:
             return False
-        values = moved_values(props)
-        return bool(self.config.update(panel_id, values))
+        changed = bool(self.config.update(panel_id, moved_values(props)))
+        if changed and alias in self.shown:
+            self.backend.update(alias, {'dock': dock_of(alias, self.panels[panel_id])})
+        return changed

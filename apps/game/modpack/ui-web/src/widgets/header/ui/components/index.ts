@@ -1,4 +1,5 @@
-export { BindForm } from './BindForm';
+export { AccountChip } from './AccountChip';
 export { Brand } from './Brand';
-export { StatusChip } from './StatusChip';
+export { SearchBox } from './SearchBox';
 export { Tools } from './Tools';
+export { ZoomControl } from './ZoomControl';

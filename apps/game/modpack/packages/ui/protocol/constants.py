@@ -11,6 +11,7 @@ COMMANDS = (
     'ready',
     'close',
     'set',
+    'set_many',
     'action',
     'language',
     'bind',
@@ -25,10 +26,12 @@ COMMANDS = (
     'hud_move',
     'hud_reset',
     'hud_reset_all',
+    'window_layout',
 )
 
 REQUIRED = {
     'set': ('component', 'key', 'value'),
+    'set_many': ('component', 'values'),
     'action': ('component', 'action'),
     'language': ('language',),
     'bind': ('code',),
@@ -42,6 +45,7 @@ REQUIRED = {
     'hud_edit': ('active',),
     'hud_move': ('panel', 'x', 'y'),
     'hud_reset': ('panel',),
+    'window_layout': ('x', 'y', 'width', 'height', 'zoom'),
 }
 
 RES_MAP_WINDOW = 'otmetki/ui/settings'

@@ -1,0 +1,63 @@
+@use '../../../../shared/styles/gameface' as *;
+
+.plate {
+  padding: 5px 9px 6px;
+}
+
+.box {
+  display: flex;
+  min-width: 190px;
+  max-width: 340px;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  height: 20px;
+  flex-direction: row;
+  align-items: center;
+}
+
+.divided {
+  padding-bottom: 3px;
+  border-bottom: 1px solid rgb(255 255 255 / 8%);
+  margin-bottom: 3px;
+}
+
+.icon {
+  margin-right: 6px;
+}
+
+.title {
+  flex-shrink: 0;
+  color: token(color-text-muted);
+  font-size: 11px;
+
+  @include caps;
+}
+
+.subtitle {
+  margin-left: 6px;
+  color: token(color-text);
+  font-size: 12px;
+  font-weight: 700;
+
+  @include ellipsis;
+}
+
+.value {
+  flex-shrink: 0;
+  padding-left: 10px;
+  margin-left: auto;
+  font-size: 17px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.footer {
+  margin-top: 3px;
+  color: token(color-text-muted);
+  font-size: 11px;
+
+  @include ellipsis;
+}

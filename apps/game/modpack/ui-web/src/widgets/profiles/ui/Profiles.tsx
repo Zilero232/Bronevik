@@ -1,7 +1,6 @@
 import type { ProfilesProps } from './Profiles.types';
 
 import { useT } from '../../../entities/window-state';
-import { Card } from '../../../shared/ui/card';
 import { Confirm } from '../../../shared/ui/confirm';
 import { Empty } from '../../../shared/ui/empty';
 import { List } from '../../../shared/ui/list';
@@ -9,12 +8,14 @@ import { PROFILES } from '../config';
 import { useProfiles } from '../model/hooks';
 import { InlineForm, ProfileRow } from './components';
 
+import s from './Profiles.module.scss';
+
 export const Profiles = ({ profiles }: ProfilesProps) => {
   const t = useT();
   const model = useProfiles(profiles);
 
   return (
-    <Card hint={t('profilesHint')} title={t('sectionProfiles')}>
+    <div className={s.profiles}>
       <InlineForm
         accent
         label={t('profileName')}
@@ -53,6 +54,6 @@ export const Profiles = ({ profiles }: ProfilesProps) => {
         onSubmit={model.importProfile}
         onValue={model.setImportCode}
       />
-    </Card>
+    </div>
   );
 };

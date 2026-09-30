@@ -2,13 +2,13 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.client.chat import battle_layout, is_own, is_own_command
 from ....core.client.component import FeatureComponent
-from ....core.client.hotkey import Hotkey
+from ....core.client.hotkey import HotkeyChoice
 from ....core.client.hud import hud_layer
-from ....core.events import EVENT_COMPONENT_SETTINGS
 from ....core.hooks import override
 from ....core.log import log, safe
 from ..i18n import STRINGS
-from ..model import PanelToggle, blocked_labels, hides_chat, hotkey_of
+from ..model import PanelToggle, blocked_labels, hides_chat
+from ..model.constants import HOTKEYS
 from ..settings import SCHEMA, SECTION, SWITCH
 
 
@@ -19,13 +19,12 @@ class StreamerMode(FeatureComponent):
     def __init__(self, app):
         FeatureComponent.__init__(self, app, SECTION, SCHEMA, SWITCH, STRINGS)
         self.toggle = PanelToggle()
-        self.hotkey = None
+        self.hotkey = HotkeyChoice(HOTKEYS, self._on_hotkey)
         self.hotkey_choice = None
         self.chat_hooked = self._hook_chat()
         bus = app.bus
         bus.on('hangar', self._on_hangar)
         bus.on('battle_ready', self._on_battle_ready)
-        bus.on(EVENT_COMPONENT_SETTINGS, self._on_settings)
 
     def _hook_chat(self):
         layout = battle_layout()
@@ -43,24 +42,16 @@ class StreamerMode(FeatureComponent):
     def _on_battle_ready(self, player):
         self._set_hidden(self.toggle.battle_started(self.enabled() and self.settings.get('keep_hidden')))
 
-    def _on_settings(self, component_id, changed):
-        if component_id == SECTION:
-            self._install_hotkey()
-            self._apply_private()
+    def settings_changed(self, changed):
+        self._install_hotkey()
+        self._apply_private()
 
     def _install_hotkey(self):
         choice = self.settings.get('hotkey') if self.enabled() else 'none'
         if choice == self.hotkey_choice:
             return
-        if self.hotkey is not None:
-            self.hotkey.remove()
-            self.hotkey = None
         self.hotkey_choice = choice
-        key, modifiers = hotkey_of(choice)
-        if key is not None:
-            self.hotkey = Hotkey(key, modifiers, self._on_hotkey)
-            self.hotkey.install()
-        if key is None and self.toggle.hidden:
+        if not self.hotkey.set(choice) and self.toggle.hidden:
             self.toggle.hidden = False
             self._set_hidden(False)
 

@@ -37,4 +37,5 @@ PANEL_KEYS = (
     ('scale', 'scale', 1.0),
     ('kind', 'kind', KIND_LABEL),
     ('widget', 'widget', None),
+    ('dock', 'dock', None),
 )

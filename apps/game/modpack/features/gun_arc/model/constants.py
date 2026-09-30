@@ -14,3 +14,6 @@ TICK_S = 0.1
 PREVIEW_SIZE = (260, 30)
 PREVIEW_LIMITS = (-0.35, 0.35)
 PREVIEW_YAW = 0.18
+
+# The card (model/widget.py), design px.
+CARD_WIDTH = 200

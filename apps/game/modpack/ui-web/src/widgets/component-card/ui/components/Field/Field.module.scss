@@ -4,25 +4,56 @@
   display: flex;
   min-height: 44px;
   flex-direction: row;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 0;
+  padding: 7px 0;
   border-bottom: 1px solid token(color-border);
 }
 
 .text {
   display: flex;
-  flex: 1 1 auto;
+  min-width: 220px;
+  flex: 1 1 260px;
   flex-direction: column;
-  margin-right: 16px;
+  padding: 3px 16px 3px 0;
+}
+
+.labelRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+  border-radius: 3px;
+  margin: 0 8px 0 -14px;
+  background-color: transparent;
+}
+
+.dotOn {
+  background-color: token(color-accent);
 }
 
 .label {
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .hint {
   margin-top: 2px;
   color: token(color-text-dim);
   font-size: 12px;
+  line-height: 1.35;
+}
+
+.control {
+  display: flex;
+  max-width: 100%;
+  flex: 0 1 auto;
+  flex-direction: row;
+  justify-content: flex-end;
+  padding: 3px 0;
 }

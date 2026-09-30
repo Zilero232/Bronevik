@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.me import ReadState
-from .constants import OVERVIEW_KEY, REFRESH_AFTER_BATTLE_S
+from ....core.me import REFRESH_AFTER_BATTLE_S, ReadState
+from .constants import OVERVIEW_KEY
 
 
 class RatingsCache(ReadState):

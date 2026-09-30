@@ -27,3 +27,7 @@ PREVIEW_CARD = {
     'modules': ['engine', 'ammoBay'],
     'sector': 'rear_left',
 }
+
+# The card (model/widget.py), design px.
+CARD_WIDTH = 300
+MINUS = u'\u2212'

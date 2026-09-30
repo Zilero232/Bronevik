@@ -1,6 +1,4 @@
 export const HEADER = {
-  logoSize: 30,
-  bindCodeMaxLength: 16,
-  closeGlyph: '×',
-  sitePath: '/'
+  logoSize: 28,
+  searchMaxLength: 60
 } as const;

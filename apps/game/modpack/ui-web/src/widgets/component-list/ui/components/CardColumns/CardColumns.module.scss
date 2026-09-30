@@ -1,0 +1,14 @@
+.columns {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  margin-right: -12px;
+}
+
+.column {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 0;
+  flex-direction: column;
+  margin-right: 12px;
+}

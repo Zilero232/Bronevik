@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import time
 
 from ...companion.settings_ui.client import SettingsView, add_settings_view
+from ...core.events import EVENT_SETTINGS_OPEN
 from ...core.log import log, safe
 from ...core.durable import open_config
 from ..bridge import SettingsBridge
@@ -58,6 +59,7 @@ class UiHost(object):
         bus.on('battle_enter', self.on_battle_enter)
         bus.on('hangar', self.on_hangar)
         bus.on('component_settings', self._on_changed)
+        bus.on(EVENT_SETTINGS_OPEN, self.open_at)
         if GamefaceSettingsView.available():
             add_settings_view(app, GamefaceSettingsView(app, self))
         else:
@@ -96,7 +98,17 @@ class UiHost(object):
             self.app.ui.notify(self.app.translate('ui_gameface_missing'))
 
     @safe
+    def open_at(self, page):
+        if not self.bridge.focus_page(page):
+            log('ui: no settings page %r to open' % (page,))
+        if self.window.is_open:
+            self.push()
+            return
+        self.open()
+
+    @safe
     def close(self):
+        self.bridge.clear_focus()
         self.window.close()
 
     @safe

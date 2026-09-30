@@ -10,7 +10,7 @@ import json
 import os
 import re
 
-from .model import (DEPENDENCY_KIND, ID_PATTERN, LANGUAGES, PERF_LEVELS, Author, Catalog, CatalogEntry, Category, ConflictRule, Dependency,
+from .model import (CONTEXTS, DEPENDENCY_KIND, ID_PATTERN, LANGUAGES, PERF_LEVELS, Author, Catalog, CatalogEntry, Category, ConflictRule, Dependency,
                     Licence, Localized, Preset, Preview)
 
 PREVIEW_EXTENSIONS = ('.svg', '.png')
@@ -100,6 +100,12 @@ class _Reader(object):
             return None
         return value
 
+    def context(self, where, value):
+        if value not in CONTEXTS:
+            self.fail(where, 'context must be one of %s, got %r' % (', '.join(CONTEXTS), value))
+            return None
+        return value
+
     def conflict(self, index, raw):
         where = 'conflicts[%d]' % index
         patterns = raw.get('patterns')
@@ -139,6 +145,7 @@ class _Reader(object):
             preview=self.preview(where + '.preview', raw.get('preview')),
             dependencies=tuple(raw.get('dependencies', ())),
             perf=self.perf(where + '.perf', raw.get('perf')),
+            context=self.context(where + '.context', raw.get('context')),
         )
 
     def https(self, where, value):

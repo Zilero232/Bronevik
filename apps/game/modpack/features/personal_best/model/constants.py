@@ -21,3 +21,7 @@ SOUND = 'otmetki_record'
 PREVIEW_SIZE = (320, 50)
 PREVIEW_RECORD = {'damage': 6812, 'assist': 5120, 'frags': 6, 'xp': 2740}
 PREVIEW_LIVE = {'damage': 5612, 'assist': 840, 'frags': 2}
+
+# The card (model/widget.py): width in design px, the post-battle efficiency icon of each metric.
+CARD_WIDTH = 260
+METRIC_ICONS = {'damage': 'damage', 'assist': 'help', 'frags': 'destruction'}

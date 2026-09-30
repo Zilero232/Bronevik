@@ -25,8 +25,9 @@ describe(MarksReport, () => {
     ]);
 
     expect(html.textContent).toContain('Tiger I');
-    expect(html.textContent).toContain('85,20 %');
-    expect(html.querySelectorAll('polyline')).toHaveLength(1);
-    expect(html.textContent).toContain('4 500');
+    expect(html.textContent).toContain('85,20 %');
+    expect(html.querySelectorAll('svg')).toHaveLength(0);
+    expect(html.textContent).not.toMatch(/[\u2212\u202F]/);
+    expect(html.textContent).toContain('4 500');
   });
 });

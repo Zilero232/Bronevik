@@ -9,11 +9,12 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ...compat import is_number, string_types, to_text
 from ...settings import Schema
-from .constants import (ALIAS_PREFIX, GAMEFACE_PROPS, HEX_COLOR, LAYOUT_KEYS, MAX_SOUND_EVENT, MOVED_ALIGNS, PANEL_CHOICES, PANEL_DEFAULTS, PANEL_LIMITS,
-                        SOUND_EVENT)
+from .constants import (ALIAS_PREFIX, DOCK_ANCHORS, DOCKS, GAMEFACE_PROPS, HEX_COLOR, LAYOUT_KEYS, MAX_SOUND_EVENT, MOVED_ALIGNS, PANEL_CHOICES,
+                        PANEL_DEFAULTS, PANEL_LIMITS, SOUND_EVENT)
 
-__all__ = ('ALIAS_PREFIX', 'GAMEFACE_PROPS', 'LAYOUT_KEYS', 'MOVED_ALIGNS', 'PANEL_DEFAULTS', 'alias_of', 'component_schema', 'hex_color', 'layout_props',
-           'matching', 'max_length', 'moved_values', 'panel_of', 'panel_schema', 'sound_event')
+__all__ = ('ALIAS_PREFIX', 'DOCK_ANCHORS', 'DOCKS', 'GAMEFACE_PROPS', 'LAYOUT_KEYS', 'MOVED_ALIGNS', 'PANEL_DEFAULTS', 'alias_of', 'anchor_of',
+           'component_schema', 'dock_layout', 'dock_of', 'hex_color', 'layout_props', 'matching', 'max_length', 'moved_values', 'panel_of', 'panel_schema',
+           'sound_event')
 
 
 def component_schema(defaults, choices=None, limits=None, normalizers=None):
@@ -92,3 +93,41 @@ def moved_values(props):
     if is_number(scale) and not isinstance(scale, bool):
         values['scale'] = int(round(scale * 100))
     return values
+
+
+def anchor_of(group):
+    """The default place of a docked column (settings keys x, y, align_x, align_y)."""
+    anchor = DOCK_ANCHORS[group]
+    return {'x': anchor['x'], 'y': anchor['y'], 'align_x': anchor['align_x'], 'align_y': anchor['align_y']}
+
+
+def dock_layout(group):
+    """The renderer props (x, y, alignX, alignY) of a docked column's anchor: a hangar label's default layout."""
+    anchor = DOCK_ANCHORS[group]
+    return {'x': anchor['x'], 'y': anchor['y'], 'alignX': anchor['align_x'], 'alignY': anchor['align_y']}
+
+
+def _place(values):
+    """(x, y, align_x, align_y) of settings (`align_x`) or renderer props (`alignX`)."""
+    if not isinstance(values, dict):
+        return (values.get('x'), values.get('y'), values.get('align_x'), values.get('align_y'))
+
+    def read(key, prop):
+        return values[key] if key in values else values.get(prop)
+    return (read('x', 'x'), read('y', 'y'), read('align_x', 'alignX'), read('align_y', 'alignY'))
+
+
+def dock_of(alias, values):
+    """The `dock` prop of a panel: `{group, order}` while it sits at its column's anchor, else None (moved, or not docked)."""
+    entry = DOCKS.get(alias)
+    if entry is None or values is None:
+        return None
+    group, order = entry
+    anchor = DOCK_ANCHORS[group]
+    if _place(values) != (anchor['x'], anchor['y'], anchor['align_x'], anchor['align_y']):
+        return None
+    dock = {'group': group, 'order': order, 'reserve': anchor['reserve']}
+    for key in ('ceiling', 'stop_center'):
+        if key in anchor:
+            dock[key] = anchor[key]
+    return dock

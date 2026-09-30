@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.me.constants import (MAX_RETRY_S, MAX_TANKS, RATING_TIERS, REFRESH_AFTER_BATTLE_S, RETRY_AFTER_ERROR_S,  # noqa: F401
-                                   RETRY_AFTER_LIMIT_S, TANKS_PATH)
-
 OVERVIEW_PATH = '/mod/me/overview'
 SITE_PATH = '/me/analytics'
 
@@ -35,3 +32,5 @@ METRIC_SEPARATOR = u' · '
 STAR = u'★'
 TITLE_SIZE_STEP = 2
 SESSION_RATINGS = ('wn8', 'brone_index')
+# The hangar card (model/widget.py), design px.
+CARD_WIDTH = 260

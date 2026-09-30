@@ -5,10 +5,10 @@ PANEL_ID = 'arty_meter'
 GROUP = 'battle'
 
 DEFAULTS = {
-    'x': 8,
-    'y': -60,
-    'align_x': 'left',
-    'align_y': 'center',
+    'x': 0,
+    'y': 60,
+    'align_x': 'center',
+    'align_y': 'top',
     'show_day': True,
     'show_always': False,
     'keep_battles': 100,

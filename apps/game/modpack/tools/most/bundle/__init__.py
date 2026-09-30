@@ -9,13 +9,11 @@
     dist/most/<id>/changelog.md            this version's CHANGELOG.md entry (### ru, ### en)
     dist/most/<id>/submission.json         forum titles, dependencies (ours and third-party), file hash and size, findings
 """
-import hashlib
-import io
-import json
 import os
 import shutil
 
 import layout
+from fileio import sha256, write_json, write_text
 from setupkit import ASSETS_DIR, CATALOG_DIR, CATALOG_PATH
 from setupkit.manifest import catalog as catalog_module
 from setupkit.manifest.catalog import CatalogError
@@ -31,24 +29,6 @@ INDEX = 'index.json'
 
 class BundleError(RuntimeError):
     pass
-
-
-def _sha256(path):
-    digest = hashlib.sha256()
-    with open(path, 'rb') as handle:
-        for chunk in iter(lambda: handle.read(1 << 16), b''):
-            digest.update(chunk)
-    return digest.hexdigest()
-
-
-def _write_text(path, text):
-    with io.open(path, 'w', encoding='utf-8', newline='\n') as handle:
-        handle.write(text)
-    return path
-
-
-def _write_json(path, value):
-    return _write_text(path, json.dumps(value, ensure_ascii=False, indent=2) + '\n')
 
 
 def load_manifest(packages_dir, packages=None, catalog_path=CATALOG_PATH, assets_dir=ASSETS_DIR):
@@ -77,7 +57,7 @@ def bundle_component(component, manifest, catalog, package, options, out_dir):
         findings.error(component.id, str(error), 'mtmod')
         info = None
     if info is not None:
-        _write_text(os.path.join(target, 'meta.xml'), info.meta_text)
+        write_text(os.path.join(target, 'meta.xml'), info.meta_text)
         meta_dependencies = [(depend.package_id, depend.version) for depend in package.depends]
         findings.extend(check_package(info, component, meta_dependencies, options['release']))
     entry = catalog.entry(component.id)
@@ -94,9 +74,9 @@ def bundle_component(component, manifest, catalog, package, options, out_dir):
     changes = texts.changelog_entry(options['changelog'], component)
     findings.extend(texts.check_texts(component, changes))
     for language in LANGUAGES:
-        _write_text(os.path.join(target, 'description.%s.md' % language),
+        write_text(os.path.join(target, 'description.%s.md' % language),
                     texts.description(component, manifest, language, options['game_version'], changes))
-    _write_text(os.path.join(target, 'changelog.md'), texts.changelog_markdown(component, changes))
+    write_text(os.path.join(target, 'changelog.md'), texts.changelog_markdown(component, changes))
     missing = [key for key in component.dependencies if key not in options['selected']]
     if missing:
         findings.warn(component.id, 'depends on %s, which this bundle leaves out: they must already be in MOST' % ', '.join(missing), 'ours')
@@ -106,7 +86,7 @@ def bundle_component(component, manifest, catalog, package, options, out_dir):
         'version': component.version,
         'gameVersion': options['game_version'],
         'file': component.file,
-        'sha256': _sha256(source),
+        'sha256': sha256(source),
         'size': os.path.getsize(source),
         'required': component.required,
         'category': component.category,
@@ -120,7 +100,7 @@ def bundle_component(component, manifest, catalog, package, options, out_dir):
         'video': video,
         'findings': [item.to_json() for item in findings.items],
     }
-    _write_json(os.path.join(target, 'submission.json'), submission)
+    write_json(os.path.join(target, 'submission.json'), submission)
     return submission, findings
 
 
@@ -164,5 +144,5 @@ def assemble(packages_dir, game_version, out_dir, release=False, changelog=None,
         'findings': [item.to_json() for item in findings.items if item.where == 'bundle'],
         'sources': SOURCES,
     }
-    _write_json(os.path.join(out_dir, INDEX), index)
+    write_json(os.path.join(out_dir, INDEX), index)
     return index, findings

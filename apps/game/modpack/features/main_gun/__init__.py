@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 FEATURE_ID = 'main_gun'
 PACKAGE_ID = 'net.triotmetki.main_gun'
 PACKAGE_NAME = 'Three Marks: High Caliber counter'
-VERSION = '0.1.0'
+VERSION = '0.2.0'
 
 
 def create(app):

@@ -1,40 +1,37 @@
-import clsx from 'clsx';
-
-import { SECTION, useT } from '../../../entities/window-state';
-import { ComponentCard } from '../../../widgets/component-card';
+import { useT } from '../../../entities/window-state';
 import { Header } from '../../../widgets/header';
-import { HudEditor } from '../../../widgets/hud-editor';
 import { Notice } from '../../../widgets/notice';
-import { Profiles } from '../../../widgets/profiles';
 import { Sidebar } from '../../../widgets/sidebar';
+import { UndoToast } from '../../../widgets/undo-toast';
+import { WindowFrame } from '../../../widgets/window-frame';
 import { useApp } from '../model/hooks';
+import { Content } from './components';
 
 import s from './App.module.scss';
 
 export const App = () => {
   const t = useT();
-  const { state, section, selected, placeholderKey } = useApp();
+  const app = useApp();
 
-  if (!state) {
+  if (!app.state) {
     return (
-      <div aria-live='polite' className={clsx(s.window, s.empty)} role='status'>
-        {t(placeholderKey)}
+      <div aria-live='polite' className={s.empty} role='status'>
+        {t(app.placeholderKey)}
       </div>
     );
   }
 
   return (
-    <div className={s.window}>
-      <Header language={state.language} status={state.status} />
+    <WindowFrame frame={app.frame} label={t('title')}>
+      <Header compact={app.compact} frame={app.frame} language={app.state.language} />
       <div className={s.body}>
-        <Sidebar />
+        <Sidebar compact={app.compact} />
         <main className={s.content}>
-          {section === SECTION.components && selected && <ComponentCard key={selected.id} component={selected} />}
-          {section === SECTION.profiles && <Profiles profiles={state.profiles} />}
-          {section === SECTION.hud && <HudEditor panels={state.hud.panels} />}
+          <Content columns={app.columns} searching={app.searching} section={app.section} state={app.state} />
         </main>
       </div>
-      {state.notice && <Notice key={state.revision} notice={state.notice} />}
-    </div>
+      <UndoToast />
+      {app.state.notice && <Notice key={app.state.revision} notice={app.state.notice} />}
+    </WindowFrame>
   );
 };

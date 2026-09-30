@@ -96,6 +96,7 @@
         "@resvg/resvg-js": "catalog:",
         "@types/postcss-pxtorem": "^6.1.0",
         "esbuild": "catalog:",
+        "lucide-react": "catalog:",
         "postcss-pxtorem": "^6.1.0",
         "sass-embedded": "catalog:",
         "typescript": "catalog:",

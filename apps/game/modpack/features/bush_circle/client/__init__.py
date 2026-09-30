@@ -4,12 +4,12 @@ import BigWorld
 
 from ....core.client.battle import BattleHooks, arena
 from ....core.client.component import FeatureComponent
-from ....core.client.hotkey import Hotkey
-from ....core.events import EVENT_COMPONENT_SETTINGS
+from ....core.client.hotkey import HotkeyChoice
 from ....core.log import log_exception, safe
 from .. import FEATURE_ID
 from ..i18n import STRINGS
-from ..model import CircleState, color_of, diameter, hotkey_of
+from ..model import CircleState, color_of, diameter
+from ..model.constants import HOTKEYS
 from ..settings import SCHEMA, SWITCH
 from .constants import CIRCLE_VISUAL, CUT_OFF_DISTANCE, ENTITY_ATTEMPTS, ENTITY_RETRY_S, OVER_TERRAIN_HEIGHT
 
@@ -23,13 +23,12 @@ class BushCircle(FeatureComponent):
         self.vehicle_id = None
         self.model = None
         self.owner = None
-        self.hotkey = None
+        self.hotkey = HotkeyChoice(HOTKEYS, self._on_hotkey)
         self.hooks = BattleHooks()
         self.generation = 0
         bus = app.bus
         bus.on('battle_ready', self._on_battle_ready)
         bus.on('battle_leave', self._on_battle_leave)
-        bus.on(EVENT_COMPONENT_SETTINGS, self._on_settings)
 
     def _on_battle_ready(self, battle_player):
         self._on_battle_leave()
@@ -44,27 +43,19 @@ class BushCircle(FeatureComponent):
     def _on_battle_leave(self):
         self.generation += 1
         self.hooks.clear()
-        if self.hotkey is not None:
-            self.hotkey.remove()
-            self.hotkey = None
+        self.hotkey.remove()
         self._remove()
         self.state = None
 
-    def _on_settings(self, component_id, changed):
-        if component_id == FEATURE_ID and self.state is not None:
+    def settings_changed(self, changed):
+        if self.state is not None:
             self.state.mode = self.settings.get('mode')
             self._remove()
             self._install_hotkey()
             self.apply()
 
     def _install_hotkey(self):
-        if self.hotkey is not None:
-            self.hotkey.remove()
-            self.hotkey = None
-        key, modifiers = hotkey_of(self.settings.get('hotkey'))
-        if key is not None and self.settings.get('mode') == 'hotkey':
-            self.hotkey = Hotkey(key, modifiers, self._on_hotkey)
-            self.hotkey.install()
+        self.hotkey.set(self.settings.get('hotkey') if self.settings.get('mode') == 'hotkey' else None)
 
     @safe
     def _on_hotkey(self):

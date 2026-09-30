@@ -8,7 +8,8 @@ from ....core.log import safe
 from ..i18n import STRINGS
 from ..model import arc_state, format_panel
 from ..model.constants import PREVIEW_SIZE, TICK_S
-from ..model.preview import preview_text
+from ..model.preview import preview_text, preview_widget
+from ..model.widget import panel_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
 
 
@@ -29,7 +30,7 @@ class GunArcPanel(BattlePanel):
         self.limits = None
         self.text = None
         self.ticker = Ticker(TICK_S, self._on_tick)
-        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text)
+        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text, preview_widget)
 
     def start(self, battle_player):
         self.limits = yaw_limits(battle_player)
@@ -50,11 +51,12 @@ class GunArcPanel(BattlePanel):
 
     @safe
     def render(self):
-        text = format_panel(arc_state(turret_yaw(), self.limits), self.settings, self.app.translate) if controls_own_vehicle() else None
+        state = arc_state(turret_yaw(), self.limits) if controls_own_vehicle() else None
+        text = format_panel(state, self.settings, self.app.translate) if state is not None else None
         if text == self.text:
             return
         self.text = text
         if text:
-            self.show(text)
+            self.show(text, panel_widget(state, self.settings, self.app.translate))
         else:
             self.hide()

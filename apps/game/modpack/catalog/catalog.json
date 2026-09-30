@@ -228,6 +228,7 @@
     {
       "id": "core",
       "category": "base",
+      "context": "any",
       "required": true,
       "title": {
         "ru": "Ядро",
@@ -249,6 +250,7 @@
     {
       "id": "companion",
       "category": "base",
+      "context": "any",
       "required": true,
       "title": {
         "ru": "Компаньон «Три отметки»",
@@ -270,6 +272,7 @@
     {
       "id": "ui",
       "category": "base",
+      "context": "hangar",
       "required": true,
       "title": {
         "ru": "Интерфейс в игре",
@@ -291,6 +294,7 @@
     {
       "id": "marks_panel",
       "category": "battle",
+      "context": "battle",
       "presets": ["recommended", "minimal", "streamer"],
       "title": {
         "ru": "Отметка в бою",
@@ -312,6 +316,7 @@
     {
       "id": "damage_log",
       "category": "battle",
+      "context": "battle",
       "presets": ["recommended", "streamer"],
       "title": {
         "ru": "Лог урона",
@@ -333,6 +338,7 @@
     {
       "id": "hit_log",
       "category": "battle",
+      "context": "battle",
       "presets": ["recommended"],
       "title": {
         "ru": "Хит-лог",
@@ -354,6 +360,7 @@
     {
       "id": "team_hp",
       "category": "battle",
+      "context": "battle",
       "presets": ["recommended", "streamer"],
       "title": {
         "ru": "ХП команд и счёт",
@@ -375,6 +382,7 @@
     {
       "id": "sixth_sense",
       "category": "battle",
+      "context": "battle",
       "presets": ["recommended", "minimal", "streamer"],
       "title": {
         "ru": "Лампа шестого чувства",
@@ -397,7 +405,8 @@
     {
       "id": "battle_clock",
       "category": "battle",
-      "presets": ["recommended", "streamer"],
+      "context": "any",
+      "presets": ["streamer"],
       "title": {
         "ru": "Часы",
         "en": "Clock"
@@ -418,7 +427,8 @@
     {
       "id": "personal_best",
       "category": "battle",
-      "presets": ["recommended", "streamer"],
+      "context": "any",
+      "presets": ["streamer"],
       "title": {
         "ru": "Личный рекорд",
         "en": "Personal best"
@@ -440,7 +450,8 @@
     {
       "id": "main_gun",
       "category": "battle",
-      "presets": ["recommended"],
+      "context": "battle",
+      "presets": [],
       "title": {
         "ru": "Основной калибр",
         "en": "High Caliber counter"
@@ -461,7 +472,8 @@
     {
       "id": "battle_efficiency",
       "category": "battle",
-      "presets": ["recommended", "streamer"],
+      "context": "battle",
+      "presets": ["streamer"],
       "title": {
         "ru": "Эффективность боя",
         "en": "Battle efficiency"
@@ -482,7 +494,8 @@
     {
       "id": "consumables",
       "category": "battle",
-      "presets": ["streamer"],
+      "context": "battle",
+      "presets": ["recommended", "streamer"],
       "title": {
         "ru": "Снаряжение и снаряды",
         "en": "Consumables and shells"
@@ -503,7 +516,8 @@
     {
       "id": "reload_timer",
       "category": "battle",
-      "presets": ["streamer"],
+      "context": "battle",
+      "presets": ["recommended", "streamer"],
       "title": {
         "ru": "Перезарядка орудия",
         "en": "Gun reload"
@@ -524,7 +538,8 @@
     {
       "id": "gun_arc",
       "category": "battle",
-      "presets": ["recommended", "streamer"],
+      "context": "battle",
+      "presets": ["streamer"],
       "title": {
         "ru": "УГН орудия",
         "en": "Gun traverse limits"
@@ -545,7 +560,8 @@
     {
       "id": "received_hits",
       "category": "battle",
-      "presets": ["recommended", "streamer"],
+      "context": "battle",
+      "presets": ["streamer"],
       "title": {
         "ru": "Попадания по вам",
         "en": "Hits on you"
@@ -566,6 +582,7 @@
     {
       "id": "death_card",
       "category": "battle",
+      "context": "battle",
       "presets": ["recommended"],
       "title": {
         "ru": "Карточка уничтожения",
@@ -587,6 +604,7 @@
     {
       "id": "bush_circle",
       "category": "battle",
+      "context": "battle",
       "presets": ["recommended"],
       "title": {
         "ru": "Круг 15 м",
@@ -608,7 +626,8 @@
     {
       "id": "arty_meter",
       "category": "battle",
-      "presets": ["recommended"],
+      "context": "any",
+      "presets": [],
       "title": {
         "ru": "Артометр",
         "en": "Artillery meter"
@@ -629,6 +648,7 @@
     {
       "id": "platoon_points",
       "category": "battle",
+      "context": "battle",
       "presets": [],
       "title": {
         "ru": "Очки взвода (турнир)",
@@ -650,6 +670,7 @@
     {
       "id": "battle_loadout",
       "category": "battle",
+      "context": "battle",
       "presets": ["streamer"],
       "title": {
         "ru": "Оборудование в бою",
@@ -671,6 +692,7 @@
     {
       "id": "minimap",
       "category": "battle",
+      "context": "battle",
       "presets": ["recommended", "streamer"],
       "title": {
         "ru": "Мини-карта",
@@ -692,6 +714,7 @@
     {
       "id": "crosshair",
       "category": "battle",
+      "context": "battle",
       "presets": ["recommended", "streamer"],
       "title": {
         "ru": "Прицелы",
@@ -713,6 +736,7 @@
     {
       "id": "camera",
       "category": "battle",
+      "context": "battle",
       "presets": ["recommended"],
       "title": {
         "ru": "Зум и камера",
@@ -734,6 +758,7 @@
     {
       "id": "chat_filter",
       "category": "battle",
+      "context": "battle",
       "presets": ["recommended", "streamer"],
       "title": {
         "ru": "Фильтр чата",
@@ -755,6 +780,7 @@
     {
       "id": "streamer_mode",
       "category": "battle",
+      "context": "any",
       "presets": ["streamer"],
       "title": {
         "ru": "Режим стримера",
@@ -776,6 +802,7 @@
     {
       "id": "battle_sounds",
       "category": "battle",
+      "context": "battle",
       "title": {
         "ru": "Звуки событий",
         "en": "Event sounds"
@@ -796,6 +823,7 @@
     {
       "id": "session_stats",
       "category": "hangar",
+      "context": "hangar",
       "presets": ["recommended", "streamer"],
       "title": {
         "ru": "Сессия в ангаре",
@@ -817,6 +845,7 @@
     {
       "id": "battle_results",
       "category": "hangar",
+      "context": "hangar",
       "presets": ["recommended"],
       "title": {
         "ru": "Итоги боя",
@@ -838,6 +867,7 @@
     {
       "id": "hangar_tweaks",
       "category": "hangar",
+      "context": "hangar",
       "presets": ["recommended", "streamer"],
       "title": {
         "ru": "Удобный ангар",
@@ -859,18 +889,19 @@
     {
       "id": "replay_manager",
       "category": "hangar",
+      "context": "hangar",
       "presets": ["recommended"],
       "title": {
         "ru": "Менеджер реплеев",
         "en": "Replay manager"
       },
       "description": {
-        "ru": "Список ваших реплеев в ангаре с поиском по карте, танку и имени, фильтрами по итогу и времени и сортировкой по дате, урону и размеру. Загруженные на сайт открываются по ссылке, уведомление о готовом разборе; по желанию реплеи новых боёв сами получают понятные имена.",
-        "en": "Your replays in the hangar with search by map, tank and name, filters by result and period and sorting by date, damage and size. The uploaded ones open on the site, with a notice when their analysis is ready; optionally the replays of new battles get readable names by themselves."
+        "ru": "Экран «Реплеи» в окне мода: все ваши реплеи с картинкой карты, танком, итогом, уроном, помощью и фрагами, поиск, фильтры по карте, технике, уровню, режиму и дате, сортировка и сводка по выборке. «Смотреть» запускает реплей прямо из ангара (клиент перезапускается), «Загрузить на сайт», избранное, переименование и удаление; по желанию реплеи новых боёв сами получают понятные имена.",
+        "en": "A Replays screen in the mod window: all your replays with the map picture, tank, result, damage, assist and frags, search, filters by map, vehicle, tier, mode and date, sorting and a summary of the selection. Watch starts a replay right from the hangar (the client restarts), plus Upload to the site, favourites, rename and delete; optionally the replays of new battles get readable names by themselves."
       },
       "fairPlay": {
-        "ru": "Только ваши реплеи из папки клиента.",
-        "en": "Only your own replays from the client folder."
+        "ru": "Только ваши реплеи из папки клиента и ваши собственные итоги из них; данные других игроков не читаются.",
+        "en": "Only your own replays from the client folder and your own results in them; other players' data is never read."
       },
       "perf": "medium",
       "preview": {
@@ -880,6 +911,7 @@
     {
       "id": "marks_history",
       "category": "hangar",
+      "context": "hangar",
       "presets": ["recommended", "streamer"],
       "title": {
         "ru": "История отметок",
@@ -901,6 +933,7 @@
     {
       "id": "battle_hits",
       "category": "hangar",
+      "context": "hangar",
       "presets": ["recommended"],
       "title": {
         "ru": "Боевые раны",
@@ -922,6 +955,7 @@
     {
       "id": "hangar_ratings",
       "category": "hangar",
+      "context": "hangar",
       "presets": ["recommended", "streamer"],
       "title": {
         "ru": "Мои рейтинги в ангаре",
@@ -943,6 +977,7 @@
     {
       "id": "hangar_marks",
       "category": "hangar",
+      "context": "hangar",
       "presets": ["recommended", "streamer"],
       "title": {
         "ru": "Отметки в ангаре",
@@ -964,6 +999,7 @@
     {
       "id": "session_goals",
       "category": "hangar",
+      "context": "any",
       "presets": ["recommended", "streamer"],
       "title": {
         "ru": "Цели с сайта",
@@ -986,6 +1022,7 @@
     {
       "id": "personal_missions",
       "category": "hangar",
+      "context": "any",
       "presets": ["recommended"],
       "title": {
         "ru": "Помощник ЛБЗ",
@@ -1007,6 +1044,7 @@
     {
       "id": "platoon_helper",
       "category": "hangar",
+      "context": "hangar",
       "presets": ["recommended"],
       "title": {
         "ru": "Помощник взвода",
@@ -1028,6 +1066,7 @@
     {
       "id": "tilt_guard",
       "category": "hangar",
+      "context": "hangar",
       "presets": ["recommended"],
       "title": {
         "ru": "Антитилт",
@@ -1049,6 +1088,7 @@
     {
       "id": "hangar_info",
       "category": "hangar",
+      "context": "hangar",
       "presets": ["recommended", "streamer"],
       "title": {
         "ru": "Часы и сервер в ангаре",
@@ -1070,6 +1110,7 @@
     {
       "id": "auto_resupply",
       "category": "hangar",
+      "context": "hangar",
       "presets": ["recommended"],
       "title": {
         "ru": "Автопополнение",
@@ -1091,6 +1132,7 @@
     {
       "id": "notification_filter",
       "category": "hangar",
+      "context": "hangar",
       "presets": ["recommended", "streamer"],
       "title": {
         "ru": "Фильтр уведомлений",
@@ -1112,6 +1154,7 @@
     {
       "id": "hangar_cleaner",
       "category": "hangar",
+      "context": "hangar",
       "presets": ["recommended", "minimal", "streamer"],
       "title": {
         "ru": "Чистый ангар",
@@ -1133,6 +1176,7 @@
     {
       "id": "replay_upload",
       "category": "data",
+      "context": "hangar",
       "title": {
         "ru": "Автозагрузка реплеев",
         "en": "Replay auto-upload"

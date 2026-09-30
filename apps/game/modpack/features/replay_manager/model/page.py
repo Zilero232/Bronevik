@@ -1,78 +1,128 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.format import format_epoch, format_number
-from .constants import ACTION_DELETE, ACTION_FOLDER, ACTION_REFRESH, ACTION_RENAME, SITE_LIST_PATH, SITE_REPLAY_PATH
-from .filters import arrange
+import os
+
+from ....core.compat import is_int, to_text
+from .constants import (BATTLE_TYPES, MAP_NAME, MAP_SMALL_ICON, MAP_STATS_ICON, MASTERY_ICON, MAX_MASTERY, OTHER_BATTLE_TYPE, PAGE_KIND, RESULTS,
+                        SITE_ANALYSED, SITE_QUEUED, SITE_REPLAY_PATH, SITE_UPLOADED, STATUS_INDEXING, STATUS_NO_ACCOUNT, STATUS_READY,
+                        VEHICLE_ICON, VEHICLE_NAME)
+from .version import compatible
+
+STAT_KEYS = ('assist', 'kills', 'xp', 'base_xp', 'credits', 'spotted', 'marks', 'shots', 'hits', 'pens', 'received', 'blocked', 'duration',
+             'life_time')
 
 
-def _megabytes(size):
-    return '%.1f MB' % (size / (1024.0 * 1024.0))
+def vehicle_parts(vehicle):
+    """(nation, name) of the header's `playerVehicle` (`ussr-R04_T-34`), or (None, None)."""
+    if not vehicle or not VEHICLE_NAME.match(vehicle):
+        return None, None
+    nation, name = vehicle.split('-', 1)
+    return nation, name
 
 
-def _vehicle_label(vehicle):
-    if not vehicle:
+def vehicle_label(vehicle):
+    """A readable name from the vehicle's code name when the client has no localized one (`R04_T-34` -> `T-34`)."""
+    name = vehicle_parts(vehicle)[1] or vehicle
+    if not name:
         return None
-    name = vehicle.split('-', 1)[-1]
     parts = name.split('_', 1)
-    return parts[1] if len(parts) > 1 and parts[0][:1].isalpha() and any(ch.isdigit() for ch in parts[0]) else name
+    return parts[1].replace('_', ' ') if len(parts) > 1 and parts[0][:1].isalpha() and any(ch.isdigit() for ch in parts[0]) else name
 
 
-def outcome_text(header, translate):
-    parts = []
-    if header.get('result'):
-        parts.append(translate('replay_manager_result_%s' % header['result']))
-    if header.get('damage') is not None:
-        parts.append(translate('replay_manager_damage', damage=format_number(header['damage'])))
-    return ', '.join(parts)
+def battle_type(header):
+    kind = header.get('battle_type')
+    return BATTLE_TYPES.get(kind, OTHER_BATTLE_TYPE) if is_int(kind) else OTHER_BATTLE_TYPE
 
 
-def badge_of(replay_id, analysed, translate):
-    if not replay_id:
-        return None
-    return translate('replay_manager_analysed') if replay_id in analysed else translate('replay_manager_uploaded')
+def map_icons(map_name):
+    if not map_name or not MAP_NAME.match(map_name):
+        return None, None
+    return MAP_STATS_ICON % map_name, MAP_SMALL_ICON % map_name
 
 
-def row_of(replay, replay_id, translate, analysed=()):
-    header = replay['header'] or {}
-    title = ' - '.join(part for part in (header.get('map_title') or header.get('map_name'), _vehicle_label(header.get('vehicle'))) if part)
-    actions = [
-        {'id': ACTION_RENAME, 'label': translate('replay_manager_rename'), 'input': replay['name'].rsplit('.', 1)[0], 'confirm': None},
-        {'id': ACTION_DELETE, 'label': translate('replay_manager_delete'), 'confirm': translate('replay_manager_delete_confirm',
-                                                                                              name=replay['name'])},
-    ]
-    link = None
+def mastery_icon(mastery):
+    return MASTERY_ICON % mastery if is_int(mastery) and 1 <= mastery <= MAX_MASTERY else None
+
+
+def site_state(header, index, queued, analysed):
+    arena = header.get('arena_unique_id')
+    replay_id = index.get(arena) if arena and index is not None else None
     if replay_id:
-        link = SITE_REPLAY_PATH % replay_id
-        actions.insert(0, {'id': 'site', 'label': translate('replay_manager_open_site'), 'link': link, 'confirm': None})
-    return {
+        return {'state': SITE_ANALYSED if replay_id in analysed else SITE_UPLOADED, 'link': SITE_REPLAY_PATH % replay_id}
+    if arena and arena in queued:
+        return {'state': SITE_QUEUED, 'link': None}
+    return None
+
+
+class PageContext(object):
+    """What a page needs beside the replays: the account's index, the client, and the client lookups the glue passes in
+    (`describe_vehicle(tank_id, vehicle)` -> {label, tier, cls}, `image(path)` -> an image string or None)."""
+
+    def __init__(self, index=None, client_version=None, queued=(), analysed=(), upload=None, describe_vehicle=None, image=None):
+        self.index = index
+        self.client_version = client_version
+        self.queued = queued
+        self.analysed = analysed
+        self.upload = upload
+        self.describe_vehicle = describe_vehicle or (lambda tank_id, vehicle: {})
+        self.image = image or (lambda path: None)
+
+
+def item_of(replay, context):
+    header = replay.get('header') or {}
+    stats = header.get('stats') or {}
+    vehicle = header.get('vehicle')
+    nation = vehicle_parts(vehicle)[0]
+    described = context.describe_vehicle(stats.get('tank_id'), vehicle) or {}
+    big_map, small_map = map_icons(header.get('map_name'))
+    arena = header.get('arena_unique_id')
+    index = context.index
+    item = {
         'id': replay['name'],
-        'title': title or replay['name'],
-        'subtitle': replay['name'],
-        'meta': ' / '.join(part for part in (format_epoch(header.get('date_time') or replay['mtime']), outcome_text(header, translate),
-                                             _megabytes(replay['size'])) if part),
-        'badge': badge_of(replay_id, analysed, translate),
-        'link': link,
-        'actions': actions,
+        'title': os.path.splitext(replay['name'])[0],
+        'size': replay['size'],
+        'time': int(header.get('date_time') or replay['mtime']),
+        'arena': arena,
+        'map': header.get('map_name'),
+        'map_title': header.get('map_title') or header.get('map_name'),
+        'map_image': context.image(big_map) if big_map else None,
+        'map_thumb': context.image(small_map) if small_map else None,
+        'vehicle': vehicle,
+        'tank': described.get('label') or vehicle_label(vehicle),
+        'tier': described.get('tier'),
+        'cls': described.get('cls'),
+        'nation': nation,
+        'tank_image': context.image(VEHICLE_ICON % vehicle) if nation else None,
+        'type': battle_type(header),
+        'result': header.get('result') if header.get('result') in RESULTS else None,
+        'damage': header.get('damage'),
+        'survived': stats.get('survived'),
+        'mastery': stats.get('mastery') if is_int(stats.get('mastery')) else None,
+        'mastery_image': context.image(mastery_icon(stats.get('mastery'))) if mastery_icon(stats.get('mastery')) else None,
+        'version': header.get('client_version'),
+        'playable': compatible(header.get('client_version'), context.client_version),
+        'favourite': bool(index is not None and index.is_favourite(arena or replay['name'])),
+        'site': site_state(header, index, context.queued, context.analysed),
     }
+    for key in STAT_KEYS:
+        item[key] = stats.get(key) if is_int(stats.get(key)) else None
+    return item
 
 
-def build_page(replays, index, translate, max_rows, uploaded_only, settings=None, now=None, analysed=()):
-    rows = []
-    for replay in (arrange(replays, settings, now) if settings is not None else replays):
-        arena = (replay['header'] or {}).get('arena_unique_id')
-        replay_id = index.get(arena) if arena else None
-        if uploaded_only and not replay_id:
-            continue
-        rows.append(row_of(replay, replay_id, translate, analysed))
-        if len(rows) >= max_rows:
-            break
-    empty = 'replay_manager_nothing_found' if replays and not rows else 'replay_manager_empty'
-    return {'kind': 'list', 'empty': translate(empty), 'rows': rows}
+def page_status(account_id, library):
+    if account_id is None:
+        return STATUS_NO_ACCOUNT
+    return STATUS_INDEXING if library.indexing() else STATUS_READY
 
 
-def page_actions(translate):
-    return [
-        {'id': ACTION_REFRESH, 'label': translate('replay_manager_refresh'), 'confirm': None},
-        {'id': ACTION_FOLDER, 'label': translate('replay_manager_folder'), 'confirm': None},
-        {'id': 'site_list', 'label': translate('replay_manager_site_list'), 'link': SITE_LIST_PATH, 'confirm': None},
-    ]
+def build_page(replays, context, status, progress, folder):
+    done, total = progress
+    return {
+        'kind': PAGE_KIND,
+        'status': status,
+        'progress': {'done': done, 'total': total},
+        'client': to_text(context.client_version or ''),
+        'folder': to_text(folder or ''),
+        'upload': context.upload,
+        'items': [item_of(replay, context) for replay in replays],
+    }

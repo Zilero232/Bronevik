@@ -5,7 +5,8 @@ import BigWorld
 from ...log import log_exception
 
 
-def _clock():
+def game_time():
+    """BigWorld.time(): the client's game clock in seconds, or None without it."""
     getter = getattr(BigWorld, 'time', None)
     return getter() if getter is not None else None
 
@@ -30,7 +31,7 @@ class Ticker(object):
             return
         self.running = True
         self.generation += 1
-        self.last_at = _clock()
+        self.last_at = game_time()
         self._schedule(self.generation)
 
     def stop(self):
@@ -41,13 +42,13 @@ class Ticker(object):
 
     def restart_elapsed(self):
         """The next `elapsed()` counts from now: call it when a countdown was just set from the client."""
-        self.last_at = _clock()
+        self.last_at = game_time()
 
     def _schedule(self, generation):
         BigWorld.callback(self.interval_s, lambda: self._tick(generation))
 
     def _measure(self):
-        now = _clock()
+        now = game_time()
         if now is None or self.last_at is None or now < self.last_at:
             self.last_elapsed = self.interval_s
         else:

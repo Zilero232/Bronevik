@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from . import ReceivedHits, format_panel
 from .constants import PREVIEW_HITS
+from .widget import panel_widget
 
 
 def preview_hits():
@@ -13,3 +14,7 @@ def preview_hits():
 
 def preview_text(settings, translate):
     return format_panel(preview_hits(), settings, translate) or u''
+
+
+def preview_widget(settings, translate):
+    return panel_widget(preview_hits(), settings, translate)

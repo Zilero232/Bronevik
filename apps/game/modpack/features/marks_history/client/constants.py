@@ -1,4 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ....core.hud.panel import dock_layout
+
 HANGAR_PANEL = 'otmetki.marks_history'
-LAYOUT = {'x': -20, 'y': 260, 'alignX': 'right', 'alignY': 'top'}
+LAYOUT = dock_layout('hangar_left')

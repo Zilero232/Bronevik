@@ -15,7 +15,8 @@ import type {
   profilesSchema,
   rowSchema,
   stateSchema,
-  statusSchema
+  statusSchema,
+  windowSchema
 } from './protocol.schemas';
 
 export type UiState = z.infer<typeof stateSchema>;
@@ -32,6 +33,9 @@ export type UiPanel = z.infer<typeof panelSchema>;
 export type UiNotice = z.infer<typeof noticeSchema>;
 export type UiProfile = z.infer<typeof profileSchema>;
 export type UiProfiles = z.infer<typeof profilesSchema>;
+export type UiWindow = z.infer<typeof windowSchema>;
+export type UiSection = UiComponent['section'];
+export type UiContext = UiComponent['context'];
 export type UiMessage = z.infer<typeof messageSchema>;
 export type UiMessageOf<Type extends UiMessage['type']> = Extract<UiMessage, { type: Type }>;
 export type SettingValue = UiMessageOf<'set'>['value'];

@@ -1,0 +1,30 @@
+@use '../../../../../shared/styles/gameface' as *;
+
+.body {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 16px 12px 62px;
+  border-top: 1px solid token(color-border);
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.reset {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.resetIcon {
+  margin-right: 6px;
+}

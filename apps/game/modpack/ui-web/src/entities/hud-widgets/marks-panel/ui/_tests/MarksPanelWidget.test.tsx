@@ -14,12 +14,12 @@ describe(MarksPanelWidget, () => {
 
     expect(imageSources(html)).toEqual(['img://gui/maps/icons/library/marksOnGun/mark_2.png']);
     expect(html.textContent).toContain('86,30');
-    expect(html.textContent).toContain('95 %');
+    expect(html.textContent).toContain('95 %');
   });
 
   it('keeps the compact style to one line', () => {
     const html = mount({ Component: MarksPanelWidget, props: { data: { ...data, style: 'compact' as const } } });
 
-    expect(html.textContent).not.toContain('25 195');
+    expect(html.textContent).not.toContain('25 195');
   });
 });

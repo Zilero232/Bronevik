@@ -4,12 +4,13 @@ import time
 
 from ....core.client.me import can_read, post_signed
 from ....core.errors import ReasonError
+from ....core.hud import HangarLabel
 from ....core.events import EVENT_COMPONENT_SETTINGS
 from ....core.log import log
 from ....core.me import OK_STATUS
 from .. import FEATURE_ID
 from ..i18n import STRINGS
-from ..model import SessionAggregator, format_session_panel, format_session_plain
+from ..model import SessionAggregator, format_session_panel, format_session_plain, session_widget
 from ..model.constants import (ACTION_SHARE, SHARE_PATH, SHARE_REFUSED, SHARE_REFUSED_NOTICE, SHARE_RETRY_S, SHARE_SEND_PATH, SHARE_STATE_KEY,
                                SHARE_SYNCED)
 from ..model.share import preference_body, preference_of, preference_outcome, send_body, send_failure_key
@@ -23,6 +24,7 @@ class SessionStats(object):
 
     def __init__(self, app):
         self.app = app
+        self.label = HangarLabel(app, HANGAR_PANEL)
         app.translate.catalog.add(STRINGS)
         self.session = SessionAggregator(idle_seconds=app.config.get(IDLE_MINUTES) * 60)
         self.session.load(app.state.get(STATE_KEY))
@@ -48,7 +50,7 @@ class SessionStats(object):
         self.sync_share(time.time())
 
     def _on_battle_enter(self):
-        self.app.ui.hide(HANGAR_PANEL)
+        self.label.hide()
 
     def _on_battle_event(self, event, now):
         event['session_id'] = self.session.add(event, now)
@@ -80,13 +82,13 @@ class SessionStats(object):
         if app.in_battle or not app.config.is_enabled(SWITCH):
             return
         if self.session.is_expired(time.time()):
-            app.ui.hide(HANGAR_PANEL)
+            self.label.clear()
             return
         summary = self.session.summary()
         if not summary['battles']:
             return
         if app.ui.has_panels:
-            app.ui.show(HANGAR_PANEL, format_session_panel(summary, app.translate), LAYOUT)
+            self.label.show(format_session_panel(summary, app.translate), LAYOUT, widget=session_widget(summary, app.translate))
         elif after_battle:
             app.ui.notify(format_session_plain(summary, app.translate))
 

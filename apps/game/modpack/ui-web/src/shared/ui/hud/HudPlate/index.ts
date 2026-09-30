@@ -1,3 +1,3 @@
 export { HudPlate } from './HudPlate';
 
-export type { HudPlateProps } from './HudPlate.types';
+export type { HudPlateProps, HudRail } from './HudPlate.types';

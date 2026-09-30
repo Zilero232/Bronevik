@@ -12,7 +12,7 @@ export const DamageLogWidget = ({ data }: DamageLogWidgetProps) => {
   const view = damageLogView(data);
 
   return (
-    <HudPlate className={s.plate} rail='accent'>
+    <HudPlate className={s.plate} rail='damage'>
       <div className={s.totals}>
         {view.totals.map((total) => (
           <IconNumber key={total.key} icon={total.icon} minWidth={DAMAGE_LOG.totalWidth} tone={total.tone} value={total.value} />

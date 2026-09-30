@@ -32,6 +32,12 @@ JITTER = 0.2
 
 QUOTA_CODE = 'SUBSCRIPTION_REQUIRED'
 
+# The answers to core.events.EVENT_REPLAY_UPLOAD_REQUEST: the replay manager shows them as `replay_manager_upload_<state>`.
+REQUEST_READY = 'ready'
+REQUEST_OFF = 'off'
+REQUEST_UNBOUND = 'unbound'
+REQUEST_INVALID = 'invalid'
+
 
 class JobResult(Enum):
 

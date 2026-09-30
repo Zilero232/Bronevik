@@ -11,6 +11,8 @@ DAMAGE_WINDOW_S = 1.0
 ACTION_CLEAR = 'clear'
 SEPARATOR = u' · '
 MINUS = u'−'
+# The hangar card (model/widget.py), design px.
+CARD_WIDTH = 260
 
 # RU 1.45 client source (vehicle_systems/tankStructure.TankPartIndexes): 0 chassis, 1 hull, 2 turret, 3 gun; higher
 # indices are the chassis' track pairs (VehicleEffects.DamageFromShotDecoder.convertComponentIndex).

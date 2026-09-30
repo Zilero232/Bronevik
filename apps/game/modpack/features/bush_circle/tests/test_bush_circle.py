@@ -5,8 +5,8 @@ import unittest
 
 import _support  # noqa: F401
 from otmetki.features.bush_circle.i18n import STRINGS
-from otmetki.features.bush_circle.model import CircleState, color_of, diameter, hotkey_of
-from otmetki.features.bush_circle.model.constants import COLOR_CHOICES, HOTKEY_CHOICES, RADIUS_M
+from otmetki.features.bush_circle.model import CircleState, color_of, diameter
+from otmetki.features.bush_circle.model.constants import COLOR_CHOICES, HOTKEY_CHOICES, HOTKEYS, RADIUS_M
 from otmetki.features.bush_circle.settings import CHOICES, SCHEMA, SETTINGS
 
 
@@ -33,7 +33,7 @@ class ValuesTest(unittest.TestCase):
     def test_fixed_radius_colours_and_hotkeys(self):
         assert RADIUS_M == 15.0 and diameter() == 30.0
         assert color_of('green') == 0xFF7CD35B and color_of('purple') == 0xFFFFFFFF
-        assert hotkey_of('ctrl_shift_b') == ('KEY_B', ('KEY_LCONTROL', 'KEY_LSHIFT')) and hotkey_of('bad') == (None, ())
+        assert sorted(HOTKEYS) == sorted(HOTKEY_CHOICES) and HOTKEYS['none'] == (None, ())
         assert all(color in CHOICES['color'] for color in COLOR_CHOICES) and CHOICES['hotkey'] == HOTKEY_CHOICES
 
     def test_settings_and_strings(self):

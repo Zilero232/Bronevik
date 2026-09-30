@@ -1,6 +1,5 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import BigWorld
 from BattleFeedbackCommon import BATTLE_EVENT_TYPE
 
 from ....core.battle_tally import EFFICIENCY_KEYS, efficiency_totals
@@ -8,7 +7,7 @@ from ....core.client.battle import (call, controls_own_vehicle, damage_source, f
                                    vehicle_state)
 from ....core.client.game import values_by_name
 from ....core.client.hud.panel import BattlePanel
-from ....core.client.timer import Ticker
+from ....core.client.timer import Ticker, game_time
 from ....core.log import safe
 from ....core.hud.stock import BATTLE_DAMAGE_LOG_PANEL
 from ....core.shells import shell_code, shell_name
@@ -29,11 +28,6 @@ try:
     from gui.battle_control.battle_constants import PERSONAL_EFFICIENCY_TYPE
 except ImportError:
     PERSONAL_EFFICIENCY_TYPE = None
-
-
-def now():
-    getter = getattr(BigWorld, 'time', None)
-    return getter() if getter is not None else None
 
 
 class LastHitPanel(BattlePanel):
@@ -110,7 +104,7 @@ class DamageLogPanel(BattlePanel):
             source = damage_source(extra) if kind == 'received' else None
             shell = call(extra, 'getShellType')
             added = self.log.add(kind, call(extra, 'getDamage', 0), vehicle_name(vehicle_id), shell_code(shell), source, vehicle_class(vehicle_id),
-                                 now(), shell_name(shell), call(extra, 'isShellGold', False))
+                                 game_time(), shell_name(shell), call(extra, 'isShellGold', False))
             if added and kind == 'received':
                 received = self.log.last('received')
             changed = added or changed
@@ -126,7 +120,7 @@ class DamageLogPanel(BattlePanel):
             return
         if not isinstance(value, (list, tuple)) or len(value) < 2 or value[0] != AMMO_RACK_DEVICE or value[1] not in AMMO_RACK_STATES:
             return
-        if self.log.ammo_rack_hit(now()):
+        if self.log.ammo_rack_hit(game_time()):
             self.render()
             self.last_hit.show_hit(self.log.last('received'))
 

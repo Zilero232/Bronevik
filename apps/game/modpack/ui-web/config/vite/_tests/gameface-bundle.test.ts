@@ -8,7 +8,7 @@ import { hudConfig } from '../hud';
 import { settingsConfig } from '../settings';
 import { UI_BUILD } from '../vite.constants';
 
-const BUNDLE_FILES = ['hud.html', 'icon.png', 'index.html'];
+const BUNDLE_FILES = ['hud.html', 'icon.png', 'icons.png', 'index.html'];
 const CLASSIC_SCRIPT_AT_BODY_END = /<script>\(function\(\)\{[\s\S]*\}\)\(\);<\/script>\s*<\/body>\s*<\/html>\s*$/;
 const POLYFILLED_ELEMENTS = /[\w$]\([`'"](?:ul|ol|li|dl|dt|dd|select|option)[`'"][,)]/;
 

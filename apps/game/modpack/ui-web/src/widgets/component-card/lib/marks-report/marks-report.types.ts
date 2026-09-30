@@ -11,7 +11,7 @@ export type MarksReportView = {
   progress: string;
   cards: ReportCard[];
   rows: ReportRow[];
-  chart: { points: string; min: string; max: string } | null;
+  chart: { bars: { key: string; height: string }[]; min: string; max: string } | null;
 };
 
 export type { UiMarksReport };

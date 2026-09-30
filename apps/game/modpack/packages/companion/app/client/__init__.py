@@ -28,6 +28,7 @@ from PlayerEvents import g_playerEvents
 
 from ....core.client.game import client_language, client_version
 from ....core.client.packaging import warn_mixed_install
+from ....core.client.session_log import open_session_log
 from ....core.client.timer import Ticker
 from ....core.client.transport import create_transport
 from ....core.client.ui import Ui
@@ -37,6 +38,7 @@ from ....core.durable import open_config
 from ....core.log import log, safe
 from ....core.registry import registry
 from ....core.storage import JsonFile
+from ....core.version import VERSION as CORE_VERSION
 from ...battles.client import BattleCapture
 from ...binding import CredentialStore
 from ...binding.client import Binder
@@ -58,6 +60,7 @@ def _path(name):
 class OtmetkiApp(object):
 
     def __init__(self):
+        open_session_log(CONFIG_DIR, ((MOD_ID, VERSION), ('core', CORE_VERSION)))
         self.config_dir = CONFIG_DIR
         self.bus = EventBus()
         self.hooks = Subscriptions()
@@ -187,6 +190,7 @@ class OtmetkiApp(object):
         self.bus.emit('tick', now)
 
     def _on_account_show_gui(self, *args):
+        log('hangar shown')
         account_id = getattr(BigWorld.player(), 'databaseID', None)
         if account_id and account_id != self.account_id:
             self._switch_account(account_id)
@@ -217,8 +221,10 @@ class OtmetkiApp(object):
 
     def _on_avatar_ready(self, *args):
         self.in_battle = True
+        replay = BattleReplay.isPlaying()
+        log('battle entered%s' % (' (replay)' if replay else ''))
         self.bus.emit('battle_enter')
-        if BattleReplay.isPlaying():
+        if replay:
             return
         player = BigWorld.player()
         self.battles.on_battle_ready(player)
@@ -226,6 +232,7 @@ class OtmetkiApp(object):
 
     def _on_avatar_leave(self, *args):
         self.in_battle = False
+        log('battle left')
         self.battles.on_battle_leave()
         self.bus.emit('battle_leave')
 

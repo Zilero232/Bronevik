@@ -70,6 +70,8 @@ class CatalogTest(unittest.TestCase):
         self.assertIn('bare package file mask', self.problems(lambda raw: raw.update(ownedPatterns=['mods/*.mtmod'])))
         self.assertIn('perf must be one of', self.problems(lambda raw: self.entry(raw, 'marks_panel').update(perf='huge')))
         self.assertIn('perf must be one of', self.problems(lambda raw: self.entry(raw, 'marks_panel').pop('perf')))
+        self.assertIn('context must be one of', self.problems(lambda raw: self.entry(raw, 'marks_panel').update(context='lobby')))
+        self.assertIn('context must be one of', self.problems(lambda raw: self.entry(raw, 'marks_panel').pop('context')))
         self.assertIn('not found in assets/', self.problems(lambda raw: self.entry(raw, 'sixth_sense')['preview'].update(audio='otmetki/none.mp3')))
         self.assertIn('preview audio must be', self.problems(lambda raw: self.entry(raw, 'sixth_sense')['preview'].update(audio='../x.mp3')))
         self.assertIn('unknown component', self.problems(lambda raw: raw['conflicts'][0].update(components=['nothing'])))
@@ -80,6 +82,7 @@ class CatalogTest(unittest.TestCase):
     def test_every_component_has_a_perf_mark_and_sounds_have_a_preview(self):
         catalog = catalog_module.load(CATALOG_PATH, ASSETS_DIR)
         self.assertTrue(all(entry.perf in ('low', 'medium', 'high') for entry in catalog.components))
+        self.assertTrue(all(entry.context in ('hangar', 'battle', 'any') for entry in catalog.components))
         self.assertEqual(set(entry.id for entry in catalog.components if entry.preview.audio), set(['sixth_sense', 'personal_best', 'session_goals']))
         self.assertIn('scripts/client/gui/mods/otmetki/', catalog.owned_paths)
         self.assertTrue(any(rule.id == 'xvm' for rule in catalog.conflicts))
@@ -116,8 +119,10 @@ class ManifestTest(unittest.TestCase):
         self.assertEqual(data['schemaVersion'], 1)
         component = data['components'][2]
         self.assertEqual(sorted(component), sorted(['id', 'packageId', 'version', 'file', 'category', 'title', 'description', 'fairPlay', 'required',
-                                                    'default', 'presets', 'preview', 'dependencies', 'catalogued', 'sha256', 'size', 'perf']))
+                                                    'default', 'presets', 'preview', 'dependencies', 'catalogued', 'sha256', 'size', 'perf',
+                                                    'context']))
         self.assertEqual(component['perf'], 'low')
+        self.assertEqual(component['context'], 'battle')
         self.assertEqual(data['components'][3]['preview']['audio'], 'previews/sixth_sense.mp3')
         self.assertEqual([rule['id'] for rule in data['conflicts']], ['xvm', 'battle_observer', 'marks_calculator', 'sixth_sense_lamp'])
         self.assertEqual(data['conflicts'][0]['components'], ['sixth_sense'])

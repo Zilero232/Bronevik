@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, font, format_number, format_percent
+from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, counted, font, format_number, format_percent
 from .constants import (ACCOUNT_METRICS, ACTION_REFRESH, ACTION_SITE, METRIC_KEY, METRIC_SEPARATOR, RATING_METRICS, SESSION_METRICS, SITE_PATH, STAR,
                         TANK_METRICS, TIER_COLORS, TITLE_SIZE_STEP)
 
@@ -43,7 +43,7 @@ def metric_text(metric, row, translate, colored, size):
         value = row.get('win_rate')
         return None if value is None else font(translate('hangar_ratings_win_rate_value', value=format_percent(value)), COLOR_NEUTRAL, size)
     if metric == 'battles':
-        return font(translate('hangar_ratings_battles_value', count=format_number(row.get('battles') or 0)), COLOR_NEUTRAL, size)
+        return font(counted(row.get('battles') or 0, 'battles', translate), COLOR_NEUTRAL, size)
     if metric == 'avg_damage':
         value = row.get('avg_damage')
         return None if value is None else font(translate('hangar_ratings_avg_damage_value', value=format_number(value)), COLOR_NEUTRAL, size)

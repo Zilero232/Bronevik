@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import copy
 
-from .constants import EXCLUDED_CONFIG_KEYS, EXCLUDED_CONFIG_PREFIXES
+from .constants import EXCLUDED_CONFIG_KEYS, EXCLUDED_CONFIG_PREFIXES, EXCLUDED_SECTIONS
 
 
 def is_excluded(key):
@@ -16,6 +16,8 @@ def portable_values(values):
 def take_snapshot(config, component_config=None):
     values = portable_values(config.to_dict())
     sections = copy.deepcopy(component_config.data) if component_config is not None else {}
+    for key in EXCLUDED_SECTIONS:
+        sections.pop(key, None)
     return {'config': values, 'components': sections}
 
 
@@ -31,7 +33,7 @@ def apply_snapshot(snapshot, config, save_config, component_config=None, layer=N
     stored_raw = False
     panels = getattr(layer, 'panels', {}) if layer is not None else {}
     for key, section in sorted((snapshot.get('components') or {}).items()):
-        if not isinstance(section, dict):
+        if not isinstance(section, dict) or key in EXCLUDED_SECTIONS:
             continue
         if component_config.get(key) is None:
             component_config.data[key] = copy.deepcopy(section)

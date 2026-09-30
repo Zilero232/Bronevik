@@ -2,7 +2,7 @@
 
 [project]
 name = "otmetki-feature-marks-history"
-version = "0.2.0"
+version = "0.3.0"
 description = "Feature: per-vehicle marks of excellence history in the hangar."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }

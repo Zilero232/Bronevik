@@ -4,6 +4,7 @@ export const PROTOCOL = {
     'ready',
     'close',
     'set',
+    'set_many',
     'action',
     'language',
     'bind',
@@ -17,9 +18,13 @@ export const PROTOCOL = {
     'hud_edit',
     'hud_move',
     'hud_reset',
-    'hud_reset_all'
+    'hud_reset_all',
+    'window_layout'
   ],
   groups: ['data', 'hangar', 'battle'],
+  sections: ['battle', 'hangar', 'marks', 'replays', 'streamer', 'data'],
+  contexts: ['hangar', 'battle', 'any'],
+  pages: ['battle', 'hangar', 'marks', 'replays', 'streamer', 'data', 'profiles', 'hud'],
   alignX: ['left', 'center', 'right'],
   alignY: ['top', 'center', 'bottom'],
   noticeKinds: ['info', 'error', 'code'],

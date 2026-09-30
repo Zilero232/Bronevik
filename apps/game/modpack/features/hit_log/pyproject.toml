@@ -2,7 +2,7 @@
 
 [project]
 name = "otmetki-feature-hit-log"
-version = "0.2.0"
+version = "0.2.1"
 description = "Feature: battle hit log of the player's own shots as the client reports them (penetration, ricochet, no penetration, crits)."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }

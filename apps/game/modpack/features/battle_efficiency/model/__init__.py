@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ....core.battle_tally import Counters
 from ....core.compat import is_number
 from ....core.format import COLOR_DOWN, COLOR_MUTED, COLOR_NEUTRAL, COLOR_UP, font, format_number
 from ....core.templates import render
@@ -13,22 +14,10 @@ from .constants import (DAMAGE_FLOOR, DEF_FLOOR, DEF_MARGIN, FRAG_FLOOR, FRAG_MA
 TOTALS = ('damage', 'spot', 'frag', 'def')
 
 
-class BattleTotals(object):
+class BattleTotals(Counters):
 
     def __init__(self):
-        self.values = dict((key, 0) for key in TOTALS)
-
-    def add(self, key, amount=1):
-        if key not in self.values or not is_number(amount) or amount <= 0:
-            return False
-        self.values[key] += int(amount)
-        return True
-
-    def raise_to(self, key, value):
-        if key in self.values and is_number(value) and value > self.values[key]:
-            self.values[key] = int(value)
-            return True
-        return False
+        Counters.__init__(self, TOTALS)
 
 
 def _ratio(value, expected):

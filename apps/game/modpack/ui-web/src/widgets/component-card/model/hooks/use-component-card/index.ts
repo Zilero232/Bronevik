@@ -1,3 +1,3 @@
 export { useComponentCard } from './use-component-card';
 
-export type { RunActionInput } from './use-component-card.types';
+export type { RunActionInput, UseComponentCardInput } from './use-component-card.types';

@@ -1,5 +1,16 @@
 @use '../../../shared/styles/gameface' as *;
 
+.editor {
+  display: flex;
+  flex-direction: column;
+}
+
+.toolbar {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 4px;
+}
+
 .stage {
   position: relative;
   overflow: hidden;

@@ -3,7 +3,7 @@ export type { ClientIconProps } from './ClientIcon';
 export { Glyph } from './Glyph';
 export type { GlyphProps } from './Glyph';
 export { HudPlate } from './HudPlate';
-export type { HudPlateProps } from './HudPlate';
+export type { HudPlateProps, HudRail } from './HudPlate';
 export { IconNumber } from './IconNumber';
 
 export type { IconNumberProps } from './IconNumber';

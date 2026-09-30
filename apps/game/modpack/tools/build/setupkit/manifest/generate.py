@@ -6,10 +6,10 @@ runtime mods (`kind: "dependency"`) have no package here: they are passed throug
 """
 import dataclasses
 import fnmatch
-import hashlib
 import os
 
 import archive
+import fileio
 import layout
 
 from .model import Component, Localized, Manifest, Preview
@@ -19,14 +19,6 @@ PREVIEWS_DIR = 'previews'
 
 class ManifestError(ValueError):
     pass
-
-
-def _sha256(path):
-    digest = hashlib.sha256()
-    with open(path, 'rb') as handle:
-        for chunk in iter(lambda: handle.read(1 << 16), b''):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def _fallback(package, catalog):
@@ -39,10 +31,11 @@ def _component(package, catalog, platform, packages_dir, warnings):
     if entry is None:
         warnings.append('package %s has no catalog entry: shipped unticked in category %s' % (package.key, catalog.fallback_category))
         title, description, fair_play = _fallback(package, catalog)
-        category, presets, required, preview, extra, perf = catalog.fallback_category, (), False, Preview(), (), None
+        category, presets, required, preview, extra, perf, context = catalog.fallback_category, (), False, Preview(), (), None, None
     else:
         title, description, fair_play = entry.title, entry.description, entry.fair_play
-        category, presets, required, extra, perf = entry.category, entry.presets, entry.required, entry.dependencies, entry.perf
+        category, presets, required, extra, perf, context = (entry.category, entry.presets, entry.required, entry.dependencies, entry.perf,
+                                                             entry.context)
         image = '%s/%s.png' % (PREVIEWS_DIR, package.key) if entry.preview.image else None
         audio = audio_path(package.key, entry.preview.audio) if entry.preview.audio else None
         preview = Preview(image, entry.preview.video, audio)
@@ -56,7 +49,7 @@ def _component(package, catalog, platform, packages_dir, warnings):
         path = os.path.join(packages_dir, file_name)
         if not os.path.isfile(path):
             raise ManifestError('%s not found in %s: build the packages first (tools/build/build.py)' % (file_name, packages_dir))
-        sha256, size = _sha256(path), os.path.getsize(path)
+        sha256, size = fileio.sha256(path), os.path.getsize(path)
     return Component(
         id=package.key,
         package_id=package.package_id,
@@ -75,6 +68,7 @@ def _component(package, catalog, platform, packages_dir, warnings):
         sha256=sha256,
         size=size,
         perf=perf,
+        context=context,
     )
 
 

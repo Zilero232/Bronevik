@@ -1,13 +1,8 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from .constants import HOTKEYS, PRIVATE_HANGAR_LABELS
+from .constants import PRIVATE_HANGAR_LABELS
 
 # Fair play: this component only hides things (the mod's own panels, the battle chat of others); it reads nothing.
-
-
-def hotkey_of(choice):
-    """(Keys name, modifiers) of a hotkey choice; (None, ()) for none or an unknown one."""
-    return HOTKEYS.get(choice, HOTKEYS['none'])
 
 
 def blocked_labels(settings):

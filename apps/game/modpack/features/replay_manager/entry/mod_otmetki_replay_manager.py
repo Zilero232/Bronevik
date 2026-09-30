@@ -3,7 +3,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import traceback
 
 try:
-    from gui.mods.otmetki.features.replay_manager import register
+    from gui.mods.otmetki.features.replay_manager import boot, register
     register()
+    boot()
 except Exception:
     print('[OTMETKI] failed to register replay_manager\n%s' % traceback.format_exc())

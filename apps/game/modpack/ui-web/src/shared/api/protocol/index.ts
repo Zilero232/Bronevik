@@ -15,7 +15,8 @@ export {
   profilesSchema,
   rowSchema,
   stateSchema,
-  statusSchema
+  statusSchema,
+  windowSchema
 } from './protocol.schemas';
 
 export type {
@@ -23,6 +24,7 @@ export type {
   SettingValue,
   UiAction,
   UiComponent,
+  UiContext,
   UiDetail,
   UiField,
   UiFigure,
@@ -35,6 +37,8 @@ export type {
   UiProfile,
   UiProfiles,
   UiRow,
+  UiSection,
   UiState,
-  UiStatus
+  UiStatus,
+  UiWindow
 } from './protocol.types';

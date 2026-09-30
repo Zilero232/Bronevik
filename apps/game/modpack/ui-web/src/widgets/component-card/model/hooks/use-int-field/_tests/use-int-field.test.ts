@@ -35,6 +35,12 @@ describe(useIntField, () => {
     expect(hook.current().text).toBe('30');
   });
 
+  it('shows the range and stops the buttons at the limits', () => {
+    expect(mount(30).hook.current()).toMatchObject({ range: '10-60', canDecrease: true, canIncrease: true });
+    expect(mount(10).hook.current()).toMatchObject({ canDecrease: false, canIncrease: true });
+    expect(mount(60).hook.current()).toMatchObject({ canDecrease: true, canIncrease: false });
+  });
+
   it('commits on Enter', () => {
     const { hook, onCommit } = mount(30);
 

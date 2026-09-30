@@ -1,19 +1,115 @@
 @use '../../../shared/styles/gameface' as *;
 
-.switch {
+.card {
   display: flex;
+  flex-direction: column;
+  border: 1px solid token(color-border);
+  border-radius: token(radius-md);
+  margin-bottom: 8px;
+  background-color: token(color-surface);
+}
+
+.open {
+  border-color: token(color-border-strong);
+  background-color: token(color-surface-raised);
+}
+
+.off {
+  background-color: token(color-surface-sunken);
+}
+
+.head {
+  display: flex;
+  min-height: 60px;
   flex-direction: row;
+  align-items: center;
+  padding: 0 14px 0 0;
+}
+
+.main {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px 12px;
+  border: none;
+  background-color: transparent;
+  color: token(color-text);
+  cursor: pointer;
+  text-align: left;
+}
+
+.tile {
+  display: flex;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid token(color-border-strong);
+  border-radius: token(radius-md);
+  margin-right: 12px;
+  background-color: token(color-bg-deep);
+}
+
+.tileOn {
+  border-color: token(color-accent);
+  background-color: token(color-accent-soft);
+}
+
+.titles {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+.titleRow {
+  display: flex;
+  min-width: 0;
+  flex-direction: row;
+  flex-wrap: wrap;
   align-items: center;
 }
 
-.switchLabel {
-  margin-right: 8px;
-  color: token(color-text-muted);
-  font-size: 12px;
-  text-transform: uppercase;
+.title {
+  font-size: 15px;
+  font-weight: 700;
 }
 
-.fields {
+.hint {
+  margin-top: 3px;
+  color: token(color-text-muted);
+  font-size: 12px;
+  line-height: 1.35;
+
+  @include ellipsis;
+}
+
+.hintFull {
+  white-space: normal;
+}
+
+.chevron {
+  margin-left: 10px;
+}
+
+.switch {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-shrink: 0;
+  align-items: center;
+  padding-left: 12px;
+  border-left: 1px solid token(color-border);
+}
+
+.switchLabel {
+  width: 34px;
+  margin-right: 8px;
+  color: token(color-text-muted);
+  font-size: 11px;
+  text-align: right;
+
+  @include caps(0.5px);
 }

@@ -2,7 +2,7 @@
 
 [project]
 name = "otmetki-feature-death-card"
-version = "0.1.0"
+version = "0.2.0"
 description = "Feature: after the own tank is destroyed, who fired the last shot, its shell and damage, the modules it hit and the side it came from."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }

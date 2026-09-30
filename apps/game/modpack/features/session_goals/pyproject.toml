@@ -2,7 +2,7 @@
 
 [project]
 name = "otmetki-feature-session-goals"
-version = "0.1.0"
+version = "0.2.0"
 description = "Feature: the goals set on the site, progress in the hangar, an optional battle line and a completion sound."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }

@@ -1,6 +1,5 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....events import EVENT_COMPONENT_SETTINGS
 from ....hud import HudPreview
 from ...battle import BattleHooks
 from ...component import FeatureComponent
@@ -31,7 +30,6 @@ class BattlePanel(FeatureComponent):
                                   self.preview_widget).attach(app.bus)
         app.bus.on(self.start_event, self._on_start)
         app.bus.on('battle_leave', self._on_leave)
-        app.bus.on(EVENT_COMPONENT_SETTINGS, self._on_component_settings)
 
     def register(self, schema):
         return self.hud.register(self.component_id, schema)
@@ -55,12 +53,13 @@ class BattlePanel(FeatureComponent):
         self.sync_stock()
 
     def _on_component_settings(self, component_id, changed):
-        if component_id != self.component_id or not self.running:
+        if component_id != self.component_id:
             return
-        if not self.enabled():
+        if self.running and not self.enabled():
             self._on_leave()
-            return
-        self.sync_stock()
+        elif self.running:
+            self.sync_stock()
+        self.settings_changed(changed)
 
     def stock_aliases(self):
         """The stock battle elements this panel replaces with its current settings (`core.hud.stock` aliases)."""
@@ -77,6 +76,13 @@ class BattlePanel(FeatureComponent):
 
     def hide(self):
         self.hud.hide(self.component_id)
+
+    def show_text(self, text):
+        """Show `text`, or hide the panel when it is empty."""
+        if text:
+            self.show(text)
+        else:
+            self.hide()
 
     def start(self, *args):
         pass

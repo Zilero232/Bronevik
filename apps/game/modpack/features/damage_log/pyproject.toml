@@ -2,7 +2,7 @@
 
 [project]
 name = "otmetki-feature-damage-log"
-version = "0.3.0"
+version = "0.3.1"
 description = "Feature: battle damage log panel with dealt, blocked, assisted and received damage, template-formatted."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }

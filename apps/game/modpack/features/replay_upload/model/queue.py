@@ -6,7 +6,7 @@ from ....core.codec import decode_json
 from ....core.compat import string_types, to_text
 from ....core.net.backoff import backoff_delay
 from .constants import (BASE_BACKOFF_S, BUSY_RETRY_S, FIRST_DELAY_S, JITTER, LOCATE_RETRY_S, LOCATE_TIMEOUT_S, MAX_AGE_S, MAX_BACKOFF_S,
-                        MAX_PENDING, MAX_SEEN, QUOTA_BACKOFF_S, QUOTA_CODE, JobResult, Outcome)
+                        MAX_PENDING, MAX_SEEN, QUOTA_BACKOFF_S, QUOTA_CODE, REQUEST_INVALID, REQUEST_READY, JobResult, Outcome)
 
 
 def _error_code(body):
@@ -78,19 +78,14 @@ class ReplayQueue(object):
         key = to_text(arena_unique_id)
         return key in self.seen or self._find(key) is not None
 
-    def add(self, arena_unique_id, account_id, started_at, now):
-        if not arena_unique_id or not account_id:
-            return False
-        key = to_text(arena_unique_id)
-        if self.knows(key):
-            return False
+    def _append(self, key, account_id, started_at, now, retry_at):
         self.items.append({
             'arena_unique_id': key,
             'account_id': int(account_id),
             'started_at': float(started_at) if started_at is not None else None,
             'ended_at': float(now),
             'attempt': 0,
-            'retry_at': float(now) + FIRST_DELAY_S,
+            'retry_at': float(retry_at),
         })
         overflow = len(self.items) - self.max_pending
         if overflow > 0:
@@ -99,7 +94,29 @@ class ReplayQueue(object):
             self.items = self.items[overflow:]
             self.dropped += overflow
         self._persist()
+
+    def add(self, arena_unique_id, account_id, started_at, now):
+        if not arena_unique_id or not account_id:
+            return False
+        key = to_text(arena_unique_id)
+        if self.knows(key):
+            return False
+        self._append(key, account_id, started_at, now, float(now) + FIRST_DELAY_S)
         return True
+
+    def request(self, arena_unique_id, account_id, started_at, now):
+        """A replay the player asked for in the replay manager: sent next, even one an earlier try gave up on."""
+        if not arena_unique_id or not account_id:
+            return REQUEST_INVALID
+        key = to_text(arena_unique_id)
+        item = self._find(key)
+        if item is not None:
+            item['retry_at'] = min(item['retry_at'], float(now))
+            self._persist()
+            return REQUEST_READY
+        self.seen = [value for value in self.seen if value != key]
+        self._append(key, account_id, started_at, now, now)
+        return REQUEST_READY
 
     def next_item(self, now):
         if self.auth_blocked:

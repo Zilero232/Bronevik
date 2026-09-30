@@ -5,7 +5,14 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import BigWorld
 
+from ....battle_tally import assist_with_stun, own_damage
+from ....compat import call
 from .constants import SOURCE_CHECKS
+
+try:
+    from BattleFeedbackCommon import BATTLE_EVENT_TYPE
+except ImportError:
+    BATTLE_EVENT_TYPE = None
 
 
 def player():
@@ -26,6 +33,18 @@ def feedback():
 
 def vehicle_state():
     return shared('vehicleState')
+
+
+def ammo():
+    return shared('ammo')
+
+
+def equipments():
+    return shared('equipments')
+
+
+def crosshair():
+    return shared('crosshair')
 
 
 def personal_efficiency():
@@ -82,15 +101,15 @@ def is_enemy(vehicle_id):
     return bool(team) and provider is not None and bool(provider.isEnemyTeam(team))
 
 
-def call(target, name, default=None, *args):
-    """`target.name(*args)`, or `default` when the method is missing or raises (client API drift)."""
-    method = getattr(target, name, None)
-    if method is None:
-        return default
-    try:
-        return method(*args)
-    except Exception:
-        return default
+def dealt_damage(events):
+    """The damage one onPlayerFeedbackReceived batch reports the player dealt to enemies (that event carries only
+    the player's own events: feedback_adaptor, RU 1.45)."""
+    return own_damage(events, getattr(BATTLE_EVENT_TYPE, 'DAMAGE', None), is_enemy)
+
+
+def summary_assist(event):
+    """The assist of an onPlayerSummaryFeedbackReceived summary, stun included."""
+    return assist_with_stun(call(event, 'getTotalAssistDamage'), call(event, 'getTotalStunDamage'))
 
 
 def damage_source(extra):

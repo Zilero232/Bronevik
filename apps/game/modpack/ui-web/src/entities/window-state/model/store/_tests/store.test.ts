@@ -2,8 +2,21 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { SECTION } from '../../../config';
-import { $groups, $invalid, $selected, $state, $view, openComponent, openSection, receiveState } from '../store';
+import { CONTEXT_FILTER, SECTION, SECTION_NAV } from '../../../config';
+import {
+  $focusSeq,
+  $hits,
+  $invalid,
+  $query,
+  $state,
+  $summaries,
+  $view,
+  openSection,
+  receiveState,
+  setContextFilter,
+  setQuery,
+  toggleExpanded
+} from '../store';
 
 const sample = readFileSync(path.resolve(import.meta.dirname, '../../../../../shared/api/protocol/_tests/fixtures/state.sample.json'), 'utf8');
 const withRevision = (revision: number): string => JSON.stringify({ ...JSON.parse(sample), revision });
@@ -12,7 +25,9 @@ describe('store', () => {
   beforeEach(() => {
     $state.set(null);
     $invalid.set(false);
-    $view.set({ section: SECTION.components, componentId: null });
+    $query.set('');
+    $focusSeq.set(0);
+    $view.set({ section: SECTION_NAV.first, expanded: [], context: CONTEXT_FILTER.all });
   });
 
   it('keeps the newest revision and flags invalid pushes', () => {
@@ -25,22 +40,40 @@ describe('store', () => {
     expect(receiveState(null)).toBe(false);
   });
 
-  it('groups cards data, hangar, battle', () => {
+  it('summarises the pages and searches the cards of the latest state', () => {
     receiveState(sample);
+    setQuery('minimap');
 
-    expect($groups.get().map(({ id }) => id)).toEqual(['data', 'hangar', 'battle']);
-    expect($groups.get()[2]?.components.map(({ id }) => id)).toEqual(['marks_panel', 'minimap', 'damage_log']);
+    expect($summaries.get()).toHaveLength(6);
+    expect($hits.get().map(({ component }) => component.id)).toEqual(['minimap']);
   });
 
-  it('selects the first card until one is opened, and a missing one falls back', () => {
-    receiveState(sample);
+  it('opens the page a package asked for once per request', () => {
+    const focused = (seq: number) => JSON.stringify({ ...JSON.parse(sample), revision: seq + 10, focus: { section: 'replays', seq } });
 
-    expect($selected.get()?.id).toBe('companion');
-    openComponent('minimap');
-    expect($selected.get()?.id).toBe('minimap');
+    receiveState(focused(1));
+
+    expect($view.get().section).toBe(SECTION.replays);
+
+    openSection(SECTION.hud);
+    receiveState(focused(1));
+
+    expect($view.get().section).toBe(SECTION.hud);
+
+    receiveState(focused(2));
+
+    expect($view.get().section).toBe(SECTION.replays);
+  });
+
+  it('opens a page with its filter cleared and the search closed, and remembers open cards', () => {
+    setQuery('zoom');
+    setContextFilter(CONTEXT_FILTER.hangar);
+    toggleExpanded('minimap');
+    toggleExpanded('damage_log');
+    toggleExpanded('minimap');
     openSection(SECTION.profiles);
-    expect($view.get()).toEqual({ section: SECTION.profiles, componentId: 'minimap' });
-    openComponent('gone');
-    expect($selected.get()?.id).toBe('companion');
+
+    expect($query.get()).toBe('');
+    expect($view.get()).toEqual({ section: SECTION.profiles, expanded: ['damage_log'], context: CONTEXT_FILTER.all });
   });
 });

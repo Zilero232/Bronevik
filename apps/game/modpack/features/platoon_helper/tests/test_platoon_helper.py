@@ -45,7 +45,7 @@ class PlatoonTest(unittest.TestCase):
         session.add(event('loss', damage=1000), 1)
         text = format_hangar(clean_members(MEMBERS), session, Settings({}, SCHEMA), translator())
         assert u'Взвод: готовы 2 из 3' in text and u'Напарник' in text and u'✓' in text
-        assert u'Во взводе за сессию: 2 боёв, 50% побед, урон 1 500' in text and u'Клановые' not in text
+        assert u'Во взводе за сессию: 2 боя, 50% побед, урон 1 500' in text and u'Клановые' not in text
         only_session = format_hangar([], session, Settings({}, SCHEMA), translator('en'))
         assert 'Platoon:' not in only_session and 'In a platoon this session' in only_session
         assert format_hangar([], OwnSession(), Settings({}, SCHEMA), translator()) is None

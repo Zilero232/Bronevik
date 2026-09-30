@@ -2,7 +2,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.compat import is_number
-from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, font
+from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, counted, font
 from ....core.moe import combined_damage, moe_color, moe_macros, moe_state, rating_to_percent
 from ....core.templates import render
 from .constants import KINDS, LINE_SEPARATOR, TARGET_SEPARATOR, TITLE_SIZE_STEP
@@ -72,6 +72,7 @@ def format_panel(state, settings, translate):
     """The panel text in the chosen style; `custom` renders the player's template with every macro."""
     values = moe_macros(state)
     values['title'] = translate('marks_panel_title')
+    values['battles_count'] = counted(state['battles'], 'battles', translate) if state['battles'] is not None else values['battles']
     color = moe_color(state, settings.get('color_mode'))
     size = settings.get('font_size')
     style = settings.get('style')

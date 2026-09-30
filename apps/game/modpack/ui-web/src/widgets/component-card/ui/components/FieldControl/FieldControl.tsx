@@ -1,14 +1,13 @@
 import type { FieldProps } from '../Field';
 
-import { useT } from '../../../../../entities/window-state';
-import { Input } from '../../../../../shared/ui/input';
 import { Segmented } from '../../../../../shared/ui/segmented';
 import { Toggle } from '../../../../../shared/ui/toggle';
+import { choiceLayout } from '../../../lib/choice-layout';
+import { ChoiceList } from '../ChoiceList';
 import { IntField } from '../IntField';
+import { TextField } from '../TextField';
 
 export const FieldControl = ({ field, onSet }: FieldProps) => {
-  const t = useT();
-
   if (field.type === 'bool') {
     return <Toggle label={field.label} on={field.value} onToggle={() => onSet({ key: field.key, value: !field.value })} />;
   }
@@ -17,18 +16,13 @@ export const FieldControl = ({ field, onSet }: FieldProps) => {
     return <IntField field={field} onSet={onSet} />;
   }
 
-  if (field.type === 'choice') {
-    return <Segmented wrap items={field.choices} label={field.label} value={field.value} onSelect={(value) => onSet({ key: field.key, value })} />;
+  if (field.type === 'choice' && choiceLayout(field.choices) === 'list') {
+    return <ChoiceList field={field} onSelect={(value) => onSet({ key: field.key, value })} />;
   }
 
-  return (
-    <Input
-      aria-label={field.label}
-      defaultValue={field.value}
-      maxLength={field.max_length}
-      placeholder={t('reset')}
-      variant='wide'
-      onChange={(event) => onSet({ key: field.key, value: event.currentTarget.value })}
-    />
-  );
+  if (field.type === 'choice') {
+    return <Segmented items={field.choices} label={field.label} value={field.value} onSelect={(value) => onSet({ key: field.key, value })} />;
+  }
+
+  return <TextField field={field} onSet={onSet} />;
 };

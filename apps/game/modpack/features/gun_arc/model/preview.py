@@ -2,7 +2,12 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from . import arc_state, format_panel
 from .constants import PREVIEW_LIMITS, PREVIEW_YAW
+from .widget import panel_widget
 
 
 def preview_text(settings, translate):
     return format_panel(arc_state(PREVIEW_YAW, PREVIEW_LIMITS), settings, translate) or u''
+
+
+def preview_widget(settings, translate):
+    return panel_widget(arc_state(PREVIEW_YAW, PREVIEW_LIMITS), settings, translate)

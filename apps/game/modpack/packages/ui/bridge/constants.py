@@ -14,6 +14,9 @@ NOTICE_INFO = 'info'
 NOTICE_ERROR = 'error'
 NOTICE_CODE = 'code'
 
+# The window's pages a package may open it at (core.events.EVENT_SETTINGS_OPEN): the component sections plus two tools.
+TOOL_PAGES = ('profiles', 'hud')
+
 SITE_URL = 'https://triotmetki.ru'
 API_PREFIX = 'https://api.'
 LOCAL_SITE_URL = 'http://localhost:3000'

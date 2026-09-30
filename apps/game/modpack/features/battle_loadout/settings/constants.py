@@ -6,8 +6,8 @@ GROUP = 'battle'
 STYLES = ('compact', 'detailed')
 
 DEFAULTS = {
-    'x': -480,
-    'y': -14,
+    'x': -200,
+    'y': -66,
     'align_x': 'center',
     'align_y': 'bottom',
     'style': 'compact',

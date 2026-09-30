@@ -2,7 +2,7 @@
 
 [project]
 name = "otmetki-feature-battle-hits"
-version = "0.1.0"
+version = "0.2.0"
 description = "Feature: the hits on the own tank recorded in battle and shown in the hangar afterwards (a schematic and a list)."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }

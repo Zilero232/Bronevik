@@ -3,13 +3,14 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ...core.compat import string_types, to_text
 from ...core.hud import EVENT_RESET_LAYOUT
 from ...core.log import log
-from ..components import COMPANION_ACTIONS, COMPANION_ID, build_catalog, find
+from ..components import COMPANION_ACTIONS, COMPANION_ID, SECTIONS, build_catalog, find
 from ..fields import Labels
 from ..hud_edit import HudEditor, move_values
 from ..profiles import ProfileError, apply_snapshot, decode_profile, encode_profile, take_snapshot
 from ..protocol import ProtocolError, decode_message
+from ..window_layout import WindowLayout
 from .companion import CompanionActions
-from .constants import CONFIG_COMPONENT, EVENT_COMPONENT_SETTINGS, LANGUAGE_CHOICES, LANGUAGES, NOTICE_CODE, NOTICE_ERROR, NOTICE_INFO
+from .constants import CONFIG_COMPONENT, EVENT_COMPONENT_SETTINGS, LANGUAGE_CHOICES, LANGUAGES, NOTICE_CODE, NOTICE_ERROR, NOTICE_INFO, TOOL_PAGES
 from .links import site_link, site_url
 
 
@@ -21,10 +22,12 @@ class SettingsBridge(object):
         self.companion = CompanionActions(context.config, self.labels)
         self.notice = None
         self.revision = 0
+        self.focus = None
         self.handlers = {
             'ready': self._on_ready,
             'close': self._on_close,
             'set': self._on_set,
+            'set_many': self._on_set_many,
             'action': self._on_action,
             'language': self._on_language,
             'bind': self._on_bind,
@@ -39,6 +42,7 @@ class SettingsBridge(object):
             'hud_move': self._on_hud_move,
             'hud_reset': self._on_hud_reset,
             'hud_reset_all': self._on_hud_reset_all,
+            'window_layout': self._on_window_layout,
         }
 
     def labels(self):
@@ -64,7 +68,23 @@ class SettingsBridge(object):
             'profiles': {'active': profiles.active, 'items': profiles.items()},
             'hud': {'editing': self.editor.editing, 'panels': self.editor.panels(labels)},
             'notice': self.notice,
+            'window': self.window_layout().describe(),
+            'focus': self.focus,
         }
+
+    def focus_page(self, page):
+        if page not in SECTIONS + TOOL_PAGES:
+            return False
+        seq = (self.focus or {}).get('seq', 0) + 1
+        self.focus = {'section': page, 'seq': seq}
+        self.revision += 1
+        return True
+
+    def clear_focus(self):
+        self.focus = None
+
+    def window_layout(self):
+        return WindowLayout(self.context.component_config)
 
     def handle(self, raw):
         self.notice = None
@@ -104,6 +124,23 @@ class SettingsBridge(object):
         self._changed(component.id, changed)
         if kind == 'config':
             self.context.config_changed(changed)
+
+    def _on_set_many(self, message):
+        component = find(self.components(), message['component'])
+        values = message['values']
+        if component is None or not isinstance(values, dict) or not values:
+            raise ProtocolError('unknown_setting')
+        if not all(isinstance(key, string_types) and component.editable(key) for key in values):
+            raise ProtocolError('unknown_setting')
+        changed, config_changed = [], []
+        for key in sorted(values):
+            keys, kind = component.update(key, values[key])
+            changed.extend(keys)
+            if kind == 'config':
+                config_changed.extend(keys)
+        self._changed(component.id, sorted(set(changed)))
+        if config_changed:
+            self.context.config_changed(sorted(set(config_changed)))
 
     def _on_action(self, message):
         component_id, action = message['component'], message['action']
@@ -183,6 +220,9 @@ class SettingsBridge(object):
     def _on_hud_reset(self, message):
         panel_id = message['panel']
         self._changed(panel_id, self.editor.reset(panel_id))
+
+    def _on_window_layout(self, message):
+        self.window_layout().update(message)
 
     def _on_hud_reset_all(self, message):
         for panel_id in self.editor.panel_ids():

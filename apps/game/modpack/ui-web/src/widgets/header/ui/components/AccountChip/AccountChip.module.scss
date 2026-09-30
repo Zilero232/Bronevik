@@ -1,0 +1,36 @@
+@use '../../../../../shared/styles/gameface' as *;
+
+.chip {
+  display: flex;
+  height: 30px;
+  flex-direction: row;
+  flex-shrink: 0;
+  align-items: center;
+  padding: 0 10px;
+  border: 1px solid token(color-accent);
+  border-radius: token(radius-full);
+  margin-right: 12px;
+  background-color: token(color-accent-soft);
+  color: token(color-accent);
+  cursor: pointer;
+}
+
+.success {
+  border-color: token(color-success);
+  background-color: rgb(111 181 68 / 12%);
+  color: token(color-success);
+}
+
+.danger {
+  border-color: token(color-danger);
+  background-color: rgb(241 112 91 / 12%);
+  color: token(color-danger);
+}
+
+.label {
+  margin-left: 6px;
+  font-size: 11px;
+  white-space: nowrap;
+
+  @include caps(0.5px);
+}

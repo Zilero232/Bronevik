@@ -19,3 +19,6 @@ ACTION_ARMOR = 'armor'
 ARMOR_PATH = '/t/%s/armor'
 SLUG_DROPPED = re.compile(r"['\u2019]")
 SLUG_SEPARATORS = re.compile(r'[^a-z0-9]+')
+
+# The hangar card (model/widget.py), design px.
+CARD_WIDTH = 260

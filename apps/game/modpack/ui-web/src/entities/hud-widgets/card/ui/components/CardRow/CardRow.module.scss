@@ -1,0 +1,106 @@
+@use '../../../../../../shared/styles/gameface' as *;
+
+.row {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1px;
+}
+
+.line {
+  display: flex;
+  min-height: 18px;
+  flex-direction: row;
+  align-items: center;
+}
+
+.icon {
+  margin-right: 6px;
+}
+
+.label {
+  flex-shrink: 0;
+  margin-right: 6px;
+  color: token(color-text-muted);
+  font-size: 12px;
+}
+
+.text {
+  flex-grow: 1;
+  flex-shrink: 1;
+  font-size: 13px;
+
+  @include ellipsis;
+}
+
+.value {
+  flex-shrink: 0;
+  padding-left: 8px;
+  margin-left: auto;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.note {
+  flex-shrink: 0;
+  margin-left: 5px;
+  color: token(color-text-muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.detail {
+  margin-top: -1px;
+  color: token(color-text-muted);
+  font-size: 11px;
+
+  @include ellipsis;
+}
+
+.indented {
+  margin-left: 20px;
+}
+
+.track {
+  height: 2px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  background-color: rgb(255 255 255 / 10%);
+}
+
+.fill {
+  height: 100%;
+  background-color: token(color-accent);
+}
+
+.muted {
+  background-color: token(color-text-muted);
+}
+
+.gold {
+  background-color: token(color-gold);
+}
+
+.success {
+  background-color: token(color-success);
+}
+
+.good {
+  background-color: token(rating-good);
+}
+
+.bad {
+  background-color: token(rating-bad);
+}
+
+.warning {
+  background-color: token(color-warning);
+}
+
+.ally {
+  background-color: token(color-ally);
+}
+
+.received {
+  background-color: token(color-danger);
+}

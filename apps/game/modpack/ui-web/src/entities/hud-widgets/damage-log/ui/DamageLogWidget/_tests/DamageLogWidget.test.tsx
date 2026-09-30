@@ -14,7 +14,7 @@ describe(DamageLogWidget, () => {
 
     expect(imageSources(html)).toContain('img://gui/maps/icons/library/efficiency/48x48/damage.png');
     expect(imageSources(html)).toContain('img://gui/maps/icons/shell/small/ARMOR_PIERCING_CR_PREMIUM.png');
-    expect(html.textContent).toContain('−310');
+    expect(html.textContent).toContain('-310');
     expect(html.textContent).toContain('KV-1');
     expect(html.querySelectorAll('svg').length).toBeGreaterThan(0);
   });

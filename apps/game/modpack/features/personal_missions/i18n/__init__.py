@@ -20,6 +20,10 @@ STRINGS = {
         'pm_state_honors': u'Выполнена с отличием',
         'pm_empty': u'Игра пока не передала список личных задач: откройте экран ЛБЗ',
         'pm_refresh': u'Обновить',
+        'pm_card_title': u'ЛБЗ',
+        'pm_chip_active': u'в работе',
+        'pm_chip_done': u'выполнено',
+        'pm_chip_honors': u'с отличием',
     },
     'en': {
         'component_personal_missions': u'Personal missions helper',
@@ -39,5 +43,9 @@ STRINGS = {
         'pm_state_honors': u'Done with honours',
         'pm_empty': u'The game has not listed your personal missions yet: open the missions screen',
         'pm_refresh': u'Refresh',
+        'pm_card_title': u'Personal missions',
+        'pm_chip_active': u'active',
+        'pm_chip_done': u'done',
+        'pm_chip_honors': u'honours',
     },
 }

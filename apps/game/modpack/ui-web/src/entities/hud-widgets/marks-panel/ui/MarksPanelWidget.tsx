@@ -2,7 +2,7 @@ import clsx from 'clsx';
 
 import type { MarksPanelWidgetProps } from './MarksPanelWidget.types';
 
-import { ClientIcon, HudPlate, toneClass } from '../../../../shared/ui/hud';
+import { ClientIcon, Glyph, HudPlate, toneClass } from '../../../../shared/ui/hud';
 import { MARKS_PANEL } from '../config';
 import { marksPanelView } from '../lib/marks-panel-view';
 
@@ -12,13 +12,17 @@ export const MarksPanelWidget = ({ data }: MarksPanelWidgetProps) => {
   const view = marksPanelView(data);
 
   return (
-    <HudPlate className={s.plate} rail='gold'>
+    <HudPlate className={s.plate} rail='progress'>
       {view.extended && view.thresholds.length > 0 && (
         <div className={s.line}>
           {view.thresholds.map((item) => (
             <span key={item.level} className={s.threshold}>
               <span className={s.level}>{item.label}</span>
-              <span className={clsx(s.need, item.reached && s.reached)}>{item.value}</span>
+              {item.reached ? (
+                <Glyph name={MARKS_PANEL.checkGlyph} size={MARKS_PANEL.checkSize} tone='success' />
+              ) : (
+                <span className={s.need}>{item.value}</span>
+              )}
             </span>
           ))}
         </div>

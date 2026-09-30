@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ....core.battle_tally import Counters
 from ....core.compat import is_int, is_number
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, COLOR_UP, font, format_number
 from ....core.templates import render
@@ -85,23 +86,11 @@ def beaten(record, values):
     return result
 
 
-class LiveBattle(object):
+class LiveBattle(Counters):
     """This battle's own damage, assist and frags from the player's feedback events (and the end-of-life summary)."""
 
     def __init__(self):
-        self.values = dict((metric, 0) for metric in LIVE_METRICS)
-
-    def add(self, metric, amount=1):
-        if metric not in self.values or not is_number(amount) or amount <= 0:
-            return False
-        self.values[metric] += int(amount)
-        return True
-
-    def raise_to(self, metric, value):
-        if metric in self.values and is_number(value) and value > self.values[metric]:
-            self.values[metric] = int(value)
-            return True
-        return False
+        Counters.__init__(self, LIVE_METRICS)
 
 
 def metric_values(metric, record, current, translate):

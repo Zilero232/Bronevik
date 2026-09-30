@@ -1,3 +1,4 @@
 export const BATTLE_LOADOUT = {
-  bonusMark: '★'
+  bonusGlyph: 'points',
+  bonusSize: 10
 } as const;

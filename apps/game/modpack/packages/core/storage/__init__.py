@@ -62,3 +62,8 @@ class MemoryFile(object):
 
     def delete(self):
         self.data = None
+
+
+def account_file(config_dir, pattern, account_id):
+    """The JsonFile `pattern % account_id` in `config_dir`: one account's own data of a component."""
+    return JsonFile(os.path.join(config_dir, pattern % account_id))

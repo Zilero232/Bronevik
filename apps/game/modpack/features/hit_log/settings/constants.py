@@ -8,9 +8,9 @@ PALETTES = ('classic', 'graphite', 'contrast', 'colorblind')
 
 DEFAULTS = {
     'x': -8,
-    'y': -320,
+    'y': 40,
     'align_x': 'right',
-    'align_y': 'bottom',
+    'align_y': 'top',
     'show_header': True,
     'header_template': '',
     'line_template': '',

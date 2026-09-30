@@ -5,7 +5,8 @@ import unittest
 
 import _feedback as fb
 import _support  # noqa: F401
-from otmetki.core.battle_tally import EFFICIENCY_KEYS, EVENT_KEYS, MARKER_OUTCOMES, BattleTally, efficiency_totals
+from otmetki.core.battle_tally import EFFICIENCY_KEYS, EVENT_KEYS, MARKER_OUTCOMES, BattleTally, Counters, assist_with_stun, efficiency_totals, own_damage
+from otmetki.core.compat import call
 from otmetki.core.client.game import values_by_name
 from otmetki.core.shells import shell_code
 
@@ -100,3 +101,49 @@ class BattleTallyTest(unittest.TestCase):
     def test_efficiency_totals_ignore_unknown_types(self):
         assert efficiency_totals({fb.PERSONAL_EFFICIENCY_TYPE.STUN: 80, 999: 5, fb.PERSONAL_EFFICIENCY_TYPE.DAMAGE: None}, EFFICIENCY) == {'stun': 80}
         assert efficiency_totals(None, EFFICIENCY) == {}
+
+
+class OwnCountersTest(unittest.TestCase):
+
+    def test_own_damage_sums_only_the_damage_to_enemies(self):
+        events = [
+            fb.damage(K.DAMAGE, ENEMY, 390),
+            fb.damage(K.DAMAGE, ALLY, 50),
+            fb.damage(K.RADIO_ASSIST, ENEMY, 300),
+            fb.damage(K.DAMAGE, ENEMY_2, 120),
+        ]
+        assert own_damage(events, K.DAMAGE, is_enemy) == 510
+        assert own_damage(events, None, is_enemy) == 0
+        assert own_damage(None, K.DAMAGE, is_enemy) == 0
+
+    def test_assist_with_stun_adds_only_two_numbers(self):
+        assert assist_with_stun(300, 80) == 380
+        assert assist_with_stun(300, None) == 300
+        assert assist_with_stun(None, 80) is None
+
+    def test_counters_add_positive_amounts_and_raise_to_the_summary(self):
+        counters = Counters(('damage', 'frags'))
+        assert counters.add('damage', 390.0)
+        assert not counters.add('damage', 0)
+        assert not counters.add('damage', None)
+        assert not counters.add('assist', 10)
+        assert counters.add('frags')
+        assert not counters.raise_to('damage', 300)
+        assert counters.raise_to('damage', 700)
+        assert not counters.raise_to('frags', 'x')
+        assert counters.values == {'damage': 700, 'frags': 1}
+
+
+class CallTest(unittest.TestCase):
+
+    def test_call_falls_back_on_a_missing_or_failing_method(self):
+        class Target(object):
+            def double(self, value):
+                return value * 2
+
+            def broken(self):
+                raise RuntimeError('client API drift')
+
+        assert call(Target(), 'double', None, 21) == 42
+        assert call(Target(), 'broken', 'fallback') == 'fallback'
+        assert call(None, 'double', 0) == 0

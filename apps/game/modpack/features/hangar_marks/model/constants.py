@@ -9,3 +9,8 @@ PREVIEW_SIZE = (280, 90)
 PREVIEW_SNAPSHOT = {'moving_avg_damage': 2540, 'damage_rating': 8612, 'marks_on_gun': 2}
 PREVIEW_THRESHOLDS = {'thresholds': {'65': 1900, '85': 2450, '95': 3050, '100': 3900}}
 PREVIEW_PACE = 3400
+
+# The hangar card (model/widget.py): width in design px, the percent's colour role by the marks already earned.
+CARD_WIDTH = 260
+PERCENT_SUFFIX = u'%'
+TONE_BY_MARKS = ('text', 'text', 'text', 'gold')

@@ -15,6 +15,8 @@ from otmetki.core.shells.constants import BATTLE_LOG_SHELL_NAMES
 from otmetki.core.vendor.enum34 import IntEnum
 
 ACCOUNT = 12345678
+BATTLE_OPT_INS = ('battle_main_gun', 'battle_efficiency', 'battle_personal_best', 'battle_gun_arc', 'battle_arty_meter', 'battle_platoon_points',
+                  'battle_received_hits', 'battle_loadout', 'battle_clock')
 REGISTERED = tuple(_support.feature_ids()) + ('ui',)
 ENTRY_MODULES = ('mod_otmetki',) + tuple('mod_otmetki_' + key for key in REGISTERED)
 STUBBED = ('gui', 'BigWorld', 'BattleReplay', 'CurrentVehicle', 'PlayerEvents', 'BattleFeedbackCommon', 'dossiers2', 'constants', 'SoundGroups',
@@ -404,7 +406,9 @@ class ClientSmokeTest(unittest.TestCase):
         import importlib
         for name in entries:
             importlib.import_module('gui.mods.' + name)
-        return sys.modules['gui.mods.otmetki.companion.app.client'].g_app
+        app = sys.modules['gui.mods.otmetki.companion.app.client'].g_app
+        app.config.update(dict((feature, True) for feature in BATTLE_OPT_INS))
+        return app
 
     def play_battle(self, app):
         app.credentials.save(Credentials('device-1', 's' * 40, ACCOUNT))
@@ -747,6 +751,39 @@ class ClientSmokeTest(unittest.TestCase):
         refusal = instances['auto_resupply'].ui_action('apply_selected')
         self.assertEqual(refusal['kind'], 'error')
         instances['hangar_info'].render(SERVER_TIME)
+        self.assertIn('otmetki.hangar_info', self.components)
+
+    def test_settings_changes_and_layout_reset_reach_every_component_without_errors(self):
+        self.install_hud_stubs()
+        app = self.load(list(ENTRY_MODULES))
+        self.player = Player(ACCOUNT)
+        self.events.onAccountShowGUI()
+        instances = sys.modules['gui.mods.otmetki.core.registry'].registry().instances
+        instances['hangar_info'].render(SERVER_TIME)
+        instances['hangar_info'].save_place({'x': 40, 'y': 50})
+
+        class Capture(object):
+
+            def __init__(self):
+                self.parts = []
+
+            def write(self, text):
+                self.parts.append(text)
+
+            def flush(self):
+                pass
+
+        capture, stdout = Capture(), sys.stdout
+        sys.stdout = capture
+        try:
+            for instance in instances.values():
+                settings = getattr(instance, 'settings', None)
+                if getattr(instance, 'component_id', None) and settings is not None:
+                    app.bus.emit('component_settings', instance.component_id, sorted(settings.to_dict()))
+            app.bus.emit('hud_reset_layout')
+        finally:
+            sys.stdout = stdout
+        self.assertNotIn('error in', ''.join(capture.parts))
         self.assertIn('otmetki.hangar_info', self.components)
 
     def test_hangar_ratings_reads_only_the_bound_account(self):
@@ -1147,6 +1184,7 @@ class ClientSmokeTest(unittest.TestCase):
         self.assertEqual(instances['personal_best'].book.get(1), {'damage': 6812, 'assist': 5120, 'frags': 6, 'xp': 2740})
         self.assertIn(u'Ср. урон 3 000', self.components['otmetki.session_goals']['text'])
         self.assertEqual(self.sounds, [])
+        sys.modules['gui.mods.otmetki.core.client.hud'].hud_layer(app).update_settings('session_goals', {'show_battle': True})
 
         session = self.enter_battle(1, tank_id=1)
         session.feedback.onPlayerFeedbackReceived([Feedback(kinds.DAMAGE, ENEMY_VEHICLE, Extra(1500)), Feedback(kinds.SPOTTED, ENEMY_VEHICLE, None),
@@ -1725,6 +1763,60 @@ class ClientSmokeTest(unittest.TestCase):
         self.assertNotIn('otmetki.hangar_test', ids)
         self.assertIn('otmetki.hud.damage_log', ids)
         self.assertFalse(self.hud_page()['cursor'])
+
+    def install_app_loader(self):
+        loader = type('AppLoader', (object,), {'space': 1})()
+        loader.getSpaceID = lambda: loader.space
+        loader.onGUISpaceEntered, loader.onGUISpaceLeft = Event(), Event()
+        interface = type('IAppLoader', (object,), {})
+        self.services[interface] = loader
+        package('skeletons.gui', [])
+        module('skeletons.gui.app_loader', GuiGlobalSpaceID=type('GuiGlobalSpaceID', (object,), {'LOGIN': 1, 'WAITING': 2, 'LOBBY': 3, 'BATTLE': 5}),
+               IAppLoader=interface)
+        return loader
+
+    def enter_space(self, loader, space_id):
+        loader.onGUISpaceLeft(loader.space)
+        loader.space = space_id
+        loader.onGUISpaceEntered(space_id)
+
+    def test_gameface_window_opens_a_frame_after_the_lobby_space_was_entered(self):
+        self.install_hud_stubs()
+        self.install_gameface_hud_stubs()
+        loader = self.install_app_loader()
+        app = self.load(list(ENTRY_MODULES))
+        self.player = Player(ACCOUNT)
+        app.ui.show('otmetki.hangar_test', 'hangar only', {'x': 1, 'y': 2, 'alignX': 'left', 'alignY': 'top'})
+        self.assertEqual(self.windows, [])
+        self.enter_space(loader, 3)
+        self.assertEqual(self.windows, [])
+        self.enter_space(loader, 2)
+        self.enter_space(loader, 3)
+        pending = list(self.callbacks)
+        del self.callbacks[:]
+        for callback in pending:
+            callback()
+        self.assertEqual(len(self.windows), 1)
+        self.assertIn('otmetki.hangar_test', [panel['id'] for panel in self.hud_page()['panels']])
+        self.enter_space(loader, 2)
+        self.assertEqual(self.windows, [])
+
+    def test_session_log_keeps_the_mod_lines_of_the_last_sessions(self):
+        self.install_hud_stubs()
+        self.install_gameface_hud_stubs()
+        sys.modules['openwg_gameface'].manager = type('ResMapManager', (object,), {'isResMapValidated': False})()
+        with open('res_map_restart', 'w') as handle:
+            handle.write('')
+        self.load(list(ENTRY_MODULES))
+        path = os.path.join('mods', 'configs', 'otmetki', 'otmetki.log')
+        with open(path, 'rb') as handle:
+            text = handle.read().decode('utf-8')
+        self.assertIn('[OTMETKI] session start', text)
+        self.assertIn(CLIENT_VERSION, text)
+        self.assertIn('[OTMETKI] HUD renderers', text)
+        self.assertLess(text.index('session start'), text.index('HUD renderers'))
+        self.assertIn('[OTMETKI] started', text)
+        self.assertIn('OpenWG Gameface is restarting the client', text)
 
     def test_pre_06_guiflash_draws_in_battle_only(self):
         self.install_hud_stubs()

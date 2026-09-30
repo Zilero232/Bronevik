@@ -53,4 +53,4 @@ class BattleResultsSummary(FeatureComponent):
             return None
         self.history = []
         self.app.save_state()
-        return {'kind': 'info', 'text': self.app.translate('br_cleared')}
+        return self.notice_info('br_cleared')

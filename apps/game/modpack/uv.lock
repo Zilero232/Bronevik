@@ -140,7 +140,7 @@ source = { virtual = "packages/core" }
 
 [[package]]
 name = "otmetki-feature-arty-meter"
-version = "0.1.0"
+version = "0.1.1"
 source = { virtual = "features/arty_meter" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -170,7 +170,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-battle-clock"
-version = "0.2.0"
+version = "0.2.1"
 source = { virtual = "features/battle_clock" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -185,7 +185,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-battle-efficiency"
-version = "0.1.0"
+version = "0.2.0"
 source = { virtual = "features/battle_efficiency" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -200,7 +200,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-battle-hits"
-version = "0.1.0"
+version = "0.2.0"
 source = { virtual = "features/battle_hits" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -215,7 +215,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-battle-loadout"
-version = "0.2.0"
+version = "0.2.1"
 source = { virtual = "features/battle_loadout" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -335,7 +335,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-damage-log"
-version = "0.3.0"
+version = "0.3.1"
 source = { virtual = "features/damage_log" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -350,7 +350,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-death-card"
-version = "0.1.0"
+version = "0.2.0"
 source = { virtual = "features/death_card" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -365,7 +365,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-gun-arc"
-version = "0.1.0"
+version = "0.2.0"
 source = { virtual = "features/gun_arc" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -395,7 +395,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-hangar-info"
-version = "0.3.0"
+version = "0.4.0"
 source = { virtual = "features/hangar_info" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -410,7 +410,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-hangar-marks"
-version = "0.1.0"
+version = "0.2.0"
 source = { virtual = "features/hangar_marks" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -425,7 +425,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-hangar-ratings"
-version = "0.1.0"
+version = "0.2.0"
 source = { virtual = "features/hangar_ratings" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -455,7 +455,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-hit-log"
-version = "0.2.0"
+version = "0.2.1"
 source = { virtual = "features/hit_log" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -470,7 +470,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-main-gun"
-version = "0.1.0"
+version = "0.2.0"
 source = { virtual = "features/main_gun" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -485,7 +485,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-marks-history"
-version = "0.2.0"
+version = "0.3.0"
 source = { virtual = "features/marks_history" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -500,7 +500,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-marks-panel"
-version = "0.3.0"
+version = "0.3.1"
 source = { virtual = "features/marks_panel" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -545,7 +545,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-personal-best"
-version = "0.1.0"
+version = "0.2.0"
 source = { virtual = "features/personal_best" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -560,7 +560,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-personal-missions"
-version = "0.1.0"
+version = "0.2.0"
 source = { virtual = "features/personal_missions" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -575,7 +575,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-platoon-helper"
-version = "0.1.0"
+version = "0.2.0"
 source = { virtual = "features/platoon_helper" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -590,7 +590,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-platoon-points"
-version = "0.1.0"
+version = "0.1.1"
 source = { virtual = "features/platoon_points" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -605,7 +605,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-received-hits"
-version = "0.1.0"
+version = "0.2.0"
 source = { virtual = "features/received_hits" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -635,7 +635,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-replay-manager"
-version = "0.2.0"
+version = "0.3.0"
 source = { virtual = "features/replay_manager" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -650,7 +650,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-replay-upload"
-version = "0.1.0"
+version = "0.2.0"
 source = { virtual = "features/replay_upload" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -665,7 +665,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-session-goals"
-version = "0.1.0"
+version = "0.2.0"
 source = { virtual = "features/session_goals" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -680,7 +680,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-session-stats"
-version = "0.2.0"
+version = "0.3.0"
 source = { virtual = "features/session_stats" }
 dependencies = [
     { name = "otmetki-companion" },

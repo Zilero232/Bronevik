@@ -13,6 +13,15 @@ export const hudToneSchema = z.enum(HUD_PROTOCOL.tones);
 
 export const hudIconSchema = z.nullable(z.string());
 
+// A panel at its column's anchor (core/hud/panel DOCKS): the page stacks the panels of one group in `order`.
+export const hudDockSchema = z.object({
+  group: z.string(),
+  order: z.number(),
+  reserve: z.optional(z.number()),
+  ceiling: z.optional(z.number()),
+  stop_center: z.optional(z.number())
+});
+
 export const hudPanelSchema = z.object({
   id: z.string(),
   text: z.string(),
@@ -26,7 +35,8 @@ export const hudPanelSchema = z.object({
   visible: z.boolean(),
   scale: z.number(),
   kind: z.enum(HUD_PROTOCOL.kinds),
-  widget: z.nullable(hudWidgetSchema)
+  widget: z.nullable(hudWidgetSchema),
+  dock: z.optional(z.nullable(hudDockSchema))
 });
 
 export const hudStateSchema = z.object({

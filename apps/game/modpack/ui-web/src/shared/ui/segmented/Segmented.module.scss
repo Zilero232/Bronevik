@@ -8,11 +8,6 @@
   border-radius: token(radius-md);
 }
 
-.wrap {
-  max-width: 520px;
-  flex-wrap: wrap;
-}
-
 .item {
   padding: 6px 12px;
   border: none;
@@ -20,9 +15,18 @@
   color: token(color-text-muted);
   cursor: pointer;
   font-size: 13px;
+  white-space: nowrap;
+
+  &:hover {
+    color: token(color-text);
+  }
 }
 
 .itemOn {
   background-color: token(color-accent);
   color: token(color-accent-contrast);
+
+  &:hover {
+    color: token(color-accent-contrast);
+  }
 }

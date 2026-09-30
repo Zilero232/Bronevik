@@ -31,12 +31,12 @@ describe(TeamHpWidget, () => {
   it('shows the numbers and the difference in the bar pair style', () => {
     const html = mount({ ...fixture, style: 'full', vehicles: { allies: [], enemies: [] } });
 
-    expect(html.textContent).toContain('3 200');
-    expect(html.textContent).toContain('Δ +2 300');
+    expect(html.textContent).toContain('3 200');
+    expect(html.textContent).toContain('Δ +2 300');
     expect(html.querySelectorAll('img')).toHaveLength(0);
   });
 
   it('leaves the numbers out of the minimal style', () => {
-    expect(mount({ ...fixture, style: 'minimal' }).textContent).not.toContain('3 200');
+    expect(mount({ ...fixture, style: 'minimal' }).textContent).not.toContain('3 200');
   });
 });

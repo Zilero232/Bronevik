@@ -7,7 +7,7 @@ import { Glyph } from '../Glyph';
 
 import s from './ClientIcon.module.scss';
 
-export const ClientIcon = ({ icon, size, width, className }: ClientIconProps) => {
+export const ClientIcon = ({ icon, size, width, tone, className }: ClientIconProps) => {
   const { image, glyph } = parseIcon(icon);
 
   if (image) {
@@ -15,6 +15,7 @@ export const ClientIcon = ({ icon, size, width, className }: ClientIconProps) =>
       <img
         alt=''
         className={clsx(s.icon, className)}
+        draggable={false}
         height={size}
         src={image}
         style={{ width: `${width ?? size}rem`, height: `${size}rem` }}
@@ -23,5 +24,5 @@ export const ClientIcon = ({ icon, size, width, className }: ClientIconProps) =>
     );
   }
 
-  return glyph ? <Glyph className={clsx(s.icon, className)} name={glyph} size={size} /> : null;
+  return glyph ? <Glyph className={clsx(s.icon, className)} name={glyph} size={size} tone={tone} /> : null;
 };

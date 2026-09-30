@@ -24,6 +24,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import archive  # noqa: E402
 import compilers  # noqa: E402
+import fileio  # noqa: E402
 import layout  # noqa: E402
 
 SINGLE_DIR = 'single'
@@ -51,8 +52,7 @@ def build(args):
     staging = tempfile.mkdtemp(prefix='otmetki-build-')
     try:
         root_init = os.path.join(staging, 'root_init.py')
-        with open(root_init, 'w', encoding='utf-8', newline='\n') as handle:
-            handle.write(layout.ROOT_INIT)
+        fileio.write_text(root_init, layout.ROOT_INIT)
         packages = [layout.single_package(root_init)] if args.single else layout.split_packages(root_init)
         platform = 'wg' if args.wg else 'lesta'
         if args.dry_run:

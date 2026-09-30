@@ -1,7 +1,5 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import math
-
 from ....core.compat import is_number
 from ....core.format import COLOR_NEUTRAL, font, format_moment, format_timer
 from ....core.templates import render
@@ -11,7 +9,9 @@ from .constants import TIMED_PERIODS
 def timer_seconds(period, period_end, server_now):
     if period not in TIMED_PERIODS or not is_number(period_end) or not is_number(server_now) or period_end <= 0:
         return None
-    return max(0, int(math.ceil(period_end - server_now)))
+    # RU 1.45 client source: the stock battle timer shows max(int(end - BigWorld.serverTime()), 0), the seconds truncated
+    # (gui/battle_control/controllers/period_ctrl.py ArenaPeriodController.__tick).
+    return max(0, int(period_end - server_now))
 
 
 def clock_values(moment, settings, period=None, seconds_left=None):

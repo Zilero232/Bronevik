@@ -217,6 +217,24 @@ class BridgeStateTest(unittest.TestCase):
         assert replays['page']['kind'] == 'list'
         assert replays['actions'][0]['id'] == 'refresh'
 
+    def test_cards_carry_their_page_and_context(self):
+        state = self.bridge.state()
+        assert (card(state, COMPANION_ID)['section'], card(state, COMPANION_ID)['context']) == ('data', 'any')
+        assert (card(state, 'marks_panel')['section'], card(state, 'marks_panel')['context']) == ('marks', 'battle')
+        assert (card(state, 'replay_manager')['section'], card(state, 'replay_manager')['context']) == ('replays', 'hangar')
+
+    def test_a_package_opens_the_window_at_a_page(self):
+        assert self.bridge.state()['focus'] is None
+        assert self.bridge.focus_page('replays') is True
+        assert self.bridge.state()['focus'] == {'section': 'replays', 'seq': 1}
+        assert self.bridge.focus_page('hud') is True
+        assert self.bridge.state()['focus'] == {'section': 'hud', 'seq': 2}
+        assert self.bridge.focus_page('garage') is False
+        assert self.bridge.state()['focus']['section'] == 'hud'
+
+    def test_window_layout_defaults_to_centred(self):
+        assert self.bridge.state()['window'] == {'placed': False, 'x': 0, 'y': 0, 'width': 0, 'height': 0, 'zoom': 100}
+
     def test_hud_panels_carry_the_preview_without_markup(self):
         panels = self.bridge.state()['hud']['panels']
         assert panels[0]['id'] == 'damage_log'
@@ -243,6 +261,29 @@ class BridgeMessageTest(unittest.TestCase):
         send(self.bridge, type='set', component='minimap', key='zoom', value='x99')
         assert self.bridge.notice['kind'] == 'error'
         assert self.context.component_config.get('minimap').get('zoom') == 'x2'
+
+    def test_set_many_resets_a_card_in_one_message(self):
+        send(self.bridge, type='set', component='minimap', key='zoom', value='x2')
+        send(self.bridge, type='set_many', component='minimap', values={'zoom': 'native', 'enabled': False})
+        assert self.context.component_config.get('minimap').get('zoom') == 'native'
+        assert self.context.component_config.get('minimap').get('enabled') is False
+        assert self.context.events[-1] == ('minimap', ['enabled', 'zoom'])
+        send(self.bridge, type='set_many', component=COMPANION_ID, values={'send_shots': False, 'flush_interval_seconds': 30})
+        assert self.context.refreshed[-1] == ['flush_interval_seconds', 'send_shots']
+        assert self.context.saved == 2
+
+    def test_set_many_refuses_keys_outside_the_card(self):
+        for values in ({'server_url': 'https://evil.example', 'send_shots': False}, {}, ['send_shots']):
+            send(self.bridge, type='set_many', component=COMPANION_ID, values=values)
+            assert self.bridge.notice['kind'] == 'error', values
+        assert self.context.config.get('send_shots') is True
+
+    def test_window_layout_is_kept_and_clamped(self):
+        send(self.bridge, type='window_layout', x=120.4, y=-40, width=99999, height=640, zoom=110)
+        assert self.bridge.state()['window'] == {'placed': True, 'x': 120, 'y': -40, 'width': 8000, 'height': 640, 'zoom': 110}
+        send(self.bridge, type='window_layout', x=0, y=0, width=0, height=0, zoom='big', placed=False)
+        assert self.bridge.state()['window']['placed'] is False
+        assert self.bridge.state()['window']['zoom'] == 110
 
     def test_panel_switch_lives_in_config(self):
         send(self.bridge, type='set', component='damage_log', key='upload_replays', value=True)
@@ -356,6 +397,15 @@ class BridgeProfilesTest(unittest.TestCase):
         assert self.bridge.notice['text'] == STRINGS['ru']['error_profile_limit']
         send(self.bridge, type='profile_delete', id='p1')
         assert self.context.profiles.get('p1') is None and len(self.context.profiles.items()) == 11
+
+    def test_profile_never_carries_the_window_layout(self):
+        send(self.bridge, type='window_layout', x=10, y=20, width=900, height=600, zoom=90)
+        send(self.bridge, type='profile_save', name='A')
+        assert 'settings_window' not in self.context.profiles.get('p1')['data']['components']
+        send(self.bridge, type='window_layout', x=500, y=20, width=900, height=600, zoom=90)
+        self.context.profiles.get('p1')['data']['components']['settings_window'] = {'x': 1}
+        send(self.bridge, type='profile_load', id='p1')
+        assert self.bridge.state()['window']['x'] == 500
 
     def test_export_import_round_trip(self):
         send(self.bridge, type='set', component='minimap', key='zoom', value='x2')

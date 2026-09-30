@@ -2,7 +2,7 @@
 
 [project]
 name = "otmetki-feature-personal-missions"
-version = "0.1.0"
+version = "0.2.0"
 description = "Feature: the personal combat missions in progress, their conditions and state from the client's own quest data."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }

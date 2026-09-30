@@ -24,6 +24,9 @@ export const useIntField = ({ value, min, max, onCommit }: UseIntFieldInput) => 
 
   return {
     text: draft ?? String(value),
+    range: min !== null && max !== null ? `${min}-${max}` : null,
+    canDecrease: min === null || value > min,
+    canIncrease: max === null || value < max,
     edit: setDraft,
     commit,
     onKey: (key: string) => {

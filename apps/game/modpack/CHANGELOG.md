@@ -4,6 +4,24 @@ The modpack's release notes. Every package has its own entry, `## <id> <version>
 
 Add the new entry on top of the component's previous ones when you bump a `VERSION`.
 
+## 0.1.3
+
+### ru
+
+Новое окно настроек мода.
+
+- Разделы с иконками, карточки компонентов с метками «Ангар» и «Бой», поиск по настройкам, отмена изменений и сброс к стандартным.
+- Окно двигается, меняет размер и масштаб и запоминает их; колесо мыши прокручивает списки в нужную сторону, иконки и кнопки больше не пропадают.
+- Кнопка «///» в правом нижнем ряду кнопок ангара.
+
+### en
+
+A new mod settings window.
+
+- Sections with icons, component cards with «Hangar» and «Battle» badges, search across settings, undo and reset to defaults.
+- The window moves, resizes and zooms and remembers it; the mouse wheel scrolls lists the right way, icons and buttons no longer go blank.
+- The «///» button in the hangar's bottom-right button row.
+
 ## 0.1.2
 
 ### ru
@@ -76,6 +94,18 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 - The Gameface settings window with profiles and an on-screen HUD editor; ModsSettingsAPI stays the fallback.
 - Settings survive a wiped `mods/configs`: the binding, config.json, components.json, profiles.json and the app state are mirrored into `%APPDATA%\TriOtmetki` and restored on the next start.
 
+## arty_meter 0.1.1
+
+### ru
+
+- По умолчанию стоит в колонке слева под списком команды; «За день: 7 боёв, по вам 6 раз» с правильными формами слов.
+- Выключен по умолчанию: стандартный набор боя — только ХП команд, лог урона, лог попаданий, отметка, расходники с перезарядкой и лампа. Включается в окне настроек.
+
+### en
+
+- By default it sits in the left column under the team list; correct word forms in the day line.
+- Off by default: the default battle set is team HP, the damage log, the hit log, marks, consumables with reload and the lamp only. Turn it on in the settings window.
+
 ## arty_meter 0.1.0
 
 ### ru
@@ -85,6 +115,18 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 ### en
 
 - Artillery meter: direct hits, splash, damaged modules, stuns and damage from artillery on your vehicle in battle (a 0-10 thermometer) and over the day; in the hangar, a list of recent battles. Only fire on your own vehicle, no positions or tracers.
+
+## platoon_points 0.1.1
+
+### ru
+
+- По умолчанию стоит слева вверху в колонке с отметкой.
+- Выключен по умолчанию: стандартный набор боя — только ХП команд, лог урона, лог попаданий, отметка, расходники с перезарядкой и лампа. Включается в окне настроек.
+
+### en
+
+- By default it sits top left in the column with the marks.
+- Off by default: the default battle set is team HP, the damage log, the hit log, marks, consumables with reload and the lamp only. Turn it on in the settings window.
 
 ## platoon_points 0.1.0
 
@@ -96,6 +138,20 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 
 - Platoon points: tournament-style points for damage, assist, frags and survival by your own rules, with the platoon's HP bars. For mates only the frags and HP the game already shows.
 
+## battle_hits 0.2.0
+
+### ru
+
+- «Боевые раны» в ангаре — карточка: полученный урон крупно, пробития, непробития и рикошеты значками исходов клиента, попадания по частям и сторонам.
+- Подпись в ангаре видна только в самом ангаре: на экране очереди в бой, в других разделах, в окне настроек и в полноэкранных окнах клиента она скрыта.
+- Правильные формы слов: «2 попадания», «5 попаданий».
+
+### en
+
+- Battle wounds in the hangar is a card: the damage taken in big type, penetrations, no pens and ricochets with the client's outcome icons, hits by part and side.
+- The hangar label shows only in the hangar itself: on the battle queue screen, in other lobby sections, in the settings window and in the client's full-screen windows it is hidden.
+- Correct word forms for the hit count.
+
 ## battle_hits 0.1.0
 
 ### ru
@@ -105,6 +161,20 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 ### en
 
 - «Battle wounds»: the hits on your tank are recorded in battle (your own vehicle only) and shown in the hangar after it: the last battle's summary and, in the modpack window, a schematic from above (hull, turret, gun, running gear) with the hit points, the side, the outcome, the damage and who fired. The last battles are kept (up to 30), each can be deleted.
+
+## gun_arc 0.2.0
+
+### ru
+
+- УГН — плашка с градусами до упора цветом и полосой положения орудия.
+- По умолчанию стоит под перезарядкой и не перекрывает её.
+- Выключен по умолчанию: стандартный набор боя — только ХП команд, лог урона, лог попаданий, отметка, расходники с перезарядкой и лампа. Включается в окне настроек.
+
+### en
+
+- Gun traverse is a plate with the degrees to each stop in colour and a bar with the gun's position.
+- By default it sits under the reload bar instead of over it.
+- Off by default: the default battle set is team HP, the damage log, the hit log, marks, consumables with reload and the lamp only. Turn it on in the settings window.
 
 ## gun_arc 0.1.0
 
@@ -146,6 +216,20 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 
 - Your shells' stats (off by default): the penetration, damage and velocity of the loaded shell or of every type, the numbers the shell tooltip shows in battle.
 
+## hangar_info 0.4.0
+
+### ru
+
+- Подпись — карточка: время крупно с датой, сервер, пинг цветом по качеству и онлайн значками, для выбранного танка уровни боёв, опыт экипажа до навыка и ускоренное обучение.
+- Подпись в ангаре видна только в самом ангаре: на экране очереди в бой, в других разделах, в окне настроек и в полноэкранных окнах клиента она скрыта.
+- По умолчанию стоит справа сразу под верхней панелью ангара.
+
+### en
+
+- The label is a card: the time in big type with the date, the server, the ping coloured by quality and the online count as icons, and for the selected tank its battle tiers, crew XP to a skill and accelerated training.
+- The hangar label shows only in the hangar itself: on the battle queue screen, in other lobby sections, in the settings window and in the client's full-screen windows it is hidden.
+- By default it sits on the right right under the hangar's top bar.
+
 ## hangar_info 0.3.0
 
 ### ru
@@ -155,6 +239,22 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 ### en
 
 - An «Armour on the site» button in the modpack window: opens the selected tank's 3D armour on triotmetki.ru.
+
+## received_hits 0.2.0
+
+### ru
+
+- «По вам» — карточка: урон крупно, попадания, пробития и заблокированный урон значками, строка на выстрел со значком класса стрелявшего и исходом цветом.
+- По умолчанию стоит в колонке над логом урона и отметкой, а не поверх них.
+- По умолчанию стоит слева вверху под отметкой, а не над чатом.
+- Выключен по умолчанию: стандартный набор боя — только ХП команд, лог урона, лог попаданий, отметка, расходники с перезарядкой и лампа. Включается в окне настроек.
+
+### en
+
+- Hits on you is a card: the damage in big type, hits, penetrations and blocked damage as icons, a line per shot with the shooter's class icon and the outcome in colour.
+- By default it sits in the column above the damage log and the marks, not over them.
+- By default it sits top left under the marks, not over the chat.
+- Off by default: the default battle set is team HP, the damage log, the hit log, marks, consumables with reload and the lamp only. Turn it on in the settings window.
 
 ## received_hits 0.1.0
 
@@ -166,6 +266,16 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 
 - A log of the hits on your tank: the class and name of the vehicle that fired, the shell, the damage and the outcome (penetrated, critical, no pen, ricochet); crits join their shot; battle totals and a custom line template.
 
+## death_card 0.2.0
+
+### ru
+
+- Карточка гибели: значок класса стрелявшего, его имя, урон крупно, снаряд значком, повреждённые модули и сторона выстрела.
+
+### en
+
+- The death card: the shooter's class icon and name, the damage in big type, the shell as an icon, the damaged modules and the side of the shot.
+
 ## death_card 0.1.0
 
 ### ru
@@ -175,6 +285,20 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 ### en
 
 - A card after your tank is destroyed: who fired the last shot (or whom the kill feed named), the shell or the cause (fire, ram), the damage, the damaged modules and crew and the side of the hull as the game's hit indicator showed it. Nothing is drawn while the tank is alive; no positions, no trajectories.
+
+## battle_loadout 0.2.1
+
+### ru
+
+- Звёздочка бонуса учитывает слот с выбранной вами специализацией (полевая модернизация), как в ангаре.
+- По умолчанию полоса стоит слева от наших расходников над стандартной панелью и не наезжает на лог урона.
+- Выключен по умолчанию: стандартный набор боя — только ХП команд, лог урона, лог попаданий, отметка, расходники с перезарядкой и лампа. Включается в окне настроек.
+
+### en
+
+- The bonus star counts the slot with the specialization you chose (field modification) as the hangar does.
+- By default the strip sits left of our consumables above the stock bar and no longer runs into the damage log.
+- Off by default: the default battle set is team HP, the damage log, the hit log, marks, consumables with reload and the lamp only. Turn it on in the settings window.
 
 ## battle_loadout 0.2.0
 
@@ -195,6 +319,22 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 ### en
 
 - Your tank's equipment in battle with the game's item icons (★: in a slot with its own bonus), field modifications and directives; a compact icon row or a detailed list by group, placed in the HUD editor.
+
+## personal_missions 0.2.0
+
+### ru
+
+- Подпись «ЛБЗ» в ангаре стала компактной карточкой: счётчики «в работе», «выполнено», «с отличием» значками и задачи в работе одной строкой со значком статуса; основное условие — одна приглушённая строка, полные условия — на странице в окне мода.
+- Подпись в ангаре видна только в самом ангаре: на экране очереди в бой, в других разделах, в окне настроек и в полноэкранных окнах клиента она скрыта.
+- Строка в бою — такая же карточка; по умолчанию она стоит в колонке слева под списком команды.
+- Строка ЛБЗ в бою выключена по умолчанию (включается в окне настроек).
+
+### en
+
+- The «ЛБЗ» hangar label is a compact card now: the in progress, done and with honours counters as icons and the missions in progress one line each with a status mark; the main condition is one dimmed line, the full conditions are on the page in the mod window.
+- The hangar label shows only in the hangar itself: on the battle queue screen, in other lobby sections, in the settings window and in the client's full-screen windows it is hidden.
+- The battle line is the same card; by default it sits in the left column under the team list.
+- The battle line of personal missions is off by default (turn it on in the settings window).
 
 ## personal_missions 0.1.0
 
@@ -217,6 +357,20 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 
 - A key (Ctrl+Shift+H by default) takes every panel and hangar label of the mod off the screen and brings them back with their latest text; optionally the panels stay hidden in the next battle too.
 - Private mode: the battle chat of other players is not drawn and the hangar labels with your numbers (ratings, session, goals, personal missions, marks history) are hidden. Your name and clan in the game's interface stay.
+
+## platoon_helper 0.2.0
+
+### ru
+
+- Взвод в ангаре — карточка: готовность напарников значками и число «2/3», свои бои во взводе и в клане.
+- Подпись в ангаре видна только в самом ангаре: на экране очереди в бой, в других разделах, в окне настроек и в полноэкранных окнах клиента она скрыта.
+- Правильные формы слова «бой».
+
+### en
+
+- The platoon label is a card: the mates' ready marks and «2/3», the own platoon and clan battles.
+- The hangar label shows only in the hangar itself: on the battle queue screen, in other lobby sections, in the settings window and in the client's full-screen windows it is hidden.
+- Correct word forms for the battle count.
 
 ## platoon_helper 0.1.0
 
@@ -258,6 +412,20 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 
 - Five new one-colour centre marks of our own (dot, cross, dashed ring, brackets, diamond) and a choice of their colour: white, green, yellow, cyan, magenta, red.
 
+## personal_best 0.2.0
+
+### ru
+
+- Рекорд танка — карточка со значками урона, помощи и фрагов и полосой до рекорда; побитый рекорд золотом. По умолчанию слева под списком команды.
+- По умолчанию стоит в колонке под полосой ХП команд.
+- Выключен по умолчанию: стандартный набор боя — только ХП команд, лог урона, лог попаданий, отметка, расходники с перезарядкой и лампа. Включается в окне настроек.
+
+### en
+
+- The tank record is a card with the damage, assist and frags icons and a bar to the record; a beaten record in gold. By default on the left under the team list.
+- By default it sits in the column under the team HP strip.
+- Off by default: the default battle set is team HP, the damage log, the hit log, marks, consumables with reload and the lamp only. Turn it on in the settings window.
+
 ## personal_best 0.1.0
 
 ### ru
@@ -272,6 +440,20 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 - After a battle that beat a record, a card notification in the hangar and our sound.
 - Records come from the own tank dossier, the own battle results and the site's copy of them (`/mod/me/tanks`); when full, the tank not seen for the longest is forgotten.
 
+## session_goals 0.2.0
+
+### ru
+
+- Цели в ангаре и в бою — карточки со значками статуса и полосой прогресса.
+- Подпись в ангаре видна только в самом ангаре: на экране очереди в бой, в других разделах, в окне настроек и в полноэкранных окнах клиента она скрыта.
+- Строка целей в бою выключена по умолчанию (включается в окне настроек).
+
+### en
+
+- Goals in the hangar and in battle are cards with status marks and a progress bar.
+- The hangar label shows only in the hangar itself: on the battle queue screen, in other lobby sections, in the settings window and in the client's full-screen windows it is hidden.
+- The battle line of goals is off by default (turn it on in the settings window).
+
 ## session_goals 0.1.0
 
 ### ru
@@ -284,6 +466,18 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 - Goals from your site dashboard: progress in the hangar, a battle line (for an average-damage goal, the damage this battle needs) and a sound when the site marks a goal met.
 - Reads `/mod/me/goals` once bound, in the hangar; the server does not serve it yet (contract `contract/goals.schema.json`).
 
+## main_gun 0.2.0
+
+### ru
+
+- «Основной калибр» — карточка с полосой прогресса до порога; по умолчанию стоит под полосой ХП команд.
+- Выключен по умолчанию: стандартный набор боя — только ХП команд, лог урона, лог попаданий, отметка, расходники с перезарядкой и лампа. Включается в окне настроек.
+
+### en
+
+- High Caliber is a card with a progress bar to the threshold; by default it sits under the team HP strip.
+- Off by default: the default battle set is team HP, the damage log, the hit log, marks, consumables with reload and the lamp only. Turn it on in the settings window.
+
 ## main_gun 0.1.0
 
 ### ru
@@ -293,6 +487,18 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 ### en
 
 - The High Caliber counter: your damage against the medal threshold (20% of the enemy HP, at least 1,000), the team damage and your share.
+
+## battle_efficiency 0.2.0
+
+### ru
+
+- WN8 боя — карточка: оценка крупно цветом, WN8 на танке и урон против среднего; по умолчанию под «Основным калибром».
+- Выключен по умолчанию: стандартный набор боя — только ХП команд, лог урона, лог попаданий, отметка, расходники с перезарядкой и лампа. Включается в окне настроек.
+
+### en
+
+- Battle WN8 is a card: the estimate in big type and colour, the tank's WN8 and the damage against the average; by default under High Caliber.
+- Off by default: the default battle set is team HP, the damage log, the hit log, marks, consumables with reload and the lamp only. Turn it on in the settings window.
 
 ## battle_efficiency 0.1.0
 
@@ -335,6 +541,24 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 ### en
 
 - Your gun's reload countdown with a bar and the shells in the magazine; your own gun only. It counts by game time and keeps pace with the reticle.
+
+## core 0.5.0
+
+### ru
+
+- Подписи ангара и кнопка «///» видны только в обычном виде ангара (`core/lobby_view`): правило то же, что у стандартных маркеров техники в ангаре — окно ангара открыто и нет другого окна слоёв SUB_VIEW, TOP_SUB_VIEW, FULLSCREEN_WINDOW и OVERLAY. Очередь в бой, магазин, исследования, окно настроек и полноэкранные окна их скрывают.
+- Общая карточка панелей (`core.hud.widget.card`): заголовок со значком, крупное число, значки с числами, строки со статусом, приглушённой строкой условия и полосой прогресса.
+- Колонки панелей (`core.hud.panel.DOCKS`): панели одной колонки встают друг под другом и не перекрываются при любой высоте, а при нехватке места начинают вторую колонку.
+- Формы слов по числу (`core.format.plural`, `counted`): «1 бой», «2 боя», «5 боёв».
+- Подпись ангара без своего места запоминает, куда её перетащили, и возвращается по «Сбросить расположение».
+
+### en
+
+- Hangar labels and the «///» button show only in the plain hangar view (`core/lobby_view`): the rule of the stock hangar's vehicle markers, the hangar window open and no other window of the SUB_VIEW, TOP_SUB_VIEW, FULLSCREEN_WINDOW and OVERLAY layers. The battle queue, the store, research, the settings window and full-screen windows hide them.
+- A shared panel card (`core.hud.widget.card`): a header with an icon, a big number, icon + number chips, rows with a status mark, a dimmed condition line and a progress bar.
+- Panel columns (`core.hud.panel.DOCKS`): the panels of a column sit one under another and never overlap whatever their height, and start a second column when there is no room.
+- Word forms by number (`core.format.plural`, `counted`): «1 бой», «2 боя», «5 боёв», «1 battle».
+- A hangar label without a place of its own remembers where it was dragged and goes back with «Reset layout».
 
 ## core 0.4.0
 
@@ -410,6 +634,16 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 - Durable settings: the files a player cannot recreate are mirrored into `%APPDATA%\TriOtmetki`, and a missing or older copy in `mods/configs/otmetki` is restored on load.
 - Pinned Python 2.7 libraries: six, blinker, attrs, enum34.
 
+## companion 0.5.0
+
+### ru
+
+- Вторичные боевые панели выключены по умолчанию (у новых игроков): «Основной калибр», WN8 боя, рекорд танка, УГН, артометр, очки взвода, «По вам», оборудование в бою и часы. Уже сохранённые настройки не меняются.
+
+### en
+
+- The secondary battle panels are off by default (for new players): High Caliber, battle WN8, the tank record, gun traverse, the arty meter, platoon points, hits on you, equipment in battle and the clock. Settings you already saved do not change.
+
 ## companion 0.4.0
 
 ### ru
@@ -468,6 +702,44 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 - After each own battle: the `personal` block of the battle results, MoE snapshots and distribution, queue times, the loadout and shots, sent in signed batches through an outbox that survives a restart and backs off on errors.
 - Per-feature data switches in `config.json`, the ModsSettingsAPI window as the fallback settings UI, and the streamer settings share (export, apply with a confirmation, restore).
 
+## ui 0.3.0
+
+### ru
+
+- Новое окно настроек: разделы слева с иконками (Бой, Ангар, Отметки и статистика, Реплеи, Стримерам, Данные и сайт, Профили, Редактор HUD) и счётчиком включённых компонентов, карточки компонентов с иконкой, описанием, метками «Ангар» и «Бой» и раскрывающимися настройками, фильтр «Все / Ангар / Бой».
+- Поиск по компонентам и настройкам: находит и название, и отдельную настройку, и вариант выбора.
+- Изменения применяются сразу, всплывающая подсказка «Отменить» возвращает до 20 последних изменений; у каждой карточки «Сбросить к стандартным», изменённые настройки отмечены.
+- Окно двигается за заголовок, меняет размер за край и угол, масштаб 80–150 %; положение, размер и масштаб запоминаются и подгоняются под экран при любом разрешении и масштабе интерфейса. В узком окне меню сворачивается до иконок, в широком карточки встают в две колонки.
+- Колесо мыши больше не прокручивает списки в обратную сторону, содержимое не обрезается сверху.
+- Иконки и кнопки «−», «+» и «×» больше не пропадают: все значки рисуются из одного PNG-спрайта, у поля кода привязки есть подсказка.
+- Блок привязки в «Данных и сайте»: состояние, поле кода, «Привязать», «Получить код» и «Открыть сайт».
+- Кнопка «///» в ангаре переехала в правый нижний ряд кнопок, рядом с уведомлениями, и получила иконку; если вы её не двигали, она переедет сама.
+- Названия и описания у «Лога урона», «Хит-лога», «ХП команд», «Лампы шестого чувства» и «Часов» вместо служебных имён.
+- Перетаскивание панелей с зажатым Alt и изменение размера колесом снова работают в бою: страница сама определяет панель под курсором, и значки, подложки и SVG внутри панели больше не перехватывают нажатие.
+- Панели одной колонки встают друг под другом; ХП команд ровно по центру стандартной полосы счёта, тонкие полосы, счёт в тёмной плашке.
+- Подписи ангара и небольшие боевые панели — тёмные карточки со значком в заголовке, крупными числами и приглушёнными подписями; значки нашего набора рисуются явными цветами.
+- Цвет полоски слева у каждой плашки — по категории: оранжевый — ваш урон, красный — урон по вам, золотой — отметки, рекорды, цели и задачи, серый — справочные панели.
+- Текст панелей рисуется только знаками, которые есть в шрифте клиента (Warhelios): минус — дефис, неразрывный пробел вместо узкого, ≈ → ~, стрелки и звёзды — значками; пустых квадратов больше нет.
+- Вторичные боевые панели встают под полосой ХП команд и не заходят на лампу, список команды, чат, миникарту и панель расходников.
+
+### en
+
+- A new settings window: sections on the left with icons (Battle, Hangar, Marks and stats, Replays, Streamers, Data and site, Profiles, HUD editor) and a count of the components that are on, component cards with an icon, a description, «Hangar» and «Battle» badges and settings that fold out, and an All / Hangar / Battle filter.
+- Search across components and settings: it finds a title, a single setting and a choice.
+- Changes apply at once; an «Undo» toast takes back up to the last 20 changes; every card has «Reset to defaults», and changed settings are marked.
+- The window moves by its title, resizes by its edge and corner, zooms from 80 to 150 %; its place, size and zoom are remembered and fitted to the screen at any resolution and interface scale. In a narrow window the menu folds to icons, in a wide one the cards sit in two columns.
+- The mouse wheel no longer scrolls lists backwards, and nothing is cut off at the top.
+- Icons and the «−», «+» and «×» buttons no longer go blank: every icon is drawn from one PNG sprite, and the binding code field shows its hint.
+- A binding block in «Data and site»: the state, the code field, «Bind», «Get a code» and «Open the site».
+- The «///» hangar button moved to the bottom-right button row next to the notifications and got its icon; it moves there by itself unless you moved it.
+- Titles and descriptions for the damage log, hit log, team HP, sixth sense lamp and clock instead of internal names.
+- Dragging panels with Alt held and resizing them with the wheel work in battle again: the page finds the panel under the pointer itself, and icons, plates and SVG inside a panel no longer swallow the press.
+- The panels of a column sit one under another; team HP is centred on the stock score strip, with thin bars and the score in a dark box.
+- Hangar labels and the smaller battle panels are dark cards with an icon in the header, numbers in bold and dimmed captions; our glyphs are drawn with explicit colours.
+- The stripe on the left of every plate is coloured by category: orange for your damage, red for damage to you, gold for marks, records, goals and missions, grey for information.
+- Panel text uses only characters the client font (Warhelios) has: a hyphen for the minus, a no-break space for the narrow one, ~ for ≈, arrows and stars as icons; no more blank boxes.
+- The secondary battle panels sit under the team HP strip and keep off the lamp, the team lists, the chat, the minimap and the consumables bar.
+
 ## ui 0.2.0
 
 ### ru
@@ -518,6 +790,18 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 - The Gameface settings window (OpenWG Gameface): a card per installed component built from its own schema, list pages, profiles (save, load, rename, export and import as a code) and the on-screen HUD editor.
 - Entry points: the «///» button in the hangar, a ModsList entry and the hotkey Ctrl+Shift+T.
 
+## marks_panel 0.3.1
+
+### ru
+
+- Правильные формы слова «бой» в прогнозе.
+- Позиция по умолчанию — слева вверху, правее списка команды: над чатом места нет.
+
+### en
+
+- Correct Russian word forms in the forecast.
+- Default position: top left, right of the team list; there is no room over the chat.
+
 ## marks_panel 0.3.0
 
 ### ru
@@ -544,6 +828,20 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 - Styles «Extended», «Compact», «Minimal» and your own macro template; colour by change, by mark or none.
 - Spotting and tracking assist earned after the tank is destroyed now counts; the client's end-of-life summary raises the damage and stun to its values.
 
+## hangar_marks 0.2.0
+
+### ru
+
+- Отметка в ангаре — карточка: значок отметки, процент крупно, среднее и темп, урон за бой до 65/85/95 % с галочкой у взятых порогов и прогноз «до 95 %: ~12 боёв». Строка «+0,5 %: -» убрана.
+- Скрывается вне обычного вида ангара, как и подписи ангара; по умолчанию стоит первой в левой колонке.
+- Правильные формы слов: «2 боя», «5 боёв».
+
+### en
+
+- Hangar marks is a card: the mark icon, the percent in big type, the average and the pace, the damage per battle to 65/85/95 % with a check at the reached ones, and the forecast «to 95 %: ~12 battles». The «+0.5 %: -» line is gone.
+- It hides outside the plain hangar view like the hangar labels; by default it is the first of the left column.
+- Correct word forms for the battle count.
+
 ## hangar_marks 0.1.0
 
 ### ru
@@ -563,6 +861,20 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 ### en
 
 - In battle: the current MoE percentage, the projection after the battle and the damage still needed for the next mark; team damage is not counted.
+
+## session_stats 0.3.0
+
+### ru
+
+- Сессия в ангаре — карточка: число боёв с правильной формой слова, процент побед цветом, средний урон и WN8, победы и поражения строкой ниже.
+- Подпись в ангаре видна только в самом ангаре: на экране очереди в бой, в других разделах, в окне настроек и в полноэкранных окнах клиента она скрыта.
+- Перетащенная подпись запоминает место.
+
+### en
+
+- The session in the hangar is a card: the battle count, the win rate in colour, the average damage and WN8, wins and losses below.
+- The hangar label shows only in the hangar itself: on the battle queue screen, in other lobby sections, in the settings window and in the client's full-screen windows it is hidden.
+- A dragged label keeps its place.
 
 ## session_stats 0.2.0
 
@@ -586,6 +898,18 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 
 - In the hangar: battles, win rate, average damage and WN8 of the current session; a new session starts after `session_idle_minutes` of idle time.
 
+## replay_upload 0.2.0
+
+### ru
+
+- Реплей можно загрузить вручную из менеджера реплеев, в том числе тот, который раньше не удалось отправить. Действуют те же условия: включённая «Загрузка реплеев» и привязка к сайту.
+- Время начала боя из результатов переводится в часы компьютера так же, как это делает клиент, поэтому реплей без номера боя в заголовке находится точнее.
+
+### en
+
+- A replay can be uploaded by hand from the replay manager, including one an earlier try gave up on. The same conditions apply: Replay upload on and the mod bound to the site.
+- The battle start from the results is turned into this computer's time the way the client does it, so a replay without a battle id in its header is found more reliably.
+
 ## replay_upload 0.1.1
 
 ### ru
@@ -607,6 +931,18 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 ### en
 
 - Opt-in, off by default: uploads the replays the game itself recorded of the player's own battles, matched by the replay header, private unless `publish_replays` is on. Never turns replay recording on; files above 50 MiB are refused.
+
+## damage_log 0.3.1
+
+### ru
+
+- Всплывающее последнее попадание по умолчанию стоит под прицелом, ниже перезарядки, и больше не перекрывает лампу.
+- Итоги занимают меньше места и не заходят на стандартную панель расходников при масштабе интерфейса 125 %.
+
+### en
+
+- The last-hit pop-up sits under the reticle below the reload bar by default and no longer covers the lamp.
+- The totals take less room and stay clear of the stock consumables bar at a 125 % interface scale.
 
 ## damage_log 0.3.0
 
@@ -648,6 +984,16 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 - Palettes `classic`, `graphite`, `contrast`, `colorblind` (macros `{c_dealt}`, `{c_blocked}`, `{c_assisted}`, `{c_received}`) and our own damage-kind icons (`{icon}`).
 - Assist earned after death, while the camera follows an ally, still counts.
 
+## hit_log 0.2.1
+
+### ru
+
+- По умолчанию стоит справа вверху сразу под таймером боя, выше списка команды, и больше не заходит на миникарту.
+
+### en
+
+- By default it sits top right right under the battle timer, above the team list, and no longer runs into the minimap.
+
 ## hit_log 0.2.0
 
 ### ru
@@ -669,6 +1015,20 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 
 - In battle: each own hit on an enemy (penetration, critical, no penetration, ricochet and the rest) with damage, shell, crits and the target's HP after the hit, exactly as the enemy marker shows it; optionally grouped by target.
 - Outcome colour by palette (`{c_outcome}`: `classic`, `graphite`, `contrast`, `colorblind`); the target's HP is taken only from the player's own hit.
+
+## battle_clock 0.2.1
+
+### ru
+
+- Таймер боя отбрасывает доли секунды, как стандартный таймер, и больше не опережает его на секунду.
+- По умолчанию стоит слева от стандартного таймера.
+- Выключен по умолчанию: стандартный набор боя — только ХП команд, лог урона, лог попаданий, отметка, расходники с перезарядкой и лампа. Включается в окне настроек.
+
+### en
+
+- The battle timer drops the fraction of a second like the stock timer and no longer runs a second ahead of it.
+- By default it sits left of the stock timer.
+- Off by default: the default battle set is team HP, the damage log, the hit log, marks, consumables with reload and the lamp only. Turn it on in the settings window.
 
 ## battle_clock 0.2.0
 
@@ -773,6 +1133,26 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 ### en
 
 - In battle: time stamps on chat lines and hiding of repeats, flood, quick-command spam and lines with blocked words. The player's own lines are never hidden.
+
+## replay_manager 0.3.0
+
+### ru
+
+- Отдельный экран «Реплеи» в окне настроек: все ваши реплеи из папки игры с картинкой карты, техникой, уровнем, режимом, итогом, уроном, помощью, фрагами, опытом, серебром и знаком классности; список прокручивается плавно даже на тысяче файлов.
+- Поиск по карте, танку и имени файла; фильтры по итогу, карте, технике, уровню, типу боя, дате и избранному; сортировка по дате, урону, помощи, опыту, фрагам и размеру; сводка по выборке (боёв, процент побед, средний урон и опыт).
+- «Смотреть»: реплей запускается прямо из ангара — клиент перезапускается, показывает бой и после «Закончить» возвращается к входу в игру. Реплеи другой версии клиента помечены, и запускать их нельзя.
+- «Загрузить на сайт» для любого своего реплея (нужны включённая «Загрузка реплеев» и привязка), избранное, переименование и удаление с подтверждением, открытие папки.
+- Заголовки реплеев читаются один раз и хранятся на диске, поэтому экран открывается сразу; новые файлы дочитываются понемногу, не замедляя ангар.
+- Настройки поиска и фильтров из карточки компонента убраны: они теперь на экране.
+
+### en
+
+- A separate Replays screen in the settings window: all your replays in the game folder with the map picture, vehicle, tier, mode, result, damage, assist, frags, XP, credits and mastery badge; the list scrolls smoothly even with a thousand files.
+- Search by map, tank and file name; filters by result, map, vehicle, tier, battle type, date and favourites; sorting by date, damage, assist, XP, frags and size; a summary of the selection (battles, win rate, average damage and XP).
+- Watch: a replay starts right from the hangar. The client restarts, shows the battle and after Finish returns to the login screen. Replays of another client version are marked and cannot be started.
+- Upload to the site for any of your replays (needs Replay upload on and the mod bound), favourites, rename and delete with a confirmation, open the folder.
+- Replay headers are read once and kept on disk, so the screen opens at once; new files are read a little at a time without slowing the hangar.
+- The search and filter settings left the component card: they are on the screen now.
 
 ## replay_manager 0.2.0
 
@@ -900,6 +1280,20 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 
 - In the hangar: local time and date, the current server, the client's own ping to it and the online count.
 
+## marks_history 0.3.0
+
+### ru
+
+- Подпись в ангаре — карточка: процент крупно, прошлый бой и тренд со стрелками вверх и вниз.
+- Подпись в ангаре видна только в самом ангаре: на экране очереди в бой, в других разделах, в окне настроек и в полноэкранных окнах клиента она скрыта.
+- Исправлено «За 2 боёв»: теперь «За 2 боя».
+
+### en
+
+- The hangar label is a card: the percent in big type, the last battle and the trend with up and down arrows.
+- The hangar label shows only in the hangar itself: on the battle queue screen, in other lobby sections, in the settings window and in the client's full-screen windows it is hidden.
+- Fixed «2 battles» word forms in Russian.
+
 ## marks_history 0.2.0
 
 ### ru
@@ -919,6 +1313,20 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 ### en
 
 - The MoE percent, marks and moving-average damage after each own battle per vehicle, with the date each mark was reached: a hangar label for the selected tank and a list in the mod window.
+
+## hangar_ratings 0.2.0
+
+### ru
+
+- «Мои рейтинги» — карточка: рейтинги аккаунта цветами шкалы, строки сессии и выбранного танка с WN8 справа и остальным приглушённо.
+- Подпись в ангаре видна только в самом ангаре: на экране очереди в бой, в других разделах, в окне настроек и в полноэкранных окнах клиента она скрыта.
+- Место, куда вы перетащили подпись, по-прежнему запоминается; правильные формы слова «бой».
+
+### en
+
+- My ratings is a card: the account ratings in the rating scale colours, the session and selected tank rows with WN8 on the right and the rest dimmed.
+- The hangar label shows only in the hangar itself: on the battle queue screen, in other lobby sections, in the settings window and in the client's full-screen windows it is hidden.
+- Where you dragged the label is still remembered; correct word forms for the battle count.
 
 ## hangar_ratings 0.1.1
 

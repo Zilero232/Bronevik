@@ -6,9 +6,9 @@ GROUP = 'battle'
 MAX_TEMPLATE = 300
 
 DEFAULTS = {
-    'x': -20,
+    'x': 0,
     'y': 60,
-    'align_x': 'right',
+    'align_x': 'center',
     'align_y': 'top',
     'show_team': True,
     'template': '',

@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, font
+from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, counted, font
 from ....core.moe import moe_color, moe_macros, moe_state, rating_to_percent
 from ....core.templates import render
 from .constants import LINE_SEPARATOR, STEP_PERCENT, TARGET_SEPARATOR, TITLE_SIZE_STEP
@@ -22,6 +22,7 @@ def _targets(state, values, translate):
 def format_panel(state, settings, translate):
     values = moe_macros(state)
     values['title'] = translate('hangar_marks_title')
+    values['battles_count'] = counted(state['battles'], 'battles', translate) if state['battles'] is not None else values['battles']
     color = moe_color(state, settings.get('color_mode'))
     size = settings.get('font_size')
     style = settings.get('style')

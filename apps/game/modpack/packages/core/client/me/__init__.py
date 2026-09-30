@@ -40,6 +40,34 @@ def post_signed(app, path, payload, on_done):
                    app.user_agent(), done)
 
 
+def signed_read(app, reads, key, path, build, account_of, on_data, on_end=None):
+    """One keyed read of the bound account's own data: POSTs `build()` to `path` (a ReasonError from it skips the read
+    and is logged) with `key` of `reads` (a ReadState) pending. An answer that arrives after `account_of()` changed is
+    dropped; a 200 marks `key` done and gets `on_data(data, account_id)`, any other status backs `key` off
+    (`retry_delay`); `on_end()` runs after either. Returns True when the request went out."""
+    try:
+        payload = build()
+    except ReasonError as error:
+        log('%s not requested: %s' % (path, error.reason))
+        return False
+    account_id = account_of()
+    reads.start([key])
+
+    def done(status, data, retry_after):
+        if account_of() != account_id:
+            return
+        if status == OK_STATUS:
+            reads.done([key])
+            on_data(data, account_id)
+        else:
+            reads.fail([key], time.time(), retry_delay(status, retry_after))
+        if on_end is not None:
+            on_end()
+
+    post_signed(app, path, payload, done)
+    return True
+
+
 def signed_body(app, **fields):
     """{device_id, account_id} of the bound device plus `fields`."""
     body = device_body(app.current_credentials())
@@ -100,32 +128,20 @@ class TankRatings(object):
         key = tank_key(tank_id)
         if not self.reads.wants(key, now):
             return False
-        try:
-            payload = tanks_request(self.app.current_credentials(), [tank_id])
-        except ReasonError as error:
-            log('tank ratings not requested: %s' % error.reason)
-            return False
-        account_id = self.account_id
-        self.reads.start([key])
+        def store(data, account_id):
+            rows = tank_rows(data, account_id)
+            if tank_id in rows:
+                self.rows[tank_id] = rows[tank_id]
 
-        def done(status, data, retry_after):
-            if account_id != self.account_id:
-                return
-            if status == OK_STATUS:
-                self.reads.done([key])
-                rows = tank_rows(data, account_id)
-                if tank_id in rows:
-                    self.rows[tank_id] = rows[tank_id]
-            else:
-                self.reads.fail([key], time.time(), retry_delay(status, retry_after))
-            for callback in list(self.listeners):
-                try:
-                    callback(tank_id)
-                except Exception:
-                    log_exception('tank ratings listener')
+        return signed_read(self.app, self.reads, key, TANKS_PATH, lambda: tanks_request(self.app.current_credentials(), [tank_id]),
+                           lambda: self.account_id, store, lambda: self._notify(tank_id))
 
-        post_signed(self.app, TANKS_PATH, payload, done)
-        return True
+    def _notify(self, tank_id):
+        for callback in list(self.listeners):
+            try:
+                callback(tank_id)
+            except Exception:
+                log_exception('tank ratings listener')
 
 
 def tank_ratings(app):

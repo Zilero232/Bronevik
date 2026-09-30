@@ -6,10 +6,10 @@ GROUP = 'battle'
 MAX_TEMPLATE = 300
 
 DEFAULTS = {
-    'x': 250,
-    'y': -120,
+    'x': 208,
+    'y': 8,
     'align_x': 'left',
-    'align_y': 'bottom',
+    'align_y': 'top',
     'show_header': True,
     'show_class': True,
     'show_shell': True,

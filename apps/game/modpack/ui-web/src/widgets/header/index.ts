@@ -1,3 +1,3 @@
 export { Header } from './ui/Header';
 
-export type { HeaderProps } from './ui/Header.types';
+export type { HeaderFrame, HeaderProps } from './ui/Header.types';

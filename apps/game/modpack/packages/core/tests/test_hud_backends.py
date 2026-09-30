@@ -142,7 +142,7 @@ class SurfaceTest(unittest.TestCase):
         assert [panel['id'] for panel in state['panels']] == ['otmetki.hud.damage_log']
         lobby = self.surface.state(SPACE_LOBBY, True)['panels'][0]
         assert lobby == {'id': 'otmetki.hangar_info', 'text': '12:00', 'x': -10, 'y': 4, 'align_x': 'right', 'align_y': 'top', 'alpha': 1.0,
-                         'drag': False, 'border': False, 'visible': True, 'scale': 1.0, 'kind': 'label', 'widget': None}
+                         'drag': False, 'border': False, 'visible': True, 'scale': 1.0, 'kind': 'label', 'widget': None, 'dock': None}
         assert self.surface.state(SPACE_LOBBY, False, True)['edit'] is False
         assert self.surface.state(SPACE_LOBBY, True, True)['edit'] is True
         assert json.loads(self.surface.encode(SPACE_BATTLE, True))['panels'][0]['text'].endswith(u'урон 1 200</font>')

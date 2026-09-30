@@ -3,7 +3,6 @@ import type { HudEditorProps } from './HudEditor.types';
 import { useT } from '../../../entities/window-state';
 import { ActionBar } from '../../../shared/ui/action-bar';
 import { Button } from '../../../shared/ui/button';
-import { Card } from '../../../shared/ui/card';
 import { Empty } from '../../../shared/ui/empty';
 import { HUD_EDITOR } from '../config';
 import { useHudEditor } from '../model/hooks';
@@ -16,15 +15,12 @@ export const HudEditor = ({ panels }: HudEditorProps) => {
   const editor = useHudEditor(panels);
 
   return (
-    <Card
-      aside={
+    <div className={s.editor}>
+      <div className={s.toolbar}>
         <Button disabled={!editor.hasPanels} variant='accent' onClick={editor.editOnScreen}>
           {t('hudOnScreen')}
         </Button>
-      }
-      hint={t('hudHint')}
-      title={t('sectionHud')}
-    >
+      </div>
       {editor.hasPanels ? (
         <div ref={editor.stageRef} aria-label={t('hudStage')} className={s.stage} role='group'>
           {editor.panels.map((item) => (
@@ -40,6 +36,6 @@ export const HudEditor = ({ panels }: HudEditorProps) => {
           { id: HUD_EDITOR.resetAllActionId, label: t('hudResetAll'), onClick: editor.resetAll }
         ]}
       />
-    </Card>
+    </div>
   );
 };

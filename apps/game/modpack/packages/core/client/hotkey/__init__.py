@@ -22,8 +22,8 @@ def _repeated(event):
 
 class Hotkey(object):
     """Calls `on_press()` when the key named `key` (a `Keys` name, KEY_T) goes down while every key of `modifiers`
-    is held (a left-hand Ctrl, Shift or Alt also on the right), through the game's own InputHandler.onKeyDown (hangar and battle). A held key's auto-repeat does not press it
-    again. `install()` / `remove()` are idempotent."""
+    is held (a left-hand Ctrl, Shift or Alt also on the right), through the game's own InputHandler.onKeyDown (hangar
+    and battle). A held key's auto-repeat does not press it again. `install()` / `remove()` are idempotent."""
 
     def __init__(self, key, modifiers, on_press):
         self.key = key
@@ -53,3 +53,28 @@ class Hotkey(object):
             return
         if all(_held(BigWorld, Keys, name) for name in self.modifiers):
             self.on_press()
+
+
+class HotkeyChoice(object):
+    """The hotkey a player picks from `hotkeys` ({choice: (Keys name or None, modifiers)}): `set(choice)` installs its
+    key in place of the previous one and returns whether one is installed; a choice without a key (or an unknown one)
+    only removes it."""
+
+    def __init__(self, hotkeys, on_press):
+        self.hotkeys = hotkeys
+        self.on_press = on_press
+        self.hotkey = None
+
+    def set(self, choice):
+        self.remove()
+        key, modifiers = self.hotkeys.get(choice) or (None, ())
+        if key is None:
+            return False
+        self.hotkey = Hotkey(key, modifiers, self.on_press)
+        self.hotkey.install()
+        return True
+
+    def remove(self):
+        if self.hotkey is not None:
+            self.hotkey.remove()
+            self.hotkey = None

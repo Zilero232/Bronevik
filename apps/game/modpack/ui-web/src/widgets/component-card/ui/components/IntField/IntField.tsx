@@ -1,8 +1,8 @@
 import type { IntFieldProps } from './IntField.types';
 
 import { useT } from '../../../../../entities/window-state';
+import { IconButton } from '../../../../../shared/ui/icon-button';
 import { Input } from '../../../../../shared/ui/input';
-import { INT_FIELD } from '../../../config';
 import { useIntField } from '../../../model/hooks';
 
 import s from './IntField.module.scss';
@@ -13,9 +13,8 @@ export const IntField = ({ field, onSet }: IntFieldProps) => {
 
   return (
     <div aria-label={field.label} className={s.stepper} role='group'>
-      <button aria-label={t('decrease')} className={s.step} type='button' onClick={control.decrease}>
-        {INT_FIELD.decreaseGlyph}
-      </button>
+      {control.range && <span className={s.range}>{control.range}</span>}
+      <IconButton disabled={!control.canDecrease} icon='minus' label={t('decrease')} size='small' onClick={control.decrease} />
       <Input
         aria-label={field.label}
         className={s.value}
@@ -25,9 +24,7 @@ export const IntField = ({ field, onSet }: IntFieldProps) => {
         onInput={(event) => control.edit(event.currentTarget.value)}
         onKeyDown={(event) => control.onKey(event.key)}
       />
-      <button aria-label={t('increase')} className={s.step} type='button' onClick={control.increase}>
-        {INT_FIELD.increaseGlyph}
-      </button>
+      <IconButton disabled={!control.canIncrease} icon='plus' label={t('increase')} size='small' onClick={control.increase} />
     </div>
   );
 };

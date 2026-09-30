@@ -1,12 +1,8 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.compat import to_text
-from ....core.me import device_body, is_auth_failure, owned, retry_delay, stats, tank_rows, tanks_request  # noqa: F401
+from ....core.me import owned, stats
 from .constants import RATING_METRICS, SESSION_RATINGS
-
-
-def overview_request(credentials):
-    return device_body(credentials)
 
 
 def parse_overview(data, account_id):
@@ -26,6 +22,3 @@ def parse_overview(data, account_id):
         parsed['session']['is_live'] = session.get('is_live') is True
     return parsed
 
-
-def parse_tanks(data, account_id):
-    return tank_rows(data, account_id)

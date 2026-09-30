@@ -6,7 +6,7 @@ GROUP = 'battle'
 
 DEFAULTS = {
     'x': 0,
-    'y': 110,
+    'y': 190,
     'align_x': 'center',
     'align_y': 'center',
     'show_bar': True,

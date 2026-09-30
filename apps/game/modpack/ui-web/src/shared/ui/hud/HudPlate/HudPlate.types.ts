@@ -1,5 +1,7 @@
 import type { ComponentChildren } from 'preact';
 
-import type { HudTone } from '../tone';
+import type { HUD_RAILS } from '../../../config';
 
-export type HudPlateProps = { rail?: HudTone | null; plain?: boolean; flash?: boolean; className?: string; children: ComponentChildren };
+export type HudRail = (typeof HUD_RAILS)[number];
+
+export type HudPlateProps = { rail?: HudRail | null; plain?: boolean; flash?: boolean; className?: string; children: ComponentChildren };

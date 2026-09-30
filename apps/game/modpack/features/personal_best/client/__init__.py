@@ -1,23 +1,18 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import os
-
 from BattleFeedbackCommon import BATTLE_EVENT_TYPE
 
-from ....core.client.battle import arena, call, feedback, is_enemy
-from ....core.client.game import client_attr, player_tank_id, values_by_name, vehicle_short_name
+from ....core.client.battle import arena, call, feedback, is_enemy, summary_assist
+from ....core.client.game import client_attr, on_vehicle_changed, player_tank_id, values_by_name, vehicle_short_name
 from ....core.client.hud.panel import BattlePanel
 from ....core.client.me import tank_ratings
 from ....core.client.sound import play_mp3
-from ....core.compat import is_number
-from ....core.events import EVENT_COMPONENT_SETTINGS
-from ....core.hooks import subscribe
-from ....core.log import log_exception, safe
-from ....core.storage import JsonFile
+from ....core.log import safe
 from ..i18n import STRINGS
 from ..model import LiveBattle, RecordBook, beaten, event_values, format_card, format_line
 from ..model.constants import KIND_BY_EVENT, PREVIEW_SIZE, RANDOM_BONUS_TYPE, SOUND, STORE_FILE
-from ..model.preview import preview_text
+from ..model.preview import preview_text, preview_widget
+from ..model.widget import line_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
 from .constants import CAPS_CLASS, CAPS_MODULE, DOSSIER_CAP
 from .dossier import selected_records
@@ -48,23 +43,16 @@ class PersonalBestPanel(BattlePanel):
         self.record = {}
         self.live = None
         self.pending = []
-        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text)
+        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text, preview_widget)
         bus = app.bus
-        bus.on('account', self._on_account)
         bus.on('hangar', self._on_hangar)
         bus.on('battle_event', self._on_battle_event)
-        bus.on(EVENT_COMPONENT_SETTINGS, self._on_settings)
         self.tanks.listen(self._on_site_row)
-        try:
-            from CurrentVehicle import g_currentVehicle
-            subscribe(g_currentVehicle, 'onChanged', self._on_vehicle_changed)
-        except Exception:
-            log_exception('personal best: current vehicle')
-        if app.account_id:
-            self._on_account(app.account_id)
+        on_vehicle_changed(self._on_vehicle_changed, 'personal best')
+        self.follow_account(self._on_account)
 
     def _on_account(self, account_id):
-        self.store = JsonFile(os.path.join(self.app.config_dir, STORE_FILE % account_id))
+        self.store = self.account_file(STORE_FILE, account_id)
         self.book = RecordBook(self.store.read({}))
 
     def _save(self):
@@ -96,9 +84,8 @@ class PersonalBestPanel(BattlePanel):
         if row is not None and row.get('records'):
             self._merge(tank_id, row['records'])
 
-    def _on_settings(self, component_id, changed):
-        if component_id == PANEL_ID:
-            self.render()
+    def settings_changed(self, changed):
+        self.render()
 
     def _on_battle_event(self, event, now):
         tank_id = (event.get('vehicle') or {}).get('tank_id')
@@ -143,16 +130,11 @@ class PersonalBestPanel(BattlePanel):
         if changed:
             self.render()
 
-    # BattleSummaryFeedbackEvent (feedback_events, RU 1.45): getTotalAssistDamage() is track + radio, stun comes apart.
     def _on_summary(self, event):
         if self.live is None:
             return
-        assist = call(event, 'getTotalAssistDamage')
-        stun = call(event, 'getTotalStunDamage')
-        if is_number(assist) and is_number(stun):
-            assist += stun
         changed = self.live.raise_to('damage', call(event, 'getTotalDamage'))
-        if self.live.raise_to('assist', assist) or changed:
+        if self.live.raise_to('assist', summary_assist(event)) or changed:
             self.render()
 
     @safe
@@ -161,6 +143,6 @@ class PersonalBestPanel(BattlePanel):
             return
         text = format_line(self.record, self.live, self.settings, self.app.translate)
         if text:
-            self.show(text)
+            self.show(text, line_widget(self.record, self.live, self.settings, self.app.translate))
         else:
             self.hide()

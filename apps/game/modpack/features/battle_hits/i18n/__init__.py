@@ -31,6 +31,10 @@ STRINGS = {
         'battle_hits_clear': u'Удалить',
         'battle_hits_clear_confirm': u'Удалить этот бой из «Боевых ран»?',
         'battle_hits_cleared': u'Бой удалён',
+        'battle_hits_card_title': u'Боевые раны',
+        'battle_hits_chip_pen': u'проб.',
+        'battle_hits_chip_blocked': u'непроб.',
+        'battle_hits_chip_ricochet': u'рикош.',
     },
     'en': {
         'component_battle_hits': u'Battle wounds',
@@ -61,5 +65,9 @@ STRINGS = {
         'battle_hits_clear': u'Delete',
         'battle_hits_clear_confirm': u'Delete this battle from «Battle wounds»?',
         'battle_hits_cleared': u'The battle is deleted',
+        'battle_hits_card_title': u'Battle wounds',
+        'battle_hits_chip_pen': u'pen',
+        'battle_hits_chip_blocked': u'no pen',
+        'battle_hits_chip_ricochet': u'ricochet',
     },
 }

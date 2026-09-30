@@ -1,40 +1,32 @@
 import clsx from 'clsx';
 
+import type { SidebarProps } from './Sidebar.types';
+
 import { useT } from '../../../entities/window-state';
+import { ScrollArea } from '../../../shared/ui/scroll-area';
 import { useSidebar } from '../model/hooks';
 import { SidebarItem } from './components';
 
 import s from './Sidebar.module.scss';
 
-export const Sidebar = () => {
+export const Sidebar = ({ compact }: SidebarProps) => {
   const t = useT();
   const sidebar = useSidebar();
 
   return (
-    <nav aria-label={t('sectionComponents')} className={s.sidebar}>
-      <div className={s.scroll}>
-        {sidebar.groups.map((group) => (
-          <section key={group.id} aria-label={t(group.titleKey)} className={s.group}>
-            <h3 className={s.groupTitle}>{t(group.titleKey)}</h3>
-            {group.items.map((item) => (
-              <SidebarItem key={item.component.id} item={item} />
-            ))}
-          </section>
+    <nav aria-label={t('navLabel')} className={clsx(s.sidebar, compact && s.compact)}>
+      <ScrollArea contentClassName={s.scroll}>
+        {!compact && <span className={s.heading}>{t('navComponents')}</span>}
+        {sidebar.components.map((item) => (
+          <SidebarItem key={item.section} compact={compact} item={item} />
         ))}
-      </div>
-      <div className={s.footer}>
-        {sidebar.links.map((link) => (
-          <button
-            key={link.section}
-            aria-current={link.active ? 'page' : undefined}
-            className={clsx(s.link, link.active && s.linkOn)}
-            type='button'
-            onClick={link.open}
-          >
-            {t(link.label)}
-          </button>
+        <span className={s.divider} />
+        {!compact && <span className={s.heading}>{t('navTools')}</span>}
+        {sidebar.tools.map((item) => (
+          <SidebarItem key={item.section} compact={compact} item={item} />
         ))}
-      </div>
+      </ScrollArea>
+      {!compact && <span className={s.hotkey}>{t('hotkeyHint')}</span>}
     </nav>
   );
 };

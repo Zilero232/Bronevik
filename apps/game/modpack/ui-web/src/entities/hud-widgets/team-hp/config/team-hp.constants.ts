@@ -1,7 +1,7 @@
 export const TEAM_HP = {
   styles: ['full', 'segments', 'icons', 'compact', 'minimal', 'numbers', 'bars'],
-  barWidth: { full: 190, bars: 220, segments: 220, icons: 190, minimal: 120 },
-  barHeight: { regular: 10, thin: 4 },
+  barWidth: { full: 160, bars: 190, segments: 190, icons: 160, minimal: 110 },
+  barHeight: { regular: 6, thin: 3 },
   iconSize: 16,
   iconBar: { width: 16, height: 3 },
   segmentGap: 1,

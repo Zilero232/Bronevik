@@ -8,9 +8,9 @@ COLOR_MODES = ('mark', 'off')
 MAX_TEMPLATE = 400
 
 DEFAULTS = {
-    'x': -24,
-    'y': 260,
-    'align_x': 'right',
+    'x': 16,
+    'y': 440,
+    'align_x': 'left',
     'align_y': 'top',
     'style': 'extended',
     'template': '',

@@ -14,7 +14,8 @@ from ....core.shells import shell_code
 from ..i18n import STRINGS
 from ..model import DeathWatch, format_card, sector_of
 from ..model.constants import PREVIEW_SIZE
-from ..model.preview import preview_text
+from ..model.preview import preview_text, preview_widget
+from ..model.widget import card_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
 from .constants import AVATAR_CLASS, AVATAR_MODULE, HIT_DIRECTION_METHOD
 
@@ -35,7 +36,7 @@ class DeathCardPanel(BattlePanel):
         self.watch = None
         self.own_vehicle_id = None
         self.ticker = None
-        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text)
+        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text, preview_widget)
         self._hook_hit_direction()
 
     def _hook_hit_direction(self):
@@ -111,4 +112,4 @@ class DeathCardPanel(BattlePanel):
             return
         text = format_card(self.watch.card, self.settings, self.app.translate)
         if text:
-            self.show(text)
+            self.show(text, card_widget(self.watch.card, self.settings, self.app.translate))

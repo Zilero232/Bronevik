@@ -5,12 +5,12 @@ PANEL_ID = 'session_goals'
 GROUP = 'hangar'
 
 DEFAULTS = {
-    'x': 20,
-    'y': 20,
-    'align_x': 'left',
-    'align_y': 'center',
+    'x': 0,
+    'y': 60,
+    'align_x': 'center',
+    'align_y': 'top',
     'show_hangar': True,
-    'show_battle': True,
+    'show_battle': False,
     'sound': True,
     'max_goals': 3,
 }

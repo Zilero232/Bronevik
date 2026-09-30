@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import os
 import time
 
 from BattleFeedbackCommon import BATTLE_EVENT_TYPE
@@ -9,13 +8,12 @@ from BattleFeedbackCommon import BATTLE_EVENT_TYPE
 from ....core.client.battle import BattleHooks, call, feedback, vehicle_class, vehicle_name
 from ....core.client.component import FeatureComponent
 from ....core.client.game import client_attr, values_by_name
-from ....core.events import EVENT_COMPONENT_SETTINGS
 from ....core.hooks import override
+from ....core.hud import HangarLabel
 from ....core.log import log, log_exception, safe
-from ....core.storage import JsonFile
 from .. import FEATURE_ID
 from ..i18n import STRINGS
-from ..model import ACTION_CLEAR, BOOK_FILE, HitBook, build_page, panel_text
+from ..model import ACTION_CLEAR, BOOK_FILE, HitBook, build_page, hangar_widget, panel_text
 from ..settings import SCHEMA, SWITCH
 from .constants import HANGAR_PANEL, KIND_BY_EVENT, LAYOUT, OWN_VEHICLE_ATTR, SHOT_METHOD, VEHICLE_CLASS, VEHICLE_MODULE
 
@@ -27,17 +25,15 @@ class BattleHitsFeature(FeatureComponent):
     def __init__(self, app):
         FeatureComponent.__init__(self, app, FEATURE_ID, SCHEMA, SWITCH, STRINGS)
         self.book = None
+        self.label = HangarLabel(app, HANGAR_PANEL)
         self.kinds = values_by_name(BATTLE_EVENT_TYPE, KIND_BY_EVENT)
         self.hooks = BattleHooks()
         bus = app.bus
-        bus.on('account', self._on_account)
         bus.on('battle_ready', self._on_battle_ready)
         bus.on('battle_enter', self._on_battle_enter)
         bus.on('battle_leave', self._on_battle_leave)
         bus.on('hangar', self.show)
-        bus.on(EVENT_COMPONENT_SETTINGS, self._on_settings)
-        if app.account_id:
-            self._on_account(app.account_id)
+        self.follow_account(self._on_account)
         self._hook_shots()
 
     def _hook_shots(self):
@@ -58,12 +54,9 @@ class BattleHitsFeature(FeatureComponent):
             log_exception('battle hits: shots')
 
     def _on_account(self, account_id):
-        path = os.path.join(self.app.config_dir, BOOK_FILE % account_id)
-        self.book = HitBook(JsonFile(path), self.settings.get('keep_battles'))
+        self.book = HitBook(self.account_file(BOOK_FILE, account_id), self.settings.get('keep_battles'))
 
-    def _on_settings(self, component_id, changed):
-        if component_id != FEATURE_ID:
-            return
+    def settings_changed(self, changed):
         if self.book is not None and 'keep_battles' in changed:
             self.book.resize(self.settings.get('keep_battles'))
             self.book.save()
@@ -77,7 +70,7 @@ class BattleHitsFeature(FeatureComponent):
         self.hooks.add(feedback, 'onPlayerFeedbackReceived', self._on_feedback)
 
     def _on_battle_enter(self):
-        self.app.ui.hide(HANGAR_PANEL)
+        self.label.hide()
 
     def _on_battle_leave(self):
         self.hooks.clear()
@@ -104,9 +97,9 @@ class BattleHitsFeature(FeatureComponent):
     def show(self):
         latest = self.book.latest() if self.book is not None else None
         if self.app.in_battle or latest is None or not self.enabled() or not self.settings.get('show_panel'):
-            self.app.ui.hide(HANGAR_PANEL)
+            self.label.clear()
             return
-        self.app.ui.show(HANGAR_PANEL, panel_text(latest, self.app.translate), LAYOUT)
+        self.label.show(panel_text(latest, self.app.translate), LAYOUT, widget=hangar_widget(latest, self.app.translate))
 
     def ui_page(self):
         if not self.enabled() or self.book is None:
@@ -119,4 +112,4 @@ class BattleHitsFeature(FeatureComponent):
         if self.book.clear(row):
             self.book.save()
             self.show()
-        return {'kind': 'info', 'text': self.app.translate('battle_hits_cleared')}
+        return self.notice_info('battle_hits_cleared')

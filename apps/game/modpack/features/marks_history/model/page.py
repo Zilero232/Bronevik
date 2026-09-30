@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.format import COLOR_DOWN, COLOR_MUTED, COLOR_NEUTRAL, COLOR_UP, font, format_epoch, format_number
+from ....core.format import COLOR_DOWN, COLOR_MUTED, COLOR_NEUTRAL, COLOR_UP, counted, font, format_epoch, format_number
 from .constants import ACTION_CLEAR, MAX_DETAIL_LINES, SITE_PROGRESS_PATH, SOURCE_BATTLE
 from .history import percent
 from .report import marks_report
@@ -50,7 +50,7 @@ def row_of(tank_id, vehicle, summary, translate):
     trend = summary.get('trend')
     meta = format_epoch(summary.get('updated')) or u''
     if trend is not None:
-        meta += u' / ' + translate('marks_history_trend', battles=summary['trend_battles'], delta=signed_percent(trend))
+        meta += u' / ' + translate('marks_history_trend', battles=counted(summary['trend_battles'], 'battles', translate), delta=signed_percent(trend))
     return {
         'id': str(tank_id),
         'title': summary['label'] or str(tank_id),
@@ -91,6 +91,6 @@ def panel_text(summary, translate):
     if summary.get('last_delta') is not None:
         lines.append(u'%s %s' % (font(translate('marks_history_last'), COLOR_MUTED), _colored_delta(summary['last_delta'])))
     if summary.get('trend') is not None and summary.get('trend_battles', 0) > 1:
-        label = translate('marks_history_trend_label', battles=summary['trend_battles'])
+        label = translate('marks_history_trend_label', battles=counted(summary['trend_battles'], 'battles', translate))
         lines.append(u'%s %s' % (font(label, COLOR_MUTED), _colored_delta(summary['trend'])))
     return u'\n'.join(lines)

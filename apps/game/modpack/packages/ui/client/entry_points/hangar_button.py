@@ -3,7 +3,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.hud import panel_schema
 from ....core.hud.panel import moved_values
 from ....core.log import log, safe
-from ..constants import BUTTON_ALIAS, BUTTON_DEFAULTS, BUTTON_LAYOUT_KEYS, BUTTON_SECTION
+from ...window_layout import unmoved_layout
+from ..constants import BUTTON_ALIAS, BUTTON_DEFAULTS, BUTTON_LAYOUT_KEYS, BUTTON_OLD_DEFAULTS, BUTTON_SECTION
 
 
 def _hud_config(app):
@@ -33,6 +34,9 @@ class HangarButton(object):
             return False
         if self.settings is None:
             self.settings = config.section(BUTTON_SECTION, panel_schema(BUTTON_DEFAULTS))
+            moved = unmoved_layout(self.settings.to_dict(), BUTTON_OLD_DEFAULTS, BUTTON_DEFAULTS)
+            if moved:
+                config.update(BUTTON_SECTION, moved)
         return self.show()
 
     def layout(self):

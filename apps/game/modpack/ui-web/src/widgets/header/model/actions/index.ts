@@ -1,1 +1,1 @@
-export { closeWindow, openSite, selectLanguage } from './actions';
+export { closeWindow, selectLanguage } from './actions';

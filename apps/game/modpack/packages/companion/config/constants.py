@@ -54,7 +54,10 @@ FEATURES = (
     'publish_replays',
     'share_session_report',
 )
-OPT_IN_FEATURES = ('upload_replays', 'publish_replays', 'share_session_report')
+# Off until the player turns them on: the uploads (privacy) and the secondary battle panels, so a default battle shows only
+# the essentials (team HP, damage and hit logs, marks, consumables and reload, the sixth sense lamp, the death card).
+OPT_IN_FEATURES = ('upload_replays', 'publish_replays', 'share_session_report', 'battle_main_gun', 'battle_efficiency', 'battle_personal_best',
+                   'battle_gun_arc', 'battle_arty_meter', 'battle_platoon_points', 'battle_received_hits', 'battle_loadout', 'battle_clock')
 SHARE_CHANNELS = ('telegram', 'discord', 'both')
 DEFAULTS = {
     'enabled': True,
@@ -72,7 +75,7 @@ DEFAULTS = {
     'hangar_session_panel': True,
     'battle_damage_log': True,
     'battle_hit_log': True,
-    'battle_clock': True,
+    'battle_clock': False,
     'battle_team_hp': True,
     'battle_sixth_sense': True,
     'hangar_battle_results': True,
@@ -90,24 +93,24 @@ DEFAULTS = {
     'hangar_marks_history': True,
     'hangar_ratings': True,
     'hangar_marks': True,
-    'battle_personal_best': True,
+    'battle_personal_best': False,
     'hangar_session_goals': True,
-    'battle_main_gun': True,
-    'battle_efficiency': True,
+    'battle_main_gun': False,
+    'battle_efficiency': False,
     'battle_consumables': True,
     'battle_reload_timer': True,
-    'battle_received_hits': True,
+    'battle_received_hits': False,
     'battle_death_card': True,
-    'battle_loadout': True,
+    'battle_loadout': False,
     'hangar_personal_missions': True,
     'streamer_mode': True,
     'hangar_platoon_helper': True,
     'hangar_tilt_guard': True,
     'hangar_battle_hits': True,
-    'battle_gun_arc': True,
+    'battle_gun_arc': False,
     'battle_bush_circle': True,
-    'battle_arty_meter': True,
-    'battle_platoon_points': True,
+    'battle_arty_meter': False,
+    'battle_platoon_points': False,
     'share_settings': True,
     'upload_replays': False,
     'publish_replays': False,

@@ -33,7 +33,7 @@ KIND_COLOR_KEYS = ('color_damage', 'color_assist', 'color_blocked', 'color_recei
 LAST_HIT_PANEL_ID = 'last_hit'
 LAST_HIT_DEFAULTS = {
     'x': 0,
-    'y': -180,
+    'y': 250,
     'align_x': 'center',
     'align_y': 'center',
     'font_size': 16,

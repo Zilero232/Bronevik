@@ -2,7 +2,7 @@
 
 [project]
 name = "otmetki-feature-replay-upload"
-version = "0.1.0"
+version = "0.2.0"
 description = "Feature: opt-in upload of the player's own replays the game recorded."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }

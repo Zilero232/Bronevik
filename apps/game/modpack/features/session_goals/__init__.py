@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 FEATURE_ID = 'session_goals'
 PACKAGE_ID = 'net.triotmetki.session_goals'
 PACKAGE_NAME = 'Three Marks: session goals'
-VERSION = '0.1.0'
+VERSION = '0.2.0'
 
 
 def create(app):

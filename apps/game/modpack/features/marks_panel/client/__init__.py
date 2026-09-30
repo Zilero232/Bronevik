@@ -30,7 +30,6 @@ class MarksPanel(BattlePanel):
         self.curve = None
         self.pace = None
         BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE)
-        app.bus.on('component_settings', self._on_settings)
         self.moe.listen(self._on_curve)
 
     def start(self, player):
@@ -58,9 +57,8 @@ class MarksPanel(BattlePanel):
     def preview_widget(self):
         return preview_widget(self.settings, self.app.translate)
 
-    def _on_settings(self, component_id, changed):
-        if component_id == PANEL_ID:
-            self.render()
+    def settings_changed(self, changed):
+        self.render()
 
     def _on_curve(self, tank_id):
         if self.totals is not None and tank_id == self.tank_id:

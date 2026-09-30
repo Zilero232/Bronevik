@@ -6,17 +6,16 @@ import unittest
 import _support
 from otmetki.core.settings import Settings
 from otmetki.features.streamer_mode.i18n import STRINGS
-from otmetki.features.streamer_mode.model import PanelToggle, blocked_labels, hides_chat, hotkey_of
-from otmetki.features.streamer_mode.model.constants import HOTKEY_CHOICES, PRIVATE_HANGAR_LABELS
+from otmetki.features.streamer_mode.model import PanelToggle, blocked_labels, hides_chat
+from otmetki.features.streamer_mode.model.constants import HOTKEY_CHOICES, HOTKEYS, PRIVATE_HANGAR_LABELS
 from otmetki.features.streamer_mode.settings import SCHEMA, SETTINGS
 
 
 class StreamerModeTest(unittest.TestCase):
 
     def test_hotkeys(self):
-        assert hotkey_of('ctrl_shift_h') == ('KEY_H', ('KEY_LCONTROL', 'KEY_LSHIFT'))
-        assert hotkey_of('f10') == ('KEY_F10', ())
-        assert hotkey_of('none') == (None, ()) and hotkey_of('bogus') == (None, ())
+        assert sorted(HOTKEYS) == sorted(HOTKEY_CHOICES) and HOTKEYS['none'] == (None, ())
+        assert all(key.startswith('KEY_') for key, _ in HOTKEYS.values() if key is not None)
         assert Settings({'hotkey': 'bogus'}, SCHEMA).get('hotkey') == 'ctrl_shift_h'
 
     def test_private_mode(self):

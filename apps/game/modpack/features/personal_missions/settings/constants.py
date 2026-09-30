@@ -5,12 +5,12 @@ PANEL_ID = 'personal_missions'
 GROUP = 'hangar'
 
 DEFAULTS = {
-    'x': 20,
-    'y': 160,
-    'align_x': 'left',
+    'x': 0,
+    'y': 60,
+    'align_x': 'center',
     'align_y': 'top',
     'show_hangar': True,
-    'show_battle': True,
+    'show_battle': False,
     'show_conditions': True,
     'max_missions': 3,
 }

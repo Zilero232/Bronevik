@@ -2,7 +2,7 @@
 
 [project]
 name = "otmetki-feature-platoon-points"
-version = "0.1.0"
+version = "0.1.1"
 description = "Feature: tournament-style points for the player and the platoon, from the own results and what the stock UI shows of the mates."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }

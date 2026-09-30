@@ -2,7 +2,7 @@
 
 [project]
 name = "otmetki-feature-personal-best"
-version = "0.1.0"
+version = "0.2.0"
 description = "Feature: the tank personal best in battle and a new-record card after it, from own results, the dossier and the site."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }

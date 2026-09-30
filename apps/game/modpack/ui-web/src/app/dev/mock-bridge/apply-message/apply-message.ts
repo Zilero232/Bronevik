@@ -4,7 +4,7 @@ import type { ApplyMessageInput } from './apply-message.types';
 import { PROTOCOL } from '../../../../shared/api/protocol';
 import { DEV_MOCK } from '../../config';
 
-const setField = (field: UiField, message: UiMessageOf<'set'>): UiField => {
+const setField = (field: UiField, message: Pick<UiMessageOf<'set'>, 'key' | 'value'>): UiField => {
   const { value } = message;
 
   if (field.key !== message.key) {
@@ -38,6 +38,21 @@ export const applyMessage = ({ state, message }: ApplyMessageInput): UiState => 
 
   if (message.type === 'set') {
     return { ...next, components: state.components.map((component) => setComponent(component, message)) };
+  }
+
+  if (message.type === 'set_many') {
+    const components = Object.entries(message.values).reduce(
+      (current, [key, value]) => current.map((component) => setComponent(component, { type: 'set', component: message.component, key, value })),
+      state.components
+    );
+
+    return { ...next, components };
+  }
+
+  if (message.type === 'window_layout') {
+    const { x, y, width, height, zoom, placed = true } = message;
+
+    return { ...next, window: { x, y, width, height, zoom, placed } };
   }
 
   if (message.type === 'language' && message.language !== PROTOCOL.autoLanguage) {

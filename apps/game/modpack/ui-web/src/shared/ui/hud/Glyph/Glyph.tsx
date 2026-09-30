@@ -2,13 +2,14 @@ import clsx from 'clsx';
 
 import type { GlyphProps } from './Glyph.types';
 
-import { HUD_GLYPHS } from '../../../config';
+import { HUD_GLYPHS, HUD_TONE_COLORS } from '../../../config';
 import { glyphPaths } from '../../../lib/hud-glyph';
 
 import s from './Glyph.module.scss';
 
-export const Glyph = ({ name, size, className }: GlyphProps) => {
+export const Glyph = ({ name, size, tone, className }: GlyphProps) => {
   const { shapes, details } = glyphPaths(name);
+  const fill = HUD_TONE_COLORS[tone ?? 'text'].hex;
 
   return (
     <span className={clsx(s.glyph, className)} style={{ width: `${size}rem`, height: `${size}rem` }}>
@@ -20,7 +21,7 @@ export const Glyph = ({ name, size, className }: GlyphProps) => {
         xmlns='http://www.w3.org/2000/svg'
       >
         {shapes.map((d) => (
-          <path key={d} d={d} fill='currentColor' stroke={HUD_GLYPHS.outline} stroke-linejoin='round' stroke-width={HUD_GLYPHS.outlineWidth} />
+          <path key={d} d={d} fill={fill} stroke={HUD_GLYPHS.outline} stroke-linejoin='round' stroke-width={HUD_GLYPHS.outlineWidth} />
         ))}
         {details.map((d) => (
           <path key={d} d={d} fill={HUD_GLYPHS.outline} />

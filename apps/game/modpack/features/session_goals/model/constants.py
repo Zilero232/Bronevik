@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ....core.hud.panel import dock_layout
+
 # contract/goals.schema.json: the goals set on the site's «Мой кабинет» page.
 GOALS_PATH = '/mod/me/goals'
 SITE_PATH = '/me'
@@ -22,7 +24,7 @@ ACTION_REFRESH = 'refresh'
 ACTION_SITE = 'site'
 
 HANGAR_PANEL = 'otmetki.session_goals'
-HANGAR_LAYOUT = {'x': -20, 'y': 400, 'alignX': 'right', 'alignY': 'top'}
+HANGAR_LAYOUT = dock_layout('hangar_right')
 TITLE_SIZE_STEP = 2
 
 PREVIEW_SIZE = (340, 50)
@@ -32,3 +34,6 @@ PREVIEW_GOALS = (
     {'id': 'preview-2', 'metric': 'battles', 'tank_id': None, 'target': 10.0, 'baseline': 0.0, 'current': 9.0, 'battles': 9, 'status': 'active'},
 )
 PREVIEW_DAMAGE = 1450
+
+# The card (model/widget.py), design px.
+CARD_WIDTH = 260

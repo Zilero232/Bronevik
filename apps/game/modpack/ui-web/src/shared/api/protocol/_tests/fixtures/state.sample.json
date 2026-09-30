@@ -13,6 +13,7 @@
           "label": "Вернуть мои настройки"
         }
       ],
+      "context": "any",
       "fields": [
         {
           "default": true,
@@ -146,6 +147,7 @@
       "id": "companion",
       "page": null,
       "panel": false,
+      "section": "data",
       "switch": {
         "key": "enabled",
         "value": true
@@ -154,12 +156,14 @@
     },
     {
       "actions": [],
+      "context": "battle",
       "fields": [],
       "group": "battle",
       "hint": "Текущий процент, прогноз и сколько урона осталось до следующей отметки.",
       "id": "marks_panel",
       "page": null,
       "panel": false,
+      "section": "marks",
       "switch": {
         "key": "battle_moe_panel",
         "value": true
@@ -168,6 +172,7 @@
     },
     {
       "actions": [],
+      "context": "hangar",
       "fields": [
         {
           "default": 60,
@@ -185,6 +190,7 @@
       "id": "session_stats",
       "page": null,
       "panel": false,
+      "section": "marks",
       "switch": {
         "key": "hangar_session_panel",
         "value": true
@@ -193,6 +199,7 @@
     },
     {
       "actions": [],
+      "context": "battle",
       "fields": [
         {
           "choices": [
@@ -218,6 +225,7 @@
       "id": "minimap",
       "page": null,
       "panel": false,
+      "section": "battle",
       "switch": {
         "key": "enabled",
         "value": true
@@ -232,6 +240,7 @@
           "label": "Refresh"
         }
       ],
+      "context": "hangar",
       "fields": [],
       "group": "hangar",
       "hint": null,
@@ -254,11 +263,13 @@
         ]
       },
       "panel": false,
+      "section": "replays",
       "switch": null,
       "title": "replay_manager"
     },
     {
       "actions": [],
+      "context": "battle",
       "fields": [
         {
           "default": 100,
@@ -300,17 +311,19 @@
         }
       ],
       "group": "battle",
-      "hint": null,
+      "hint": "Нанесённый, заблокированный, ассистированный и полученный урон за бой и последние записи с типом снаряда.",
       "id": "damage_log",
       "page": null,
       "panel": true,
+      "section": "battle",
       "switch": {
         "key": "upload_replays",
         "value": false
       },
-      "title": "damage_log"
+      "title": "Лог урона"
     }
   ],
+  "focus": null,
   "hud": {
     "editing": false,
     "panels": [
@@ -321,7 +334,7 @@
         "height": 40,
         "id": "damage_log",
         "preview": "1 200",
-        "title": "damage_log",
+        "title": "Лог урона",
         "width": 300,
         "x": 10,
         "y": 0
@@ -357,5 +370,13 @@
     "bound": false,
     "text": "not bound"
   },
-  "v": 1
+  "v": 1,
+  "window": {
+    "height": 0,
+    "placed": false,
+    "width": 0,
+    "x": 0,
+    "y": 0,
+    "zoom": 100
+  }
 }

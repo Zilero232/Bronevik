@@ -2,7 +2,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.compat import is_number, string_types, to_text
-from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, COLOR_UP, COLOR_WARN, font, format_number
+from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, COLOR_UP, COLOR_WARN, counted, font, format_number
 from .constants import CLAN_BONUS_TYPES, MAX_MEMBERS, MAX_NAME, READY_MARK, SESSION_IDLE_S, TITLE_SIZE_STEP, WAITING_MARK
 
 # Fair play: the platoon mates' names and ready marks exactly as the platoon window shows them, and the player's own
@@ -71,5 +71,6 @@ def format_hangar(members, session, settings, translate):
     if settings.get('show_session'):
         for key, totals in (('platoon', session.platoon), ('clan', session.clan)):
             if totals['battles']:
-                lines.append(font(translate('platoon_helper_session_' + key, **totals_text(totals)), COLOR_MUTED, size))
+                values = dict(totals_text(totals), battles=counted(totals['battles'], 'battles', translate))
+                lines.append(font(translate('platoon_helper_session_' + key, **values), COLOR_MUTED, size))
     return u'\n'.join(lines) if lines else None

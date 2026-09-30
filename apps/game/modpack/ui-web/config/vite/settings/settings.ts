@@ -6,6 +6,7 @@ import { viteSingleFile } from 'vite-plugin-singlefile';
 import { classicScriptPlugin } from '../classic-script';
 import { devMockPlugin } from '../dev-mock';
 import { iconPngPlugin } from '../icon-png';
+import { iconSpritePlugin } from '../icon-sprite';
 import { sharedConfig } from '../shared';
 import { UI_BUILD } from '../vite.constants';
 
@@ -15,7 +16,7 @@ import { UI_BUILD } from '../vite.constants';
 export const settingsConfig = (): UserConfig =>
   mergeConfig(sharedConfig(), {
     base: './',
-    plugins: [devMockPlugin(), viteSingleFile({ useRecommendedBuildConfig: false }), classicScriptPlugin(), iconPngPlugin()],
+    plugins: [devMockPlugin(), viteSingleFile({ useRecommendedBuildConfig: false }), classicScriptPlugin(), iconPngPlugin(), iconSpritePlugin()],
     build: {
       emptyOutDir: true,
       assetsDir: '',

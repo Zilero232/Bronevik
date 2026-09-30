@@ -8,8 +8,6 @@ the modpack manager downloads as a release's `catalog`. --packages is the folder
 with the split .mtmod packages from tools/build/build.py (adds sha256/size to the manifest).
 """
 import argparse
-import io
-import json
 import os
 import sys
 
@@ -18,6 +16,7 @@ if BUILD_DIR not in sys.path:
     sys.path.insert(0, BUILD_DIR)
 
 import layout  # noqa: E402
+from fileio import write_json  # noqa: E402
 from setupkit import ASSETS_DIR, CATALOG_PATH, MODPACK_DIR  # noqa: E402
 from setupkit.audio import copy_audio  # noqa: E402
 from setupkit.manifest import catalog as catalog_module  # noqa: E402
@@ -35,20 +34,13 @@ def parse_args(argv=None):
     return parser.parse_args(argv)
 
 
-def write_text(path, text):
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with io.open(path, 'w', encoding='utf-8', newline='\n') as handle:
-        handle.write(text)
-    return path
-
-
 def generate(args):
     """components.json (+ previews); returns the manifest."""
     catalog = catalog_module.load(CATALOG_PATH, ASSETS_DIR)
     manifest, warnings = build_manifest(layout.split_packages('root_init.py'), catalog, packages_dir=args.packages, strict=args.strict)
     for warning in warnings:
         print('WARNING: %s' % warning)
-    write_text(os.path.join(args.out, 'components.json'), json.dumps(manifest.to_json(), ensure_ascii=False, indent=2) + '\n')
+    write_json(os.path.join(args.out, 'components.json'), manifest.to_json())
     print('Wrote %s (%d components, %d dependencies)' % (os.path.join(args.out, 'components.json'), len(manifest.components), len(manifest.dependencies)))
     print('Copied %d audio previews' % len(copy_audio(manifest, catalog, MODPACK_DIR, args.out)))
     if not args.skip_artwork:

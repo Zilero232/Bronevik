@@ -15,3 +15,34 @@ AVATAR_KEY = 'avatar'
 RESULT_WIN = 'win'
 RESULT_LOSS = 'loss'
 RESULT_DRAW = 'draw'
+# personal[<vehicle>].deathReason of a vehicle that lived to the end of the battle.
+ALIVE_DEATH_REASON = -1
+
+# The recorder's own entry of the results block (personal[<vehicle>], RU 1.45 battle results) -> our stat names.
+# Nothing is read from the vehicles, players or avatars blocks (fair play).
+OWN_STATS = (
+    ('damageAssistedRadio', 'assist_radio'),
+    ('damageAssistedTrack', 'assist_track'),
+    ('damageAssistedStun', 'assist_stun'),
+    ('kills', 'kills'),
+    ('xp', 'xp'),
+    ('originalXP', 'base_xp'),
+    ('credits', 'credits'),
+    ('spotted', 'spotted'),
+    ('markOfMastery', 'mastery'),
+    ('marksOnGun', 'marks'),
+    ('shots', 'shots'),
+    ('directEnemyHits', 'hits'),
+    ('piercingEnemyHits', 'pens'),
+    ('damageReceived', 'received'),
+    ('damageBlockedByArmor', 'blocked'),
+    ('lifeTime', 'life_time'),
+    ('typeCompDescr', 'tank_id'),
+)
+# The results screen's assisted damage (gui/battle_results/components/personal.py:432): radio plus tracks.
+ASSIST_KEYS = ('assist_radio', 'assist_track')
+COMMON_STATS = (
+    ('duration', 'duration'),
+    ('bonusType', 'bonus_type'),
+    ('finishReason', 'finish_reason'),
+)

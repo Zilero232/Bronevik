@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.hud import hex_color, matching, max_length, panel_schema, sound_event
-from .constants import CHOICES, DEFAULTS, ICON_PATH, MAX_PATH, MAX_TEXT, PANEL_ID, SWITCH
+from .constants import CHOICES, DEFAULTS, ICON_PATH, MAX_PATH, MAX_TEXT, PANEL_ID, SWITCH  # noqa: F401
 
 SETTINGS = (SWITCH,)
 
@@ -16,5 +16,3 @@ SCHEMA = panel_schema(
         'sound_event': sound_event,
     },
 )
-
-__all__ = ('PANEL_ID', 'SCHEMA', 'SETTINGS', 'SWITCH')

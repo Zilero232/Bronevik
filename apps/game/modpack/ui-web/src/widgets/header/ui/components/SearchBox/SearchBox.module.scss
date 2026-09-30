@@ -1,0 +1,21 @@
+.search {
+  position: relative;
+  display: flex;
+  min-width: 160px;
+  max-width: 520px;
+  flex: 1 1 360px;
+  flex-direction: row;
+  align-items: center;
+  margin-right: 12px;
+}
+
+.input {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.clear {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+}

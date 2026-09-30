@@ -10,7 +10,7 @@ export const LastHitWidget = ({ data }: LastHitWidgetProps) => {
   const { flash, amount } = useLastHit(data);
 
   return (
-    <HudPlate className={s.card} flash={flash} rail='received'>
+    <HudPlate className={s.card} flash={flash} rail='incoming'>
       <div className={s.row}>
         <ClientIcon className={s.icon} icon={data.cls} size={DAMAGE_LOG.lastHit.classSize} />
         <span className={s.name}>{data.name}</span>

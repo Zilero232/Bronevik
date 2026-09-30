@@ -3,8 +3,9 @@
 `HudSurface` keeps every label the layer created (GUIFlash props) with the GUI space it was created in, so
 a hangar label never shows in battle and the other way round, as GUIFlash does. `encode(space, cursor, edit)`
 is the view model's `state` property: `{v, cursor, edit, panels: [{id, text, x, y, align_x, align_y, alpha,
-drag, border, visible, scale, kind, widget}]}`; `widget` is a panel's structured payload (`core.hud.widget`)
-or None, drawn instead of `text` when the page knows its kind. `edit` is true while the player holds the edit modifier (Alt by
+drag, border, visible, scale, kind, widget, dock}]}`; `widget` is a panel's structured payload (`core.hud.widget`)
+or None, drawn instead of `text` when the page knows its kind; `dock` (`{group, order}` or None, `core.hud.panel.dock_of`)
+stacks the panels of one column at its anchor. `edit` is true while the player holds the edit modifier (Alt by
 default) and a cursor is shown: only then does a panel take the mouse, show its frame and move. The page
 sends `{type: 'ready'}` once it can draw, `{type: 'moved', id, x, y, align_x, align_y}` after a drag,
 `{type: 'resized', id, scale}` after the modifier + wheel, and `{type: 'pressed', id}` when the player
@@ -53,6 +54,16 @@ def _moved(message):
 def _resized(message):
     scale = _scale(message.get('scale'))
     return {'scale': scale} if scale is not None else None
+
+
+def _dock(value):
+    if not isinstance(value, dict) or not isinstance(value.get('group'), string_types) or not is_number(value.get('order')):
+        return None
+    dock = {'group': to_text(value['group']), 'order': int(value['order'])}
+    for key in ('reserve', 'ceiling', 'stop_center'):
+        if is_number(value.get(key)):
+            dock[key] = int(value[key])
+    return dock
 
 
 _FIELDS = {'moved': _moved, 'resized': _resized, 'pressed': lambda message: {}}
@@ -122,6 +133,7 @@ class HudSurface(object):
             panel['kind'] = KIND_LABEL
         if not isinstance(panel['widget'], dict):
             panel['widget'] = None
+        panel['dock'] = _dock(panel['dock'])
         return panel
 
     def state(self, space, cursor, edit=False):

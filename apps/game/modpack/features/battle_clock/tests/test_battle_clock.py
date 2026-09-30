@@ -25,7 +25,7 @@ def translator(language='ru'):
 class ClockTest(unittest.TestCase):
 
     def test_timer(self):
-        assert timer_seconds('battle', 1000.0, 700.2) == 300
+        assert timer_seconds('battle', 1000.0, 700.2) == 299
         assert timer_seconds('prebattle', 1000.0, 990.0) == 10
         assert timer_seconds('battle', 1000.0, 1200.0) == 0
         assert timer_seconds('afterbattle', 1000.0, 900.0) is None

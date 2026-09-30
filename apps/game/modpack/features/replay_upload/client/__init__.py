@@ -1,19 +1,19 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import os
 import time
 
+from ....core.client.game import client_attr
 from ....core.client.native import read_settings
 from ....core.client.replays import DEFAULT_REPLAY_DIR, replay_dir
-from ....core.events import EVENT_REPLAY_UPLOADED
+from ....core.events import EVENT_REPLAY_UPLOAD_REQUEST, EVENT_REPLAY_UPLOADED
 from ....core.log import log, safe
-from ....core.net.signing import clock_offset
 from ....core.net.transport import BackgroundRunner, SyncTransport
-from ....core.storage import JsonFile
-from ..model import ReplayQueue, ReplayUploader, find_replay
-from ..model.constants import UPLOAD_PATH, VISIBILITY_PRIVATE, VISIBILITY_PUBLIC
+from ....core.storage import account_file
+from ..model import ReplayQueue, ReplayUploader, battle_started_at, find_replay
+from ..model.constants import (REQUEST_INVALID, REQUEST_OFF, REQUEST_READY, REQUEST_UNBOUND, UPLOAD_PATH, VISIBILITY_PRIVATE,
+                               VISIBILITY_PUBLIC)
 from ..settings import PUBLISH, SWITCH
-from .constants import REPLAY_SETTING, STARTED_KEEP, UPLOAD_TIMEOUT_S
+from .constants import QUEUE_FILE, REPLAY_SETTING, STARTED_KEEP, UPLOAD_TIMEOUT_S
 
 
 def game_records_replays():
@@ -24,6 +24,11 @@ def game_records_replays():
         return int(value) != 0
     except (TypeError, ValueError):
         return None
+
+
+def server_to_local(server_time):
+    convert = client_attr('helpers.time_utils', 'makeLocalServerTime')
+    return convert(server_time) if convert is not None else server_time
 
 
 # Never turns replay recording on: it uploads files the client already wrote, for battles of the bound
@@ -48,6 +53,7 @@ class ReplayAutoUpload(object):
         bus.on('hangar', self.on_hangar)
         bus.on('battle_results', self.on_battle_result)
         bus.on('tick', self.tick)
+        bus.on(EVENT_REPLAY_UPLOAD_REQUEST, self.on_request)
         if app.account_id:
             self.on_account(app.account_id)
 
@@ -55,7 +61,7 @@ class ReplayAutoUpload(object):
         return self.app.config.is_enabled(SWITCH) and self.app.is_bound() and not self.app.auth_failed
 
     def on_account(self, account_id):
-        self.queue = ReplayQueue(JsonFile(os.path.join(self.config_dir, 'replays_%d.json' % account_id)))
+        self.queue = ReplayQueue(account_file(self.config_dir, QUEUE_FILE, account_id))
         self.uploader = ReplayUploader(
             self.queue,
             self.app.current_credentials(),
@@ -100,11 +106,23 @@ class ReplayAutoUpload(object):
             return
         if game_records_replays() is False:
             return
-        if started_at is None:
-            created = (results.get('common') or {}).get('arenaCreateTime')
-            started_at = float(created) - clock_offset() if created else None
+        started_at = battle_started_at(started_at, results, server_to_local)
         if self.queue.add(arena_unique_id, self.app.account_id, started_at, time.time()):
             log('replay queued for upload: %s' % arena_unique_id)
+
+    # The replay manager's 'upload' (core.events.EVENT_REPLAY_UPLOAD_REQUEST): the same opt-in switch and binding as the
+    # automatic upload; `request` None only asks whether an upload would be accepted.
+    def on_request(self, request, reply):
+        if not self.app.config.is_enabled(SWITCH):
+            reply(REQUEST_OFF)
+        elif not self.app.is_bound() or self.app.auth_failed or self.queue is None:
+            reply(REQUEST_UNBOUND)
+        elif request is None:
+            reply(REQUEST_READY)
+        elif request.get('account_id') != self.app.account_id:
+            reply(REQUEST_INVALID)
+        else:
+            reply(self.queue.request(request.get('arena_unique_id'), request.get('account_id'), request.get('started_at'), time.time()))
 
     def _find(self, item):
         # Runs on the worker thread: plain file access in the folder the main thread resolved.

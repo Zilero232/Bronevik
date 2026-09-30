@@ -2,7 +2,7 @@
 
 [project]
 name = "otmetki-feature-platoon-helper"
-version = "0.1.0"
+version = "0.2.0"
 description = "Feature: the platoon mates' ready state as the platoon window shows it and the own platoon and clan battles of the session."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }

@@ -7,7 +7,6 @@ from ....core.client.hud.panel import BattlePanel
 from ....core.client.native import apply_changed
 from ....core.client.sound import play_sound
 from ....core.client.timer import Ticker
-from ....core.events import EVENT_COMPONENT_SETTINGS
 from ....core.hud.stock import SIXTH_SENSE
 from ....core.log import safe
 from ..i18n import STRINGS
@@ -32,10 +31,9 @@ class SixthSenseAlert(BattlePanel):
         self.lamp = None
         self.ticker = Ticker(TICK_S, self._tick)
         BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text, preview_widget)
-        app.bus.on(EVENT_COMPONENT_SETTINGS, self._on_settings)
 
-    def _on_settings(self, component_id, changed):
-        if component_id == self.component_id and 'lamp_sound' in (changed or ()) and self.enabled_in_hangar():
+    def settings_changed(self, changed):
+        if 'lamp_sound' in (changed or ()) and self.enabled_in_hangar():
             apply_changed(to_native(self.settings.to_dict()))
 
     def start(self, player):

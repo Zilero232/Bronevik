@@ -7,6 +7,7 @@ from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, COLOR_UP, font, format_m
 from ....core.templates import render
 from .constants import PING_BAD_COLOR, PING_GOOD_COLOR, PING_LOW_MS, PING_NORM_COLOR, PING_NORM_MS
 from .site import armor_actions, tank_slug  # noqa: F401
+from .widget import info_widget
 
 
 def valid_ping(value):
@@ -98,3 +99,10 @@ def format_info(info, settings, translate, now):
 def layout_of(settings):
     return {'x': settings.get('x'), 'y': settings.get('y'), 'alignX': settings.get('align_x'), 'alignY': settings.get('align_y'),
             'scale': round(settings.get('scale') / 100, 2)}
+
+
+def format_widget(info, settings, translate, now):
+    """The Gameface card of the label, or None with a custom template (the player's own text is drawn as is)."""
+    if settings.get('template'):
+        return None
+    return info_widget(info, macro_values(info, settings, translate, now), settings, translate, valid_ping(info.get('ping')))

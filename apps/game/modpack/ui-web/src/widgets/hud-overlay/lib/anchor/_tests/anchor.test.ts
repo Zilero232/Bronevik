@@ -63,6 +63,18 @@ describe(placeRect, () => {
     expect(placeRect({ anchor: lost, size: SIZE, screen: small })).toEqual({ left: 420, top: 280, width: 220, height: 80 });
   });
 
+  it('keeps the team HP strip (its default is x 0, top centre) centred on the stock score strip on every screen', () => {
+    for (const client of RESOLUTIONS) {
+      for (const scale of SCALES) {
+        const screen = designScreen({ client, scale, fallback: FALLBACK });
+        const rect = placeRect({ anchor: { x: 0, y: 4, align_x: 'center', align_y: 'top' }, size: { width: 590, height: 44 }, screen });
+
+        expect(rect.left + rect.width / 2, `${client.width}x${client.height} @${scale}`).toBeCloseTo(screen.width / 2, 5);
+        expect(rect.top).toBe(4);
+      }
+    }
+  });
+
   it('keeps a right-anchored panel at the same distance from the right edge on every width', () => {
     for (const client of RESOLUTIONS) {
       const screen = designScreen({ client, scale: 1, fallback: FALLBACK });

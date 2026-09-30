@@ -8,7 +8,7 @@ import { PLATOON_POINTS } from '../config';
 import s from './PlatoonPointsWidget.module.scss';
 
 export const PlatoonPointsWidget = ({ data }: PlatoonPointsWidgetProps) => (
-  <HudPlate className={s.plate} rail='ally'>
+  <HudPlate className={s.plate} rail='progress'>
     <div className={s.header}>
       <ClientIcon icon={data.icon} size={18} />
       <span className={s.total}>{data.total}</span>

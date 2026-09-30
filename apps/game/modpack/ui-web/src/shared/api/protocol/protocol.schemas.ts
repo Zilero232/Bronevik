@@ -84,16 +84,20 @@ export const rowSchema = z.object({
 
 export const pageSchema = z.object({ kind: z.literal('list'), empty: text, rows: z.array(rowSchema) });
 
+const replaysPageSchema = z.looseObject({ kind: z.literal('replays') });
+
 export const componentSchema = z.object({
   id: text,
   group: text,
+  section: z.enum(PROTOCOL.sections),
+  context: z.enum(PROTOCOL.contexts),
   title: text,
   hint: z.nullable(z.string()),
   switch: z.nullable(z.object({ key: text, value: z.boolean() })),
   fields: z.array(fieldSchema),
   panel: z.boolean(),
   actions: z.array(actionSchema),
-  page: z.nullable(pageSchema)
+  page: z.nullable(z.discriminatedUnion('kind', [pageSchema, replaysPageSchema]))
 });
 
 export const panelSchema = z.object({
@@ -117,6 +121,15 @@ export const noticeSchema = z.object({
 
 export const statusSchema = z.object({ bound: z.boolean(), auth_failed: z.boolean(), account_id: z.nullable(z.number()), text });
 
+export const windowSchema = z.object({
+  placed: z.boolean(),
+  x: z.number(),
+  y: z.number(),
+  width: z.number(),
+  height: z.number(),
+  zoom: z.number()
+});
+
 export const profileSchema = z.object({ id: text, name: text, updated: z.nullable(z.number()) });
 
 export const profilesSchema = z.object({ active: z.nullable(z.string()), items: z.array(profileSchema) });
@@ -132,7 +145,9 @@ export const stateSchema = z.object({
   components: z.array(componentSchema),
   profiles: profilesSchema,
   hud: z.object({ editing: z.boolean(), panels: z.array(panelSchema) }),
-  notice: z.nullable(noticeSchema)
+  notice: z.nullable(noticeSchema),
+  window: windowSchema,
+  focus: z.nullable(z.object({ section: z.enum(PROTOCOL.pages), seq: z.number() }))
 });
 
 const settingValue = z.union([z.boolean(), z.number(), z.string()]);
@@ -141,6 +156,7 @@ export const messageSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('ready') }),
   z.object({ type: z.literal('close') }),
   z.object({ type: z.literal('set'), component: text, key: text, value: settingValue }),
+  z.object({ type: z.literal('set_many'), component: text, values: z.record(text, settingValue) }),
   z.object({ type: z.literal('action'), component: text, action: text, row: z.optional(text), value: z.optional(text) }),
   z.object({ type: z.literal('language'), language: z.enum([PROTOCOL.autoLanguage, ...LANGUAGES] as const) }),
   z.object({ type: z.literal('bind'), code: text }),
@@ -161,5 +177,14 @@ export const messageSchema = z.discriminatedUnion('type', [
     align_y: z.optional(z.enum(PROTOCOL.alignY))
   }),
   z.object({ type: z.literal('hud_reset'), panel: text }),
-  z.object({ type: z.literal('hud_reset_all') })
+  z.object({ type: z.literal('hud_reset_all') }),
+  z.object({
+    type: z.literal('window_layout'),
+    x: z.number(),
+    y: z.number(),
+    width: z.number(),
+    height: z.number(),
+    zoom: z.number(),
+    placed: z.optional(z.boolean())
+  })
 ]);

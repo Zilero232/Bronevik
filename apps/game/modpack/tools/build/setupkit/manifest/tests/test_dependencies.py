@@ -19,7 +19,7 @@ GAMEFACE = 'openwg_gameface'
 GUIFLASH = 'guiflash'
 # The renderer chain lives in core (core/client/hud: OpenWG Gameface, then GUIFlash); its users are the packages below.
 RENDERER_HOST = 'core'
-HUD_USE = re.compile(r'\bBattlePanel\b|\bhud_layer\(|\.ui\.show\(')
+HUD_USE = re.compile(r'\bBattlePanel\b|\bHangarLabel\b|\bhud_layer\(|\.ui\.show\(')
 GAMEFACE_IMPORT = re.compile(r'^\s*(?:from\s+openwg_gameface\s+import|import\s+openwg_gameface)\b', re.MULTILINE)
 SKIPPED_DIRS = ('tests', '__pycache__')
 

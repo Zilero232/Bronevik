@@ -5,7 +5,7 @@ PANEL_ID = 'platoon_points'
 GROUP = 'battle'
 
 DEFAULTS = {
-    'x': 260,
+    'x': 208,
     'y': 8,
     'align_x': 'left',
     'align_y': 'top',

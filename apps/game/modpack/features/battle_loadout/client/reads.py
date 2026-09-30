@@ -25,6 +25,18 @@ def _categories(value):
         return set()
 
 
+def _slot(layout, slots, index):
+    # RU 1.45 client source (gui/shared/gui_items/vehicle_equipment.py _OptDevicesCollector.getSlot): the slot with the
+    # player's chosen specialization (dynSlotTypeIdx) takes the chosen category, not the one in `slots`.
+    get_slot = getattr(layout, 'getSlot', None)
+    if get_slot is not None and index < len(slots):
+        try:
+            return getattr(get_slot(index), 'item', None)
+        except Exception:
+            log_exception('battle loadout: device slot')
+    return slots[index] if index < len(slots) else None
+
+
 def _devices(vehicle):
     layout = getattr(vehicle, 'optDevices', None)
     slots = list(getattr(layout, 'slots', None) or [])
@@ -32,7 +44,7 @@ def _devices(vehicle):
     for index, item in enumerate(_installed(layout)):
         if item is None:
             continue
-        slot = slots[index] if index < len(slots) else None
+        slot = _slot(layout, slots, index)
         bonus = bool(_categories(getattr(slot, 'categories', None)) & _categories(getattr(getattr(item, 'descriptor', None), 'categories', None)))
         devices.append({'name': getattr(item, 'userName', None), 'icon': getattr(item, 'icon', None), 'bonus': bonus})
     return devices

@@ -1,3 +1,3 @@
-export { setSetting, toggleSwitch } from './actions';
+export { changeSetting, resetComponent, toggleSwitch, undoLast } from './actions';
 
-export type { SetSettingInput, SettingInput } from './actions.types';
+export type { ChangeSettingInput, SetSettingInput, SettingInput } from './actions.types';

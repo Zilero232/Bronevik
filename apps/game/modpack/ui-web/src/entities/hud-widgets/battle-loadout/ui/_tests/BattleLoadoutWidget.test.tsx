@@ -16,6 +16,6 @@ describe(BattleLoadoutWidget, () => {
       'img://gui/maps/icons/artefact/rammer.png'
     ]);
 
-    expect(html.textContent?.split('★')).toHaveLength(3);
+    expect(html.querySelectorAll('svg')).toHaveLength(2);
   });
 });

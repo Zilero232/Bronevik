@@ -2,6 +2,7 @@ import { readdirSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
+import { FONT_SAFE } from '../../../../../shared/lib/font-safe';
 import { readWidget } from '../../../../../shared/lib/testing/widget-fixture';
 import { resolveWidget, widgetKinds, widgetLines } from '../widget-registry';
 
@@ -13,6 +14,16 @@ describe(resolveWidget, () => {
 
     expect(widgetKinds().sort()).toEqual(written.sort());
   });
+
+  it.each(readdirSync(FIXTURES).map((file) => file.replace('.sample.json', '')))(
+    'draws the %s fixture only in glyphs the client font has',
+    (kind) => {
+      const resolved = resolveWidget(readWidget(kind));
+      const text = JSON.stringify(resolved?.data);
+
+      expect(Array.from(text).filter((char) => (char.codePointAt(0) ?? 0) >= FONT_SAFE.firstUnsafe && !FONT_SAFE.kept.includes(char))).toEqual([]);
+    }
+  );
 
   it.each(readdirSync(FIXTURES).map((file) => file.replace('.sample.json', '')))('accepts the %s fixture', (kind) => {
     const resolved = resolveWidget(readWidget(kind));

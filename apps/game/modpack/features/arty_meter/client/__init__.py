@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import os
 import time
 
 from BattleFeedbackCommon import BATTLE_EVENT_TYPE
@@ -11,7 +10,6 @@ from ....core.client.game import client_attr, values_by_name
 from ....core.client.hud.panel import BattlePanel
 from ....core.hooks import override
 from ....core.log import log, log_exception, safe
-from ....core.storage import JsonFile
 from ..i18n import STRINGS
 from ..model import ArtyBattle, ArtyBook, is_artillery
 from ..model.constants import ACTION_CLEAR, BOOK_FILE, PREVIEW_SIZE
@@ -39,13 +37,11 @@ class ArtyMeterPanel(BattlePanel):
         self.battle = None
         self.book = None
         BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text, preview_widget)
-        app.bus.on('account', self._on_account)
-        if app.account_id:
-            self._on_account(app.account_id)
+        self.follow_account(self._on_account)
         self._hook_effects()
 
     def _on_account(self, account_id):
-        self.book = ArtyBook(JsonFile(os.path.join(self.app.config_dir, BOOK_FILE % account_id)), self.settings.get('keep_battles'))
+        self.book = ArtyBook(self.account_file(BOOK_FILE, account_id), self.settings.get('keep_battles'))
 
     def _hook_effects(self):
         vehicle = client_attr(VEHICLE_MODULE, VEHICLE_CLASS)
@@ -137,4 +133,4 @@ class ArtyMeterPanel(BattlePanel):
             return None
         if self.book.clear():
             self.book.save()
-        return {'kind': 'info', 'text': self.app.translate('arty_meter_cleared')}
+        return self.notice_info('arty_meter_cleared')

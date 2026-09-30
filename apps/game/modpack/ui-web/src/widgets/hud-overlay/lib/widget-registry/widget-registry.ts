@@ -2,6 +2,7 @@ import type { HudWidget } from '../../../../shared/api/hud-protocol';
 import type { ResolvedWidget } from './widget-registry.types';
 
 import { HUD_PROTOCOL } from '../../../../shared/api/hud-protocol';
+import { fontSafeData } from '../../../../shared/lib/font-safe';
 import { isRecord } from '../../../../shared/lib/is-record';
 import { WIDGET_ENTRIES } from './widget-entries';
 import { WIDGET_LINES } from './widget-registry.constants';
@@ -11,7 +12,7 @@ const byKind = new Map(WIDGET_ENTRIES.map((entry) => [entry.kind, entry]));
 export const resolveWidget = (widget: HudWidget | null | undefined): ResolvedWidget | null => {
   const entry = widget && widget.v === HUD_PROTOCOL.widgetVersion ? byKind.get(widget.kind) : undefined;
 
-  return (entry && widget ? entry.parse(widget.data) : undefined) ?? null;
+  return (entry && widget ? entry.parse(fontSafeData(widget.data)) : undefined) ?? null;
 };
 
 const countRows = (value: unknown, depth: number): number => {

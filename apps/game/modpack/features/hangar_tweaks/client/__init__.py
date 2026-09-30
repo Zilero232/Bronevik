@@ -46,36 +46,33 @@ class HangarTweaks(NativeSettingsComponent):
     def ui_action(self, action, row=None, value=None):
         vehicle = selected_vehicle()
         if not self._actions_enabled() or vehicle is None:
-            return self._notice('error', 'hangar_tweaks_refused_nothing')
+            return self.notice_error('hangar_tweaks_refused_nothing')
         state = summary(vehicle)
         if action == ACTION_DEMOUNT:
             slots, refusal = plan_demount(state)
             if refusal:
-                return self._notice('error', 'hangar_tweaks_refused_%s' % refusal)
+                return self.notice_error('hangar_tweaks_refused_%s' % refusal)
             demount(vehicle, slots, device_in, self._done)
-            return self._notice('info', 'hangar_tweaks_sent')
+            return self.notice_info('hangar_tweaks_sent')
         if action == ACTION_CREW:
             count, refusal = plan_crew_unload(state, free_berths())
             if refusal:
-                return self._notice('error', 'hangar_tweaks_refused_%s' % refusal)
+                return self.notice_error('hangar_tweaks_refused_%s' % refusal)
             unload_crew(vehicle, self._done)
-            return self._notice('info', 'hangar_tweaks_sent')
+            return self.notice_info('hangar_tweaks_sent')
         if action == ACTION_RETURN:
             refusal = plan_crew_return(state)
             if refusal:
-                return self._notice('error', 'hangar_tweaks_refused_%s' % refusal)
+                return self.notice_error('hangar_tweaks_refused_%s' % refusal)
             return_crew(vehicle, self._done)
-            return self._notice('info', 'hangar_tweaks_sent')
+            return self.notice_info('hangar_tweaks_sent')
         if action == ACTION_STYLE:
             refusal = plan_style_removal(state)
             if refusal:
-                return self._notice('error', 'hangar_tweaks_refused_%s' % refusal)
+                return self.notice_error('hangar_tweaks_refused_%s' % refusal)
             remove_style(vehicle, self._done)
-            return self._notice('info', 'hangar_tweaks_sent')
+            return self.notice_info('hangar_tweaks_sent')
         return None
-
-    def _notice(self, kind, key):
-        return {'kind': kind, 'text': self.app.translate(key)}
 
     @safe
     def _done(self, success):

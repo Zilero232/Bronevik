@@ -24,3 +24,7 @@ PREVIEW_HITS = (
     ('KV-1', 'heavyTank', 'he', 'blocked', 240, 0),
     ('T-34', 'mediumTank', 'apcr', 'ricochet', 0, 0),
 )
+
+# The card (model/widget.py): width in design px and the colour role of each outcome.
+CARD_WIDTH = 260
+OUTCOME_TONES = {'pen': 'received', 'crit': 'warning', 'blocked': 'blocked', 'ricochet': 'blocked'}

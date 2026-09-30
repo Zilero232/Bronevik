@@ -13,6 +13,8 @@ LANGUAGES = ('ru', 'en')
 ID_PATTERN = re.compile(r'^[a-z][a-z0-9_]*$')
 DEPENDENCY_KIND = 'dependency'
 PERF_LEVELS = ('low', 'medium', 'high')
+# Where a component shows anything: only in the hangar, only in battle, or in both (the in-game window's badges).
+CONTEXTS = ('hangar', 'battle', 'any')
 
 
 @dataclass(frozen=True)
@@ -57,6 +59,7 @@ class CatalogEntry:
     preview: Preview = Preview()
     dependencies: Tuple[str, ...] = ()
     perf: Optional[str] = None
+    context: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -145,6 +148,7 @@ class Component:
     sha256: Optional[str] = None
     size: Optional[int] = None
     perf: Optional[str] = None
+    context: Optional[str] = None
 
 
 @dataclass(frozen=True)

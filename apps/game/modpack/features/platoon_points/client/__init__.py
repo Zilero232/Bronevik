@@ -2,10 +2,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from BattleFeedbackCommon import BATTLE_EVENT_TYPE
 
-from ....core.client.battle import arena, arena_dp, call, feedback, is_enemy, vehicle_state
+from ....core.client.battle import arena, arena_dp, call, feedback, is_enemy, summary_assist, vehicle_state
 from ....core.client.game import values_by_name
 from ....core.client.hud.panel import BattlePanel
-from ....core.compat import is_number
 from ....core.log import safe
 from ..i18n import STRINGS
 from ..model import Platoon
@@ -69,15 +68,8 @@ class PlatoonPointsPanel(BattlePanel):
         if changed:
             self.render()
 
-    # BattleSummaryFeedbackEvent (feedback_events, RU 1.45): getTotalAssistDamage() is track + radio, stun comes apart.
     def _on_summary(self, event):
-        if self.platoon is None:
-            return
-        assist = call(event, 'getTotalAssistDamage')
-        stun = call(event, 'getTotalStunDamage')
-        if is_number(assist) and is_number(stun):
-            assist += stun
-        if self.platoon.apply_summary(call(event, 'getTotalDamage'), assist):
+        if self.platoon is not None and self.platoon.apply_summary(call(event, 'getTotalDamage'), summary_assist(event)):
             self.render()
 
     def _on_vehicle_feedback(self, event_id, vehicle_id, value):

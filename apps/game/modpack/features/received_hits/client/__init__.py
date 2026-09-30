@@ -14,8 +14,9 @@ from ....core.shells import shell_code
 from ..i18n import STRINGS
 from ..model import ReceivedHits, format_panel
 from ..model.constants import PREVIEW_SIZE
-from ..model.preview import preview_text
+from ..model.preview import preview_text, preview_widget
 from ..model.shot import is_ricochet
+from ..model.widget import panel_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
 from .constants import KIND_BY_EVENT, OWN_VEHICLE_ATTR, SHOT_METHOD, VEHICLE_CLASS, VEHICLE_MODULE
 
@@ -29,7 +30,7 @@ class ReceivedHitsPanel(BattlePanel):
     def __init__(self, app):
         self.kinds = values_by_name(BATTLE_EVENT_TYPE, KIND_BY_EVENT)
         self.hits = None
-        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text)
+        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text, preview_widget)
         self._hook_shots()
 
     def _hook_shots(self):
@@ -87,6 +88,6 @@ class ReceivedHitsPanel(BattlePanel):
             return
         text = format_panel(self.hits, self.settings, self.app.translate)
         if text:
-            self.show(text)
+            self.show(text, panel_widget(self.hits, self.settings, self.app.translate))
         else:
             self.hide()

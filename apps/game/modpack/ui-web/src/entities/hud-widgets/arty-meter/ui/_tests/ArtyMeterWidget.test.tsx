@@ -14,8 +14,8 @@ describe(ArtyMeterWidget, () => {
     const html = mount({ Component: ArtyMeterWidget, props: { data } });
 
     expect(artyView(data)).toMatchObject({ level: Math.round((5 / 10) * 84), tone: 'warning' });
-    expect(html.textContent).toContain('−740');
-    expect(html.textContent).toContain('7 · 17 · −2 310');
+    expect(html.textContent).toContain('-740');
+    expect(html.textContent).toContain('7 · 17 · -2 310');
   });
 
   it('caps the scale at ten and turns red', () => {

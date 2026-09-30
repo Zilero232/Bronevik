@@ -6,6 +6,7 @@ import uuid
 from ....core.compat import is_int, is_number
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, font, format_number, format_percent
 from .constants import COUNTERS, REGULAR_BONUS_TYPE
+from .widget import session_widget  # noqa: F401
 
 
 def _ratio(numerator, denominator, digits=2):

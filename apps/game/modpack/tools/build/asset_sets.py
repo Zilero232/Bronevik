@@ -11,6 +11,8 @@ import json
 import os
 import sys
 
+from fileio import write_text
+
 MODPACK_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ASSETS_DIR = os.path.join(MODPACK_DIR, 'assets')
 MANIFEST = os.path.join(ASSETS_DIR, 'assets.json')
@@ -162,8 +164,7 @@ def main(argv):
         return 1
     text = notices(sets)
     if '--write' in argv:
-        with io.open(NOTICES, 'w', encoding='utf-8', newline='\n') as handle:
-            handle.write(text)
+        write_text(NOTICES, text)
         return 0
     with io.open(NOTICES, encoding='utf-8') as handle:
         if handle.read() != text:

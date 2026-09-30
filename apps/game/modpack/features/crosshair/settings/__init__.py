@@ -5,5 +5,3 @@ from .constants import CHOICES, DEFAULTS, GROUP, LIMITS, PANEL_ID, SWITCH  # noq
 
 SETTINGS = (SWITCH,)
 SCHEMA = panel_schema(DEFAULTS, choices=CHOICES, limits=LIMITS)
-
-__all__ = ('GROUP', 'PANEL_ID', 'SCHEMA', 'SETTINGS', 'SWITCH')

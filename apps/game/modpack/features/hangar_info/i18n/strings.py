@@ -30,6 +30,7 @@ STRINGS = {
         'hangar_info_crew_role': u'до навыка {xp} опыта ({role})',
         'hangar_info_training_on': u'ускоренное обучение',
         'hangar_info_training_off': u'без ускоренного обучения',
+        'hangar_info_crew_row': u'до навыка',
     },
     'en': {
         'component_hangar_info': u'Hangar clock and server',
@@ -59,5 +60,6 @@ STRINGS = {
         'hangar_info_crew_role': u'{xp} XP to a skill ({role})',
         'hangar_info_training_on': u'accelerated training',
         'hangar_info_training_off': u'no accelerated training',
+        'hangar_info_crew_row': u'XP to a skill',
     },
 }

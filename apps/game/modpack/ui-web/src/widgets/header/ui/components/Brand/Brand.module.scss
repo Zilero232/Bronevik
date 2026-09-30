@@ -2,14 +2,20 @@
 
 .brand {
   display: flex;
+  height: 60px;
   flex-direction: row;
+  flex-shrink: 0;
   align-items: center;
-  margin-right: 24px;
+  padding: 0 20px 0 18px;
+  border: none;
+  background-color: transparent;
+  color: token(color-text);
+  cursor: move;
+  text-align: left;
 }
 
 .mark {
   margin-right: 10px;
-  color: token(color-accent);
 }
 
 .text {
@@ -18,12 +24,14 @@
 }
 
 .title {
-  font-size: 20px;
+  font-size: 18px;
+  white-space: nowrap;
 
-  @include caps;
+  @include caps(1.5px);
 }
 
 .subtitle {
   color: token(color-text-muted);
-  font-size: 12px;
+  font-size: 11px;
+  white-space: nowrap;
 }

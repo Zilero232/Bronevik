@@ -12,7 +12,7 @@ export const ConsumablesWidget = ({ data }: ConsumablesWidgetProps) => {
   const view = consumablesView(data);
 
   return (
-    <HudPlate className={s.plate}>
+    <HudPlate className={s.plate} rail='info'>
       {data.stats.map((stats) => (
         <div key={`${stats.icon ?? ''}|${stats.text}`} className={clsx(s.stats, stats.current && s.current)}>
           <ClientIcon icon={stats.icon} size={CONSUMABLES.statsIcon} />

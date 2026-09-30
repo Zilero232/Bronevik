@@ -57,7 +57,7 @@
 .name {
   @include ellipsis;
 
-  max-width: 120px;
+  max-width: 96px;
   margin-right: 4px;
   color: token(color-text);
   font-size: 13px;

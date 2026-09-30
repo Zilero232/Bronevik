@@ -9,3 +9,6 @@ PREVIEW_SIZE = (320, 50)
 PREVIEW_OWN_DAMAGE = 1850
 PREVIEW_ENEMY_MAX = 14700
 PREVIEW_ENEMY_HP = 8580
+
+# The card (model/widget.py), design px.
+CARD_WIDTH = 260

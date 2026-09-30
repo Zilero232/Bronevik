@@ -32,9 +32,13 @@ const install = (state: string) => {
 
 const sent = (mock: ReturnType<typeof install>): unknown[] => mock.sent().map((message): unknown => JSON.parse(message));
 
+const mounted: { unmount: () => void }[] = [];
+
 const mount = async (state: string) => {
   const mock = install(state);
   const hook = renderHook(useHudOverlay);
+
+  mounted.push(hook);
 
   await hook.settle();
   await hook.settle();
@@ -43,6 +47,7 @@ const mount = async (state: string) => {
 };
 
 afterEach(() => {
+  mounted.splice(0).forEach((hook) => hook.unmount());
   Object.values(GAMEFACE.globals).forEach((name) => Reflect.deleteProperty(globalThis, name));
   document.documentElement.style.fontSize = '';
   vi.useRealTimers();
@@ -67,36 +72,64 @@ describe(useHudOverlay, () => {
 
     expect(label).toMatchObject({ interactive: false, framed: false });
 
-    hook.run(() => label?.onMouseDown({ clientX: 1, clientY: 1 }));
+    hook.run(() => window.dispatchEvent(new MouseEvent('mousedown', { clientX: 20, clientY: 940, button: 0 })));
     hook.run(() => window.dispatchEvent(new MouseEvent('mouseup', { clientX: 50, clientY: 50 })));
-    hook.run(() => label?.onWheel({ deltaY: -1, preventDefault: () => undefined }));
+    hook.run(() => window.dispatchEvent(new WheelEvent('wheel', { clientX: 20, clientY: 940, deltaY: -1, cancelable: true })));
 
     expect(sent(mock)).toHaveLength(1);
   });
 
-  it('drags a label while the modifier is held and reports its new anchor', async () => {
+  it('drags a label while the modifier is held and reports its new anchor, whatever element is under the pointer', async () => {
     const { mock, hook } = await mount(sample);
+    const icon = document.createElement('img');
+
+    document.body.append(icon);
 
     expect(hook.current().labels[0]).toMatchObject({ interactive: true, framed: true });
 
-    hook.run(() => hook.current().labels[0]?.onMouseDown({ clientX: 100, clientY: 900 }));
-    hook.run(() => window.dispatchEvent(new MouseEvent('mousemove', { clientX: 1700, clientY: 100 })));
+    const press = new MouseEvent('mousedown', { clientX: 20, clientY: 940, button: 0, bubbles: true, cancelable: true });
+
+    hook.run(() => icon.dispatchEvent(press));
+
+    expect(press.defaultPrevented).toBe(true);
+
+    hook.run(() => window.dispatchEvent(new MouseEvent('mousemove', { clientX: 1620, clientY: 140 })));
 
     expect(hook.current().labels[0]?.dragging).toBe(true);
 
-    hook.run(() => window.dispatchEvent(new MouseEvent('mouseup', { clientX: 1700, clientY: 100 })));
+    hook.run(() => window.dispatchEvent(new MouseEvent('mouseup', { clientX: 1620, clientY: 140 })));
 
     expect(sent(mock)[1]).toEqual({ type: 'moved', id: 'otmetki.hud.damage_log', x: -300, y: 140, align_x: 'right', align_y: 'top' });
     expect(hook.current().labels[0]?.dragging).toBe(false);
+    icon.remove();
+  });
+
+  it('keeps the moved place when the next state still carries the old one until the game saves it', async () => {
+    const { hook } = await mount(sample);
+
+    hook.run(() => window.dispatchEvent(new MouseEvent('mousedown', { clientX: 20, clientY: 940, button: 0 })));
+    hook.run(() => window.dispatchEvent(new MouseEvent('mousemove', { clientX: 120, clientY: 900 })));
+    hook.run(() => window.dispatchEvent(new MouseEvent('mouseup', { clientX: 120, clientY: 900 })));
+
+    expect(hook.current().labels[0]?.style).toMatchObject({ left: '120rem', top: '900rem' });
+  });
+
+  it('starts no drag when the press misses every panel', async () => {
+    const { mock, hook } = await mount(sample);
+
+    hook.run(() => window.dispatchEvent(new MouseEvent('mousedown', { clientX: 900, clientY: 300, button: 0 })));
+    hook.run(() => window.dispatchEvent(new MouseEvent('mouseup', { clientX: 1000, clientY: 400 })));
+
+    expect(sent(mock)).toHaveLength(1);
   });
 
   it('scales a panel with the wheel while the modifier is held', async () => {
     const { mock, hook } = await mount(sample);
-    const preventDefault = vi.fn();
+    const wheel = new WheelEvent('wheel', { clientX: 20, clientY: 940, deltaY: -100, cancelable: true });
 
-    hook.run(() => hook.current().labels[0]?.onWheel({ deltaY: -100, preventDefault }));
+    hook.run(() => window.dispatchEvent(wheel));
 
-    expect(preventDefault).toHaveBeenCalledOnce();
+    expect(wheel.defaultPrevented).toBe(true);
     expect(sent(mock)[1]).toEqual({ type: 'resized', id: 'otmetki.hud.damage_log', scale: 1.1 });
     expect(hook.current().labels[0]?.style).toMatchObject({ transform: 'scale(1.1)', transformOrigin: '0 0' });
   });

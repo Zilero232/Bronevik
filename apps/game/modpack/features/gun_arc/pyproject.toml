@@ -2,7 +2,7 @@
 
 [project]
 name = "otmetki-feature-gun-arc"
-version = "0.1.0"
+version = "0.2.0"
 description = "Feature: how far the own gun can still turn left and right before the traverse limits (УГН)."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }

@@ -1,5 +1,3 @@
 export const INT_FIELD = {
-  step: 1,
-  decreaseGlyph: '−',
-  increaseGlyph: '+'
+  step: 1
 } as const;

@@ -24,3 +24,6 @@ SITE_PROGRESS_PATH = '/me/progress'
 
 # "ussr:R04_T-34" -> "T-34": the nation prefix and the item code before the name.
 ITEM_CODE = re.compile(r'^[A-Za-z]{1,3}\d+[A-Za-z]?_')
+
+# The hangar card (model/widget.py), design px.
+CARD_WIDTH = 260

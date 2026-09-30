@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ..fields import SWITCH_KEY, TYPE_BOOL, describe_fields, field_type
 from .constants import PANEL_POSITION_KEYS
+from .placement import placement_of
 
 
 class Component(object):
@@ -42,9 +43,12 @@ class Component(object):
         switch = None
         if self.switch is not None and switch_settings is not None:
             switch = {'key': self.switch, 'value': bool(switch_settings.get(self.switch))}
+        section, context = placement_of(self.id, self.group, self.panel)
         described = {
             'id': self.id,
             'group': self.group,
+            'section': section,
+            'context': context,
             'title': labels.title(self.id, self.fallback_title),
             'hint': labels.component_hint(self.id),
             'switch': switch,

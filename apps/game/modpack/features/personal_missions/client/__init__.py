@@ -2,12 +2,13 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.client.battle import vehicle_class, vehicle_info
 from ....core.client.hud.panel import BattlePanel
-from ....core.events import EVENT_COMPONENT_SETTINGS
+from ....core.hud import HangarLabel
 from ....core.log import safe
 from ..i18n import STRINGS
 from ..model import build_page, clean_missions, format_battle, format_hangar
 from ..model.constants import HANGAR_LAYOUT, HANGAR_PANEL, PREVIEW_SIZE, REFRESH_EVERY_S
-from ..model.preview import preview_text
+from ..model.preview import preview_text, preview_widget
+from ..model.widget import battle_widget, hangar_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
 from .constants import ACTION_REFRESH
 from .reads import own_missions
@@ -20,52 +21,45 @@ class PersonalMissionsPanel(BattlePanel):
     def __init__(self, app):
         self.missions = []
         self.totals = None
-        self.hangar_text = None
+        self.hangar = HangarLabel(app, HANGAR_PANEL)
         self.read_at = 0.0
-        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text)
+        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text, preview_widget)
         bus = app.bus
         bus.on('hangar', self.refresh)
         bus.on('tick', self._on_tick)
-        bus.on('battle_enter', self._hide_hangar)
-        bus.on(EVENT_COMPONENT_SETTINGS, self._on_settings)
+        bus.on('battle_enter', self.hangar.hide)
 
-    def _on_settings(self, component_id, changed):
-        if component_id == PANEL_ID:
-            self._hide_hangar()
-            self.refresh()
+    def settings_changed(self, changed):
+        self.hangar.hide()
+        self.refresh()
 
     def _on_tick(self, now):
         if now - self.read_at >= REFRESH_EVERY_S:
             self.read_at = now
             self.refresh()
 
-    def _hide_hangar(self):
-        self.hangar_text = None
-        self.app.ui.hide(HANGAR_PANEL)
-
     @safe
     def refresh(self):
         if not self.enabled_in_hangar():
-            if self.hangar_text is not None:
-                self._hide_hangar()
+            self.hangar.clear()
             return
         self.missions, self.totals = clean_missions(own_missions())
-        text = format_hangar(self.missions, self.settings, self.app.translate, self.totals) if self.settings.get('show_hangar') else None
-        if text is None:
-            if self.hangar_text is not None:
-                self._hide_hangar()
+        if not self.settings.get('show_hangar'):
+            self.hangar.clear()
             return
-        if text != self.hangar_text and self.app.ui.show(HANGAR_PANEL, text, HANGAR_LAYOUT):
-            self.hangar_text = text
+        translate = self.app.translate
+        self.hangar.show(format_hangar(self.missions, self.settings, translate, self.totals), HANGAR_LAYOUT,
+                         widget=hangar_widget(self.missions, self.settings, translate, self.totals))
 
     def start(self, player):
         if not self.settings.get('show_battle'):
             return
         vehicle_id = getattr(player, 'playerVehicleID', None)
         level = getattr(getattr(vehicle_info(vehicle_id), 'vehicleType', None), 'level', None)
-        text = format_battle(self.missions, vehicle_class(vehicle_id), self.settings, self.app.translate, level)
+        cls = vehicle_class(vehicle_id)
+        text = format_battle(self.missions, cls, self.settings, self.app.translate, level)
         if text:
-            self.show(text)
+            self.show(text, battle_widget(self.missions, cls, self.settings, self.app.translate, level))
 
     def ui_actions(self):
         if not self.enabled_in_hangar():

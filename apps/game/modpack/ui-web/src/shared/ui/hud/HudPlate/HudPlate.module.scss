@@ -22,25 +22,21 @@
 }
 
 .rail {
-  border-left: 2px solid token(color-accent);
+  border-left: 2px solid rgb(255 255 255 / 18%);
 }
 
-.accent {
+.damage {
   border-left-color: token(color-accent);
 }
 
-.received {
+.incoming {
   border-left-color: token(color-danger);
 }
 
-.gold {
+.progress {
   border-left-color: token(color-gold);
 }
 
-.ally {
-  border-left-color: token(color-ally);
-}
-
-.stun {
-  border-left-color: token(class-spg);
+.info {
+  border-left-color: rgb(255 255 255 / 18%);
 }

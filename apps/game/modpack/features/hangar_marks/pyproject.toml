@@ -2,7 +2,7 @@
 
 [project]
 name = "otmetki-feature-hangar-marks"
-version = "0.1.0"
+version = "0.2.0"
 description = "Feature: marks of excellence of the selected tank in the hangar: percent, damage per target, battles-to-mark forecast."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }

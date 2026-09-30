@@ -1,24 +1,27 @@
 import { useStore } from '@nanostores/preact';
 
-import { $groups, $selected, $view, openComponent, openSection, SECTION, toggleSwitch } from '../../../../../entities/window-state';
-import { SIDEBAR } from '../../../config';
+import type { Section } from '../../../../../entities/window-state';
+
+import { $query, $summaries, $view, openSection, SECTION_ICONS, SECTION_NAV, SECTION_TEXT } from '../../../../../entities/window-state';
 
 export const useSidebar = () => {
-  const groups = useStore($groups);
   const view = useStore($view);
-  const selected = useStore($selected);
+  const query = useStore($query);
+  const summaries = useStore($summaries);
+  const searching = query.trim().length > 0;
 
-  return {
-    groups: groups.map((group) => ({
-      id: group.id,
-      titleKey: SIDEBAR.groupTitles[group.id] ?? SIDEBAR.otherGroupTitle,
-      items: group.components.map((component) => ({
-        component,
-        active: view.section === SECTION.components && selected?.id === component.id,
-        open: () => openComponent(component.id),
-        toggle: () => toggleSwitch(component)
-      }))
-    })),
-    links: SIDEBAR.links.map((link) => ({ ...link, active: view.section === link.section, open: () => openSection(link.section) }))
+  const item = (section: Section) => {
+    const summary = summaries.find((entry) => entry.section === section);
+
+    return {
+      section,
+      icon: SECTION_ICONS[section],
+      labelKey: SECTION_TEXT[section].title,
+      count: summary && summary.total > 0 ? `${summary.enabled}/${summary.total}` : null,
+      active: !searching && view.section === section,
+      open: () => openSection(section)
+    };
   };
+
+  return { components: SECTION_NAV.components.map(item), tools: SECTION_NAV.tools.map(item) };
 };

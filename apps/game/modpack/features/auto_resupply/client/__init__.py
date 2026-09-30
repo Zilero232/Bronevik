@@ -37,13 +37,13 @@ class AutoResupply(FeatureComponent):
         by_inv = dict((getattr(vehicle, 'invID', None), vehicle) for vehicle in vehicles)
         requests, refusal = plan([summary(vehicle) for vehicle in vehicles], self.settings.to_dict())
         if refusal:
-            return {'kind': 'error', 'text': self.app.translate('auto_resupply_refused_%s' % refusal)}
+            return self.notice_error('auto_resupply_refused_%s' % refusal)
         idle = not self.queue
         self.queue.extend((by_inv[inv_id], flag, flag_value) for inv_id, flag, flag_value in requests)
         if idle:
             self.failed = 0
             self._next()
-        return {'kind': 'info', 'text': self.app.translate('auto_resupply_sent', count=len(requests))}
+        return self.notice_info('auto_resupply_sent', count=len(requests))
 
     def _next(self):
         if not self.queue:

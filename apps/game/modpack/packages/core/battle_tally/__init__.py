@@ -1,28 +1,35 @@
-"""Per-battle counters of the player's own feedback for the python.log line that shows what the client reported:
-own hit markers, own battle events (damage, blocked, assist, stun, received) and the vanilla totals of the personal
-efficiency controller. Pure: the events are the client's objects, read only through their public getters."""
+"""Per-battle counters of the player's own feedback: `BattleTally` for the python.log line that shows what the client
+reported (own hit markers, own battle events (damage, blocked, assist, stun, received) and the vanilla totals of the
+personal efficiency controller), and `Counters`, `own_damage`, `assist_with_stun` for the HUD panels that count the
+own battle. Pure: the events are the client's objects, read only through their public getters."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ..compat import is_number
+from ..compat import call, is_number
 from .constants import CRIT_KEYS, DAMAGE_KEYS, EFFICIENCY_KEYS, ENEMY_ONLY_KEYS, EVENT_KEYS, MARKER_OUTCOMES, PEN_OUTCOMES
 
-__all__ = ('BattleTally', 'EFFICIENCY_KEYS', 'EVENT_KEYS', 'MARKER_OUTCOMES', 'efficiency_totals', 'extra_amount')
-
-
-def _call(target, name, default=None):
-    method = getattr(target, name, None)
-    if method is None:
-        return default
-    try:
-        return method()
-    except Exception:
-        return default
+__all__ = ('BattleTally', 'Counters', 'EFFICIENCY_KEYS', 'EVENT_KEYS', 'MARKER_OUTCOMES', 'assist_with_stun', 'efficiency_totals', 'extra_amount',
+           'own_damage')
 
 
 def extra_amount(extra, name='getDamage'):
     """The positive int the extra reports through `name`, else 0."""
-    value = _call(extra, name, 0)
+    value = call(extra, name, 0)
     return int(value) if is_number(value) and value > 0 else 0
+
+
+def own_damage(events, damage_type, is_enemy):
+    """The damage one onPlayerFeedbackReceived batch reports the player dealt to enemies (events of `damage_type`,
+    targets `is_enemy(vehicle_id)` accepts)."""
+    if damage_type is None:
+        return 0
+    return sum(extra_amount(call(event, 'getExtra')) for event in events or ()
+               if call(event, 'getBattleEventType') == damage_type and is_enemy(call(event, 'getTargetID')))
+
+
+def assist_with_stun(assist, stun):
+    """The summary's assist with its stun assist added: BattleSummaryFeedbackEvent (feedback_events, RU 1.45)
+    reports getTotalAssistDamage() (track + radio) and getTotalStunDamage() apart."""
+    return assist + stun if is_number(assist) and is_number(stun) else assist
 
 
 def efficiency_totals(totals, keys_by_type):
@@ -34,6 +41,26 @@ def efficiency_totals(totals, keys_by_type):
         if key is not None and is_number(value) and value >= 0:
             picked[key] = int(value)
     return picked
+
+
+class Counters(object):
+    """This battle's own counts by key: `add` sums what the feedback events report, `raise_to` lifts a key to the
+    client's summary total. Both return whether the value changed; `values` is {key: int}."""
+
+    def __init__(self, keys):
+        self.values = dict((key, 0) for key in keys)
+
+    def add(self, key, amount=1):
+        if key not in self.values or not is_number(amount) or amount <= 0:
+            return False
+        self.values[key] += int(amount)
+        return True
+
+    def raise_to(self, key, value):
+        if key in self.values and is_number(value) and value > self.values[key]:
+            self.values[key] = int(value)
+            return True
+        return False
 
 
 class BattleTally(object):
@@ -58,12 +85,12 @@ class BattleTally(object):
         self.batches += 1
         added = 0
         for event in events or ():
-            key = keys_by_kind.get(_call(event, 'getBattleEventType'))
+            key = keys_by_kind.get(call(event, 'getBattleEventType'))
             if key is None:
                 continue
-            if key in ENEMY_ONLY_KEYS and not is_enemy(_call(event, 'getTargetID')):
+            if key in ENEMY_ONLY_KEYS and not is_enemy(call(event, 'getTargetID')):
                 continue
-            extra = _call(event, 'getExtra')
+            extra = call(event, 'getExtra')
             if key in DAMAGE_KEYS:
                 amount = extra_amount(extra)
             elif key in CRIT_KEYS:

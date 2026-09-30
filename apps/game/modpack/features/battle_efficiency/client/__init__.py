@@ -3,17 +3,16 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from BattleFeedbackCommon import BATTLE_EVENT_TYPE
 
 from ....core.client.battle import call, feedback, is_enemy
-from ....core.client.game import player_tank_id, selected_vehicle, values_by_name
+from ....core.client.game import on_vehicle_changed, player_tank_id, selected_tank_id, values_by_name
 from ....core.client.hud.panel import BattlePanel
 from ....core.client.me import tank_ratings
 from ....core.compat import is_number
-from ....core.events import EVENT_COMPONENT_SETTINGS
-from ....core.hooks import subscribe
-from ....core.log import log_exception, safe
+from ....core.log import safe
 from ..i18n import STRINGS
 from ..model import BattleTotals, format_panel, panel_state
 from ..model.constants import KIND_BY_EVENT, PREVIEW_SIZE
-from ..model.preview import preview_text
+from ..model.preview import preview_text, preview_widget
+from ..model.widget import panel_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
 
 
@@ -26,22 +25,16 @@ class BattleEfficiencyPanel(BattlePanel):
         self.tanks = tank_ratings(app)
         self.totals = None
         self.row = None
-        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text)
+        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text, preview_widget)
         app.bus.on('hangar', self._on_vehicle_changed)
-        app.bus.on(EVENT_COMPONENT_SETTINGS, self._on_settings)
-        try:
-            from CurrentVehicle import g_currentVehicle
-            subscribe(g_currentVehicle, 'onChanged', self._on_vehicle_changed)
-        except Exception:
-            log_exception('battle efficiency: current vehicle')
+        on_vehicle_changed(self._on_vehicle_changed, 'battle efficiency')
 
     def _on_vehicle_changed(self):
         if self.enabled_in_hangar():
-            self.tanks.ensure(getattr(selected_vehicle(), 'intCD', None))
+            self.tanks.ensure(selected_tank_id())
 
-    def _on_settings(self, component_id, changed):
-        if component_id == PANEL_ID:
-            self.render()
+    def settings_changed(self, changed):
+        self.render()
 
     def start(self, player):
         self.row = self.tanks.row(player_tank_id(player))
@@ -83,8 +76,9 @@ class BattleEfficiencyPanel(BattlePanel):
     def render(self):
         if self.totals is None:
             return
-        text = format_panel(panel_state(self.totals.values, self.row), self.settings, self.app.translate)
+        state = panel_state(self.totals.values, self.row)
+        text = format_panel(state, self.settings, self.app.translate)
         if text:
-            self.show(text)
+            self.show(text, panel_widget(state, self.settings, self.app.translate))
         else:
             self.hide()

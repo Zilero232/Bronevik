@@ -1,5 +1,6 @@
 export const MARKS_REPORT = {
-  chart: { width: 320, height: 90, padding: 4 },
+  chart: { width: 320, height: 90, minBar: 4, full: 100 },
+  glyphs: { minus: '-', space: '\u00A0' },
   minSpan: 1,
   dash: '—',
   dateFormat: 'dd.MM HH:mm'

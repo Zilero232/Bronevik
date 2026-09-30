@@ -18,7 +18,7 @@ from otmetki.core.events import EventBus
 from otmetki.core.i18n import Catalog, Translator, resolve_language
 from otmetki.core.format import format_number, format_percent, single_spaces, strip_tags
 from otmetki.core.settings import Schema, Settings
-from otmetki.core.storage import JsonFile
+from otmetki.core.storage import JsonFile, account_file
 
 
 class FakeEvent(object):
@@ -369,6 +369,11 @@ class StorageAndPanelsTest(unittest.TestCase):
             self.assertEqual(JsonFile(path).read('fallback'), 'fallback')
         finally:
             shutil.rmtree(directory)
+
+    def test_account_file_names_one_account_per_file(self):
+        stored = account_file(os.path.join('configs', 'otmetki'), 'hits_%d.json', 12345)
+        self.assertEqual(stored.path, os.path.join('configs', 'otmetki', 'hits_12345.json'))
+        self.assertFalse(stored.pretty)
 
     def test_number(self):
         self.assertEqual(format_number(1234567.4), u'1 234 567')

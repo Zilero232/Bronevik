@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.client.battle import call, shared
+from ....core.client.battle import ammo, call
 from ....core.client.hud.panel import BattlePanel
 from ....core.client.timer import Ticker
 from ....core.log import safe
@@ -10,10 +10,6 @@ from ..model.constants import PREVIEW_SIZE, TICK_S
 from ..model.preview import preview_text, preview_widget
 from ..model.widget import reload_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
-
-
-def ammo():
-    return shared('ammo')
 
 
 def clip_size(gun_settings):

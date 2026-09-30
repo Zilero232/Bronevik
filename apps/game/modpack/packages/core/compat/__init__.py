@@ -1,4 +1,4 @@
-"""Python 2/3 helpers on top of the vendored `six`.
+"""Python 2/3 helpers on top of the vendored `six`, and `call` for client objects whose API drifts.
 
 The type aliases are six's; `to_text` / `to_bytes` / `to_native` are six's `ensure_*` that also take a
 non-string (a number, None) by converting it to text first, which is what the mod's callers rely on.
@@ -42,3 +42,14 @@ def is_number(value):
 def as_int(value, default=0):
     """`value` as an int when it is a number (floats truncated), else `default`."""
     return int(value) if is_number(value) else default
+
+
+def call(target, name, default=None, *args):
+    """`target.name(*args)`, or `default` when the method is missing or raises (client API drift)."""
+    method = getattr(target, name, None)
+    if method is None:
+        return default
+    try:
+        return method(*args)
+    except Exception:
+        return default

@@ -1,10 +1,8 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.client.game import player_tank_id
+from ....core.client.game import on_vehicle_changed, player_tank_id
 from ....core.client.hud.panel import BattlePanel
-from ....core.events import EVENT_COMPONENT_SETTINGS
-from ....core.hooks import subscribe
-from ....core.log import log_exception, safe
+from ....core.log import safe
 from ..i18n import STRINGS
 from ..model import LoadoutBook, format_panel
 from ..model.constants import PREVIEW_SIZE
@@ -23,12 +21,7 @@ class BattleLoadoutPanel(BattlePanel):
         self.loadout = None
         BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text, preview_widget)
         app.bus.on('hangar', self._on_vehicle_changed)
-        app.bus.on(EVENT_COMPONENT_SETTINGS, self._on_settings)
-        try:
-            from CurrentVehicle import g_currentVehicle
-            subscribe(g_currentVehicle, 'onChanged', self._on_vehicle_changed)
-        except Exception:
-            log_exception('battle loadout: current vehicle')
+        on_vehicle_changed(self._on_vehicle_changed, 'battle loadout')
 
     def _on_vehicle_changed(self):
         if not self.enabled_in_hangar():
@@ -37,9 +30,8 @@ class BattleLoadoutPanel(BattlePanel):
         if tank_id:
             self.book.put(tank_id, loadout)
 
-    def _on_settings(self, component_id, changed):
-        if component_id == PANEL_ID:
-            self.render()
+    def settings_changed(self, changed):
+        self.render()
 
     def start(self, player):
         self.loadout = self.book.get(player_tank_id(player))

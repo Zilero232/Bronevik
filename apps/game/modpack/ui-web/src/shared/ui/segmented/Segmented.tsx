@@ -4,8 +4,8 @@ import type { SegmentedProps } from './Segmented.types';
 
 import s from './Segmented.module.scss';
 
-export const Segmented = <T extends string>({ label, items, value, wrap = false, className, onSelect }: SegmentedProps<T>) => (
-  <div aria-label={label} className={clsx(s.segmented, wrap && s.wrap, className)} role='group'>
+export const Segmented = <T extends string>({ label, items, value, className, onSelect }: SegmentedProps<T>) => (
+  <div aria-label={label} className={clsx(s.segmented, className)} role='group'>
     {items.map((item) => (
       <button
         key={item.value}

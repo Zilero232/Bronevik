@@ -36,8 +36,8 @@ class HangarMarksTest(unittest.TestCase):
         assert MARK_COLORS[1] in render()
 
     def test_forecast_without_pace_or_curve(self):
-        assert '~- battles' in strip_tags(render(pace=None))
-        assert u'~∞ battles' in strip_tags(render(pace=2400))
+        assert strip_tags(render(pace=None)).endswith('~-')
+        assert strip_tags(render(pace=2400)).endswith(u'~∞')
         text = strip_tags(render(curve=False))
         assert 'no thresholds' in text and '95%' not in text
 

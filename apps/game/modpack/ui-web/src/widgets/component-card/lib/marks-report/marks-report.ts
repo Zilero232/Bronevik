@@ -3,14 +3,20 @@ import { clamp } from 'remeda';
 
 import type { MarksReportView, ReportCard, ReportRow, ReportTone, UiMarksReport } from './marks-report.types';
 
-import { formatNumber, formatPercent } from '../../../../shared/lib/hud-format';
+import { formatNumber, formatPercent, HUD_FORMAT } from '../../../../shared/lib/hud-format';
 import { MARKS_REPORT } from './marks-report.constants';
+
+const plain = (text: string): string =>
+  text.replaceAll(HUD_FORMAT.minus, MARKS_REPORT.glyphs.minus).replaceAll(HUD_FORMAT.thinSpace, MARKS_REPORT.glyphs.space);
 
 const toneOf = (delta: number | null): ReportTone => ((delta ?? 0) > 0 ? 'good' : (delta ?? 0) < 0 ? 'bad' : 'muted');
 
-const deltaText = (delta: number | null): string => (delta === null ? MARKS_REPORT.dash : formatPercent({ value: delta, digits: 2, signed: true }));
+const deltaText = (delta: number | null): string =>
+  delta === null ? MARKS_REPORT.dash : plain(formatPercent({ value: delta, digits: 2, signed: true }));
 
-const percentText = (value: number | null): string => (value === null ? MARKS_REPORT.dash : formatPercent({ value, digits: 2 }));
+const percentText = (value: number | null): string => (value === null ? MARKS_REPORT.dash : plain(formatPercent({ value, digits: 2 })));
+
+const numberText = (value: number | null): string => plain(formatNumber(value ?? 0));
 
 const reportDate = (seconds: number | null): string => {
   const date = seconds === null ? null : fromUnixTime(seconds);
@@ -23,16 +29,16 @@ const chartOf = (values: number[]): MarksReportView['chart'] => {
     return null;
   }
 
-  const { width, height, padding } = MARKS_REPORT.chart;
+  const { minBar, full } = MARKS_REPORT.chart;
   const min = Math.min(...values);
   const max = Math.max(...values);
   const span = Math.max(max - min, MARKS_REPORT.minSpan);
-  const step = (width - padding * 2) / (values.length - 1);
-  const points = values.map(
-    (value, index) => `${(padding + index * step).toFixed(1)},${(height - padding - ((value - min) / span) * (height - padding * 2)).toFixed(1)}`
-  );
+  const bars = values.map((value, index) => ({
+    key: `bar-${index}`,
+    height: `${Math.round(minBar + ((value - min) / span) * (full - minBar))}%`
+  }));
 
-  return { points: points.join(' '), min: percentText(min), max: percentText(max) };
+  return { bars, min: percentText(min), max: percentText(max) };
 };
 
 const cardsOf = (report: UiMarksReport): ReportCard[] => {
@@ -43,7 +49,7 @@ const cardsOf = (report: UiMarksReport): ReportCard[] => {
       key: 'last',
       label: 'last',
       window: null,
-      value: formatNumber(report.last.damage ?? 0),
+      value: numberText(report.last.damage),
       delta: deltaText(report.last.delta),
       tone: toneOf(report.last.delta)
     });
@@ -54,7 +60,7 @@ const cardsOf = (report: UiMarksReport): ReportCard[] => {
       key: 'best',
       label: 'best',
       window: null,
-      value: formatNumber(report.best.damage ?? 0),
+      value: numberText(report.best.damage),
       delta: deltaText(report.best.delta),
       tone: toneOf(report.best.delta)
     });
@@ -81,7 +87,7 @@ export const marksReportView = (report: UiMarksReport): MarksReportView => ({
   rows: report.battles.map((battle, index): ReportRow => ({
     key: `${battle.t ?? index}-${index}`,
     date: reportDate(battle.t),
-    damage: formatNumber(battle.damage ?? 0),
+    damage: numberText(battle.damage),
     percent: percentText(battle.percent),
     delta: deltaText(battle.delta),
     tone: toneOf(battle.delta)

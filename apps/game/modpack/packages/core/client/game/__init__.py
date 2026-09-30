@@ -4,6 +4,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import importlib  # novermin
 
 from ...compat import is_int, string_types
+from ...hooks import subscribe
+from ...log import log_exception
 
 
 def client_version():
@@ -58,6 +60,21 @@ def selected_vehicle():
     except ImportError:
         return None
     return getattr(g_currentVehicle, 'item', None)
+
+
+def selected_tank_id():
+    """The type id (intCD) of the vehicle selected in the hangar, or None."""
+    return getattr(selected_vehicle(), 'intCD', None)
+
+
+def on_vehicle_changed(callback, owner):
+    """Calls `callback()` when the vehicle selected in the hangar changes (g_currentVehicle.onChanged); a client
+    without it is logged under `owner`."""
+    try:
+        from CurrentVehicle import g_currentVehicle
+        subscribe(g_currentVehicle, 'onChanged', callback)
+    except Exception:
+        log_exception('%s: current vehicle' % owner)
 
 
 def player_tank_id(player):

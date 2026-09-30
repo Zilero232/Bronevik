@@ -6,14 +6,11 @@
   align-items: center;
 }
 
-.step {
-  width: 32px;
-  height: 32px;
-  border: 1px solid token(color-border-strong);
-  background-color: token(color-surface-raised);
-  color: token(color-text);
-  cursor: pointer;
-  font-size: 16px;
+.range {
+  margin-right: 10px;
+  color: token(color-text-dim);
+  font-size: 11px;
+  white-space: nowrap;
 }
 
 .value {

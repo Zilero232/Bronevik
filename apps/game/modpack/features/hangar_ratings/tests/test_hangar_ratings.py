@@ -9,13 +9,13 @@ import unittest
 import _support
 from otmetki.companion.binding import Credentials
 from otmetki.core.errors import ReasonError
+from otmetki.core.me import (MAX_RETRY_S, MAX_TANKS, REFRESH_AFTER_BATTLE_S, RETRY_AFTER_ERROR_S, RETRY_AFTER_LIMIT_S, TANKS_PATH, device_body,
+                             retry_delay, tank_key, tank_rows, tanks_request)
 from otmetki.core.net.signing import signed_request, verify_request
 from otmetki.core.settings import Settings
 from otmetki.features.hangar_ratings.i18n import STRINGS
-from otmetki.features.hangar_ratings.model import (OVERVIEW_KEY, OVERVIEW_PATH, TANKS_PATH, RatingsCache, layout_of, overview_request, page_actions,
-                                                   panel_text, parse_overview, parse_tanks, retry_delay, tank_key, tanks_request)
-from otmetki.features.hangar_ratings.model.constants import (MAX_RETRY_S, MAX_TANKS, REFRESH_AFTER_BATTLE_S, RETRY_AFTER_ERROR_S,
-                                                             RETRY_AFTER_LIMIT_S, TIER_COLORS)
+from otmetki.features.hangar_ratings.model import OVERVIEW_KEY, OVERVIEW_PATH, RatingsCache, layout_of, page_actions, panel_text, parse_overview
+from otmetki.features.hangar_ratings.model.constants import TIER_COLORS
 from otmetki.features.hangar_ratings.settings import SCHEMA, SETTINGS
 
 ACCOUNT = 12345678
@@ -49,7 +49,7 @@ class RequestTest(unittest.TestCase):
 
     def test_refuses_to_build_a_request_without_binding(self):
         with self.assertRaises(ReasonError) as caught:
-            overview_request(None)
+            device_body(None)
         assert caught.exception.reason == 'not_bound'
         with self.assertRaises(ReasonError):
             tanks_request(Credentials('', 's' * 40, ACCOUNT), [1])
@@ -67,7 +67,7 @@ class RequestTest(unittest.TestCase):
         tanks = _support.schema_validator('ratings.schema.json', 'tanksRequest')
         if overview is None:
             self.skipTest('jsonschema not installed')
-        overview.validate(overview_request(CREDENTIALS))
+        overview.validate(device_body(CREDENTIALS))
         tanks.validate(tanks_request(CREDENTIALS, list(range(1, MAX_TANKS + 5))))
 
     def test_signs_the_body_over_the_ratings_path(self):
@@ -107,7 +107,7 @@ class ParseTest(unittest.TestCase):
 
     def test_answers_about_another_account_are_dropped(self):
         assert parse_overview(example('ratings-overview.example.json'), ACCOUNT + 1) is None
-        assert parse_tanks(example('ratings-tanks.example.json'), ACCOUNT + 1) == {}
+        assert tank_rows(example('ratings-tanks.example.json'), ACCOUNT + 1) == {}
         assert parse_overview(example('ratings-overview.example.json'), None) is None
         assert parse_overview(['not', 'an', 'object'], ACCOUNT) is None
 
@@ -115,7 +115,7 @@ class ParseTest(unittest.TestCase):
         data = example('ratings-tanks.example.json')
         data['tanks'].append({'tank_id': 'x'})
         data['tanks'].append({'tank_id': 9, 'battles': -3, 'win_rate': 140, 'marks_on_gun': 5, 'mastery': 7, 'wn8': {'value': 'a', 'tier': 'god'}})
-        rows = parse_tanks(data, ACCOUNT)
+        rows = tank_rows(data, ACCOUNT)
         assert sorted(rows) == [1, 9, 2849]
         assert rows[1]['moe_percent'] == 86.12 and rows[1]['marks_on_gun'] == 2 and rows[1]['mastery'] == 4
         assert rows[9] == {'tank_id': 9, 'battles': 0, 'win_rate': None, 'avg_damage': None, 'wn8': {'value': None, 'tier': None},
@@ -174,12 +174,12 @@ class PanelTest(unittest.TestCase):
 
     def setUp(self):
         self.overview = parse_overview(example('ratings-overview.example.json'), ACCOUNT)
-        self.tank = parse_tanks(example('ratings-tanks.example.json'), ACCOUNT)[1]
+        self.tank = tank_rows(example('ratings-tanks.example.json'), ACCOUNT)[1]
 
     def test_default_panel(self):
         text = panel_text(self.overview, self.tank, u'T-34', settings(), translator())
         assert u'Мои рейтинги' in text and u'Аккаунт:' in text and u'Сессия:' in text and u'T-34' in text
-        assert u'1 850' in text and u'53.41% побед' in text and u'18 432 боёв' in text
+        assert u'1 850' in text and u'53.41% побед' in text and u'18 432 боя' in text
         assert u'86.12% ★★' in text and u'Мастер' in text
         assert TIER_COLORS['good'] in text and TIER_COLORS['very_good'] in text
         assert u'ЭФФ' not in text
@@ -209,7 +209,7 @@ class PanelTest(unittest.TestCase):
         assert u'Сессия' not in panel_text(overview, None, None, settings(), translator())
 
     def test_layout_actions_settings_and_strings(self):
-        assert layout_of(settings()) == {'x': 20, 'y': 140, 'alignX': 'left', 'alignY': 'top'}
+        assert layout_of(settings()) == {'x': 16, 'y': 440, 'alignX': 'left', 'alignY': 'top'}
         assert [action['id'] for action in page_actions(translator())] == ['refresh', 'site']
         assert SETTINGS == ('hangar_ratings',)
         assert sorted(STRINGS['ru']) == sorted(STRINGS['en'])

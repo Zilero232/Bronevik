@@ -30,13 +30,20 @@
   padding: 0;
   border-color: token(color-border-strong);
   border-radius: token(radius-md);
-  background-color: token(shade-35);
+  background-color: token(color-bg-deep);
   color: token(color-accent);
   cursor: pointer;
 
   &:hover {
     border-color: token(color-accent);
   }
+}
+
+.buttonIcon {
+  display: flex;
+  width: 34px;
+  height: 34px;
+  border-radius: token(radius-md);
 }
 
 .widget {

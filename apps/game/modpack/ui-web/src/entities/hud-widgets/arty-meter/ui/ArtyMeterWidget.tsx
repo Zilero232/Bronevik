@@ -12,7 +12,7 @@ export const ArtyMeterWidget = ({ data }: ArtyMeterWidgetProps) => {
   const view = artyView(data);
 
   return (
-    <HudPlate className={s.plate} rail='stun'>
+    <HudPlate className={s.plate} rail='incoming'>
       <div className={s.body}>
         <div className={s.thermometer}>
           <div className={s.tube} style={{ width: `${ARTY_METER.tube.width}rem`, height: `${ARTY_METER.tube.height}rem` }}>

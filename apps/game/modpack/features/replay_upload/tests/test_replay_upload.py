@@ -19,8 +19,8 @@ from otmetki.companion.binding import Credentials
 from otmetki.companion.config import FEATURES, OPT_IN_FEATURES, Config
 from otmetki.companion.i18n import Translator
 from otmetki.core.replay_file import MAGIC, is_replay_name, parse_date_time, read_header, read_header_from
-from otmetki.features.replay_upload.model import (JobResult, Outcome, ReplayQueue, ReplayUploader, build_multipart, classify_upload,
-                                                  find_replay, matches, upload_job, upload_name, uploaded_replay_id)
+from otmetki.features.replay_upload.model import (JobResult, Outcome, ReplayQueue, ReplayUploader, battle_started_at, build_multipart,
+                                                  classify_upload, find_replay, matches, upload_job, upload_name, uploaded_replay_id)
 from otmetki.features.replay_upload.model.constants import (FILE_FIELD, MATCH_WINDOW_S, MAX_BYTES, UPLOAD_PATH, VISIBILITY_HEADER,
                                                             VISIBILITY_PRIVATE, VISIBILITY_PUBLIC)
 from otmetki.core.replay_file import EXTENSIONS
@@ -396,6 +396,59 @@ class ReplayQueueTest(unittest.TestCase):
         self.assertTrue(queue.knows(ARENA))
         self.assertIsNone(queue.next_item(replay_upload.MAX_AGE_S + 1))
         self.assertEqual(len(queue), 0)
+
+
+class ManualRequestTest(unittest.TestCase):
+
+    def queue(self, storage=None):
+        return ReplayQueue(storage or MemoryFile(), rng=lambda: 0.5)
+
+    def test_a_requested_replay_is_sent_at_once(self):
+        queue = self.queue()
+        self.assertEqual(queue.request(ARENA, ACCOUNT, STARTED, 1000.0), replay_upload.REQUEST_READY)
+        self.assertEqual(queue.next_item(1000.0)['arena_unique_id'], str(ARENA))
+
+    def test_a_request_hurries_a_waiting_upload_without_a_second_item(self):
+        queue = self.queue()
+        queue.add(ARENA, ACCOUNT, STARTED, 1000.0)
+        self.assertEqual(queue.request(str(ARENA), ACCOUNT, STARTED, 1001.0), replay_upload.REQUEST_READY)
+        self.assertEqual(len(queue), 1)
+        self.assertIsNotNone(queue.next_item(1001.0))
+
+    def test_a_replay_given_up_on_can_be_asked_for_again(self):
+        queue = self.queue()
+        queue.add(ARENA, ACCOUNT, STARTED, 1000.0)
+        queue.complete(ARENA, {'result': JobResult.HTTP, 'status': 422}, 1100.0)
+        self.assertTrue(queue.knows(ARENA))
+        queue.request(ARENA, ACCOUNT, STARTED, 2000.0)
+        self.assertEqual(queue.next_item(2000.0)['arena_unique_id'], str(ARENA))
+        self.assertEqual(queue.seen.count(str(ARENA)), 0)
+
+    def test_an_old_battle_requested_now_does_not_expire(self):
+        queue = self.queue()
+        queue.request(ARENA, ACCOUNT, STARTED - 30 * 24 * 3600, STARTED)
+        self.assertIsNotNone(queue.next_item(STARTED + 60))
+
+    def test_invalid_requests(self):
+        queue = self.queue()
+        self.assertEqual(queue.request(None, ACCOUNT, STARTED, 1000.0), replay_upload.REQUEST_INVALID)
+        self.assertEqual(queue.request(ARENA, None, STARTED, 1000.0), replay_upload.REQUEST_INVALID)
+        self.assertEqual(len(queue), 0)
+
+
+class BattleStartTest(unittest.TestCase):
+
+    def test_the_moment_the_client_saw_wins(self):
+        self.assertEqual(battle_started_at(1234.0, {'common': {'arenaCreateTime': 99}}, lambda value: value - 10), 1234.0)
+
+    def test_the_server_time_goes_through_the_client_conversion(self):
+        self.assertEqual(battle_started_at(None, {'common': {'arenaCreateTime': 1790000000}}, lambda value: value - 7200), 1789992800.0)
+
+    def test_no_start_without_a_usable_time(self):
+        for results in ({}, {'common': None}, {'common': {'arenaCreateTime': 0}}, {'common': {'arenaCreateTime': '1790000000'}},
+                        {'common': {'arenaCreateTime': True}}, None):
+            self.assertIsNone(battle_started_at(None, results, lambda value: value))
+        self.assertIsNone(battle_started_at(None, {'common': {'arenaCreateTime': 5}}, lambda value: None))
 
 
 class ReplayUploaderTest(unittest.TestCase):

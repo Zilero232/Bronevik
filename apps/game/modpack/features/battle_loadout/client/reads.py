@@ -4,7 +4,6 @@ import BigWorld
 
 from ....core.client.battle import controls_own_vehicle, optional_devices, player, session_provider
 from ....core.log import log_exception
-from .constants import SET_GROUP_IDS
 
 # RU 1.45 client source: PlayerAvatar.getVehicleDescriptor() (the own vehicle's descriptor, with the chosen
 # specialisation slot), VehicleDescriptor.iterOptDevsWithSlots() (each installed device with its slot, in slot order; a
@@ -141,29 +140,14 @@ def _boosted(boosters, vehicle):
     return set(device.intCD for device in devices if _is_boosted(device, boosters))
 
 
-# The field modification setup switch (RU 1.45 Vehicle.isSetupSwitchActive, the check PrebattleSetupsController runs)
-# and the active set of its group (vehicle_equipment.py setupLayouts getLayoutIndex, getGroupCapacity).
-def _sets(vehicle):
-    from post_progression_common import TankSetupGroupsId
-
-    layouts = vehicle.setupLayouts
-    sets = {}
-    for name, group_attribute in SET_GROUP_IDS.items():
-        group = getattr(TankSetupGroupsId, group_attribute)
-        if vehicle.isSetupSwitchActive(group):
-            sets[name] = {'index': layouts.getLayoutIndex(group), 'total': layouts.getGroupCapacity(group)}
-    return sets
-
-
 def _setups():
     vehicle = _gui_vehicle()
     if vehicle is None:
-        return set(), [], {}
+        return set(), []
 
     boosters = vehicle.battleBoosters.installed.getItems()
-    boosted = _boosted(boosters, vehicle)
     directives = [_booster(booster, vehicle) for booster in boosters]
-    return boosted, directives, _sets(vehicle)
+    return _boosted(boosters, vehicle), directives
 
 
 # The descriptor's own device alone (its name and icon), for when the stock texts or the battle state cannot be read:
@@ -185,18 +169,18 @@ def _devices(boosted):
     return [_read_device(device, slot, boosted) for device, slot in installed if device is not None]
 
 
-# The GUI vehicle only adds the directives, the boosted marks and the set badges: when the client cannot build it,
-# the row still shows the devices from the descriptor.
+# The GUI vehicle only adds the directives and the boosted marks: when the client cannot build it, the row still
+# shows the devices from the descriptor.
 def own_loadout():
     try:
-        boosted, directives, sets = _setups()
+        boosted, directives = _setups()
     except Exception:
         log_exception('battle loadout: own setups')
-        boosted, directives, sets = set(), [], {}
+        boosted, directives = set(), []
 
     try:
         devices = _devices(boosted)
     except Exception:
         log_exception('battle loadout: own devices')
         devices = []
-    return devices + directives, sets
+    return devices + directives

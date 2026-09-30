@@ -19,7 +19,7 @@ from otmetki.core.vendor.enum34 import IntEnum
 ACCOUNT = 12345678
 BATTLE_OPT_INS = (
     'battle_main_gun', 'battle_efficiency', 'battle_personal_best', 'battle_gun_arc', 'battle_arty_meter',
-    'battle_platoon_points', 'battle_received_hits', 'battle_consumables', 'battle_clock',
+    'battle_platoon_points', 'battle_received_hits', 'battle_clock',
 )
 REGISTERED = tuple(_support.feature_ids()) + ('ui',)
 ENTRY_MODULES = ('mod_otmetki',) + tuple('mod_otmetki_' + key for key in REGISTERED)
@@ -63,20 +63,20 @@ NOTIFICATION_TYPES = {
 BATTLE_SOUNDS = {'fire': 'otmetki_fire', 'ammo_rack': 'otmetki_ammo', 'first_blood': 'otmetki_first_blood'}
 HUD_OFF = (
     'battle_damage_log', 'battle_hit_log', 'battle_clock', 'battle_team_hp', 'battle_sixth_sense',
-    'hangar_battle_results', 'battle_main_gun', 'battle_consumables', 'battle_reload_timer', 'battle_efficiency',
+    'hangar_battle_results', 'battle_main_gun', 'battle_reload_timer', 'battle_efficiency',
     'battle_personal_best', 'hangar_session_goals',
 )
 BATTLE_PANELS = [
-    'battle_clock', 'consumables', 'damage_log', 'hit_log', 'last_hit', 'main_gun', 'received_hits', 'reload_timer',
-    'sixth_sense', 'team_hp',
+    'battle_clock', 'damage_log', 'hit_log', 'last_hit', 'main_gun', 'received_hits', 'reload_timer', 'sixth_sense',
+    'team_hp',
 ]
 DESCRIBED_PANELS = [
-    'arty_meter', 'battle_clock', 'battle_efficiency', 'battle_loadout', 'consumables', 'crosshair', 'damage_log',
+    'arty_meter', 'battle_clock', 'battle_efficiency', 'battle_loadout', 'crosshair', 'damage_log',
     'death_card', 'gun_arc', 'hangar_marks', 'hit_log', 'last_hit', 'main_gun', 'marks_panel', 'personal_best',
     'personal_missions', 'platoon_points', 'received_hits', 'reload_timer', 'session_goals', 'sixth_sense', 'team_hp',
 ]
 HUD_EDIT_PREVIEWS = [
-    'arty_meter', 'battle_clock', 'battle_efficiency', 'battle_loadout', 'consumables', 'damage_log', 'death_card',
+    'arty_meter', 'battle_clock', 'battle_efficiency', 'battle_loadout', 'damage_log', 'death_card',
     'gun_arc', 'hangar_marks', 'hit_log', 'last_hit', 'main_gun', 'marks_panel', 'personal_best', 'personal_missions',
     'platoon_points', 'received_hits', 'reload_timer', 'session_goals', 'sixth_sense',
 ]
@@ -361,37 +361,6 @@ class ArenaDP(object):
         return 1
 
 
-class EquipmentItem(object):
-    # RU 1.45 equipment_ctrl._EquipmentItem: getDescriptor().userString, getQuantity(), isReady (a property),
-    # getTimeRemaining().
-
-    def __init__(self, name, quantity, ready=True, remaining=0):
-        self.descriptor = instance('Equipment', {'userString': name})
-        self.quantity = quantity
-        self.isReady = ready
-        self.remaining = remaining
-
-    def getDescriptor(self):
-        return self.descriptor
-
-    def getQuantity(self):
-        return self.quantity
-
-    def getTimeRemaining(self):
-        return self.remaining
-
-
-class Equipments(object):
-
-    def __init__(self):
-        self.items = [(501, EquipmentItem(u'Аптечка', 1)), (502, EquipmentItem(u'Ремкомплект', 1, False, 12))]
-        self.onEquipmentAdded = Event()
-        self.onEquipmentUpdated = Event()
-
-    def getOrderedEquipmentsLayout(self):
-        return list(self.items)
-
-
 class ReloadSnapshot(object):
     # RU 1.45 ammo_ctrl.ReloadingTimeSnapshot.
 
@@ -407,24 +376,15 @@ class ReloadSnapshot(object):
 
 
 class GunSettings(object):
-    # RU 1.45 ammo_ctrl.GunSettings: the clip, and getPiercingPower and getShotSpeed per shell, what the vanilla
-    # shell tooltip reads.
+    # RU 1.45 ammo_ctrl.GunSettings: the clip.
 
     def __init__(self):
         self.clip = instance('Clip', {'size': 4, 'interval': 2.0})
 
-    def getPiercingPower(self, int_cd):
-        return (258, 250) if int_cd == 11 else (60, 60)
-
-    def getShotSpeed(self, int_cd):
-        return 800.0
-
 
 class Ammo(object):
-    # RU 1.45 ammo_ctrl.AmmoController: the shells layout (intCD, descriptor, quantity, quantityInClip, gunSettings),
-    # the gun settings' clip, the current shell and the reload snapshot.
-    SHELL_KINDS = {11: 'ARMOR_PIERCING', 12: 'HIGH_EXPLOSIVE'}
-    SHELL_DAMAGE = {11: 390, 12: 480}
+    # RU 1.45 ammo_ctrl.AmmoController: the gun settings' clip, the shells (quantity, quantityInClip) per intCD, the
+    # current shell and the reload snapshot.
     EVENTS = ('onGunReloadTimeSet', 'onGunSettingsSet', 'onShellsAdded', 'onShellsUpdated', 'onCurrentShellChanged')
 
     def __init__(self):
@@ -432,15 +392,6 @@ class Ammo(object):
         self.shells = {11: (32, 3), 12: (6, 0)}
         for name in self.EVENTS:
             setattr(self, name, Event())
-
-    def shell_descriptor(self, int_cd):
-        return instance('Shell', {'kind': self.SHELL_KINDS[int_cd], 'avgDamage': self.SHELL_DAMAGE[int_cd]})
-
-    def getOrderedShellsLayout(self):
-        return [
-            (int_cd, self.shell_descriptor(int_cd), quantity, in_clip, self.gun)
-            for int_cd, (quantity, in_clip) in sorted(self.shells.items())
-        ]
 
     def getGunSettings(self):
         return self.gun
@@ -469,7 +420,6 @@ class BattleSession(object):
         self.shared = instance('Shared', {})
         self.shared.feedback = self.feedback
         self.shared.vehicleState = self.vehicle_state
-        self.shared.equipments = Equipments()
         self.shared.ammo = Ammo()
         self.dp = ArenaDP([
             VehicleInfo(OWN_VEHICLE, 1, 'T-34', 1000),
@@ -1031,8 +981,6 @@ class Game(object):
         big_world.entity = lambda vehicle_id: self.own_vehicle if vehicle_id == OWN_VEHICLE else None
         module('Math', Vector2=lambda x, y: (x, y))
         module('Vehicle', Vehicle=Vehicle)
-        config = {'miscParams': {'projectileSpeedFactor': 0.8}}
-        package('items').vehicles = module('items.vehicles', g_cache=instance('Cache', {'commonConfig': config}))
         return Vehicle
 
     def install_client_class_stubs(self):
@@ -1904,8 +1852,7 @@ class ControllerPanelsTest(StoryTest):
     @classmethod
     def play(cls, game):
         game.install_hud_stubs()
-        app = game.open_hangar()
-        game.hud_module().hud_layer(app).update_settings('consumables', {'show_consumables': True})
+        game.open_hangar()
         session = game.enter_battle(1)
         cls.panels = copy.deepcopy(game.hud_components())
 
@@ -1915,11 +1862,6 @@ class ControllerPanelsTest(StoryTest):
         ammo.onShellsUpdated(11, 31, 2, 0)
         ammo.onShellsUpdated(12, 5, 0, 0)
         cls.clip_used = game.hud_text('reload_timer')
-        equipments = session.shared.equipments
-        first_aid = equipments.items[0][1]
-        first_aid.quantity = 0
-        equipments.onEquipmentUpdated(501, first_aid)
-        cls.consumables_used = game.hud_text('consumables')
 
         session.own_feedback(Feedback(KINDS.DAMAGE, ENEMY_VEHICLE, Extra(390)))
         session.hit('VEHICLE_HEALTH', ENEMY_VEHICLE, (510, None, 0))
@@ -1935,13 +1877,6 @@ class ControllerPanelsTest(StoryTest):
         cls.ammo_rack_damage_log = game.hud_text('damage_log')
         game.events.onAvatarBecomeNonPlayer()
         cls.panels_after_battle = game.hud_components()
-
-    def test_consumables_show_the_equipment_and_the_shells(self):
-        consumables = self.panels['consumables']['text']
-
-        self.assertIn(u'Аптечка', consumables)
-        self.assertIn(u'Ремкомплект 12 с', consumables)
-        self.assertIn(u'ББ 32', consumables)
 
     def test_reload_timer_shows_the_clip_while_loaded(self):
         reload_timer = self.panels['reload_timer']['text']
@@ -1959,9 +1894,6 @@ class ControllerPanelsTest(StoryTest):
 
     def test_reload_timer_follows_the_shells_left_in_the_clip(self):
         self.assertIn(u'Кассета 2/4', self.clip_used)
-
-    def test_consumables_show_a_used_up_kit(self):
-        self.assertIn(u'Аптечка ×0', self.consumables_used)
 
     def test_main_gun_counts_the_own_damage_and_the_enemy_hp_left(self):
         self.assertIn(u'нужно ещё 610, у противника осталось 510', self.main_gun)
@@ -2135,9 +2067,6 @@ class GunAndWoundsTest(StoryTest):
         game.vehicle.item = None
 
         session = game.enter_battle_with_gun((-0.26, 0.26))
-        cls.consumables = game.hud_text('consumables')
-        session.shared.ammo.onCurrentShellChanged(12)
-        cls.consumables_second_shell = game.hud_text('consumables')
         game.player.gunRotator.turretYaw = 0.2
         instances['gun_arc'].render()
         cls.gun_arc = game.hud_text('gun_arc')
@@ -2173,14 +2102,6 @@ class GunAndWoundsTest(StoryTest):
 
     def test_hangar_info_links_the_armor_page_of_the_selected_tank(self):
         self.assertEqual(self.hangar_info_actions[0]['link'], '/t/r04-t-34/armor')
-
-    def test_shell_stats_show_the_penetration_damage_and_speed(self):
-        self.assertIn(u'258 мм', self.consumables)
-        self.assertIn(u'урон 390', self.consumables)
-        self.assertIn(u'1 000 м/с', self.consumables)
-
-    def test_shell_stats_follow_the_current_shell(self):
-        self.assertIn(u'480', self.consumables_second_shell)
 
     def test_the_gun_arc_shows_the_traverse_left_each_way(self):
         self.assertIn(u'УГН', self.gun_arc)
@@ -2226,7 +2147,6 @@ def open_shots_hangar(game):
     game.install_hud_stubs()
     vehicle_class = game.install_shot_and_bush_circle_stubs()
     app = game.open_hangar()
-    game.hud_module().hud_layer(app).update_settings('consumables', {'show_shell_stats': True})
     return app, vehicle_class
 
 

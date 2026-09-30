@@ -41,7 +41,7 @@ The harness renders (`hud/live2/battle-1920x1080@1.png`, `hangar/after-hangar-19
 | marks_panel | Readable but three lines tall by default. The thresholds line uses 11 px with check glyphs. It sits at the top left, over the players panel on some widths. | One line by default (icon, key percent, delta, the next threshold). Thresholds on Alt. Right of the consumables bar, as in Lebwa and Near_You (§8.4). |
 | main_gun, battle_efficiency, personal_best, goals and missions battle lines | Five titled cards at top centre and top right. | One «Прогресс боя» plate right of the score strip, one row each, no titles (§8.5). |
 | arty_meter | A 10×84 thermometer with a 9 px scale and five icon rows. The largest block for the rarest event. | A one-line summary inside the log on Alt; history in the battle-results page. |
-| consumables | Draws the shell counts and consumable cooldowns the stock bar already shows. | Deleted; its shell-stats line moves to battle_loadout (§8.7). |
+| consumables | Draws the shell counts and consumable cooldowns the stock bar already shows. | Deleted (done in modpack 0.1.6). The shell-stats line is dropped too: the row above the stock bar shows the equipment only. |
 | reload_timer | Fine, but the seconds float away from the bar, and the clip line uses a glyph. | Keep; shell chip for the clip; absorbs gun_arc (§8.6). |
 | gun_arc | A card with a plate while the reload above it has none, and a progress bar that reads as "percent done". | A traverse scale under the reload bar: limit ticks, centre tick, a dot for the gun (§8.6). |
 | battle_loadout | Good. Slots with a gold border and ★ read well. It sits above the bar and collides with vehicle messages. | Left of the stock bar at the bar's own height, as in the Lesta and Jove equipment rows (§8.7). |
@@ -117,7 +117,7 @@ Rule: a merged component may own several panels. **Panel ids stay** wherever a p
 | **marks_panel** | «Отметки» / Marks of Excellence | hangar_marks, marks_history | `marks_panel` (battle), `hangar_marks` (the Tank card in the hangar) + window page | Battle: live MoE. Hangar: the Tank card (§9.1). Window: the history list and marks report of marks_history. |
 | **battle_progress** (new) | «Прогресс боя» / Battle progress | main_gun, battle_efficiency, personal_best (battle part), session_goals (battle part), personal_missions (battle part) | `battle_progress` | One plate, one row per target: main gun, record, WN8 of the battle, site goal, ЛБЗ. A row shows only while it applies. |
 | **reload_timer** | «Орудие» / Gun | gun_arc | `reload_timer` | Reload bar and seconds, clip, and the traverse scale on limited-traverse vehicles. |
-| **battle_loadout** | «Оборудование и снаряды» / Equipment and shells | consumables (shell stats only) | `battle_loadout`, `shell_stats` | Equipment strip left of the stock bar. Optional line above the bar: pen, damage and speed of the loaded shell. |
+| **battle_loadout** | «Оборудование в бою» / Equipment in battle | consumables (nothing kept) | `battle_loadout` | Equipment and directives as the client's icons, no labels, above the stock bar. No shell line: the stock bar and its tooltip already show the shells. |
 | team_hp | unchanged | — | `team_hp` | §8.1 |
 | sixth_sense | unchanged | — | `sixth_sense` | §8.8 |
 | platoon_points | unchanged | — | `platoon_points` | §8.10 |
@@ -168,7 +168,7 @@ Kept: `style` (full, compact, minimal, custom), `keep_stock`, `palette`, `kind_i
 
 **reload_timer:** `show_arc` (← switch `battle_gun_arc`), `arc_degrees` (← `gun_arc.show_degrees`), `arc_warn_deg` (← `gun_arc.warn_deg`).
 
-**battle_loadout:** `shell_stats` (off, current, all; ← `consumables.show_shell_stats` and `shell_stats`, only when switch `battle_consumables` was on). `icon_size` default 45 → 40.
+**battle_loadout:** no new keys; the `battle_consumables` switch is dropped silently (the schema ignores an unknown key).
 
 **session_stats:** `show_goals` (← `hangar_session_goals` and `session_goals.show_hangar`), `max_goals`, `goal_sound` (← `session_goals.sound`), `tilt` (off, row, row_and_notice; ← `hangar_tilt_guard`, §4.2), `loss_streak`, `session_battles`, `damage_drop` (← tilt_guard), `show_account` (← `hangar_ratings.show_account`), `metric_*` (← hangar_ratings), `show_platoon` (← `platoon_helper.show_session`).
 
@@ -301,7 +301,7 @@ One upgrade step, **revision 3**, runs where `upgraded()` runs today (`companion
 | `battle_moe_panel` | on if it, `hangar_marks` or `hangar_marks_history` is on; `marks_panel.show_battle_panel` keeps the old `battle_moe_panel` value. |
 | `battle_progress` (new) | on if any of `battle_main_gun`, `battle_efficiency`, `battle_personal_best` is on (all were opt-in, so on means chosen), or `session_goals.show_battle` / `personal_missions.show_battle` is True. |
 | `battle_reload_timer` | on if it or `battle_gun_arc` is on (after the §4.2 flip). |
-| `battle_loadout` | unchanged; `shell_stats` from consumables only when `battle_consumables` was on. |
+| `battle_loadout` | unchanged; `battle_consumables` is dropped. |
 | `hangar_session_panel` | on if it, `hangar_session_goals` or `hangar_ratings` is on. |
 | `hangar_battle_results` | on if it or `hangar_battle_hits` is on. |
 | `hangar_info` | on if it or `battle_clock` is on. `hangar_info.battle_clock` takes the new default (on): the old `battle_clock` switch was opt-in, so «off» cannot be told from «untouched». |

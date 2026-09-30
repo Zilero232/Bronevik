@@ -4,7 +4,7 @@ from ....core.client.battle import ammo, optional_devices
 from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.log import safe
 from ..i18n import STRINGS
-from ..model import clean_devices, format_panel, set_badges
+from ..model import clean_devices, format_panel
 from ..model.constants import PREVIEW_SIZE
 from ..model.preview import preview_text, preview_widget
 from ..model.widget import equipment_widget
@@ -25,12 +25,12 @@ PANEL_SPEC = PanelSpec(
 
 
 # Read again whenever the client reports the descriptor's devices or a device's battle state changed, or a setup
-# was switched before the battle.
+# was switched before the battle. Only the equipment and the directives: the stock panel under the row shows the
+# shells and the consumables.
 class BattleLoadoutPanel(BattlePanel):
 
     def __init__(self, app):
         self.devices = []
-        self.sets = {}
         BattlePanel.__init__(self, app, PANEL_SPEC)
 
     def start(self, player):
@@ -41,14 +41,12 @@ class BattleLoadoutPanel(BattlePanel):
 
     def stop(self):
         self.devices = []
-        self.sets = {}
 
     def settings_changed(self, changed):
         self.render()
 
     def _on_loadout(self, *args):
-        items, self.sets = own_loadout()
-        self.devices = clean_devices(items)
+        self.devices = clean_devices(own_loadout())
         self.render()
 
     @safe
@@ -57,6 +55,4 @@ class BattleLoadoutPanel(BattlePanel):
             self.hide()
             return
 
-        badges = set_badges(self.sets, self.app.translate)
-        text = format_panel(self.devices, badges, self.settings)
-        self.show(text, equipment_widget(self.devices, badges, self.settings))
+        self.show(format_panel(self.devices, self.settings), equipment_widget(self.devices, self.settings))

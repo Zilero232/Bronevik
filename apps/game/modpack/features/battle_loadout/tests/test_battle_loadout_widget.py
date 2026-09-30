@@ -6,8 +6,8 @@ import unittest
 import _support
 from otmetki.core.settings import Settings
 from otmetki.features.battle_loadout.i18n import STRINGS
-from otmetki.features.battle_loadout.model import clean_devices, set_badges
-from otmetki.features.battle_loadout.model.constants import PREVIEW_DEVICES, PREVIEW_SETS
+from otmetki.features.battle_loadout.model import clean_devices
+from otmetki.features.battle_loadout.model.constants import PREVIEW_DEVICES
 from otmetki.features.battle_loadout.model.preview import preview_widget
 from otmetki.features.battle_loadout.model.widget import equipment_widget
 from otmetki.features.battle_loadout.settings import SCHEMA
@@ -18,8 +18,7 @@ def translator():
 
 
 def preview_data():
-    badges = set_badges(PREVIEW_SETS, translator())
-    return equipment_widget(clean_devices(PREVIEW_DEVICES), badges, Settings({}, SCHEMA))['data']
+    return equipment_widget(clean_devices(PREVIEW_DEVICES), Settings({}, SCHEMA))['data']
 
 
 class EquipmentWidgetTest(unittest.TestCase):
@@ -49,13 +48,8 @@ class EquipmentWidgetTest(unittest.TestCase):
         assert items[3]['active']
         assert items[4]['overlay'] == 'img://gui/maps/icons/artefact/battleBooster_overlay.png'
 
-    def test_the_set_badges_of_the_sample(self):
-        sets = preview_data()['sets']
-
-        assert sets == [
-            {'group': 'devices', 'text': u'набор 2/2'},
-            {'group': 'consumables', 'text': u'снаряды 1/2'},
-        ]
+    def test_the_row_carries_only_the_items_and_their_size(self):
+        assert sorted(preview_data()) == ['items', 'size']
 
     def test_fixture_for_the_page(self):
         widget = preview_widget(Settings({}, SCHEMA), translator())

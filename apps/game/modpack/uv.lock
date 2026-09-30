@@ -22,7 +22,6 @@ members = [
     "otmetki-feature-camera",
     "otmetki-feature-chat-filter",
     "otmetki-feature-comp7-helper",
-    "otmetki-feature-consumables",
     "otmetki-feature-crosshair",
     "otmetki-feature-damage-log",
     "otmetki-feature-death-card",
@@ -218,7 +217,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-battle-loadout"
-version = "0.2.1"
+version = "0.3.0"
 source = { virtual = "features/battle_loadout" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -310,21 +309,6 @@ requires-dist = [
 name = "otmetki-feature-comp7-helper"
 version = "0.1.0"
 source = { virtual = "features/comp7_helper" }
-dependencies = [
-    { name = "otmetki-companion" },
-    { name = "otmetki-core" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "otmetki-companion", virtual = "packages/companion" },
-    { name = "otmetki-core", virtual = "packages/core" },
-]
-
-[[package]]
-name = "otmetki-feature-consumables"
-version = "0.3.0"
-source = { virtual = "features/consumables" }
 dependencies = [
     { name = "otmetki-companion" },
     { name = "otmetki-core" },
@@ -820,7 +804,6 @@ dependencies = [
     { name = "otmetki-feature-camera" },
     { name = "otmetki-feature-chat-filter" },
     { name = "otmetki-feature-comp7-helper" },
-    { name = "otmetki-feature-consumables" },
     { name = "otmetki-feature-crosshair" },
     { name = "otmetki-feature-damage-log" },
     { name = "otmetki-feature-death-card" },
@@ -881,7 +864,6 @@ requires-dist = [
     { name = "otmetki-feature-camera", virtual = "features/camera" },
     { name = "otmetki-feature-chat-filter", virtual = "features/chat_filter" },
     { name = "otmetki-feature-comp7-helper", virtual = "features/comp7_helper" },
-    { name = "otmetki-feature-consumables", virtual = "features/consumables" },
     { name = "otmetki-feature-crosshair", virtual = "features/crosshair" },
     { name = "otmetki-feature-damage-log", virtual = "features/damage_log" },
     { name = "otmetki-feature-death-card", virtual = "features/death_card" },

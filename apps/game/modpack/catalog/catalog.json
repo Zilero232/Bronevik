@@ -150,8 +150,8 @@
         "en": "Streamer"
       },
       "description": {
-        "ru": "Панели, которые интересно видеть зрителям: отметка, урон, перезарядка, снаряжение и оборудование, плюс режим стримера с клавишей «убрать панели».",
-        "en": "Panels viewers like to see: MoE, damage, reload, consumables and equipment, plus the streamer mode with its “hide panels” key."
+        "ru": "Панели, которые интересно видеть зрителям: отметка, урон, перезарядка и оборудование, плюс режим стримера с клавишей «убрать панели».",
+        "en": "Panels viewers like to see: MoE, damage, reload and equipment, plus the streamer mode with its “hide panels” key."
       }
     },
     {
@@ -492,28 +492,6 @@
       }
     },
     {
-      "id": "consumables",
-      "category": "battle",
-      "context": "battle",
-      "presets": ["streamer"],
-      "title": {
-        "ru": "Снаряжение и снаряды",
-        "en": "Consumables and shells"
-      },
-      "description": {
-        "ru": "Своё снаряжение с откатом и оставшиеся снаряды каждого типа одной строкой, в любом месте экрана; по желанию — пробитие, урон и скорость своих снарядов, как в их подсказке в бою.",
-        "en": "Your consumables with their cooldowns and the shells left of each type on one line, anywhere on screen; optionally your shells’ penetration, damage and velocity, as their in-battle tooltip shows them."
-      },
-      "fairPlay": {
-        "ru": "Только свой танк: то же, что панель снаряжения игры.",
-        "en": "Your own tank only: what the game's consumables panel shows."
-      },
-      "perf": "low",
-      "preview": {
-        "image": "previews/consumables.png"
-      }
-    },
-    {
       "id": "reload_timer",
       "category": "battle",
       "context": "battle",
@@ -699,8 +677,8 @@
         "en": "Equipment in battle"
       },
       "description": {
-        "ru": "Значки оборудования и директивы вашего танка прямо над стандартной панелью снарядов (★ — в слоте своей специализации), выбранный набор полевой модернизации и работающее оборудование; наведите курсор (Ctrl) на значок, и подсказка расскажет, что даёт предмет.",
-        "en": "Your tank's equipment and directive icons right above the stock shells panel (★: in a slot of its own specialisation), the selected field modification set and the equipment at work; point the cursor (Ctrl) at an icon for a tooltip on what the item does."
+        "ru": "Значки оборудования и директив вашего танка — картинки из самой игры, без подписей — прямо над стандартной панелью (★ — в слоте своей специализации, значок улучшенного, трофейного и модернизированного); наведите курсор (Ctrl) на значок, и подсказка назовёт предмет и что он даёт.",
+        "en": "Your tank's equipment and directives as the game's own icons, no labels, right above the stock panel (★: in a slot of its own specialisation, the improved, trophy and modernized marks); point the cursor (Ctrl) at an icon for a tooltip with the item's name and what it does."
       },
       "fairPlay": {
         "ru": "Только свой танк: чужое оборудование клиент не показывает, и мод его не угадывает.",
@@ -1297,7 +1275,6 @@
         "personal_best",
         "main_gun",
         "battle_efficiency",
-        "consumables",
         "reload_timer",
         "gun_arc",
         "received_hits",
@@ -1359,7 +1336,6 @@
         "personal_best",
         "main_gun",
         "battle_efficiency",
-        "consumables",
         "reload_timer",
         "gun_arc",
         "received_hits",

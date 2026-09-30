@@ -3,12 +3,12 @@ import { artyMeterSchema, ArtyMeterWidget } from '../../../arty-meter';
 import { battleClockSchema, BattleClockWidget } from '../../../battle-clock';
 import { battleLoadoutSchema, BattleLoadoutWidget } from '../../../battle-loadout';
 import { cardSchema, CardWidget } from '../../../card';
-import { consumablesSchema, ConsumablesWidget, reloadTimerSchema, ReloadTimerWidget } from '../../../consumables';
 import { crosshairSchema, CrosshairWidget } from '../../../crosshair';
 import { damageLogSchema, DamageLogWidget, lastHitSchema, LastHitWidget } from '../../../damage-log';
 import { hitLogSchema, HitLogWidget } from '../../../hit-log';
 import { marksPanelSchema, MarksPanelWidget } from '../../../marks-panel';
 import { platoonPointsSchema, PlatoonPointsWidget } from '../../../platoon-points';
+import { reloadTimerSchema, ReloadTimerWidget } from '../../../reload-timer';
 import { sixthSenseSchema, SixthSenseWidget } from '../../../sixth-sense';
 import { teamHpSchema, TeamHpWidget } from '../../../team-hp';
 
@@ -18,7 +18,6 @@ export const WIDGET_ENTRIES = [
   defineHudWidget({ kind: 'last_hit', schema: lastHitSchema, Component: LastHitWidget }),
   defineHudWidget({ kind: 'hit_log', schema: hitLogSchema, Component: HitLogWidget }),
   defineHudWidget({ kind: 'marks_panel', schema: marksPanelSchema, Component: MarksPanelWidget }),
-  defineHudWidget({ kind: 'consumables', schema: consumablesSchema, Component: ConsumablesWidget }),
   defineHudWidget({ kind: 'reload_timer', schema: reloadTimerSchema, Component: ReloadTimerWidget }),
   defineHudWidget({ kind: 'battle_loadout', schema: battleLoadoutSchema, Component: BattleLoadoutWidget, pointer: true }),
   defineHudWidget({ kind: 'sixth_sense', schema: sixthSenseSchema, Component: SixthSenseWidget }),

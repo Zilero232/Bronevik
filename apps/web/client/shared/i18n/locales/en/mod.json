@@ -106,7 +106,7 @@
       },
       "battle_loadout": {
         "title": "Equipment in battle",
-        "text": "Equipment, directives and the field modification above the shell bar, with a tooltip on hover."
+        "text": "The game's own equipment and directive icons above the shell bar, no labels, with a tooltip on hover."
       },
       "gun_arc": {
         "title": "Gun traverse",

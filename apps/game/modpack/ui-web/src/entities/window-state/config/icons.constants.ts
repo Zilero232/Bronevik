@@ -24,7 +24,6 @@ export const COMPONENT_ICONS: Partial<Record<string, UiIconName>> = {
   personal_best: 'trophy',
   main_gun: 'badge-check',
   battle_efficiency: 'activity',
-  consumables: 'package',
   reload_timer: 'hourglass',
   gun_arc: 'move-horizontal',
   received_hits: 'shield-alert',

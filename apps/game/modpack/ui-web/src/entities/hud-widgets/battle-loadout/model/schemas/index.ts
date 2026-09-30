@@ -1,3 +1,3 @@
 export { battleLoadoutSchema } from './battle-loadout.schemas';
 
-export type { BattleLoadoutData, EquipmentItem, SetBadge } from './battle-loadout.types';
+export type { BattleLoadoutData, EquipmentItem } from './battle-loadout.types';

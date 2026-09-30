@@ -15,17 +15,20 @@
   align-items: center;
 }
 
-.item {
+.cell {
   position: relative;
   display: flex;
-  padding: 1px;
-  border: 1px solid rgb(255 255 255 / 0%);
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border: 1px solid rgb(255 255 255 / 14%);
   border-radius: token(radius-sm);
   margin: 0 2px;
+  background-color: rgb(0 0 0 / 35%);
 }
 
 .bonus {
-  border-color: rgb(255 214 102 / 45%);
+  border-color: rgb(255 214 102 / 55%);
 }
 
 .boosted {
@@ -43,23 +46,18 @@
 
 .overlay {
   position: absolute;
-  top: 1px;
-  left: 1px;
+  top: 2px;
+  left: 2px;
 }
 
 .star {
   position: absolute;
-  top: -3px;
-  right: -3px;
+  top: -4px;
+  right: -4px;
 }
 
 .attention {
-  @include hud-text;
-
   position: absolute;
-  top: -2px;
-  left: 2px;
-  color: token(color-warning);
-  font-size: 14px;
-  font-weight: 700;
+  top: -4px;
+  left: -4px;
 }

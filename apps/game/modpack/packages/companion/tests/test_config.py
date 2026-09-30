@@ -64,7 +64,6 @@ class ConfigTest(unittest.TestCase):
     def test_a_switch_left_at_a_retired_default_takes_the_new_one(self):
         upgraded = config_at_retired_defaults()
 
-        self.assertEqual(upgraded.get('battle_consumables'), False)
         self.assertEqual(upgraded.get('battle_loadout'), True)
 
     def test_upgrading_keeps_the_other_switches(self):
@@ -82,21 +81,25 @@ class ConfigTest(unittest.TestCase):
 
         chosen = Config(dict(upgraded.to_dict(), **RETIRED_VALUES))
 
-        self.assertEqual(chosen.get('battle_consumables'), True)
         self.assertEqual(chosen.get('battle_loadout'), False)
 
-    def test_a_config_stamped_before_the_one_time_switches_drops_the_consumables_bar_for_the_equipment_row(self):
-        upgraded = Config({'defaults_revision': 1, 'battle_consumables': True, 'battle_loadout': False})
+    def test_a_config_stamped_before_the_one_time_switches_turns_the_equipment_row_on(self):
+        upgraded = Config({'defaults_revision': 1, 'battle_loadout': False})
 
-        self.assertEqual(upgraded.get('battle_consumables'), False)
         self.assertEqual(upgraded.get('battle_loadout'), True)
 
-    def test_the_consumables_bar_turned_back_on_after_the_one_time_switches_stays_on(self):
-        upgraded = Config({'defaults_revision': 1, 'battle_consumables': True})
+    def test_the_equipment_row_turned_off_after_the_one_time_switches_stays_off(self):
+        upgraded = Config({'defaults_revision': 1})
 
-        chosen = Config(dict(upgraded.to_dict(), battle_consumables=True))
+        chosen = Config(dict(upgraded.to_dict(), battle_loadout=False))
 
-        self.assertEqual(chosen.get('battle_consumables'), True)
+        self.assertEqual(chosen.get('battle_loadout'), False)
+
+    def test_the_switch_of_the_removed_consumables_bar_drops_out_of_the_file(self):
+        config = Config({'defaults_revision': 2, 'battle_consumables': True, 'battle_loadout': True})
+
+        self.assertNotIn('battle_consumables', config.to_dict())
+        self.assertFalse(config.is_enabled('battle_consumables'))
 
     def test_a_fresh_config_is_stamped_with_the_current_revision(self):
         self.assertEqual(Config().get('defaults_revision'), DEFAULTS_REVISION)

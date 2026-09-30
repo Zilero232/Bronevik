@@ -19,14 +19,11 @@ BOOSTER_OVERLAYS = {'boost': 'battleBooster_overlay', 'replace': 'battleBooster_
 ICON_FALLBACK = 'module'
 BONUS_MARK = u'★'
 ATTENTION_MARK = u'!'
+# The GUIFlash row draws only images: a device whose icon the client lacks keeps its cell with a mark, not a name.
+MISSING_ICON_MARK = u'◆'
 # The item marks the widget draws: specialisation slot, boosted by the directive, directive without effect,
 # running, spent.
 FLAGS = ('bonus', 'boosted', 'attention', 'active', 'used')
-
-# The field modification setup groups (RU 1.45 common/post_progression_common.py TankSetupGroupsId), in badge order.
-SET_GROUPS = ('devices', 'consumables')
-SET_KEYS = {'devices': 'battle_loadout_set_devices', 'consumables': 'battle_loadout_set_consumables'}
-MAX_SETS = 2
 
 PREVIEW_SIZE = (400, 60)
 
@@ -64,4 +61,3 @@ PREVIEW_DEVICES = [
         'booster': 'boost',
     },
 ]
-PREVIEW_SETS = {'devices': {'index': 1, 'total': 2}, 'consumables': {'index': 0, 'total': 2}}

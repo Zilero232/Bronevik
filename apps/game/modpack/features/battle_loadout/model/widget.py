@@ -4,5 +4,5 @@ from ....core.hud.widget import widget
 from .constants import KIND
 
 
-def equipment_widget(devices, badges, settings):
-    return widget(KIND, {'size': settings.get('icon_size'), 'items': devices, 'sets': badges})
+def equipment_widget(devices, settings):
+    return widget(KIND, {'size': settings.get('icon_size'), 'items': devices})

@@ -34,9 +34,9 @@ QUEST_PROGRESS = (200, 107, 245)
 TIMER_WIDTH = 184
 BATTLE_CLOCK_WIDTH = 90
 BATTLE_PANELS = (
-    'arty_meter', 'battle_clock', 'battle_efficiency', 'battle_loadout', 'consumables', 'damage_log', 'death_card',
-    'gun_arc', 'hit_log', 'main_gun', 'marks_panel', 'personal_best', 'personal_missions', 'platoon_points',
-    'received_hits', 'reload_timer', 'session_goals', 'sixth_sense',
+    'arty_meter', 'battle_clock', 'battle_efficiency', 'battle_loadout', 'damage_log', 'death_card', 'gun_arc',
+    'hit_log', 'main_gun', 'marks_panel', 'personal_best', 'personal_missions', 'platoon_points', 'received_hits',
+    'reload_timer', 'session_goals', 'sixth_sense',
 )
 
 

@@ -2,8 +2,8 @@
 
 [project]
 name = "otmetki-feature-battle-loadout"
-version = "0.2.1"
-description = "Feature: the own tank's equipment, field modifications and directives on a battle panel."
+version = "0.3.0"
+description = "Feature: the own tank's equipment and directives as the game's own icons on a battle panel."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }
 authors = [{ name = "Alexandr Artemev" }]

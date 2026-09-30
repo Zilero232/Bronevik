@@ -4,6 +4,22 @@ The modpack's release notes. Every package has its own entry, `## <id> <version>
 
 Add the new entry on top of the component's previous ones when you bump a `VERSION`.
 
+## 0.1.6
+
+### ru
+
+Ряд оборудования — только значки из самой игры, а повтор стандартной панели снарядов и расходников убран.
+
+- Компонент «Снаряжение и снаряды» удалён: стандартная панель игры уже показывает снаряжение, снаряды и откат. Его переключатель в `config.json` тихо отбрасывается при следующем сохранении.
+- «Оборудование в бою»: квадратные ячейки с иконками предметов из клиента в лёгкой рамке, без подписей и без плашек наборов. Название и действие предмета — в подсказке игры при наведении с Ctrl. Если у клиента нет картинки, в ячейке наш значок.
+
+### en
+
+The equipment row is the game's own icons only, and the copy of the stock shells and consumables panel is gone.
+
+- The «Consumables and shells» component is removed: the game's stock panel already shows the consumables, the shells and the cooldowns. Its switch in `config.json` is silently dropped on the next save.
+- «Equipment in battle»: square cells with the client's item icons in a light frame, with no labels and no set badges. The item's name and effect are in the game's tooltip on hover with Ctrl. When the client has no image, the cell shows our glyph.
+
 ## 0.1.5
 
 ### ru
@@ -324,36 +340,6 @@ A new component: Event trackers (off by default).
 
 - A 15 m circle on the ground around your tank: always on or by a hotkey (Ctrl+Shift+B, Ctrl+Shift+C, F7, F8), four colours; gone when the tank is destroyed.
 
-## consumables 0.3.1
-
-### ru
-
-- Выключено по умолчанию: стандартная панель показывает то же. Если включить, стоит над рядом оборудования.
-
-### en
-
-- Off by default: the stock panel shows the same. When on, it sits above the equipment row.
-
-## consumables 0.3.0
-
-### ru
-
-- Слоты с иконками клиента и круговой перезарядкой, снаряды иконками; по умолчанию только снаряды, чтобы не дублировать стандартную панель.
-
-### en
-
-- Slots with client icons and radial cooldowns, shells as icons; by default shells only, so the stock bar is not duplicated.
-
-## consumables 0.2.0
-
-### ru
-
-- ТТХ своих снарядов (выключено по умолчанию): пробитие, урон и скорость заряженного снаряда или всех типов — те же числа, что в подсказке снаряда в бою.
-
-### en
-
-- Your shells' stats (off by default): the penetration, damage and velocity of the loaded shell or of every type, the numbers the shell tooltip shows in battle.
-
 ## hangar_info 0.4.0
 
 ### ru
@@ -435,6 +421,22 @@ A new component: Event trackers (off by default).
 ### en
 
 - A card after your tank is destroyed: who fired the last shot (or whom the kill feed named), the shell or the cause (fire, ram), the damage, the damaged modules and crew and the side of the hull as the game's hit indicator showed it. Nothing is drawn while the tank is alive; no positions, no trajectories.
+
+## battle_loadout 0.5.0
+
+### ru
+
+- Только оборудование и директивы значками из клиента в квадратных ячейках с рамкой: никаких подписей и плашек «набор N/2» и «снаряды N/2» — снаряды и расходники показывает стандартная панель под рядом.
+- Знак директивы, которая не действует на танк, — щит с «!» вместо буквы; улучшенное, трофейное и модернизированное оборудование — со стандартным значком поверх иконки, ★ — в слоте своей специализации.
+- Название и действие предмета — в подсказке самой игры при наведении с Ctrl (своя подсказка остаётся, где игровая недоступна).
+- Нет картинки у клиента — в ячейке наш значок, а не название.
+
+### en
+
+- Equipment and directives only, as the client's icons in square framed cells: no labels and no «set N/2» and «shells N/2» badges, the stock panel under the row shows the shells and consumables.
+- A directive that does not affect the tank wears a shield with «!» instead of a letter; improved, trophy and modernized devices wear the stock mark over the icon, ★ marks a slot of the device's own specialisation.
+- The item's name and effect are in the game's own tooltip on hover with Ctrl (our tooltip stays where the game's is unavailable).
+- When the client has no image, the cell shows our glyph, not the name.
 
 ## battle_loadout 0.4.1
 
@@ -802,16 +804,6 @@ A new component: Event trackers (off by default).
 - Battle efficiency: a WN8 estimate of this battle from the tank's expected values and the damage against your own average on it, coloured above or below your own.
 - Without a known average damage (0 or missing) the damage line is left out.
 
-## consumables 0.1.0
-
-### ru
-
-- Своё снаряжение с откатом и оставшиеся снаряды каждого типа одной перетаскиваемой строкой; откат считается по времени игры.
-
-### en
-
-- Your consumables with their cooldowns and the shells left of each type on one movable line; cooldowns count by game time.
-
 ## reload_timer 0.2.1
 
 ### ru
@@ -841,6 +833,16 @@ A new component: Event trackers (off by default).
 ### en
 
 - Your gun's reload countdown with a bar and the shells in the magazine; your own gun only. It counts by game time and keeps pace with the reticle.
+
+## core 0.6.6
+
+### ru
+
+- Удалён доступ к контроллеру расходников боя: им пользовалась только удалённая панель снаряжения. Ряд оборудования — единственная панель над стандартной панелью снарядов.
+
+### en
+
+- The access to the battle consumables controller is removed: only the removed consumables bar used it. The equipment row is the only panel above the stock shells panel.
 
 ## core 0.6.5
 
@@ -1014,6 +1016,16 @@ A new component: Event trackers (off by default).
 - Durable settings: the files a player cannot recreate are mirrored into `%APPDATA%\TriOtmetki`, and a missing or older copy in `mods/configs/otmetki` is restored on load.
 - Pinned Python 2.7 libraries: six, blinker, attrs, enum34.
 
+## companion 0.6.3
+
+### ru
+
+- Переключатель удалённой панели снаряжения (`battle_consumables`) больше не хранится: старый ключ в `config.json` тихо отбрасывается.
+
+### en
+
+- The switch of the removed consumables bar (`battle_consumables`) is no longer kept: the old key in `config.json` is silently dropped.
+
 ## companion 0.6.2
 
 ### ru
@@ -1113,6 +1125,16 @@ A new component: Event trackers (off by default).
 - Binding to triotmetki.ru with a one-time code from the site; nothing is collected or sent before it.
 - After each own battle: the `personal` block of the battle results, MoE snapshots and distribution, queue times, the loadout and shots, sent in signed batches through an outbox that survives a restart and backs off on errors.
 - Per-feature data switches in `config.json`, the ModsSettingsAPI window as the fallback settings UI, and the streamer settings share (export, apply with a confirmation, restore).
+
+## ui 0.6.3
+
+### ru
+
+- Страница HUD больше не рисует панель снаряжения и снарядов; ряд оборудования — квадратные ячейки с иконками клиента без подписей и с подсказкой игры.
+
+### en
+
+- The HUD page no longer draws the consumables and shells bar; the equipment row is square cells with the client's icons, no labels and the game's tooltip.
 
 ## ui 0.6.2
 

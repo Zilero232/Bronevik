@@ -6,7 +6,7 @@ import unittest
 import _support
 from otmetki.core.settings import Settings
 from otmetki.features.battle_loadout.i18n import STRINGS
-from otmetki.features.battle_loadout.model import clean_device, clean_devices, format_panel, overlay_of, set_badges
+from otmetki.features.battle_loadout.model import clean_device, clean_devices, format_panel, overlay_of
 from otmetki.features.battle_loadout.model.preview import preview_text
 from otmetki.features.battle_loadout.settings import SCHEMA, SETTINGS
 
@@ -57,6 +57,11 @@ class DeviceTest(unittest.TestCase):
 
         assert device['icon'] == ARTEFACTS + 'improvedVentilation.png|otmetki:module'
         assert device['effect'] == u''
+
+    def test_a_device_without_an_icon_gets_the_fallback_glyph(self):
+        device = clean_device(turbocharger(icon=None))
+
+        assert device['icon'] == 'otmetki:module'
 
     def test_nameless_and_broken_entries_are_dropped(self):
         raw = [turbocharger(), ventilation(), {'name': u'  ', 'icon': 'rammer'}, None]
@@ -134,53 +139,24 @@ class ActiveStateTest(unittest.TestCase):
         assert not device['active']
 
 
-class SetBadgeTest(unittest.TestCase):
-
-    def test_the_active_set_of_each_switchable_group_in_badge_order(self):
-        raw = {'consumables': {'index': 0, 'total': 2}, 'devices': {'index': 1, 'total': 2}}
-
-        badges = set_badges(raw, translator())
-
-        assert badges == [
-            {'group': 'devices', 'text': u'набор 2/2'},
-            {'group': 'consumables', 'text': u'снаряды 1/2'},
-        ]
-
-    def test_the_badge_in_english(self):
-        badges = set_badges({'devices': {'index': 0, 'total': 2}}, translator('en'))
-
-        assert badges == [{'group': 'devices', 'text': u'set 1/2'}]
-
-    def test_no_badge_for_a_group_without_a_switch_or_with_broken_indexes(self):
-        raw = {
-            'devices': {'index': 2, 'total': 2},
-            'consumables': {'index': 0, 'total': 1},
-            'other': {'index': 0, 'total': 2},
-        }
-
-        assert set_badges(raw, translator()) == []
-
-    def test_no_badge_for_a_boolean_index(self):
-        assert set_badges({'devices': {'index': True, 'total': 2}}, translator()) == []
-
-    def test_no_badges_from_nothing(self):
-        assert set_badges(None, translator()) == []
-
-
 class FormatTest(unittest.TestCase):
 
-    def test_the_set_badge_leads_the_icon_row(self):
-        badges = set_badges({'devices': {'index': 0, 'total': 2}}, translator())
+    def test_the_row_is_the_client_icons_alone(self):
+        text = format_panel(clean_devices([turbocharger(bonus=False)]), Settings({}, SCHEMA))
 
-        text = format_panel(clean_devices([turbocharger()]), badges, Settings({}, SCHEMA))
+        assert text == u'<img src="img://gui/maps/icons/artefact/turbocharger.png" width="45" height="45"/>'
 
-        icon = u'<img src="img://gui/maps/icons/artefact/turbocharger.png" width="45" height="45"/>'
-        assert text.startswith(u'набор 1/2 ' + icon)
+    def test_a_device_without_an_icon_keeps_a_mark_and_no_name(self):
+        devices = clean_devices([turbocharger(icon=None, bonus=False)])
+
+        text = format_panel(devices, Settings({}, SCHEMA))
+
+        assert text == u'◆'
 
     def test_icons_carry_the_bonus_star_and_the_attention_mark_instead_of_names(self):
         devices = clean_devices([turbocharger(), directive(attention=True)])
 
-        text = format_panel(devices, [], Settings({}, SCHEMA))
+        text = format_panel(devices, Settings({}, SCHEMA))
 
         assert u'★' in text
         assert u'!' in text

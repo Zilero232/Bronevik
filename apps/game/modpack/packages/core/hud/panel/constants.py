@@ -99,7 +99,6 @@ DOCKS = {
     'otmetki.hud.personal_missions': ('battle_right_top', 3),
     'otmetki.hud.main_gun': ('battle_right_top', 4),
     'otmetki.hud.battle_loadout': ('battle_bottom_center', 0),
-    'otmetki.hud.consumables': ('battle_bottom_center', 1),
     'otmetki.hud.hangar_marks': ('hangar_left', 0),
     'otmetki.marks_history': ('hangar_left', 1),
     'otmetki.battle_hits': ('hangar_left', 2),

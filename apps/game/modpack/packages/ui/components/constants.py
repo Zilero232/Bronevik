@@ -61,7 +61,6 @@ PLACEMENT = {
     'personal_best': (SECTION_MARKS, CONTEXT_ANY),
     'main_gun': (SECTION_MARKS, CONTEXT_BATTLE),
     'battle_efficiency': (SECTION_MARKS, CONTEXT_BATTLE),
-    'consumables': (SECTION_BATTLE, CONTEXT_BATTLE),
     'reload_timer': (SECTION_BATTLE, CONTEXT_BATTLE),
     'gun_arc': (SECTION_BATTLE, CONTEXT_BATTLE),
     'received_hits': (SECTION_BATTLE, CONTEXT_BATTLE),

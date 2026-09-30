@@ -41,7 +41,6 @@ dependencies = [
   "otmetki-feature-session-goals",
   "otmetki-feature-main-gun",
   "otmetki-feature-battle-efficiency",
-  "otmetki-feature-consumables",
   "otmetki-feature-reload-timer",
   "otmetki-feature-received-hits",
   "otmetki-feature-death-card",
@@ -116,7 +115,6 @@ otmetki-feature-personal-best = { workspace = true }
 otmetki-feature-session-goals = { workspace = true }
 otmetki-feature-main-gun = { workspace = true }
 otmetki-feature-battle-efficiency = { workspace = true }
-otmetki-feature-consumables = { workspace = true }
 otmetki-feature-reload-timer = { workspace = true }
 otmetki-feature-received-hits = { workspace = true }
 otmetki-feature-death-card = { workspace = true }

@@ -2,14 +2,15 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.compat import is_int, string_types, to_text
 from ....core.format import COLOR_WARN, font
-from ....core.hud.icons import artefact_icon, image, split
+from ....core.hud.icons import artefact_icon, glyph, image, split
 from .constants import (ATTENTION_MARK, BONUS_MARK, BOOSTER_OVERLAY_PATH, BOOSTER_OVERLAYS, FLAGS, ICON_FALLBACK,
-                        MAX_EFFECT, MAX_ITEMS, MAX_MODERNIZED_LEVEL, MAX_NAME, MAX_SETS, OVERLAY_DELUXE,
-                        OVERLAY_MODERNIZED, OVERLAY_PATH, OVERLAY_TROPHIES, SET_GROUPS, SET_KEYS)
+                        MAX_EFFECT, MAX_ITEMS, MAX_MODERNIZED_LEVEL, MAX_NAME, MISSING_ICON_MARK, OVERLAY_DELUXE,
+                        OVERLAY_MODERNIZED, OVERLAY_PATH, OVERLAY_TROPHIES)
 
 # Fair play: the player's own tank only, the equipment and directives its setups carry (what the stock equipment
 # tooltips and ammunition panels read) and the device states the client reports for the own vehicle. The client tells
-# nothing about other vehicles' equipment and nothing is inferred.
+# nothing about other vehicles' equipment and nothing is inferred. The shells and consumables are left to the stock
+# panel under the row, which already shows them.
 
 
 def _text(value, limit):
@@ -49,7 +50,7 @@ def clean_device(raw):
     device = {
         'name': name,
         'effect': _text(raw.get('effect'), MAX_EFFECT) or u'',
-        'icon': artefact_icon(raw.get('icon'), ICON_FALLBACK),
+        'icon': artefact_icon(raw.get('icon'), ICON_FALLBACK) or glyph(ICON_FALLBACK),
         'overlay': overlay_of(raw),
     }
     device.update((flag, bool(raw.get(flag))) for flag in FLAGS)
@@ -61,34 +62,6 @@ def clean_devices(raw):
     return [device for device in cleaned if device is not None]
 
 
-def _set_position(entry):
-    if not isinstance(entry, dict):
-        return None
-
-    index = entry.get('index')
-    total = entry.get('total')
-    if not is_int(index) or not is_int(total):
-        return None
-    is_switchable = 1 < total <= MAX_SETS
-    if not is_switchable or not 0 <= index < total:
-        return None
-    return index, total
-
-
-# The client's layout indexes are 0-based (RU 1.45 gui/shared/gui_items/vehicle_equipment.py getLayoutIndex); the badge
-# counts from 1, the way the prebattle setup selector numbers the sets.
-def set_badges(raw, translate):
-    groups = raw or {}
-    badges = []
-    for group in SET_GROUPS:
-        position = _set_position(groups.get(group))
-        if position is None:
-            continue
-        index, total = position
-        badges.append({'group': group, 'text': translate(SET_KEYS[group], index=index + 1, total=total)})
-    return badges
-
-
 def _mark(device):
     if device['attention']:
         return font(ATTENTION_MARK, COLOR_WARN)
@@ -98,12 +71,10 @@ def _mark(device):
 def _icon_markup(device, size):
     path, _ = split(device['icon'])
     if not path:
-        return device['name']
+        return MISSING_ICON_MARK
     return u'<img src="img://%s" width="%d" height="%d"/>' % (path, size, size)
 
 
-def format_panel(devices, badges, settings):
+def format_panel(devices, settings):
     size = settings.get('icon_size')
-    parts = [badge['text'] for badge in badges]
-    parts.extend(_icon_markup(device, size) + _mark(device) for device in devices)
-    return u' '.join(parts)
+    return u' '.join(_icon_markup(device, size) + _mark(device) for device in devices)

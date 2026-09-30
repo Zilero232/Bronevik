@@ -61,7 +61,6 @@ def oversized_card_data():
 def docked_feature_schemas():
     from otmetki.features.battle_efficiency.settings import SCHEMA as BATTLE_EFFICIENCY
     from otmetki.features.battle_loadout.settings import SCHEMA as BATTLE_LOADOUT
-    from otmetki.features.consumables.settings import SCHEMA as CONSUMABLES
     from otmetki.features.damage_log.settings import LAST_HIT_SCHEMA
     from otmetki.features.hangar_marks.settings import SCHEMA as HANGAR_MARKS
     from otmetki.features.hangar_ratings.settings import SCHEMA as HANGAR_RATINGS
@@ -78,7 +77,6 @@ def docked_feature_schemas():
         ('otmetki.hud.hit_log', HIT_LOG),
         ('otmetki.hud.last_hit', LAST_HIT_SCHEMA),
         ('otmetki.hud.battle_loadout', BATTLE_LOADOUT),
-        ('otmetki.hud.consumables', CONSUMABLES),
         ('otmetki.hud.battle_efficiency', BATTLE_EFFICIENCY),
     )
 

@@ -14,6 +14,4 @@ export const equipmentItemSchema = z.object({
   used: z.boolean()
 });
 
-export const setBadgeSchema = z.object({ group: z.string(), text: z.string() });
-
-export const battleLoadoutSchema = z.object({ size: z.number(), items: z.array(equipmentItemSchema), sets: z.array(setBadgeSchema) });
+export const battleLoadoutSchema = z.object({ size: z.number(), items: z.array(equipmentItemSchema) });

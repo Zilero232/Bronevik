@@ -35,7 +35,6 @@ FEATURES = (
     'hangar_session_goals',
     'battle_main_gun',
     'battle_efficiency',
-    'battle_consumables',
     'battle_reload_timer',
     'battle_received_hits',
     'battle_death_card',
@@ -59,8 +58,7 @@ FEATURES = (
 )
 # Off until the player turns them on: the uploads (privacy) and the secondary battle panels, so a default
 # battle shows only the essentials (team HP, damage and hit logs, marks, the reload timer, the equipment over
-# the stock consumables panel, the sixth sense lamp, the death card). The consumables bar repeats the stock
-# panel and is opt-in too.
+# the stock consumables panel, the sixth sense lamp, the death card).
 OPT_IN_FEATURES = (
     'upload_replays',
     'publish_replays',
@@ -72,24 +70,23 @@ OPT_IN_FEATURES = (
     'battle_arty_meter',
     'battle_platoon_points',
     'battle_received_hits',
-    'battle_consumables',
     'battle_clock',
     'hangar_event_trackers',
 )
 SHARE_CHANNELS = ('telegram', 'discord', 'both')
 # config.json keeps every default it was written with: a switch whose default changed is moved to the new
 # one when it still holds the old default and the file predates the change (`defaults_revision`).
-# (revision, key, old default, new default).
+# (revision, key, old default, new default). A switch of a removed component (the consumables bar,
+# `battle_consumables`, which repeated the stock panel) is left out of DEFAULTS: Settings ignores a key its schema
+# does not know, so the leftover drops out of the file on the next save.
 DEFAULTS_REVISION = 2
 RETIRED_DEFAULTS = (
-    (1, 'battle_consumables', True, False),
     (1, 'battle_loadout', False, True),
 )
 # Switches set once for every file older than the revision, whatever they hold: revision 1 missed the files already
-# stamped with it, so the consumables bar under the equipment row stayed on. The stamp records it, and a switch the
-# player turns back on afterwards is kept. (revision, key, value).
+# stamped with it, so the equipment row stayed off. The stamp records it, and a switch the player turns off
+# afterwards is kept. (revision, key, value).
 ONE_TIME_SWITCHES = (
-    (2, 'battle_consumables', False),
     (2, 'battle_loadout', True),
 )
 DEFAULTS = {
@@ -130,7 +127,6 @@ DEFAULTS = {
     'hangar_session_goals': True,
     'battle_main_gun': False,
     'battle_efficiency': False,
-    'battle_consumables': False,
     'battle_reload_timer': True,
     'battle_received_hits': False,
     'battle_death_card': True,

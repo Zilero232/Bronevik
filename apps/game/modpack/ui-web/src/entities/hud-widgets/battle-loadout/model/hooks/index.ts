@@ -1,1 +1,1 @@
-export { useHoveredItem } from './use-hovered-item';
+export { useItemTooltip } from './use-item-tooltip';

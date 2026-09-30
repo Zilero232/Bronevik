@@ -21,7 +21,6 @@ HUD_PREVIEWS = {
     'battle_clock': 'battle',
     'battle_efficiency': 'battle',
     'battle_loadout': 'battle',
-    'consumables': 'battle',
     'crosshair': 'battle',
     'damage_log': 'battle',
     'death_card': 'battle',

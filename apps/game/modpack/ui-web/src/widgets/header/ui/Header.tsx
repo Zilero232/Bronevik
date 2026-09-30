@@ -12,9 +12,11 @@ export const Header = ({ language, compact, frame }: HeaderProps) => {
     <header className={s.header}>
       <Brand compact={compact} dragRef={frame.handles.move} onRecentre={frame.onRecentre} />
       <SearchBox query={header.query} onChange={header.setQuery} onClear={header.clearQuery} />
-      {header.account && <AccountChip account={header.account} compact={compact} onOpen={header.openAccount} />}
-      <ZoomControl frame={frame} />
-      <Tools language={language} />
+      <div className={s.actions}>
+        {header.account && <AccountChip account={header.account} compact={compact} onOpen={header.openAccount} />}
+        <ZoomControl frame={frame} />
+        <Tools language={language} />
+      </div>
     </header>
   );
 };

@@ -1,3 +1,3 @@
 export const UNDO_TOAST = {
-  hideMs: 8000
+  hideMs: 5000
 } as const;

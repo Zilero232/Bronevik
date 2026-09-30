@@ -54,10 +54,12 @@ $font-family: warhelios, 'Arial Narrow', arial, sans-serif;
 
 @mixin field-box {
   height: 32px;
+  box-sizing: border-box;
   padding: 0 10px;
   border: 1px solid token(color-border-strong);
   border-radius: token(radius-md);
   background-color: token(color-surface-sunken);
   color: token(color-text);
   font-size: 13px;
+  line-height: 30px;
 }

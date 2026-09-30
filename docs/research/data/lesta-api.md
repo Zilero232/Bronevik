@@ -131,8 +131,8 @@ Our only paid product is the Plus subscription ([Plus spec](../../specs/2026-09-
 ## Community data
 - **WN8 expected values (Lesta)**: modxvm.com/en/wn8-expected-values-lesta. Daily, JSON/CSV, but behind Cloudflare.
   - Alternatives: tankist.net/services/wn8, kttc.ru/wot/ru/info/wn8etv.
-- **MoE thresholds**: poliroid.me/gunmarks (RU/BY cluster, no public API); kttc mirrors it.
-  - Long-term: compute our own from mod data.
+- **MoE thresholds**: poliroid.me/gunmarks (RU/BY cluster, no public API); kttc mirrors it. The import stays off (`FEATURES.moePoliroid`) until Poliroid's permission.
+  - Our own estimate from mod battle reports is the live source (the collector's `moe-estimate` job, [ops/moe-thresholds.md](../../ops/moe-thresholds.md)).
 - **Libraries**:
   - WgLestaAPI (Python, small).
   - Node `lesta-mt-api` is abandoned; we write our own thin TS client.

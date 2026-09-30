@@ -8,6 +8,7 @@ import {
   EquipmentSyncService,
   ExpectedValuesSyncService,
   MasteryThresholdsSyncService,
+  MoeEstimateSyncService,
   MoeThresholdsSyncService,
   VehicleSyncService
 } from './services';
@@ -21,6 +22,7 @@ import {
     CatalogSyncService,
     ExpectedValuesSyncService,
     MoeThresholdsSyncService,
+    MoeEstimateSyncService,
     MasteryThresholdsSyncService,
     ReferenceProcessor
   ]

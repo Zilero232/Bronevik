@@ -47,6 +47,13 @@ export const SCHEDULES: readonly ScheduleDefinition[] = [
   },
   { id: 'wn8-expected-daily', queue: QUEUE.reference, name: JOB.reference.wn8Expected, repeat: { pattern: '0 6 * * *' } },
   {
+    id: 'moe-estimate-daily',
+    queue: QUEUE.reference,
+    name: JOB.reference.moeEstimate,
+    repeat: { pattern: '10 6 * * *' },
+    runOnBoot: true
+  },
+  {
     id: 'moe-thresholds-daily',
     queue: QUEUE.reference,
     name: JOB.reference.moeThresholds,

@@ -7,20 +7,23 @@ import { ZodResponse } from 'nestjs-zod';
 import { CACHE_TTL } from '../../common/cache';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
 import { ModMoeParamsDto, ModMoeThresholdsDto } from './dto';
-import { MoeTableService } from './services';
+import { ModThresholdsService } from './services';
 
 @ApiTags('v1-mod')
 @AllowAnonymous()
 @UseInterceptors(ViewerCacheInterceptor)
 @Controller('v1/moe')
 export class MoePublicController {
-  constructor(private readonly table: MoeTableService) {}
+  constructor(private readonly modThresholds: ModThresholdsService) {}
 
   @Get(':tankId')
   @CacheTTL(CACHE_TTL.reference)
-  @ApiOperation({ operationId: 'getModMarkThresholds', summary: 'MoE thresholds in the shape the game mod reads; no API key needed' })
+  @ApiOperation({
+    operationId: 'getModMarkThresholds',
+    summary: 'MoE thresholds in the shape the game mod reads; no API key needed. `is_enough` is false while the thresholds are unknown'
+  })
   @ZodResponse({ type: ModMoeThresholdsDto, status: HttpStatus.OK })
   thresholds(@Param() { tankId }: ModMoeParamsDto) {
-    return this.table.forMod(tankId);
+    return this.modThresholds.forTank(tankId);
   }
 }

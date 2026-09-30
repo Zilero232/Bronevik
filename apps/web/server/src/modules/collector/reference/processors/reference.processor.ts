@@ -10,6 +10,7 @@ import {
   EncyclopediaSyncService,
   ExpectedValuesSyncService,
   MasteryThresholdsSyncService,
+  MoeEstimateSyncService,
   MoeThresholdsSyncService
 } from '../services';
 
@@ -19,6 +20,7 @@ export class ReferenceProcessor extends TrackedWorkerHost {
     private readonly encyclopedia: EncyclopediaSyncService,
     private readonly expectedValues: ExpectedValuesSyncService,
     private readonly moe: MoeThresholdsSyncService,
+    private readonly moeEstimate: MoeEstimateSyncService,
     private readonly mastery: MasteryThresholdsSyncService,
     private readonly catalog: CatalogSyncService,
     metrics: MetricsService
@@ -32,6 +34,7 @@ export class ReferenceProcessor extends TrackedWorkerHost {
       .with(JOB.reference.encyclopedia, () => this.encyclopedia.sync(encyclopediaPayloadSchema.parse(job.data)))
       .with(JOB.reference.wn8Expected, () => this.expectedValues.sync())
       .with(JOB.reference.moeThresholds, () => this.moe.sync())
+      .with(JOB.reference.moeEstimate, () => this.moeEstimate.sync())
       .with(JOB.reference.masteryThresholds, () => this.mastery.sync())
       .with(JOB.reference.englishNames, () => this.catalog.englishNames())
       .otherwise(async () => ({ ignored: job.name }));

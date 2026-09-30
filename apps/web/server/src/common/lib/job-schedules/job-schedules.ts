@@ -20,7 +20,10 @@ export const registerJobSchedules = async ({ schedules, queueOf, environment }: 
       continue;
     }
 
-    const repeat = 'pattern' in schedule.repeat ? { pattern: schedule.repeat.pattern, tz: TIME.zone } : { every: schedule.repeat.every };
+    const repeat =
+      'pattern' in schedule.repeat
+        ? { pattern: schedule.repeat.pattern, tz: TIME.zone, ...(schedule.runOnBoot ? { immediately: true } : {}) }
+        : { every: schedule.repeat.every };
 
     await queue.upsertJobScheduler(schedule.id, repeat, { name: schedule.name, data: schedule.data ?? {} });
     registered += 1;

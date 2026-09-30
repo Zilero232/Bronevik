@@ -20,6 +20,7 @@ export const JOB = {
     encyclopedia: 'encyclopedia',
     wn8Expected: 'wn8-expected',
     moeThresholds: 'moe-thresholds',
+    moeEstimate: 'moe-estimate',
     masteryThresholds: 'mastery-thresholds',
     englishNames: 'english-names'
   },

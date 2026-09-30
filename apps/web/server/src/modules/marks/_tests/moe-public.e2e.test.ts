@@ -7,22 +7,22 @@ import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { AppNotFoundException } from '../../../common/exceptions';
 import { AllExceptionsFilter } from '../../../common/filters';
 import { MoePublicController } from '../moe-public.controller';
-import { MoeTableService } from '../services';
+import { ModThresholdsService } from '../services';
 
 const KNOWN_TANK = 17_953;
 const thresholds = { '65': 2_000, '85': 2_600, '95': 3_100 };
 const mastery = { class3: 540, class2: 710, class1: 960, ace: 1_320 };
+const curve = [{ percent: 70, damage: 2_200, players: 6, battles: 40 }];
 
-const table = {
-  forMod: async (tankId: number) => {
+const service = {
+  forTank: async (tankId: number) => {
     if (tankId !== KNOWN_TANK) {
-      throw new AppNotFoundException('NOT_FOUND', 'no thresholds');
+      return { tank_id: tankId, is_enough: false, thresholds: {}, curve: [], updated_at: null, source: null };
     }
 
-    return { tank_id: tankId, thresholds, mastery, updated_at: '2026-09-24T00:00:00.000Z', source: 'poliroid' };
+    return { tank_id: tankId, is_enough: true, thresholds, curve, mastery, updated_at: '2026-09-24T00:00:00.000Z', source: 'otmetki' };
   }
 };
 
@@ -34,7 +34,7 @@ describe('GET /v1/moe/:tankId', () => {
       imports: [CacheModule.register()],
       controllers: [MoePublicController],
       providers: [
-        { provide: MoeTableService, useValue: table },
+        { provide: ModThresholdsService, useValue: service },
         { provide: APP_FILTER, useClass: AllExceptionsFilter },
         { provide: APP_PIPE, useClass: ZodValidationPipe },
         { provide: APP_INTERCEPTOR, useClass: ZodSerializerInterceptor }
@@ -54,7 +54,9 @@ describe('GET /v1/moe/:tankId', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.tank_id).toBe(KNOWN_TANK);
+    expect(response.body.is_enough).toBe(true);
     expect(response.body.thresholds).toEqual(thresholds);
+    expect(response.body.curve).toEqual(curve);
   });
 
   it('adds the base XP per battle of each mastery badge', async () => {
@@ -63,11 +65,11 @@ describe('GET /v1/moe/:tankId', () => {
     expect(response.body.mastery).toEqual(mastery);
   });
 
-  it('answers 404 with the shared error shape when there is no data', async () => {
+  it('answers 200 with is_enough false instead of an error when the thresholds are unknown', async () => {
     const response = await request(app.getHttpServer()).get('/v1/moe/1');
 
-    expect(response.status).toBe(404);
-    expect(response.body).toEqual({ error: 'no thresholds', code: 'NOT_FOUND' });
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ tank_id: 1, is_enough: false, thresholds: {}, curve: [], updated_at: null, source: null });
   });
 
   it('rejects a malformed tank id before reaching the service', async () => {

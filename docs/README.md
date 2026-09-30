@@ -44,5 +44,6 @@ The style guide, split by stack. Index and tooling: [guides/README.md](guides/RE
 ## Ops
 
 - [ops/deploy.md](ops/deploy.md) — the first production deploy checklist, modpack and manager releases on the VPS.
+- [ops/moe-thresholds.md](ops/moe-thresholds.md) — where the MoE thresholds come from, how to check and trigger the fill in production.
 - [ops/most-publishing.md](ops/most-publishing.md) — publishing the modpack in МОСТ.
 - [ops/mod-authors-outreach.md](ops/mod-authors-outreach.md) — asking mod authors for permission to ship their assets.

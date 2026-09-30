@@ -28,6 +28,24 @@ describe('registerJobSchedules', () => {
     expect(queue.upsertJobScheduler).toHaveBeenCalledWith('every', { every: 1000 }, { name: 'job', data: {} });
   });
 
+  it('asks BullMQ for an immediate first run when a cron schedule runs on boot', async () => {
+    const queue = mock<Queue>();
+
+    queue.getJobSchedulers.mockResolvedValue([]);
+
+    await registerJobSchedules({
+      schedules: [{ id: 'boot', queue: 'q', name: 'job', repeat: { pattern: '0 10 * * *' }, runOnBoot: true }],
+      queueOf: () => queue,
+      environment
+    });
+
+    expect(queue.upsertJobScheduler).toHaveBeenCalledWith(
+      'boot',
+      { pattern: '0 10 * * *', tz: TIME.zone, immediately: true },
+      { name: 'job', data: {} }
+    );
+  });
+
   it('removes a disabled schedule instead of registering it', async () => {
     const queue = mock<Queue>();
 

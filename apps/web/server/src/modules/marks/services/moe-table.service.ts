@@ -4,9 +4,8 @@ import { Injectable } from '@nestjs/common';
 import { subDays } from 'date-fns';
 import { match } from 'ts-pattern';
 
-import type { ModMoeThresholds, MoeHistoryBatchInput, MoeHistoryInput } from '../marks.types';
+import type { MoeHistoryBatchInput, MoeHistoryInput } from '../marks.types';
 
-import { AppNotFoundException } from '../../../common/exceptions';
 import { page, sortRows } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { ThresholdsService, toMasteryThreshold, toMoeThreshold, toMoeThresholdRecord, VehicleCatalogService } from '../../reference';
@@ -107,27 +106,6 @@ export class MoeTableService {
         tankIds,
         rows: rows.map(toMoeThresholdRecord).map(toHistorySourceRow)
       })
-    };
-  }
-
-  async forMod(tankId: number): Promise<ModMoeThresholds> {
-    const [moe, mastery] = await Promise.all([this.thresholds.moe(tankId), this.thresholds.mastery(tankId)]);
-
-    if (!moe) {
-      throw new AppNotFoundException('NOT_FOUND', `No MoE thresholds for tank ${tankId}`);
-    }
-
-    return {
-      tank_id: tankId,
-      thresholds: {
-        '65': moe.p65,
-        '85': moe.p85,
-        '95': moe.p95,
-        ...(moe.p100 === null ? {} : { '100': moe.p100 })
-      },
-      ...(mastery ? { mastery: { class3: mastery.class3, class2: mastery.class2, class1: mastery.class1, ace: mastery.master } } : {}),
-      updated_at: moe.capturedAt.toISOString(),
-      source: moe.source
     };
   }
 }

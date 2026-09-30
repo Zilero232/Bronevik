@@ -23,7 +23,10 @@ export const COLLECTOR_JOB_SOURCES = {
     { queue: QUEUE.sweep, name: JOB.sweep.batch }
   ],
   tankStats: [{ queue: QUEUE.aggregate, name: JOB.aggregate.serverStats }],
-  moeImport: [{ queue: QUEUE.reference, name: JOB.reference.moeThresholds }],
+  moeImport: [
+    { queue: QUEUE.reference, name: JOB.reference.moeEstimate },
+    { queue: QUEUE.reference, name: JOB.reference.moeThresholds }
+  ],
   xvmExpected: [{ queue: QUEUE.reference, name: JOB.reference.wn8Expected }],
   gameFiles: []
 } as const satisfies Record<CollectorJobName, readonly JobSuccessKeyInput[]>;

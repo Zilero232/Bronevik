@@ -6,7 +6,7 @@ use crate::catalog::fixtures::catalog_json;
 #[test]
 fn accepts_only_media_files_directly_in_the_previews_folder() {
     assert!(is_preview_file("previews/core.png"));
-    assert!(is_preview_file("previews/battle_sounds.ogg"));
+    assert!(is_preview_file("previews/session_stats.ogg"));
     assert!(!is_preview_file("previews/../core.png"));
     assert!(!is_preview_file("previews/nested/core.png"));
     assert!(!is_preview_file("other/core.png"));

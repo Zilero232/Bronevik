@@ -8,6 +8,7 @@ import type {
   EncyclopediaSyncService,
   ExpectedValuesSyncService,
   MasteryThresholdsSyncService,
+  MoeEstimateSyncService,
   MoeThresholdsSyncService
 } from '../../services';
 
@@ -18,6 +19,7 @@ const createProcessor = () => {
   const encyclopedia = mock<EncyclopediaSyncService>();
   const expectedValues = mock<ExpectedValuesSyncService>();
   const moe = mock<MoeThresholdsSyncService>();
+  const moeEstimate = mock<MoeEstimateSyncService>();
   const mastery = mock<MasteryThresholdsSyncService>();
   const catalog = mock<CatalogSyncService>();
   const metrics = mock<MetricsService>();
@@ -28,25 +30,28 @@ const createProcessor = () => {
     encyclopedia,
     expectedValues,
     moe,
+    moeEstimate,
     mastery,
     catalog,
-    processor: new ReferenceProcessor(encyclopedia, expectedValues, moe, mastery, catalog, metrics)
+    processor: new ReferenceProcessor(encyclopedia, expectedValues, moe, moeEstimate, mastery, catalog, metrics)
   };
 };
 
 describe('ReferenceProcessor', () => {
   it('routes each reference job to its sync', async () => {
-    const { encyclopedia, expectedValues, moe, mastery, catalog, processor } = createProcessor();
+    const { encyclopedia, expectedValues, moe, moeEstimate, mastery, catalog, processor } = createProcessor();
 
     await processor.process(mock<Job>({ name: JOB.reference.versionCheck, data: {} }));
     await processor.process(mock<Job>({ name: JOB.reference.wn8Expected, data: {} }));
     await processor.process(mock<Job>({ name: JOB.reference.moeThresholds, data: {} }));
+    await processor.process(mock<Job>({ name: JOB.reference.moeEstimate, data: {} }));
     await processor.process(mock<Job>({ name: JOB.reference.masteryThresholds, data: {} }));
     await processor.process(mock<Job>({ name: JOB.reference.englishNames, data: {} }));
 
     expect(encyclopedia.checkVersion).toHaveBeenCalledOnce();
     expect(expectedValues.sync).toHaveBeenCalledOnce();
     expect(moe.sync).toHaveBeenCalledOnce();
+    expect(moeEstimate.sync).toHaveBeenCalledOnce();
     expect(mastery.sync).toHaveBeenCalledOnce();
     expect(catalog.englishNames).toHaveBeenCalledOnce();
   });

@@ -10,6 +10,7 @@ export type JobSchedule = {
   data?: Record<string, unknown>;
   enabled?: boolean;
   needsLesta?: boolean;
+  runOnBoot?: boolean;
 };
 
 type ScheduleEnvironment = {

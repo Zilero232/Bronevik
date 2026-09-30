@@ -24,6 +24,10 @@ Only libraries **already declared** in the workspace's `package.json` count. A
 transitive dependency used directly is a phantom dependency — it passes locally
 through hoisting and fails on a clean CI install.
 
+## The modpack's UI is not an exception
+
+The modpack's pages (`apps/game/modpack/ui-web`) are HTML + Preact, so the same rule applies: a maintained library first — `remeda`, `ts-pattern`, `date-fns`, `zod/mini`, `nanostores`, `clsx`, `@tanstack/virtual-core` and whatever else fits. Gameface is a reason to *check* a library, not to skip it: build it with the page's ES2017 target, grep the output for built-ins newer than ES2017 (`Object.hasOwn`, `Array#at`, `structuredClone`, `Intl`), and weigh the added size. Custom code stays only when that check fails, and then it gets an entry below with the measured reason.
+
 ## Kept on purpose
 
 Custom code a library seems to cover but does not fit. Re-check an entry when the library changes, not when it looks duplicated:

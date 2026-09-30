@@ -22,9 +22,11 @@ def random_id():
     return to_text(binascii.hexlify(os.urandom(6)))
 
 
-def _valid_profile(item):
-    return isinstance(item, dict) and isinstance(item.get('id'), string_types) and isinstance(item.get('name'), string_types) \
-        and isinstance(item.get('data'), dict)
+def _is_profile(item):
+    if not isinstance(item, dict):
+        return False
+    has_names = isinstance(item.get('id'), string_types) and isinstance(item.get('name'), string_types)
+    return has_names and isinstance(item.get('data'), dict)
 
 
 class ProfileStore(object):
@@ -34,8 +36,10 @@ class ProfileStore(object):
         self.clock = clock
         self.new_id = new_id
         data = store.read({})
-        data = data if isinstance(data, dict) else {}
-        self.profiles = [dict(item) for item in data.get('profiles') or [] if _valid_profile(item)][:MAX_PROFILES]
+        if not isinstance(data, dict):
+            data = {}
+        profiles = [dict(item) for item in data.get('profiles') or [] if _is_profile(item)]
+        self.profiles = profiles[:MAX_PROFILES]
         active = data.get('active')
         self.active = active if self.get(active) is not None else None
 
@@ -52,41 +56,43 @@ class ProfileStore(object):
         name = normalize_name(name)
         now = self.clock()
         if profile_id is not None:
-            item = self.get(profile_id)
-            if item is None:
-                raise ProfileError(ERROR_MISSING)
+            item = self._existing(profile_id)
             item.update({'name': name, 'data': data, 'updated': now})
         else:
-            if len(self.profiles) >= MAX_PROFILES:
-                raise ProfileError(ERROR_LIMIT)
-            item = {'id': self._unique_id(), 'name': name, 'created': now, 'updated': now, 'data': data}
-            self.profiles.append(item)
+            item = self._add(name, data, now)
         self.active = item['id']
         self._persist()
         return item
 
-    def rename(self, profile_id, name):
+    def _existing(self, profile_id):
         item = self.get(profile_id)
         if item is None:
             raise ProfileError(ERROR_MISSING)
+        return item
+
+    def _add(self, name, data, now):
+        if len(self.profiles) >= MAX_PROFILES:
+            raise ProfileError(ERROR_LIMIT)
+        item = {'id': self._unique_id(), 'name': name, 'created': now, 'updated': now, 'data': data}
+        self.profiles.append(item)
+        return item
+
+    def rename(self, profile_id, name):
+        item = self._existing(profile_id)
         item['name'] = normalize_name(name)
         item['updated'] = self.clock()
         self._persist()
         return item
 
     def delete(self, profile_id):
-        item = self.get(profile_id)
-        if item is None:
-            raise ProfileError(ERROR_MISSING)
+        item = self._existing(profile_id)
         self.profiles = [other for other in self.profiles if other is not item]
         if self.active == profile_id:
             self.active = None
         self._persist()
 
     def activate(self, profile_id):
-        item = self.get(profile_id)
-        if item is None:
-            raise ProfileError(ERROR_MISSING)
+        item = self._existing(profile_id)
         self.active = profile_id
         self._persist()
         return item

@@ -40,7 +40,8 @@ class Preset:
 
 @dataclass(frozen=True)
 class Preview:
-    """In the catalog `image` is relative to catalog/ and `audio` to assets/; in the manifest both to the manifest's folder."""
+    """In the catalog `image` is relative to catalog/ and `audio` to assets/;
+    in the manifest both to the manifest's folder."""
     image: Optional[str] = None
     video: Optional[str] = None
     audio: Optional[str] = None

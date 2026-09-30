@@ -8,14 +8,26 @@ import { DamageLogWidget } from '../DamageLogWidget';
 
 const fixture = damageLogSchema.parse(readWidgetFixture('damage_log'));
 
+const withNote = (note: string) => fixture.rows.map((row) => ({ ...row, note }));
+
 describe(DamageLogWidget, () => {
-  it('draws totals as icon and number and one row per hit, received ones with a minus', () => {
+  it('draws the totals as an icon and a number', () => {
     const html = mount({ Component: DamageLogWidget, props: { data: fixture } });
 
     expect(imageSources(html)).toContain('img://gui/maps/icons/library/efficiency/48x48/damage.png');
+  });
+
+  it('draws one row per hit with its shell and attacker, received ones with a minus', () => {
+    const html = mount({ Component: DamageLogWidget, props: { data: fixture } });
+
     expect(imageSources(html)).toContain('img://gui/maps/icons/shell/small/ARMOR_PIERCING_CR_PREMIUM.png');
     expect(html.textContent).toContain('-310');
     expect(html.textContent).toContain('KV-1');
+  });
+
+  it('draws the hit glyphs as inline icons', () => {
+    const html = mount({ Component: DamageLogWidget, props: { data: fixture } });
+
     expect(html.querySelectorAll('svg').length).toBeGreaterThan(0);
   });
 
@@ -35,9 +47,9 @@ describe(DamageLogWidget, () => {
   });
 
   it('keeps the full row and adds its note while Alt is held', () => {
-    const rows = fixture.rows.map((row) => ({ ...row, note: 'Получено ОФ боеукладка' }));
+    const data = { ...fixture, detail: 'extended' as const, rows: withNote('Получено ОФ боеукладка') };
 
-    const html = mount({ Component: DamageLogWidget, props: { data: { ...fixture, detail: 'extended' as const, rows } } });
+    const html = mount({ Component: DamageLogWidget, props: { data } });
 
     expect(html.textContent).toContain('KV-1');
     expect(html.textContent).toContain('Получено ОФ боеукладка');

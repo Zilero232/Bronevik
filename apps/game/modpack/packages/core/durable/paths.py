@@ -7,9 +7,9 @@ from ..compat import PY2, binary_type
 from .constants import APPDATA_ENV, DIR_NAME, ENV_BUFFER_CHARS, LOSSY_CHAR, POSIX_CONFIG, WINDOWS_ROAMING
 
 
+# A path as text. Python 2 hands out environment values and `expanduser` as bytes in the ANSI code page (a Cyrillic user
+# name); joining those with text would decode them as ASCII and fail.
 def to_path_text(value):
-    """A path as text. Python 2 hands out environment values and `expanduser` as bytes in the ANSI code page
-    (a Cyrillic user name); joining those with text would decode them as ASCII and fail."""
     if value is None or not isinstance(value, binary_type):
         return value
     for encoding in (sys.getfilesystemencoding(), 'utf-8'):
@@ -46,9 +46,9 @@ def _home_config(platform, expanduser):
     return os.path.join(home, POSIX_CONFIG)
 
 
+# %APPDATA%\TriOtmetki: the copy of the mod's settings that outlives a wiped mods/configs; None when neither APPDATA
+# nor a home folder is known.
 def durable_dir(environ=None, platform=None, expanduser=os.path.expanduser):
-    """%APPDATA%\\TriOtmetki: the copy of the mod's settings that outlives a wiped mods/configs; None when neither
-    APPDATA nor a home folder is known."""
     environ = os.environ if environ is None else environ
     platform = sys.platform if platform is None else platform
     base = _env_path(environ, platform, APPDATA_ENV) or _home_config(platform, expanduser)

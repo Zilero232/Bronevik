@@ -69,15 +69,19 @@ def _set_position(entry):
     total = entry.get('total')
     if not is_int(index) or not is_int(total):
         return None
-    return (index, total) if 1 < total <= MAX_SETS and 0 <= index < total else None
+    is_switchable = 1 < total <= MAX_SETS
+    if not is_switchable or not 0 <= index < total:
+        return None
+    return index, total
 
 
 # The client's layout indexes are 0-based (RU 1.45 gui/shared/gui_items/vehicle_equipment.py getLayoutIndex); the badge
 # counts from 1, the way the prebattle setup selector numbers the sets.
 def set_badges(raw, translate):
+    groups = raw or {}
     badges = []
     for group in SET_GROUPS:
-        position = _set_position((raw or {}).get(group))
+        position = _set_position(groups.get(group))
         if position is None:
             continue
         index, total = position

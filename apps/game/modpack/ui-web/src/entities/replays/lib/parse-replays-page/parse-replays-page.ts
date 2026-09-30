@@ -1,7 +1,7 @@
-import type { ReplayItem, ReplaysPage } from '../../model';
+import type { ReplayItem, ReplaysPage } from '../../model/schemas';
 
 import { isRecord } from '../../../../shared/lib/is-record';
-import { replayItemSchema, replaysHeadSchema } from '../../model';
+import { replayItemSchema, replaysHeadSchema } from '../../model/schemas';
 
 const parsedItems = new WeakMap<object, ReplayItem | null>();
 

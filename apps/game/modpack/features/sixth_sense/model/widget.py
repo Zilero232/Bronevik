@@ -10,11 +10,17 @@ from .constants import KIND
 
 def lamp_icon(settings):
     path = icon_path(settings)
-    return image(path, 'lamp') if path else (None if settings.get('text') else glyph('lamp'))
+    if path:
+        return image(path, 'lamp')
+    if settings.get('text'):
+        return None
+
+    return glyph('lamp')
 
 
 def sixth_sense_widget(state, settings, translate, now):
     seconds_left = state.seconds_left(now) or 0.0
+
     return widget(KIND, {
         'icon': lamp_icon(settings),
         'size': settings.get('icon_size'),

@@ -4,8 +4,6 @@ from .constants import THRESHOLD_ERROR_TTL_S, THRESHOLD_TTL_S
 
 
 class ThresholdCache(object):
-    """The site curves per tank with their read time: a curve is read again after THRESHOLD_TTL_S, a
-    failed read (None) after THRESHOLD_ERROR_TTL_S, and never twice at once."""
 
     def __init__(self):
         self.entries = {}
@@ -28,7 +26,6 @@ class ThresholdCache(object):
         self.pending.add(tank_id)
 
     def store(self, tank_id, curve, now):
-        """Keep a read; a failed refresh keeps the older curve and tries again after the error TTL."""
         self.pending.discard(tank_id)
         previous = self.get(tank_id)
         if curve is None and previous is not None:

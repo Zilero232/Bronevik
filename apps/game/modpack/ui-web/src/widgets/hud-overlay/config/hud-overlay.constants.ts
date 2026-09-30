@@ -9,5 +9,6 @@ export const HUD_OVERLAY = {
   buttonIcon: 'icon.png',
   scaleOrigin: '0 0',
   hidden: 0,
+  emptyRect: { left: 0, top: 0, width: 0, height: 0 },
   dock: { gap: 6, reserve: 190, ceiling: 80 }
 } as const;

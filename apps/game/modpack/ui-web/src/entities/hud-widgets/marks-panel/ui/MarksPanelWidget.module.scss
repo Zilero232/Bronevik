@@ -4,75 +4,8 @@
   min-width: 230px;
 }
 
-.line {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-bottom: 2px;
-}
-
-.threshold {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-right: 10px;
-  font-size: 11px;
-}
-
-.level {
-  margin-right: 4px;
-  color: token(color-text-muted);
-}
-
-.need {
-  color: token(color-text);
-  font-weight: 700;
-}
-
-.reached {
-  color: token(color-success);
-}
-
 .secondary {
   margin-right: 8px;
   color: token(color-text-muted);
   font-size: 11px;
-}
-
-.battles {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  color: token(color-text-muted);
-}
-
-.main {
-  display: flex;
-  height: 24px;
-  flex-direction: row;
-  align-items: center;
-}
-
-.percent {
-  min-width: 78px;
-  margin: 0 6px;
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.delta {
-  font-size: 13px;
-}
-
-.up {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-left: 8px;
-  font-size: 11px;
-}
-
-.badge {
-  margin-left: 8px;
-  font-size: 10px;
 }

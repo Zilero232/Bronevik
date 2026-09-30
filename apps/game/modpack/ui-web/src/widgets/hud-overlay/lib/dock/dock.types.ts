@@ -12,3 +12,15 @@ export type LimitInput = { item: DockItem; screen: Size; reserve: number };
 export type SettledPanelsInput = { items: DockItem[]; measured: (id: string) => boolean };
 
 export type RoofInput = { first: DockItem; free: Rect[]; gap: number; ceiling: number };
+
+export type Column = { first: Rect; previous: Rect; widest: number };
+
+export type ColumnItemInput = { column: Column; item: DockItem; gap: number };
+
+export type OverflowInput = { top: number; height: number; upward: boolean; limit: number };
+
+export type OverlapInput = { rect: Rect; other: Rect };
+
+export type PlaceNextInput = ColumnItemInput & { screen: Size; reserve: number };
+
+export type StackGroupInput = { members: DockItem[]; lifted: number | null; placed: Map<string, Rect>; screen: Size; gap: number; reserve: number };

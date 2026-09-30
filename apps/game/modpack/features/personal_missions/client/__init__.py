@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.client.battle import vehicle_class, vehicle_info
-from ....core.client.hud.panel import BattlePanel
+from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.hud import HangarLabel
 from ....core.log import safe
 from ..i18n import STRINGS
@@ -14,16 +14,27 @@ from .constants import ACTION_REFRESH
 from .reads import own_missions
 
 
+PANEL_SPEC = PanelSpec(
+    panel_id=PANEL_ID,
+    schema=SCHEMA,
+    switch=SWITCH,
+    strings=STRINGS,
+    preview_size=PREVIEW_SIZE,
+    preview_text=preview_text,
+    preview_widget=preview_widget,
+)
+
+
+# The personal missions in progress: a hangar label, the battle line of the missions of the tank's class (from the
+# hangar snapshot: the battle client has no missions cache) and the list page in the mod window.
 class PersonalMissionsPanel(BattlePanel):
-    """The personal missions in progress: a hangar label, the battle line of the missions of the tank's class (from
-    the hangar snapshot: the battle client has no missions cache) and the list page in the mod window."""
 
     def __init__(self, app):
         self.missions = []
         self.totals = None
         self.hangar = HangarLabel(app, HANGAR_PANEL)
         self.read_at = 0.0
-        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text, preview_widget)
+        BattlePanel.__init__(self, app, PANEL_SPEC)
         bus = app.bus
         bus.on('hangar', self.refresh)
         bus.on('tick', self._on_tick)
@@ -48,18 +59,23 @@ class PersonalMissionsPanel(BattlePanel):
             self.hangar.clear()
             return
         translate = self.app.translate
-        self.hangar.show(format_hangar(self.missions, self.settings, translate, self.totals), HANGAR_LAYOUT,
-                         widget=hangar_widget(self.missions, self.settings, translate, self.totals))
+
+        text = format_hangar(self.missions, self.settings, translate, self.totals)
+        widget = hangar_widget(self.missions, self.settings, translate, self.totals)
+        self.hangar.show(text, HANGAR_LAYOUT, widget=widget)
 
     def start(self, player):
         if not self.settings.get('show_battle'):
             return
         vehicle_id = getattr(player, 'playerVehicleID', None)
-        level = getattr(getattr(vehicle_info(vehicle_id), 'vehicleType', None), 'level', None)
-        cls = vehicle_class(vehicle_id)
-        text = format_battle(self.missions, cls, self.settings, self.app.translate, level)
+        vehicle_type = getattr(vehicle_info(vehicle_id), 'vehicleType', None)
+        level = getattr(vehicle_type, 'level', None)
+        tank_class = vehicle_class(vehicle_id)
+        translate = self.app.translate
+
+        text = format_battle(self.missions, tank_class, self.settings, translate, level)
         if text:
-            self.show(text, battle_widget(self.missions, cls, self.settings, self.app.translate, level))
+            self.show(text, battle_widget(self.missions, tank_class, self.settings, translate, level))
 
     def ui_actions(self):
         if not self.enabled_in_hangar():
@@ -74,4 +90,3 @@ class PersonalMissionsPanel(BattlePanel):
     def ui_action(self, action, row=None, value=None):
         if action == ACTION_REFRESH:
             self.refresh()
-        return None

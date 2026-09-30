@@ -1,8 +1,9 @@
-"""Image strings for widget payloads: client images by path (`img://gui/maps/icons/...`) and our own glyphs (`otmetki:<name>`).
+"""Image strings for widget payloads: client images by path (`img://gui/maps/icons/...`) and our own glyphs
+(`otmetki:<name>`).
 
-We only reference what the player's client already has; nothing is copied. `image(path, fallback)` adds a fallback glyph
-after `|`: the page draws it when the image fails, and `resolve(value, exists)` swaps a missing client file for it before
-the payload is sent (the client side passes a `ResMgr.isFile` check). Paths are from the RU 1.45 client
+We only reference what the player's client already has; nothing is copied. `image(path, fallback)` adds a fallback
+glyph after `|`: the page draws it when the image fails, and `resolve(value, exists)` swaps a missing client file for it
+before the payload is sent (the client side passes a `ResMgr.isFile` check). Paths are from the RU 1.45 client
 (docs/specs/2026-09-29-hud-visual-redesign.md section 2.4).
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
@@ -10,12 +11,46 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import os.path
 
 from ...compat import is_int, string_types, to_text
-from .constants import (CLASS_GLYPHS, CLASS_TAGS, CLASS_TINTS, EFFICIENCY, FALLBACK_SEPARATOR, GLYPH_SCHEME, ICON_NAME_LIMIT, ICONS_ROOT,
-                        IMAGE_SCHEME, LOWER_CASE_TINTS, MAX_MARKS, MAX_TIER, NATIONS, OUTCOME_FILES, OUTCOME_GLYPHS, PREMIUM_SHELLS,
-                        PREMIUM_SUFFIX, SHELL_CODE_FILES, SHELL_FILES, SHELL_STEM)
+from .constants import (
+    CLASS_GLYPHS,
+    CLASS_TAGS,
+    CLASS_TINTS,
+    EFFICIENCY,
+    FALLBACK_SEPARATOR,
+    GLYPH_SCHEME,
+    ICON_NAME_LIMIT,
+    ICONS_ROOT,
+    IMAGE_SCHEME,
+    LOWER_CASE_TAGS,
+    LOWER_CASE_TINTS,
+    MAX_MARKS,
+    MAX_TIER,
+    NATIONS,
+    OUTCOME_FILES,
+    OUTCOME_GLYPHS,
+    PREMIUM_SHELLS,
+    PREMIUM_SUFFIX,
+    SHELL_CODE_FILES,
+    SHELL_FILES,
+    SHELL_STEM,
+)
 
-__all__ = ('artefact_icon', 'class_icon', 'efficiency_icon', 'flag_icon', 'glyph', 'image', 'item_name', 'mark_icon', 'outcome_icon',
-           'resolve', 'shell_icon', 'shell_icon_of', 'split', 'tier_icon')
+__all__ = (
+    'artefact_icon',
+    'class_icon',
+    'efficiency_icon',
+    'flag_icon',
+    'glyph',
+    'image',
+    'item_name',
+    'mark_icon',
+    'outcome_icon',
+    'resolve',
+    'shell_icon',
+    'shell_icon_of',
+    'split',
+    'tier_icon',
+)
 
 
 def glyph(name):
@@ -34,7 +69,8 @@ def split(value):
         return None, None
     head, _, tail = to_text(value).partition(FALLBACK_SEPARATOR)
     path = head[len(IMAGE_SCHEME):] if head.startswith(IMAGE_SCHEME) else None
-    fallback = tail if tail.startswith(GLYPH_SCHEME) else (head if head.startswith(GLYPH_SCHEME) else None)
+    glyphs = [part for part in (tail, head) if part.startswith(GLYPH_SCHEME)]
+    fallback = glyphs[0] if glyphs else None
     return path, fallback
 
 
@@ -44,8 +80,11 @@ def item_name(raw):
         raw = raw[0] if raw else None
     if not isinstance(raw, string_types) or not raw:
         return None
-    stem = os.path.splitext(os.path.basename(to_text(raw).replace('\\', '/')))[0]
-    return stem if stem and len(stem) <= ICON_NAME_LIMIT and '..' not in stem else None
+    file_name = os.path.basename(to_text(raw).replace('\\', '/'))
+    stem = os.path.splitext(file_name)[0]
+    if not stem or len(stem) > ICON_NAME_LIMIT or '..' in stem:
+        return None
+    return stem
 
 
 def class_icon(tag, tint='white'):
@@ -53,19 +92,28 @@ def class_icon(tag, tint='white'):
     if tag not in CLASS_TAGS:
         return None
     tint = tint if tint in CLASS_TINTS else 'white'
-    name = tag.lower() if tint in LOWER_CASE_TINTS and tag in ('AT-SPG', 'SPG') else tag
+    name = tag.lower() if tint in LOWER_CASE_TINTS and tag in LOWER_CASE_TAGS else tag
     return image('%s/vehicleTypes/%s/%s.png' % (ICONS_ROOT, tint, name), CLASS_GLYPHS[tag])
 
 
 def shell_icon(name, premium=False, kind='small'):
-    """A shell icon from its BATTLE_LOG_SHELL_TYPES name or the stem of its descriptor icon: `small` flat, or `battle_ammo`."""
-    stem = SHELL_FILES.get(name) or (item_name(name) if isinstance(name, string_types) and SHELL_STEM.match(name) else None)
+    """A shell icon from its BATTLE_LOG_SHELL_TYPES name or the stem of its descriptor icon: `small` flat, or
+    `battle_ammo`."""
+    stem = _shell_stem(name)
     if stem is None:
         return None
     if premium and stem in PREMIUM_SHELLS and not stem.endswith(PREMIUM_SUFFIX):
         stem += PREMIUM_SUFFIX
     folder = 'ammopanel/battle_ammo' if kind == 'battle_ammo' else 'shell/small'
     return image('%s/%s/%s.png' % (ICONS_ROOT, folder, stem), 'damage')
+
+
+def _shell_stem(name):
+    if name in SHELL_FILES:
+        return SHELL_FILES[name]
+    if isinstance(name, string_types) and SHELL_STEM.match(name):
+        return item_name(name)
+    return None
 
 
 def shell_icon_of(code, premium=False, kind='small'):
@@ -81,7 +129,9 @@ def artefact_icon(name, fallback=None):
 
 
 def efficiency_icon(kind):
-    return image('%s/library/efficiency/48x48/%s.png' % (ICONS_ROOT, kind), 'damage') if kind in EFFICIENCY else None
+    if kind not in EFFICIENCY:
+        return None
+    return image('%s/library/efficiency/48x48/%s.png' % (ICONS_ROOT, kind), 'damage')
 
 
 def outcome_icon(outcome):
@@ -99,16 +149,20 @@ def mark_icon(marks):
 
 
 def flag_icon(nation):
-    return image('%s/flags/25x17/%s.png' % (ICONS_ROOT, nation)) if nation in NATIONS else None
+    if nation not in NATIONS:
+        return None
+    return image('%s/flags/25x17/%s.png' % (ICONS_ROOT, nation))
 
 
 def tier_icon(tier):
-    return image('%s/levels/tank_level_small_%d.png' % (ICONS_ROOT, tier)) if is_int(tier) and 1 <= tier <= MAX_TIER else None
+    if not is_int(tier) or not 1 <= tier <= MAX_TIER:
+        return None
+    return image('%s/levels/tank_level_small_%d.png' % (ICONS_ROOT, tier))
 
 
 def resolve(value, exists):
-    """`value` (a widget payload) with every client image whose file `exists(path)` denies replaced by its fallback glyph
-    (or None when it has none)."""
+    """`value` (a widget payload) with every client image whose file `exists(path)` denies replaced by its fallback
+    glyph (or None when it has none)."""
     if isinstance(value, dict):
         return dict((key, resolve(item, exists)) for key, item in value.items())
     if isinstance(value, list):

@@ -47,10 +47,10 @@ class BattleTallyLog(object):
         self.hooks.clear()
         if tally is None:
             return
-        ctrl = personal_efficiency()
-        if ctrl is not None:
-            tally.apply_vanilla(efficiency_totals(dict((kind, call(ctrl, 'getTotalEfficiency', None, kind)) for kind in self.efficiency),
-                                                  self.efficiency))
+        controller = personal_efficiency()
+        if controller is not None:
+            totals = dict((kind, call(controller, 'getTotalEfficiency', None, kind)) for kind in self.efficiency)
+            tally.apply_vanilla(efficiency_totals(totals, self.efficiency))
         for line in tally.summary():
             log(line)
 

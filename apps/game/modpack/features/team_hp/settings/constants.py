@@ -7,11 +7,14 @@ PANEL_ID = 'team_hp'
 # full: bar pair with the score between; segments: a segment per tank; icons: class icons with a bar each; compact and
 # minimal: numbers and score in one line; numbers and bars: the older one-part styles.
 STYLES = ('full', 'segments', 'icons', 'compact', 'minimal', 'numbers', 'bars')
-# Styles drawn under the stock score strip instead of in its place.
+# Styles drawn beside the stock score strip instead of in its place.
 OVERLAY_STYLES = ('numbers',)
-# Where a pinned strip that keeps the stock score strip sits: right under it (the stock strip's markers end about 60 design px
-# down, RU 1.45 gui_battle VehicleMarkersList.as).
-UNDER_STOCK_Y = 62
+# Where a pinned strip that keeps the stock score strip sits (centre offset, top): right of it, in the top row between
+# it and the battle clock. Under the stock strip the page keeps the capture bars and the quest progress (RU 1.45
+# gui_battle BattlePage.as), so nothing of ours goes there. The stock strip reaches 343 design px either side of the
+# centre (BaseTeamHealthBar.as: bars of 234 px from 109 px off the centre); 443 leaves 180 px of text clear of it and of
+# the clock left of the stock timer on the smallest battle screen (1707 design px wide).
+BESIDE_STOCK_PLACE = (443, 4)
 MAX_TEMPLATE = 400
 
 DEFAULTS = {

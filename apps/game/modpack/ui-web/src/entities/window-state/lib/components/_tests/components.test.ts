@@ -31,25 +31,53 @@ const byId = (id: string): UiComponent => {
   return found;
 };
 
+const zoomedMinimap = (): UiComponent => {
+  const minimap = byId('minimap');
+
+  return { ...minimap, fields: minimap.fields.map((field) => (field.type === 'choice' ? { ...field, value: 'x2' } : field)) };
+};
+
+const idsOf = (list: UiComponent[]): string[] => list.map(({ id }) => id);
+
+const searchKeys = (query: string) =>
+  searchComponents({ components: components(), query }).map(({ component, fields }) => [component.id, fields.map(({ key }) => key)]);
+
 describe(componentsOf, () => {
-  it('keeps a page to its own cards, sorted by title, and filters them by where they show', () => {
-    const all = components();
+  it('keeps a page to its own cards, sorted by title', () => {
+    const titles = componentsOf({ components: components(), section: 'battle', context: 'all' }).map(({ title }) => title);
 
-    const titles = componentsOf({ components: all, section: 'battle', context: 'all' }).map(({ title }) => title);
+    expect(titles).toEqual(['Лог урона', 'minimap']);
+  });
 
-    expect(titles).toHaveLength(2);
-    expect(titles).toEqual([...titles].sort((left, right) => left.localeCompare(right)));
-    expect(componentsOf({ components: all, section: 'marks', context: 'hangar' }).map(({ id }) => id)).toEqual(['session_stats']);
-    expect(componentsOf({ components: all, section: 'marks', context: 'battle' }).map(({ id }) => id)).toEqual(['marks_panel']);
-    expect(componentsOf({ components: all, section: 'data', context: 'battle' }).map(({ id }) => id)).toEqual(['companion']);
+  it('keeps the hangar filter to the cards shown in the hangar', () => {
+    const cards = componentsOf({ components: components(), section: 'marks', context: 'hangar' });
+
+    expect(idsOf(cards)).toEqual(['session_stats']);
+  });
+
+  it('keeps the battle filter to the cards shown in battle', () => {
+    const cards = componentsOf({ components: components(), section: 'marks', context: 'battle' });
+
+    expect(idsOf(cards)).toEqual(['marks_panel']);
+  });
+
+  it('keeps a card shown everywhere under the battle filter', () => {
+    const cards = componentsOf({ components: components(), section: 'data', context: 'battle' });
+
+    expect(idsOf(cards)).toEqual(['companion']);
   });
 });
 
 describe(summarize, () => {
-  it('counts every page in the navigation order, switched-off cards apart', () => {
+  it('lists every page in the navigation order', () => {
     const summaries = summarize(components());
 
     expect(summaries.map(({ section }) => section)).toEqual(['battle', 'hangar', 'marks', 'replays', 'streamer', 'data', 'hud']);
+  });
+
+  it('counts the switched-off cards of a page apart', () => {
+    const summaries = summarize(components());
+
     expect(summaries.find(({ section }) => section === 'battle')).toEqual({ section: 'battle', total: 2, enabled: 1 });
     expect(summaries.find(({ section }) => section === 'replays')).toEqual({ section: 'replays', total: 1, enabled: 1 });
   });
@@ -63,11 +91,14 @@ describe(searchComponents, () => {
     expect(hit?.fields).toHaveLength(1);
   });
 
-  it('finds single settings by label and choice, ignoring case and ё', () => {
-    const hits = searchComponents({ components: components(), query: 'интервал' });
+  it('finds a single setting by its label', () => {
+    expect(searchKeys('интервал')).toEqual([['companion', ['flush_interval_seconds']]]);
+  });
 
-    expect(hits.map(({ component, fields }) => [component.id, fields.map(({ key }) => key)])).toEqual([['companion', ['flush_interval_seconds']]]);
-    expect(searchComponents({ components: components(), query: 'ctrl+alt' })[0]?.fields.map(({ key }) => key)).toEqual(['hud_modifier']);
+  it('finds a single setting by one of its choices, ignoring case', () => {
+    const [hit] = searchKeys('ctrl+alt');
+
+    expect(hit?.[1]).toEqual(['hud_modifier']);
   });
 
   it('waits for two letters', () => {
@@ -75,30 +106,58 @@ describe(searchComponents, () => {
   });
 });
 
-describe('defaults and undo values', () => {
-  it('lists what differs from the defaults, and both sides of a reset', () => {
-    const minimap = {
-      ...byId('minimap'),
-      fields: byId('minimap').fields.map((field) => (field.type === 'choice' ? { ...field, value: 'x2' } : field))
-    };
-
+describe(changedFields, () => {
+  it('lists nothing for a card at its defaults', () => {
     expect(changedFields(byId('damage_log'))).toEqual([]);
-    expect(changedFields(minimap).map(({ key }) => key)).toEqual(['zoom']);
-    expect(defaultValues(minimap)).toEqual({ zoom: 'native' });
-    expect(currentValues(minimap)).toEqual({ zoom: 'x2' });
   });
 
-  it('reads a switch or a field by key', () => {
-    const companion = byId('companion');
+  it('lists the fields that differ from their defaults', () => {
+    const changed = changedFields(zoomedMinimap());
 
-    expect(valueOf({ component: companion, key: 'enabled' })).toBe(true);
-    expect(valueOf({ component: companion, key: 'flush_interval_seconds' })).toBe(15);
-    expect(valueOf({ component: companion, key: 'missing' })).toBeNull();
-    expect(labelOf({ component: companion, key: 'enabled' })).toBe(companion.title);
+    expect(changed.map(({ key }) => key)).toEqual(['zoom']);
+  });
+});
+
+describe(defaultValues, () => {
+  it('gives the default side of a reset', () => {
+    expect(defaultValues(zoomedMinimap())).toEqual({ zoom: 'native' });
+  });
+});
+
+describe(currentValues, () => {
+  it('gives the current side of a reset', () => {
+    expect(currentValues(zoomedMinimap())).toEqual({ zoom: 'x2' });
+  });
+});
+
+describe(valueOf, () => {
+  it('reads the switch of a card', () => {
+    expect(valueOf({ component: byId('companion'), key: 'enabled' })).toBe(true);
   });
 
-  it('draws a known card with its own icon and a new one with the fallback', () => {
+  it('reads a field by its key', () => {
+    expect(valueOf({ component: byId('companion'), key: 'flush_interval_seconds' })).toBe(15);
+  });
+
+  it('reads null for an unknown key', () => {
+    expect(valueOf({ component: byId('companion'), key: 'missing' })).toBeNull();
+  });
+});
+
+describe(labelOf, () => {
+  it('labels the switch with the card title', () => {
+    const label = labelOf({ component: byId('companion'), key: 'enabled' });
+
+    expect(label).toBe('Данные и сайт');
+  });
+});
+
+describe(componentIcon, () => {
+  it('draws a known card with its own icon', () => {
     expect(componentIcon('damage_log')).toBe('scroll-text');
+  });
+
+  it('draws a new card with the fallback icon', () => {
     expect(componentIcon('brand_new')).toBe('puzzle');
   });
 });

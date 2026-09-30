@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import copy
+import importlib
 import json
 import os
 import random
@@ -15,13 +17,107 @@ from otmetki.core.shells.constants import BATTLE_LOG_SHELL_NAMES
 from otmetki.core.vendor.enum34 import IntEnum
 
 ACCOUNT = 12345678
-BATTLE_OPT_INS = ('battle_main_gun', 'battle_efficiency', 'battle_personal_best', 'battle_gun_arc', 'battle_arty_meter', 'battle_platoon_points',
-                  'battle_received_hits', 'battle_consumables', 'battle_clock')
+BATTLE_OPT_INS = (
+    'battle_main_gun', 'battle_efficiency', 'battle_personal_best', 'battle_gun_arc', 'battle_arty_meter',
+    'battle_platoon_points', 'battle_received_hits', 'battle_consumables', 'battle_clock',
+)
 REGISTERED = tuple(_support.feature_ids()) + ('ui',)
 ENTRY_MODULES = ('mod_otmetki',) + tuple('mod_otmetki_' + key for key in REGISTERED)
-STUBBED = ('gui', 'BigWorld', 'BattleReplay', 'CurrentVehicle', 'PlayerEvents', 'BattleFeedbackCommon', 'dossiers2', 'constants', 'SoundGroups',
-           'messenger', 'notification', 'account_helpers', 'helpers', 'skeletons', 'frameworks', 'openwg_gameface', 'items', 'WWISE', 'vehicle_outfit',
-           'Keys', 'Avatar', 'Vehicle', 'Math', 'arena_bonus_type_caps')
+STUBBED = (
+    'gui', 'BigWorld', 'BattleReplay', 'CurrentVehicle', 'PlayerEvents', 'BattleFeedbackCommon', 'dossiers2',
+    'constants', 'SoundGroups', 'messenger', 'notification', 'account_helpers', 'helpers', 'skeletons', 'frameworks',
+    'openwg_gameface', 'items', 'WWISE', 'vehicle_outfit', 'Keys', 'Avatar', 'Vehicle', 'Math', 'arena_bonus_type_caps',
+)
+LOAD_ORDER_SEEDS = (0, 1, 2, 3)
+PLAYER_EVENTS = (
+    'onAccountShowGUI', 'onEnqueued', 'onDequeued', 'onArenaCreated', 'onAvatarReady', 'onAvatarBecomeNonPlayer',
+    'onBattleResultsReceived',
+)
+# RU 1.45 common/BattleFeedbackCommon.BATTLE_EVENT_TYPE values.
+BATTLE_EVENT_TYPES = {
+    'SPOTTED': 0,
+    'RADIO_ASSIST': 1,
+    'TRACK_ASSIST': 2,
+    'BASE_CAPTURE_POINTS': 3,
+    'BASE_CAPTURE_DROPPED': 4,
+    'TANKING': 5,
+    'CRIT': 6,
+    'DAMAGE': 7,
+    'KILL': 8,
+    'RECEIVED_CRIT': 9,
+    'RECEIVED_DAMAGE': 10,
+    'STUN_ASSIST': 11,
+}
+KINDS = type('BATTLE_EVENT_TYPE', (object,), BATTLE_EVENT_TYPES)
+# RU 1.45 gui/battle_control/battle_constants.VEHICLE_VIEW_STATE values the features read.
+VIEW_STATE = {'FIRE': 1, 'DEVICES': 2, 'HEALTH': 4, 'OBSERVED_BY_ENEMY': 4096, 'SWITCHING': 16384, 'STUN': 65536}
+ARENA_PERIODS = {'WAITING': 1, 'PREBATTLE': 2, 'BATTLE': 3, 'AFTERBATTLE': 4}
+GUI_SPACES = {'LOGIN': 1, 'WAITING': 2, 'LOBBY': 3, 'BATTLE': 5}
+NOTIFICATION_TYPES = {
+    'MESSAGE': 1,
+    'NOTIFY_CENTER_POP_UP': 4,
+    'RECRUIT_REMINDER': 13,
+    'AUCTION_STAGE_START': 19,
+    'TRADING_CARAVAN_REFILL': 19,
+}
+BATTLE_SOUNDS = {'fire': 'otmetki_fire', 'ammo_rack': 'otmetki_ammo', 'first_blood': 'otmetki_first_blood'}
+HUD_OFF = (
+    'battle_damage_log', 'battle_hit_log', 'battle_clock', 'battle_team_hp', 'battle_sixth_sense',
+    'hangar_battle_results', 'battle_main_gun', 'battle_consumables', 'battle_reload_timer', 'battle_efficiency',
+    'battle_personal_best', 'hangar_session_goals',
+)
+BATTLE_PANELS = [
+    'battle_clock', 'consumables', 'damage_log', 'hit_log', 'last_hit', 'main_gun', 'received_hits', 'reload_timer',
+    'sixth_sense', 'team_hp',
+]
+DESCRIBED_PANELS = [
+    'arty_meter', 'battle_clock', 'battle_efficiency', 'battle_loadout', 'consumables', 'crosshair', 'damage_log',
+    'death_card', 'gun_arc', 'hangar_marks', 'hit_log', 'last_hit', 'main_gun', 'marks_panel', 'personal_best',
+    'personal_missions', 'platoon_points', 'received_hits', 'reload_timer', 'session_goals', 'sixth_sense', 'team_hp',
+]
+HUD_EDIT_PREVIEWS = [
+    'arty_meter', 'battle_clock', 'battle_efficiency', 'battle_loadout', 'consumables', 'damage_log', 'death_card',
+    'gun_arc', 'hangar_marks', 'hit_log', 'last_hit', 'main_gun', 'marks_panel', 'personal_best', 'personal_missions',
+    'platoon_points', 'received_hits', 'reload_timer', 'session_goals', 'sixth_sense',
+]
+OWN_SHOT = {
+    'damage': 390,
+    'nominal': None,
+    'shell': 'armor_piercing',
+    'outcome': 'damage',
+    'distance_m': None,
+    'fatal': False,
+}
+HANGAR_LABEL_PLACE = {'x': 1, 'y': 2, 'alignX': 'left', 'alignY': 'top'}
+SESSION_LABEL_PLACE = {'x': 0, 'y': 0, 'alignX': 'right', 'alignY': 'top'}
+MOE_SNAPSHOT = {
+    'tank_id': 1,
+    'name': 'ussr:R04_T-34',
+    'tier': 5,
+    'damage_rating': 8150,
+    'moving_avg_damage': 2500,
+    'marks_on_gun': 1,
+    'battles': 120,
+}
+MOE_CURVE = {'tank_id': 1, 'thresholds': {'65': 2000, '85': 2600, '95': 3100}}
+HANGAR_MOE = {'tank_id': 1, 'damage_rating': 8600, 'moving_avg_damage': 2550, 'marks_on_gun': 2}
+REPLAY_ID = '0f8e2d4c-6b1a-4f3e-9d2c-7a5b3c1d9e8f'
+BUSH_CIRCLE_KEY = 48
+STREAMER_KEY = 35
+LEFT_CONTROL, LEFT_SHIFT, RIGHT_CONTROL, RIGHT_SHIFT = 29, 42, 157, 54
+# RU 1.45 Vehicle.showDamageFromShot: a packed hit point (flags, component, position and angles).
+FRONT_HULL_PEN = 4 | (1 << 8) | (120 << 16) | (100 << 24) | (250 << 32) | (130 << 40) | (110 << 48) | (255 << 56)
+RICOCHET_POINT = 2 | (1 << 8) | (120 << 16) | (130 << 40)
+BUSH_CIRCLE_AREA = ('content/Interface/CheckPoint/CheckPoint.visual', (30.0, 30.0), 0.5, 0xFFFFFFFF)
+EARLY_EXIT_POLLS = 40
+HANGAR_VIEW_PACKAGES = (
+    'gui.Scaleform', 'gui.Scaleform.daapi', 'gui.Scaleform.daapi.view', 'gui.Scaleform.daapi.view.lobby',
+    'gui.Scaleform.daapi.view.lobby.hangar', 'gui.impl', 'gui.impl.lobby', 'gui.impl.lobby.offers',
+)
+CHAT_PACKAGES = (
+    'messenger', 'messenger.gui', 'messenger.gui.Scaleform', 'messenger.gui.Scaleform.channels',
+    'messenger.gui.Scaleform.channels.bw_chat2', 'messenger.ext', 'notification',
+)
 
 
 class Event(object):
@@ -49,6 +145,15 @@ class Sink(object):
 
     def flush(self):
         pass
+
+
+class Capture(Sink):
+
+    def __init__(self):
+        self.parts = []
+
+    def write(self, text):
+        self.parts.append(text)
 
 
 class Player(object):
@@ -103,19 +208,52 @@ def module(name, **attrs):
     return stub
 
 
-def package(name, path):
+def package(name, path=()):
     stub = module(name)
     stub.__path__ = list(path)
     return stub
 
 
+def constants(name, values):
+    return type(name, (object,), values)
+
+
+def instance(name, attrs):
+    """An object of a one-off class: the client objects the features only read attributes and methods of."""
+    return type(name, (object,), attrs)()
+
+
+def key_event(key, is_repeated=False):
+    if is_repeated:
+        return instance('KeyEvent', {'key': key, 'isRepeatedEvent': lambda event: True})
+    return instance('KeyEvent', {'key': key})
+
+
+def result(success, message):
+    return instance('Result', {'success': success, 'userMsg': message})
+
+
+def response_json(data):
+    return Response(200, json.dumps(data).encode('utf-8'))
+
+
+def contract_example(name):
+    example = _support.load_json(os.path.join(_support.CONTRACT_DIR, 'examples', name))
+    example['account_id'] = ACCOUNT
+    return example
+
+
 SHELL_TYPES = IntEnum('BATTLE_LOG_SHELL_TYPES', [(name, index) for index, name in enumerate(BATTLE_LOG_SHELL_NAMES)])
 SERVER_TIME = 1790000100.0
-CLIENT_VERSION = u'\u041c\u0438\u0440 \u0442\u0430\u043d\u043a\u043e\u0432 1.45.0.5231'
+CLIENT_VERSION = u'Мир танков 1.45.0.5231'
 OWN_VEHICLE = 101
 ENEMY_VEHICLE = 202
 ALLY_VEHICLE = 303
-HIT_STATES = ('VEHICLE_HEALTH', 'VEHICLE_HIT', 'VEHICLE_RICOCHET', 'VEHICLE_ARMOR_PIERCED', 'VEHICLE_CRITICAL_HIT', 'VEHICLE_DEAD')
+HIT_STATES = (
+    'VEHICLE_HEALTH', 'VEHICLE_HIT', 'VEHICLE_RICOCHET', 'VEHICLE_ARMOR_PIERCED', 'VEHICLE_CRITICAL_HIT',
+    'VEHICLE_DEAD',
+)
+FEEDBACK_IDS = dict((name, index + 100) for index, name in enumerate(HIT_STATES))
 
 
 class Extra(object):
@@ -178,13 +316,25 @@ class Summary(object):
         return 0
 
 
+def summary_with_stun(stun):
+    summary = Summary()
+    summary.getTotalStunDamage = lambda: stun
+    return summary
+
+
 class VehicleInfo(object):
-    # RU 1.45 arena_vos.VehicleArenaInfoVO: vehicleType is a VehicleTypeInfoVO with shortName, maxHealth and classTag.
+    # RU 1.45 arena_vos.VehicleArenaInfoVO: vehicleType is a VehicleTypeInfoVO with shortName, maxHealth and
+    # classTag.
 
     def __init__(self, vehicle_id, team, name, max_health, alive=True, class_tag='mediumTank'):
         self.vehicleID = vehicle_id
         self.team = team
-        self.vehicleType = type('VehicleType', (object,), {'shortName': name, 'name': name, 'maxHealth': max_health, 'classTag': class_tag})()
+        self.vehicleType = instance('VehicleType', {
+            'shortName': name,
+            'name': name,
+            'maxHealth': max_health,
+            'classTag': class_tag,
+        })
         self.alive = alive
 
     def isAlive(self):
@@ -214,7 +364,7 @@ class EquipmentItem(object):
     # getTimeRemaining().
 
     def __init__(self, name, quantity, ready=True, remaining=0):
-        self.descriptor = type('Equipment', (object,), {'userString': name})()
+        self.descriptor = instance('Equipment', {'userString': name})
         self.quantity = quantity
         self.isReady = ready
         self.remaining = remaining
@@ -254,23 +404,41 @@ class ReloadSnapshot(object):
         return self.base
 
 
-class Ammo(object):
-    # RU 1.45 ammo_ctrl.AmmoController: the shells layout (intCD, descriptor, quantity, quantityInClip, gunSettings), the
-    # gun settings' clip, the current shell and the reload snapshot.
+class GunSettings(object):
+    # RU 1.45 ammo_ctrl.GunSettings: the clip, and getPiercingPower and getShotSpeed per shell, what the vanilla
+    # shell tooltip reads.
 
     def __init__(self):
-        # RU 1.45 ammo_ctrl.GunSettings: getPiercingPower and getShotSpeed per shell, what the vanilla shell tooltip reads.
-        self.gun = type('GunSettings', (object,), {'clip': type('Clip', (object,), {'size': 4, 'interval': 2.0})(),
-                                                   'getPiercingPower': lambda gun, int_cd: (258, 250) if int_cd == 11 else (60, 60),
-                                                   'getShotSpeed': lambda gun, int_cd: 800.0})()
+        self.clip = instance('Clip', {'size': 4, 'interval': 2.0})
+
+    def getPiercingPower(self, int_cd):
+        return (258, 250) if int_cd == 11 else (60, 60)
+
+    def getShotSpeed(self, int_cd):
+        return 800.0
+
+
+class Ammo(object):
+    # RU 1.45 ammo_ctrl.AmmoController: the shells layout (intCD, descriptor, quantity, quantityInClip, gunSettings),
+    # the gun settings' clip, the current shell and the reload snapshot.
+    SHELL_KINDS = {11: 'ARMOR_PIERCING', 12: 'HIGH_EXPLOSIVE'}
+    SHELL_DAMAGE = {11: 390, 12: 480}
+    EVENTS = ('onGunReloadTimeSet', 'onGunSettingsSet', 'onShellsAdded', 'onShellsUpdated', 'onCurrentShellChanged')
+
+    def __init__(self):
+        self.gun = GunSettings()
         self.shells = {11: (32, 3), 12: (6, 0)}
-        for name in ('onGunReloadTimeSet', 'onGunSettingsSet', 'onShellsAdded', 'onShellsUpdated', 'onCurrentShellChanged'):
+        for name in self.EVENTS:
             setattr(self, name, Event())
 
+    def shell_descriptor(self, int_cd):
+        return instance('Shell', {'kind': self.SHELL_KINDS[int_cd], 'avgDamage': self.SHELL_DAMAGE[int_cd]})
+
     def getOrderedShellsLayout(self):
-        kinds = {11: 'ARMOR_PIERCING', 12: 'HIGH_EXPLOSIVE'}
-        return [(int_cd, type('Shell', (object,), {'kind': kinds[int_cd], 'avgDamage': 390 if int_cd == 11 else 480})(), quantity, in_clip, self.gun)
-                for int_cd, (quantity, in_clip) in sorted(self.shells.items())]
+        return [
+            (int_cd, self.shell_descriptor(int_cd), quantity, in_clip, self.gun)
+            for int_cd, (quantity, in_clip) in sorted(self.shells.items())
+        ]
 
     def getGunSettings(self):
         return self.gun
@@ -291,24 +459,39 @@ class Ammo(object):
 class BattleSession(object):
 
     def __init__(self):
-        self.feedback = type('Feedback', (object,), {})()
+        self.feedback = instance('Feedback', {})
         for name in ('onPlayerFeedbackReceived', 'onPlayerSummaryFeedbackReceived', 'onVehicleFeedbackReceived'):
             setattr(self.feedback, name, Event())
-        self.vehicle_state = type('VehicleState', (object,), {'getControllingVehicleID': lambda state: OWN_VEHICLE})()
+        self.vehicle_state = instance('VehicleState', {'getControllingVehicleID': lambda state: OWN_VEHICLE})
         self.vehicle_state.onVehicleStateUpdated = Event()
-        self.shared = type('Shared', (object,), {})()
+        self.shared = instance('Shared', {})
         self.shared.feedback = self.feedback
         self.shared.vehicleState = self.vehicle_state
         self.shared.equipments = Equipments()
         self.shared.ammo = Ammo()
-        self.dp = ArenaDP([VehicleInfo(OWN_VEHICLE, 1, 'T-34', 1000), VehicleInfo(ALLY_VEHICLE, 1, 'KV-1', 1200, class_tag='heavyTank'),
-                           VehicleInfo(ENEMY_VEHICLE, 2, 'Pz. IV', 900)])
-        self.arena = type('Arena', (object,), {'period': 3, 'periodEndTime': SERVER_TIME + 300})()
+        self.dp = ArenaDP([
+            VehicleInfo(OWN_VEHICLE, 1, 'T-34', 1000),
+            VehicleInfo(ALLY_VEHICLE, 1, 'KV-1', 1200, class_tag='heavyTank'),
+            VehicleInfo(ENEMY_VEHICLE, 2, 'Pz. IV', 900),
+        ])
+        self.arena = instance('Arena', {'period': 3, 'periodEndTime': SERVER_TIME + 300})
         self.arena.onVehicleKilled = Event()
         self.arena.onVehicleAdded = Event()
 
     def getArenaDP(self):
         return self.dp
+
+    def state(self, name, value):
+        self.vehicle_state.onVehicleStateUpdated(VIEW_STATE[name], value)
+
+    def control(self, vehicle_id):
+        self.vehicle_state.getControllingVehicleID = lambda: vehicle_id
+
+    def hit(self, state_name, vehicle_id, value=None):
+        self.feedback.onVehicleFeedbackReceived(FEEDBACK_IDS[state_name], vehicle_id, value)
+
+    def own_feedback(self, *events):
+        self.feedback.onPlayerFeedbackReceived(list(events))
 
 
 class Response(object):
@@ -324,9 +507,316 @@ class Response(object):
         return dict(self._headers)
 
 
-class ClientSmokeTest(unittest.TestCase):
+class GuiFlash(object):
 
-    def setUp(self):
+    def __init__(self, test):
+        self.test = test
+
+    def createComponent(self, alias, kind, props, battle=True, lobby=False):
+        self.test.components[alias] = dict(props, kind=kind, battle=battle, lobby=lobby)
+
+    def updateComponent(self, alias, props):
+        self.test.components[alias].update(props)
+
+    def deleteComponent(self, alias):
+        del self.test.components[alias]
+
+
+class Sound(object):
+
+    def __init__(self, test, name):
+        self.test = test
+        self.name = name
+
+    def play(self):
+        prepared = self.test.mp3[-1] if self.test.mp3 else None
+        self.test.sounds.append('mp3:%s:%s' % (self.name, prepared))
+
+
+class Device(object):
+    # RU 1.45 common/items/artefacts.py OptionalDevice: what the stock battle tooltip of a device reads.
+
+    def __init__(self, name, categories=(), deluxe=False):
+        self.tierlessName = self.groupName = self.userString = name
+        self.compactDescr = name
+        self.icon = (name, 0, 0)
+        self.categories = set(categories)
+        self.isDeluxe = deluxe
+        self.shortDescriptionSpecial = u'{colorTagOpen}+10 %{colorTagClose} ' + name
+
+
+def device_slot(*categories):
+    return instance('Slot', {'categories': set(categories)})
+
+
+class Resource(object):
+
+    def __call__(self):
+        return self
+
+    def dyn(self, name):
+        return self
+
+    def exists(self):
+        return False
+
+
+class TerrainArea(object):
+    # RU 1.45 BigWorld.PyTerrainSelectedArea as CombatSelectedArea sets it up.
+
+    def setup(self, visual, size, height, color):
+        self.args = (visual, size, height, color)
+
+    def enableAccurateCollision(self, value):
+        pass
+
+    def setCutOffDistance(self, value):
+        pass
+
+
+class Node(object):
+
+    def __init__(self):
+        self.items = []
+
+    def attach(self, item):
+        self.items.append(item)
+
+
+class Model(object):
+
+    def __init__(self, path):
+        self.root = Node()
+        self.motors = []
+
+    def node(self, name):
+        return self.root
+
+    def addMotor(self, motor):
+        self.motors.append(motor)
+
+
+class DossierStats(object):
+    # RU 1.45 gui/shared/gui_items/dossier/stats.py: the random-battle max records of a vehicle dossier.
+
+    def getMaxDamage(self):
+        return 2000
+
+    def getMaxAssisted(self):
+        return 3000
+
+    def getMaxFrags(self):
+        return 4
+
+    def getMaxXp(self):
+        return 1100
+
+
+class Tankman(object):
+
+    def __init__(self, cost, role):
+        self.cost = cost
+        self.roleUserName = role
+
+    def getNextSkillXpCost(self):
+        return self.cost
+
+
+class DossierCaps(object):
+    DOSSIER_MAX15X15 = str('DOSSIER_MAX15X15')
+
+    @staticmethod
+    def checkAny(bonus_type, *caps):
+        # RU 1.45 arena_bonus_type_caps.checkAny: a cap given by name must be a native str.
+        has_native_cap = any(type(cap) is str and cap == 'DOSSIER_MAX15X15' for cap in caps)
+        return bonus_type in (1, 29) and has_native_cap
+
+
+class GarageDevice(object):
+
+    def __init__(self, name):
+        self.name = name
+        self.isRemovable = True
+        self.intCD = len(name)
+
+
+class GarageVehicle(object):
+
+    def __init__(self, devices):
+        self.invID = 7
+        self.intCD = 1
+        self.optDevices = instance('OptDevices', {'installed': list(devices)})
+        self.crew = []
+        self.lastCrew = None
+        self.descriptor = instance('Descriptor', {'modifications': [11, 12]})
+
+
+class GarageItems(object):
+
+    def __init__(self):
+        self.vehicle = GarageVehicle([GarageDevice('rammer'), GarageDevice('vents'), None])
+        self.free_berths = 0
+
+    def getVehicle(self, inv_id):
+        return self.vehicle if inv_id == self.vehicle.invID else None
+
+    def freeTankmenBerthsCount(self):
+        return self.free_berths
+
+
+class GamefaceViewModel(object):
+
+    def __init__(self, properties=0, commands=0):
+        self.strings = []
+        self.commands = {}
+        self._initialize()
+
+    def _initialize(self):
+        pass
+
+    def _addStringProperty(self, name, value):
+        self.strings.append([name, value])
+
+    def _setString(self, index, value):
+        self.strings[index][1] = value
+
+    def _addCommand(self, name):
+        self.commands[name] = Event()
+        return self.commands[name]
+
+
+class ViewSettings(object):
+
+    def __init__(self, layout_id, flags=None, model=None):
+        self.layout_id = layout_id
+        self.model = model
+
+
+class ViewImpl(object):
+
+    def __init__(self, settings):
+        self.settings = settings
+
+    def getViewModel(self):
+        return self.settings.model
+
+    def _onLoading(self, *args, **kwargs):
+        pass
+
+    def _finalize(self):
+        pass
+
+
+class StatusEvent(list):
+
+    def __iadd__(self, handler):
+        self.append(handler)
+        return self
+
+
+def window_impl_class(test):
+    """WindowImpl that records the loaded windows in `test.windows`."""
+
+    class WindowImpl(object):
+
+        def __init__(self, wndFlags=None, content=None, layer=None, **kwargs):
+            self.content = content
+            self.layer = layer
+            self.uniqueID = len(test.windows) + 1
+            self.windowStatus = 1
+            self.onStatusChanged = StatusEvent()
+
+        def load(self):
+            test.windows.append(self)
+            self.windowStatus = 3
+            self.content._onLoading()
+
+        def destroy(self):
+            self.windowStatus = 5
+            test.windows.remove(self)
+            self.content._finalize()
+
+    return WindowImpl
+
+
+def chat_classes(test):
+    """The battle chat controllers whose lines land in `test.chat`."""
+
+    class BattleLayout(object):
+
+        def addMessage(self, message, doFormatting=True):
+            test.chat.append(self._formatMessage(message, doFormatting)[1])
+            return True
+
+        def addCommand(self, command):
+            test.chat.append('command:%s' % command.getSenderID())
+
+    class ChannelController(BattleLayout):
+
+        def _formatMessage(self, message, doFormatting=True):
+            return False, message.text
+
+    class EpicTeamChannelController(ChannelController):
+        # RU 1.45 battle_controllers: the Frontline team chat builds its line with its own _formatMessage.
+
+        def _formatMessage(self, message, doFormatting=True):
+            return False, u'<epic>' + message.text
+
+    return BattleLayout, ChannelController, EpicTeamChannelController
+
+
+def hangar_view_classes(test):
+    """The lobby Hangar view and the offer banner, recording what reaches them."""
+
+    class Hangar(object):
+
+        def __onTeaserReceived(self, teaserData, showCallback, closeCallback):
+            test.teasers.append(teaserData)
+
+        def __updateCarouselEventEntryState(self):
+            self.as_updateCarouselEventEntryStateS(True)
+
+        def as_updateCarouselEventEntryStateS(self, visible):
+            test.entries.append(visible)
+
+    class OfferBannerWindow(object):
+
+        @classmethod
+        def tryLoad(cls, offerID, controller):
+            test.banner_loads.append(offerID)
+
+    return Hangar, OfferBannerWindow
+
+
+def chat_message(sender, text):
+    return instance('Message', {'avatarSessionID': sender, 'text': text})
+
+
+def notification(kind, class_name='Notification'):
+    return instance(class_name, {'getType': lambda item: kind})
+
+
+def stun_info(end_time, duration):
+    # RU 1.45 Vehicle.updateStunInfo: STUN carries a StunInfo namedtuple, its end a StunInfo with duration 0.
+    return instance('StunInfo', {'endTime': end_time, 'duration': duration})
+
+
+def comp7_division(rank, index, begin):
+    return instance('Division', {
+        'rank': rank,
+        'index': index,
+        'range': instance('Range', {'begin': begin}),
+        'elitePercent': 0,
+    })
+
+
+class Game(object):
+    """The stubbed client in a throwaway game folder: start() installs it, stop() takes it down."""
+
+    def __init__(self, client_version=CLIENT_VERSION):
+        self.client_version = client_version
+
+    def start(self):
         self.saved_cwd = os.getcwd()
         self.saved_stdout = sys.stdout
         sys.stdout = Sink()
@@ -337,18 +827,15 @@ class ClientSmokeTest(unittest.TestCase):
         self.purge()
         self.callbacks = []
         self.messages = []
-        self.requests = []
         self.fetches = []
         self.player = Player()
-        self.events = type('PlayerEvents', (object,), {})()
-        for name in ('onAccountShowGUI', 'onEnqueued', 'onDequeued', 'onArenaCreated', 'onAvatarReady', 'onAvatarBecomeNonPlayer',
-                     'onBattleResultsReceived'):
+        self.events = instance('PlayerEvents', {})
+        for name in PLAYER_EVENTS:
             setattr(self.events, name, Event())
-        self.vehicle = type('CurrentVehicle', (object,), {'item': None, 'onChanged': Event()})()
-        self.client_version = CLIENT_VERSION
+        self.vehicle = instance('CurrentVehicle', {'item': None, 'onChanged': Event()})
         self.install_stubs()
 
-    def tearDown(self):
+    def stop(self):
         os.chdir(self.saved_cwd)
         os.environ['APPDATA'] = self.saved_appdata
         sys.stdout = self.saved_stdout
@@ -360,533 +847,118 @@ class ClientSmokeTest(unittest.TestCase):
             if name.split('.')[0] in STUBBED:
                 del sys.modules[name]
 
-    def install_stubs(self):
+    def install_big_world(self):
         test = self
 
         def fetch_url(url, callback, headers=None, timeout=None, method=None, postData=None):
-            test.requests.append((method, url))
             test.fetches.append((method, url, headers, postData, callback))
 
         self.clock = [100.0]
-        module('BigWorld', callback=lambda delay, fn: test.callbacks.append(fn), player=lambda: test.player, fetchURL=fetch_url,
-               serverTime=lambda: SERVER_TIME, time=lambda: test.clock[0])
+        module(
+            'BigWorld',
+            callback=lambda delay, fn: test.callbacks.append(fn),
+            player=lambda: test.player,
+            fetchURL=fetch_url,
+            serverTime=lambda: SERVER_TIME,
+            time=lambda: test.clock[0],
+        )
+
+    def install_battle_results_stubs(self):
+        self.results_cache = BattleResultsCache()
+        self.results_service = instance('BattleResultsService', {})
+        self.results_service.onResultPosted = Event()
+        self.results_interface = constants('IBattleResultsService', {})
+        package('account_helpers')
+        cache_module = module(
+            'account_helpers.BattleResultsCache',
+            load=self.results_cache.load,
+            convertToFullForm=self.results_cache.convertToFullForm,
+        )
+        sys.modules['account_helpers'].BattleResultsCache = cache_module
+
+    def install_dependency_stubs(self):
+        test = self
+        self.services = {self.results_interface: self.results_service}
+        services = self.services
+        dependency = instance('Dependency', {'instance': staticmethod(lambda interface: services.get(interface))})
+        module('helpers', dependency=dependency, getFullClientVersion=lambda: test.client_version)
+        package('skeletons')
+        package('skeletons.gui')
+        module('skeletons.gui.battle_results', IBattleResultsService=self.results_interface)
+
+    def install_system_messages(self):
+        test = self
+        self.result_messages = []
+        package('gui')
+        system_messages = module(
+            'gui.SystemMessages',
+            SM_TYPE=constants('SM_TYPE', {'Information': 'info'}),
+            pushMessage=lambda text, type=None: test.messages.append(text),
+            pushMessagesFromResult=lambda outcome: test.result_messages.append(outcome.userMsg),
+        )
+        sys.modules['gui'].SystemMessages = system_messages
+
+    def install_stubs(self):
+        self.install_big_world()
         module('BattleReplay', isPlaying=lambda: False)
         module('CurrentVehicle', g_currentVehicle=self.vehicle)
         module('PlayerEvents', g_playerEvents=self.events)
-        # RU 1.45 common/BattleFeedbackCommon.BATTLE_EVENT_TYPE values.
-        kinds = type('BATTLE_EVENT_TYPE', (object,), {'SPOTTED': 0, 'RADIO_ASSIST': 1, 'TRACK_ASSIST': 2, 'BASE_CAPTURE_POINTS': 3,
-                                                      'BASE_CAPTURE_DROPPED': 4, 'TANKING': 5, 'CRIT': 6, 'DAMAGE': 7, 'KILL': 8,
-                                                      'RECEIVED_CRIT': 9, 'RECEIVED_DAMAGE': 10, 'STUN_ASSIST': 11})
-        module('BattleFeedbackCommon', BATTLE_EVENT_TYPE=kinds)
-        package('dossiers2', [])
-        package('dossiers2.ui', [])
-        module('dossiers2.ui.achievements', ACHIEVEMENT_BLOCK=type('ACHIEVEMENT_BLOCK', (object,), {'TOTAL': 'total'}))
-        self.results_cache = BattleResultsCache()
-        self.results_service = type('BattleResultsService', (object,), {})()
-        self.results_service.onResultPosted = Event()
-        interfaces = type('IBattleResultsService', (object,), {})
-        services = {interfaces: self.results_service}
-        package('account_helpers', [])
-        module('account_helpers.BattleResultsCache', load=self.results_cache.load, convertToFullForm=self.results_cache.convertToFullForm)
-        sys.modules['account_helpers'].BattleResultsCache = sys.modules['account_helpers.BattleResultsCache']
-        self.services = services
-        module('helpers', dependency=type('Dependency', (object,), {'instance': staticmethod(lambda interface: services.get(interface))})(),
-               getFullClientVersion=lambda: test.client_version)
-        package('skeletons', [])
-        package('skeletons.gui', [])
-        module('skeletons.gui.battle_results', IBattleResultsService=interfaces)
-        package('gui', [])
-        self.result_messages = []
-        system_messages = module('gui.SystemMessages', SM_TYPE=type('SM_TYPE', (object,), {'Information': 'info'}),
-                                 pushMessage=lambda text, type=None: test.messages.append(text),
-                                 pushMessagesFromResult=lambda result: test.result_messages.append(result.userMsg))
-        sys.modules['gui'].SystemMessages = system_messages
+        module('BattleFeedbackCommon', BATTLE_EVENT_TYPE=KINDS)
+        package('dossiers2')
+        package('dossiers2.ui')
+        module('dossiers2.ui.achievements', ACHIEVEMENT_BLOCK=constants('ACHIEVEMENT_BLOCK', {'TOTAL': 'total'}))
+        self.install_battle_results_stubs()
+        self.install_dependency_stubs()
+        self.install_system_messages()
         entry_dirs = [os.path.join(base, 'entry') for base in _support.source_dirs()]
         package('gui.mods', [path for path in entry_dirs if os.path.isdir(path)])
         package('gui.mods.otmetki', [_support.PACKAGES_DIR, _support.MODPACK_DIR])
-
-    def load(self, entries):
-        import importlib
-        for name in entries:
-            importlib.import_module('gui.mods.' + name)
-        app = sys.modules['gui.mods.otmetki.companion.app.client'].g_app
-        app.config.update(dict((feature, True) for feature in BATTLE_OPT_INS))
-        return app
-
-    def play_battle(self, app):
-        app.credentials.save(Credentials('device-1', 's' * 40, ACCOUNT))
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-        results = _support.battle_results()
-        self.player = Player(ACCOUNT, results['arenaUniqueID'])
-        self.events.onAvatarReady()
-        self.events.onAvatarBecomeNonPlayer()
-        self.events.onBattleResultsReceived(True, results)
-        return results
-
-    def test_any_load_order(self):
-        for seed in range(4):
-            self.tearDown()
-            self.setUp()
-            entries = list(ENTRY_MODULES)
-            random.Random(seed).shuffle(entries)
-            app = self.load(entries)
-            registry = sys.modules['gui.mods.otmetki.core.registry'].registry()
-            self.assertIs(registry.host, app, entries)
-            self.assertEqual(sorted(registry.instances), sorted(REGISTERED), entries)
-
-            results = self.play_battle(app)
-            events = app.outbox.events
-            battle = [event for event in events if event.get('type') == 'battle_result']
-            self.assertEqual(len(battle), 1, entries)
-            self.assertTrue(battle[0]['session_id'], entries)
-            state = app.state_file.read({})
-            self.assertEqual(state['seen_arenas'], [results['arenaUniqueID']])
-            self.assertEqual(state['session']['totals']['battles'], 1)
-            self.assertEqual(state['session']['session_id'], battle[0]['session_id'])
-            self.assertTrue([text for text in self.messages if u'Сессия' in text or u'Session' in text], (entries, self.messages))
-
-    def test_companion_alone(self):
-        app = self.load(['mod_otmetki'])
-        self.assertEqual(sys.modules['gui.mods.otmetki.core.registry'].registry().instances, {})
-        self.play_battle(app)
-        events = app.outbox.events
-        battle = [event for event in events if event.get('type') == 'battle_result']
-        self.assertEqual(len(battle), 1)
-        self.assertIsNone(battle[0]['session_id'])
-        self.assertNotIn('session', app.state_file.read({}))
-
 
     def install_hud_stubs(self):
         test = self
         self.components = {}
         self.sounds = []
-
-        class GuiFlash(object):
-
-            def createComponent(self, alias, kind, props, battle=True, lobby=False):
-                test.components[alias] = dict(props, kind=kind, battle=battle, lobby=lobby)
-
-            def updateComponent(self, alias, props):
-                test.components[alias].update(props)
-
-            def deleteComponent(self, alias):
-                del test.components[alias]
-
-        self.component_updated = Event()
-        package('gui.mods.gambiter', [])
-        sys.modules['gui.mods.gambiter'].g_guiFlash = GuiFlash()
-        module('gui.mods.gambiter.flash', COMPONENT_TYPE=type('COMPONENT_TYPE', (object,), {'LABEL': 'Label'}),
-               COMPONENT_EVENT=type('COMPONENT_EVENT', (object,), {'UPDATED': self.component_updated}))
-        package('gui.battle_control', [])
-        feedback_ids = dict((name, index + 100) for index, name in enumerate(HIT_STATES))
-        module('gui.battle_control.battle_constants', FEEDBACK_EVENT_ID=type('FEEDBACK_EVENT_ID', (object,), feedback_ids),
-               VEHICLE_VIEW_STATE=type('VEHICLE_VIEW_STATE', (object,), {'FIRE': 1, 'DEVICES': 2, 'HEALTH': 4, 'OBSERVED_BY_ENEMY': 4096,
-                                                                          'SWITCHING': 16384}))
-        module('constants', ARENA_PERIOD=type('ARENA_PERIOD', (object,), {'WAITING': 1, 'PREBATTLE': 2, 'BATTLE': 3, 'AFTERBATTLE': 4}))
         self.mp3 = []
-
-        class Sound(object):
-
-            def __init__(self, name):
-                self.name = name
-
-            def play(self):
-                test.sounds.append('mp3:%s:%s' % (self.name, test.mp3[-1] if test.mp3 else None))
-
-        module('SoundGroups', g_instance=type('Sounds', (object,), {'playSound2D': lambda sounds, name: test.sounds.append(name),
-                                                                    'getSound2D': lambda sounds, name: Sound(name)})())
+        self.component_updated = Event()
+        package('gui.mods.gambiter')
+        sys.modules['gui.mods.gambiter'].g_guiFlash = GuiFlash(self)
+        module(
+            'gui.mods.gambiter.flash',
+            COMPONENT_TYPE=constants('COMPONENT_TYPE', {'LABEL': 'Label'}),
+            COMPONENT_EVENT=constants('COMPONENT_EVENT', {'UPDATED': self.component_updated}),
+        )
+        package('gui.battle_control')
+        view_states = dict((name, value) for name, value in VIEW_STATE.items() if name != 'STUN')
+        module(
+            'gui.battle_control.battle_constants',
+            FEEDBACK_EVENT_ID=constants('FEEDBACK_EVENT_ID', FEEDBACK_IDS),
+            VEHICLE_VIEW_STATE=constants('VEHICLE_VIEW_STATE', view_states),
+        )
+        module('constants', ARENA_PERIOD=constants('ARENA_PERIOD', ARENA_PERIODS))
+        sounds = instance('Sounds', {
+            'playSound2D': lambda sounds, name: test.sounds.append(name),
+            'getSound2D': lambda sounds, name: Sound(test, name),
+        })
+        module('SoundGroups', g_instance=sounds)
         module('WWISE', WW_prepareMP3=lambda name: test.mp3.append(name))
-        return feedback_ids
 
-    def enter_battle(self, results_arena, tank_id=None, gui_type=None):
-        session = BattleSession()
-        if gui_type is not None:
-            session.arena.guiType = gui_type
-        self.player = Player(ACCOUNT, results_arena)
-        if tank_id is not None:
-            vehicle_type = type('VehicleType', (object,), {'compactDescr': tank_id})()
-            devices = getattr(self, 'own_devices', ())
-            self.player.vehicleTypeDescriptor = type('Descriptor', (object,), {'type': vehicle_type,
-                                                                               'iterOptDevsWithSlots': lambda descriptor: iter(devices)})()
-        self.player.guiSessionProvider = session
-        self.player.playerVehicleID = OWN_VEHICLE
-        self.player.team = 1
-        self.player.arena = session.arena
-        self.events.onAvatarReady()
-        return session
-
-    def hud_components(self):
-        return dict((alias.split('.')[-1], props) for alias, props in self.components.items() if alias.startswith('otmetki.hud.'))
-
-    def test_battle_hud(self):
-        ids = self.install_hud_stubs()
-        kinds = sys.modules['BattleFeedbackCommon'].BATTLE_EVENT_TYPE
-        app = self.load(list(ENTRY_MODULES))
-        app.credentials.save(Credentials('device-1', 's' * 40, ACCOUNT))
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-        hud = sys.modules['gui.mods.otmetki.core.client.hud'].hud_layer(app)
-        hud.update_settings('sixth_sense', {'sound_event': 'otmetki_lamp'})
-        sys.modules['gui.mods.otmetki.core.client.hud'].component_config(app).get('battle_sounds').update(
-            {'fire': 'otmetki_fire', 'ammo_rack': 'otmetki_ammo', 'first_blood': 'otmetki_first_blood'})
-        app.marks.hangar_moe[1] = {'tank_id': 1, 'damage_rating': 8600, 'moving_avg_damage': 2550, 'marks_on_gun': 2}
-
-        results = _support.battle_results()
-        session = self.enter_battle(results['arenaUniqueID'])
-        feedback = session.feedback
-        feedback.onVehicleFeedbackReceived(ids['VEHICLE_ARMOR_PIERCED'], ENEMY_VEHICLE, None)
-        feedback.onPlayerFeedbackReceived([
-            Feedback(kinds.DAMAGE, ENEMY_VEHICLE, Extra(390)),
-            Feedback(kinds.DAMAGE, ALLY_VEHICLE, Extra(50)),
-            Feedback(kinds.RADIO_ASSIST, ENEMY_VEHICLE, Extra(120)),
-            Feedback(kinds.TANKING, ENEMY_VEHICLE, Extra(240)),
-            Feedback(kinds.RECEIVED_DAMAGE, ENEMY_VEHICLE, Extra(310, 'HOLLOW_CHARGE')),
-        ])
-        feedback.onVehicleFeedbackReceived(ids['VEHICLE_HEALTH'], ENEMY_VEHICLE, (510, None, 0))
-        feedback.onVehicleFeedbackReceived(ids['VEHICLE_RICOCHET'], ENEMY_VEHICLE, None)
-        session.vehicle_state.onVehicleStateUpdated(4, 690)
-        session.vehicle_state.onVehicleStateUpdated(1, True)
-        session.vehicle_state.onVehicleStateUpdated(2, ('ammoBay', 'critical', 'critical'))
-        session.vehicle_state.onVehicleStateUpdated(2, ('engine', 'repaired', 'critical'))
-        session.vehicle_state.onVehicleStateUpdated(4096, True)
-        session.arena.onVehicleKilled(ALLY_VEHICLE, ENEMY_VEHICLE, 0, 0, 1)
-
-        panels = self.hud_components()
-        self.assertEqual(sorted(panels), ['battle_clock', 'consumables', 'damage_log', 'hit_log', 'last_hit', 'main_gun', 'received_hits', 'reload_timer',
-                                          'sixth_sense', 'team_hp'])
-        self.assertTrue(all(props['kind'] == 'Label' and props['drag'] != (name == 'team_hp') for name, props in panels.items()))
-        damage_log = panels['damage_log']['text']
-        self.assertIn('390', damage_log)
-        self.assertIn('310', damage_log)
-        self.assertNotIn(' 50 ', damage_log)
-        feedback.onPlayerSummaryFeedbackReceived(Summary())
-        self.assertIn('2 150', self.hud_components()['damage_log']['text'])
-        hit_log = panels['hit_log']['text']
-        self.assertIn('Pz. IV', hit_log)
-        self.assertIn('390', hit_log)
-        self.assertIn(u'\u0440\u0438\u043a\u043e\u0448\u0435\u0442', hit_log)
-        self.assertIn('05:00', panels['battle_clock']['text'])
-        team_hp = self.hud_components()['team_hp']['text']
-        self.assertIn('690', team_hp)
-        self.assertIn('510', team_hp)
-        self.assertIn('0 : 1', team_hp)
-        self.assertEqual(self.sounds, ['otmetki_fire', 'otmetki_ammo', 'otmetki_lamp', 'otmetki_first_blood'])
-        session.vehicle_state.onVehicleStateUpdated(4096, False)
-        self.assertNotIn('sixth_sense', self.hud_components())
-
-        self.component_updated('otmetki.hud.damage_log', {'x': 111, 'y': 222})
-        saved = _support.load_json(os.path.join(app.config_dir, 'components.json'))
-        self.assertEqual((saved['damage_log']['x'], saved['damage_log']['y']), (111, 222))
-        self.assertEqual(saved['sixth_sense']['sound_event'], 'otmetki_lamp')
-
-        self.events.onAvatarBecomeNonPlayer()
-        self.assertEqual(self.hud_components(), {})
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-        self.events.onBattleResultsReceived(True, results)
-        battle = [event for event in app.outbox.events if event['type'] == 'battle_result'][-1]
-        self.assertEqual(battle['shots'], [{'damage': 390, 'nominal': None, 'shell': 'armor_piercing', 'outcome': 'damage', 'distance_m': None,
-                                            'fatal': False}])
-        summary = [text for text in self.messages if u'87.12%' in text]
-        self.assertTrue(summary, self.messages)
-        self.assertIn('+1.12%', summary[0])
-        self.assertIn('2 150', summary[0])
-
-    def test_event_battles_get_the_compact_layout_and_keep_their_places(self):
-        self.install_hud_stubs()
-        app = self.load(list(ENTRY_MODULES))
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-        results = _support.battle_results()
-        self.enter_battle(results['arenaUniqueID'], gui_type=301)
-        self.assertEqual(sorted(self.hud_components()), ['battle_clock', 'damage_log'])
-        self.component_updated('otmetki.hud.damage_log', {'x': 333, 'y': 44})
-        saved = _support.load_json(os.path.join(app.config_dir, 'components.json'))
-        self.assertEqual(saved['hud_layout_places'], {'event': {'damage_log': {'x': 333, 'y': 44}}})
-        self.assertNotEqual(saved['damage_log']['x'], 333)
-        self.events.onAvatarBecomeNonPlayer()
-        self.enter_battle(results['arenaUniqueID'] + 1, gui_type=30)
-        self.assertIn('team_hp', self.hud_components())
-        self.assertNotEqual(self.hud_components()['damage_log']['x'], 333)
-
-    def test_hud_edit_previews_in_hangar(self):
-        self.install_hud_stubs()
-        app = self.load(list(ENTRY_MODULES))
-        app.config.update({'battle_team_hp': False})
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-        described = {}
-
-        def collect(panel_id, preview=None, width=None, height=None, enabled=False):
-            described.update({panel_id: (preview, width, enabled)})
-
-        app.bus.emit('hud_describe', collect)
-        self.assertEqual(sorted(described), ['arty_meter', 'battle_clock', 'battle_efficiency', 'battle_loadout', 'consumables', 'crosshair',
-                                             'damage_log', 'death_card', 'gun_arc', 'hangar_marks', 'hit_log', 'last_hit', 'main_gun', 'marks_panel',
-                                             'personal_best', 'personal_missions', 'platoon_points', 'received_hits', 'reload_timer', 'session_goals',
-                                             'sixth_sense', 'team_hp'])
-        self.assertFalse(described['team_hp'][2])
-        self.assertTrue(described['damage_log'][2])
-        self.assertIn('390', described['damage_log'][0])
-        app.bus.emit('hud_edit', True)
-        panels = self.hud_components()
-        self.assertEqual(sorted(panels), ['arty_meter', 'battle_clock', 'battle_efficiency', 'battle_loadout', 'consumables', 'damage_log',
-                                          'death_card', 'gun_arc', 'hangar_marks', 'hit_log', 'last_hit', 'main_gun', 'marks_panel', 'personal_best',
-                                          'personal_missions', 'platoon_points', 'received_hits', 'reload_timer', 'session_goals', 'sixth_sense'])
-        self.assertTrue(all(props['lobby'] and not props['battle'] for props in panels.values()))
-        self.assertIn('Pz. IV', panels['hit_log']['text'])
-        app.bus.emit('hud_edit', False)
-        self.assertEqual(self.hud_components(), {})
-        app.bus.emit('hud_edit', True)
-        self.enter_battle(1)
-        self.assertNotIn('390', self.hud_components().get('damage_log', {}).get('text', ''))
-        self.assertNotIn('sixth_sense', self.hud_components())
-
-    def test_own_feedback_after_death_and_hp_only_from_own_shots(self):
-        ids = self.install_hud_stubs()
-        kinds = sys.modules['BattleFeedbackCommon'].BATTLE_EVENT_TYPE
-        app = self.load(list(ENTRY_MODULES))
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-        session = self.enter_battle(1)
-        own = session.dp.getVehicleInfo(OWN_VEHICLE)
-        ally = session.dp.getVehicleInfo(ALLY_VEHICLE)
-        session.feedback.onVehicleFeedbackReceived(ids['VEHICLE_ARMOR_PIERCED'], ENEMY_VEHICLE, None)
-        session.feedback.onPlayerFeedbackReceived([Feedback(kinds.DAMAGE, ENEMY_VEHICLE, Extra(390))])
-        hit_log = sys.modules['gui.mods.otmetki.core.registry'].registry().get('hit_log').log
-        session.feedback.onVehicleFeedbackReceived(ids['VEHICLE_HEALTH'], ENEMY_VEHICLE, (480, ally, 0))
-        self.assertIsNone(hit_log.entries[-1]['hp'])
-        session.feedback.onVehicleFeedbackReceived(ids['VEHICLE_HEALTH'], ENEMY_VEHICLE, (510, own, 0))
-        self.assertEqual(hit_log.entries[-1]['hp'], 510)
-        session.vehicle_state.getControllingVehicleID = lambda: ALLY_VEHICLE
-        session.feedback.onPlayerFeedbackReceived([Feedback(kinds.RADIO_ASSIST, ENEMY_VEHICLE, Extra(640))])
-        self.assertIn('640', self.hud_components()['damage_log']['text'])
-        self.assertTrue(app.config.get('battle_damage_log'))
-        # RU 1.45 Avatar.showVehicleDamageInfo: after death DEVICES reports the ally the camera follows, not the own ammo rack.
-        damage_log = sys.modules['gui.mods.otmetki.core.registry'].registry().get('damage_log').log
-        session.vehicle_state.onVehicleStateUpdated(2, ('ammoBay', 'critical', 'critical'))
-        self.assertIsNone(damage_log.ammo_rack_at)
-        session.vehicle_state.getControllingVehicleID = lambda: OWN_VEHICLE
-        session.vehicle_state.onVehicleStateUpdated(2, ('ammoBay', 'critical', 'critical'))
-        self.assertIsNotNone(damage_log.ammo_rack_at)
-
-    def install_client_class_stubs(self):
-        test = self
-        self.chat = []
-        self.notifications = []
-
-        class BattleLayout(object):
-
-            def addMessage(self, message, doFormatting=True):
-                test.chat.append(self._formatMessage(message, doFormatting)[1])
-                return True
-
-            def addCommand(self, command):
-                test.chat.append('command:%s' % command.getSenderID())
-
-        class ChannelController(BattleLayout):
-
-            def _formatMessage(self, message, doFormatting=True):
-                return False, message.text
-
-        class EpicTeamChannelController(ChannelController):
-            # RU 1.45 battle_controllers: the Frontline team chat builds its line with its own _formatMessage.
-
-            def _formatMessage(self, message, doFormatting=True):
-                return False, u'<epic>' + message.text
-
-        class NotificationsModel(object):
-
-            def addNotification(self, notification):
-                test.notifications.append(notification.getType())
-
-        for name in ('messenger', 'messenger.gui', 'messenger.gui.Scaleform', 'messenger.gui.Scaleform.channels',
-                     'messenger.gui.Scaleform.channels.bw_chat2', 'messenger.ext', 'notification'):
-            package(name, [])
-        module('messenger.gui.Scaleform.channels.layout', BattleLayout=BattleLayout)
-        module('messenger.gui.Scaleform.channels.bw_chat2.battle_controllers', _ChannelController=ChannelController,
-               EpicTeamChannelController=EpicTeamChannelController)
-        module('messenger.ext.player_helpers', isCurrentPlayer=lambda session_id: session_id == 'me')
-        module('notification.NotificationsModel', NotificationsModel=NotificationsModel)
-        module('notification.settings', NOTIFICATION_TYPE=type('NOTIFICATION_TYPE', (object,), {'MESSAGE': 1, 'NOTIFY_CENTER_POP_UP': 4,
-                                                                                               'RECRUIT_REMINDER': 13, 'AUCTION_STAGE_START': 19,
-                                                                                               'TRADING_CARAVAN_REFILL': 19}))
-        return ChannelController, NotificationsModel
-
-    def test_chat_filter_and_notification_filter(self):
-        self.install_hud_stubs()
-        controller_class, model_class = self.install_client_class_stubs()
-        app = self.load(list(ENTRY_MODULES))
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-        model = model_class()
-        for kind in (1, 4, 13):
-            model.addNotification(type('Notification', (object,), {'getType': lambda item, kind=kind: kind})())
-        self.assertEqual(self.notifications, [1, 13])
-        for decorator in ('IntegratedAuctionStageStartDecorator', 'TradingCaravanRefillDecorator'):
-            model.addNotification(type(decorator, (object,), {'getType': lambda item: 19})())
-        self.assertEqual(self.notifications, [1, 13, 19])
-
-        self.enter_battle(1)
-        chat = controller_class()
-
-        def message(sender, text):
-            return type('Message', (object,), {'avatarSessionID': sender, 'text': text})()
-
-        command = type('Command', (object,), {'isSender': lambda item: False, 'getSenderID': lambda item: 'spammer'})()
-        for _ in range(3):
-            chat.addMessage(message('spammer', u'ALL TO BASE'))
-            chat.addMessage(message('me', u'ALL TO BASE'))
-        for _ in range(6):
-            chat.addCommand(command)
-        texts = [text for text in self.chat if not text.startswith('command:')]
-        self.assertEqual(len(texts), 4)
-        self.assertTrue(all(u'ALL TO BASE' in text and '[' in text for text in texts))
-        self.assertEqual(len([text for text in self.chat if text.startswith('command:')]), 4)
-        del self.chat[:]
-        epic = sys.modules['messenger.gui.Scaleform.channels.bw_chat2.battle_controllers'].EpicTeamChannelController()
-        epic.addMessage(message('ally', u'hold A'))
-        self.assertEqual(len(self.chat), 1)
-        self.assertTrue(self.chat[0].endswith(u'<epic>hold A') and '[' in self.chat[0])
-
-        self.events.onAvatarBecomeNonPlayer()
-        del self.chat[:]
-        chat.addMessage(message('spammer', u'after battle'))
-        self.assertEqual(self.chat, [u'after battle'])
-        app.config.update({'hangar_notification_filter': False})
-        model.addNotification(type('Notification', (object,), {'getType': lambda item: 4})())
-        self.assertEqual(self.notifications, [1, 13, 19, 4])
-
-    def test_new_features_have_cards_and_pages(self):
-        self.install_hud_stubs()
-        self.load(list(ENTRY_MODULES))
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-        instances = sys.modules['gui.mods.otmetki.core.registry'].registry().instances
-        for feature_id in ('marks_history', 'battle_results', 'auto_resupply'):
-            self.assertTrue(instances[feature_id].ui_actions(), feature_id)
-        self.assertEqual(instances['marks_history'].ui_page()['rows'], [])
-        self.assertEqual(instances['battle_results'].ui_page()['rows'], [])
-        self.events.onBattleResultsReceived(True, _support.battle_results())
-        rows = instances['battle_results'].ui_page()['rows']
-        self.assertEqual([row['id'] for row in rows][0], 'session')
-        self.assertTrue(rows[1]['details'])
-        refusal = instances['auto_resupply'].ui_action('apply_selected')
-        self.assertEqual(refusal['kind'], 'error')
-        instances['hangar_info'].render(SERVER_TIME)
-        self.assertIn('otmetki.hangar_info', self.components)
-
-    def test_settings_changes_and_layout_reset_reach_every_component_without_errors(self):
-        self.install_hud_stubs()
-        app = self.load(list(ENTRY_MODULES))
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-        instances = sys.modules['gui.mods.otmetki.core.registry'].registry().instances
-        instances['hangar_info'].render(SERVER_TIME)
-        instances['hangar_info'].save_place({'x': 40, 'y': 50})
-
-        class Capture(object):
-
-            def __init__(self):
-                self.parts = []
-
-            def write(self, text):
-                self.parts.append(text)
-
-            def flush(self):
-                pass
-
-        capture, stdout = Capture(), sys.stdout
-        sys.stdout = capture
-        try:
-            for instance in instances.values():
-                settings = getattr(instance, 'settings', None)
-                if getattr(instance, 'component_id', None) and settings is not None:
-                    app.bus.emit('component_settings', instance.component_id, sorted(settings.to_dict()))
-            app.bus.emit('hud_reset_layout')
-        finally:
-            sys.stdout = stdout
-        self.assertNotIn('error in', ''.join(capture.parts))
-        self.assertIn('otmetki.hangar_info', self.components)
-
-    def test_hangar_ratings_reads_only_the_bound_account(self):
-        self.install_hud_stubs()
-        app = self.load(list(ENTRY_MODULES))
-        app.credentials.save(Credentials('device-1', 's' * 40, ACCOUNT))
-        self.vehicle.item = type('Vehicle', (object,), {'intCD': 1})()
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-        reads = dict((url.rsplit('/', 1)[-1], (headers, body, callback)) for method, url, headers, body, callback in self.fetches
-                     if method == 'POST' and '/mod/me/' in url)
-        self.assertEqual(sorted(reads), ['goals', 'overview', 'tanks'])
-        self.assertEqual(len([fetch for fetch in self.fetches if fetch[1].endswith('/mod/me/tanks')]), 1)
-        for headers, body, callback in reads.values():
-            self.assertTrue(headers['X-Otmetki-Signature'].startswith('sha256='))
-            self.assertEqual(json.loads(body)['account_id'], ACCOUNT)
-        self.assertEqual(json.loads(reads['tanks'][1])['tank_ids'], [1])
-        for name, key in (('overview', 'ratings-overview.example.json'), ('tanks', 'ratings-tanks.example.json')):
-            answer = _support.load_json(os.path.join(_support.CONTRACT_DIR, 'examples', key))
-            answer['account_id'] = ACCOUNT
-            reads[name][2](Response(200, json.dumps(answer).encode('utf-8')))
-        text = self.components['otmetki.hangar_ratings']['text']
-        self.assertIn('WN8', text)
-        self.assertIn(u'★★', text)
-        self.enter_battle(1)
-        self.assertNotIn('otmetki.hangar_ratings', self.components)
-
-    def test_battle_hud_extras_from_own_controllers(self):
-        ids = self.install_hud_stubs()
-        kinds = sys.modules['BattleFeedbackCommon'].BATTLE_EVENT_TYPE
-        app = self.load(list(ENTRY_MODULES))
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-        sys.modules['gui.mods.otmetki.core.client.hud'].hud_layer(app).update_settings('consumables', {'show_consumables': True})
-        session = self.enter_battle(1)
-        panels = self.hud_components()
-        self.assertIn(u'Аптечка', panels['consumables']['text'])
-        self.assertIn(u'Ремкомплект 12 с', panels['consumables']['text'])
-        self.assertIn(u'ББ 32', panels['consumables']['text'])
-        self.assertIn(u'Кассета 3/4', panels['reload_timer']['text'])
-        self.assertNotIn(u'Перезарядка', panels['reload_timer']['text'])
-        self.assertIn(u'недостижим: нужно ещё 1 000, у противника осталось 900', panels['main_gun']['text'])
-
-        ammo = session.shared.ammo
-        ammo.onGunReloadTimeSet(11, ReloadSnapshot(5.5, 7.8), False)
-        self.assertIn(u'Перезарядка 5.5 с', self.hud_components()['reload_timer']['text'])
-        ammo.onShellsUpdated(11, 31, 2, 0)
-        ammo.onShellsUpdated(12, 5, 0, 0)
-        self.assertIn(u'Кассета 2/4', self.hud_components()['reload_timer']['text'])
-        session.shared.equipments.items[0][1].quantity = 0
-        session.shared.equipments.onEquipmentUpdated(501, session.shared.equipments.items[0][1])
-        self.assertIn(u'Аптечка ×0', self.hud_components()['consumables']['text'])
-
-        session.feedback.onPlayerFeedbackReceived([Feedback(kinds.DAMAGE, ENEMY_VEHICLE, Extra(390))])
-        session.feedback.onVehicleFeedbackReceived(ids['VEHICLE_HEALTH'], ENEMY_VEHICLE, (510, None, 0))
-        self.assertIn(u'нужно ещё 610, у противника осталось 510', self.hud_components()['main_gun']['text'])
-        self.assertIn(u'урон команды 390', self.hud_components()['main_gun']['text'])
-
-        self.clock[0] = 200.0
-        session.feedback.onPlayerFeedbackReceived([Feedback(kinds.RECEIVED_DAMAGE, ALLY_VEHICLE, Extra(140, 'HIGH_EXPLOSIVE', reason='ram'))])
-        last_hit = self.hud_components()['last_hit']['text']
-        self.assertIn(u'KV-1 −140', last_hit)
-        self.assertIn(u'таран', last_hit)
-        self.assertIn('class_heavy_32.png', last_hit)
-        self.clock[0] = 201.0
-        session.feedback.onPlayerFeedbackReceived([Feedback(kinds.RECEIVED_DAMAGE, ENEMY_VEHICLE, Extra(300, 'ARMOR_PIERCING'))])
-        session.vehicle_state.onVehicleStateUpdated(2, ('ammoBay', 'critical', 'critical'))
-        self.assertIn(u'боеукладка', self.hud_components()['last_hit']['text'])
-        self.assertIn(u'боеукладка', self.hud_components()['damage_log']['text'])
-        self.events.onAvatarBecomeNonPlayer()
-        self.assertEqual(self.hud_components(), {})
-
-    def install_round_four_stubs(self):
-        test = self
+    def install_hotkey_input(self, **keys):
         self.key_down = Event()
-        self.hit_directions = []
-        module('Keys', KEY_H=35, KEY_LCONTROL=29, KEY_LSHIFT=42, KEY_RCONTROL=157, KEY_RSHIFT=54)
-        sys.modules['gui'].InputHandler = type('InputHandler', (object,), {'g_instance': type('Input', (object,), {'onKeyDown': self.key_down})()})
+        module('Keys', **keys)
+        input_handler = instance('Input', {'onKeyDown': self.key_down})
+        sys.modules['gui'].InputHandler = constants('InputHandler', {'g_instance': input_handler})
         sys.modules['BigWorld'].isKeyDown = lambda key: True
+
+    def install_avatar_and_device_stubs(self):
+        test = self
+        self.hit_directions = []
+        self.install_hotkey_input(
+            KEY_H=STREAMER_KEY,
+            KEY_LCONTROL=LEFT_CONTROL,
+            KEY_LSHIFT=LEFT_SHIFT,
+            KEY_RCONTROL=RIGHT_CONTROL,
+            KEY_RSHIFT=RIGHT_SHIFT,
+        )
 
         class PlayerAvatar(object):
             # RU 1.45 Avatar.PlayerAvatar: the server's call behind the game's own hit direction indicator.
@@ -895,131 +967,25 @@ class ClientSmokeTest(unittest.TestCase):
                 test.hit_directions.append(hit_yaw)
 
         module('Avatar', PlayerAvatar=PlayerAvatar)
-
-        class Device(object):
-            # RU 1.45 common/items/artefacts.py OptionalDevice: what the stock battle tooltip of a device reads.
-
-            def __init__(self, name, categories=(), deluxe=False):
-                self.tierlessName = self.groupName = self.userString = name
-                self.compactDescr = name
-                self.icon = (name, 0, 0)
-                self.categories = set(categories)
-                self.isDeluxe = deluxe
-                self.shortDescriptionSpecial = u'{colorTagOpen}+10 %{colorTagClose} ' + name
-
-        def slot(*categories):
-            return type('Slot', (object,), {'categories': set(categories)})()
-
-        class Resource(object):
-
-            def __call__(self):
-                return self
-
-            def dyn(self, name):
-                return self
-
-            def exists(self):
-                return False
-
-        impl = sys.modules.get('gui.impl') or package('gui.impl', [])
+        impl = sys.modules.get('gui.impl') or package('gui.impl')
         impl.backport = module('gui.impl.backport', text=lambda resource: None)
-        module('gui.impl.gen', R=type('R', (object,), {'strings': type('Strings', (object,), {'artefacts': Resource()})()}))
-        self.own_devices = [(Device('rammer', ['firepower']), slot('firepower')), (Device('vents', ['survivability'], True), slot('mobility')),
-                            (None, slot('firepower'))]
+        strings = instance('Strings', {'artefacts': Resource()})
+        module('gui.impl.gen', R=constants('R', {'strings': strings}))
+        self.own_devices = [
+            (Device('rammer', ['firepower']), device_slot('firepower')),
+            (Device('vents', ['survivability'], True), device_slot('mobility')),
+            (None, device_slot('firepower')),
+        ]
         return PlayerAvatar
 
-    def test_round_four_battle_panels_and_streamer_hotkey(self):
-        self.install_hud_stubs()
-        avatar = self.install_round_four_stubs()
-        kinds = sys.modules['BattleFeedbackCommon'].BATTLE_EVENT_TYPE
-        self.load(list(ENTRY_MODULES))
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-        session = self.enter_battle(1, tank_id=1)
-        loadout = self.hud_components()['battle_loadout']
-        self.assertIn('img://gui/maps/icons/artefact/rammer.png', loadout['text'])
-        self.assertEqual(loadout['text'].count(u'★'), 1)
-        self.assertFalse(loadout['drag'])
-
-        session.feedback.onPlayerFeedbackReceived([Feedback(kinds.RECEIVED_DAMAGE, ENEMY_VEHICLE, Extra(310)),
-                                                   Feedback(kinds.TANKING, ALLY_VEHICLE, Extra(200, SHELL_TYPES.HE_MODERN))])
-        hits = self.hud_components()['received_hits']['text']
-        self.assertIn(u'Pz. IV', hits)
-        self.assertIn(u'не пробил, заблокировано 200', hits)
-        avatar().showOwnVehicleHitDirection(3.1)
-        self.assertEqual(self.hit_directions, [3.1])
-        session.vehicle_state.onVehicleStateUpdated(2, ('engine', 'critical', 'critical'))
-        self.assertNotIn('death_card', self.hud_components())
-        session.arena.onVehicleKilled(OWN_VEHICLE, ENEMY_VEHICLE, 0, 0)
-        card = self.hud_components()['death_card']['text']
-        self.assertIn(u'Вас уничтожил: СТ Pz. IV', card)
-        self.assertIn(u'урон 310', card)
-        self.assertIn(u'двигатель', card)
-
-        self.key_down(type('KeyEvent', (object,), {'key': 35})())
-        self.assertEqual(self.hud_components(), {})
-        session.feedback.onPlayerFeedbackReceived([Feedback(kinds.TANKING, ALLY_VEHICLE, Extra(100))])
-        self.assertEqual(self.hud_components(), {})
-        self.key_down(type('KeyEvent', (object,), {'key': 35})())
-        self.assertIn(u'заблокировано 100', self.hud_components()['received_hits']['text'])
-        self.assertIn('death_card', self.hud_components())
-        # RU 1.45 client checks read Ctrl and Shift on either side (KEY_LCONTROL or KEY_RCONTROL).
-        big_world = sys.modules['BigWorld']
-        big_world.isKeyDown = lambda key: key == 157
-        self.key_down(type('KeyEvent', (object,), {'key': 35})())
-        self.assertIn('death_card', self.hud_components())
-        big_world.isKeyDown = lambda key: key in (157, 54)
-        self.key_down(type('KeyEvent', (object,), {'key': 35})())
-        self.assertEqual(self.hud_components(), {})
-        big_world.isKeyDown = lambda key: True
-        self.key_down(type('KeyEvent', (object,), {'key': 35})())
-        self.assertIn('death_card', self.hud_components())
-        self.events.onAvatarBecomeNonPlayer()
-        self.assertEqual(self.hud_components(), {})
-
-    def install_round_five_stubs(self):
+    def install_shot_and_bush_circle_stubs(self):
         test = self
-        self.key_down = Event()
         self.shots = []
-        module('Keys', KEY_B=48, KEY_LCONTROL=29, KEY_LSHIFT=42)
-        sys.modules['gui'].InputHandler = type('InputHandler', (object,), {'g_instance': type('Input', (object,), {'onKeyDown': self.key_down})()})
-        big_world = sys.modules['BigWorld']
-        big_world.isKeyDown = lambda key: True
-
-        class Area(object):
-            # RU 1.45 BigWorld.PyTerrainSelectedArea as CombatSelectedArea sets it up.
-
-            def setup(self, visual, size, height, color):
-                self.args = (visual, size, height, color)
-
-            def enableAccurateCollision(self, value):
-                pass
-
-            def setCutOffDistance(self, value):
-                pass
-
-        class Node(object):
-
-            def __init__(self):
-                self.items = []
-
-            def attach(self, item):
-                self.items.append(item)
-
-        class Model(object):
-
-            def __init__(self, path):
-                self.root = Node()
-                self.motors = []
-
-            def node(self, name):
-                return self.root
-
-            def addMotor(self, motor):
-                self.motors.append(motor)
+        self.install_hotkey_input(KEY_B=BUSH_CIRCLE_KEY, KEY_LCONTROL=LEFT_CONTROL, KEY_LSHIFT=LEFT_SHIFT)
 
         class Vehicle(object):
-            # RU 1.45 Vehicle.Vehicle: the client draws the effects of every shot on a vehicle through showDamageFromShot.
+            # RU 1.45 Vehicle.Vehicle: the client draws the effects of every shot on a vehicle through
+            # showDamageFromShot.
 
             def __init__(self, own):
                 self.isPlayerVehicle = own
@@ -1028,350 +994,46 @@ class ClientSmokeTest(unittest.TestCase):
             def showDamageFromShot(self, attacker_id, points, effects_index, damage_factor, last_material_is_shield):
                 test.shots.append(attacker_id)
 
+        big_world = sys.modules['BigWorld']
         big_world.Model = Model
-        big_world.PyTerrainSelectedArea = Area
+        big_world.PyTerrainSelectedArea = TerrainArea
         big_world.Servo = lambda matrix: ('servo', matrix)
         self.own_vehicle = Vehicle(True)
         big_world.entity = lambda vehicle_id: self.own_vehicle if vehicle_id == OWN_VEHICLE else None
         module('Math', Vector2=lambda x, y: (x, y))
         module('Vehicle', Vehicle=Vehicle)
         config = {'miscParams': {'projectileSpeedFactor': 0.8}}
-        package('items', []).vehicles = module('items.vehicles', g_cache=type('Cache', (object,), {'commonConfig': config})())
+        package('items').vehicles = module('items.vehicles', g_cache=instance('Cache', {'commonConfig': config}))
         return Vehicle
 
-    def enter_battle_with_gun(self, yaw_limits):
-        session = BattleSession()
-        self.player = Player(ACCOUNT, 4242)
-        self.player.vehicleTypeDescriptor = type('Descriptor', (object,), {'gun': type('Gun', (object,), {'turretYawLimits': yaw_limits})()})()
-        self.player.gunRotator = type('GunRotator', (object,), {'turretYaw': 0.0})()
-        self.player.guiSessionProvider = session
-        self.player.playerVehicleID = OWN_VEHICLE
-        self.player.team = 1
-        self.player.arena = session.arena
-        self.events.onAvatarReady()
-        return session
+    def install_client_class_stubs(self):
+        self.chat = []
+        self.notifications = []
+        test = self
+        battle_layout, channel_controller, epic_controller = chat_classes(self)
 
-    def test_round_five_battle_wounds_traverse_circle_and_shell_stats(self):
-        self.install_hud_stubs()
-        vehicle = self.install_round_five_stubs()
-        kinds = sys.modules['BattleFeedbackCommon'].BATTLE_EVENT_TYPE
-        app = self.load(list(ENTRY_MODULES))
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-        sys.modules['gui.mods.otmetki.core.client.hud'].hud_layer(app).update_settings('consumables', {'show_shell_stats': True})
-        instances = sys.modules['gui.mods.otmetki.core.registry'].registry().instances
-        self.vehicle.item = type('Vehicle', (object,), {'intCD': 1, 'name': 'ussr:R04_T-34'})()
-        self.assertEqual(instances['hangar_info'].ui_actions()[0]['link'], '/t/r04-t-34/armor')
-        self.vehicle.item = None
+        class NotificationsModel(object):
 
-        session = self.enter_battle_with_gun((-0.26, 0.26))
-        consumables = self.hud_components()['consumables']['text']
-        self.assertIn(u'258 мм', consumables)
-        self.assertIn(u'урон 390', consumables)
-        self.assertIn(u'1 000 м/с', consumables)
-        session.shared.ammo.onCurrentShellChanged(12)
-        self.assertIn(u'480', self.hud_components()['consumables']['text'])
+            def addNotification(self, item):
+                test.notifications.append(item.getType())
 
-        self.player.gunRotator.turretYaw = 0.2
-        instances['gun_arc'].render()
-        arc = self.hud_components()['gun_arc']['text']
-        self.assertIn(u'УГН', arc)
-        self.assertIn(u'◄ 26°', arc)
-        self.assertIn(u'3° ►', arc)
-
-        self.assertEqual(self.player.models, [])
-        self.key_down(type('KeyEvent', (object,), {'key': 48})())
-        circle = self.player.models[0]
-        self.assertEqual(circle.root.items[0].args, ('content/Interface/CheckPoint/CheckPoint.visual', (30.0, 30.0), 0.5, 0xFFFFFFFF))
-        self.assertEqual(circle.motors, [('servo', 'own-matrix')])
-        self.key_down(type('KeyEvent', (object,), {'key': 48, 'isRepeatedEvent': lambda event: True})())
-        self.assertEqual(self.player.models, [circle])
-        self.key_down(type('KeyEvent', (object,), {'key': 48})())
-        self.assertEqual(self.player.models, [])
-        self.key_down(type('KeyEvent', (object,), {'key': 48})())
-        session.arena.onVehicleKilled(OWN_VEHICLE, ENEMY_VEHICLE, 0, 0)
-        self.assertEqual(self.player.models, [])
-
-        front_hull_pen = 4 | (1 << 8) | (120 << 16) | (100 << 24) | (250 << 32) | (130 << 40) | (110 << 48) | (255 << 56)
-        self.own_vehicle.showDamageFromShot(ENEMY_VEHICLE, [front_hull_pen], 0, 1.0, False)
-        vehicle(False).showDamageFromShot(ENEMY_VEHICLE, [front_hull_pen], 0, 1.0, False)
-        session.feedback.onPlayerFeedbackReceived([Feedback(kinds.RECEIVED_DAMAGE, ENEMY_VEHICLE, Extra(390))])
-        self.assertEqual(self.shots, [ENEMY_VEHICLE, ENEMY_VEHICLE])
-        self.assertNotIn('otmetki.battle_hits', self.components)
-        self.events.onAvatarBecomeNonPlayer()
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-        label = self.components['otmetki.battle_hits']['text']
-        self.assertIn(u'Боевые раны · T-34', label)
-        self.assertIn(u'Попаданий 1', label)
-        rows = instances['battle_hits'].ui_page()['rows']
-        self.assertEqual(rows[0]['id'], '4242')
-        self.assertEqual(rows[0]['details'][1]['value'], u'Корпус, лоб · пробитие · −390 · Pz. IV')
-        self.assertEqual([mark['tone'] for mark in rows[0]['figure']['marks']], ['pen'])
-        self.assertTrue(os.path.isfile(os.path.join(app.config_dir, 'battle_hits_%d.json' % ACCOUNT)))
-        instances['battle_hits'].ui_action('clear', '4242')
-        self.assertEqual(instances['battle_hits'].ui_page()['rows'], [])
-        self.assertNotIn('otmetki.battle_hits', self.components)
-
-    def test_received_hits_tell_a_ricochet_from_the_shot_drawn_on_the_own_tank(self):
-        self.install_hud_stubs()
-        vehicle = self.install_round_five_stubs()
-        kinds = sys.modules['BattleFeedbackCommon'].BATTLE_EVENT_TYPE
-        self.load(list(ENTRY_MODULES))
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-        session = self.enter_battle_with_gun(None)
-        ricochet = 2 | (1 << 8) | (120 << 16) | (130 << 40)
-        vehicle(False).showDamageFromShot(ALLY_VEHICLE, [ricochet], 0, 0.0, False)
-        self.own_vehicle.showDamageFromShot(ENEMY_VEHICLE, [ricochet], 0, 0.0, False)
-        session.feedback.onPlayerFeedbackReceived([Feedback(kinds.TANKING, ENEMY_VEHICLE, Extra(240)),
-                                                   Feedback(kinds.TANKING, ALLY_VEHICLE, Extra(100))])
-        hits = self.hud_components()['received_hits']['text']
-        self.assertIn(u'рикошет, заблокировано 240', hits)
-        self.assertIn(u'не пробил, заблокировано 100', hits)
-
-    def test_bush_circle_leaves_with_the_battle_it_was_drawn_in(self):
-        self.install_hud_stubs()
-        self.install_round_five_stubs()
-        self.load(list(ENTRY_MODULES))
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-        self.enter_battle_with_gun(None)
-        avatar = self.player
-        self.key_down(type('KeyEvent', (object,), {'key': 48})())
-        self.assertEqual(len(avatar.models), 1)
-        self.player = Player(ACCOUNT)
-        self.events.onAvatarBecomeNonPlayer()
-        self.assertEqual(avatar.models, [])
-        self.key_down(type('KeyEvent', (object,), {'key': 48})())
-        self.assertEqual(self.player.models, [])
-
-    def test_round_four_hangar_helpers_and_private_mode(self):
-        self.install_hud_stubs()
-        self.install_round_four_stubs()
-        app = self.load(list(ENTRY_MODULES))
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-        instances = sys.modules['gui.mods.otmetki.core.registry'].registry().instances
-        self.assertEqual(instances['personal_missions'].ui_page()['rows'], [])
-        self.assertNotIn('otmetki.personal_missions', self.components)
-        app.ui.show('otmetki.session', 'mine', {'x': 0, 'y': 0, 'alignX': 'right', 'alignY': 'top'})
-        sys.modules['gui.mods.otmetki.core.client.hud'].component_config(app).get('streamer_mode').update({'private': True})
-        app.bus.emit('component_settings', 'streamer_mode', ['private'])
-        self.assertNotIn('otmetki.session', self.components)
-        sys.modules['gui.mods.otmetki.core.client.hud'].component_config(app).get('streamer_mode').update({'private': False})
-        app.bus.emit('component_settings', 'streamer_mode', ['private'])
-        self.assertEqual(self.components['otmetki.session']['text'], 'mine')
-        for step in range(3):
-            results = _support.battle_results()
-            results['arenaUniqueID'] = 900 + step
-            results['common']['winnerTeam'] = 2
-            self.events.onBattleResultsReceived(True, results)
-        self.assertTrue([text for text in self.messages if u'поражений подряд' in text], self.messages)
+        for name in CHAT_PACKAGES:
+            package(name)
+        module('messenger.gui.Scaleform.channels.layout', BattleLayout=battle_layout)
+        module(
+            'messenger.gui.Scaleform.channels.bw_chat2.battle_controllers',
+            _ChannelController=channel_controller,
+            EpicTeamChannelController=epic_controller,
+        )
+        module('messenger.ext.player_helpers', isCurrentPlayer=lambda session_id: session_id == 'me')
+        module('notification.NotificationsModel', NotificationsModel=NotificationsModel)
+        module('notification.settings', NOTIFICATION_TYPE=constants('NOTIFICATION_TYPE', NOTIFICATION_TYPES))
+        return channel_controller, NotificationsModel
 
     def install_site_vehicle(self):
-        test = self
-
-        class Stats(object):
-            # RU 1.45 gui/shared/gui_items/dossier/stats.py: the random-battle max records of a vehicle dossier.
-
-            def getMaxDamage(self):
-                return 2000
-
-            def getMaxAssisted(self):
-                return 3000
-
-            def getMaxFrags(self):
-                return 4
-
-            def getMaxXp(self):
-                return 1100
-
-        dossier = type('Dossier', (object,), {'getRandomStats': lambda item: Stats()})()
-        self.vehicle.item = type('Vehicle', (object,), {'intCD': 1, 'name': 'ussr:R04_T-34', 'level': 5, 'crew': []})()
+        dossier = instance('Dossier', {'getRandomStats': lambda item: DossierStats()})
+        self.vehicle.item = instance('Vehicle', {'intCD': 1, 'name': 'ussr:R04_T-34', 'level': 5, 'crew': []})
         self.vehicle.getDossier = lambda: dossier
-        return test
-
-    def answer(self, name, data):
-        for method, url, headers, body, callback in list(self.fetches):
-            if method == 'POST' and url.endswith('/mod/me/' + name):
-                self.fetches.remove((method, url, headers, body, callback))
-                callback(Response(200, json.dumps(data).encode('utf-8')))
-
-    def site_rows(self):
-        tanks = _support.load_json(os.path.join(_support.CONTRACT_DIR, 'examples', 'ratings-tanks.example.json'))
-        goals = _support.load_json(os.path.join(_support.CONTRACT_DIR, 'examples', 'goals.example.json'))
-        tanks['account_id'] = goals['account_id'] = ACCOUNT
-        return tanks, goals
-
-    def test_records_goals_and_efficiency_from_the_site(self):
-        self.install_hud_stubs()
-        self.install_site_vehicle()
-        kinds = sys.modules['BattleFeedbackCommon'].BATTLE_EVENT_TYPE
-        app = self.load(list(ENTRY_MODULES))
-        app.credentials.save(Credentials('device-1', 's' * 40, ACCOUNT))
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-
-        def failing_listener(tank_id):
-            raise RuntimeError('listener')
-
-        sys.modules['gui.mods.otmetki.core.client.me'].tank_ratings(app).listeners.insert(0, failing_listener)
-        tanks, goals = self.site_rows()
-        self.answer('tanks', tanks)
-        self.answer('goals', goals)
-        instances = sys.modules['gui.mods.otmetki.core.registry'].registry().instances
-        self.assertEqual(instances['personal_best'].book.get(1), {'damage': 6812, 'assist': 5120, 'frags': 6, 'xp': 2740})
-        self.assertIn(u'Ср. урон 3 000', self.components['otmetki.session_goals']['text'])
-        self.assertEqual(self.sounds, [])
-        sys.modules['gui.mods.otmetki.core.client.hud'].hud_layer(app).update_settings('session_goals', {'show_battle': True})
-
-        session = self.enter_battle(1, tank_id=1)
-        session.feedback.onPlayerFeedbackReceived([Feedback(kinds.DAMAGE, ENEMY_VEHICLE, Extra(1500)), Feedback(kinds.SPOTTED, ENEMY_VEHICLE, None),
-                                                   Feedback(kinds.KILL, ENEMY_VEHICLE, None)])
-        panels = self.hud_components()
-        self.assertIn(u'осталось 5 312', panels['personal_best']['text'])
-        self.assertIn(u'WN8 боя', panels['battle_efficiency']['text'])
-        self.assertIn(u'Урон 1 500 / ср. 1 20', panels['battle_efficiency']['text'])
-        self.assertIn(u'Ср. урон 3 000: нужно', panels['session_goals']['text'])
-        self.assertNotIn('otmetki.session_goals', self.components)
-        # RU 1.45 dossiers2 battle_results_processors: maxAssisted is track + radio + stun, so an artillery player's
-        # stun assist counts in battle; BattleSummaryFeedbackEvent keeps stun apart from getTotalAssistDamage().
-        sys.modules['gui.mods.otmetki.core.client.hud'].hud_layer(app).update_settings('personal_best', {'show_assist': True})
-        session.feedback.onPlayerFeedbackReceived([Feedback(kinds.STUN_ASSIST, ENEMY_VEHICLE, Extra(600))])
-        self.assertIn(u'осталось 4 520', self.hud_components()['personal_best']['text'])
-        summary = Summary()
-        summary.getTotalStunDamage = lambda: 5000
-        session.feedback.onPlayerSummaryFeedbackReceived(summary)
-        self.assertIn(u'Новый рекорд (помощь): 5 950 (+830)', self.hud_components()['personal_best']['text'])
-        self.events.onAvatarBecomeNonPlayer()
-
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-        results = _support.battle_results()
-        results['personal'][1]['damageDealt'] = 7050
-        self.events.onBattleResultsReceived(True, results)
-        card = [text for text in self.messages if u'новый рекорд' in text]
-        self.assertTrue(card, self.messages)
-        self.assertIn(u'урон 7 050 (было 6 812)', card[0])
-        self.assertEqual(self.sounds, ['mp3:sixthSense:otmetki_record.mp3'])
-        stored = _support.load_json(os.path.join(app.config_dir, 'personal_best_%d.json' % ACCOUNT))
-        self.assertEqual(stored['tanks']['1']['damage'], 7050)
-
-        for step in range(1, 30):
-            app.bus.emit('tick', time.time() + step * 5)
-        done = dict(goals['goals'][0], current=3050.0, status='achieved')
-        self.answer('goals', dict(goals, goals=[done]))
-        self.assertTrue([text for text in self.messages if u'цель выполнена' in text], self.messages)
-        self.assertEqual(self.sounds[-1], 'mp3:sixthSense:otmetki_goal.mp3')
-
-    def test_platoon_points_and_arty_meter_follow_only_the_own_vehicle(self):
-        self.install_hud_stubs()
-        sys.modules['gui.battle_control.battle_constants'].VEHICLE_VIEW_STATE.STUN = 65536
-        ArenaDP.isSquadMan = lambda provider, vehicle_id: vehicle_id == ALLY_VEHICLE
-        self.addCleanup(delattr, ArenaDP, 'isSquadMan')
-        self.load(list(ENTRY_MODULES))
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-        session = self.enter_battle(1)
-        instances = sys.modules['gui.mods.otmetki.core.registry'].registry().instances
-        platoon, arty = instances['platoon_points'].platoon, instances['arty_meter'].battle
-
-        # RU 1.45 Vehicle.updateStunInfo: STUN carries a StunInfo namedtuple, its end a StunInfo with duration 0.
-        def stun(end_time, duration):
-            return type('StunInfo', (object,), {'endTime': end_time, 'duration': duration})()
-
-        state = session.vehicle_state.onVehicleStateUpdated
-        for value in (stun(130.0, 12.0), stun(130.0, 11.0), stun(0.0, 0.0), stun(160.0, 10.0)):
-            state(65536, value)
-        state(4, 640)
-        summary = Summary()
-        summary.getTotalStunDamage = lambda: 5000
-        session.feedback.onPlayerSummaryFeedbackReceived(summary)
-        session.vehicle_state.getControllingVehicleID = lambda: ALLY_VEHICLE
-        state(65536, stun(190.0, 10.0))
-        state(4, 700)
-        self.assertEqual(arty.values()['stuns'], 2)
-        self.assertEqual((platoon.members[OWN_VEHICLE]['hp'], platoon.members[ALLY_VEHICLE]['hp']), (640, 700))
-        self.assertEqual(platoon.own_totals(), (2150, 5950))
-
-    def test_a_vehicle_without_a_team_is_not_an_enemy(self):
-        self.install_hud_stubs()
-        self.load(list(ENTRY_MODULES))
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-        session = self.enter_battle(1)
-        known = session.dp.getVehicleInfo
-        # RU 1.45 arena_dp.getVehicleInfo: an unknown id gets a blank VehicleArenaInfoVO of team 0.
-        session.dp.getVehicleInfo = lambda vehicle_id: known(vehicle_id) or VehicleInfo(vehicle_id, 0, '', 0)
-        battle = sys.modules['gui.mods.otmetki.core.client.battle']
-        self.assertEqual([battle.is_enemy(vehicle_id) for vehicle_id in (ENEMY_VEHICLE, ALLY_VEHICLE, 999, None)], [True, False, False, False])
-
-    def test_personal_best_counts_every_dossier_bonus_type(self):
-        self.install_hud_stubs()
-        self.load(list(ENTRY_MODULES))
-        counts = sys.modules['gui.mods.otmetki.features.personal_best.client'].counts_in_dossier
-        self.assertTrue(counts(1))
-        self.assertFalse(counts(29))
-
-        class Caps(object):
-            DOSSIER_MAX15X15 = str('DOSSIER_MAX15X15')
-
-            @staticmethod
-            def checkAny(bonus_type, *caps):
-                # RU 1.45 arena_bonus_type_caps.checkAny: a cap given by name must be a native str.
-                return bonus_type in (1, 29) and any(type(cap) is str and cap == 'DOSSIER_MAX15X15' for cap in caps)
-
-        module('arena_bonus_type_caps', ARENA_BONUS_TYPE_CAPS=Caps)
-        self.assertTrue(counts(29))
-        self.assertFalse(counts(22))
-        self.assertFalse(counts(None))
-
-    def test_replay_analysis_notice_and_session_share(self):
-        self.install_hud_stubs()
-        app = self.load(list(ENTRY_MODULES))
-        app.credentials.save(Credentials('device-1', 's' * 40, ACCOUNT))
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-        replay_id = '0f8e2d4c-6b1a-4f3e-9d2c-7a5b3c1d9e8f'
-        app.bus.emit('replay_uploaded', '777', replay_id)
-        app.bus.emit('tick', time.time() + 120)
-        polls = [fetch for fetch in self.fetches if fetch[1].endswith('/mod/me/replays')]
-        self.assertEqual(len(polls), 1)
-        self.assertEqual(json.loads(polls[0][3])['replay_ids'], [replay_id])
-        answer = _support.load_json(os.path.join(_support.CONTRACT_DIR, 'examples', 'replay-analysis.example.json'))
-        answer['account_id'] = ACCOUNT
-        polls[0][4](Response(200, json.dumps(answer).encode('utf-8')))
-        self.assertTrue([text for text in self.messages if u'разбор реплея готов' in text and u'точность 83%' in text], self.messages)
-
-        instances = sys.modules['gui.mods.otmetki.core.registry'].registry().instances
-        stats = instances['session_stats']
-        self.assertEqual([action['id'] for action in stats.ui_actions()], ['new_session'])
-        self.assertFalse([fetch for fetch in self.fetches if '/mod/me/session-share' in fetch[1]])
-        app.config.update({'share_session_report': True, 'share_session_channel': 'both'})
-        app.bus.emit('component_settings', 'session_stats', ['share_session_report'])
-        shares = [fetch for fetch in self.fetches if fetch[1].endswith('/mod/me/session-share')]
-        self.assertEqual(json.loads(shares[0][3])['channels'], ['telegram', 'discord'])
-        shares[0][4](Response(200, b'{}'))
-        self.assertEqual(app.state_file.read({})['session_share_synced'], [True, 'both'])
-        self.assertEqual(stats.ui_action('share_now')['kind'], 'error')
-        self.events.onBattleResultsReceived(True, _support.battle_results())
-        self.assertEqual(stats.ui_action('share_now')['kind'], 'info')
-        sent = [fetch for fetch in self.fetches if fetch[1].endswith('/mod/me/session-share/send')]
-        self.assertEqual(json.loads(sent[0][3])['session_id'], stats.session.session_id)
-        self.assertEqual([action['id'] for action in stats.ui_actions()], ['new_session', 'share_now'])
-        shared_id = stats.session.session_id
-        self.assertEqual(stats.ui_action('new_session')['kind'], 'info')
-        self.assertNotEqual(stats.session.session_id, shared_id)
-        self.assertEqual(stats.session.summary(time.time())['battles'], 0)
-
-        app.config.update({'share_session_channel': 'discord'})
-        app.bus.emit('component_settings', 'session_stats', ['share_session_channel'])
-        shares = [fetch for fetch in self.fetches if fetch[1].endswith('/mod/me/session-share')]
-        shares[-1][4](Response(409, b'{"error":"channel_not_linked"}'))
-        self.assertTrue([text for text in self.messages if u'привяжите выбранный канал' in text], self.messages)
-        app.bus.emit('tick', time.time() + 3600)
-        self.assertEqual(len([fetch for fetch in self.fetches if fetch[1].endswith('/mod/me/session-share')]), len(shares))
 
     def install_customization_stubs(self):
         test = self
@@ -1380,115 +1042,231 @@ class ClientSmokeTest(unittest.TestCase):
         class OutfitApplier(object):
 
             def __init__(self, vehicle, outfit_data):
-                self.vehicle, self.outfit_data = vehicle, outfit_data
+                self.vehicle = vehicle
+                self.outfit_data = outfit_data
 
             # RU 1.45 Processor.request is @adisp_async: request() returns the caller that takes the callback.
             def request(self):
                 def caller(callback):
                     test.outfits.append(self.outfit_data)
-                    callback(type('Result', (object,), {'success': True, 'userMsg': 'style removed'})())
+                    callback(result(True, 'style removed'))
                 return caller
 
         module('gui.shared.gui_items.processors.common', OutfitApplier=OutfitApplier)
-        package('items.components', [])
-        module('items.components.c11n_constants', SeasonType=type('SeasonType', (object,), {'ALL': 7}))
+        package('items.components')
+        module('items.components.c11n_constants', SeasonType=constants('SeasonType', {'ALL': 7}))
         module('items.customizations', CustomizationOutfit=lambda: 'empty-component')
-        package('vehicle_outfit', [])
+        package('vehicle_outfit')
         module('vehicle_outfit.outfit', Outfit=lambda component=None, vehicleCD=None: ('outfit', component, vehicleCD))
 
-    def test_hangar_small_wins(self):
-        self.install_hud_stubs()
-        device_class, vehicle_class = self.install_garage_stubs()
-        self.install_customization_stubs()
-        self.load(list(ENTRY_MODULES))
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-        instances = sys.modules['gui.mods.otmetki.core.registry'].registry().instances
-        vehicle = self.vehicle.item
-        vehicle.descriptor.makeCompactDescr = lambda: 'cd-1'
-        tweaks = instances['hangar_tweaks']
-        self.assertEqual(tweaks.ui_action('remove_style')['text'], tweaks.app.translate('hangar_tweaks_refused_nothing'))
-        vehicle.isStyleInstalled = True
-        self.assertEqual(instances['hangar_tweaks'].ui_action('remove_style')['kind'], 'info')
-        self.assertEqual(self.outfits, [((('outfit', 'empty-component', 'cd-1'), 7),)])
-        self.assertEqual(self.result_messages, ['style removed'])
+    def install_garage_stubs(self):
+        test = self
+        self.processors = []
 
-        class Tankman(object):
+        class InstallerProcessor(object):
 
-            def __init__(self, cost, role):
-                self.cost, self.roleUserName = cost, role
+            def __init__(self, vehicle, item, slotIdx, install=True):
+                self.vehicle = vehicle
+                self.item = item
+                self.slot = slotIdx
+                self.install = install
 
-            def getNextSkillXpCost(self):
-                return self.cost
+            # RU 1.45 Processor.request is @adisp_async: request() returns the caller that takes the callback.
+            def request(self):
+                return lambda callback: test.processors.append((self, callback))
 
-        levels = {'ussr:R04_T-34': (5, 7)}
-        lobby = type('ILobbyContext', (object,), {})
-        self.services[lobby] = type('LobbyContext', (object,), {'getServerSettings': lambda context: type('Settings', (object,), {
-            'getRandomBattleLevelsForDemonstrator': lambda settings: levels})()})()
+        self.items = GarageItems()
+        items_cache = constants('IItemsCache', {})
+        self.services[items_cache] = instance('ItemsCache', {'items': self.items})
+        package('skeletons.gui.shared')
+        sys.modules['skeletons.gui.shared'].IItemsCache = items_cache
+        for name in ('gui.shared', 'gui.shared.gui_items', 'gui.shared.gui_items.processors'):
+            package(name)
+        module('gui.shared.gui_items.processors.module', getInstallerProcessor=InstallerProcessor)
+        modifications = {
+            11: instance('Modification', {'name': 'mod_a'}),
+            12: instance('Modification', {'name': 'mod_b'}),
+        }
+        post_progression = instance('PostProgression', {'modifications': modifications})
+        cache = instance('Cache', {'postProgression': lambda cache: post_progression})
+        package('items').vehicles = module('items.vehicles', g_cache=cache)
+        self.vehicle.item = self.items.vehicle
+
+    def install_hangar_view_stubs(self):
+        self.teasers = []
+        self.entries = []
+        self.banner_loads = []
+        hangar_class, banner_class = hangar_view_classes(self)
+        for name in HANGAR_VIEW_PACKAGES:
+            package(name)
+        module('gui.Scaleform.daapi.view.lobby.hangar.Hangar', Hangar=hangar_class)
+        module('gui.impl.lobby.offers.offer_banner_window', OfferBannerWindow=banner_class)
+        return hangar_class, banner_class
+
+    def install_gameface_hud_stubs(self):
+        test = self
+        self.windows = []
+        self.res_id = 7
+        package('frameworks')
+        module(
+            'frameworks.wulf',
+            ViewModel=GamefaceViewModel,
+            ViewSettings=ViewSettings,
+            ViewFlags=constants('ViewFlags', {'VIEW': 1}),
+            WindowFlags=constants('WindowFlags', {'WINDOW': 1}),
+            WindowLayer=constants('WindowLayer', {'WINDOW': 7}),
+            WindowStatus=constants('WindowStatus', {'LOADED': 3, 'DESTROYING': 4, 'DESTROYED': 5}),
+        )
+        package('gui.impl')
+        module('gui.impl.pub', ViewImpl=ViewImpl, WindowImpl=window_impl_class(self))
+        module(
+            'openwg_gameface',
+            res_id_by_key=lambda key: test.res_id if key == 'otmetki/ui/hud' else -1,
+            ModDynAccessor=lambda key: (lambda: 'layout:' + key),
+            gf_mod_inject=lambda model, key, styles=None, modules=None: None,
+        )
+
+    def install_app_loader(self):
+        loader = instance('AppLoader', {'space': GUI_SPACES['LOGIN']})
+        loader.getSpaceID = lambda: loader.space
+        loader.onGUISpaceEntered = Event()
+        loader.onGUISpaceLeft = Event()
+        interface = constants('IAppLoader', {})
+        self.services[interface] = loader
+        package('skeletons.gui')
+        module(
+            'skeletons.gui.app_loader',
+            GuiGlobalSpaceID=constants('GuiGlobalSpaceID', GUI_SPACES),
+            IAppLoader=interface,
+        )
+        return loader
+
+    def install_onslaught_services(self):
+        current = comp7_division(5, 2, 3000)
+        divisions = (comp7_division(5, 3, 2500), current, comp7_division(5, 1, 3500))
+        comp7 = constants('IComp7Controller', {})
+        lobby = constants('ILobbyContext', {})
+        skill = instance('Equipment', {'userString': u'Точка сбора'})
+        self.services[comp7] = instance('Comp7', {
+            'rating': 3150,
+            'isComp7PrbActive': lambda ctrl: True,
+            'isQualificationActive': lambda ctrl: False,
+            'getVehicleSkillEquipment': lambda ctrl, vehicle: skill,
+        })
+        ranks = instance('Ranks', {'divisions': divisions})
+        server_settings = instance('Settings', {'comp7RanksConfig': ranks})
+        self.services[lobby] = instance('Lobby', {'getServerSettings': lambda ctx: server_settings})
         module('skeletons.gui.lobby_context', ILobbyContext=lobby)
-        vehicle.name, vehicle.type, vehicle.level, vehicle.isElite = 'ussr:R04_T-34', 'mediumTank', 5, True
-        vehicle.shortUserName = u'Т-34'
-        vehicle.crew = [(0, Tankman(0, u'Командир')), (1, Tankman(8400, u'Наводчик')), (2, None)]
-        instances['hangar_info'].render(SERVER_TIME)
-        text = self.components['otmetki.hangar_info']['text']
-        self.assertIn(u'Т-34', text)
-        self.assertIn(u'бои 5–7 ур.', text)
-        self.assertIn(u'до навыка 8 400 опыта (Наводчик)', text)
-        self.assertIn(u'ускоренное обучение', text)
+        for name in ('gui.impl', 'gui.impl.lobby', 'gui.impl.lobby.comp7'):
+            package(name)
+        module('gui.impl.lobby.comp7.comp7_shared', getPlayerDivision=lambda: current)
+        return comp7
 
-    def test_onslaught_and_event_cards_read_only_the_own_data(self):
-        self.install_hud_stubs()
-        self.load(list(ENTRY_MODULES))
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-        instances = sys.modules['gui.mods.otmetki.core.registry'].registry().instances
-        instances['event_trackers'].app.config.update({'hangar_event_trackers': True})
-
-        def division(rank, index, begin):
-            return type('Division', (object,), {'rank': rank, 'index': index, 'range': type('Range', (object,), {'begin': begin})(),
-                                                'elitePercent': 0})()
-
-        current = division(5, 2, 3000)
-        divisions = (division(5, 3, 2500), current, division(5, 1, 3500))
-        comp7, shop = type('IComp7Controller', (object,), {}), type('IShopSalesEventController', (object,), {})
-        lobby, items, boards = type('ILobbyContext', (object,), {}), type('IItemsCache', (object,), {}), type('IEventBoardController', (object,), {})
-        skill = type('Equipment', (object,), {'userString': u'Точка сбора'})()
-        self.services[comp7] = type('Comp7', (object,), {'rating': 3150, 'isComp7PrbActive': lambda ctrl: True,
-                                                         'isQualificationActive': lambda ctrl: False,
-                                                         'getVehicleSkillEquipment': lambda ctrl, vehicle: skill})()
-        self.services[lobby] = type('Lobby', (object,), {'getServerSettings': lambda ctx: type('Settings', (object,), {
-            'comp7RanksConfig': type('Ranks', (object,), {'divisions': divisions})()})()})()
-        self.services[shop] = type('Shop', (object,), {'isShopSalesEntryPointAvailable': lambda ctrl: True, 'activePhaseFinishTime': 0,
-                                                       'eventFinishTime': 4102444800})()
-        self.services[items] = type('Items', (object,), {'items': type('Cache', (object,), {'stats': type('Stats', (object,), {
-            'entitlements': {'caravan_guaranteed_reward_points': 12}})()})()})()
-        event = type('Event', (object,), {'getObjectiveParameter': lambda e: 'originalXP', 'isStarted': lambda e: True, 'isFinished': lambda e: False,
-                                          'getName': lambda e: u'Триатлон', 'getCardinality': lambda e: 3, 'getStartDateTs': lambda e: 0,
-                                          'getEndDateTs': lambda e: 4102444800, 'getLimits': lambda e: None})()
-        self.services[boards] = type('Boards', (object,), {'getEventsSettingsData': lambda ctrl: type('Data', (object,), {
-            'getEvents': lambda data: [event]})()})()
-        module('skeletons.gui.game_control', IComp7Controller=comp7, IShopSalesEventController=shop)
-        module('skeletons.gui.lobby_context', ILobbyContext=lobby)
+    def install_event_services(self):
+        shop = constants('IShopSalesEventController', {})
+        items = constants('IItemsCache', {})
+        boards = constants('IEventBoardController', {})
+        self.services[shop] = instance('Shop', {
+            'isShopSalesEntryPointAvailable': lambda ctrl: True,
+            'activePhaseFinishTime': 0,
+            'eventFinishTime': 4102444800,
+        })
+        stats = instance('Stats', {'entitlements': {'caravan_guaranteed_reward_points': 12}})
+        self.services[items] = instance('Items', {'items': instance('Cache', {'stats': stats})})
+        event = instance('Event', {
+            'getObjectiveParameter': lambda e: 'originalXP',
+            'isStarted': lambda e: True,
+            'isFinished': lambda e: False,
+            'getName': lambda e: u'Триатлон',
+            'getCardinality': lambda e: 3,
+            'getStartDateTs': lambda e: 0,
+            'getEndDateTs': lambda e: 4102444800,
+            'getLimits': lambda e: None,
+        })
+        events_data = instance('Data', {'getEvents': lambda data: [event]})
+        self.services[boards] = instance('Boards', {'getEventsSettingsData': lambda ctrl: events_data})
         module('skeletons.gui.shared', IItemsCache=items)
         module('skeletons.gui.event_boards_controllers', IEventBoardController=boards)
-        for name in ('gui.impl', 'gui.impl.lobby', 'gui.impl.lobby.comp7'):
-            package(name, [])
-        module('gui.impl.lobby.comp7.comp7_shared', getPlayerDivision=lambda: current)
-        self.vehicle.item = type('Vehicle', (object,), {'intCD': 1})()
-        instances['comp7_helper'].refresh()
-        instances['event_trackers'].refresh()
-        comp7_text = self.components['otmetki.comp7_helper']['text']
-        self.assertIn(u'Чемпион B', comp7_text)
-        self.assertIn(u'До «Чемпион A»: 350 очков', comp7_text)
-        self.assertIn(u'Точка сбора', comp7_text)
-        self.assertIn(u'12 жетонов', self.components['otmetki.event_trackers.caravan']['text'])
-        self.assertIn(u'Триатлон', self.components['otmetki.event_trackers.triathlon']['text'])
-        self.services[comp7].isComp7PrbActive = lambda: False
-        instances['comp7_helper'].refresh()
-        self.assertNotIn('otmetki.comp7_helper', self.components)
+        return shop
+
+    def install_demonstrator_levels(self, levels):
+        lobby = constants('ILobbyContext', {})
+        server_settings = instance('Settings', {'getRandomBattleLevelsForDemonstrator': lambda settings: levels})
+        self.services[lobby] = instance('LobbyContext', {'getServerSettings': lambda context: server_settings})
+        module('skeletons.gui.lobby_context', ILobbyContext=lobby)
+
+    def load(self, entries):
+        for name in entries:
+            importlib.import_module('gui.mods.' + name)
+        app = sys.modules['gui.mods.otmetki.companion.app.client'].g_app
+        app.config.update(dict((feature, True) for feature in BATTLE_OPT_INS))
+        return app
+
+    def bind(self, app):
+        app.credentials.save(Credentials('device-1', 's' * 40, ACCOUNT))
+
+    def open_hangar(self, entries=ENTRY_MODULES, is_bound=False):
+        app = self.load(list(entries))
+        if is_bound:
+            self.bind(app)
+        self.player = Player(ACCOUNT)
+        self.events.onAccountShowGUI()
+        return app
+
+    def load_shuffled(self, seed):
+        entries = list(ENTRY_MODULES)
+        random.Random(seed).shuffle(entries)
+        return self.load(entries), entries
+
+    def play_battle(self, app):
+        self.bind(app)
+        self.player = Player(ACCOUNT)
+        self.events.onAccountShowGUI()
+        results = _support.battle_results()
+        self.player = Player(ACCOUNT, results['arenaUniqueID'])
+        self.events.onAvatarReady()
+        self.events.onAvatarBecomeNonPlayer()
+        self.events.onBattleResultsReceived(True, results)
+        return results
+
+    def enter_battle(self, results_arena, tank_id=None, gui_type=None):
+        session = BattleSession()
+        if gui_type is not None:
+            session.arena.guiType = gui_type
+        self.player = Player(ACCOUNT, results_arena)
+        if tank_id is not None:
+            vehicle_type = instance('VehicleType', {'compactDescr': tank_id})
+            devices = getattr(self, 'own_devices', ())
+            self.player.vehicleTypeDescriptor = instance('Descriptor', {
+                'type': vehicle_type,
+                'iterOptDevsWithSlots': lambda descriptor: iter(devices),
+            })
+        self.join(session)
+        return session
+
+    def enter_battle_with_gun(self, yaw_limits):
+        session = BattleSession()
+        self.player = Player(ACCOUNT, 4242)
+        gun = instance('Gun', {'turretYawLimits': yaw_limits})
+        self.player.vehicleTypeDescriptor = instance('Descriptor', {'gun': gun})
+        self.player.gunRotator = instance('GunRotator', {'turretYaw': 0.0})
+        self.join(session)
+        return session
+
+    def join(self, session):
+        self.player.guiSessionProvider = session
+        self.player.playerVehicleID = OWN_VEHICLE
+        self.player.team = 1
+        self.player.arena = session.arena
+        self.events.onAvatarReady()
+
+    def back_to_hangar(self):
+        self.events.onAvatarBecomeNonPlayer()
+        self.player = Player(ACCOUNT)
+        self.events.onAccountShowGUI()
 
     def leave_battle_early(self, app):
-        app.credentials.save(Credentials('device-1', 's' * 40, ACCOUNT))
+        self.bind(app)
         self.player = Player(ACCOUNT)
         self.events.onAccountShowGUI()
         results = _support.battle_results()
@@ -1501,280 +1279,49 @@ class ClientSmokeTest(unittest.TestCase):
         self.events.onAccountShowGUI()
         return results
 
+    def registry(self):
+        return sys.modules['gui.mods.otmetki.core.registry'].registry()
+
+    def instances(self):
+        return self.registry().instances
+
+    def hud_module(self):
+        return sys.modules['gui.mods.otmetki.core.client.hud']
+
+    def hud_components(self):
+        hud = [(alias, props) for alias, props in self.components.items() if alias.startswith('otmetki.hud.')]
+        return dict((alias.split('.')[-1], props) for alias, props in hud)
+
+    def hud_text(self, panel):
+        return self.hud_components()[panel]['text']
+
+    def saved_components(self, app):
+        return _support.load_json(os.path.join(app.config_dir, 'components.json'))
+
     def battle_events(self, app):
         return [event for event in app.outbox.events if event.get('type') == 'battle_result']
 
-    def test_early_exit_results_come_from_the_game_own_request(self):
-        app = self.load(['mod_otmetki'])
-        results = self.leave_battle_early(app)
-        for step in range(40):
-            app.battles.poll_pending_results(SERVER_TIME + 100 * step)
-        self.assertEqual(self.results_cache.server_requests, [])
-        self.assertEqual((app.battles.pending_arenas, app.battles.shots_by_arena, app.battles.queue_wait_by_arena), ([], {}, {}))
-        self.assertEqual(self.battle_events(app), [])
-        self.results_cache.get(results['arenaUniqueID'], lambda code, data: None)
-        self.assertEqual(self.results_cache.server_requests, [results['arenaUniqueID']])
-        self.results_cache.saved[(self.player.name, results['arenaUniqueID'])] = results
-        self.results_service.onResultPosted(type('ReusableInfo', (object,), {'arenaUniqueID': results['arenaUniqueID']})(), None, None)
-        self.assertEqual(len(self.battle_events(app)), 1)
-        self.assertEqual(self.results_cache.server_requests, [results['arenaUniqueID']])
+    def messages_with(self, *parts):
+        return [text for text in self.messages if all(part in text for part in parts)]
 
-    def test_early_exit_results_are_read_from_the_disk_cache(self):
-        app = self.load(['mod_otmetki'])
-        results = self.leave_battle_early(app)
-        self.results_cache.saved[(self.player.name, results['arenaUniqueID'])] = results
-        app.battles.poll_pending_results(SERVER_TIME)
-        self.assertEqual(len(self.battle_events(app)), 1)
-        self.assertEqual(self.results_cache.server_requests, [])
-        self.assertEqual(app.battles.pending_arenas, [])
-
-    def install_garage_stubs(self):
-        test = self
-        self.processors = []
-
-        class Device(object):
-
-            def __init__(self, name):
-                self.name = name
-                self.isRemovable = True
-                self.intCD = len(name)
-
-        class Vehicle(object):
-
-            def __init__(self, devices):
-                self.invID = 7
-                self.intCD = 1
-                self.optDevices = type('OptDevices', (object,), {'installed': list(devices)})()
-                self.crew = []
-                self.lastCrew = None
-                self.descriptor = type('Descriptor', (object,), {'modifications': [11, 12]})()
-
-        class InstallerProcessor(object):
-
-            def __init__(self, vehicle, item, slotIdx, install=True):
-                self.vehicle, self.item, self.slot, self.install = vehicle, item, slotIdx, install
-
-            # RU 1.45 Processor.request is @adisp_async: request() returns the caller that takes the callback.
-            def request(self):
-                return lambda callback: test.processors.append((self, callback))
-
-        class Items(object):
-
-            def __init__(self):
-                self.vehicle = Vehicle([Device('rammer'), Device('vents'), None])
-                self.free_berths = 0
-
-            def getVehicle(self, inv_id):
-                return self.vehicle if inv_id == self.vehicle.invID else None
-
-            def freeTankmenBerthsCount(self):
-                return self.free_berths
-
-        self.items = Items()
-        items_cache = type('IItemsCache', (object,), {})
-        self.services[items_cache] = type('ItemsCache', (object,), {'items': self.items})()
-        package('skeletons.gui.shared', [])
-        sys.modules['skeletons.gui.shared'].IItemsCache = items_cache
-        for name in ('gui.shared', 'gui.shared.gui_items', 'gui.shared.gui_items.processors'):
-            package(name, [])
-        module('gui.shared.gui_items.processors.module',
-               getInstallerProcessor=lambda vehicle, item, slotIdx, install=True: InstallerProcessor(vehicle, item, slotIdx, install))
-        modifications = {11: type('Modification', (object,), {'name': 'mod_a'})(), 12: type('Modification', (object,), {'name': 'mod_b'})()}
-        post_progression = type('PostProgression', (object,), {'modifications': modifications})()
-        package('items', []).vehicles = module('items.vehicles', g_cache=type('Cache', (object,), {'postProgression': lambda cache: post_progression})())
-        self.vehicle.item = self.items.vehicle
-        return Device, Vehicle
-
-    def test_hangar_tweaks_demount_one_slot_at_a_time_from_fresh_state(self):
-        self.install_hud_stubs()
-        device_class, vehicle_class = self.install_garage_stubs()
-        self.load(list(ENTRY_MODULES))
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-        tweaks = sys.modules['gui.mods.otmetki.core.registry'].registry().instances['hangar_tweaks']
-        self.assertEqual(tweaks.ui_action('demount_removable')['kind'], 'info')
-        self.assertEqual(len(self.processors), 1)
-        first, answer = self.processors[0]
-        self.assertEqual((first.slot, first.item.name, first.install), (0, 'rammer', False))
-        self.items.vehicle = vehicle_class([None, device_class('vents'), None])
-        answer(type('Result', (object,), {'success': True, 'userMsg': 'rammer demounted'})())
-        self.assertEqual(len(self.processors), 2)
-        second, answer = self.processors[1]
-        self.assertIs(second.vehicle, self.items.vehicle)
-        self.assertEqual((second.slot, second.item.name), (1, 'vents'))
-        answer(type('Result', (object,), {'success': False, 'userMsg': 'server busy'})())
-        self.assertEqual(self.result_messages, ['rammer demounted', 'server busy'])
-        self.assertEqual(len(self.processors), 2)
-        self.assertTrue(self.messages)
-        self.vehicle.item.crew = [(0, object())]
-        self.assertEqual(tweaks.ui_action('crew_to_barracks'), {'kind': 'error', 'text': tweaks.app.translate('hangar_tweaks_refused_berths')})
-
-    def test_loadout_reads_the_installed_field_modifications(self):
-        self.install_garage_stubs()
-        self.load(['mod_otmetki'])
-        tank_id, loadout = sys.modules['gui.mods.otmetki.companion.loadout.client'].read_current_loadout()
-        self.assertEqual(loadout['field_modifications'], ['mod_a', 'mod_b'])
-
-    def install_hangar_view_stubs(self):
-        test = self
-        self.teasers = []
-        self.entries = []
-        self.banner_loads = []
-
-        class Hangar(object):
-
-            def __onTeaserReceived(self, teaserData, showCallback, closeCallback):
-                test.teasers.append(teaserData)
-
-            def __updateCarouselEventEntryState(self):
-                self.as_updateCarouselEventEntryStateS(True)
-
-            def as_updateCarouselEventEntryStateS(self, visible):
-                test.entries.append(visible)
-
-        class OfferBannerWindow(object):
-
-            @classmethod
-            def tryLoad(cls, offerID, controller):
-                test.banner_loads.append(offerID)
-
-        for name in ('gui.Scaleform', 'gui.Scaleform.daapi', 'gui.Scaleform.daapi.view', 'gui.Scaleform.daapi.view.lobby',
-                     'gui.Scaleform.daapi.view.lobby.hangar', 'gui.impl', 'gui.impl.lobby', 'gui.impl.lobby.offers'):
-            package(name, [])
-        module('gui.Scaleform.daapi.view.lobby.hangar.Hangar', Hangar=Hangar)
-        module('gui.impl.lobby.offers.offer_banner_window', OfferBannerWindow=OfferBannerWindow)
-        return Hangar, OfferBannerWindow
-
-    def test_hangar_cleaner_overrides_private_methods_only_on_a_verified_client(self):
-        hangar_class, banner_class = self.install_hangar_view_stubs()
-        self.load(list(ENTRY_MODULES))
-        hangar = hangar_class()
-        hangar._Hangar__onTeaserReceived('teaser', None, None)
-        hangar._Hangar__updateCarouselEventEntryState()
-        banner_class.tryLoad(5, None)
-        self.assertEqual((self.teasers, self.entries, self.banner_loads), ([], [True], []))
-
-        self.tearDown()
-        self.setUp()
-        self.client_version = '1.46.0.0'
-        hangar_class, banner_class = self.install_hangar_view_stubs()
-        self.load(list(ENTRY_MODULES))
-        hangar_class()._Hangar__onTeaserReceived('teaser', None, None)
-        banner_class.tryLoad(5, None)
-        self.assertEqual((self.teasers, self.banner_loads), (['teaser'], []))
+    def fetches_to(self, suffix):
+        return [fetch for fetch in self.fetches if fetch[1].endswith(suffix)]
 
     def ingest_fetches(self):
         return [fetch for fetch in self.fetches if fetch[0] == 'POST' and fetch[1].endswith('/mod/ingest')]
 
-    def test_signed_requests_resync_on_428_and_honour_retry_after(self):
-        app = self.load(['mod_otmetki'])
-        self.play_battle(app)
-        now = SERVER_TIME
-        self.assertTrue(app.sender.tick(now))
-        first = self.ingest_fetches()[-1]
-        signing = sys.modules['gui.mods.otmetki.core.net.signing']
-        server_now = int(time.time()) + 600
-        first[4](Response(428, b'{"error":"stale_request"}', {'X-Otmetki-Server-Time': str(server_now)}))
-        retried = self.ingest_fetches()
-        self.assertEqual(len(retried), 2)
-        stamp = int(retried[-1][2][signing.TIMESTAMP_HEADER])
-        self.assertTrue(abs(stamp - server_now) <= 5, (stamp, server_now))
-        retried[-1][4](Response(429, b'', {'Retry-After': '900'}))
-        self.assertIsNone(app.sender.in_flight)
-        self.assertGreaterEqual(app.outbox.retry_at, now + 900)
-        self.assertEqual(len(app.outbox.events), 1)
-
-    def test_battle_hud_switched_off(self):
-        self.install_hud_stubs()
-        app = self.load(list(ENTRY_MODULES))
-        app.config.update(dict((key, False) for key in ('battle_damage_log', 'battle_hit_log', 'battle_clock', 'battle_team_hp',
-                                                         'battle_sixth_sense', 'hangar_battle_results', 'battle_main_gun', 'battle_consumables',
-                                                         'battle_reload_timer', 'battle_efficiency', 'battle_personal_best', 'hangar_session_goals')))
-        self.enter_battle(1)
-        self.assertEqual(self.hud_components(), {})
-
-    def install_gameface_hud_stubs(self):
-        test = self
-        self.windows = []
-        self.res_id = 7
-
-        class ViewModel(object):
-
-            def __init__(self, properties=0, commands=0):
-                self.strings = []
-                self.commands = {}
-                self._initialize()
-
-            def _initialize(self):
-                pass
-
-            def _addStringProperty(self, name, value):
-                self.strings.append([name, value])
-
-            def _setString(self, index, value):
-                self.strings[index][1] = value
-
-            def _addCommand(self, name):
-                self.commands[name] = Event()
-                return self.commands[name]
-
-        class ViewSettings(object):
-
-            def __init__(self, layout_id, flags=None, model=None):
-                self.layout_id = layout_id
-                self.model = model
-
-        class ViewImpl(object):
-
-            def __init__(self, settings):
-                self.settings = settings
-
-            def getViewModel(self):
-                return self.settings.model
-
-            def _onLoading(self, *args, **kwargs):
-                pass
-
-            def _finalize(self):
-                pass
-
-        class StatusEvent(list):
-
-            def __iadd__(self, handler):
-                self.append(handler)
-                return self
-
-        class WindowImpl(object):
-
-            def __init__(self, wndFlags=None, content=None, layer=None, **kwargs):
-                self.content = content
-                self.layer = layer
-                self.uniqueID = len(test.windows) + 1
-                self.windowStatus = 1
-                self.onStatusChanged = StatusEvent()
-
-            def load(self):
-                test.windows.append(self)
-                self.windowStatus = 3
-                self.content._onLoading()
-
-            def destroy(self):
-                self.windowStatus = 5
-                test.windows.remove(self)
-                self.content._finalize()
-
-        package('frameworks', [])
-        module('frameworks.wulf', ViewModel=ViewModel, ViewSettings=ViewSettings, ViewFlags=type('ViewFlags', (object,), {'VIEW': 1}),
-               WindowFlags=type('WindowFlags', (object,), {'WINDOW': 1}), WindowLayer=type('WindowLayer', (object,), {'WINDOW': 7}),
-               WindowStatus=type('WindowStatus', (object,), {'LOADED': 3, 'DESTROYING': 4, 'DESTROYED': 5}))
-        package('gui.impl', [])
-        module('gui.impl.pub', ViewImpl=ViewImpl, WindowImpl=WindowImpl)
-        module('openwg_gameface', res_id_by_key=lambda key: test.res_id if key == 'otmetki/ui/hud' else -1,
-               ModDynAccessor=lambda key: (lambda: 'layout:' + key), gf_mod_inject=lambda model, key, styles=None, modules=None: None)
+    def answer(self, name, data):
+        for method, url, headers, body, callback in list(self.fetches):
+            if method == 'POST' and url.endswith('/mod/me/' + name):
+                self.fetches.remove((method, url, headers, body, callback))
+                callback(response_json(data))
 
     def hud_page(self):
         self.next_frame_pushes()
         return json.loads(self.windows[-1].content.getViewModel().strings[0][1])
+
+    def hud_page_ids(self):
+        return [panel['id'] for panel in self.hud_page()['panels']]
 
     def next_frame_pushes(self):
         """Run the HUD page pushes the Gameface backend put off to the next frame (core.hud.surface.FramePush)."""
@@ -1783,163 +1330,1619 @@ class ClientSmokeTest(unittest.TestCase):
         for push in pushes:
             push()
 
-    def moe_snapshot(self, app):
-        snapshot = {'tank_id': 1, 'name': 'ussr:R04_T-34', 'tier': 5, 'damage_rating': 8150, 'moving_avg_damage': 2500, 'marks_on_gun': 1,
-                    'battles': 120}
-        app.marks.hangar_moe[1] = snapshot
-        app.bus.emit('vehicle_moe', snapshot)
-        reads = [callback for method, url, headers, body, callback in self.fetches if method == 'GET' and url.endswith('/v1/moe/1')]
-        self.assertEqual(len(reads), 1)
-        curve = {'tank_id': 1, 'thresholds': {'65': 2000, '85': 2600, '95': 3100}}
-        reads[0](Response(200, json.dumps(curve).encode('utf-8')))
-
-    def test_marks_panel_in_battle_and_hangar_marks(self):
-        self.install_hud_stubs()
-        kinds = sys.modules['BattleFeedbackCommon'].BATTLE_EVENT_TYPE
-        app = self.load(list(ENTRY_MODULES))
-        app.credentials.save(Credentials('device-1', 's' * 40, ACCOUNT))
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-        self.moe_snapshot(app)
-        hangar = self.hud_components()['hangar_marks']
-        self.assertTrue(hangar['lobby'] and not hangar['battle'])
-        self.assertIn('81.50%', hangar['text'])
-        self.assertIn('2 600', hangar['text'])
-
-        session = self.enter_battle(1, tank_id=1)
-        self.assertNotIn('hangar_marks', self.hud_components())
-        panel = self.hud_components()['marks_panel']
-        self.assertTrue(panel['battle'] and panel['drag'])
-        session.feedback.onPlayerFeedbackReceived([Feedback(kinds.DAMAGE, ENEMY_VEHICLE, Extra(390)),
-                                                   Feedback(kinds.DAMAGE, ALLY_VEHICLE, Extra(50))])
-        self.assertIn('390', self.hud_components()['marks_panel']['text'])
-        session.vehicle_state.getControllingVehicleID = lambda: ALLY_VEHICLE
-        session.feedback.onPlayerFeedbackReceived([Feedback(kinds.RADIO_ASSIST, ENEMY_VEHICLE, Extra(640))])
-        self.assertIn('1 030', self.hud_components()['marks_panel']['text'])
-        session.feedback.onPlayerSummaryFeedbackReceived(Summary())
-        self.assertIn('2 790', self.hud_components()['marks_panel']['text'])
-        self.events.onAvatarBecomeNonPlayer()
-        self.assertNotIn('marks_panel', self.hud_components())
-        self.assertIn('moe_pace', [key for key, dump in app.state_parts])
-
-    def test_gameface_backend_is_preferred_and_falls_back(self):
-        self.install_hud_stubs()
-        self.install_gameface_hud_stubs()
-        app = self.load(list(ENTRY_MODULES))
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-        layer = sys.modules['gui.mods.otmetki.core.client.hud'].hud_layer(app)
-        self.assertEqual(layer.backend.names, ['gameface', 'guiflash'])
-        self.assertEqual(layer.backend_name, 'gameface')
-        app.bus.emit('hud_edit', True)
-        self.assertEqual(self.hud_components(), {})
-        self.assertEqual(len(self.windows), 1)
-        self.assertEqual(self.windows[0].layer, 7)
-        page = self.hud_page()
-        panels = dict((panel['id'], panel) for panel in page['panels'])
-        self.assertTrue(page['cursor'])
-        self.assertIn('390', panels['otmetki.hud.damage_log']['text'])
-        model = self.windows[0].content.getViewModel()
-        model.commands['send']({'message': json.dumps({'type': 'moved', 'id': 'otmetki.hud.damage_log', 'x': 40, 'y': 50,
-                                                       'align_x': 'center', 'align_y': 'top'})})
-        saved = _support.load_json(os.path.join(app.config_dir, 'components.json'))['damage_log']
-        self.assertEqual((saved['x'], saved['y'], saved['align_x'], saved['align_y']), (40, 50, 'center', 'top'))
-        model.commands['send']({'message': 'not json'})
-        app.bus.emit('hud_edit', False)
-        self.assertFalse([panel for panel in self.hud_page()['panels'] if panel['id'].startswith('otmetki.hud.')])
-
-        self.res_id = -1
-        app.bus.emit('hud_edit', True)
-        self.assertEqual(len(self.windows), 1)
-        self.assertIn('damage_log', self.hud_components())
-        self.assertEqual(layer.backend_name, 'guiflash')
-
-    def test_gameface_labels_stay_in_their_space(self):
-        self.install_hud_stubs()
-        self.install_gameface_hud_stubs()
-        app = self.load(list(ENTRY_MODULES))
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
-        app.ui.show('otmetki.hangar_test', 'hangar only', {'x': 1, 'y': 2, 'alignX': 'left', 'alignY': 'top'})
-        self.assertIn('otmetki.hangar_test', [panel['id'] for panel in self.hud_page()['panels']])
-        self.enter_battle(1)
-        ids = [panel['id'] for panel in self.hud_page()['panels']]
-        self.assertNotIn('otmetki.hangar_test', ids)
-        self.assertIn('otmetki.hud.damage_log', ids)
-        self.assertFalse(self.hud_page()['cursor'])
-
-    def install_app_loader(self):
-        loader = type('AppLoader', (object,), {'space': 1})()
-        loader.getSpaceID = lambda: loader.space
-        loader.onGUISpaceEntered, loader.onGUISpaceLeft = Event(), Event()
-        interface = type('IAppLoader', (object,), {})
-        self.services[interface] = loader
-        package('skeletons.gui', [])
-        module('skeletons.gui.app_loader', GuiGlobalSpaceID=type('GuiGlobalSpaceID', (object,), {'LOGIN': 1, 'WAITING': 2, 'LOBBY': 3, 'BATTLE': 5}),
-               IAppLoader=interface)
-        return loader
-
-    def enter_space(self, loader, space_id):
-        loader.onGUISpaceLeft(loader.space)
-        loader.space = space_id
-        loader.onGUISpaceEntered(space_id)
-
-    def test_gameface_window_opens_a_frame_after_the_lobby_space_was_entered(self):
-        self.install_hud_stubs()
-        self.install_gameface_hud_stubs()
-        loader = self.install_app_loader()
-        app = self.load(list(ENTRY_MODULES))
-        self.player = Player(ACCOUNT)
-        app.ui.show('otmetki.hangar_test', 'hangar only', {'x': 1, 'y': 2, 'alignX': 'left', 'alignY': 'top'})
-        self.assertEqual(self.windows, [])
-        self.enter_space(loader, 3)
-        self.assertEqual(self.windows, [])
-        self.enter_space(loader, 2)
-        self.enter_space(loader, 3)
+    def run_callbacks(self):
         pending = list(self.callbacks)
         del self.callbacks[:]
         for callback in pending:
             callback()
-        self.assertEqual(len(self.windows), 1)
-        self.assertIn('otmetki.hangar_test', [panel['id'] for panel in self.hud_page()['panels']])
-        self.enter_space(loader, 2)
-        self.assertEqual(self.windows, [])
 
-    def test_session_log_keeps_the_mod_lines_of_the_last_sessions(self):
-        self.install_hud_stubs()
-        self.install_gameface_hud_stubs()
-        sys.modules['openwg_gameface'].manager = type('ResMapManager', (object,), {'isResMapValidated': False})()
+    def enter_space(self, loader, space_name):
+        loader.onGUISpaceLeft(loader.space)
+        loader.space = GUI_SPACES[space_name]
+        loader.onGUISpaceEntered(loader.space)
+
+    def moe_curve_reads(self, app):
+        snapshot = dict(MOE_SNAPSHOT)
+        app.marks.hangar_moe[1] = snapshot
+        app.bus.emit('vehicle_moe', snapshot)
+        return [callback for method, url, headers, body, callback in self.fetches
+                if method == 'GET' and url.endswith('/v1/moe/1')]
+
+    def answer_moe_curve(self, app):
+        self.moe_curve_reads(app)[0](response_json(MOE_CURVE))
+
+    def press(self, key):
+        self.key_down(key_event(key))
+
+
+class StoryTest(unittest.TestCase):
+    """One game per class: setUpClass plays the class's story once and keeps what its tests check, so the
+    modpack loads once per story rather than once per test."""
+    client_version = CLIENT_VERSION
+
+    @classmethod
+    def setUpClass(cls):
+        game = Game(cls.client_version)
+        game.start()
+        try:
+            cls.play(game)
+        finally:
+            game.stop()
+
+    @classmethod
+    def play(cls, game):
+        raise NotImplementedError
+
+
+class LoadOrderTest(StoryTest):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.orders = []
+        for seed in LOAD_ORDER_SEEDS:
+            game = Game()
+            game.start()
+            try:
+                cls.orders.append(cls.play_order(game, seed))
+            finally:
+                game.stop()
+
+    @classmethod
+    def play_order(cls, game, seed):
+        app, entries = game.load_shuffled(seed)
+        registry = game.registry()
+        order = {
+            'entries': entries,
+            'is_host': registry.host is app,
+            'instances': sorted(registry.instances),
+        }
+        results = game.play_battle(app)
+        order['arena_id'] = results['arenaUniqueID']
+        order['battles'] = copy.deepcopy(game.battle_events(app))
+        order['state'] = app.state_file.read({})
+        order['session_messages'] = game.messages_with(u'Сессия') + game.messages_with(u'Session')
+        order['messages'] = list(game.messages)
+        return order
+
+    def test_every_load_order_registers_every_feature_under_the_app(self):
+        for order in self.orders:
+            self.assertTrue(order['is_host'], order['entries'])
+            self.assertEqual(order['instances'], sorted(REGISTERED), order['entries'])
+
+    def test_every_load_order_reports_one_battle_with_its_session(self):
+        for order in self.orders:
+            battle = order['battles']
+            state = order['state']
+            self.assertEqual(len(battle), 1, order['entries'])
+            self.assertTrue(battle[0]['session_id'], order['entries'])
+            self.assertEqual(state['seen_arenas'], [order['arena_id']])
+            self.assertEqual(state['session']['totals']['battles'], 1)
+            self.assertEqual(state['session']['session_id'], battle[0]['session_id'])
+
+    def test_every_load_order_shows_the_session_message(self):
+        for order in self.orders:
+            self.assertTrue(order['session_messages'], (order['entries'], order['messages']))
+
+
+class CompanionAloneTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        app = game.load(['mod_otmetki'])
+        cls.instances = dict(game.instances())
+        game.play_battle(app)
+        cls.battles = copy.deepcopy(game.battle_events(app))
+        cls.state = app.state_file.read({})
+
+    def test_the_companion_alone_registers_no_feature(self):
+        self.assertEqual(self.instances, {})
+
+    def test_the_companion_alone_reports_the_battle_without_a_session(self):
+        self.assertEqual(len(self.battles), 1)
+        self.assertIsNone(self.battles[0]['session_id'])
+        self.assertNotIn('session', self.state)
+
+
+class BattleHudTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        app = game.open_hangar(is_bound=True)
+        hud = game.hud_module()
+        hud.hud_layer(app).update_settings('sixth_sense', {'sound_event': 'otmetki_lamp'})
+        hud.component_config(app).get('battle_sounds').update(BATTLE_SOUNDS)
+        app.marks.hangar_moe[1] = dict(HANGAR_MOE)
+        results = _support.battle_results()
+        session = game.enter_battle(results['arenaUniqueID'])
+        cls.fight(session)
+        cls.panels = copy.deepcopy(game.hud_components())
+        cls.sounds = list(game.sounds)
+
+        session.feedback.onPlayerSummaryFeedbackReceived(Summary())
+        cls.damage_log_after_summary = game.hud_text('damage_log')
+        session.state('OBSERVED_BY_ENEMY', False)
+        cls.panels_unspotted = sorted(game.hud_components())
+        game.component_updated('otmetki.hud.damage_log', {'x': 111, 'y': 222})
+        cls.saved = game.saved_components(app)
+
+        game.events.onAvatarBecomeNonPlayer()
+        cls.panels_after_battle = game.hud_components()
+        game.player = Player(ACCOUNT)
+        game.events.onAccountShowGUI()
+        game.events.onBattleResultsReceived(True, results)
+        cls.battle_report = copy.deepcopy(game.battle_events(app)[-1])
+        cls.moe_messages = game.messages_with(u'87.12%')
+        cls.messages = list(game.messages)
+
+    @staticmethod
+    def fight(session):
+        """Own and ally damage, hits taken, fire, the ammo rack, the lamp and a kill."""
+        session.hit('VEHICLE_ARMOR_PIERCED', ENEMY_VEHICLE)
+        session.own_feedback(
+            Feedback(KINDS.DAMAGE, ENEMY_VEHICLE, Extra(390)),
+            Feedback(KINDS.DAMAGE, ALLY_VEHICLE, Extra(50)),
+            Feedback(KINDS.RADIO_ASSIST, ENEMY_VEHICLE, Extra(120)),
+            Feedback(KINDS.TANKING, ENEMY_VEHICLE, Extra(240)),
+            Feedback(KINDS.RECEIVED_DAMAGE, ENEMY_VEHICLE, Extra(310, 'HOLLOW_CHARGE')),
+        )
+        session.hit('VEHICLE_HEALTH', ENEMY_VEHICLE, (510, None, 0))
+        session.hit('VEHICLE_RICOCHET', ENEMY_VEHICLE)
+        session.state('HEALTH', 690)
+        session.state('FIRE', True)
+        session.state('DEVICES', ('ammoBay', 'critical', 'critical'))
+        session.state('DEVICES', ('engine', 'repaired', 'critical'))
+        session.state('OBSERVED_BY_ENEMY', True)
+        session.arena.onVehicleKilled(ALLY_VEHICLE, ENEMY_VEHICLE, 0, 0, 1)
+
+    def test_battle_hud_shows_the_battle_panels(self):
+        self.assertEqual(sorted(self.panels), BATTLE_PANELS)
+
+    def test_battle_hud_labels_are_draggable_except_team_hp(self):
+        for name, props in self.panels.items():
+            self.assertEqual(props['kind'], 'Label', name)
+            self.assertEqual(props['drag'], name != 'team_hp', name)
+
+    def test_damage_log_lists_own_and_received_damage_but_not_ally_hits(self):
+        damage_log = self.panels['damage_log']['text']
+
+        self.assertIn('390', damage_log)
+        self.assertIn('310', damage_log)
+        self.assertNotIn(' 50 ', damage_log)
+
+    def test_damage_log_takes_the_total_from_the_battle_summary(self):
+        self.assertIn('2 150', self.damage_log_after_summary)
+
+    def test_hit_log_names_the_target_the_damage_and_the_ricochet(self):
+        hit_log = self.panels['hit_log']['text']
+
+        self.assertIn('Pz. IV', hit_log)
+        self.assertIn('390', hit_log)
+        self.assertIn(u'рикошет', hit_log)
+
+    def test_battle_clock_shows_the_time_left(self):
+        self.assertIn('05:00', self.panels['battle_clock']['text'])
+
+    def test_team_hp_shows_both_teams_and_the_score(self):
+        team_hp = self.panels['team_hp']['text']
+
+        self.assertIn('690', team_hp)
+        self.assertIn('510', team_hp)
+        self.assertIn('0 : 1', team_hp)
+
+    def test_battle_sounds_play_for_fire_the_ammo_rack_the_lamp_and_first_blood(self):
+        self.assertEqual(self.sounds, ['otmetki_fire', 'otmetki_ammo', 'otmetki_lamp', 'otmetki_first_blood'])
+
+    def test_the_lamp_goes_out_when_the_tank_is_no_longer_spotted(self):
+        self.assertNotIn('sixth_sense', self.panels_unspotted)
+
+    def test_a_dragged_panel_saves_its_place_beside_its_settings(self):
+        self.assertEqual(self.saved['damage_log']['x'], 111)
+        self.assertEqual(self.saved['damage_log']['y'], 222)
+        self.assertEqual(self.saved['sixth_sense']['sound_event'], 'otmetki_lamp')
+
+    def test_leaving_the_battle_removes_every_panel(self):
+        self.assertEqual(self.panels_after_battle, {})
+
+    def test_the_battle_report_carries_only_the_own_shot(self):
+        self.assertEqual(self.battle_report['shots'], [OWN_SHOT])
+
+    def test_the_battle_message_shows_the_moe_progress_and_the_damage(self):
+        self.assertTrue(self.moe_messages, self.messages)
+        self.assertIn('+1.12%', self.moe_messages[0])
+        self.assertIn('2 150', self.moe_messages[0])
+
+
+class HudSwitchedOffTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        app = game.load(list(ENTRY_MODULES))
+        app.config.update(dict((key, False) for key in HUD_OFF))
+        game.enter_battle(1)
+        cls.panels = game.hud_components()
+
+    def test_battle_hud_switched_off_shows_nothing(self):
+        self.assertEqual(self.panels, {})
+
+
+class EventBattleTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        app = game.open_hangar()
+        results = _support.battle_results()
+        game.enter_battle(results['arenaUniqueID'], gui_type=301)
+        cls.event_panels = sorted(game.hud_components())
+        game.component_updated('otmetki.hud.damage_log', {'x': 333, 'y': 44})
+        cls.saved = game.saved_components(app)
+        game.events.onAvatarBecomeNonPlayer()
+        game.enter_battle(results['arenaUniqueID'] + 1, gui_type=30)
+        cls.random_panels = copy.deepcopy(game.hud_components())
+
+    def test_event_battles_get_the_compact_layout(self):
+        self.assertEqual(self.event_panels, ['battle_clock', 'damage_log'])
+
+    def test_a_panel_moved_in_an_event_battle_keeps_its_place_for_event_battles_only(self):
+        self.assertEqual(self.saved['hud_layout_places'], {'event': {'damage_log': {'x': 333, 'y': 44}}})
+        self.assertNotEqual(self.saved['damage_log']['x'], 333)
+
+    def test_a_random_battle_after_an_event_battle_gets_the_full_layout_and_places(self):
+        self.assertIn('team_hp', self.random_panels)
+        self.assertNotEqual(self.random_panels['damage_log']['x'], 333)
+
+
+class HudEditTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        app = game.load(list(ENTRY_MODULES))
+        app.config.update({'battle_team_hp': False})
+        game.player = Player(ACCOUNT)
+        game.events.onAccountShowGUI()
+        cls.described = {}
+
+        def collect(panel_id, preview=None, width=None, height=None, enabled=False):
+            cls.described.update({panel_id: (preview, width, enabled)})
+
+        app.bus.emit('hud_describe', collect)
+        app.bus.emit('hud_edit', True)
+        cls.previews = copy.deepcopy(game.hud_components())
+        app.bus.emit('hud_edit', False)
+        cls.panels_after_edit = game.hud_components()
+        app.bus.emit('hud_edit', True)
+        game.enter_battle(1)
+        cls.battle_panels = copy.deepcopy(game.hud_components())
+
+    def test_hud_describe_lists_every_panel_with_its_preview_and_switch(self):
+        self.assertEqual(sorted(self.described), DESCRIBED_PANELS)
+        self.assertFalse(self.described['team_hp'][2])
+        self.assertTrue(self.described['damage_log'][2])
+        self.assertIn('390', self.described['damage_log'][0])
+
+    def test_hud_edit_shows_lobby_previews_of_the_enabled_panels(self):
+        self.assertEqual(sorted(self.previews), HUD_EDIT_PREVIEWS)
+        for name, props in self.previews.items():
+            self.assertTrue(props['lobby'], name)
+            self.assertFalse(props['battle'], name)
+        self.assertIn('Pz. IV', self.previews['hit_log']['text'])
+
+    def test_leaving_hud_edit_removes_the_previews(self):
+        self.assertEqual(self.panels_after_edit, {})
+
+    def test_a_battle_replaces_the_hud_edit_previews(self):
+        self.assertNotIn('390', self.battle_panels.get('damage_log', {}).get('text', ''))
+        self.assertNotIn('sixth_sense', self.battle_panels)
+
+
+class OwnFeedbackTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        app = game.open_hangar()
+        session = game.enter_battle(1)
+        own = session.dp.getVehicleInfo(OWN_VEHICLE)
+        ally = session.dp.getVehicleInfo(ALLY_VEHICLE)
+        session.hit('VEHICLE_ARMOR_PIERCED', ENEMY_VEHICLE)
+        session.own_feedback(Feedback(KINDS.DAMAGE, ENEMY_VEHICLE, Extra(390)))
+        hit_log = game.registry().get('hit_log').log
+        session.hit('VEHICLE_HEALTH', ENEMY_VEHICLE, (480, ally, 0))
+        cls.hp_after_ally_shot = hit_log.entries[-1]['hp']
+        session.hit('VEHICLE_HEALTH', ENEMY_VEHICLE, (510, own, 0))
+        cls.hp_after_own_shot = hit_log.entries[-1]['hp']
+
+        session.control(ALLY_VEHICLE)
+        session.own_feedback(Feedback(KINDS.RADIO_ASSIST, ENEMY_VEHICLE, Extra(640)))
+        cls.damage_log = game.hud_text('damage_log')
+        cls.is_damage_log_on = app.config.get('battle_damage_log')
+        # RU 1.45 Avatar.showVehicleDamageInfo: after death DEVICES reports the ally the camera follows, not the
+        # own ammo rack.
+        damage_log = game.registry().get('damage_log').log
+        session.state('DEVICES', ('ammoBay', 'critical', 'critical'))
+        cls.ammo_rack_while_following = damage_log.ammo_rack_at
+        session.control(OWN_VEHICLE)
+        session.state('DEVICES', ('ammoBay', 'critical', 'critical'))
+        cls.own_ammo_rack = damage_log.ammo_rack_at
+
+        known = session.dp.getVehicleInfo
+        # RU 1.45 arena_dp.getVehicleInfo: an unknown id gets a blank VehicleArenaInfoVO of team 0.
+        session.dp.getVehicleInfo = lambda vehicle_id: known(vehicle_id) or VehicleInfo(vehicle_id, 0, '', 0)
+        battle = sys.modules['gui.mods.otmetki.core.client.battle']
+        cls.enemy_verdicts = [battle.is_enemy(vehicle_id) for vehicle_id in (ENEMY_VEHICLE, ALLY_VEHICLE, 999, None)]
+
+    def test_hit_log_takes_the_hp_left_only_from_own_shots(self):
+        self.assertIsNone(self.hp_after_ally_shot)
+        self.assertEqual(self.hp_after_own_shot, 510)
+
+    def test_own_assist_after_death_still_counts(self):
+        self.assertIn('640', self.damage_log)
+        self.assertTrue(self.is_damage_log_on)
+
+    def test_after_death_the_ammo_rack_of_the_followed_ally_is_ignored(self):
+        self.assertIsNone(self.ammo_rack_while_following)
+
+    def test_the_own_ammo_rack_is_logged(self):
+        self.assertIsNotNone(self.own_ammo_rack)
+
+    def test_a_vehicle_without_a_team_is_not_an_enemy(self):
+        self.assertEqual(self.enemy_verdicts, [True, False, False, False])
+
+
+class ChatAndNotificationFilterTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        controller_class, model_class = game.install_client_class_stubs()
+        app = game.open_hangar()
+        model = model_class()
+        for kind in (1, 4, 13):
+            model.addNotification(notification(kind))
+        cls.after_pop_ups = list(game.notifications)
+        for decorator in ('IntegratedAuctionStageStartDecorator', 'TradingCaravanRefillDecorator'):
+            model.addNotification(notification(19, decorator))
+        cls.after_decorators = list(game.notifications)
+
+        game.enter_battle(1)
+        chat = controller_class()
+        command = instance('Command', {'isSender': lambda item: False, 'getSenderID': lambda item: 'spammer'})
+        for _ in range(3):
+            chat.addMessage(chat_message('spammer', u'ALL TO BASE'))
+            chat.addMessage(chat_message('me', u'ALL TO BASE'))
+        for _ in range(6):
+            chat.addCommand(command)
+        cls.battle_chat = list(game.chat)
+        del game.chat[:]
+        epic = sys.modules['messenger.gui.Scaleform.channels.bw_chat2.battle_controllers'].EpicTeamChannelController()
+        epic.addMessage(chat_message('ally', u'hold A'))
+        cls.epic_chat = list(game.chat)
+
+        game.events.onAvatarBecomeNonPlayer()
+        del game.chat[:]
+        chat.addMessage(chat_message('spammer', u'after battle'))
+        cls.chat_after_battle = list(game.chat)
+        app.config.update({'hangar_notification_filter': False})
+        model.addNotification(notification(4))
+        cls.after_filter_off = list(game.notifications)
+
+    def test_notification_filter_drops_the_pop_ups(self):
+        self.assertEqual(self.after_pop_ups, [1, 13])
+
+    def test_notification_filter_tells_the_type_19_decorators_apart(self):
+        self.assertEqual(self.after_decorators, [1, 13, 19])
+
+    def test_chat_filter_drops_repeated_spam_and_tags_the_kept_lines(self):
+        lines = [text for text in self.battle_chat if not text.startswith('command:')]
+
+        self.assertEqual(len(lines), 4)
+        for line in lines:
+            self.assertIn(u'ALL TO BASE', line)
+            self.assertIn('[', line)
+
+    def test_chat_filter_drops_repeated_commands(self):
+        commands = [text for text in self.battle_chat if text.startswith('command:')]
+
+        self.assertEqual(len(commands), 4)
+
+    def test_frontline_team_chat_is_tagged_through_its_own_format(self):
+        self.assertEqual(len(self.epic_chat), 1)
+        self.assertTrue(self.epic_chat[0].endswith(u'<epic>hold A'))
+        self.assertIn('[', self.epic_chat[0])
+
+    def test_chat_after_the_battle_is_left_alone(self):
+        self.assertEqual(self.chat_after_battle, [u'after battle'])
+
+    def test_notification_filter_switched_off_lets_pop_ups_through(self):
+        self.assertEqual(self.after_filter_off, [1, 13, 19, 4])
+
+
+class HangarCardsTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        game.open_hangar()
+        instances = game.instances()
+        cls.actions = dict(
+            (feature_id, instances[feature_id].ui_actions())
+            for feature_id in ('marks_history', 'battle_results', 'auto_resupply')
+        )
+        cls.history_rows = instances['marks_history'].ui_page()['rows']
+        cls.results_rows_before = instances['battle_results'].ui_page()['rows']
+        game.events.onBattleResultsReceived(True, _support.battle_results())
+        cls.results_rows = copy.deepcopy(instances['battle_results'].ui_page()['rows'])
+        cls.resupply_refusal = instances['auto_resupply'].ui_action('apply_selected')
+        instances['hangar_info'].render(SERVER_TIME)
+        cls.components = sorted(game.components)
+
+    def test_new_features_offer_card_actions(self):
+        for feature_id, actions in self.actions.items():
+            self.assertTrue(actions, feature_id)
+
+    def test_history_and_results_pages_start_empty(self):
+        self.assertEqual(self.history_rows, [])
+        self.assertEqual(self.results_rows_before, [])
+
+    def test_the_results_page_lists_the_session_then_the_battle(self):
+        self.assertEqual(self.results_rows[0]['id'], 'session')
+        self.assertTrue(self.results_rows[1]['details'])
+
+    def test_auto_resupply_refuses_to_apply_without_a_vehicle(self):
+        self.assertEqual(self.resupply_refusal['kind'], 'error')
+
+    def test_hangar_info_draws_its_label(self):
+        self.assertIn('otmetki.hangar_info', self.components)
+
+
+class SettingsBroadcastTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        app = game.open_hangar()
+        instances = game.instances()
+        instances['hangar_info'].render(SERVER_TIME)
+        instances['hangar_info'].save_place({'x': 40, 'y': 50})
+        capture = Capture()
+        sys.stdout = capture
+        for component in instances.values():
+            settings = getattr(component, 'settings', None)
+            if getattr(component, 'component_id', None) and settings is not None:
+                app.bus.emit('component_settings', component.component_id, sorted(settings.to_dict()))
+        app.bus.emit('hud_reset_layout')
+        sys.stdout = Sink()
+        cls.output = ''.join(capture.parts)
+        cls.components = sorted(game.components)
+
+    def test_settings_changes_and_layout_reset_reach_every_component_without_errors(self):
+        self.assertNotIn('error in', self.output)
+        self.assertIn('otmetki.hangar_info', self.components)
+
+
+class HangarRatingsTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        app = game.load(list(ENTRY_MODULES))
+        game.bind(app)
+        game.vehicle.item = instance('Vehicle', {'intCD': 1})
+        game.player = Player(ACCOUNT)
+        game.events.onAccountShowGUI()
+        reads = dict(
+            (url.rsplit('/', 1)[-1], (headers, body, callback))
+            for method, url, headers, body, callback in game.fetches
+            if method == 'POST' and '/mod/me/' in url
+        )
+        cls.reads = dict((name, (headers, body)) for name, (headers, body, _) in reads.items())
+        cls.tank_fetches = len(game.fetches_to('/mod/me/tanks'))
+        for name, example in (('overview', 'ratings-overview.example.json'), ('tanks', 'ratings-tanks.example.json')):
+            reads[name][2](response_json(contract_example(example)))
+        cls.text = game.components['otmetki.hangar_ratings']['text']
+        game.enter_battle(1)
+        cls.battle_components = sorted(game.components)
+
+    def test_hangar_ratings_asks_the_site_once_for_the_own_account(self):
+        self.assertEqual(sorted(self.reads), ['goals', 'overview', 'tanks'])
+        self.assertEqual(self.tank_fetches, 1)
+        for headers, body in self.reads.values():
+            self.assertTrue(headers['X-Otmetki-Signature'].startswith('sha256='))
+            self.assertEqual(json.loads(body)['account_id'], ACCOUNT)
+
+    def test_hangar_ratings_asks_for_the_selected_tank(self):
+        self.assertEqual(json.loads(self.reads['tanks'][1])['tank_ids'], [1])
+
+    def test_hangar_ratings_show_wn8_and_the_marks(self):
+        self.assertIn('WN8', self.text)
+        self.assertIn(u'★★', self.text)
+
+    def test_hangar_ratings_leave_with_the_hangar(self):
+        self.assertNotIn('otmetki.hangar_ratings', self.battle_components)
+
+
+class ControllerPanelsTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        app = game.open_hangar()
+        game.hud_module().hud_layer(app).update_settings('consumables', {'show_consumables': True})
+        session = game.enter_battle(1)
+        cls.panels = copy.deepcopy(game.hud_components())
+
+        ammo = session.shared.ammo
+        ammo.onGunReloadTimeSet(11, ReloadSnapshot(5.5, 7.8), False)
+        cls.reloading = game.hud_text('reload_timer')
+        ammo.onShellsUpdated(11, 31, 2, 0)
+        ammo.onShellsUpdated(12, 5, 0, 0)
+        cls.clip_used = game.hud_text('reload_timer')
+        equipments = session.shared.equipments
+        first_aid = equipments.items[0][1]
+        first_aid.quantity = 0
+        equipments.onEquipmentUpdated(501, first_aid)
+        cls.consumables_used = game.hud_text('consumables')
+
+        session.own_feedback(Feedback(KINDS.DAMAGE, ENEMY_VEHICLE, Extra(390)))
+        session.hit('VEHICLE_HEALTH', ENEMY_VEHICLE, (510, None, 0))
+        cls.main_gun = game.hud_text('main_gun')
+
+        game.clock[0] = 200.0
+        session.own_feedback(Feedback(KINDS.RECEIVED_DAMAGE, ALLY_VEHICLE, Extra(140, 'HIGH_EXPLOSIVE', reason='ram')))
+        cls.rammed = game.hud_text('last_hit')
+        game.clock[0] = 201.0
+        session.own_feedback(Feedback(KINDS.RECEIVED_DAMAGE, ENEMY_VEHICLE, Extra(300, 'ARMOR_PIERCING')))
+        session.state('DEVICES', ('ammoBay', 'critical', 'critical'))
+        cls.ammo_rack_last_hit = game.hud_text('last_hit')
+        cls.ammo_rack_damage_log = game.hud_text('damage_log')
+        game.events.onAvatarBecomeNonPlayer()
+        cls.panels_after_battle = game.hud_components()
+
+    def test_consumables_show_the_equipment_and_the_shells(self):
+        consumables = self.panels['consumables']['text']
+
+        self.assertIn(u'Аптечка', consumables)
+        self.assertIn(u'Ремкомплект 12 с', consumables)
+        self.assertIn(u'ББ 32', consumables)
+
+    def test_reload_timer_shows_the_clip_while_loaded(self):
+        reload_timer = self.panels['reload_timer']['text']
+
+        self.assertIn(u'Кассета 3/4', reload_timer)
+        self.assertNotIn(u'Перезарядка', reload_timer)
+
+    def test_main_gun_is_out_of_reach_before_any_damage(self):
+        expected = u'недостижим: нужно ещё 1 000, у противника осталось 900'
+
+        self.assertIn(expected, self.panels['main_gun']['text'])
+
+    def test_reload_timer_counts_down_the_reload(self):
+        self.assertIn(u'Перезарядка 5.5 с', self.reloading)
+
+    def test_reload_timer_follows_the_shells_left_in_the_clip(self):
+        self.assertIn(u'Кассета 2/4', self.clip_used)
+
+    def test_consumables_show_a_used_up_kit(self):
+        self.assertIn(u'Аптечка ×0', self.consumables_used)
+
+    def test_main_gun_counts_the_own_damage_and_the_enemy_hp_left(self):
+        self.assertIn(u'нужно ещё 610, у противника осталось 510', self.main_gun)
+        self.assertIn(u'урон команды 390', self.main_gun)
+
+    def test_last_hit_names_the_rammer_and_its_class(self):
+        self.assertIn(u'KV-1 −140', self.rammed)
+        self.assertIn(u'таран', self.rammed)
+        self.assertIn('class_heavy_32.png', self.rammed)
+
+    def test_an_ammo_rack_hit_shows_in_the_last_hit_and_the_damage_log(self):
+        self.assertIn(u'боеукладка', self.ammo_rack_last_hit)
+        self.assertIn(u'боеукладка', self.ammo_rack_damage_log)
+
+    def test_leaving_the_battle_removes_the_controller_panels(self):
+        self.assertEqual(self.panels_after_battle, {})
+
+
+class LoadoutAndStreamerTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        avatar = game.install_avatar_and_device_stubs()
+        game.open_hangar()
+        session = game.enter_battle(1, tank_id=1)
+        cls.loadout = copy.deepcopy(game.hud_components()['battle_loadout'])
+
+        session.own_feedback(
+            Feedback(KINDS.RECEIVED_DAMAGE, ENEMY_VEHICLE, Extra(310)),
+            Feedback(KINDS.TANKING, ALLY_VEHICLE, Extra(200, SHELL_TYPES.HE_MODERN)),
+        )
+        cls.received_hits = game.hud_text('received_hits')
+        avatar().showOwnVehicleHitDirection(3.1)
+        cls.hit_directions = list(game.hit_directions)
+        session.state('DEVICES', ('engine', 'critical', 'critical'))
+        cls.panels_after_crit = sorted(game.hud_components())
+        session.arena.onVehicleKilled(OWN_VEHICLE, ENEMY_VEHICLE, 0, 0)
+        cls.death_card = game.hud_text('death_card')
+
+        game.press(STREAMER_KEY)
+        cls.panels_hidden = game.hud_components()
+        session.own_feedback(Feedback(KINDS.TANKING, ALLY_VEHICLE, Extra(100)))
+        cls.panels_hidden_after_feedback = game.hud_components()
+        game.press(STREAMER_KEY)
+        cls.panels_shown_again = copy.deepcopy(game.hud_components())
+        cls.play_modifiers(game)
+        game.events.onAvatarBecomeNonPlayer()
+        cls.panels_after_battle = game.hud_components()
+
+    @classmethod
+    def play_modifiers(cls, game):
+        # RU 1.45 client checks read Ctrl and Shift on either side (KEY_LCONTROL or KEY_RCONTROL).
+        big_world = sys.modules['BigWorld']
+        big_world.isKeyDown = lambda key: key == RIGHT_CONTROL
+        game.press(STREAMER_KEY)
+        cls.panels_with_control_only = sorted(game.hud_components())
+        big_world.isKeyDown = lambda key: key in (RIGHT_CONTROL, RIGHT_SHIFT)
+        game.press(STREAMER_KEY)
+        cls.panels_with_right_keys = game.hud_components()
+        big_world.isKeyDown = lambda key: True
+        game.press(STREAMER_KEY)
+        cls.panels_with_every_key = sorted(game.hud_components())
+
+    def test_battle_loadout_shows_the_devices_and_the_deluxe_star(self):
+        self.assertIn('img://gui/maps/icons/artefact/rammer.png', self.loadout['text'])
+        self.assertEqual(self.loadout['text'].count(u'★'), 1)
+        self.assertFalse(self.loadout['drag'])
+
+    def test_received_hits_name_the_shooter_and_the_blocked_damage(self):
+        self.assertIn(u'Pz. IV', self.received_hits)
+        self.assertIn(u'не пробил, заблокировано 200', self.received_hits)
+
+    def test_the_game_still_gets_its_hit_direction(self):
+        self.assertEqual(self.hit_directions, [3.1])
+
+    def test_a_crit_alone_shows_no_death_card(self):
+        self.assertNotIn('death_card', self.panels_after_crit)
+
+    def test_the_death_card_names_the_killer_the_damage_and_the_crits(self):
+        self.assertIn(u'Вас уничтожил: СТ Pz. IV', self.death_card)
+        self.assertIn(u'урон 310', self.death_card)
+        self.assertIn(u'двигатель', self.death_card)
+
+    def test_the_streamer_hotkey_hides_every_panel_and_what_comes_while_hidden(self):
+        self.assertEqual(self.panels_hidden, {})
+        self.assertEqual(self.panels_hidden_after_feedback, {})
+
+    def test_the_streamer_hotkey_again_shows_the_panels_with_what_came_meanwhile(self):
+        self.assertIn(u'заблокировано 100', self.panels_shown_again['received_hits']['text'])
+        self.assertIn('death_card', self.panels_shown_again)
+
+    def test_the_streamer_hotkey_needs_control_and_shift_on_either_side(self):
+        self.assertIn('death_card', self.panels_with_control_only)
+        self.assertEqual(self.panels_with_right_keys, {})
+        self.assertIn('death_card', self.panels_with_every_key)
+
+    def test_leaving_the_battle_clears_the_loadout_panels(self):
+        self.assertEqual(self.panels_after_battle, {})
+
+
+class HangarHelpersTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        game.install_avatar_and_device_stubs()
+        app = game.open_hangar()
+        cls.missions_rows = game.instances()['personal_missions'].ui_page()['rows']
+        cls.components_at_start = sorted(game.components)
+        app.ui.show('otmetki.session', 'mine', SESSION_LABEL_PLACE)
+        cls.set_private_mode(game, app, True)
+        cls.components_private = sorted(game.components)
+        cls.set_private_mode(game, app, False)
+        cls.session_label = game.components['otmetki.session']['text']
+        for step in range(3):
+            results = _support.battle_results()
+            results['arenaUniqueID'] = 900 + step
+            results['common']['winnerTeam'] = 2
+            game.events.onBattleResultsReceived(True, results)
+        cls.tilt_messages = game.messages_with(u'поражений подряд')
+        cls.messages = list(game.messages)
+
+    @staticmethod
+    def set_private_mode(game, app, is_private):
+        game.hud_module().component_config(app).get('streamer_mode').update({'private': is_private})
+        app.bus.emit('component_settings', 'streamer_mode', ['private'])
+
+    def test_personal_missions_start_with_an_empty_page_and_no_label(self):
+        self.assertEqual(self.missions_rows, [])
+        self.assertNotIn('otmetki.personal_missions', self.components_at_start)
+
+    def test_private_mode_hides_the_session_label(self):
+        self.assertNotIn('otmetki.session', self.components_private)
+
+    def test_leaving_private_mode_brings_the_session_label_back(self):
+        self.assertEqual(self.session_label, 'mine')
+
+    def test_three_losses_in_a_row_bring_a_tilt_warning(self):
+        self.assertTrue(self.tilt_messages, self.messages)
+
+
+class GunAndWoundsTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        app, vehicle_class = open_shots_hangar(game)
+        instances = game.instances()
+        game.vehicle.item = instance('Vehicle', {'intCD': 1, 'name': 'ussr:R04_T-34'})
+        cls.hangar_info_actions = instances['hangar_info'].ui_actions()
+        game.vehicle.item = None
+
+        session = game.enter_battle_with_gun((-0.26, 0.26))
+        cls.consumables = game.hud_text('consumables')
+        session.shared.ammo.onCurrentShellChanged(12)
+        cls.consumables_second_shell = game.hud_text('consumables')
+        game.player.gunRotator.turretYaw = 0.2
+        instances['gun_arc'].render()
+        cls.gun_arc = game.hud_text('gun_arc')
+        cls.play_bush_circle(game, session)
+
+        game.own_vehicle.showDamageFromShot(ENEMY_VEHICLE, [FRONT_HULL_PEN], 0, 1.0, False)
+        vehicle_class(False).showDamageFromShot(ENEMY_VEHICLE, [FRONT_HULL_PEN], 0, 1.0, False)
+        session.own_feedback(Feedback(KINDS.RECEIVED_DAMAGE, ENEMY_VEHICLE, Extra(390)))
+        cls.shots = list(game.shots)
+        cls.components_in_battle = sorted(game.components)
+        game.back_to_hangar()
+        cls.wounds_label = game.components['otmetki.battle_hits']['text']
+        cls.wounds_rows = copy.deepcopy(instances['battle_hits'].ui_page()['rows'])
+        cls.is_wounds_file_saved = os.path.isfile(os.path.join(app.config_dir, 'battle_hits_%d.json' % ACCOUNT))
+        instances['battle_hits'].ui_action('clear', '4242')
+        cls.wounds_rows_cleared = instances['battle_hits'].ui_page()['rows']
+        cls.components_cleared = sorted(game.components)
+
+    @classmethod
+    def play_bush_circle(cls, game, session):
+        cls.models_before = list(game.player.models)
+        game.press(BUSH_CIRCLE_KEY)
+        circle = game.player.models[0]
+        cls.circle_area = circle.root.items[0].args
+        cls.circle_motors = list(circle.motors)
+        game.key_down(key_event(BUSH_CIRCLE_KEY, is_repeated=True))
+        cls.is_circle_kept_while_held = game.player.models == [circle]
+        game.press(BUSH_CIRCLE_KEY)
+        cls.models_after_second_press = list(game.player.models)
+        game.press(BUSH_CIRCLE_KEY)
+        session.arena.onVehicleKilled(OWN_VEHICLE, ENEMY_VEHICLE, 0, 0)
+        cls.models_after_death = list(game.player.models)
+
+    def test_hangar_info_links_the_armor_page_of_the_selected_tank(self):
+        self.assertEqual(self.hangar_info_actions[0]['link'], '/t/r04-t-34/armor')
+
+    def test_shell_stats_show_the_penetration_damage_and_speed(self):
+        self.assertIn(u'258 мм', self.consumables)
+        self.assertIn(u'урон 390', self.consumables)
+        self.assertIn(u'1 000 м/с', self.consumables)
+
+    def test_shell_stats_follow_the_current_shell(self):
+        self.assertIn(u'480', self.consumables_second_shell)
+
+    def test_the_gun_arc_shows_the_traverse_left_each_way(self):
+        self.assertIn(u'УГН', self.gun_arc)
+        self.assertIn(u'◄ 26°', self.gun_arc)
+        self.assertIn(u'3° ►', self.gun_arc)
+
+    def test_the_bush_circle_hotkey_draws_the_circle_on_the_own_tank(self):
+        self.assertEqual(self.models_before, [])
+        self.assertEqual(self.circle_area, BUSH_CIRCLE_AREA)
+        self.assertEqual(self.circle_motors, [('servo', 'own-matrix')])
+
+    def test_a_held_bush_circle_hotkey_keeps_the_circle(self):
+        self.assertTrue(self.is_circle_kept_while_held)
+
+    def test_the_bush_circle_hotkey_again_removes_the_circle(self):
+        self.assertEqual(self.models_after_second_press, [])
+
+    def test_the_bush_circle_goes_with_the_own_tank(self):
+        self.assertEqual(self.models_after_death, [])
+
+    def test_battle_wounds_let_the_game_draw_every_shot_and_show_nothing_in_battle(self):
+        self.assertEqual(self.shots, [ENEMY_VEHICLE, ENEMY_VEHICLE])
+        self.assertNotIn('otmetki.battle_hits', self.components_in_battle)
+
+    def test_battle_wounds_show_in_the_hangar_after_the_battle(self):
+        self.assertIn(u'Боевые раны · T-34', self.wounds_label)
+        self.assertIn(u'Попаданий 1', self.wounds_label)
+
+    def test_battle_wounds_page_lists_the_battle_with_its_hits(self):
+        row = self.wounds_rows[0]
+
+        self.assertEqual(row['id'], '4242')
+        self.assertEqual(row['details'][1]['value'], u'Корпус, лоб · пробитие · −390 · Pz. IV')
+        self.assertEqual([mark['tone'] for mark in row['figure']['marks']], ['pen'])
+        self.assertTrue(self.is_wounds_file_saved)
+
+    def test_clearing_battle_wounds_empties_the_page_and_removes_the_label(self):
+        self.assertEqual(self.wounds_rows_cleared, [])
+        self.assertNotIn('otmetki.battle_hits', self.components_cleared)
+
+
+def open_shots_hangar(game):
+    game.install_hud_stubs()
+    vehicle_class = game.install_shot_and_bush_circle_stubs()
+    app = game.open_hangar()
+    game.hud_module().hud_layer(app).update_settings('consumables', {'show_shell_stats': True})
+    return app, vehicle_class
+
+
+class RicochetTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        _, vehicle_class = open_shots_hangar(game)
+        session = game.enter_battle_with_gun(None)
+        vehicle_class(False).showDamageFromShot(ALLY_VEHICLE, [RICOCHET_POINT], 0, 0.0, False)
+        game.own_vehicle.showDamageFromShot(ENEMY_VEHICLE, [RICOCHET_POINT], 0, 0.0, False)
+        session.own_feedback(
+            Feedback(KINDS.TANKING, ENEMY_VEHICLE, Extra(240)),
+            Feedback(KINDS.TANKING, ALLY_VEHICLE, Extra(100)),
+        )
+        cls.hits = game.hud_text('received_hits')
+
+    def test_received_hits_tell_a_ricochet_from_the_shot_drawn_on_the_own_tank(self):
+        self.assertIn(u'рикошет, заблокировано 240', self.hits)
+        self.assertIn(u'не пробил, заблокировано 100', self.hits)
+
+
+class BushCircleAfterBattleTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        open_shots_hangar(game)
+        game.enter_battle_with_gun(None)
+        avatar = game.player
+        game.press(BUSH_CIRCLE_KEY)
+        game.player = Player(ACCOUNT)
+        game.events.onAvatarBecomeNonPlayer()
+        cls.battle_avatar_models = list(avatar.models)
+        game.press(BUSH_CIRCLE_KEY)
+        cls.hangar_models = list(game.player.models)
+
+    def test_the_bush_circle_leaves_with_the_battle_it_was_drawn_in(self):
+        self.assertEqual(self.battle_avatar_models, [])
+
+    def test_the_bush_circle_hotkey_draws_nothing_in_the_hangar(self):
+        self.assertEqual(self.hangar_models, [])
+
+
+class SiteRecordsTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        game.install_site_vehicle()
+        app = game.open_hangar(is_bound=True)
+
+        def failing_listener(tank_id):
+            raise RuntimeError('listener')
+
+        sys.modules['gui.mods.otmetki.core.client.me'].tank_ratings(app).listeners.insert(0, failing_listener)
+        goals = contract_example('goals.example.json')
+        game.answer('tanks', contract_example('ratings-tanks.example.json'))
+        game.answer('goals', goals)
+        cls.book = game.instances()['personal_best'].book.get(1)
+        cls.goals_label = game.components['otmetki.session_goals']['text']
+        cls.hangar_sounds = list(game.sounds)
+        cls.play_battle(game, app)
+        cls.play_results(game, app, goals)
+
+    @classmethod
+    def play_battle(cls, game, app):
+        layer = game.hud_module().hud_layer(app)
+        layer.update_settings('session_goals', {'show_battle': True})
+        session = game.enter_battle(1, tank_id=1)
+        session.own_feedback(
+            Feedback(KINDS.DAMAGE, ENEMY_VEHICLE, Extra(1500)),
+            Feedback(KINDS.SPOTTED, ENEMY_VEHICLE, None),
+            Feedback(KINDS.KILL, ENEMY_VEHICLE, None),
+        )
+        cls.battle_panels = copy.deepcopy(game.hud_components())
+        cls.components_in_battle = sorted(game.components)
+        # RU 1.45 dossiers2 battle_results_processors: maxAssisted is track + radio + stun, so an artillery player's
+        # stun assist counts in battle; BattleSummaryFeedbackEvent keeps stun apart from getTotalAssistDamage().
+        layer.update_settings('personal_best', {'show_assist': True})
+        session.own_feedback(Feedback(KINDS.STUN_ASSIST, ENEMY_VEHICLE, Extra(600)))
+        cls.personal_best_after_stun = game.hud_text('personal_best')
+        session.feedback.onPlayerSummaryFeedbackReceived(summary_with_stun(5000))
+        cls.personal_best_after_summary = game.hud_text('personal_best')
+        game.events.onAvatarBecomeNonPlayer()
+
+    @classmethod
+    def play_results(cls, game, app, goals):
+        game.player = Player(ACCOUNT)
+        game.events.onAccountShowGUI()
+        results = _support.battle_results()
+        results['personal'][1]['damageDealt'] = 7050
+        game.events.onBattleResultsReceived(True, results)
+        cls.record_cards = game.messages_with(u'новый рекорд')
+        cls.record_sounds = list(game.sounds)
+        cls.stored = _support.load_json(os.path.join(app.config_dir, 'personal_best_%d.json' % ACCOUNT))
+        for step in range(1, 30):
+            app.bus.emit('tick', time.time() + step * 5)
+        achieved = dict(goals['goals'][0], current=3050.0, status='achieved')
+        game.answer('goals', dict(goals, goals=[achieved]))
+        cls.goal_messages = game.messages_with(u'цель выполнена')
+        cls.last_sound = game.sounds[-1]
+        cls.messages = list(game.messages)
+
+    def test_site_records_fill_the_personal_best_book(self):
+        self.assertEqual(self.book, {'damage': 6812, 'assist': 5120, 'frags': 6, 'xp': 2740})
+
+    def test_site_goals_show_in_the_hangar_without_a_sound(self):
+        self.assertIn(u'Ср. урон 3 000', self.goals_label)
+        self.assertEqual(self.hangar_sounds, [])
+
+    def test_battle_panels_count_the_record_efficiency_and_goals_so_far(self):
+        panels = self.battle_panels
+
+        self.assertIn(u'осталось 5 312', panels['personal_best']['text'])
+        self.assertIn(u'WN8 боя', panels['battle_efficiency']['text'])
+        self.assertIn(u'Урон 1 500 / ср. 1 20', panels['battle_efficiency']['text'])
+        self.assertIn(u'Ср. урон 3 000: нужно', panels['session_goals']['text'])
+        self.assertNotIn('otmetki.session_goals', self.components_in_battle)
+
+    def test_stun_assist_counts_towards_the_assist_record(self):
+        self.assertIn(u'осталось 4 520', self.personal_best_after_stun)
+
+    def test_the_battle_summary_sets_a_new_assist_record_with_the_stun(self):
+        self.assertIn(u'Новый рекорд (помощь): 5 950 (+830)', self.personal_best_after_summary)
+
+    def test_a_new_record_is_announced_played_and_stored_after_the_battle(self):
+        self.assertTrue(self.record_cards, self.messages)
+        self.assertIn(u'урон 7 050 (было 6 812)', self.record_cards[0])
+        self.assertEqual(self.record_sounds, ['mp3:sixthSense:otmetki_record.mp3'])
+        self.assertEqual(self.stored['tanks']['1']['damage'], 7050)
+
+    def test_an_achieved_goal_is_announced_with_its_sound(self):
+        self.assertTrue(self.goal_messages, self.messages)
+        self.assertEqual(self.last_sound, 'mp3:sixthSense:otmetki_goal.mp3')
+
+
+class PlatoonAndArtyTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        sys.modules['gui.battle_control.battle_constants'].VEHICLE_VIEW_STATE.STUN = VIEW_STATE['STUN']
+        ArenaDP.isSquadMan = lambda provider, vehicle_id: vehicle_id == ALLY_VEHICLE
+        try:
+            cls.play_platoon(game)
+        finally:
+            del ArenaDP.isSquadMan
+
+    @classmethod
+    def play_platoon(cls, game):
+        game.open_hangar()
+        session = game.enter_battle(1)
+        platoon = game.instances()['platoon_points'].platoon
+        arty = game.instances()['arty_meter'].battle
+        for stun in (stun_info(130.0, 12.0), stun_info(130.0, 11.0), stun_info(0.0, 0.0), stun_info(160.0, 10.0)):
+            session.state('STUN', stun)
+        session.state('HEALTH', 640)
+        session.feedback.onPlayerSummaryFeedbackReceived(summary_with_stun(5000))
+        session.control(ALLY_VEHICLE)
+        session.state('STUN', stun_info(190.0, 10.0))
+        session.state('HEALTH', 700)
+        cls.stuns = arty.values()['stuns']
+        cls.own_hp = platoon.members[OWN_VEHICLE]['hp']
+        cls.ally_hp = platoon.members[ALLY_VEHICLE]['hp']
+        cls.own_totals = platoon.own_totals()
+
+    def test_the_arty_meter_counts_only_the_own_stuns(self):
+        self.assertEqual(self.stuns, 2)
+
+    def test_platoon_points_keep_each_members_hp(self):
+        self.assertEqual(self.own_hp, 640)
+        self.assertEqual(self.ally_hp, 700)
+
+    def test_platoon_points_total_the_own_damage_and_assist(self):
+        self.assertEqual(self.own_totals, (2150, 5950))
+
+
+class DossierBonusTypesTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        game.load(list(ENTRY_MODULES))
+        counts = sys.modules['gui.mods.otmetki.features.personal_best.client'].counts_in_dossier
+        cls.without_caps = (counts(1), counts(29))
+        module('arena_bonus_type_caps', ARENA_BONUS_TYPE_CAPS=DossierCaps)
+        cls.with_caps = (counts(29), counts(22), counts(None))
+
+    def test_personal_best_counts_random_battles_without_the_caps_module(self):
+        counts_random, counts_29 = self.without_caps
+
+        self.assertTrue(counts_random)
+        self.assertFalse(counts_29)
+
+    def test_personal_best_asks_the_caps_module_by_the_native_cap_name(self):
+        counts_29, counts_22, counts_none = self.with_caps
+
+        self.assertTrue(counts_29)
+        self.assertFalse(counts_22)
+        self.assertFalse(counts_none)
+
+
+class ReplayAndShareTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        app = game.open_hangar(is_bound=True)
+        app.bus.emit('replay_uploaded', '777', REPLAY_ID)
+        app.bus.emit('tick', time.time() + 120)
+        polls = game.fetches_to('/mod/me/replays')
+        cls.polls = [json.loads(poll[3]) for poll in polls]
+        polls[0][4](response_json(contract_example('replay-analysis.example.json')))
+        cls.replay_messages = game.messages_with(u'разбор реплея готов', u'точность 83%')
+        cls.play_share(game, app, game.instances()['session_stats'])
+        cls.play_unlinked_channel(game, app)
+        cls.messages = list(game.messages)
+
+    @classmethod
+    def play_share(cls, game, app, stats):
+        cls.actions_before = [action['id'] for action in stats.ui_actions()]
+        cls.shares_before = game.fetches_to('/mod/me/session-share')
+        app.config.update({'share_session_report': True, 'share_session_channel': 'both'})
+        app.bus.emit('component_settings', 'session_stats', ['share_session_report'])
+        shares = game.fetches_to('/mod/me/session-share')
+        cls.share_request = json.loads(shares[0][3])
+        shares[0][4](Response(200, b'{}'))
+        cls.synced = app.state_file.read({})['session_share_synced']
+        cls.refusal = stats.ui_action('share_now')
+        game.events.onBattleResultsReceived(True, _support.battle_results())
+        cls.share_answer = stats.ui_action('share_now')
+        cls.sent = json.loads(game.fetches_to('/mod/me/session-share/send')[0][3])
+        cls.shared_session_id = stats.session.session_id
+        cls.actions_after = [action['id'] for action in stats.ui_actions()]
+        cls.new_session_answer = stats.ui_action('new_session')
+        cls.new_session_id = stats.session.session_id
+        cls.new_session_battles = stats.session.summary(time.time())['battles']
+
+    @classmethod
+    def play_unlinked_channel(cls, game, app):
+        app.config.update({'share_session_channel': 'discord'})
+        app.bus.emit('component_settings', 'session_stats', ['share_session_channel'])
+        shares = game.fetches_to('/mod/me/session-share')
+        shares[-1][4](Response(409, b'{"error":"channel_not_linked"}'))
+        cls.unlinked_messages = game.messages_with(u'привяжите выбранный канал')
+        app.bus.emit('tick', time.time() + 3600)
+        cls.share_count_before_tick = len(shares)
+        cls.share_count_after_tick = len(game.fetches_to('/mod/me/session-share'))
+
+    def test_an_uploaded_replay_is_polled_once_with_its_id(self):
+        self.assertEqual(len(self.polls), 1)
+        self.assertEqual(self.polls[0]['replay_ids'], [REPLAY_ID])
+
+    def test_a_ready_replay_analysis_is_announced(self):
+        self.assertTrue(self.replay_messages, self.messages)
+
+    def test_session_stats_offer_only_a_new_session_while_sharing_is_off(self):
+        self.assertEqual(self.actions_before, ['new_session'])
+        self.assertEqual(self.shares_before, [])
+
+    def test_turning_the_session_share_on_sends_both_channels(self):
+        self.assertEqual(self.share_request['channels'], ['telegram', 'discord'])
+
+    def test_an_accepted_session_share_is_remembered_as_synced(self):
+        self.assertEqual(self.synced, [True, 'both'])
+
+    def test_share_now_is_refused_before_a_battle(self):
+        self.assertEqual(self.refusal['kind'], 'error')
+
+    def test_share_now_sends_the_current_session_after_a_battle(self):
+        self.assertEqual(self.share_answer['kind'], 'info')
+        self.assertEqual(self.sent['session_id'], self.shared_session_id)
+        self.assertEqual(self.actions_after, ['new_session', 'share_now'])
+
+    def test_a_new_session_starts_empty(self):
+        self.assertEqual(self.new_session_answer['kind'], 'info')
+        self.assertNotEqual(self.new_session_id, self.shared_session_id)
+        self.assertEqual(self.new_session_battles, 0)
+
+    def test_an_unlinked_share_channel_is_announced_and_not_retried(self):
+        self.assertTrue(self.unlinked_messages, self.messages)
+        self.assertEqual(self.share_count_after_tick, self.share_count_before_tick)
+
+
+class HangarSmallWinsTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        game.install_garage_stubs()
+        game.install_customization_stubs()
+        game.open_hangar()
+        vehicle = game.vehicle.item
+        vehicle.descriptor.makeCompactDescr = lambda: 'cd-1'
+        tweaks = game.instances()['hangar_tweaks']
+        cls.nothing_refusal = tweaks.ui_action('remove_style')['text']
+        cls.nothing_text = tweaks.app.translate('hangar_tweaks_refused_nothing')
+        vehicle.isStyleInstalled = True
+        cls.remove_answer = tweaks.ui_action('remove_style')
+        cls.outfits = list(game.outfits)
+        cls.result_messages = list(game.result_messages)
+
+        game.install_demonstrator_levels({'ussr:R04_T-34': (5, 7)})
+        vehicle.name = 'ussr:R04_T-34'
+        vehicle.type = 'mediumTank'
+        vehicle.level = 5
+        vehicle.isElite = True
+        vehicle.shortUserName = u'Т-34'
+        vehicle.crew = [(0, Tankman(0, u'Командир')), (1, Tankman(8400, u'Наводчик')), (2, None)]
+        game.instances()['hangar_info'].render(SERVER_TIME)
+        cls.hangar_info = game.components['otmetki.hangar_info']['text']
+
+    def test_removing_a_style_is_refused_when_none_is_installed(self):
+        self.assertEqual(self.nothing_refusal, self.nothing_text)
+
+    def test_removing_an_installed_style_applies_an_empty_outfit(self):
+        self.assertEqual(self.remove_answer['kind'], 'info')
+        self.assertEqual(self.outfits, [((('outfit', 'empty-component', 'cd-1'), 7),)])
+        self.assertEqual(self.result_messages, ['style removed'])
+
+    def test_hangar_info_shows_the_tank_its_battle_tiers_and_the_crew_progress(self):
+        self.assertIn(u'Т-34', self.hangar_info)
+        self.assertIn(u'бои 5–7 ур.', self.hangar_info)
+        self.assertIn(u'до навыка 8 400 опыта (Наводчик)', self.hangar_info)
+        self.assertIn(u'ускоренное обучение', self.hangar_info)
+
+
+class OnslaughtAndEventCardsTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        game.open_hangar()
+        instances = game.instances()
+        instances['event_trackers'].app.config.update({'hangar_event_trackers': True})
+        comp7 = game.install_onslaught_services()
+        shop = game.install_event_services()
+        module('skeletons.gui.game_control', IComp7Controller=comp7, IShopSalesEventController=shop)
+        game.vehicle.item = instance('Vehicle', {'intCD': 1})
+        instances['comp7_helper'].refresh()
+        instances['event_trackers'].refresh()
+        cls.comp7_text = game.components['otmetki.comp7_helper']['text']
+        cls.caravan_text = game.components['otmetki.event_trackers.caravan']['text']
+        cls.triathlon_text = game.components['otmetki.event_trackers.triathlon']['text']
+        game.services[comp7].isComp7PrbActive = lambda: False
+        instances['comp7_helper'].refresh()
+        cls.components_outside_queue = sorted(game.components)
+
+    def test_the_onslaught_card_shows_the_division_the_next_one_and_the_skill(self):
+        self.assertIn(u'Чемпион B', self.comp7_text)
+        self.assertIn(u'До «Чемпион A»: 350 очков', self.comp7_text)
+        self.assertIn(u'Точка сбора', self.comp7_text)
+
+    def test_event_cards_show_the_caravan_tokens_and_the_triathlon(self):
+        self.assertIn(u'12 жетонов', self.caravan_text)
+        self.assertIn(u'Триатлон', self.triathlon_text)
+
+    def test_the_onslaught_card_leaves_outside_the_onslaught_queue(self):
+        self.assertNotIn('otmetki.comp7_helper', self.components_outside_queue)
+
+
+class EarlyExitServerRequestTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        app = game.load(['mod_otmetki'])
+        results = game.leave_battle_early(app)
+        cls.arena_id = results['arenaUniqueID']
+        for step in range(EARLY_EXIT_POLLS):
+            app.battles.poll_pending_results(SERVER_TIME + 100 * step)
+        cls.requests_while_polling = list(game.results_cache.server_requests)
+        cls.pending = (app.battles.pending_arenas, app.battles.shots_by_arena, app.battles.queue_wait_by_arena)
+        cls.battles_while_polling = len(game.battle_events(app))
+        game.results_cache.get(cls.arena_id, lambda code, data: None)
+        game.results_cache.saved[(game.player.name, cls.arena_id)] = results
+        game.results_service.onResultPosted(instance('ReusableInfo', {'arenaUniqueID': cls.arena_id}), None, None)
+        cls.battles_after_post = len(game.battle_events(app))
+        cls.requests_after_post = list(game.results_cache.server_requests)
+
+    def test_polling_after_an_early_exit_never_asks_the_server_itself(self):
+        pending_arenas, shots, queue_waits = self.pending
+
+        self.assertEqual(self.requests_while_polling, [])
+        self.assertEqual(pending_arenas, [])
+        self.assertEqual(shots, {})
+        self.assertEqual(queue_waits, {})
+        self.assertEqual(self.battles_while_polling, 0)
+
+    def test_early_exit_results_come_from_the_game_own_request(self):
+        self.assertEqual(self.battles_after_post, 1)
+        self.assertEqual(self.requests_after_post, [self.arena_id])
+
+
+class EarlyExitDiskCacheTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        app = game.load(['mod_otmetki'])
+        results = game.leave_battle_early(app)
+        game.results_cache.saved[(game.player.name, results['arenaUniqueID'])] = results
+        app.battles.poll_pending_results(SERVER_TIME)
+        cls.battles = len(game.battle_events(app))
+        cls.server_requests = list(game.results_cache.server_requests)
+        cls.pending_arenas = list(app.battles.pending_arenas)
+
+    def test_early_exit_results_are_read_from_the_disk_cache(self):
+        self.assertEqual(self.battles, 1)
+        self.assertEqual(self.server_requests, [])
+        self.assertEqual(self.pending_arenas, [])
+
+
+class HangarTweaksTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        game.install_garage_stubs()
+        game.open_hangar()
+        tweaks = game.instances()['hangar_tweaks']
+        cls.demount_answer = tweaks.ui_action('demount_removable')
+        cls.processors_at_start = len(game.processors)
+        first, reply = game.processors[0]
+        cls.first = (first.slot, first.item.name, first.install)
+        game.items.vehicle = GarageVehicle([None, GarageDevice('vents'), None])
+        reply(result(True, 'rammer demounted'))
+        cls.processors_after_success = len(game.processors)
+        second, reply = game.processors[1]
+        cls.is_second_on_fresh_vehicle = second.vehicle is game.items.vehicle
+        cls.second = (second.slot, second.item.name)
+        reply(result(False, 'server busy'))
+        cls.result_messages = list(game.result_messages)
+        cls.processors_after_failure = len(game.processors)
+        cls.messages = list(game.messages)
+        game.vehicle.item.crew = [(0, object())]
+        cls.barracks_answer = tweaks.ui_action('crew_to_barracks')
+        cls.berths_text = tweaks.app.translate('hangar_tweaks_refused_berths')
+
+    def test_demounting_starts_with_the_first_removable_slot(self):
+        slot, name, is_install = self.first
+
+        self.assertEqual(self.demount_answer['kind'], 'info')
+        self.assertEqual(self.processors_at_start, 1)
+        self.assertEqual(slot, 0)
+        self.assertEqual(name, 'rammer')
+        self.assertFalse(is_install)
+
+    def test_after_a_success_the_next_slot_comes_from_the_fresh_vehicle(self):
+        self.assertEqual(self.processors_after_success, 2)
+        self.assertTrue(self.is_second_on_fresh_vehicle)
+        self.assertEqual(self.second, (1, 'vents'))
+
+    def test_a_failed_demount_stops_the_chain_and_every_answer_is_shown(self):
+        self.assertEqual(self.result_messages, ['rammer demounted', 'server busy'])
+        self.assertEqual(self.processors_after_failure, 2)
+        self.assertTrue(self.messages)
+
+    def test_crew_to_barracks_is_refused_without_free_berths(self):
+        self.assertEqual(self.barracks_answer, {'kind': 'error', 'text': self.berths_text})
+
+
+class FieldModificationsTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_garage_stubs()
+        game.load(['mod_otmetki'])
+        _, cls.loadout = sys.modules['gui.mods.otmetki.companion.loadout.client'].read_current_loadout()
+
+    def test_loadout_reads_the_installed_field_modifications(self):
+        self.assertEqual(self.loadout['field_modifications'], ['mod_a', 'mod_b'])
+
+
+class HangarCleanerVerifiedTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        hangar_class, banner_class = game.install_hangar_view_stubs()
+        game.load(list(ENTRY_MODULES))
+        hangar = hangar_class()
+        hangar._Hangar__onTeaserReceived('teaser', None, None)
+        hangar._Hangar__updateCarouselEventEntryState()
+        banner_class.tryLoad(5, None)
+        cls.teasers = list(game.teasers)
+        cls.entries = list(game.entries)
+        cls.banner_loads = list(game.banner_loads)
+
+    def test_hangar_cleaner_overrides_private_methods_on_a_verified_client(self):
+        self.assertEqual(self.teasers, [])
+        self.assertEqual(self.entries, [True])
+        self.assertEqual(self.banner_loads, [])
+
+
+class HangarCleanerUnverifiedTest(StoryTest):
+    client_version = '1.46.0.0'
+
+    @classmethod
+    def play(cls, game):
+        hangar_class, banner_class = game.install_hangar_view_stubs()
+        game.load(list(ENTRY_MODULES))
+        hangar_class()._Hangar__onTeaserReceived('teaser', None, None)
+        banner_class.tryLoad(5, None)
+        cls.teasers = list(game.teasers)
+        cls.banner_loads = list(game.banner_loads)
+
+    def test_hangar_cleaner_leaves_private_methods_alone_on_an_unverified_client(self):
+        self.assertEqual(self.teasers, ['teaser'])
+        self.assertEqual(self.banner_loads, [])
+
+
+class SignedRequestsTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        app = game.load(['mod_otmetki'])
+        game.play_battle(app)
+        cls.is_sent = app.sender.tick(SERVER_TIME)
+        signing = sys.modules['gui.mods.otmetki.core.net.signing']
+        cls.server_now = int(time.time()) + 600
+        headers = {'X-Otmetki-Server-Time': str(cls.server_now)}
+        game.ingest_fetches()[-1][4](Response(428, b'{"error":"stale_request"}', headers))
+        retried = game.ingest_fetches()
+        cls.retries = len(retried)
+        cls.stamp = int(retried[-1][2][signing.TIMESTAMP_HEADER])
+        retried[-1][4](Response(429, b'', {'Retry-After': '900'}))
+        cls.in_flight = app.sender.in_flight
+        cls.retry_at = app.outbox.retry_at
+        cls.queued = len(app.outbox.events)
+
+    def test_a_played_battle_is_sent_on_the_next_tick(self):
+        self.assertTrue(self.is_sent)
+
+    def test_a_stale_request_is_signed_again_with_the_server_time(self):
+        self.assertEqual(self.retries, 2)
+        self.assertTrue(abs(self.stamp - self.server_now) <= 5, (self.stamp, self.server_now))
+
+    def test_a_rate_limited_request_waits_for_retry_after(self):
+        self.assertIsNone(self.in_flight)
+        self.assertGreaterEqual(self.retry_at, SERVER_TIME + 900)
+        self.assertEqual(self.queued, 1)
+
+
+class MarksTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        app = game.open_hangar(is_bound=True)
+        reads = game.moe_curve_reads(app)
+        cls.curve_reads = len(reads)
+        reads[0](response_json(MOE_CURVE))
+        cls.hangar_marks = copy.deepcopy(game.hud_components()['hangar_marks'])
+        session = game.enter_battle(1, tank_id=1)
+        cls.battle_panels = copy.deepcopy(game.hud_components())
+        session.own_feedback(
+            Feedback(KINDS.DAMAGE, ENEMY_VEHICLE, Extra(390)),
+            Feedback(KINDS.DAMAGE, ALLY_VEHICLE, Extra(50)),
+        )
+        cls.after_damage = game.hud_text('marks_panel')
+        session.control(ALLY_VEHICLE)
+        session.own_feedback(Feedback(KINDS.RADIO_ASSIST, ENEMY_VEHICLE, Extra(640)))
+        cls.after_assist = game.hud_text('marks_panel')
+        session.feedback.onPlayerSummaryFeedbackReceived(Summary())
+        cls.after_summary = game.hud_text('marks_panel')
+        game.events.onAvatarBecomeNonPlayer()
+        cls.panels_after_battle = sorted(game.hud_components())
+        cls.state_parts = [key for key, _ in app.state_parts]
+
+    def test_the_hangar_asks_the_site_once_for_the_moe_curve(self):
+        self.assertEqual(self.curve_reads, 1)
+
+    def test_hangar_marks_show_the_moe_and_the_next_threshold(self):
+        self.assertTrue(self.hangar_marks['lobby'])
+        self.assertFalse(self.hangar_marks['battle'])
+        self.assertIn('81.50%', self.hangar_marks['text'])
+        self.assertIn('2 600', self.hangar_marks['text'])
+
+    def test_the_marks_panel_takes_the_place_of_the_hangar_marks_in_battle(self):
+        panel = self.battle_panels['marks_panel']
+
+        self.assertNotIn('hangar_marks', self.battle_panels)
+        self.assertTrue(panel['battle'])
+        self.assertTrue(panel['drag'])
+
+    def test_the_marks_panel_counts_only_the_own_damage(self):
+        self.assertIn('390', self.after_damage)
+
+    def test_the_marks_panel_adds_the_assist_after_death(self):
+        self.assertIn('1 030', self.after_assist)
+
+    def test_the_marks_panel_takes_the_totals_of_the_battle_summary(self):
+        self.assertIn('2 790', self.after_summary)
+
+    def test_leaving_the_battle_removes_the_marks_panel_and_keeps_the_pace(self):
+        self.assertNotIn('marks_panel', self.panels_after_battle)
+        self.assertIn('moe_pace', self.state_parts)
+
+
+class GamefaceBackendTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        game.install_gameface_hud_stubs()
+        app = game.open_hangar()
+        layer = game.hud_module().hud_layer(app)
+        cls.backend_names = list(layer.backend.names)
+        cls.backend_name = layer.backend_name
+        app.bus.emit('hud_edit', True)
+        cls.labels_in_edit = game.hud_components()
+        cls.windows_in_edit = len(game.windows)
+        cls.window_layer = game.windows[0].layer
+        cls.page = game.hud_page()
+        cls.play_page_messages(game, app)
+        app.bus.emit('hud_edit', False)
+        cls.page_after_edit = game.hud_page_ids()
+        game.res_id = -1
+        app.bus.emit('hud_edit', True)
+        cls.windows_without_resource = len(game.windows)
+        cls.labels_without_resource = sorted(game.hud_components())
+        cls.fallback_backend = layer.backend_name
+
+    @classmethod
+    def play_page_messages(cls, game, app):
+        send = game.windows[0].content.getViewModel().commands['send']
+        moved = {
+            'type': 'moved',
+            'id': 'otmetki.hud.damage_log',
+            'x': 40,
+            'y': 50,
+            'align_x': 'center',
+            'align_y': 'top',
+        }
+        send({'message': json.dumps(moved)})
+        cls.saved = game.saved_components(app)['damage_log']
+        send({'message': 'not json'})
+
+    def test_gameface_is_the_preferred_backend_before_guiflash(self):
+        self.assertEqual(self.backend_names, ['gameface', 'guiflash'])
+        self.assertEqual(self.backend_name, 'gameface')
+
+    def test_hud_edit_opens_one_gameface_window_instead_of_labels(self):
+        self.assertEqual(self.labels_in_edit, {})
+        self.assertEqual(self.windows_in_edit, 1)
+        self.assertEqual(self.window_layer, 7)
+
+    def test_the_hud_page_shows_the_previews_with_the_cursor(self):
+        panels = dict((panel['id'], panel) for panel in self.page['panels'])
+
+        self.assertTrue(self.page['cursor'])
+        self.assertIn('390', panels['otmetki.hud.damage_log']['text'])
+
+    def test_a_panel_moved_on_the_page_saves_its_place(self):
+        self.assertEqual(self.saved['x'], 40)
+        self.assertEqual(self.saved['y'], 50)
+        self.assertEqual(self.saved['align_x'], 'center')
+        self.assertEqual(self.saved['align_y'], 'top')
+
+    def test_leaving_hud_edit_takes_the_previews_off_the_page(self):
+        previews = [panel_id for panel_id in self.page_after_edit if panel_id.startswith('otmetki.hud.')]
+
+        self.assertEqual(previews, [])
+
+    def test_without_the_gameface_resource_the_hud_falls_back_to_guiflash(self):
+        self.assertEqual(self.windows_without_resource, 1)
+        self.assertIn('damage_log', self.labels_without_resource)
+        self.assertEqual(self.fallback_backend, 'guiflash')
+
+
+class GamefaceSpacesTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        game.install_gameface_hud_stubs()
+        app = game.open_hangar()
+        app.ui.show('otmetki.hangar_test', 'hangar only', HANGAR_LABEL_PLACE)
+        cls.hangar_page = game.hud_page_ids()
+        game.enter_battle(1)
+        cls.battle_page = game.hud_page_ids()
+        cls.battle_cursor = game.hud_page()['cursor']
+
+    def test_a_hangar_label_shows_on_the_hangar_page(self):
+        self.assertIn('otmetki.hangar_test', self.hangar_page)
+
+    def test_a_battle_page_drops_the_hangar_labels_and_the_cursor(self):
+        self.assertNotIn('otmetki.hangar_test', self.battle_page)
+        self.assertIn('otmetki.hud.damage_log', self.battle_page)
+        self.assertFalse(self.battle_cursor)
+
+
+class GamefaceWindowFrameTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        game.install_gameface_hud_stubs()
+        loader = game.install_app_loader()
+        app = game.load(list(ENTRY_MODULES))
+        game.player = Player(ACCOUNT)
+        app.ui.show('otmetki.hangar_test', 'hangar only', HANGAR_LABEL_PLACE)
+        cls.windows_before_lobby = len(game.windows)
+        game.enter_space(loader, 'LOBBY')
+        cls.windows_in_lobby_frame = len(game.windows)
+        game.enter_space(loader, 'WAITING')
+        game.enter_space(loader, 'LOBBY')
+        game.run_callbacks()
+        cls.windows_next_frame = len(game.windows)
+        cls.page = game.hud_page_ids()
+        game.enter_space(loader, 'WAITING')
+        cls.windows_after_lobby = len(game.windows)
+
+    def test_no_gameface_window_opens_before_the_lobby(self):
+        self.assertEqual(self.windows_before_lobby, 0)
+
+    def test_no_gameface_window_opens_in_the_frame_the_lobby_is_entered(self):
+        self.assertEqual(self.windows_in_lobby_frame, 0)
+
+    def test_the_gameface_window_opens_a_frame_after_the_lobby_was_entered(self):
+        self.assertEqual(self.windows_next_frame, 1)
+        self.assertIn('otmetki.hangar_test', self.page)
+
+    def test_leaving_the_lobby_closes_the_gameface_window(self):
+        self.assertEqual(self.windows_after_lobby, 0)
+
+
+class SessionLogTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        game.install_gameface_hud_stubs()
+        sys.modules['openwg_gameface'].manager = instance('ResMapManager', {'isResMapValidated': False})
         with open('res_map_restart', 'w') as handle:
             handle.write('')
-        self.load(list(ENTRY_MODULES))
-        path = os.path.join('mods', 'configs', 'otmetki', 'otmetki.log')
-        with open(path, 'rb') as handle:
-            text = handle.read().decode('utf-8')
-        self.assertIn('[OTMETKI] session start', text)
-        self.assertIn(CLIENT_VERSION, text)
-        self.assertIn('[OTMETKI] HUD renderers', text)
-        self.assertLess(text.index('session start'), text.index('HUD renderers'))
-        self.assertIn('[OTMETKI] started', text)
-        self.assertIn('OpenWG Gameface is restarting the client', text)
+        game.load(list(ENTRY_MODULES))
+        with open(os.path.join('mods', 'configs', 'otmetki', 'otmetki.log'), 'rb') as handle:
+            cls.text = handle.read().decode('utf-8')
 
-    def test_pre_06_guiflash_draws_in_battle_only(self):
-        self.install_hud_stubs()
-        flash = sys.modules['gui.mods.gambiter'].g_guiFlash
-        test = self
+    def test_session_log_keeps_the_mod_lines_of_the_last_sessions(self):
+        self.assertIn('[OTMETKI] session start', self.text)
+        self.assertIn(CLIENT_VERSION, self.text)
+        self.assertIn('[OTMETKI] HUD renderers', self.text)
+        self.assertLess(self.text.index('session start'), self.text.index('HUD renderers'))
+        self.assertIn('[OTMETKI] started', self.text)
+        self.assertIn('OpenWG Gameface is restarting the client', self.text)
+
+
+class OldGuiFlashTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
 
         def create_component(alias, kind, props):
-            test.components[alias] = dict(props, kind=kind)
+            game.components[alias] = dict(props, kind=kind)
 
-        flash.createComponent = create_component
-        app = self.load(list(ENTRY_MODULES))
-        self.player = Player(ACCOUNT)
-        self.events.onAccountShowGUI()
+        sys.modules['gui.mods.gambiter'].g_guiFlash.createComponent = create_component
+        app = game.open_hangar()
         app.bus.emit('hud_edit', True)
-        self.assertEqual(self.components, {})
-        self.assertFalse(app.ui.has_panels)
-        self.enter_battle(1)
-        self.assertIn('damage_log', self.hud_components())
-        self.assertTrue(self.hud_components()['damage_log']['multiline'])
+        cls.components_in_edit = dict(game.components)
+        cls.has_panels_in_edit = app.ui.has_panels
+        game.enter_battle(1)
+        cls.battle_panels = copy.deepcopy(game.hud_components())
+
+    def test_pre_06_guiflash_draws_nothing_in_the_hangar(self):
+        self.assertEqual(self.components_in_edit, {})
+        self.assertFalse(self.has_panels_in_edit)
+
+    def test_pre_06_guiflash_draws_multiline_labels_in_battle(self):
+        self.assertIn('damage_log', self.battle_panels)
+        self.assertTrue(self.battle_panels['damage_log']['multiline'])
 
 
 if __name__ == '__main__':

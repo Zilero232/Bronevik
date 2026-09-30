@@ -23,28 +23,31 @@ def take_snapshot(config, component_config=None):
 
 def apply_snapshot(snapshot, config, save_config, component_config=None, layer=None):
     changes = {}
-    values = portable_values(snapshot.get('config') or {})
-    changed = config.update(values)
+    changed = config.update(portable_values(snapshot.get('config') or {}))
     if changed:
         save_config()
         changes['config'] = changed
-    if component_config is None:
-        return changes
-    stored_raw = False
+    if component_config is not None:
+        changes.update(_apply_sections(snapshot.get('components') or {}, component_config, layer))
+    return changes
+
+
+def _apply_sections(sections, component_config, layer):
+    changes = {}
+    has_raw_sections = False
     panels = getattr(layer, 'panels', {}) if layer is not None else {}
-    for key, section in sorted((snapshot.get('components') or {}).items()):
+    for key, section in sorted(sections.items()):
         if not isinstance(section, dict) or key in EXCLUDED_SECTIONS:
             continue
         if component_config.get(key) is None:
             component_config.data[key] = copy.deepcopy(section)
-            stored_raw = True
+            has_raw_sections = True
             continue
-        if key in panels:
-            changed = layer.update_settings(key, section)
-        else:
-            changed = component_config.update(key, section)
+        update = layer.update_settings if key in panels else component_config.update
+        changed = update(key, section)
         if changed:
             changes[key] = changed
-    if stored_raw:
+
+    if has_raw_sections:
         component_config.save()
     return changes

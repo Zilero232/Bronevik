@@ -1,10 +1,10 @@
-import type { Glide, SmoothScroll, SmoothScrollInput } from './smooth-scroll.types';
+import type { Glide, GlideStep, SmoothScroll, SmoothScrollInput, TopAtInput } from './smooth-scroll.types';
 
 import { SMOOTH_SCROLL } from './smooth-scroll.constants';
 
 const easeOut = (progress: number): number => 1 - (1 - progress) ** 3;
 
-const topAt = (glide: Glide, now: number): { top: number; done: boolean } => {
+const topAt = ({ glide, now }: TopAtInput): GlideStep => {
   const startedAt = glide.startedAt ?? now;
   const progress = Math.min((now - startedAt) / SMOOTH_SCROLL.durationMs, 1);
   const top = Math.round(glide.from + (glide.to - glide.from) * easeOut(progress));
@@ -24,7 +24,7 @@ export const createSmoothScroll = ({ element, onFrame }: SmoothScrollInput): Smo
 
     glide.startedAt ??= now;
 
-    const { top, done } = topAt(glide, now);
+    const { top, done } = topAt({ glide, now });
 
     element.scrollTop = top;
     glide.written = element.scrollTop;

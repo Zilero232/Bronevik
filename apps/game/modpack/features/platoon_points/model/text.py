@@ -6,7 +6,10 @@ from . import rules_of
 
 def points_text(platoon, settings, translate):
     rows = platoon.rows(rules_of(settings), settings.get('show_platoon'))
-    lines = [font(translate('platoon_points_total', points=sum(row['points'] for row in rows)), COLOR_NEUTRAL)]
+    total = sum(row['points'] for row in rows)
+
+    lines = [font(translate('platoon_points_total', points=total), COLOR_NEUTRAL)]
     for row in rows:
-        lines.append(font(translate('platoon_points_row', name=row['name'], points=row['points'], frags=row['frags']), COLOR_MUTED))
+        line = translate('platoon_points_row', name=row['name'], points=row['points'], frags=row['frags'])
+        lines.append(font(line, COLOR_MUTED))
     return u'\n'.join(lines)

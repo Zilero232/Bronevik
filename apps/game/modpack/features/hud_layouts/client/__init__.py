@@ -10,8 +10,6 @@ from ..settings import SCHEMA, SECTION, SWITCH
 
 
 class HudLayouts(FeatureComponent):
-    """Gives the HUD layer its layout per battle type: the battle panels take it when they start (core.hud.modes); the
-    places the player drags panels to in a battle of a type other than random stay with that type."""
 
     def __init__(self, app):
         FeatureComponent.__init__(self, app, SECTION, SCHEMA, SWITCH, STRINGS)
@@ -26,7 +24,9 @@ class HudLayouts(FeatureComponent):
         self.layer.mode_places.clear()
 
     def ui_actions(self):
-        return place_actions(self.layer.mode_places.modes(), self.app.translate) if self.enabled() else []
+        if not self.enabled():
+            return []
+        return place_actions(self.layer.mode_places.modes(), self.app.translate)
 
     def ui_action(self, action, row=None, value=None):
         if action != ACTION_RESET_PLACES:

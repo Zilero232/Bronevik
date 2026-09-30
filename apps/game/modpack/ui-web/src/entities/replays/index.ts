@@ -3,6 +3,7 @@ export { activeFilterCount, clearFilters, DEFAULT_REPLAY_FILTERS, filterReplays 
 export { formatCount, formatDuration, formatMoment, formatSize, romanTier } from './lib/format-replay';
 export { parseReplaysPage } from './lib/parse-replays-page';
 export { replayFacets } from './lib/replay-facets';
+export type { ReplayFacets } from './lib/replay-facets';
 export { summarizeReplays } from './lib/replay-summary';
 
-export type { BattleType, ReplayFilters, ReplayItem, ReplayNation, ReplaySort, ReplaysPage } from './model';
+export type { BattleType, ReplayFilters, ReplayItem, ReplayNation, ReplaySort, ReplaysPage } from './model/schemas';

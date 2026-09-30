@@ -1,0 +1,45 @@
+@use '../../../../../../../../shared/styles/gameface' as *;
+
+.track {
+  height: 2px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  background-color: rgb(255 255 255 / 10%);
+}
+
+.fill {
+  height: 100%;
+  background-color: token(color-accent);
+}
+
+.muted {
+  background-color: token(color-text-muted);
+}
+
+.gold {
+  background-color: token(color-gold);
+}
+
+.success {
+  background-color: token(color-success);
+}
+
+.good {
+  background-color: token(rating-good);
+}
+
+.bad {
+  background-color: token(rating-bad);
+}
+
+.warning {
+  background-color: token(color-warning);
+}
+
+.ally {
+  background-color: token(color-ally);
+}
+
+.received {
+  background-color: token(color-danger);
+}

@@ -8,6 +8,10 @@ const setReadyState = (state: DocumentReadyState): void => {
   Object.defineProperty(document, 'readyState', { configurable: true, get: () => state });
 };
 
+const fireDomReady = (): void => {
+  document.dispatchEvent(new Event(DOM.readyEvent));
+};
+
 afterEach(() => {
   Reflect.deleteProperty(document, 'readyState');
 });
@@ -17,21 +21,30 @@ describe(onDomReady, () => {
     const callback = vi.fn();
 
     setReadyState('interactive');
+
     onDomReady(callback);
 
     expect(callback).toHaveBeenCalledOnce();
   });
 
-  it('waits for the DOM while the document is loading and runs once', () => {
+  it('waits while the document is loading', () => {
+    const callback = vi.fn();
+
+    setReadyState('loading');
+
+    onDomReady(callback);
+
+    expect(callback).not.toHaveBeenCalled();
+  });
+
+  it('runs once the DOM is ready, however often the event fires', () => {
     const callback = vi.fn();
 
     setReadyState('loading');
     onDomReady(callback);
 
-    expect(callback).not.toHaveBeenCalled();
-
-    document.dispatchEvent(new Event(DOM.readyEvent));
-    document.dispatchEvent(new Event(DOM.readyEvent));
+    fireDomReady();
+    fireDomReady();
 
     expect(callback).toHaveBeenCalledOnce();
   });

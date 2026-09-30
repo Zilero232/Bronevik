@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.client.battle import ammo, optional_devices
-from ....core.client.hud.panel import BattlePanel
+from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.log import safe
 from ..i18n import STRINGS
 from ..model import clean_devices, format_panel, set_badges
@@ -13,15 +13,25 @@ from .constants import DEVICE_EVENTS, SETUP_EVENT
 from .reads import own_loadout
 
 
+PANEL_SPEC = PanelSpec(
+    panel_id=PANEL_ID,
+    schema=SCHEMA,
+    switch=SWITCH,
+    strings=STRINGS,
+    preview_size=PREVIEW_SIZE,
+    preview_text=preview_text,
+    preview_widget=preview_widget,
+)
+
+
+# Read again whenever the client reports the descriptor's devices or a device's battle state changed, or a setup
+# was switched before the battle.
 class BattleLoadoutPanel(BattlePanel):
-    """The own vehicle's equipment and directives as icons over the stock consumables panel, read again whenever the
-    client reports the descriptor's devices or a device's battle state changed, or a setup was switched before the
-    battle."""
 
     def __init__(self, app):
         self.devices = []
         self.sets = {}
-        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text, preview_widget)
+        BattlePanel.__init__(self, app, PANEL_SPEC)
 
     def start(self, player):
         for name in DEVICE_EVENTS:

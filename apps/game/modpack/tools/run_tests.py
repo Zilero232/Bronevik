@@ -21,26 +21,58 @@ def python3_only(directory):
     return directory.startswith(os.path.join(TOOLS_DIR, 'build'))
 
 
-def test_dirs():
-    dirs = [os.path.join(base, 'tests') for base in _support.source_dirs()]
+def is_tests_dir(directory):
+    """A tools/**/tests folder or a folder right inside one."""
+    parent_name = os.path.basename(os.path.dirname(directory))
+    return parent_name == 'tests' or os.path.basename(directory) == 'tests'
+
+
+def has_test_modules(directory):
+    if not os.path.isdir(directory):
+        return False
+    return any(name.startswith('test_') for name in os.listdir(directory))
+
+
+def tools_test_dirs():
     for directory, children, _ in os.walk(TOOLS_DIR):
         children[:] = sorted(child for child in children if child != '__pycache__')
-        if os.path.basename(os.path.dirname(directory)) == 'tests' or os.path.basename(directory) == 'tests':
-            if PY3 or not python3_only(directory):
-                dirs.append(directory)
-    return [directory for directory in dirs if os.path.isdir(directory) and any(name.startswith('test_') for name in os.listdir(directory))]
+        is_runnable = PY3 or not python3_only(directory)
+        if is_tests_dir(directory) and is_runnable:
+            yield directory
+
+
+def test_dirs():
+    dirs = [os.path.join(base, 'tests') for base in _support.source_dirs()]
+    dirs.extend(tools_test_dirs())
+    return [directory for directory in dirs if has_test_modules(directory)]
+
+
+def test_module_names(directory):
+    for name in sorted(os.listdir(directory)):
+        if name.startswith('test_') and name.endswith('.py'):
+            yield name
+
+
+def find_duplicate_module(directories):
+    """unittest imports every test module by its bare name, so two with one name would shadow each other."""
+    seen = {}
+    for directory in directories:
+        for name in test_module_names(directory):
+            if name in seen:
+                return 'duplicate test module name %s in %s and %s\n' % (name, seen[name], directory)
+            seen[name] = directory
+    return None
 
 
 def main(argv):
-    seen = {}
+    directories = test_dirs()
+    duplicate = find_duplicate_module(directories)
+    if duplicate:
+        sys.stderr.write(duplicate)
+        return 2
+
     suite = unittest.TestSuite()
-    for directory in test_dirs():
-        for name in sorted(os.listdir(directory)):
-            if name.startswith('test_') and name.endswith('.py'):
-                if name in seen:
-                    sys.stderr.write('duplicate test module name %s in %s and %s\n' % (name, seen[name], directory))
-                    return 2
-                seen[name] = directory
+    for directory in directories:
         suite.addTests(unittest.TestLoader().discover(directory, pattern='test_*.py', top_level_dir=directory))
     verbosity = 2 if '-v' in argv else 1
     result = unittest.TextTestRunner(verbosity=verbosity).run(suite)

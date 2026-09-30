@@ -3,8 +3,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.hud.panel import dock_layout
 
-# RU 1.45 client source: comp7_ranks_common.Comp7Division.rank counts from 1 (Iron) to 6 (Legend) as comp7.po rank/first
-# ... rank/sixth; `index` 1..5 is the division letter A..E (gui.impl.gen ... comp7.division_info_model.Division), A the top.
+# RU 1.45 client source: comp7_ranks_common.Comp7Division.rank counts from 1 (Iron) to 6 (Legend) as comp7.po
+# rank/first ... rank/sixth; `index` 1..5 is the division letter A..E (gui.impl.gen ...
+# comp7.division_info_model.Division), A the top.
 CHAMPION_RANK = 5
 LEGEND_RANK = 6
 THRESHOLD_RANKS = (CHAMPION_RANK, LEGEND_RANK)

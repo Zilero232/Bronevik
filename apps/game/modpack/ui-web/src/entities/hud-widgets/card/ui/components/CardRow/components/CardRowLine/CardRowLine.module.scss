@@ -1,0 +1,44 @@
+@use '../../../../../../../../shared/styles/gameface' as *;
+
+.line {
+  display: flex;
+  min-height: 18px;
+  flex-direction: row;
+  align-items: center;
+}
+
+.icon {
+  margin-right: 6px;
+}
+
+.label {
+  flex-shrink: 0;
+  margin-right: 6px;
+  color: token(color-text-muted);
+  font-size: 12px;
+}
+
+.text {
+  flex-grow: 1;
+  flex-shrink: 1;
+  font-size: 13px;
+
+  @include ellipsis;
+}
+
+.value {
+  flex-shrink: 0;
+  padding-left: 8px;
+  margin-left: auto;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.note {
+  flex-shrink: 0;
+  margin-left: 5px;
+  color: token(color-text-muted);
+  font-size: 11px;
+  white-space: nowrap;
+}

@@ -6,7 +6,7 @@ import { parseFeed, send } from '../../../../shared/api/protocol';
 import { applyFeed } from '../../lib/apply-feed';
 
 export const $feed = atom<FeedState | null>(null);
-export const $watchedFeed = atom<string | null>(null);
+const $watchedFeed = atom<string | null>(null);
 
 let resyncing = false;
 

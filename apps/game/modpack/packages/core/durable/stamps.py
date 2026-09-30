@@ -8,7 +8,6 @@ from .constants import STAMPS_NAME, STAMPS_VERSION
 
 
 class Stamps(object):
-    """saved_at.json of one folder: {version, files: {name: unix seconds of the last save}}."""
 
     def __init__(self, directory):
         self.directory = directory

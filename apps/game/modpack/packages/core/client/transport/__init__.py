@@ -20,8 +20,14 @@ class FetchUrlTransport(object):
             data = getattr(response, 'body', b'') or b''
             callback(status, data, response_headers(response))
 
-        BigWorld.fetchURL(to_native(url), on_complete, headers=native_headers(headers), timeout=self.timeout, method=to_native(method),
-                          postData=body or b'')
+        BigWorld.fetchURL(
+            to_native(url),
+            on_complete,
+            headers=native_headers(headers),
+            timeout=self.timeout,
+            method=to_native(method),
+            postData=body or b'',
+        )
 
     def poll(self):
         return 0

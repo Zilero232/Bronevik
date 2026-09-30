@@ -23,7 +23,16 @@ import BigWorld
 
 from ....hud import HudBackend
 from ....hud.icons import resolve
-from ....hud.surface import HUD_MESSAGE_ARG, HUD_RES_MAP_ID, HUD_SEND_COMMAND, HUD_STATE_PROPERTY, SPACE_BATTLE, SPACE_LOBBY, FramePush, HudSurface
+from ....hud.surface import (
+    HUD_MESSAGE_ARG,
+    HUD_RES_MAP_ID,
+    HUD_SEND_COMMAND,
+    HUD_STATE_PROPERTY,
+    SPACE_BATTLE,
+    SPACE_LOBBY,
+    FramePush,
+    HudSurface,
+)
 from ....log import log, log_exception, safe
 from ...game import main_window
 from ..icons import client_file_exists
@@ -61,11 +70,13 @@ def layout_id():
     return found if isinstance(found, int) and found != INVALID_RES_ID else None
 
 
+# True while OpenWG Gameface restarts the client to apply a new res_map (it writes RESTART_FLAG_FILE, then
+# BigWorld.restartGame(), and deletes the flag once the restarted client validated the res_map).
 def restart_pending():
-    """True while OpenWG Gameface restarts the client to apply a new res_map (it writes RESTART_FLAG_FILE, then
-    BigWorld.restartGame(), and deletes the flag once the restarted client validated the res_map)."""
     manager = getattr(openwg_gameface, 'manager', None)
-    return manager is not None and getattr(manager, 'isResMapValidated', True) is False and os.path.isfile(RESTART_FLAG_FILE)
+    if manager is None or getattr(manager, 'isResMapValidated', True) is not False:
+        return False
+    return os.path.isfile(RESTART_FLAG_FILE)
 
 
 if IMPORT_ERROR is None:
@@ -135,14 +146,18 @@ class GamefaceBackend(HudBackend):
         self.seen_edit = False
         self.seen_mouse = set()
         self.modifier = ModifierWatch(self._on_modifier, self._on_key)
-        self.loader, self.ready_spaces = None, ()
+        self.loader = None
+        self.ready_spaces = ()
         self.waiting = False
         self.settling = False
         self.answered = False
         self._listen_cursor()
         self._listen_spaces()
         if self.usable() and restart_pending():
-            log('HUD: OpenWG Gameface is restarting the client to apply its res_map (the first start after an install or update)')
+            log(
+                'HUD: OpenWG Gameface is restarting the client to apply its res_map '
+                '(the first start after an install or update)'
+            )
 
     @classmethod
     def usable(cls):
@@ -191,16 +206,17 @@ class GamefaceBackend(HudBackend):
     def set_modifier(self, mode):
         self.modifier.set_mode(mode)
 
+    # Panels move while the edit modifier is held in the hangar, where the cursor is always shown, and whenever the
+    # battle cursor is shown (Ctrl): in battle the cursor key alone is the edit key.
     def state_text(self):
-        """Panels move while the edit modifier is held in the hangar, where the cursor is always shown, and whenever the
-        battle cursor is shown (Ctrl): in battle the cursor key alone is the edit key."""
         space = current_space()
-        lobby = space == SPACE_LOBBY
-        return self.surface.encode(space, lobby or self.cursor, self.modifier.held if lobby else self.cursor)
+        if space == SPACE_LOBBY:
+            return self.surface.encode(space, True, self.modifier.held)
+        return self.surface.encode(space, self.cursor, self.cursor)
 
+    # Every label change of a frame (a 10 Hz reload timer next to the clock and the logs) becomes one push of the whole
+    # state on the next frame, and an unchanged state is not pushed again.
     def push_state(self):
-        """Every label change of a frame (a 10 Hz reload timer next to the clock and the logs) becomes one push of the
-        whole state on the next frame, and an unchanged state is not pushed again."""
         if self.view is not None:
             self.pusher.request()
 
@@ -234,7 +250,8 @@ class GamefaceBackend(HudBackend):
             return False
         if window.windowStatus in (WindowStatus.DESTROYING, WindowStatus.DESTROYED):
             log('HUD: Gameface window %s was destroyed by the client, opening a new one' % window.uniqueID)
-            self.window, self.view = None, None
+            self.window = None
+            self.view = None
             return False
         return True
 
@@ -254,7 +271,8 @@ class GamefaceBackend(HudBackend):
             self.window = None
             return False
         self.waiting = False
-        self.seen_edit, self.seen_mouse = False, set()
+        self.seen_edit = False
+        self.seen_mouse = set()
         log('HUD: Gameface window %s opened in the %s (layout %s)' % (self.window.uniqueID, current_space(), layout))
         self._check_cursor()
         return True
@@ -293,20 +311,29 @@ class GamefaceBackend(HudBackend):
         if decoded is None:
             return
         command, fields = decoded
-        if command == 'ready':
-            self.answered = True
-            log('HUD: Gameface page ready (%d labels)' % len(self.surface.aliases(current_space())))
-            self.pusher.forget()
-            self.push_state()
-        elif command == 'pressed':
-            for listener in list(self.press_listeners):
-                listener(fields['id'])
-        elif command == 'mouse':
-            self._on_page_mouse(fields['event'])
-        elif command in ('moved', 'resized'):
-            props = dict((key, value) for key, value in fields.items() if key != 'id')
-            for listener in list(self.listeners):
-                listener(fields['id'], props)
+        handlers = {
+            'ready': self._on_page_ready,
+            'pressed': self._on_page_press,
+            'mouse': self._on_page_mouse,
+            'moved': self._on_page_move,
+            'resized': self._on_page_move,
+        }
+        handlers[command](fields)
+
+    def _on_page_ready(self, fields):
+        self.answered = True
+        log('HUD: Gameface page ready (%d labels)' % len(self.surface.aliases(current_space())))
+        self.pusher.forget()
+        self.push_state()
+
+    def _on_page_press(self, fields):
+        for listener in list(self.press_listeners):
+            listener(fields['id'])
+
+    def _on_page_move(self, fields):
+        props = dict((key, value) for key, value in fields.items() if key != 'id')
+        for listener in list(self.listeners):
+            listener(fields['id'], props)
 
     def _listen_spaces(self):
         loader, ids = gui_spaces()
@@ -357,9 +384,9 @@ class GamefaceBackend(HudBackend):
     def _on_modifier(self, held):
         self.push_state()
 
+    # The client shows or hides the battle cursor after the key event (Ctrl), and no event is fired when another view
+    # already holds the cursor: read it on the next frame.
     def _on_key(self):
-        """The client shows or hides the battle cursor after the key event (Ctrl), and no event is fired when another view
-        already holds the cursor: read it on the next frame."""
         if current_space() == SPACE_BATTLE:
             _next_frame(self._check_cursor)
 
@@ -377,7 +404,8 @@ class GamefaceBackend(HudBackend):
             log('HUD: battle cursor shown, panels can be dragged')
         self.push_state()
 
-    def _on_page_mouse(self, event):
+    def _on_page_mouse(self, fields):
+        event = fields['event']
         if event not in self.seen_mouse:
             self.seen_mouse.add(event)
             log('HUD: the page saw the mouse in edit mode (%s, %s)' % (event, current_space()))

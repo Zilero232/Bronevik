@@ -40,23 +40,43 @@ def file_name(package, platform, single=False):
     return '%s_%s.%s' % (package.package_id, package.version, extension)
 
 
+def _parent_dirs(archive_path):
+    """'a/b/c.py' -> ['a/', 'a/b/']: the directory entries a file needs above it."""
+    parts = archive_path.split('/')[:-1]
+    return ['/'.join(parts[:index]) + '/' for index in range(1, len(parts) + 1)]
+
+
+def _file_info(archive_path):
+    info = zipfile.ZipInfo(archive_path, ZIP_DATE)
+    info.external_attr = 0o644 << 16
+    return info
+
+
+def _dir_info(directory):
+    info = zipfile.ZipInfo(directory, ZIP_DATE)
+    info.external_attr = (0o40755 << 16) | 0x10
+    return info
+
+
+def _members(entries):
+    """(zip info, source path or None for a directory) in archive-path order, each directory before its files."""
+    written = set()
+    for source, archive_path in sorted(entries, key=lambda item: item[1]):
+        for directory in _parent_dirs(archive_path):
+            if directory not in written:
+                written.add(directory)
+                yield _dir_info(directory), None
+        yield _file_info(archive_path), source
+
+
+def _read(source):
+    with open(source, 'rb') as handle:
+        return handle.read()
+
+
 def write_package(path, entries, meta):
     """entries: (source path, archive path). Written in archive-path order with every parent directory."""
-    written = set()
     with zipfile.ZipFile(path, 'w', zipfile.ZIP_STORED) as package:
-        info = zipfile.ZipInfo('meta.xml', ZIP_DATE)
-        info.external_attr = 0o644 << 16
-        package.writestr(info, meta.encode('utf-8'))
-        for source, archive_path in sorted(entries, key=lambda item: item[1]):
-            parts = archive_path.split('/')[:-1]
-            for index in range(1, len(parts) + 1):
-                directory = '/'.join(parts[:index]) + '/'
-                if directory not in written:
-                    written.add(directory)
-                    dir_info = zipfile.ZipInfo(directory, ZIP_DATE)
-                    dir_info.external_attr = (0o40755 << 16) | 0x10
-                    package.writestr(dir_info, b'')
-            file_info = zipfile.ZipInfo(archive_path, ZIP_DATE)
-            file_info.external_attr = 0o644 << 16
-            with open(source, 'rb') as handle:
-                package.writestr(file_info, handle.read())
+        package.writestr(_file_info('meta.xml'), meta.encode('utf-8'))
+        for info, source in _members(entries):
+            package.writestr(info, b'' if source is None else _read(source))

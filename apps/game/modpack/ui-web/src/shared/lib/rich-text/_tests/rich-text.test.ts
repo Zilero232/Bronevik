@@ -2,9 +2,13 @@ import { describe, expect, it } from 'vitest';
 
 import { parseRichText } from '../rich-text';
 
+const REPEATED_MARKUP = 'x<img src="img://a.png"/>x\nx<br/>x<br>x';
+
 describe(parseRichText, () => {
   it('splits lines and keeps nested font styles', () => {
-    expect(parseRichText('<font color="#f2ead3" size="16">MoE <b>86.12%</b></font>\nplain')).toMatchObject([
+    const lines = parseRichText('<font color="#f2ead3" size="16">MoE <b>86.12%</b></font>\nplain');
+
+    expect(lines).toMatchObject([
       {
         runs: [
           { kind: 'text', text: 'MoE ', style: { color: '#F2EAD3', size: 16 } },
@@ -30,27 +34,45 @@ describe(parseRichText, () => {
   });
 
   it('decodes entities and never turns them into markup', () => {
-    expect(parseRichText('&lt;script&gt; &amp; &#8594; &#x2713;&nbsp;&bogus;')).toMatchObject([
-      { runs: [{ kind: 'text', text: '<script> & → ✓ &bogus;', style: {} }] }
-    ]);
+    const lines = parseRichText('&lt;script&gt; &amp; &#8594; &#x2713;&nbsp;&bogus;');
+
+    expect(lines).toMatchObject([{ runs: [{ kind: 'text', text: '<script> & → ✓ &bogus;', style: {} }] }]);
   });
 
-  it('keeps only game images and valid attributes', () => {
-    expect(parseRichText('<img src="img://gui/maps/lamp.png" width="32" height="x"/><img src="https://evil"/>')).toMatchObject([
-      { runs: [{ kind: 'image', src: 'img://gui/maps/lamp.png', width: 32, height: undefined }] }
-    ]);
+  it('keeps a game image with its valid attributes and drops the rest', () => {
+    const lines = parseRichText('<img src="img://gui/maps/lamp.png" width="32" height="x"/><img src="https://evil"/>');
 
-    expect(parseRichText('<font color="red" size="-3">x</font>')).toMatchObject([{ runs: [{ kind: 'text', text: 'x', style: {} }] }]);
+    expect(lines).toMatchObject([{ runs: [{ kind: 'image', src: 'img://gui/maps/lamp.png', width: 32, height: undefined }] }]);
   });
 
-  it('keys every line and run by its place in the markup, so repeated text never shares a key', () => {
-    const markup = 'x<img src="img://a.png"/>x\nx<br/>x<br>x';
-    const lines = parseRichText(markup);
-    const lineKeys = lines.map(({ key }) => key);
+  it('drops an invalid font colour and size', () => {
+    const lines = parseRichText('<font color="red" size="-3">x</font>');
 
-    expect(new Set(lineKeys).size).toBe(lines.length);
-    lines.forEach(({ runs }) => expect(new Set(runs.map(({ key }) => key)).size).toBe(runs.length));
-    expect(parseRichText(markup)).toEqual(lines);
+    expect(lines).toMatchObject([{ runs: [{ kind: 'text', text: 'x', style: {} }] }]);
+  });
+
+  it('keys every line by its place in the markup, so repeated text never shares a key', () => {
+    const lines = parseRichText(REPEATED_MARKUP);
+
+    const lineKeys = new Set(lines.map(({ key }) => key));
+
+    expect(lineKeys.size).toBe(lines.length);
+  });
+
+  it('keys every run by its place in its line, so repeated text never shares a key', () => {
+    const lines = parseRichText(REPEATED_MARKUP);
+
+    const clashes = lines.filter(({ runs }) => new Set(runs.map(({ key }) => key)).size !== runs.length);
+
+    expect(clashes).toEqual([]);
+  });
+
+  it('keys the same markup the same way every time', () => {
+    const first = parseRichText(REPEATED_MARKUP);
+
+    const second = parseRichText(REPEATED_MARKUP);
+
+    expect(second).toEqual(first);
   });
 
   it('returns one empty line for empty text', () => {

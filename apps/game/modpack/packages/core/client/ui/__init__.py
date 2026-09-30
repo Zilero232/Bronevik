@@ -58,16 +58,23 @@ class Ui(object):
             self._take_off(alias)
             self.held[alias] = (text, layout, widget)
             return True
+
         self.held.pop(alias, None)
         self.texts[alias] = (text, layout, widget)
         if on_moved is not None:
             self.moved[alias] = on_moved
+        return self._draw(alias, layout, text, widget)
+
+    def _draw(self, alias, layout, text, widget):
+        content = {'text': text, 'widget': widget, 'visible': self.in_view, 'dock': dock_of(alias, layout)}
         if alias in self.components:
-            self.backend.update(alias, {'text': text, 'widget': widget, 'visible': self.in_view, 'dock': dock_of(alias, layout)})
+            self.backend.update(alias, content)
             return True
+
         props = {'border': False}
         props.update(layout)
-        props.update({'text': text, 'widget': widget, 'drag': True, 'visible': self.in_view, 'dock': dock_of(alias, layout)})
+        props.update(content)
+        props['drag'] = True
         if not self.backend.create(alias, props):
             self.texts.pop(alias, None)
             return False
@@ -152,12 +159,15 @@ class Ui(object):
     def _apply(self):
         for alias in list(self.components):
             if self.suppressed(alias) and alias not in self.pressed:
-                if alias in self.texts:
-                    self.held[alias] = self.texts[alias]
-                self._take_off(alias)
+                self._hold(alias)
         for alias, (text, layout, widget) in list(self.held.items()):
             if not self.suppressed(alias):
                 self.show(alias, text, layout, widget=widget)
+
+    def _hold(self, alias):
+        if alias in self.texts:
+            self.held[alias] = self.texts[alias]
+        self._take_off(alias)
 
     @safe
     def notify(self, text):

@@ -15,7 +15,6 @@ from .constants import CIRCLE_VISUAL, CUT_OFF_DISTANCE, ENTITY_ATTEMPTS, ENTITY_
 
 
 class BushCircle(FeatureComponent):
-    """A 15 m circle on the ground around the player's own tank, always or toggled by a hotkey; gone when the tank is destroyed."""
 
     def __init__(self, app):
         FeatureComponent.__init__(self, app, FEATURE_ID, SCHEMA, SWITCH, STRINGS)
@@ -55,7 +54,10 @@ class BushCircle(FeatureComponent):
             self.apply()
 
     def _install_hotkey(self):
-        self.hotkey.set(self.settings.get('hotkey') if self.settings.get('mode') == 'hotkey' else None)
+        hotkey = None
+        if self.settings.get('mode') == 'hotkey':
+            hotkey = self.settings.get('hotkey')
+        self.hotkey.set(hotkey)
 
     @safe
     def _on_hotkey(self):
@@ -63,24 +65,30 @@ class BushCircle(FeatureComponent):
             self.apply()
 
     def _on_vehicle_killed(self, victim_id, *args):
-        if self.state is not None and victim_id == self.vehicle_id and self.state.killed():
+        if self.state is None or victim_id != self.vehicle_id:
+            return
+        if self.state.killed():
             self.apply()
 
     @safe
     def apply(self, attempt=0):
-        wanted = self.state is not None and self.state.wanted()
-        if not wanted:
+        if self.state is None or not self.state.wanted():
             self._remove()
             return
         if self.model is not None:
             return
-        entity = BigWorld.entity(self.vehicle_id) if self.vehicle_id else None
-        if entity is None:
-            if attempt + 1 < ENTITY_ATTEMPTS:
-                generation = self.generation
-                BigWorld.callback(ENTITY_RETRY_S, lambda: self._retry(generation, attempt + 1))
-            return
-        self._create(entity)
+
+        entity = self._own_entity()
+        if entity is not None:
+            self._create(entity)
+        elif attempt + 1 < ENTITY_ATTEMPTS:
+            generation = self.generation
+            BigWorld.callback(ENTITY_RETRY_S, lambda: self._retry(generation, attempt + 1))
+
+    def _own_entity(self):
+        if not self.vehicle_id:
+            return None
+        return BigWorld.entity(self.vehicle_id)
 
     def _retry(self, generation, attempt):
         if generation == self.generation:
@@ -93,7 +101,8 @@ class BushCircle(FeatureComponent):
             model = BigWorld.Model('')
             area = BigWorld.PyTerrainSelectedArea()
             size = diameter()
-            area.setup(CIRCLE_VISUAL, Math.Vector2(size, size), OVER_TERRAIN_HEIGHT, color_of(self.settings.get('color')))
+            color = color_of(self.settings.get('color'))
+            area.setup(CIRCLE_VISUAL, Math.Vector2(size, size), OVER_TERRAIN_HEIGHT, color)
             area.enableAccurateCollision(True)
             area.setCutOffDistance(CUT_OFF_DISTANCE)
             model.node('').attach(area)
@@ -106,8 +115,10 @@ class BushCircle(FeatureComponent):
             self._remove()
 
     def _remove(self):
-        model, owner = self.model, self.owner
-        self.model = self.owner = None
+        model = self.model
+        owner = self.owner
+        self.model = None
+        self.owner = None
         if model is None or owner is None:
             return
         try:

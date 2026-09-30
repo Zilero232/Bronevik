@@ -6,7 +6,6 @@ from .constants import EITHER_SIDE
 
 
 def _held(big_world, keys, name):
-    """True while the modifier `name` is down on either side of the keyboard (Keys.KEY_LCONTROL or KEY_RCONTROL)."""
     for side in (name, EITHER_SIDE.get(name)):
         code = getattr(keys, side, None) if side else None
         if code is not None and big_world.isKeyDown(code):
@@ -49,10 +48,15 @@ class Hotkey(object):
     def _on_key_down(self, event):
         import BigWorld
         import Keys
-        if not self.key or getattr(event, 'key', None) != getattr(Keys, self.key, None) or _repeated(event):
+        if not self._is_first_press(event, Keys):
             return
         if all(_held(BigWorld, Keys, name) for name in self.modifiers):
             self.on_press()
+
+    def _is_first_press(self, event, keys):
+        if not self.key or _repeated(event):
+            return False
+        return getattr(event, 'key', None) == getattr(keys, self.key, None)
 
 
 class HotkeyChoice(object):

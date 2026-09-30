@@ -14,12 +14,49 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ...compat import is_number, string_types, to_text
 from ...settings import Schema
-from .constants import (ALIAS_PREFIX, DOCK_ANCHORS, DOCKS, GAMEFACE_PROPS, HEX_COLOR, LAYOUT_KEYS, MAX_SOUND_EVENT, MOVED_ALIGNS, PANEL_CHOICES,
-                        PANEL_DEFAULTS, PANEL_LIMITS, PLACE_KEYS, SOUND_EVENT)
+from .constants import (
+    ALIAS_PREFIX,
+    DOCK_ANCHORS,
+    DOCKS,
+    GAMEFACE_PROPS,
+    HEX_COLOR,
+    LAYOUT_KEYS,
+    MAX_SOUND_EVENT,
+    MOVED_ALIGNS,
+    PANEL_CHOICES,
+    PANEL_DEFAULTS,
+    PANEL_LIMITS,
+    PLACE_KEYS,
+    SOUND_EVENT,
+)
 
-__all__ = ('ALIAS_PREFIX', 'DOCK_ANCHORS', 'DOCKS', 'GAMEFACE_PROPS', 'LAYOUT_KEYS', 'MOVED_ALIGNS', 'PANEL_DEFAULTS', 'PanelSchema', 'alias_of',
-           'anchor_of', 'component_schema', 'dock_layout', 'dock_of', 'hex_color', 'is_pinned', 'layout_props', 'matching', 'max_length', 'moved_values',
-           'panel_of', 'panel_schema', 'pinned_values', 'place_of', 'retired_reset', 'sound_event')
+__all__ = (
+    'ALIAS_PREFIX',
+    'DOCK_ANCHORS',
+    'DOCKS',
+    'GAMEFACE_PROPS',
+    'LAYOUT_KEYS',
+    'MOVED_ALIGNS',
+    'PANEL_DEFAULTS',
+    'PanelSchema',
+    'alias_of',
+    'anchor_of',
+    'component_schema',
+    'dock_layout',
+    'dock_of',
+    'hex_color',
+    'is_pinned',
+    'layout_props',
+    'matching',
+    'max_length',
+    'moved_values',
+    'panel_of',
+    'panel_schema',
+    'pinned_values',
+    'place_of',
+    'retired_reset',
+    'sound_event',
+)
 
 
 def component_schema(defaults, choices=None, limits=None, normalizers=None):
@@ -29,7 +66,6 @@ def component_schema(defaults, choices=None, limits=None, normalizers=None):
 
 
 class PanelSchema(Schema):
-    """A panel's schema; `retired` holds the (x, y, align_x, align_y) places its defaults had in older versions."""
 
     def __init__(self, defaults, choices=None, limits=None, normalizers=None, retired=()):
         Schema.__init__(self, defaults, choices=choices, limits=limits, normalizers=normalizers)
@@ -48,7 +84,6 @@ def panel_schema(defaults=None, choices=None, limits=None, normalizers=None, ret
 
 
 def place_of(values):
-    """(x, y, align_x, align_y) of a settings object or dict."""
     return tuple(values.get(key) for key in PLACE_KEYS)
 
 
@@ -63,12 +98,10 @@ def retired_reset(settings):
 
 
 def is_pinned(settings):
-    """Whether the panel stays at its default place (a `pinned` key that is on)."""
     return 'pinned' in settings.schema.defaults and bool(settings.get('pinned'))
 
 
 def pinned_values(settings, values):
-    """`values` (layout keys) with a pinned panel's default place and no drag."""
     if not is_pinned(settings):
         return values
     pinned = dict(values)
@@ -139,7 +172,6 @@ def moved_values(props):
 
 
 def anchor_of(group):
-    """The default place of a docked column (settings keys x, y, align_x, align_y)."""
     anchor = DOCK_ANCHORS[group]
     return {'x': anchor['x'], 'y': anchor['y'], 'align_x': anchor['align_x'], 'align_y': anchor['align_y']}
 
@@ -151,7 +183,6 @@ def dock_layout(group):
 
 
 def _place(values):
-    """(x, y, align_x, align_y) of settings (`align_x`) or renderer props (`alignX`)."""
     if not isinstance(values, dict):
         return (values.get('x'), values.get('y'), values.get('align_x'), values.get('align_y'))
 
@@ -161,7 +192,8 @@ def _place(values):
 
 
 def dock_of(alias, values):
-    """The `dock` prop of a panel: `{group, order}` while it sits at its column's anchor, else None (moved, or not docked)."""
+    """The `dock` prop of a panel: `{group, order}` while it sits at its column's anchor, else None (moved, or not
+    docked)."""
     entry = DOCKS.get(alias)
     if entry is None or values is None:
         return None
@@ -170,7 +202,6 @@ def dock_of(alias, values):
     if _place(values) != (anchor['x'], anchor['y'], anchor['align_x'], anchor['align_y']):
         return None
     dock = {'group': group, 'order': order, 'reserve': anchor['reserve']}
-    for key in ('ceiling', 'stop_center'):
-        if key in anchor:
-            dock[key] = anchor[key]
+    if 'ceiling' in anchor:
+        dock['ceiling'] = anchor['ceiling']
     return dock

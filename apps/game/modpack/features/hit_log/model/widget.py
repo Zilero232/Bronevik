@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.hud.icons import class_icon, outcome_icon
 from ....core.hud.widget import widget
-from . import detail_mode, line_note
+from . import detail_mode, line_note, log_rows
 from .constants import KIND, OUTCOME_TONES
 
 # Fair play: the player's own shots, their outcome (the hit markers), damage and the HP left after the player's own
@@ -27,13 +27,23 @@ def row(entry, targets, note=''):
     }
 
 
+def header(log, settings):
+    if not settings.get('show_header'):
+        return None
+
+    values = log.values()
+    return {'hits': values['hits'], 'pens': values['pens'], 'damage': values['damage']}
+
+
 # `detail` is the row detail (model detail_mode): the page leaves the class and HP out of a short row and adds the
 # `note` (shell and crits in words) to an extended one.
 def hit_log_widget(log, settings, translate, extended=False):
     detail = detail_mode(settings, extended)
-    grouped = settings.get('group_by_target')
-    entries = log.by_target(settings.get('lines')) if grouped else log.recent(settings.get('lines'))
-    values = log.values()
-    header = {'hits': values['hits'], 'pens': values['pens'], 'damage': values['damage']} if settings.get('show_header') else None
-    rows = [row(entry, log.targets, line_note(entry, translate, detail)) for entry in entries]
-    return widget(KIND, {'header': header, 'grouped': bool(grouped), 'detail': detail, 'rows': rows})
+    rows = [row(entry, log.targets, line_note(entry, translate, detail)) for entry in log_rows(log, settings)]
+
+    return widget(KIND, {
+        'header': header(log, settings),
+        'grouped': bool(settings.get('group_by_target')),
+        'detail': detail,
+        'rows': rows,
+    })

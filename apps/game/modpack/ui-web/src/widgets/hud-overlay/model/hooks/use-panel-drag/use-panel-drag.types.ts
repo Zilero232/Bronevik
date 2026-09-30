@@ -1,16 +1,13 @@
-import type { Drag, Placement, Rect } from '../../../../../shared/lib/hud-geometry';
-import type { HitTarget } from '../../../lib/hit-panel';
+import type { Placement } from '../../../../../shared/lib/hud-geometry';
+import type { OverlayDrag, PanelPress } from '../../../lib/drag-motion';
+import type { DragTarget } from '../../../lib/hit-panel';
 import type { MouseReport } from '../../../lib/mouse-report';
-
-export type OverlayDrag = Drag & { moved: boolean; button: boolean };
-
-export type PanelPress = Pick<MouseEvent, 'clientX' | 'clientY'>;
 
 export type MovedPanel = { id: string; placement: Placement };
 
-export type ScaledPanel = { id: string; scale: number };
+export type SettleDragInput = { drag: OverlayDrag; press: PanelPress; onMoved: (moved: MovedPanel) => void };
 
-export type DragTarget = HitTarget & { scale: number };
+export type ScaledPanel = { id: string; scale: number };
 
 export type UsePanelDragInput = {
   edit: boolean;
@@ -19,5 +16,3 @@ export type UsePanelDragInput = {
   onScaled: (scaled: ScaledPanel) => void;
   report: MouseReport;
 };
-
-export type StartDragInput = { id: string; press: PanelPress; rect: Rect; button: boolean };

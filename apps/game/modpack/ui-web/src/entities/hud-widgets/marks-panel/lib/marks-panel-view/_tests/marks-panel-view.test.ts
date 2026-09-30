@@ -7,13 +7,28 @@ import { marksPanelView } from '../marks-panel-view';
 const data = marksPanelSchema.parse(readWidgetFixture('marks_panel'));
 
 describe(marksPanelView, () => {
-  it('writes the percent, the signed change and the thresholds the way the HUD formats numbers', () => {
+  it('writes the percent the way the HUD formats numbers', () => {
     const view = marksPanelView(data);
 
     expect(view.percent).toBe('86,30 %');
+  });
+
+  it('signs the change and tones a gain as good', () => {
+    const view = marksPanelView(data);
+
     expect(view.delta).toBe('+0,18 %');
     expect(view.deltaTone).toBe('good');
+  });
+
+  it('writes the damage left only for the thresholds not yet reached', () => {
+    const view = marksPanelView(data);
+
     expect(view.thresholds.map((item) => item.value)).toEqual(['', '', '25 195']);
+  });
+
+  it('writes the damage for the next half-percent step', () => {
+    const view = marksPanelView(data);
+
     expect(view.step).toBe('+0,5 %: 955');
   });
 

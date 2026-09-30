@@ -1,4 +1,4 @@
-export { bindWheelScroll, blockPageWheel, thumbOf, topFromThumb, wheelScroll } from './wheel-scroll';
+export { bindWheelScroll, blockPageWheel, thumbOf, topFromThumb } from './wheel-scroll';
 
 export type {
   BindWheelScrollInput,

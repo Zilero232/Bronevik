@@ -1,5 +1,5 @@
 import type { UiAction, UiRow } from '../../../../../shared/api/protocol';
-import type { RunActionInput } from '../use-component-card';
+import type { RunActionInput } from '../use-card-actions';
 import type { useListPage } from './use-list-page';
 
 export type UseListPageInput = {

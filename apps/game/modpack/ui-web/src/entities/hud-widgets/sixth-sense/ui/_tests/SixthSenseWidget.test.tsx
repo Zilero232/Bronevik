@@ -6,11 +6,18 @@ import { readWidgetFixture } from '../../../../../shared/lib/testing/widget-fixt
 import { sixthSenseSchema } from '../../model/schemas';
 import { SixthSenseWidget } from '../SixthSenseWidget';
 
+const data = sixthSenseSchema.parse(readWidgetFixture('sixth_sense'));
+
 describe(SixthSenseWidget, () => {
-  it('draws our lamp inside a ring that counts the lamp time down', () => {
-    const html = mount({ Component: SixthSenseWidget, props: { data: sixthSenseSchema.parse(readWidgetFixture('sixth_sense')) } });
+  it('draws our own lamp', () => {
+    const html = mount({ Component: SixthSenseWidget, props: { data } });
 
     expect(imageSources(html)).toEqual(['img://gui/maps/icons/otmetki/sixth_sense/icons/lamp_64.png']);
+  });
+
+  it('counts the lamp time down in seconds inside a ring', () => {
+    const html = mount({ Component: SixthSenseWidget, props: { data } });
+
     expect(html.textContent).toBe('7');
     expect(html.querySelectorAll('circle')).toHaveLength(2);
   });

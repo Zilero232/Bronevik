@@ -8,7 +8,6 @@ from .constants import SINGLE_PACKAGE, SPLIT_PACKAGE
 
 
 def mixed_install(file_names):
-    """(single package files, split package files) when both formats are present, else None."""
     names = sorted(name for name in file_names or () if isinstance(name, string_types))
     single = [name for name in names if SINGLE_PACKAGE.match(name)]
     split = [name for name in names if SPLIT_PACKAGE.match(name)]

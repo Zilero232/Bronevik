@@ -1,8 +1,20 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.native_settings import NATIVE, tri_state
-from .constants import (CENTRE_PART, DEFAULT_MARK_COLOR, MARK_COLORS, MARK_FILES, MARK_RENDITIONS, MARK_ROOT, MODE_RETICLES, PRESET_PARTS,
-                        SERVER_RETICLE, TINTED_FOLDER)
+from .constants import (
+    ARCADE,
+    CENTRE_PART,
+    DEFAULT_MARK_COLOR,
+    MARK_COLORS,
+    MARK_FILES,
+    MARK_RENDITIONS,
+    MARK_ROOT,
+    MODE_RETICLES,
+    PRESET_PARTS,
+    SERVER_RETICLE,
+    SNIPER,
+    TINTED_FOLDER,
+)
 
 # Visual only: a preset sets the opacity and style of reticle parts the game's settings already offer, and a centre
 # mark is a static image drawn where the client already draws its own reticle centre. Nothing here computes anything
@@ -12,17 +24,21 @@ from .constants import (CENTRE_PART, DEFAULT_MARK_COLOR, MARK_COLORS, MARK_FILES
 
 def to_native(values):
     result = {}
-    preset = values.get('preset')
     reticles = MODE_RETICLES.get(values.get('modes'), ())
+
+    preset = values.get('preset')
     if preset != NATIVE and preset in PRESET_PARTS:
         for reticle in reticles:
             result[reticle] = dict(PRESET_PARTS[preset])
-    if mark_image(values.get('mark'), values.get('mark_size')) and values.get('mark_hides_centre'):
+
+    has_mark = mark_image(values.get('mark'), values.get('mark_size')) is not None
+    if has_mark and values.get('mark_hides_centre'):
         for reticle in reticles:
             result.setdefault(reticle, {})[CENTRE_PART] = 0
-    server = tri_state(values.get('server_reticle'))
-    if server is not None:
-        result[SERVER_RETICLE] = server
+
+    server_reticle = tri_state(values.get('server_reticle'))
+    if server_reticle is not None:
+        result[SERVER_RETICLE] = server_reticle
     return result
 
 
@@ -34,35 +50,41 @@ def rendition(size):
 
 
 def mark_image(mark, size, color=DEFAULT_MARK_COLOR):
-    """The client path of the mark's image in the smallest rendition not below `size` (a one-colour mark in `color`),
-    or None."""
     found = MARK_FILES.get(mark)
     if found is None or not size:
         return None
+
     folder, stem = found
     if folder == TINTED_FOLDER:
-        stem = '%s_%s' % (stem, color if color in MARK_COLORS else DEFAULT_MARK_COLOR)
+        if color not in MARK_COLORS:
+            color = DEFAULT_MARK_COLOR
+        stem = '%s_%s' % (stem, color)
     return '%s/%s/%s_%d.png' % (MARK_ROOT, folder, stem, rendition(size))
 
 
 def mark_html(mark, size, color=DEFAULT_MARK_COLOR):
     path = mark_image(mark, size, color)
-    return '<img src="img://%s" width="%d" height="%d"/>' % (path, size, size) if path else ''
+    if path is None:
+        return ''
+    return '<img src="img://%s" width="%d" height="%d"/>' % (path, size, size)
 
 
 def screen_centre(size, scale):
     width, height = size
-    factor = scale if scale > 1.0 else 1.0
+    factor = max(scale, 1.0)
     return int(0.5 * width / factor), int(0.5 * height / factor)
 
 
+# The panel is centre-aligned, so the mark's x/y is the reticle's scaled position (CrosshairDataProxy
+# .getScaledPosition) relative to the screen centre, plus the player's own offset.
 def mark_offset(position, size, scale, settings):
-    """The mark's x/y relative to the screen centre (the panel is centre-aligned): the reticle's scaled position
-    (CrosshairDataProxy.getScaledPosition) minus the centre, plus the player's own offset."""
     centre_x, centre_y = screen_centre(size, scale)
-    return position[0] - centre_x + settings.get('x'), position[1] - centre_y + settings.get('y')
+    reticle_x, reticle_y = position
+    return reticle_x - centre_x + settings.get('x'), reticle_y - centre_y + settings.get('y')
 
 
-def shows_in(modes, arcade, sniper):
+def shows_in(modes, is_arcade, is_sniper):
     reticles = MODE_RETICLES.get(modes, ())
-    return (arcade and 'arcade' in reticles) or (sniper and 'sniper' in reticles)
+    if is_arcade and ARCADE in reticles:
+        return True
+    return is_sniper and SNIPER in reticles

@@ -1,0 +1,17 @@
+.tools {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 0 0 8px auto;
+}
+
+.tool {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-left: 2px;
+}
+
+.toolIcon {
+  margin-right: 6px;
+}

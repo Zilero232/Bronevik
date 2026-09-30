@@ -11,6 +11,13 @@ ACTION_DEMOUNT = 'demount_removable'
 ACTION_CREW = 'crew_to_barracks'
 ACTION_RETURN = 'return_crew'
 ACTION_STYLE = 'remove_style'
+# The window's buttons in order, each with its i18n key (hangar_tweaks_<key>, hangar_tweaks_<key>_confirm).
+ACTION_KEYS = (
+    (ACTION_DEMOUNT, 'demount'),
+    (ACTION_CREW, 'crew'),
+    (ACTION_RETURN, 'return'),
+    (ACTION_STYLE, 'style'),
+)
 
 # RU 1.45 client source: settings_constants.GRAPHICS.INTERFACE_SCALE, written as the index into
 # settingsCore.interfaceScale.getScaleOptions() (graphics.getInterfaceScalesList of the screen: 0 = auto, then the

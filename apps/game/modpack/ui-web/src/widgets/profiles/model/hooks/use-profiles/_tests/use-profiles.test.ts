@@ -18,62 +18,98 @@ const PROFILES: UiProfiles = {
   ]
 };
 
+const mountProfiles = () => renderHook(() => useProfiles(PROFILES));
+
 beforeEach(() => {
   vi.mocked(send).mockClear();
 });
 
 describe(useProfiles, () => {
-  it('saves a new profile under the trimmed name on Enter and clears the field', () => {
-    const hook = renderHook(() => useProfiles(PROFILES));
+  it('saves a new profile under the trimmed name on Enter', () => {
+    const hook = mountProfiles();
 
     hook.run(() => hook.current().setName('  Night  '));
+
     hook.run(() => hook.current().onNameKey(KEYS.enter));
 
     expect(send).toHaveBeenCalledWith({ type: 'profile_save', name: 'Night' });
+  });
+
+  it('clears the name field after saving', () => {
+    const hook = mountProfiles();
+
+    hook.run(() => hook.current().setName('  Night  '));
+
+    hook.run(() => hook.current().onNameKey(KEYS.enter));
+
     expect(hook.current().name).toBe('');
   });
 
-  it('ignores a blank name and a blank import code', () => {
-    const hook = renderHook(() => useProfiles(PROFILES));
+  it('ignores a blank name', () => {
+    const hook = mountProfiles();
 
     hook.run(() => hook.current().setName('   '));
+
     hook.run(() => hook.current().saveNew());
+
+    expect(send).not.toHaveBeenCalled();
+  });
+
+  it('ignores a blank import code', () => {
+    const hook = mountProfiles();
+
     hook.run(() => hook.current().importProfile());
 
     expect(send).not.toHaveBeenCalled();
   });
 
-  it('marks the active profile and overwrites a profile under its own name', () => {
-    const hook = renderHook(() => useProfiles(PROFILES));
+  it('marks the active profile', () => {
+    const hook = mountProfiles();
 
     expect(hook.current().rows.map((row) => row.active)).toEqual([true, false]);
+  });
+
+  it('overwrites a profile under its own name', () => {
+    const hook = mountProfiles();
 
     hook.run(() => hook.current().rows[1]?.overwrite());
 
     expect(send).toHaveBeenCalledWith({ type: 'profile_save', name: 'Ranked', id: 'p2' });
   });
 
-  it('renames one row at a time and sends the trimmed name', () => {
-    const hook = renderHook(() => useProfiles(PROFILES));
+  it('renames one row at a time', () => {
+    const hook = mountProfiles();
 
     hook.run(() => hook.current().rows[0]?.startRename());
 
     expect(hook.current().rows.map((row) => row.renameValue)).toEqual(['Streams', null]);
+  });
 
+  it('sends the trimmed new name and leaves the rename', () => {
+    const hook = mountProfiles();
+
+    hook.run(() => hook.current().rows[0]?.startRename());
     hook.run(() => hook.current().rows[0]?.editRename(' Stream nights '));
+
     hook.run(() => hook.current().rows[0]?.commitRename());
 
     expect(send).toHaveBeenCalledWith({ type: 'profile_rename', id: 'p1', name: 'Stream nights' });
     expect(hook.current().rows[0]?.renameValue).toBeNull();
   });
 
-  it('deletes only after the confirmation', () => {
-    const hook = renderHook(() => useProfiles(PROFILES));
+  it('asks for a confirmation before deleting', () => {
+    const hook = mountProfiles();
 
     hook.run(() => hook.current().rows[1]?.askDelete());
 
     expect(hook.current().deleting).toBe(true);
     expect(send).not.toHaveBeenCalled();
+  });
+
+  it('deletes the profile once confirmed', () => {
+    const hook = mountProfiles();
+
+    hook.run(() => hook.current().rows[1]?.askDelete());
 
     hook.run(() => hook.current().confirmDelete());
 

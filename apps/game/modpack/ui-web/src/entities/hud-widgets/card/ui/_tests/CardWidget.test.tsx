@@ -8,38 +8,51 @@ import { CardWidget } from '../CardWidget';
 
 const data = cardSchema.parse(readWidgetFixture('card'));
 
+const STRIP_MARK = 'span[style*="background-color"]';
+
 describe(CardWidget, () => {
   it('draws the header, the chips, the rows and the footer of the Python card', () => {
     const html = mount({ Component: CardWidget, props: { data } });
-    const text = html.textContent;
 
-    expect(text).toContain('ЛБЗ');
-    expect(text).toContain('EBR 105');
-    expect(text).toContain('79.53%');
-    expect(text).toContain('в работе');
-    expect(text).toContain('Союз-4. Прорыв линии обороны');
-    expect(text).toContain('Нанести 4000 урона');
-    expect(text).toContain('ср. урон 2 781');
+    expect(html.textContent).toContain('ЛБЗ');
+    expect(html.textContent).toContain('EBR 105');
+    expect(html.textContent).toContain('79.53%');
+    expect(html.textContent).toContain('в работе');
+    expect(html.textContent).toContain('Союз-4. Прорыв линии обороны');
+    expect(html.textContent).toContain('Нанести 4000 урона');
+    expect(html.textContent).toContain('ср. урон 2 781');
   });
 
-  it('paints a rating colour and fills a progress bar', () => {
+  it('paints a rating in its colour', () => {
     const html = mount({ Component: CardWidget, props: { data } });
-    const coloured = [...html.querySelectorAll('span')].find((span) => span.textContent === 'WN8 2 310');
 
-    expect(coloured?.getAttribute('style')).toContain('color');
+    const rating = [...html.querySelectorAll('span')].find((span) => span.textContent === 'WN8 2 310');
+
+    expect(rating?.getAttribute('style')).toContain('color');
+  });
+
+  it('fills a progress bar by the row progress', () => {
+    const html = mount({ Component: CardWidget, props: { data } });
+
     expect(html.innerHTML).toContain('width: 72%');
   });
 
-  it('draws the status marks as glyphs with explicit colours, never currentColor', () => {
+  it('draws the status marks as glyphs', () => {
     const html = mount({ Component: CardWidget, props: { data } });
 
     expect(html.querySelectorAll('svg').length).toBeGreaterThan(0);
+  });
+
+  it('gives every glyph an explicit colour, never currentColor', () => {
+    const html = mount({ Component: CardWidget, props: { data } });
+
     expect(html.innerHTML).not.toContain('currentColor');
   });
 
   it('draws one coloured mark per strip tone, in order', () => {
     const html = mount({ Component: CardWidget, props: { data } });
-    const marks = [...html.querySelectorAll('span[style*="background-color"]')].map((span) => span.getAttribute('style'));
+
+    const marks = [...html.querySelectorAll(STRIP_MARK)].map((span) => span.getAttribute('style'));
 
     expect(marks).toHaveLength(4);
     expect(marks[0]).toContain('rgb(76, 195, 107)');
@@ -49,7 +62,7 @@ describe(CardWidget, () => {
   it('draws no strip for a card without marks', () => {
     const html = mount({ Component: CardWidget, props: { data: { ...data, strip: [] } } });
 
-    expect(html.querySelectorAll('span[style*="background-color"]')).toHaveLength(0);
+    expect(html.querySelectorAll(STRIP_MARK)).toHaveLength(0);
   });
 
   it('keeps a card without a title to its body', () => {

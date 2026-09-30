@@ -2,6 +2,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 KINDS = ('damage', 'radio', 'track', 'stun', 'blocked', 'received')
 MAX_ENTRIES = 50
+MIN_ENTRY_FONT_SIZE = 8
+# The totals the stock client reports (summary feedback, personal efficiency), in DamageLog.apply_summary order.
+SUMMARY_KEYS = ('damage', 'assist', 'blocked', 'stun')
 
 # How much a log line tells: always everything (`alt_mode` off), or with `alt_mode` on the short line of the stock log's
 # SHORT record style (the amount and its icon) until Alt is held, then the full line with the kind, shell and source
@@ -46,8 +49,12 @@ PREVIEW_ENTRIES = (
     ('received', 310, 'KV-1', 'he', 'shot', 'heavyTank'),
 )
 PREVIEW_SIZE = (300, 130)
-PREVIEW_SHELLS = {'ap': ('ARMOR_PIERCING', False), 'apcr': ('ARMOR_PIERCING_CR', True), 'heat': ('HOLLOW_CHARGE', False),
-                  'he': ('HE_MODERN', False)}
+PREVIEW_SHELLS = {
+    'ap': ('ARMOR_PIERCING', False),
+    'apcr': ('ARMOR_PIERCING_CR', True),
+    'heat': ('HOLLOW_CHARGE', False),
+    'he': ('HE_MODERN', False),
+}
 PREVIEW_LAST_HIT = ('received', 310, 'KV-1', 'he', 'shot', 'heavyTank')
 PREVIEW_LAST_HIT_SIZE = (260, 30)
 
@@ -83,7 +90,14 @@ TOTALS = (
     ('assist_stun', 'stun', 'stun', False),
     ('received', None, 'received', False),
 )
-KIND_TONES = {'damage': 'accent', 'radio': 'radio', 'track': 'track', 'stun': 'stun', 'blocked': 'blocked', 'received': 'received'}
-KIND_GLYPHS = {'radio': 'radio', 'track': 'track', 'stun': 'stun', 'blocked': 'blocked', 'damage': 'damage', 'received': 'received'}
+KIND_TONES = {
+    'damage': 'accent',
+    'radio': 'radio',
+    'track': 'track',
+    'stun': 'stun',
+    'blocked': 'blocked',
+    'received': 'received',
+}
+SHELL_KINDS = ('damage', 'blocked', 'received')
 SOURCE_ICONS = {'fire': ('efficiency', 'fire'), 'ram': ('efficiency', 'ram'), 'world': ('glyph', 'fall')}
 COMPACT_STYLES = ('compact', 'minimal')

@@ -21,8 +21,18 @@ def _type_of(tank_id, vehicle):
         return None
 
 
+def _described(vehicle_type):
+    if vehicle_type is None:
+        return {}
+    return {
+        'label': getattr(vehicle_type, 'shortUserString', None),
+        'tier': getattr(vehicle_type, 'level', None),
+        'cls': getattr(vehicle_type, 'classTag', None),
+    }
+
+
+# The client's localized short name, tier and class of a replay's vehicle, looked up once per vehicle.
 class VehicleNames(object):
-    """The client's localized short name, tier and class of a replay's vehicle, looked up once per vehicle."""
 
     def __init__(self):
         self.known = {}
@@ -30,10 +40,5 @@ class VehicleNames(object):
     def __call__(self, tank_id, vehicle):
         key = vehicle or tank_id
         if key not in self.known:
-            found = _type_of(tank_id, vehicle)
-            self.known[key] = {
-                'label': getattr(found, 'shortUserString', None),
-                'tier': getattr(found, 'level', None),
-                'cls': getattr(found, 'classTag', None),
-            } if found is not None else {}
+            self.known[key] = _described(_type_of(tank_id, vehicle))
         return self.known[key]

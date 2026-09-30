@@ -8,7 +8,7 @@ from otmetki.core.client.garage import run_in_order, run_processor
 
 
 def adisp_async(func):
-    """The client's decorator (client_common/adisp.py, RU 1.45): the call returns a caller that takes the callback."""
+    # The client's decorator (client_common/adisp.py, RU 1.45): the call returns a caller that takes the callback.
     def wrapper(*args, **kwargs):
         def caller(callback):
             kwargs['callback'] = callback
@@ -25,7 +25,7 @@ class Result(object):
 
 
 class Processor(object):
-    """Processor.request as the client declares it: @adisp_async over request(self, callback=None)."""
+    # Processor.request as the client declares it: @adisp_async over request(self, callback=None).
 
     def __init__(self, success=True):
         self.success = success
@@ -39,23 +39,44 @@ class Processor(object):
 
 class RunProcessorTest(unittest.TestCase):
 
-    def test_the_request_goes_out_and_answers_once(self):
+    def test_the_request_goes_out_once(self):
         processor = Processor()
-        answers = []
-        run_processor(lambda: processor, answers.append, 'test')
+
+        run_processor(lambda: processor, lambda success: None, 'test')
+
         assert processor.sent == 1
+
+    def test_a_granted_request_answers_success_once(self):
+        answers = []
+
+        run_processor(lambda: Processor(), answers.append, 'test')
+
         assert answers == [True]
 
     def test_a_refused_request_reports_failure(self):
         answers = []
+
         run_processor(lambda: Processor(success=False), answers.append, 'test')
+
         assert answers == [False]
 
-    def test_steps_run_one_after_another(self):
-        first, second = Processor(), Processor()
+
+class RunInOrderTest(unittest.TestCase):
+
+    def test_every_step_sends_its_request_skipping_empty_steps(self):
+        first = Processor()
+        second = Processor()
+
+        run_in_order([lambda: first, lambda: None, lambda: second], lambda success: None, 'test')
+
+        assert first.sent == 1
+        assert second.sent == 1
+
+    def test_the_whole_run_answers_success_once(self):
         answers = []
-        run_in_order([lambda: first, lambda: None, lambda: second], answers.append, 'test')
-        assert (first.sent, second.sent) == (1, 1)
+
+        run_in_order([lambda: Processor(), lambda: None, lambda: Processor()], answers.append, 'test')
+
         assert answers == [True]
 
 

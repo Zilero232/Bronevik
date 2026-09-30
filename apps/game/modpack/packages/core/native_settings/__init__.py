@@ -3,6 +3,19 @@ offers), described as choices where 'native' keeps the game's value. Pure: the m
 values to client setting names; `core/client/native` reads and writes them."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from .constants import NATIVE, OFF, ON, TRI_STATE  # noqa: F401
-from .mapping import from_table, merge_value, native_values, setting_names, tri_state  # noqa: F401
-from .write import write_settings  # noqa: F401
+from .constants import NATIVE, OFF, ON, TRI_STATE
+from .mapping import from_table, merge_value, native_values, setting_names, tri_state
+from .write import write_settings
+
+__all__ = (
+    'NATIVE',
+    'OFF',
+    'ON',
+    'TRI_STATE',
+    'from_table',
+    'merge_value',
+    'native_values',
+    'setting_names',
+    'tri_state',
+    'write_settings',
+)

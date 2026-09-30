@@ -75,6 +75,10 @@ class Hooks(object):
         pass
 
 
+def refuse_a_second_linkage(*data):
+    raise ValueError('Linkage of controller ID to view alias have to be defined only once!')
+
+
 def install_stubs(provider):
     saved = dict((name, sys.modules.get(name)) for name in STUBBED)
     for name in STUBBED:
@@ -136,10 +140,8 @@ class BattleFieldFeedTest(unittest.TestCase):
     def test_a_page_reload_links_again_though_the_bridge_already_knows_the_alias(self):
         page = SharedPage(self.provider)
         page._startBattleSession()
+        self.provider.registerViewComponents = refuse_a_second_linkage
 
-        def refuse(*data):
-            raise ValueError('Linkage of controller ID to view alias have to be defined only once!')
-        self.provider.registerViewComponents = refuse
         page._startBattleSession()
 
         assert len(self.provider.added) == 2
@@ -188,7 +190,9 @@ class BattleFieldFeedTest(unittest.TestCase):
     def test_tiers_come_from_the_arena_data(self):
         self.tracker.start(Hooks(), Namespace(team=1))
 
-        assert [vehicle['level'] for vehicle in self.tracker.teams.team(False)] == [8, 7]
+        enemies = self.tracker.teams.team(False)
+
+        assert [vehicle['level'] for vehicle in enemies] == [8, 7]
 
 
 if __name__ == '__main__':

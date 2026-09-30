@@ -7,12 +7,13 @@ from .constants import ACTION_ARMOR, ARMOR_PATH, SLUG_DROPPED, SLUG_SEPARATORS
 # nothing is shown in battle (Lesta's support article 15152 names armour analysis in battle).
 
 
+# 'ussr:R45_IS-7' (Vehicle.name) -> 'r45-is-7', the slug of the site's tank pages; None without a tag.
 def tank_slug(vehicle_name):
-    """'ussr:R45_IS-7' (Vehicle.name) -> 'r45-is-7', the slug of the site's tank pages; None without a tag."""
     if not isinstance(vehicle_name, string_types):
         return None
-    tag = to_text(vehicle_name).split(u':')[-1].strip().lower().replace(u'&', u' and ')
-    slug = SLUG_SEPARATORS.sub(u'-', SLUG_DROPPED.sub(u'', tag)).strip(u'-')
+    tag = to_text(vehicle_name).split(u':')[-1].strip().lower()
+    words = SLUG_DROPPED.sub(u'', tag.replace(u'&', u' and '))
+    slug = SLUG_SEPARATORS.sub(u'-', words).strip(u'-')
     return slug or None
 
 

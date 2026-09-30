@@ -4,7 +4,7 @@ import time
 
 from ....core.client.battle import arena, call, controls_own_vehicle, player, vehicle_state
 from ....core.client.game import values_by_name
-from ....core.client.hud.panel import BattlePanel
+from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.client.native import apply_changed
 from ....core.client.sound import play_mp3, play_sound
 from ....core.client.timer import Ticker
@@ -12,7 +12,14 @@ from ....core.hud.stock import SIXTH_SENSE
 from ....core.log import safe
 from ..i18n import STRINGS
 from ..model import SixthSense, format_sixth_sense, lamp_duration, to_native
-from ..model.constants import ENDING_PERIODS, OBSERVED, OWN_SPOTTING_ATTR, PREVIEW_SIZE, TICK_SOUND, VEHICLE_STATES
+from ..model.constants import (
+    ENDING_PERIODS,
+    OBSERVED,
+    OWN_SPOTTING_ATTR,
+    PREVIEW_SIZE,
+    TICK_SOUND,
+    VEHICLE_STATES,
+)
 from ..model.preview import preview_text, preview_widget
 from ..model.widget import sixth_sense_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
@@ -34,6 +41,17 @@ def own_spotting_decrease():
     return attributes.get(OWN_SPOTTING_ATTR, 0.0)
 
 
+PANEL_SPEC = PanelSpec(
+    panel_id=PANEL_ID,
+    schema=SCHEMA,
+    switch=SWITCH,
+    strings=STRINGS,
+    preview_size=PREVIEW_SIZE,
+    preview_text=preview_text,
+    preview_widget=preview_widget,
+)
+
+
 class SixthSenseAlert(BattlePanel):
 
     def __init__(self, app):
@@ -41,7 +59,7 @@ class SixthSenseAlert(BattlePanel):
         self.ending_periods = values_by_name(ARENA_PERIOD, [(name, True) for name in ENDING_PERIODS])
         self.lamp = None
         self.ticker = Ticker(TICK_S, self._tick)
-        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text, preview_widget)
+        BattlePanel.__init__(self, app, PANEL_SPEC)
 
     def settings_changed(self, changed):
         if 'lamp_sound' in (changed or ()) and self.enabled_in_hangar():
@@ -100,6 +118,7 @@ class SixthSenseAlert(BattlePanel):
         if lamp.expired(now, self.settings.get('hide_after_s')):
             self.hide()
             return False
+
         is_tick_due = lamp.tick_due(now)
         if is_tick_due and self.settings.get('tick_sound'):
             play_mp3(TICK_SOUND)
@@ -109,7 +128,11 @@ class SixthSenseAlert(BattlePanel):
 
     @safe
     def render(self):
-        if self.lamp is not None and self.lamp.lit:
-            now = time.time()
-            self.show(format_sixth_sense(self.lamp, self.settings, self.app.translate, now),
-                      sixth_sense_widget(self.lamp, self.settings, self.app.translate, now))
+        lamp = self.lamp
+        if lamp is None or not lamp.lit:
+            return
+
+        now = time.time()
+        text = format_sixth_sense(lamp, self.settings, self.app.translate, now)
+        payload = sixth_sense_widget(lamp, self.settings, self.app.translate, now)
+        self.show(text, payload)

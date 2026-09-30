@@ -6,52 +6,79 @@ import { mountOnce } from '../mount-once';
 
 const ID = 'otmetki-test-host';
 
+const mountText = (text: string) => mountOnce({ id: ID, node: h('span', null, text) });
+
+const hostText = () => document.getElementById(ID)?.textContent;
+
+const givePageHost = (): void => {
+  document.body.innerHTML = `<div id="${ID}"></div>`;
+};
+
 afterEach(() => {
   document.body.innerHTML = '';
 });
 
 describe(mountOnce, () => {
-  it('creates the host when it is missing and renders into it', () => {
-    mountOnce({ id: ID, node: h('span', null, 'first') });
+  it('renders into the host it creates when the page has none', () => {
+    mountText('first');
 
-    expect(document.getElementById(ID)?.textContent).toBe('first');
+    expect(hostText()).toBe('first');
+  });
+
+  it('adds exactly one host to a page that has none', () => {
+    mountText('first');
+
     expect(document.body.children).toHaveLength(1);
   });
 
-  it('renders into a host the page already has without adding another', () => {
-    document.body.innerHTML = `<div id="${ID}"></div>`;
-    mountOnce({ id: ID, node: h('span', null, 'page') });
+  it('renders into a host the page already has', () => {
+    givePageHost();
+
+    mountText('page');
+
+    expect(hostText()).toBe('page');
+  });
+
+  it('adds no second host when the page already has one', () => {
+    givePageHost();
+
+    mountText('page');
 
     expect(document.querySelectorAll(`#${ID}`)).toHaveLength(1);
-    expect(document.getElementById(ID)?.textContent).toBe('page');
   });
 
   it('mounts once when a second copy of the script runs', () => {
-    mountOnce({ id: ID, node: h('span', null, 'first') });
-    mountOnce({ id: ID, node: h('span', null, 'second') });
+    mountText('first');
 
-    expect(document.getElementById(ID)?.textContent).toBe('first');
+    mountText('second');
+
+    expect(hostText()).toBe('first');
   });
 
-  it('removes a host it created on unmount, so the next mount starts over', () => {
-    const unmount = mountOnce({ id: ID, node: h('span', null, 'first') });
+  it('removes a host it created on unmount', () => {
+    const unmount = mountText('first');
 
     unmount();
 
     expect(document.getElementById(ID)).toBeNull();
-
-    mountOnce({ id: ID, node: h('span', null, 'again') });
-
-    expect(document.getElementById(ID)?.textContent).toBe('again');
   });
 
-  it('keeps a host the page owns on unmount and empties it', () => {
-    document.body.innerHTML = `<div id="${ID}"></div>`;
-
-    const unmount = mountOnce({ id: ID, node: h('span', null, 'page') });
+  it('starts over on the next mount after an unmount', () => {
+    const unmount = mountText('first');
 
     unmount();
 
-    expect(document.getElementById(ID)?.textContent).toBe('');
+    mountText('again');
+
+    expect(hostText()).toBe('again');
+  });
+
+  it('keeps a host the page owns on unmount and empties it', () => {
+    givePageHost();
+    const unmount = mountText('page');
+
+    unmount();
+
+    expect(hostText()).toBe('');
   });
 });

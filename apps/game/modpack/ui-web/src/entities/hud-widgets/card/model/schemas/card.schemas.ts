@@ -23,7 +23,6 @@ export const cardRowSchema = z.object({
 
 export const cardChipSchema = z.object({ icon: hudIconSchema, value: z.string(), tone: hudToneSchema, label: text, color: text });
 
-// core/hud/widget `card`: the shared plate of the hangar labels and the smaller battle panels.
 export const cardSchema = z.object({
   title: text,
   icon: hudIconSchema,

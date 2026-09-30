@@ -1,14 +1,23 @@
-import type { OpenTag, PushTextInput, RichLine, RichStyle } from './rich-text.types';
+import type {
+  ApplyTagInput,
+  ImageRunInput,
+  MatchesOfInput,
+  OpenTag,
+  PushTextInput,
+  RichImageRun,
+  RichLine,
+  RichLines,
+  RichStyle,
+  TagStyleInput
+} from './rich-text.types';
 
 import { RICH_TEXT } from './rich-text.constants';
 
-// Gameface runs an unknown V8 and the bundle targets es2017 syntax only (README «In-game UI»), so the
-// runtime avoids matchAll, Object.hasOwn and Array#at.
 const ENTITIES = new Map<string, string>(Object.entries(RICH_TEXT.entities));
 const STYLE_TAGS = new Map<string, RichStyle>(Object.entries(RICH_TEXT.styleTags));
 const LINE_BREAK_TAGS = new Set<string>(RICH_TEXT.lineBreakTags);
 
-const matchesOf = (pattern: RegExp, text: string): RegExpExecArray[] => {
+const matchesOf = ({ pattern, text }: MatchesOfInput): RegExpExecArray[] => {
   const found: RegExpExecArray[] = [];
   const scan = new RegExp(pattern.source, pattern.flags);
 
@@ -37,7 +46,7 @@ const decodeEntities = (text: string): string =>
 const attributesOf = (source: string): Record<string, string> => {
   const found: Record<string, string> = {};
 
-  for (const match of matchesOf(RICH_TEXT.attribute, source)) {
+  for (const match of matchesOf({ pattern: RICH_TEXT.attribute, text: source })) {
     const [, name = '', double, single] = match;
 
     found[name.toLowerCase()] = decodeEntities(double ?? single ?? '');
@@ -67,19 +76,26 @@ const fontStyle = (attributes: Record<string, string>): RichStyle => {
   return style;
 };
 
-const tagStyle = (tag: string, attributes: Record<string, string>): RichStyle | null => {
-  if (tag === 'font') {
-    return fontStyle(attributes);
+const tagStyle = ({ tag, attributes }: TagStyleInput): RichStyle | null => (tag === 'font' ? fontStyle(attributes) : (STYLE_TAGS.get(tag) ?? null));
+
+const imageRun = ({ attributes, key }: ImageRunInput): RichImageRun | null => {
+  const { src } = attributes;
+
+  if (!src?.startsWith(RICH_TEXT.imageScheme)) {
+    return null;
   }
 
-  return STYLE_TAGS.get(tag) ?? null;
+  return { key, kind: 'image', src, width: positive(attributes.width), height: positive(attributes.height) };
 };
 
-export const parseRichText = (html: string): RichLine[] => {
+const createLines = (): RichLines => {
   const lines: RichLine[] = [{ key: '0', runs: [] }];
   const open: OpenTag[] = [];
   const current = (): RichStyle => open.reduce<RichStyle>((merged, { style }) => ({ ...merged, ...style }), {});
   const lastRuns = (): RichLine['runs'] => lines[lines.length - 1]?.runs ?? [];
+  const breakLine = (key: string): void => {
+    lines.push({ key, runs: [] });
+  };
 
   const pushText = ({ raw, start }: PushTextInput): void => {
     decodeEntities(raw)
@@ -88,7 +104,7 @@ export const parseRichText = (html: string): RichLine[] => {
         const key = `${start}.${index}`;
 
         if (index > 0) {
-          lines.push({ key, runs: [] });
+          breakLine(key);
         }
 
         if (part) {
@@ -97,42 +113,71 @@ export const parseRichText = (html: string): RichLine[] => {
       });
   };
 
-  let last = 0;
+  const close = (tag: string): void => {
+    const index = open.map((item) => item.tag).lastIndexOf(tag);
 
-  for (const match of matchesOf(RICH_TEXT.tag, html)) {
-    const [whole, closing, name = '', rawAttributes = ''] = match;
-    const tag = name.toLowerCase();
-    const attributes = attributesOf(rawAttributes);
-
-    pushText({ raw: html.slice(last, match.index), start: last });
-    last = match.index + whole.length;
-
-    if (LINE_BREAK_TAGS.has(tag)) {
-      lines.push({ key: String(last), runs: [] });
-    } else if (tag === 'img' && !closing && attributes.src?.startsWith(RICH_TEXT.imageScheme)) {
-      lastRuns().push({
-        key: String(match.index),
-        kind: 'image',
-        src: attributes.src,
-        width: positive(attributes.width),
-        height: positive(attributes.height)
-      });
-    } else if (closing) {
-      const index = open.map((item) => item.tag).lastIndexOf(tag);
-
-      if (index !== -1) {
-        open.splice(index);
-      }
-    } else {
-      const style = tagStyle(tag, attributes);
-
-      if (style) {
-        open.push({ tag, style });
-      }
+    if (index !== -1) {
+      open.splice(index);
     }
+  };
+
+  return {
+    lines,
+    pushText,
+    breakLine,
+    pushRun: (run) => {
+      lastRuns().push(run);
+    },
+    open: (tag) => {
+      open.push(tag);
+    },
+    close
+  };
+};
+
+const applyTag = ({ lines, match }: ApplyTagInput): void => {
+  const [whole, closing, name = '', rawAttributes = ''] = match;
+  const tag = name.toLowerCase();
+  const attributes = attributesOf(rawAttributes);
+
+  if (LINE_BREAK_TAGS.has(tag)) {
+    lines.breakLine(String(match.index + whole.length));
+
+    return;
   }
 
-  pushText({ raw: html.slice(last), start: last });
+  const image = !closing && tag === 'img' ? imageRun({ attributes, key: String(match.index) }) : null;
 
-  return lines;
+  if (image) {
+    lines.pushRun(image);
+
+    return;
+  }
+
+  if (closing) {
+    lines.close(tag);
+
+    return;
+  }
+
+  const style = tagStyle({ tag, attributes });
+
+  if (style) {
+    lines.open({ tag, style });
+  }
+};
+
+export const parseRichText = (html: string): RichLine[] => {
+  const lines = createLines();
+  let last = 0;
+
+  for (const match of matchesOf({ pattern: RICH_TEXT.tag, text: html })) {
+    lines.pushText({ raw: html.slice(last, match.index), start: last });
+    applyTag({ lines, match });
+    last = match.index + match[0].length;
+  }
+
+  lines.pushText({ raw: html.slice(last), start: last });
+
+  return lines.lines;
 };

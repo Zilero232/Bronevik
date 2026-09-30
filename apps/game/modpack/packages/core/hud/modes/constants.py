@@ -8,8 +8,8 @@ MODE_EVENT = 'event'
 MODE_BATTLE_ROYALE = 'battle_royale'
 MODES = (MODE_RANDOM, MODE_COMP7, MODE_FRONTLINE, MODE_EVENT, MODE_BATTLE_ROYALE)
 
-# RU 1.45 client source, common/constants.py ARENA_GUI_TYPE plus the extensions' own ids (story_mode 100, cosmic_event 300,
-# white_tiger 301: the Waffentrager event).
+# RU 1.45 client source, common/constants.py ARENA_GUI_TYPE plus the extensions' own ids (story_mode 100, cosmic_event
+# 300, white_tiger 301: the Waffentrager event).
 GUI_TYPE_MODES = {
     1: MODE_RANDOM,
     2: MODE_RANDOM,
@@ -69,7 +69,8 @@ BONUS_TYPE_MODES = {
     100: MODE_EVENT,
 }
 
-# RU 1.45 gui/Scaleform/daapi/settings/views.py VIEW_ALIAS of the battle pages, the last resort when the arena says nothing.
+# RU 1.45 gui/Scaleform/daapi/settings/views.py VIEW_ALIAS of the battle pages, the last resort when the arena says
+# nothing.
 PAGE_MODES = {
     'classicBattlePage': MODE_RANDOM,
     'epicRandomPage': MODE_RANDOM,
@@ -89,11 +90,12 @@ LAYOUT_FULL = 'full'
 LAYOUT_COMPACT = 'compact'
 LAYOUT_OFF = 'off'
 LAYOUTS = (LAYOUT_FULL, LAYOUT_COMPACT, LAYOUT_OFF)
-# The essentials of an event page (docs/research/competitors/2026-09-30-round4.md section 4.3): marks, clock, damage log.
+# The essentials of an event page (docs/research/competitors/2026-09-30-round4.md section 4.3): marks, clock, damage
+# log.
 COMPACT_PANELS = ('marks_panel', 'battle_clock', 'damage_log')
 
-# Stock elements are replaced only on these battle types (docs/specs/2026-09-29-hud-visual-redesign.md section 3.2.5): the
-# event, Frontline and Steel Hunter pages keep every stock element, our panels there are overlays.
+# Stock elements are replaced only on these battle types (docs/specs/2026-09-29-hud-visual-redesign.md section 3.2.5):
+# the event, Frontline and Steel Hunter pages keep every stock element, our panels there are overlays.
 SUPPRESSING_MODES = (MODE_RANDOM, MODE_COMP7)
 
 # components.json keeps the places the player gave the panels in each battle type (other than random) under this key.

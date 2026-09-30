@@ -1,9 +1,9 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 
-import type { ReplayItem, ReplaysPage } from '../../model';
+import type { ReplayItem, ReplaysPage } from '../../model/schemas';
 
-import { replaysPageSchema } from '../../model';
+import { replaysPageSchema } from '../../model/schemas';
 
 const PAGE_SAMPLE_PATH = path.resolve(import.meta.dirname, 'replays-page.sample.json');
 

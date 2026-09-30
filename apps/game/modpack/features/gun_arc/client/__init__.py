@@ -2,7 +2,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.client.battle import controls_own_vehicle, player
-from ....core.client.hud.panel import BattlePanel
+from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.client.timer import Ticker
 from ....core.log import safe
 from ..i18n import STRINGS
@@ -13,24 +13,38 @@ from ..model.widget import panel_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
 
 
+# RU 1.45 client source: VehicleDescriptor.gun.turretYawLimits, (min, max) in radians or None
+# (gui/battle_control/vehicle_getter).
 def yaw_limits(battle_player):
-    """RU 1.45 client source: VehicleDescriptor.gun.turretYawLimits, (min, max) in radians or None (gui/battle_control/vehicle_getter)."""
-    return getattr(getattr(getattr(battle_player, 'vehicleTypeDescriptor', None), 'gun', None), 'turretYawLimits', None)
+    descriptor = getattr(battle_player, 'vehicleTypeDescriptor', None)
+    gun = getattr(descriptor, 'gun', None)
+    return getattr(gun, 'turretYawLimits', None)
 
 
+# RU 1.45 client source: VehicleGunRotator.turretYaw, the own turret's yaw relative to the hull in radians.
 def turret_yaw():
-    """RU 1.45 client source: VehicleGunRotator.turretYaw, the own turret's yaw relative to the hull in radians."""
-    return getattr(getattr(player(), 'gunRotator', None), 'turretYaw', None)
+    rotator = getattr(player(), 'gunRotator', None)
+    return getattr(rotator, 'turretYaw', None)
+
+
+PANEL_SPEC = PanelSpec(
+    panel_id=PANEL_ID,
+    schema=SCHEMA,
+    switch=SWITCH,
+    strings=STRINGS,
+    preview_size=PREVIEW_SIZE,
+    preview_text=preview_text,
+    preview_widget=preview_widget,
+)
 
 
 class GunArcPanel(BattlePanel):
-    """How far the own gun can still turn to each side before its traverse limits (УГН), for vehicles that have them."""
 
     def __init__(self, app):
         self.limits = None
         self.text = None
         self.ticker = Ticker(TICK_S, self._on_tick)
-        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text, preview_widget)
+        BattlePanel.__init__(self, app, PANEL_SPEC)
 
     def start(self, battle_player):
         self.limits = yaw_limits(battle_player)
@@ -51,10 +65,13 @@ class GunArcPanel(BattlePanel):
 
     @safe
     def render(self):
-        state = arc_state(turret_yaw(), self.limits) if controls_own_vehicle() else None
-        text = format_panel(state, self.settings, self.app.translate) if state is not None else None
+        state = None
+        if controls_own_vehicle():
+            state = arc_state(turret_yaw(), self.limits)
+        text = format_panel(state, self.settings, self.app.translate)
         if text == self.text:
             return
+
         self.text = text
         if text:
             self.show(text, panel_widget(state, self.settings, self.app.translate))

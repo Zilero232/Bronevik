@@ -4,9 +4,31 @@ import unittest
 
 import _support  # noqa: F401
 from otmetki.core.settings import Settings
-from otmetki.features.hangar_tweaks.model import (REFUSE_BERTHS, REFUSE_LOCKED, REFUSE_NOTHING, plan_crew_return, plan_crew_unload, plan_demount,
-                                                  plan_style_removal, scale_index, to_native, with_interface_scale)
+from otmetki.features.hangar_tweaks.model import (
+    REFUSE_BERTHS,
+    REFUSE_LOCKED,
+    REFUSE_NOTHING,
+    plan_crew_return,
+    plan_crew_unload,
+    plan_demount,
+    plan_style_removal,
+    scale_index,
+    to_native,
+    with_interface_scale,
+)
 from otmetki.features.hangar_tweaks.settings import SCHEMA, SETTINGS
+
+SCALE_OPTIONS = [0.0, 1.0, 1.25, 1.5, 2.0]
+
+
+def vehicle_state(locked=False, **fields):
+    state = {'locked': locked}
+    state.update(fields)
+    return state
+
+
+def device(slot, removable):
+    return {'slot': slot, 'removable': removable}
 
 
 class CarouselTest(unittest.TestCase):
@@ -14,59 +36,105 @@ class CarouselTest(unittest.TestCase):
     def test_native_keeps_the_game_value(self):
         assert to_native(Settings(None, SCHEMA).to_dict()) == {}
 
-    def test_rows_and_tiles(self):
+    def test_rows_and_tiles_become_the_game_indexes(self):
         values = Settings({'carousel_rows': 'double', 'carousel_tiles': 'small'}, SCHEMA).to_dict()
+
         assert to_native(values) == {'carouselType': 1, 'doubleCarouselType': 1}
 
     def test_three_rows_is_not_an_option(self):
         assert Settings({'carousel_rows': 'triple'}, SCHEMA).get('carousel_rows') == 'native'
+
+    def test_the_component_switch_is_hangar_tweaks(self):
         assert SETTINGS == ('hangar_tweaks',)
 
 
 class InterfaceScaleTest(unittest.TestCase):
 
-    def test_native_and_unknown_scales_are_left_alone(self):
-        options = [0.0, 1.0, 1.25, 1.5, 2.0]
-        assert with_interface_scale({'carouselType': 1}, 'native', options) == {'carouselType': 1}
-        assert with_interface_scale({}, 'x1_75', options) == {}
+    def test_native_scale_is_left_alone(self):
+        assert with_interface_scale({'carouselType': 1}, 'native', SCALE_OPTIONS) == {'carouselType': 1}
+
+    def test_a_scale_the_screen_does_not_offer_is_left_alone(self):
+        assert with_interface_scale({}, 'x1_75', SCALE_OPTIONS) == {}
+
+    def test_no_screen_options_leave_the_scale_alone(self):
         assert with_interface_scale({}, 'x1_5', []) == {}
 
-    def test_choice_becomes_the_index_the_screen_offers(self):
-        options = [0.0, 1.0, 1.25, 1.5, 2.0]
-        assert scale_index(options, 'auto') == 0 and scale_index(options, 'x2') == 4
-        assert with_interface_scale({'carouselType': 1}, 'x1_25', options) == {'carouselType': 1, 'interfaceScale': 2}
+    def test_auto_is_the_first_option(self):
+        assert scale_index(SCALE_OPTIONS, 'auto') == 0
+
+    def test_a_scale_becomes_its_index_among_the_screen_options(self):
+        assert scale_index(SCALE_OPTIONS, 'x2') == 4
+
+    def test_the_scale_index_joins_the_other_values(self):
+        result = with_interface_scale({'carouselType': 1}, 'x1_25', SCALE_OPTIONS)
+
+        assert result == {'carouselType': 1, 'interfaceScale': 2}
+
+    def test_an_unknown_scale_falls_back_to_native(self):
         assert Settings({'interface_scale': 'x3'}, SCHEMA).get('interface_scale') == 'native'
 
 
-class QuickActionsTest(unittest.TestCase):
+class StyleRemovalTest(unittest.TestCase):
 
-    def test_style_removal(self):
-        assert plan_style_removal({'locked': False, 'style': True}) is None
-        assert plan_style_removal({'locked': True, 'style': True}) == REFUSE_LOCKED
-        assert plan_style_removal({'locked': False, 'style': False}) == REFUSE_NOTHING
+    def test_an_installed_style_is_removed(self):
+        assert plan_style_removal(vehicle_state(style=True)) is None
+
+    def test_a_locked_vehicle_is_refused(self):
+        assert plan_style_removal(vehicle_state(locked=True, style=True)) == REFUSE_LOCKED
+
+    def test_no_style_is_nothing_to_do(self):
+        assert plan_style_removal(vehicle_state(style=False)) == REFUSE_NOTHING
 
 
-    def test_demount_only_removable(self):
-        vehicle = {'locked': False, 'devices': [{'slot': 0, 'removable': True}, None, {'slot': 2, 'removable': False},
-                                                {'slot': 3, 'removable': True}]}
-        assert plan_demount(vehicle) == ([0, 3], None)
+class DemountTest(unittest.TestCase):
 
-    def test_demount_refusals(self):
-        assert plan_demount({'locked': True, 'devices': [{'slot': 0, 'removable': True}]}) == ([], REFUSE_LOCKED)
-        assert plan_demount({'locked': False, 'devices': [{'slot': 0, 'removable': False}]}) == ([], REFUSE_NOTHING)
-        assert plan_demount({'locked': False}) == ([], REFUSE_NOTHING)
+    def test_only_removable_devices_are_demounted(self):
+        devices = [device(0, True), None, device(2, False), device(3, True)]
 
-    def test_crew_unload(self):
-        assert plan_crew_unload({'locked': False, 'crew': 4}, None) == (4, None)
-        assert plan_crew_unload({'locked': False, 'crew': 4}, 10) == (4, None)
-        assert plan_crew_unload({'locked': False, 'crew': 4}, 3) == (0, REFUSE_BERTHS)
-        assert plan_crew_unload({'locked': True, 'crew': 4}, 10) == (0, REFUSE_LOCKED)
-        assert plan_crew_unload({'locked': False, 'crew': 0}, 10) == (0, REFUSE_NOTHING)
+        assert plan_demount(vehicle_state(devices=devices)) == ([0, 3], None)
 
-    def test_crew_return(self):
-        assert plan_crew_return({'locked': False, 'last_crew': True}) is None
-        assert plan_crew_return({'locked': True, 'last_crew': True}) == REFUSE_LOCKED
-        assert plan_crew_return({'locked': False, 'last_crew': False}) == REFUSE_NOTHING
+    def test_a_locked_vehicle_is_refused(self):
+        state = vehicle_state(locked=True, devices=[device(0, True)])
+
+        assert plan_demount(state) == ([], REFUSE_LOCKED)
+
+    def test_no_removable_device_is_nothing_to_do(self):
+        state = vehicle_state(devices=[device(0, False)])
+
+        assert plan_demount(state) == ([], REFUSE_NOTHING)
+
+    def test_no_devices_is_nothing_to_do(self):
+        assert plan_demount(vehicle_state()) == ([], REFUSE_NOTHING)
+
+
+class CrewUnloadTest(unittest.TestCase):
+
+    def test_unknown_berths_let_the_crew_go(self):
+        assert plan_crew_unload(vehicle_state(crew=4), None) == (4, None)
+
+    def test_enough_berths_let_the_crew_go(self):
+        assert plan_crew_unload(vehicle_state(crew=4), 10) == (4, None)
+
+    def test_too_few_berths_are_refused(self):
+        assert plan_crew_unload(vehicle_state(crew=4), 3) == (0, REFUSE_BERTHS)
+
+    def test_a_locked_vehicle_is_refused(self):
+        assert plan_crew_unload(vehicle_state(locked=True, crew=4), 10) == (0, REFUSE_LOCKED)
+
+    def test_no_crew_is_nothing_to_do(self):
+        assert plan_crew_unload(vehicle_state(crew=0), 10) == (0, REFUSE_NOTHING)
+
+
+class CrewReturnTest(unittest.TestCase):
+
+    def test_the_last_crew_is_returned(self):
+        assert plan_crew_return(vehicle_state(last_crew=True)) is None
+
+    def test_a_locked_vehicle_is_refused(self):
+        assert plan_crew_return(vehicle_state(locked=True, last_crew=True)) == REFUSE_LOCKED
+
+    def test_no_last_crew_is_nothing_to_do(self):
+        assert plan_crew_return(vehicle_state(last_crew=False)) == REFUSE_NOTHING
 
 
 if __name__ == '__main__':

@@ -12,10 +12,8 @@ __all__ = ('DEFAULT_MODIFIER', 'MODIFIER_CHOICES', 'is_held', 'modifier_keys')
 
 
 def modifier_keys(mode):
-    """The key groups of `mode`; Alt for an unknown one."""
     return MODIFIERS.get(mode) or MODIFIERS[DEFAULT_MODIFIER]
 
 
 def is_held(mode, is_down):
-    """True while every key group of `mode` has one key down."""
     return all(any(is_down(key) for key in group) for group in modifier_keys(mode))

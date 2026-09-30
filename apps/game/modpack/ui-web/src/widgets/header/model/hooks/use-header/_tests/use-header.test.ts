@@ -17,23 +17,34 @@ beforeEach(() => {
 });
 
 describe(useHeader, () => {
-  it('shows the binding state and opens the data page from it', () => {
+  it('shows the binding state', () => {
     const hook = renderHook(useHeader);
 
     expect(hook.current().account).toMatchObject({ bound: false, title: 'accountUnbound' });
+  });
+
+  it('opens the data page from the binding state', () => {
+    const hook = renderHook(useHeader);
 
     hook.run(() => hook.current().openAccount());
 
     expect($view.get().section).toBe(SECTION.data);
   });
 
-  it('types into the shared search and clears it', async () => {
+  it('types into the shared search', async () => {
     const hook = renderHook(useHeader);
 
     hook.run(() => hook.current().setQuery('лог'));
     await hook.settle();
 
     expect(hook.current()).toMatchObject({ query: 'лог', searching: true });
+  });
+
+  it('stops searching once the query is cleared', async () => {
+    const hook = renderHook(useHeader);
+
+    hook.run(() => hook.current().setQuery('лог'));
+    await hook.settle();
 
     hook.run(() => hook.current().clearQuery());
     await hook.settle();

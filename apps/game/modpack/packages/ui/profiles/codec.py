@@ -25,11 +25,20 @@ def decode_profile(code):
     body = code[len(CODE_PREFIX):]
     body += '=' * (-len(body) % 4)
     try:
-        payload = decode_json(zlib.decompress(base64.urlsafe_b64decode(to_bytes(body))))
+        packed = base64.urlsafe_b64decode(to_bytes(body))
+        payload = decode_json(zlib.decompress(packed))
     except (TypeError, ValueError, binascii.Error, zlib.error, UnicodeDecodeError):
         raise ProfileError(ERROR_CODE)
     data = payload.get('data') if isinstance(payload, dict) else None
-    if not isinstance(data, dict) or not isinstance(data.get('config', {}), dict) or not isinstance(data.get('components', {}), dict):
+    if not _is_snapshot(data):
         raise ProfileError(ERROR_CODE)
+
     name = payload.get('name')
-    return (to_text(name) if isinstance(name, string_types) else ''), {'config': data.get('config') or {}, 'components': data.get('components') or {}}
+    snapshot = {'config': data.get('config') or {}, 'components': data.get('components') or {}}
+    return (to_text(name) if isinstance(name, string_types) else ''), snapshot
+
+
+def _is_snapshot(data):
+    if not isinstance(data, dict):
+        return False
+    return isinstance(data.get('config', {}), dict) and isinstance(data.get('components', {}), dict)

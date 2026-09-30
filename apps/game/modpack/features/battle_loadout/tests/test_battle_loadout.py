@@ -7,7 +7,6 @@ import _support
 from otmetki.core.settings import Settings
 from otmetki.features.battle_loadout.i18n import STRINGS
 from otmetki.features.battle_loadout.model import clean_device, clean_devices, format_panel, overlay_of, set_badges
-from otmetki.features.battle_loadout.model.constants import MAX_ITEMS
 from otmetki.features.battle_loadout.model.preview import preview_text
 from otmetki.features.battle_loadout.settings import SCHEMA, SETTINGS
 
@@ -66,19 +65,30 @@ class DeviceTest(unittest.TestCase):
 
         assert names == [u'Турбонагнетатель', u'Вентиляция']
 
-    def test_the_row_keeps_at_most_max_items(self):
-        devices = clean_devices([turbocharger()] * (MAX_ITEMS + 3))
+    def test_the_row_keeps_at_most_six_items(self):
+        devices = clean_devices([turbocharger()] * 9)
 
-        assert len(devices) == MAX_ITEMS
+        assert len(devices) == 6
 
     def test_no_devices_from_nothing(self):
         assert clean_devices(None) == []
 
-    def test_overlays_of_special_devices(self):
+
+class OverlayTest(unittest.TestCase):
+
+    def test_a_deluxe_device_wears_the_plus_mark(self):
         assert overlay_of({'deluxe': True}) == BONUSES + 'equipmentPlus_overlay.png'
+
+    def test_a_modernized_device_wears_the_mark_of_its_level(self):
         assert overlay_of({'modernized': True, 'level': 2}) == BONUSES + 'equipmentModernized_2_overlay.png'
+
+    def test_a_modernized_level_out_of_range_gets_no_mark(self):
         assert overlay_of({'modernized': True, 'level': 9}) is None
+
+    def test_an_upgraded_trophy_device_wears_the_upgraded_trophy_mark(self):
         assert overlay_of({'trophy': 'upgraded'}) == BONUSES + 'equipmentTrophyUpgraded_overlay.png'
+
+    def test_a_plain_device_gets_no_mark(self):
         assert overlay_of({}) is None
 
 
@@ -131,7 +141,10 @@ class SetBadgeTest(unittest.TestCase):
 
         badges = set_badges(raw, translator())
 
-        assert badges == [{'group': 'devices', 'text': u'набор 2/2'}, {'group': 'consumables', 'text': u'снаряды 1/2'}]
+        assert badges == [
+            {'group': 'devices', 'text': u'набор 2/2'},
+            {'group': 'consumables', 'text': u'снаряды 1/2'},
+        ]
 
     def test_the_badge_in_english(self):
         badges = set_badges({'devices': {'index': 0, 'total': 2}}, translator('en'))
@@ -181,12 +194,21 @@ class FormatTest(unittest.TestCase):
 
 class SettingsTest(unittest.TestCase):
 
-    def test_pinned_over_the_stock_consumables(self):
+    def test_switch(self):
+        assert SETTINGS == ('battle_loadout',)
+
+    def test_placed_right_over_the_stock_consumables(self):
         defaults = SCHEMA.defaults
 
-        assert SETTINGS == ('battle_loadout',)
-        assert (defaults['x'], defaults['y'], defaults['align_x'], defaults['align_y']) == (0, -64, 'center', 'bottom')
-        assert defaults['pinned'] is True
+        assert defaults['x'] == 0
+        assert defaults['y'] == -64
+        assert defaults['align_x'] == 'center'
+        assert defaults['align_y'] == 'bottom'
+
+    def test_pinned_by_default(self):
+        assert SCHEMA.defaults['pinned'] is True
+
+    def test_an_older_default_place_is_retired(self):
         assert (-200, -66, 'center', 'bottom') in SCHEMA.retired
 
     def test_icons_the_size_of_the_stock_equipment_icons(self):

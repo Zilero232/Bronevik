@@ -66,3 +66,9 @@ export type FrameLayout = {
   compactNav: boolean;
   columns: 1 | 2;
 };
+
+export type OpeningFrameInput = {
+  placed: Frame | null;
+  saved: UiWindow | null;
+  bounds: Bounds;
+};

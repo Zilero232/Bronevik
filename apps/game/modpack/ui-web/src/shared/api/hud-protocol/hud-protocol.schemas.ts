@@ -6,20 +6,17 @@ import { HUD_PROTOCOL } from './hud-protocol.constants';
 const alignX = z.enum(PROTOCOL.alignX);
 const alignY = z.enum(PROTOCOL.alignY);
 
-// A panel's structured payload (core/hud/widget): the page checks `data` against the schema of `kind` when it draws it.
 export const hudWidgetSchema = z.object({ kind: z.string(), v: z.number(), data: z.unknown() });
 
 export const hudToneSchema = z.enum(HUD_PROTOCOL.tones);
 
 export const hudIconSchema = z.nullable(z.string());
 
-// A panel at its column's anchor (core/hud/panel DOCKS): the page stacks the panels of one group in `order`.
 export const hudDockSchema = z.object({
   group: z.string(),
   order: z.number(),
   reserve: z.optional(z.number()),
-  ceiling: z.optional(z.number()),
-  stop_center: z.optional(z.number())
+  ceiling: z.optional(z.number())
 });
 
 export const hudPanelSchema = z.object({

@@ -1,9 +1,18 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ...core.compat import string_types
+from ...core.compat import is_int, string_types
 from ...core.settings import Schema, Settings
-from .constants import (CHOICES, DEFAULTS, DEFAULT_SERVER_URL, DEFAULTS_REVISION, FEATURES, LIMITS, LOCAL_HOSTS, OPT_IN_FEATURES,  # noqa: F401
-                        RETIRED_DEFAULTS, SHARE_CHANNELS)
+from .constants import (  # noqa: F401
+    CHOICES,
+    DEFAULT_SERVER_URL,
+    DEFAULTS,
+    DEFAULTS_REVISION,
+    FEATURES,
+    LIMITS,
+    LOCAL_HOSTS,
+    OPT_IN_FEATURES,
+    RETIRED_DEFAULTS,
+)
 
 
 def is_valid_server_url(url):
@@ -12,10 +21,11 @@ def is_valid_server_url(url):
     url = url.strip()
     if url.startswith('https://') and len(url) > len('https://'):
         return True
-    for host in LOCAL_HOSTS:
-        if url == host or url.startswith(host + ':') or url.startswith(host + '/'):
-            return True
-    return False
+    return any(_is_on_host(url, host) for host in LOCAL_HOSTS)
+
+
+def _is_on_host(url, host):
+    return url == host or url.startswith(host + ':') or url.startswith(host + '/')
 
 
 def normalize_server_url(url):
@@ -25,13 +35,13 @@ def normalize_server_url(url):
 SCHEMA = Schema(DEFAULTS, choices=CHOICES, limits=LIMITS, normalizers={'server_url': normalize_server_url})
 
 
+# A fresh config (None) stays None: it takes today's defaults, so only a stored one is upgraded.
 def upgraded(values):
-    """A stored config with the switches still at a retired default moved to the new one, stamped with the current revision
-    (None, a fresh config, stays None: it takes today's defaults)."""
     if not isinstance(values, dict):
         return values
     revision = values.get('defaults_revision')
-    revision = revision if isinstance(revision, int) and not isinstance(revision, bool) else 0
+    if not is_int(revision):
+        revision = 0
     upgraded_values = dict(values, defaults_revision=DEFAULTS_REVISION)
     for since, key, old, new in RETIRED_DEFAULTS:
         if revision < since and values.get(key) == old:

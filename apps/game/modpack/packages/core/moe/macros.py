@@ -20,6 +20,16 @@ def _need(value):
     return REACHED if value <= 0 else format_number(value)
 
 
+def _whole(value):
+    return u'%d' % value if value is not None else MACRO_MISSING
+
+
+def _target(state, level):
+    if level not in state['target_avg']:
+        return MACRO_MISSING
+    return format_number(state['target_avg'][level])
+
+
 def _battles(state):
     if not state['has_curve'] or state['next_level'] is None:
         return MACRO_MISSING
@@ -30,7 +40,7 @@ def _battles(state):
 
 def moe_macros(state):
     """The `{macro}` values of the marks templates as text (README «marks_panel» lists them)."""
-    marks = state['marks']
+    marks = state['marks'] if is_number(state['marks']) else None
     values = {
         'percent': _percent(state['percent']),
         'projected': _percent(state['projected']),
@@ -38,22 +48,30 @@ def moe_macros(state):
         'damage': format_number(state['damage']),
         'ema': format_number(state['ema']),
         'ema_projected': format_number(state['ema_projected']),
-        'marks': u'%d' % marks if is_number(marks) else MACRO_MISSING,
-        'stars': STAR * int(marks) if is_number(marks) else u'',
-        'next': u'%d' % state['next_level'] if state['next_level'] is not None else MACRO_MISSING,
+        'marks': _whole(marks),
+        'stars': STAR * int(marks) if marks is not None else u'',
+        'next': _whole(state['next_level']),
         'need_next': _need(state['need_next']),
-        'target_next': format_number(state['target_avg'][state['next_level']]) if state['next_level'] in state['target_avg'] else MACRO_MISSING,
+        'target_next': _target(state, state['next_level']),
         'step': u'%g' % state['step'] if is_number(state['step']) else MACRO_MISSING,
         'step_need': _need(state['step_need']),
-        'up': u'%d' % state['up_level'] if state['up_level'] is not None else MACRO_MISSING,
+        'up': _whole(state['up_level']),
         'need_up': _need(state['up_need']),
         'battles': _battles(state),
         'pace': format_number(state['pace']) if state['pace'] is not None else MACRO_MISSING,
     }
     for level in (int(value) for value in TARGET_LEVELS):
         values['need%d' % level] = _need(state['need'].get(level))
-        values['target%d' % level] = format_number(state['target_avg'][level]) if level in state['target_avg'] else MACRO_MISSING
+        values['target%d' % level] = _target(state, level)
     return values
+
+
+def _mark_color(state):
+    shown = state['projected'] if is_number(state['projected']) else state['percent']
+    if not is_number(shown):
+        return COLOR_MUTED
+    reached = len([level for level in MARK_LEVELS if shown >= level])
+    return MARK_COLORS[reached]
 
 
 def moe_color(state, mode):
@@ -61,10 +79,7 @@ def moe_color(state, mode):
     if mode == 'off':
         return COLOR_NEUTRAL
     if mode == 'mark':
-        shown = state['projected'] if is_number(state['projected']) else state['percent']
-        if not is_number(shown):
-            return COLOR_MUTED
-        return MARK_COLORS[len([level for level in MARK_LEVELS if shown >= level])]
+        return _mark_color(state)
     delta = state['delta']
     if not is_number(delta) or delta == 0:
         return COLOR_NEUTRAL

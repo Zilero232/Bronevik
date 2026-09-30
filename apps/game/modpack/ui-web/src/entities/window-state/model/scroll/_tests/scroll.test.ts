@@ -19,10 +19,15 @@ afterEach(() => {
 });
 
 describe(rememberScroll, () => {
-  it('keeps the page position in whole pixels and tells the mod', () => {
+  it('keeps the page position in whole pixels', () => {
     rememberScroll({ page: 'hangar', top: 412.6 });
 
     expect($scroll.get()).toEqual({ hangar: 413 });
+  });
+
+  it('tells the mod the rounded position', () => {
+    rememberScroll({ page: 'hangar', top: 412.6 });
+
     expect(mock.sent()).toEqual([JSON.stringify({ type: 'scroll', page: 'hangar', top: 413 })]);
   });
 

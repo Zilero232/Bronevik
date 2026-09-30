@@ -2,7 +2,14 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ..compat import is_int, is_number
 from ..errors import ReasonError
-from .constants import AUTH_STATUSES, MAX_RETRY_S, MAX_TANKS, RATE_LIMITED_STATUS, RETRY_AFTER_ERROR_S, RETRY_AFTER_LIMIT_S
+from .constants import (
+    AUTH_STATUSES,
+    MAX_RETRY_S,
+    MAX_TANKS,
+    RATE_LIMITED_STATUS,
+    RETRY_AFTER_ERROR_S,
+    RETRY_AFTER_LIMIT_S,
+)
 
 
 def device_body(credentials):

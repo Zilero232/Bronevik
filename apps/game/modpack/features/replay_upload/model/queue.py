@@ -2,44 +2,62 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import random
 
-from ....core.codec import decode_json
+from ....core.codec import parse_json_body
 from ....core.compat import string_types, to_text
 from ....core.net.backoff import backoff_delay
-from .constants import (BASE_BACKOFF_S, BUSY_RETRY_S, FIRST_DELAY_S, JITTER, LOCATE_RETRY_S, LOCATE_TIMEOUT_S, MAX_AGE_S, MAX_BACKOFF_S,
-                        MAX_PENDING, MAX_SEEN, QUOTA_BACKOFF_S, QUOTA_CODE, REQUEST_INVALID, REQUEST_READY, JobResult, Outcome)
-
-
-def _error_code(body):
-    if not body:
-        return None
-    try:
-        data = decode_json(body)
-    except (ValueError, UnicodeDecodeError):
-        return None
-    return data.get('code') if isinstance(data, dict) else None
+from .constants import (
+    BASE_BACKOFF_S,
+    DONE_STATUSES,
+    DROP_STATUSES,
+    FIRST_DELAY_S,
+    JITTER,
+    LOCATE_TIMEOUT_S,
+    MAX_AGE_S,
+    MAX_BACKOFF_S,
+    MAX_PENDING,
+    MAX_SEEN,
+    OUTCOME_BY_RESULT,
+    QUOTA_BACKOFF_S,
+    QUOTA_CODE,
+    REQUEST_INVALID,
+    REQUEST_READY,
+    WAIT_BY_RESULT,
+    JobResult,
+    Outcome,
+)
 
 
 def uploaded_replay_id(result):
-    if not isinstance(result, dict) or result.get('status') != 201 or not result.get('body'):
+    if not isinstance(result, dict) or result.get('status') != 201:
         return None
-    try:
-        data = decode_json(result['body'])
-    except (ValueError, UnicodeDecodeError):
+    data = parse_json_body(result.get('body')) or {}
+    replay_id = data.get('id')
+    if not isinstance(replay_id, string_types) or not replay_id:
         return None
-    replay_id = data.get('id') if isinstance(data, dict) else None
-    return to_text(replay_id) if isinstance(replay_id, string_types) and replay_id else None
+    return to_text(replay_id)
 
 
 def classify_upload(status, body=None):
-    if 200 <= status < 300 or status == 409:
+    if 200 <= status < 300 or status in DONE_STATUSES:
         return Outcome.DONE
     if status == 401:
         return Outcome.AUTH
     if status == 403:
-        return Outcome.QUOTA if _error_code(body) == QUOTA_CODE else Outcome.AUTH
-    if status in (400, 404, 413, 415, 422):
+        data = parse_json_body(body) or {}
+        is_quota = data.get('code') == QUOTA_CODE
+        return Outcome.QUOTA if is_quota else Outcome.AUTH
+    if status in DROP_STATUSES:
         return Outcome.DROP
     return Outcome.RETRY
+
+
+def _job_outcome(item, result, now):
+    kind = result.get('result', JobResult.ERROR)
+    if kind == JobResult.HTTP:
+        return classify_upload(result.get('status', 0), result.get('body'))
+    if kind == JobResult.MISSING and now - item['ended_at'] > LOCATE_TIMEOUT_S:
+        return Outcome.DROP
+    return OUTCOME_BY_RESULT.get(kind, Outcome.RETRY)
 
 
 class ReplayQueue(object):
@@ -52,15 +70,17 @@ class ReplayQueue(object):
         self.auth_blocked = False
         self.items = []
         self.seen = []
-        self.dropped = 0
-        data = storage.read({}) or {}
-        if isinstance(data, dict):
-            items = data.get('items')
-            seen = data.get('seen')
-            if isinstance(items, list):
-                self.items = [dict(item) for item in items if isinstance(item, dict) and item.get('arena_unique_id')]
-            if isinstance(seen, list):
-                self.seen = [to_text(value) for value in seen][-max_seen:]
+        self._load(storage.read({}))
+
+    def _load(self, data):
+        if not isinstance(data, dict):
+            return
+        items = data.get('items')
+        seen = data.get('seen')
+        if isinstance(items, list):
+            self.items = [dict(item) for item in items if isinstance(item, dict) and item.get('arena_unique_id')]
+        if isinstance(seen, list):
+            self.seen = [to_text(value) for value in seen][-self.max_seen:]
 
     def _persist(self):
         self.storage.write({'items': self.items, 'seen': self.seen})
@@ -92,7 +112,6 @@ class ReplayQueue(object):
             for item in self.items[:overflow]:
                 self._mark_seen(item['arena_unique_id'])
             self.items = self.items[overflow:]
-            self.dropped += overflow
         self._persist()
 
     def add(self, arena_unique_id, account_id, started_at, now):
@@ -101,19 +120,22 @@ class ReplayQueue(object):
         key = to_text(arena_unique_id)
         if self.knows(key):
             return False
+
         self._append(key, account_id, started_at, now, float(now) + FIRST_DELAY_S)
         return True
 
+    # A replay the player asked for in the replay manager: sent next, even one an earlier try gave up on.
     def request(self, arena_unique_id, account_id, started_at, now):
-        """A replay the player asked for in the replay manager: sent next, even one an earlier try gave up on."""
         if not arena_unique_id or not account_id:
             return REQUEST_INVALID
         key = to_text(arena_unique_id)
+
         item = self._find(key)
         if item is not None:
             item['retry_at'] = min(item['retry_at'], float(now))
             self._persist()
             return REQUEST_READY
+
         self.seen = [value for value in self.seen if value != key]
         self._append(key, account_id, started_at, now, now)
         return REQUEST_READY
@@ -121,11 +143,13 @@ class ReplayQueue(object):
     def next_item(self, now):
         if self.auth_blocked:
             return None
+
         expired = [item for item in self.items if now - item['ended_at'] > MAX_AGE_S]
         for item in expired:
-            self._finish(item, False)
+            self._finish(item)
         if expired:
             self._persist()
+
         ready = [item for item in self.items if item['retry_at'] <= now]
         if not ready:
             return None
@@ -136,51 +160,37 @@ class ReplayQueue(object):
             self.seen.append(key)
             self.seen = self.seen[-self.max_seen:]
 
-    def _finish(self, item, uploaded):
+    def _finish(self, item):
         self.items = [other for other in self.items if other is not item]
         self._mark_seen(item['arena_unique_id'])
-        if not uploaded:
-            self.dropped += 1
 
-    def _backoff(self, item, now, retry_after=None):
+    def _backoff(self, item, now, retry_after):
         item['attempt'] = item.get('attempt', 0) + 1
         delay = backoff_delay(item['attempt'], BASE_BACKOFF_S, MAX_BACKOFF_S, JITTER, self.rng, retry_after)
         item['retry_at'] = now + delay
-        return delay
 
-    def complete(self, arena_unique_id, result, now, retry_after=None):
-        item = self._find(to_text(arena_unique_id))
-        if item is None:
-            return Outcome.DROP
-        kind = (result or {}).get('result', JobResult.ERROR)
-        if kind == JobResult.HTTP:
-            outcome = classify_upload(result.get('status', 0), result.get('body'))
-        elif kind == JobResult.TOO_LARGE:
-            outcome = Outcome.DROP
-        elif kind == JobResult.BUSY:
-            item['retry_at'] = now + BUSY_RETRY_S
-            outcome = Outcome.WAIT
-        elif kind == JobResult.STOPPED:
-            item['retry_at'] = now
-            outcome = Outcome.WAIT
-        elif kind == JobResult.MISSING:
-            if now - item['ended_at'] > LOCATE_TIMEOUT_S:
-                outcome = Outcome.DROP
-            else:
-                item['retry_at'] = now + LOCATE_RETRY_S
-                outcome = Outcome.WAIT
-        else:
-            outcome = Outcome.RETRY
-        if outcome == Outcome.DONE:
-            self._finish(item, True)
-        elif outcome == Outcome.DROP:
-            self._finish(item, False)
+    def _settle(self, item, outcome, now, retry_after):
+        if outcome in (Outcome.DONE, Outcome.DROP):
+            self._finish(item)
         elif outcome == Outcome.AUTH:
             self.auth_blocked = True
         elif outcome == Outcome.QUOTA:
             item['retry_at'] = now + QUOTA_BACKOFF_S
         elif outcome == Outcome.RETRY:
             self._backoff(item, now, retry_after)
+
+    def complete(self, arena_unique_id, result, now, retry_after=None):
+        item = self._find(to_text(arena_unique_id))
+        if item is None:
+            return Outcome.DROP
+        result = result or {}
+
+        outcome = _job_outcome(item, result, now)
+        if outcome == Outcome.WAIT:
+            item['retry_at'] = now + WAIT_BY_RESULT[result['result']]
+        else:
+            self._settle(item, outcome, now, retry_after)
+
         self._persist()
         return outcome
 

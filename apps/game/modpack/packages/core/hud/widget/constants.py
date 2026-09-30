@@ -6,8 +6,23 @@ import re
 WIDGET_VERSION = 1
 
 # Colour roles the page maps to its palette (docs/specs/2026-09-29-hud-visual-redesign.md section 4.4).
-TONES = ('text', 'muted', 'ally', 'enemy', 'gold', 'accent', 'radio', 'track', 'stun', 'blocked', 'received', 'success', 'warning', 'good',
-         'bad')
+TONES = (
+    'text',
+    'muted',
+    'ally',
+    'enemy',
+    'gold',
+    'accent',
+    'radio',
+    'track',
+    'stun',
+    'blocked',
+    'received',
+    'success',
+    'warning',
+    'good',
+    'bad',
+)
 
 # The shared plate (`card`): a row's status mark the page draws as a glyph, and the lengths the page gets at most.
 CARD_KIND = 'card'
@@ -26,3 +41,27 @@ CARD_LIMITS = {
     'width': (120, 420),
 }
 HEX_COLOR = re.compile(r'^#[0-9A-Fa-f]{6}$')
+
+# The optional keywords of `card_row` and `card` with their defaults.
+ROW_OPTIONS = {
+    'icon': None,
+    'status': None,
+    'label': None,
+    'note': None,
+    'detail': None,
+    'progress': None,
+    'tone_name': 'text',
+    'text_tone': 'text',
+    'progress_tone': 'accent',
+    'color': None,
+}
+CARD_OPTIONS = {
+    'subtitle': None,
+    'value': None,
+    'value_tone': 'text',
+    'chips': (),
+    'strip': (),
+    'footer': None,
+    'rail': 'info',
+    'width': None,
+}

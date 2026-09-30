@@ -11,6 +11,7 @@ import { useWindowFrame } from '../use-window-frame';
 const SCREEN_REM = { width: 1663, height: 962 };
 const SCALE = 2;
 const SAVED = { placed: true, x: 274, y: 135, width: 1240, height: 800, zoom: 100 };
+const ORIGIN = { x: 0, y: 0 };
 
 const install = (view: { x: number; y: number }) => {
   const mock = createGamefaceMock({
@@ -47,7 +48,31 @@ const handleAt = (rect: { left: number; top: number; width: number; height: numb
 
 const mouse = (type: string, clientX: number, clientY: number) => new MouseEvent(type, { clientX, clientY, bubbles: true, cancelable: true });
 
+const drag = (from: { x: number; y: number }, to: { x: number; y: number }): void => {
+  document.body.dispatchEvent(mouse('mousedown', from.x, from.y));
+  document.body.dispatchEvent(mouse('mousemove', to.x, to.y));
+  document.body.dispatchEvent(mouse('mouseup', to.x, to.y));
+};
+
 const layouts = (sent: string[]) => sent.map((raw): { type: string } => JSON.parse(raw)).filter((message) => message.type === 'window_layout');
+
+const mountFrame = () => renderHook(() => useWindowFrame(SAVED));
+
+const mountWithTitle = () => {
+  const hook = mountFrame();
+
+  hook.current().handles.move.current = handleAt({ left: 424, top: 162, width: 400, height: 120 });
+
+  return hook;
+};
+
+const mountWithGrip = () => {
+  const hook = mountFrame();
+
+  hook.current().handles.corner.current = handleAt({ left: 2880, top: 1740, width: 36, height: 36 });
+
+  return hook;
+};
 
 afterEach(() => {
   forgetReports();
@@ -56,9 +81,9 @@ afterEach(() => {
 
 describe(useWindowFrame, () => {
   it('opens centred on the screen at the saved size, whatever position was saved', () => {
-    install({ x: 0, y: 0 });
+    install(ORIGIN);
 
-    const hook = renderHook(() => useWindowFrame(SAVED));
+    const hook = mountFrame();
 
     expect(hook.current().frameStyle).toEqual({ left: '212rem', top: '81rem', width: '1240rem', height: '800rem' });
     hook.unmount();
@@ -67,49 +92,47 @@ describe(useWindowFrame, () => {
   it('places the box on the screen, not in a view the client put off the screen origin', () => {
     install({ x: 211.5, y: 81 });
 
-    const hook = renderHook(() => useWindowFrame(SAVED));
+    const hook = mountFrame();
 
     expect(hook.current().frameStyle).toEqual({ left: '106rem', top: '41rem', width: '1240rem', height: '800rem' });
     hook.unmount();
   });
 
   it('moves by the title on the presses Gameface sends to the document, in rem at the interface scale', () => {
-    const mock = install({ x: 0, y: 0 });
-    const hook = renderHook(() => useWindowFrame(SAVED));
+    install(ORIGIN);
+    const hook = mountWithTitle();
 
-    hook.current().handles.move.current = handleAt({ left: 424, top: 162, width: 400, height: 120 });
-
-    hook.run(() => {
-      document.body.dispatchEvent(mouse('mousedown', 500, 200));
-      document.body.dispatchEvent(mouse('mousemove', 400, 150));
-      document.body.dispatchEvent(mouse('mouseup', 400, 150));
-    });
+    hook.run(() => drag({ x: 500, y: 200 }, { x: 400, y: 150 }));
 
     expect(hook.current().frameStyle).toMatchObject({ left: '162rem', top: '56rem' });
+    hook.unmount();
+  });
+
+  it('saves the new place after a move', () => {
+    const mock = install(ORIGIN);
+    const hook = mountWithTitle();
+
+    hook.run(() => drag({ x: 500, y: 200 }, { x: 400, y: 150 }));
+
     expect(layouts(mock.sent())).toEqual([expect.objectContaining({ x: 162, y: 56, placed: true })]);
     hook.unmount();
   });
 
-  it('resizes by the grip and ignores presses on the content', () => {
-    install({ x: 0, y: 0 });
+  it('ignores presses on the content', () => {
+    install(ORIGIN);
+    const hook = mountWithGrip();
 
-    const hook = renderHook(() => useWindowFrame(SAVED));
-
-    hook.current().handles.corner.current = handleAt({ left: 2880, top: 1740, width: 36, height: 36 });
-
-    hook.run(() => {
-      document.body.dispatchEvent(mouse('mousedown', 1000, 800));
-      document.body.dispatchEvent(mouse('mousemove', 900, 700));
-      document.body.dispatchEvent(mouse('mouseup', 900, 700));
-    });
+    hook.run(() => drag({ x: 1000, y: 800 }, { x: 900, y: 700 }));
 
     expect(hook.current().frameStyle).toMatchObject({ width: '1240rem', height: '800rem' });
+    hook.unmount();
+  });
 
-    hook.run(() => {
-      document.body.dispatchEvent(mouse('mousedown', 2890, 1750));
-      document.body.dispatchEvent(mouse('mousemove', 2790, 1650));
-      document.body.dispatchEvent(mouse('mouseup', 2790, 1650));
-    });
+  it('resizes by the grip', () => {
+    install(ORIGIN);
+    const hook = mountWithGrip();
+
+    hook.run(() => drag({ x: 2890, y: 1750 }, { x: 2790, y: 1650 }));
 
     expect(hook.current().frameStyle).toMatchObject({ width: '1190rem', height: '750rem' });
     hook.unmount();

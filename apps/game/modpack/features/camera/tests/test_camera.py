@@ -9,28 +9,50 @@ from otmetki.features.camera.model import FIELDS, to_native
 from otmetki.features.camera.settings import SCHEMA, SETTINGS
 
 
+def native(values):
+    return to_native(Settings(values, SCHEMA).to_dict())
+
+
 class CameraTest(unittest.TestCase):
 
     def test_defaults_change_nothing(self):
-        assert to_native(Settings(None, SCHEMA).to_dict()) == {}
+        assert native(None) == {}
+
+    def test_the_component_switch_is_camera_tweaks(self):
         assert SETTINGS == ('camera_tweaks',)
 
-    def test_sniper_zoom_and_toggles(self):
-        values = Settings({'sniper_zoom': 'x8', 'dynamic_camera': 'off', 'horizontal_stabilization': 'on'}, SCHEMA).to_dict()
-        assert to_native(values) == {'sniperZoom': 3, 'dynamicCamera': False, 'horStabilizationSnp': True}
-        assert to_native(Settings({'sniper_zoom': 'remember'}, SCHEMA).to_dict()) == {'sniperZoom': 0}
+    def test_the_zoom_and_the_toggles_map_to_the_client_settings(self):
+        result = native({'sniper_zoom': 'x8', 'dynamic_camera': 'off', 'horizontal_stabilization': 'on'})
 
-    def test_no_camera_config_overrides(self):
+        assert result == {'sniperZoom': 3, 'dynamicCamera': False, 'horStabilizationSnp': True}
+
+    def test_remember_the_last_zoom_is_zero(self):
+        assert native({'sniper_zoom': 'remember'}) == {'sniperZoom': 0}
+
+
+class NoCameraConfigTest(unittest.TestCase):
+
+    def test_only_the_games_own_options_are_written(self):
         assert setting_names(FIELDS) == ('dynamicCamera', 'horStabilizationSnp', 'sniperZoom')
+
+    def test_the_settings_are_the_preset_and_the_games_options(self):
         assert set(SCHEMA.defaults) == set(['preset', 'sniper_zoom', 'dynamic_camera', 'horizontal_stabilization'])
+
+    def test_a_zoom_the_game_does_not_offer_falls_back_to_native(self):
         assert Settings({'sniper_zoom': 'x25'}, SCHEMA).get('sniper_zoom') == 'native'
 
 
-    def test_presets_fill_native_fields_only(self):
-        values = Settings({'preset': 'sniper'}, SCHEMA).to_dict()
-        assert to_native(values) == {'sniperZoom': 3, 'dynamicCamera': False, 'horStabilizationSnp': True}
-        values = Settings({'preset': 'dynamic', 'sniper_zoom': 'x4'}, SCHEMA).to_dict()
-        assert to_native(values) == {'sniperZoom': 2, 'dynamicCamera': True, 'horStabilizationSnp': True}
+class PresetTest(unittest.TestCase):
+
+    def test_a_preset_fills_the_native_fields(self):
+        assert native({'preset': 'sniper'}) == {'sniperZoom': 3, 'dynamicCamera': False, 'horStabilizationSnp': True}
+
+    def test_a_chosen_field_wins_over_the_preset(self):
+        result = native({'preset': 'dynamic', 'sniper_zoom': 'x4'})
+
+        assert result == {'sniperZoom': 2, 'dynamicCamera': True, 'horStabilizationSnp': True}
+
+    def test_an_unknown_preset_falls_back_to_native(self):
         assert Settings({'preset': 'pmod'}, SCHEMA).get('preset') == 'native'
 
 

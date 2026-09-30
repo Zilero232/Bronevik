@@ -7,8 +7,24 @@ import struct
 import time
 
 from ..compat import is_int, string_types, to_text
-from .constants import (ALIVE_DEATH_REASON, ASSIST_KEYS, AVATAR_KEY, COMMON_STATS, DATE_TIME, EXTENSIONS, HEAD_FORMAT, MAGIC, MAX_BLOCKS,
-                        MAX_HEADER_BLOCK_BYTES, OWN_STATS, RECORDING_NAME, RESULT_DRAW, RESULT_LOSS, RESULT_WIN, SIZE_FORMAT)
+from .constants import (
+    ALIVE_DEATH_REASON,
+    ASSIST_KEYS,
+    AVATAR_KEY,
+    COMMON_STATS,
+    DATE_TIME,
+    EXTENSIONS,
+    HEAD_FORMAT,
+    MAGIC,
+    MAX_BLOCKS,
+    MAX_HEADER_BLOCK_BYTES,
+    OWN_STATS,
+    RECORDING_NAME,
+    RESULT_DRAW,
+    RESULT_LOSS,
+    RESULT_WIN,
+    SIZE_FORMAT,
+)
 
 
 def is_replay_name(name):
@@ -29,8 +45,6 @@ def _json_block(raw):
 
 
 def read_json_blocks(handle, limit=2):
-    """The first `limit` JSON blocks of a replay (arena block, then the results block when the battle
-    was watched to the end), or None when the file is not a replay."""
     head = _read_exact(handle, 8)
     if head is None:
         return None
@@ -83,25 +97,29 @@ def _dict_of(value, key):
 
 
 def _ints(source, names):
-    return dict((ours, source[theirs]) for theirs, ours in names if is_int(source.get(theirs)) and not isinstance(source.get(theirs), bool))
+    return dict((ours, source[theirs]) for theirs, ours in names if _is_plain_int(source.get(theirs)))
 
 
+def _is_plain_int(value):
+    return is_int(value) and not isinstance(value, bool)
+
+
+# (result, damage) of the recorder from the results block: its own `personal` entry and the winner team only (fair play:
+# the vehicles and players blocks are never read); (None, None) when unknown.
 def own_outcome(results):
-    """(result, damage) of the recorder from the results block: its own `personal` entry and the winner team only
-    (fair play: the vehicles and players blocks are never read); (None, None) when unknown."""
     own = _own_vehicle(_dict_of(results, 'personal'))
     common = _dict_of(results, 'common')
     if own is None:
         return None, None
     damage = own.get('damageDealt') if is_int(own.get('damageDealt')) else None
-    team, winner = own.get('team'), common.get('winnerTeam')
+    team = own.get('team')
+    winner = common.get('winnerTeam')
     if not is_int(team) or not is_int(winner):
         return None, damage
     return (RESULT_DRAW if winner == 0 else RESULT_WIN if winner == team else RESULT_LOSS), damage
 
 
 def own_stats(results):
-    """The recorder's own numbers from its `personal` entry and the battle's `common` block, or None without them."""
     own = _own_vehicle(_dict_of(results, 'personal'))
     if own is None:
         return None
@@ -117,7 +135,7 @@ def own_stats(results):
 def _arena_id(arena, first):
     for source in (arena, first):
         value = source.get('arenaUniqueID') if isinstance(source, dict) else None
-        if is_int(value) and not isinstance(value, bool) and value > 0:
+        if _is_plain_int(value) and value > 0:
             return to_text(value)
     return None
 
@@ -127,14 +145,27 @@ def read_header_from(handle):
     client_version, server, result, damage, stats} from the header blocks, or None. `stats` (the recorder's own
     results entry) and `result`/`damage` are None when the battle was left before its end."""
     blocks = read_json_blocks(handle)
-    if not blocks:
+    if not blocks or not isinstance(blocks[0], dict):
         return None
-    arena = blocks[0] if isinstance(blocks[0], dict) else None
-    if arena is None:
-        return None
+
+    arena = blocks[0]
+    first = _first_results(blocks)
+    header = _arena_header(arena, first)
+    if first is not None:
+        header['result'], header['damage'] = own_outcome(first)
+        header['stats'] = own_stats(first)
+    return header
+
+
+def _first_results(blocks):
     results = blocks[1] if len(blocks) > 1 else None
-    first = results[0] if isinstance(results, list) and results and isinstance(results[0], dict) else None
-    header = {
+    if not isinstance(results, list) or not results:
+        return None
+    return results[0] if isinstance(results[0], dict) else None
+
+
+def _arena_header(arena, first):
+    return {
         'player_id': arena.get('playerID') if is_int(arena.get('playerID')) else None,
         'player_name': _text_or_none(arena.get('playerName')),
         'date_time': parse_date_time(arena.get('dateTime')),
@@ -150,10 +181,6 @@ def read_header_from(handle):
         'damage': None,
         'stats': None,
     }
-    if first is not None:
-        header['result'], header['damage'] = own_outcome(first)
-        header['stats'] = own_stats(first)
-    return header
 
 
 def read_header(path):

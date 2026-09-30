@@ -5,11 +5,20 @@ from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, COLOR_WARN, counted, fon
 
 def arty_text(battle, day, settings, translate):
     values = dict((key, format_number(value)) for key, value in battle.items())
-    lines = [font(translate('arty_meter_line', **values), COLOR_WARN if battle['hits'] + battle['splash'] else COLOR_NEUTRAL)]
+    is_hit = battle['hits'] + battle['splash'] > 0
+
+    lines = [font(translate('arty_meter_line', **values), COLOR_WARN if is_hit else COLOR_NEUTRAL)]
     if battle['modules'] or battle['stuns']:
         lines.append(font(translate('arty_meter_line_extra', **values), COLOR_MUTED))
     if settings.get('show_day') and day:
-        lines.append(font(translate('arty_meter_day', battles=counted(day['battles'], 'battles', translate),
-                                    total=counted(day['hits'] + day['splash'], 'times', translate),
-                                    damage=format_number(day['damage'])), COLOR_MUTED))
+        lines.append(font(_day_line(day, translate), COLOR_MUTED))
     return u'\n'.join(lines)
+
+
+def _day_line(day, translate):
+    return translate(
+        'arty_meter_day',
+        battles=counted(day['battles'], 'battles', translate),
+        total=counted(day['hits'] + day['splash'], 'times', translate),
+        damage=format_number(day['damage']),
+    )

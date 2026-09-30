@@ -44,6 +44,7 @@ def strip_rows(teams, allies, options):
     previous_level = None
     for vehicle in tier_order(vehicles):
         starts_group = labelled and vehicle['level'] != previous_level
-        rows.append((vehicle, tier_numeral(vehicle['level']) if starts_group else None))
+        label = tier_numeral(vehicle['level']) if starts_group else None
+        rows.append((vehicle, label))
         previous_level = vehicle['level']
     return rows

@@ -1,7 +1,16 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.compat import as_int, is_int, string_types, to_text
-from .constants import CLASS_TAGS, HISTORY_VERSION, ITEM_CODE, MAX_VEHICLES, SOURCE_BATTLE, SOURCE_HANGAR
+from .constants import (
+    ASSIST_STATS,
+    CLASS_TAGS,
+    HISTORY_VERSION,
+    ITEM_CODE,
+    MAX_VEHICLES,
+    READING_KEYS,
+    SOURCE_BATTLE,
+    SOURCE_HANGAR,
+)
 
 
 def vehicle_label(name):
@@ -12,12 +21,77 @@ def vehicle_label(name):
 
 
 def percent(rating):
-    return round(rating / 100.0, 2) if is_int(rating) else None
+    if not is_int(rating):
+        return None
+    return round(rating / 100.0, 2)
 
 
-def _entry(time_s, rating, moving_avg, marks, source, arena=None, damage=None, combined=None, result=None):
-    return {'t': int(time_s), 'rating': rating, 'avg': moving_avg, 'marks': marks, 'source': source, 'arena': arena,
-            'damage': damage, 'combined': combined, 'result': result}
+def rating_delta(before, after):
+    first = percent(before.get('rating')) if before else None
+    last = percent(after.get('rating'))
+    if first is None or last is None:
+        return None
+    return round(last - first, 2)
+
+
+def _is_recordable(tank_id, dossier):
+    if not is_int(tank_id) or not is_int(dossier.get('damage_rating')):
+        return False
+    return bool(dossier.get('moving_avg_damage'))
+
+
+# `dossier` is the moe block of a battle event or a hangar snapshot: both carry the own dossier values.
+def _entry(time_s, dossier, source):
+    return {
+        't': int(time_s),
+        'rating': dossier['damage_rating'],
+        'avg': dossier['moving_avg_damage'],
+        'marks': dossier.get('marks_on_gun'),
+        'source': source,
+        'arena': None,
+        'damage': None,
+        'combined': None,
+        'result': None,
+    }
+
+
+def _battle_entry(event, moe):
+    stats = event.get('stats') or {}
+    damage = as_int(stats.get('damage_dealt'))
+    best_assist = max(as_int(stats.get(key)) for key in ASSIST_STATS)
+
+    entry = _entry(event.get('occurred_at') or 0, moe, SOURCE_BATTLE)
+    entry['arena'] = event.get('arena_unique_id')
+    entry['damage'] = damage
+    entry['combined'] = damage + best_assist
+    entry['result'] = event.get('result')
+    return entry
+
+
+def _same_reading(entry, other):
+    return all(entry.get(key) == other.get(key) for key in READING_KEYS)
+
+
+def _note_reached(vehicle, previous, entry):
+    marks = entry['marks']
+    if not is_int(marks):
+        return
+    reached = vehicle.setdefault('reached', {})
+    before = previous.get('marks') if previous else None
+    if not is_int(before):
+        return
+    for mark in range(max(before, 0) + 1, marks + 1):
+        reached.setdefault(str(mark), entry['t'])
+
+
+def _battle_indexes(entries):
+    return [index for index, item in enumerate(entries) if index > 0 and item.get('source') == SOURCE_BATTLE]
+
+
+def _span_delta(entries, indexes):
+    if not indexes:
+        return None
+    return rating_delta(entries[indexes[0] - 1], entries[indexes[-1]])
 
 
 class MarksHistory(object):
@@ -35,22 +109,28 @@ class MarksHistory(object):
     def vehicle(self, tank_id):
         return self.vehicles.get(str(tank_id))
 
-    def _record(self, tank_id, label, tier, entry, kind=None):
-        vehicle = self.vehicles.setdefault(str(tank_id), {'label': label or u'', 'tier': tier, 'entries': [], 'reached': {}})
+    def _entries(self, tank_id):
+        known = self.vehicle(tank_id)
+        if not known:
+            return []
+        return known.get('entries') or []
+
+    def _vehicle_for(self, tank_id, label, tier, kind):
+        blank = {'label': label or u'', 'tier': tier, 'entries': [], 'reached': {}}
+        vehicle = self.vehicles.setdefault(str(tank_id), blank)
         if label:
             vehicle['label'] = label
         if kind in CLASS_TAGS:
             vehicle['class'] = kind
         if is_int(tier):
             vehicle['tier'] = tier
+        return vehicle
+
+    def _record(self, vehicle, entry):
         entries = vehicle.setdefault('entries', [])
         previous = entries[-1] if entries else None
-        if is_int(entry['marks']):
-            before = previous['marks'] if previous and is_int(previous.get('marks')) else None
-            reached = vehicle.setdefault('reached', {})
-            for mark in range(1, entry['marks'] + 1):
-                if before is not None and mark > before and str(mark) not in reached:
-                    reached[str(mark)] = entry['t']
+        _note_reached(vehicle, previous, entry)
+
         entries.append(entry)
         del entries[:-self.max_entries]
         vehicle['updated'] = entry['t']
@@ -62,72 +142,58 @@ class MarksHistory(object):
             oldest = min(self.vehicles, key=lambda key: self.vehicles[key].get('updated') or 0)
             del self.vehicles[oldest]
 
+    def _has_arena(self, tank_id, arena):
+        if not arena:
+            return False
+        return any(item.get('arena') == arena for item in self._entries(tank_id))
+
     def record_battle(self, event, label=None, kind=None):
         moe = event.get('moe') or {}
-        vehicle = event.get('vehicle') or {}
-        tank_id = vehicle.get('tank_id')
-        if not is_int(tank_id) or not is_int(moe.get('damage_rating')) or not moe.get('moving_avg_damage'):
+        info = event.get('vehicle') or {}
+        tank_id = info.get('tank_id')
+        if not _is_recordable(tank_id, moe) or self._has_arena(tank_id, event.get('arena_unique_id')):
             return None
-        arena = event.get('arena_unique_id')
-        known = self.vehicle(tank_id)
-        if arena and known and any(item.get('arena') == arena for item in known.get('entries') or []):
-            return None
-        stats = event.get('stats') or {}
-        damage = as_int(stats.get('damage_dealt'))
-        combined = damage + max(as_int(stats.get('damage_assisted_radio')), as_int(stats.get('damage_assisted_track')),
-                                as_int(stats.get('damage_assisted_stun')))
-        entry = _entry(event.get('occurred_at') or 0, moe['damage_rating'], moe['moving_avg_damage'], moe.get('marks_on_gun'),
-                       SOURCE_BATTLE, arena, damage, combined, event.get('result'))
-        return self._record(tank_id, label or vehicle_label(vehicle.get('name')), vehicle.get('tier'), entry, kind)
+
+        entry = _battle_entry(event, moe)
+        vehicle = self._vehicle_for(tank_id, label or vehicle_label(info.get('name')), info.get('tier'), kind)
+        return self._record(vehicle, entry)
 
     def record_snapshot(self, snapshot, now, label=None, kind=None):
         tank_id = snapshot.get('tank_id')
-        if not is_int(tank_id) or not is_int(snapshot.get('damage_rating')) or not snapshot.get('moving_avg_damage'):
+        if not _is_recordable(tank_id, snapshot):
             return None
-        known = self.vehicle(tank_id)
-        last = (known.get('entries') or [None])[-1] if known else None
-        values = (snapshot['damage_rating'], snapshot['moving_avg_damage'], snapshot.get('marks_on_gun'))
-        if last is not None and (last.get('rating'), last.get('avg'), last.get('marks')) == values:
+        entry = _entry(now, snapshot, SOURCE_HANGAR)
+        entries = self._entries(tank_id)
+        if entries and _same_reading(entries[-1], entry):
             return None
-        entry = _entry(now, values[0], values[1], values[2], SOURCE_HANGAR)
-        return self._record(tank_id, label or vehicle_label(snapshot.get('name')), snapshot.get('tier'), entry, kind)
+
+        vehicle = self._vehicle_for(tank_id, label or vehicle_label(snapshot.get('name')), snapshot.get('tier'), kind)
+        return self._record(vehicle, entry)
 
     def clear(self, tank_id):
         return self.vehicles.pop(str(tank_id), None) is not None
 
     def summary(self, tank_id, trend_battles):
-        vehicle = self.vehicle(tank_id)
-        entries = (vehicle or {}).get('entries') or []
+        entries = self._entries(tank_id)
         if not entries:
             return None
+        vehicle = self.vehicle(tank_id)
         last = entries[-1]
-        battles = [index for index, item in enumerate(entries) if item.get('source') == SOURCE_BATTLE and index > 0]
-        last_delta = None
-        trend = None
-        if battles:
-            index = battles[-1]
-            last_delta = _delta(entries[index - 1], entries[index])
-            window = battles[-trend_battles:]
-            trend = _delta(entries[window[0] - 1], entries[window[-1]])
+        battles = _battle_indexes(entries)
+        window = battles[-trend_battles:]
+
         return {
             'label': vehicle.get('label') or u'',
             'tier': vehicle.get('tier'),
             'percent': percent(last.get('rating')),
             'marks': last.get('marks'),
             'avg': last.get('avg'),
-            'last_delta': last_delta,
-            'trend': trend,
-            'trend_battles': len(battles[-trend_battles:]),
+            'last_delta': _span_delta(entries, battles[-1:]),
+            'trend': _span_delta(entries, window),
+            'trend_battles': len(window),
             'reached': dict(vehicle.get('reached') or {}),
             'updated': vehicle.get('updated'),
         }
 
     def ordered(self):
         return sorted(self.vehicles, key=lambda key: -(self.vehicles[key].get('updated') or 0))
-
-
-def _delta(before, after):
-    first, last = percent(before.get('rating')), percent(after.get('rating'))
-    if first is None or last is None:
-        return None
-    return round(last - first, 2)

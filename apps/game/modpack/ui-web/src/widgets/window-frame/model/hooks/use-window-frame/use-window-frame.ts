@@ -8,7 +8,7 @@ import { send } from '../../../../../shared/api/protocol';
 import { reportOnce } from '../../../../../shared/lib/page-diag';
 import { WINDOW_FRAME } from '../../../config';
 import { describeFrame, describeViewport } from '../../../lib/describe';
-import { boundsOf, centredFrame, clampFrame, fitFrame, layoutOf, toRem, zoomStep } from '../../../lib/frame';
+import { boundsOf, centredFrame, layoutOf, openingFrame, toRem, zoomStep } from '../../../lib/frame';
 import { useFrameGesture } from '../use-frame-gesture';
 import { useViewport } from '../use-viewport';
 
@@ -22,7 +22,7 @@ export const useWindowFrame = (saved: UiWindow | null) => {
   const [chosenZoom, setChosenZoom] = useState<number | null>(null);
   const bounds = boundsOf(viewport);
   const zoom = chosenZoom ?? saved?.zoom ?? WINDOW_FRAME.defaultZoom;
-  const frame = placed ? clampFrame({ frame: placed, bounds }) : saved ? fitFrame({ saved, bounds }) : centredFrame({ bounds });
+  const frame = openingFrame({ placed, saved, bounds });
   const latestRef = useRef({ frame, zoom, viewport });
   const opened = saved !== null;
 

@@ -48,6 +48,11 @@ assert received['ammo_rack'] == 'otmetki:ammo_rack'
 - TypeScript: Prettier `printWidth` in `prettier.config.mjs`.
 - Python: 120 characters (`ruff` `line-length`), translated strings in `i18n` excepted.
 
+## What the tools enforce
+
+- Modpack Python (`apps/game/modpack/pyproject.toml`, ruff): 120 columns, blank lines between definitions (E30x), complexity 10 (C901), at most 6 returns, 10 branches, 7 arguments and 30 statements per function, 3 nested blocks (PLR0911/0912/0913/0915/1702), one condition per `assert` (PT018), no needless `else`/assignment before `return` (RET), the simplifications that stay valid on Python 2.7 (SIM, without SIM105). `ruff format` stays off: with its py37 target it adds trailing commas after `*args`/`**kwargs`, a SyntaxError on 2.7.
+- Modpack `ui-web` (root `eslint.config.mjs`, `otmetki/modpack-size`): complexity 10, depth 3, 60 lines per function, 3 nested callbacks, 3 parameters; tests are exempt.
+
 ## Tests
 
 - A test name states one behaviour: `test_alt_mode_shows_the_note_only_while_alt_is_held`.

@@ -9,6 +9,7 @@ import _support  # noqa: F401
 from otmetki.core.client.game import type_compact_descr, vehicle_class_tag, vehicle_info, vehicle_short_name
 
 STUBBED = ('items', 'items.vehicles')
+REJECTED_DESCRIPTORS = (None, True, 0, -3, 1.0, 'T-34', '', b'\x01\x02')
 
 
 class VehicleType(object):
@@ -36,7 +37,8 @@ class VehicleTypeTest(unittest.TestCase):
         vehicles = types.ModuleType(str('items.vehicles'))
         vehicles.getVehicleType = get_vehicle_type
         items.vehicles = vehicles
-        sys.modules['items'], sys.modules['items.vehicles'] = items, vehicles
+        sys.modules['items'] = items
+        sys.modules['items.vehicles'] = vehicles
 
     def tearDown(self):
         for name, module in self.saved.items():
@@ -45,20 +47,35 @@ class VehicleTypeTest(unittest.TestCase):
             else:
                 sys.modules[name] = module
 
-    def test_only_positive_ints_reach_the_client(self):
+    def test_a_positive_int_reaches_the_client_as_is(self):
         assert type_compact_descr(1) == 1
-        assert type_compact_descr('1') == 1 and type(type_compact_descr('1')) is int
-        for bad in (None, True, 0, -3, 1.0, 'T-34', '', b'\x01\x02'):
+
+    def test_a_digit_string_reaches_the_client_as_an_int(self):
+        descriptor = type_compact_descr('1')
+
+        assert descriptor == 1
+        assert type(descriptor) is int
+
+    def test_anything_but_a_positive_int_is_rejected(self):
+        for bad in REJECTED_DESCRIPTORS:
             assert type_compact_descr(bad) is None, bad
 
-    def test_names_of_a_type_id_given_as_a_digit_string(self):
+    def test_short_name_of_a_type_id_given_as_a_digit_string(self):
         assert vehicle_short_name('1') == u'Т-34'
+
+    def test_class_tag_of_a_type_id(self):
         assert vehicle_class_tag(1) == 'mediumTank'
+
+    def test_info_of_a_type_id_is_its_name_and_level(self):
         assert vehicle_info(1) == ('ussr:R04_T-34', 5)
 
-    def test_unknown_ids_read_as_missing(self):
+    def test_unknown_id_has_no_short_name(self):
         assert vehicle_short_name(2) is None
+
+    def test_missing_id_has_no_class_tag(self):
         assert vehicle_class_tag(None) is None
+
+    def test_invalid_id_has_no_info(self):
         assert vehicle_info('x') == (None, None)
 
 

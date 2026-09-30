@@ -14,3 +14,7 @@ export type Glide = {
   startedAt: number | null;
   written: number;
 };
+
+export type TopAtInput = { glide: Glide; now: number };
+
+export type GlideStep = { top: number; done: boolean };

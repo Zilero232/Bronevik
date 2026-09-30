@@ -39,7 +39,12 @@ paths:
   `except` (the core itself may be what failed to import).
 - A feature component starts from core, never from copies: `core.client.component.FeatureComponent`
   (strings, components.json section, `enabled()`, `enabled_in_hangar()`),
-  `core.client.hud.panel.BattlePanel` (battle panels: preview, hooks, start/stop),
+  `core.client.hud.panel.BattlePanel(app, PanelSpec)` (battle panels: preview, hooks, start/stop),
+  `core.client.component.PolledHangarCard(app, CardSpec)` (hangar cards refreshed on a timer:
+  implement only `render_card`), `FeatureComponent.refresh_action` (the «refresh» page button),
+  `core.client.battle.on_own_shot` / `on_own_vehicle_effect` and the pure `core.shot_points`
+  (own-vehicle hits), `core.net.signing.signed_request(transport, SignedRequest, callback)`,
+  `core.client.me.signed_read(app, SignedRead, on_data)`,
   `core.client.native.NativeSettingsComponent`, `core.client.garage` (lock flags, item
   processors), `core.client.game` (`client_attr`, `service`, `values_by_name`,
   `selected_vehicle`), `core.errors.ReasonError`.

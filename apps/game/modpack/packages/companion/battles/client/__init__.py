@@ -49,16 +49,22 @@ class BattleCapture(object):
         now = time.time()
         finished = self.queue_timer.dequeued(now)
         if finished is not None and self.app.config.is_enabled('send_queue_times'):
-            self.app.enqueue(build_queue_event(finished[0], finished[1], 'dequeued', now, current_vehicle_id()))
+            self._enqueue_queue_time(finished, 'dequeued', now)
 
     def on_arena_created(self):
         app = self.app
         now = time.time()
         finished = self.queue_timer.arena_created(now)
         if finished is not None and app.config.is_enabled('send_queue_times'):
-            app.enqueue(build_queue_event(finished[0], finished[1], 'arena', now, current_vehicle_id()))
-        if not BattleReplay.isPlaying() and app.enqueue(build_battle_start_event(now, current_vehicle_id())):
+            self._enqueue_queue_time(finished, 'arena', now)
+        if BattleReplay.isPlaying():
+            return
+        if app.enqueue(build_battle_start_event(now, current_vehicle_id())):
             app.flush_requested = True
+
+    def _enqueue_queue_time(self, finished, outcome, now):
+        queue_type, wait = finished
+        self.app.enqueue(build_queue_event(queue_type, wait, outcome, now, current_vehicle_id()))
 
     def on_battle_ready(self, player):
         self.tally.start()
@@ -66,17 +72,21 @@ class BattleCapture(object):
         wait = self.queue_timer.take_last_wait()
         if not arena_id:
             return
+
         self.app.bus.emit('battle_start', arena_id)
         self.loadouts.battle_started(arena_id, player_tank_id(player))
         if wait is not None:
             self.queue_wait_by_arena[arena_id] = wait
-        if arena_id not in [entry[0] for entry in self.pending_arenas]:
-            self.pending_arenas.append([arena_id, 0])
-        if arena_id not in self.played_arenas:
-            self.played_arenas = (self.played_arenas + [arena_id])[-PLAYED_ARENAS_LIMIT:]
+        self._track_arena(arena_id)
         if self.app.config.is_enabled('send_shots'):
             self.shot_arena = arena_id
             self.shot_tracker.start()
+
+    def _track_arena(self, arena_id):
+        if arena_id not in [pending[0] for pending in self.pending_arenas]:
+            self.pending_arenas.append([arena_id, 0])
+        if arena_id not in self.played_arenas:
+            self.played_arenas = (self.played_arenas + [arena_id])[-PLAYED_ARENAS_LIMIT:]
 
     def on_battle_leave(self):
         self.tally.stop()
@@ -106,12 +116,14 @@ class BattleCapture(object):
         if not self.pending_arenas or now - self.last_results_poll < RESULTS_POLL_EVERY_S:
             return
         self.last_results_poll = now
-        entry = self.pending_arenas.pop(0)
-        entry[1] += 1
-        if entry[1] < RESULTS_POLL_ATTEMPTS:
-            self.pending_arenas.append(entry)
-        if not self._take_cached(entry[0]) and entry[1] >= RESULTS_POLL_ATTEMPTS:
-            self._forget(entry[0])
+
+        pending = self.pending_arenas.pop(0)
+        pending[1] += 1
+        arena_id, attempts = pending
+        if attempts < RESULTS_POLL_ATTEMPTS:
+            self.pending_arenas.append(pending)
+        if not self._take_cached(arena_id) and attempts >= RESULTS_POLL_ATTEMPTS:
+            self._forget(arena_id)
 
     def _take_cached(self, arena_id):
         results = cached_results(arena_id)
@@ -126,37 +138,56 @@ class BattleCapture(object):
         self.loadouts.take(arena_id, None)
 
     def handle_results(self, results):
-        app = self.app
         arena_id = results.get('arenaUniqueID')
-        self.pending_arenas = [entry for entry in self.pending_arenas if entry[0] != arena_id]
-        if not arena_id or arena_id in self.seen_arenas:
+        self.pending_arenas = [pending for pending in self.pending_arenas if pending[0] != arena_id]
+        if not arena_id or arena_id in self.seen_arenas or self._is_foreign(results):
             return
+
+        self.app.bus.emit('battle_results', arena_id, results)
+        event = self._battle_event(arena_id, results)
+        if event is not None:
+            self._record(arena_id, event)
+
+    def _is_foreign(self, results):
         avatar = (results.get('personal') or {}).get('avatar') or {}
         owner = avatar.get('accountDBID')
-        if owner and app.account_id and owner != app.account_id:
-            return
-        app.bus.emit('battle_results', arena_id, results)
-        common = results.get('common') or {}
+        return bool(owner and self.app.account_id and owner != self.app.account_id)
+
+    def _battle_event(self, arena_id, results):
         try:
             probe = build_battle_event(results)
         except PayloadError as error:
             log('skip battle results: %s' % error)
-            return
+            return None
+
         tank_id = probe['vehicle']['tank_id']
         name, tier = vehicle_info(tank_id)
-        now = time.time()
-        event = build_battle_event(results, {
+        common = results.get('common') or {}
+        return build_battle_event(results, {
             'vehicle_name': name,
             'vehicle_tier': tier,
             'map_name': map_name(common.get('arenaTypeID')),
             'queue_time_s': self.queue_wait_by_arena.pop(arena_id, None),
-            'loadout': self.loadouts.take(arena_id, tank_id) if app.config.is_enabled('send_loadouts') else None,
-            'shots': self.shots_by_arena.pop(arena_id, None) if app.config.is_enabled('send_shots') else None,
+            'loadout': self._take_loadout(arena_id, tank_id),
+            'shots': self._take_shots(arena_id),
             'achievement_name': achievement_name,
         })
-        app.bus.emit('battle_event', event, now)
+
+    def _take_loadout(self, arena_id, tank_id):
+        if not self.app.config.is_enabled('send_loadouts'):
+            return None
+        return self.loadouts.take(arena_id, tank_id)
+
+    def _take_shots(self, arena_id):
+        if not self.app.config.is_enabled('send_shots'):
+            return None
+        return self.shots_by_arena.pop(arena_id, None)
+
+    def _record(self, arena_id, event):
+        app = self.app
+        app.bus.emit('battle_event', event, time.time())
         self.seen_arenas.append(arena_id)
-        app.marks.after_battle(tank_id, event.get('moe'))
+        app.marks.after_battle(event['vehicle']['tank_id'], event.get('moe'))
         app.save_state()
         if app.config.is_enabled('send_battle_results') and app.enqueue(event):
             app.flush_requested = True

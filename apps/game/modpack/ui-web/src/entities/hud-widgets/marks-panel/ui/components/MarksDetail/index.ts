@@ -1,0 +1,1 @@
+export { MarksDetail } from './MarksDetail';

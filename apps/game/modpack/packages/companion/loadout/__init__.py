@@ -84,9 +84,14 @@ def normalize_loadout(raw, arena_type_id=None):
         'crew': _crew(raw.get('crew')),
         'gameplay_id': gameplay_id_of(arena_type_id),
     }
-    has_slots = any(item is not None for key in ('optional_devices', 'consumables', 'directives') for item in loadout[key])
-    has_items = has_slots or any(loadout[key] for key in ('shells', 'field_modifications', 'crew'))
-    return loadout if has_items else None
+    return loadout if _has_items(loadout) else None
+
+
+def _has_items(loadout):
+    slots = loadout['optional_devices'] + loadout['consumables'] + loadout['directives']
+    if any(item is not None for item in slots):
+        return True
+    return any(loadout[key] for key in ('shells', 'field_modifications', 'crew'))
 
 
 class LoadoutTracker(object):

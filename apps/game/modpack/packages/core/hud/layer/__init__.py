@@ -1,17 +1,17 @@
 """What features call: register a panel with its schema, show text in it, hide it.
 
-When the backend reports a drag or a resize (`on_moved`), the new x/y (and the anchor, when the renderer sends
-one) or scale are saved into the panel's section of components.json, so the panel comes back where the player left it.
-An unchanged text is not sent again (a Flash or Gameface re-layout per call is the cost).
+When the backend reports a drag or a resize (`on_moved`), the new x/y (and the anchor, when the renderer sends one) or
+scale are saved into the panel's section of components.json, so the panel comes back where the player left it. An
+unchanged text is not sent again (a Flash or Gameface re-layout per call is the cost).
 
-`set_muted(True)` (the streamer hotkey), `set_blocked(panel_ids)` (the streamer's private panels) and `set_gui_hidden(True)`
-(the stock battle GUI hidden: V, full stats) take panels off the screen without the features knowing: their texts are
-held and come back when the panel is allowed again.
+`set_muted(True)` (the streamer hotkey), `set_blocked(panel_ids)` (the streamer's private panels) and
+`set_gui_hidden(True)` (the stock battle GUI hidden: V, full stats) take panels off the screen without the features
+knowing: their texts are held and come back when the panel is allowed again.
 
 `enter_mode(mode)` (a battle type, `core.hud.modes`) asks the layout policy a component set with `set_policy(policy)`
-which panels the type shows and whether it keeps places of its own: a panel the type leaves out is held like a muted one,
-and a drag in such a battle is saved for that type (`ModePlaces`), not in the panel's settings. `leave_mode()` goes back to
-every panel at its own place (the hangar, the HUD editor).
+which panels the type shows and whether it keeps places of its own: a panel the type leaves out is held like a muted
+one, and a drag in such a battle is saved for that type (`ModePlaces`), not in the panel's settings. `leave_mode()` goes
+back to every panel at its own place (the hangar, the HUD editor).
 
 `show(panel_id, text, widget)` also carries the panel's structured payload (`core.hud.widget`) for the Gameface page;
 `renders_widgets()` says whether the renderer draws it (a feature replaces a stock element only then).
@@ -21,7 +21,17 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ...compat import is_number, string_types
 from ..backend import NullBackend
 from ..modes import MODE_RANDOM, ModePlaces
-from ..panel import LAYOUT_KEYS, alias_of, dock_of, is_pinned, layout_props, moved_values, panel_of, pinned_values, retired_reset
+from ..panel import (
+    LAYOUT_KEYS,
+    alias_of,
+    dock_of,
+    is_pinned,
+    layout_props,
+    moved_values,
+    panel_of,
+    pinned_values,
+    retired_reset,
+)
 
 
 class HudLayer(object):
@@ -55,8 +65,8 @@ class HudLayer(object):
         return self.backend.name
 
     def register(self, panel_id, schema):
-        """Declare a panel; returns its settings (a `Settings` over `schema`, stored in components.json). A panel still at a
-        default place of an older version moves to today's default (`panel.retired_reset`)."""
+        """Declare a panel; returns its settings (a `Settings` over `schema`, stored in components.json). A panel still
+        at a default place of an older version moves to today's default (`panel.retired_reset`)."""
         settings = self.config.section(panel_id, schema)
         reset = retired_reset(settings)
         if reset:
@@ -116,12 +126,16 @@ class HudLayer(object):
             self.mode = None
             self._apply_mode()
 
+    def _mode_policy(self):
+        if self.mode is None or self.policy is None:
+            return None, False
+        return self.policy(self.mode)
+
     def _apply_mode(self):
-        allowed, own_places = None, False
-        if self.mode is not None and self.policy is not None:
-            allowed, own_places = self.policy(self.mode)
+        allowed, own_places = self._mode_policy()
         self.allowed = frozenset(allowed) if allowed is not None else None
         self.own_places = bool(own_places) and self.mode not in (None, MODE_RANDOM)
+
         for alias in list(self.shown):
             panel_id = panel_of(alias)
             if panel_id in self.panels:
@@ -143,12 +157,10 @@ class HudLayer(object):
             self._take_off(panel_id)
             self.held[panel_id] = (text, widget)
             return True
+
         alias = alias_of(panel_id)
         if alias in self.shown:
-            if self.texts.get(alias) != text or self.widgets.get(alias) != widget:
-                self.backend.update(alias, {'text': text, 'visible': True, 'widget': widget})
-                self.texts[alias] = text
-                self.widgets[alias] = widget
+            self._redraw(alias, text, widget)
             return True
         if not self.backend.create(alias, self.props(panel_id, text, widget)):
             return False
@@ -156,6 +168,13 @@ class HudLayer(object):
         self.texts[alias] = text
         self.widgets[alias] = widget
         return True
+
+    def _redraw(self, alias, text, widget):
+        if self.texts.get(alias) == text and self.widgets.get(alias) == widget:
+            return
+        self.backend.update(alias, {'text': text, 'visible': True, 'widget': widget})
+        self.texts[alias] = text
+        self.widgets[alias] = widget
 
     def place(self, panel_id, x, y):
         """Move a shown panel for now (a mark that follows the crosshair); components.json keeps the player's
@@ -181,10 +200,6 @@ class HudLayer(object):
         if alias in self.shown:
             self.shown.discard(alias)
             self.backend.delete(alias)
-
-    def hide_all(self):
-        for panel_id in list(self.panels):
-            self.hide(panel_id)
 
     def set_muted(self, muted):
         """Take every panel off the screen (True) or bring back what the features show (False)."""

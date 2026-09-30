@@ -13,7 +13,6 @@ from .constants import PACKAGE_EXTENSIONS, PACKAGE_PREFIXES
 
 
 def installed_packages(root=MODS_ROOT):
-    """'<client version folder>/<file>' of every package of ours or of our renderers under `root`."""
     found = []
     if not os.path.isdir(root):
         return found
@@ -28,7 +27,6 @@ def installed_packages(root=MODS_ROOT):
 
 
 def session_header(versions, root=MODS_ROOT):
-    """The header lines: the client, Python and mod versions (`versions`: (name, version) pairs) and the packages."""
     try:
         packages = installed_packages(root)
     except (IOError, OSError):

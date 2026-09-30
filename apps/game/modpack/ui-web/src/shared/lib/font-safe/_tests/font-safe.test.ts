@@ -8,18 +8,19 @@ const unsafe = (text: string): string[] =>
 
 describe(fontSafe, () => {
   it('swaps the characters the client font lacks for ones it has', () => {
-    expect(fontSafe('−1 200 ≈ 2 862 → ★✓')).toBe('-1 200 ~ 2 862 › *+');
+    expect(fontSafe('−1 200 ≈ 2 862 → ★✓')).toBe('-1 200 ~ 2 862 › *+');
   });
 
-  it('leaves Cyrillic, the kept punctuation and ASCII alone and drops an unknown symbol', () => {
+  it('leaves Cyrillic, the kept punctuation and ASCII alone', () => {
     expect(fontSafe('Урон — 1 200 · № 5…')).toBe('Урон — 1 200 · № 5…');
+  });
+
+  it('drops a symbol it has no replacement for', () => {
     expect(fontSafe('a☃b')).toBe('ab');
   });
 
-  it('maps every replacement to text the font has', () => {
-    Object.values(FONT_SAFE.replacements).forEach((replacement) => {
-      expect(unsafe(replacement)).toEqual([]);
-    });
+  it.each(Object.entries(FONT_SAFE.replacements))('replaces %j with text the font has', (_char, replacement) => {
+    expect(unsafe(replacement)).toEqual([]);
   });
 });
 

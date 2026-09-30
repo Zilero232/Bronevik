@@ -8,7 +8,7 @@ import { SearchBox } from '../SearchBox';
 
 const container = document.createElement('div');
 
-const mountSearch = (query: string, cleared: string[]): HTMLInputElement => {
+const mountSearch = (query: string, cleared: string[] = []): HTMLInputElement => {
   document.body.append(container);
 
   void act(() => {
@@ -30,6 +30,12 @@ const pressCtrlF = (): void => {
   });
 };
 
+const pressEsc = (): void => {
+  act(() => {
+    stepBack();
+  });
+};
+
 afterEach(() => {
   void act(() => {
     render(null, container);
@@ -40,7 +46,7 @@ afterEach(() => {
 
 describe(SearchBox, () => {
   it('takes the focus on Ctrl+F', () => {
-    const input = mountSearch('', []);
+    const input = mountSearch('');
 
     pressCtrlF();
 
@@ -53,21 +59,17 @@ describe(SearchBox, () => {
     mountSearch('camo', cleared);
     pressCtrlF();
 
-    act(() => {
-      stepBack();
-    });
+    pressEsc();
 
     expect(cleared).toEqual(['camo']);
   });
 
   it('gives the focus back on Esc once the query is empty', () => {
-    const input = mountSearch('', []);
+    const input = mountSearch('');
 
     pressCtrlF();
 
-    act(() => {
-      stepBack();
-    });
+    pressEsc();
 
     expect(document.activeElement).not.toBe(input);
   });

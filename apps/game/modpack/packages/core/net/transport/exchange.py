@@ -16,9 +16,9 @@ def _headers_of(response):
         return {}
 
 
+# Header names and values as the interpreter's `str`: Python 2's HTTP code must not mix unicode headers with a binary
+# body.
 def native_headers(headers):
-    """Header names and values as the interpreter's `str`: Python 2's HTTP code must not mix unicode
-    headers with a binary body."""
     return dict((to_native(key), to_native(value)) for key, value in (headers or {}).items())
 
 
@@ -31,9 +31,9 @@ def _sized_headers(headers, body):
     return sized
 
 
+# One blocking HTTP exchange: (status, body, headers); status NETWORK_ERROR when nothing came back. `body` is bytes or a
+# sized file-like object (body.StoppableBody), sent from its start in blocks.
 def perform(method, url, headers, body, timeout):
-    """One blocking HTTP exchange: (status, body, headers); status NETWORK_ERROR when nothing came back.
-    `body` is bytes or a sized file-like object (body.StoppableBody), sent from its start in blocks."""
     request = _urlrequest.Request(to_native(url), data=body, headers=native_headers(_sized_headers(headers, body)))
     request.get_method = lambda: method
     try:
@@ -66,8 +66,8 @@ class SyncTransport(object):
         return 0
 
 
+# Requests on a BackgroundRunner thread; callbacks run on the thread that calls poll() (the game's).
 class ThreadTransport(object):
-    """Requests on a BackgroundRunner thread; callbacks run on the thread that calls poll() (the game's)."""
 
     def __init__(self, timeout=DEFAULT_TIMEOUT_S):
         self.timeout = timeout

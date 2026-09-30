@@ -17,7 +17,7 @@ if TOOLS_DIR not in sys.path:
     sys.path.insert(0, TOOLS_DIR)
 
 from most import DEFAULT_CHANGELOG, DEFAULT_OUT, DEFAULT_PACKAGES  # noqa: E402
-from most.bundle import BundleError, assemble  # noqa: E402
+from most.bundle import BundleError, BundleRequest, assemble  # noqa: E402
 
 
 def parse_args(argv=None):
@@ -26,11 +26,27 @@ def parse_args(argv=None):
     parser.add_argument('--packages', default=DEFAULT_PACKAGES, help='folder with the split .mtmod release packages')
     parser.add_argument('--out', default=DEFAULT_OUT, help='bundle folder')
     parser.add_argument('--release', action='store_true', help='fail on packages with .py sources (bytecode only)')
-    parser.add_argument('--changelog', default=DEFAULT_CHANGELOG, help='CHANGELOG.md with "## <id> <version>" or "## <version>" entries')
+    parser.add_argument(
+        '--changelog',
+        default=DEFAULT_CHANGELOG,
+        help='CHANGELOG.md with "## <id> <version>" or "## <version>" entries',
+    )
     parser.add_argument('--only', nargs='+', default=(), help='bundle only these component ids')
     parser.add_argument('--skip-images', action='store_true', help='do not render previews (needs resvg-py and pillow)')
     parser.add_argument('--strict', action='store_true', help='fail on warnings too')
     return parser.parse_args(argv)
+
+
+def request_of(args):
+    return BundleRequest(
+        packages_dir=args.packages,
+        game_version=args.game_version,
+        out_dir=args.out,
+        release=args.release,
+        changelog=args.changelog,
+        only=args.only,
+        skip_images=args.skip_images,
+    )
 
 
 def main(argv=None):
@@ -38,14 +54,15 @@ def main(argv=None):
     if hasattr(sys.stdout, 'reconfigure'):
         sys.stdout.reconfigure(errors='replace')
     try:
-        index, findings = assemble(args.packages, args.game_version, args.out, release=args.release, changelog=args.changelog,
-                                   only=args.only, skip_images=args.skip_images)
+        index, findings = assemble(request_of(args))
     except BundleError as error:
         print('ERROR: %s' % error)
         return 1
+
     for item in findings.items:
         print(item)
-    print('Wrote %s: %d components, %d errors, %d warnings' % (args.out, len(index['components']), len(findings.errors), len(findings.warnings)))
+    counts = (args.out, len(index['components']), len(findings.errors), len(findings.warnings))
+    print('Wrote %s: %d components, %d errors, %d warnings' % counts)
     if findings.errors or (args.strict and findings.warnings):
         return 1
     return 0

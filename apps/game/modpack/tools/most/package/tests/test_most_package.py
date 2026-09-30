@@ -15,6 +15,15 @@ if PY3:
     from most.bundle import load_manifest
     from most.package import check_package, parse_meta, read_package
 
+META_WITH_DEPENDENCY = (
+    '<root><id>a.b</id><version>1.0.0</version><name>N</name><description>D</description>'
+    '<dependencies><dependency><id>a.core</id><version>0.1.0</version></dependency></dependencies></root>'
+)
+STALE_PANEL_META = (
+    '<root><id>net.triotmetki.marks_panel</id><version>9.9.9</version><name>x</name>'
+    '<description>y</description></root>'
+)
+
 
 def messages(findings):
     return [item.message for item in findings.items]
@@ -38,9 +47,16 @@ class PackageTest(unittest.TestCase):
         pairs = [(depend.package_id, depend.version) for depend in by_key[key].depends]
         return info, check_package(info, component, pairs, release)
 
+    def write_stale_compressed_panel(self, component):
+        path = os.path.join(self.tmp, component.file)
+        with zipfile.ZipFile(path, 'w', zipfile.ZIP_DEFLATED) as package:
+            package.writestr('meta.xml', STALE_PANEL_META)
+            package.writestr('res/scripts/client/gui/mods/mod_x.pyc', b'')
+        return path
+
     def test_parse_meta_reads_fields_and_dependencies(self):
-        meta, dependencies = parse_meta('<root><id>a.b</id><version>1.0.0</version><name>N</name><description>D</description>'
-                                        '<dependencies><dependency><id>a.core</id><version>0.1.0</version></dependency></dependencies></root>')
+        meta, dependencies = parse_meta(META_WITH_DEPENDENCY)
+
         self.assertEqual(meta, {'id': 'a.b', 'version': '1.0.0', 'name': 'N', 'description': 'D'})
         self.assertEqual(dependencies, [('a.core', '0.1.0')])
 
@@ -50,43 +66,54 @@ class PackageTest(unittest.TestCase):
 
     def test_built_release_package_passes(self):
         manifest, by_key = self.build()
+
         for key in ('core', 'companion', 'marks_panel'):
             info, findings = self.check(manifest, by_key, key)
+
             self.assertTrue(info.stored)
             self.assertEqual(findings.items, [], messages(findings))
 
-    def test_sources_fail_a_release_and_warn_otherwise(self):
+    def test_sources_fail_a_release(self):
         manifest, by_key = self.build('.py')
-        _, release = self.check(manifest, by_key, 'core', release=True)
-        _, dev = self.check(manifest, by_key, 'core', release=False)
-        self.assertEqual(len(release.errors), 1)
-        self.assertIn('.pyc', release.errors[0].message)
-        self.assertEqual(dev.errors, [])
-        self.assertEqual(len(dev.warnings), 1)
 
-    def test_meta_mismatch_and_wrong_dependencies_are_errors(self):
-        manifest, by_key = self.build()
+        _, findings = self.check(manifest, by_key, 'core', release=True)
+
+        self.assertEqual(len(findings.errors), 1)
+        self.assertIn('.pyc', findings.errors[0].message)
+
+    def test_sources_only_warn_outside_a_release(self):
+        manifest, by_key = self.build('.py')
+
+        _, findings = self.check(manifest, by_key, 'core', release=False)
+
+        self.assertEqual(findings.errors, [])
+        self.assertEqual(len(findings.warnings), 1)
+
+    def test_meta_mismatch_wrong_dependencies_and_compression_are_reported(self):
+        manifest, _ = self.build()
         component = manifest.component('marks_panel')
-        path = os.path.join(self.tmp, component.file)
-        with zipfile.ZipFile(path, 'w', zipfile.ZIP_DEFLATED) as package:
-            package.writestr('meta.xml', '<root><id>net.triotmetki.marks_panel</id><version>9.9.9</version><name>x</name>'
-                                         '<description>y</description></root>')
-            package.writestr('res/scripts/client/gui/mods/mod_x.pyc', b'')
-        info = read_package(path)
+        info = read_package(self.write_stale_compressed_panel(component))
+
         findings = check_package(info, component, [('net.triotmetki.core', '0.1.0')], True)
+
         errors = ' '.join(item.message for item in findings.errors)
         self.assertIn('version', errors)
         self.assertIn('dependencies', errors)
         self.assertIn('compressed', ' '.join(item.message for item in findings.warnings))
 
-    def test_not_a_zip_or_no_meta(self):
+    def test_not_a_zip_is_a_value_error(self):
         path = os.path.join(self.tmp, 'bad.mtmod')
         with open(path, 'wb') as handle:
             handle.write(b'not a zip')
+
         with self.assertRaises(ValueError):
             read_package(path)
+
+    def test_a_zip_without_meta_is_a_value_error(self):
+        path = os.path.join(self.tmp, 'bad.mtmod')
         with zipfile.ZipFile(path, 'w') as package:
             package.writestr('res/x.pyc', b'')
+
         with self.assertRaises(ValueError):
             read_package(path)
 

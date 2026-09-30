@@ -20,6 +20,16 @@ def strip_data(options, style='icons'):
     return team_hp_widget(preview_teams(), Settings({'style': style}, SCHEMA), options)['data']
 
 
+def bar_pair_data():
+    return team_hp_widget(preview_teams(), Settings({}, SCHEMA), ALL_ON)['data']
+
+
+def teams_with_stock_health():
+    teams = preview_teams()
+    teams.set_team_health(3000, 800, 5300, 5200)
+    return teams
+
+
 def one_tier_battle():
     teams = TeamHp(own_team=1)
     teams.add(1, 1, 1000, level=8)
@@ -30,17 +40,35 @@ def one_tier_battle():
 
 class TeamHpWidgetTest(unittest.TestCase):
 
-    def test_bar_pair_carries_both_sides_and_the_score(self):
+    def test_the_payload_is_a_team_hp_widget(self):
         payload = team_hp_widget(preview_teams(), Settings({}, SCHEMA), ALL_ON)
 
-        data = payload['data']
         assert payload['kind'] == 'team_hp'
         assert payload['v'] == 1
+
+    def test_bar_pair_carries_the_allies_side(self):
+        data = bar_pair_data()
+
         assert data['allies'] == {'hp': 3200, 'max': 5300, 'alive': 2, 'count': 3, 'frags': 2}
-        assert data['enemies']['hp'] == 900
-        assert data['enemies']['frags'] == 1
+
+    def test_bar_pair_carries_the_enemies_side(self):
+        data = bar_pair_data()
+
+        assert data['enemies'] == {'hp': 900, 'max': 5200, 'alive': 1, 'count': 3, 'frags': 1}
+
+    def test_bar_pair_has_no_vehicle_strip(self):
+        data = bar_pair_data()
+
         assert data['vehicles'] == {'allies': [], 'enemies': []}
+
+    def test_bar_pair_carries_the_difference(self):
+        data = bar_pair_data()
+
         assert data['diff'] == 2300
+
+    def test_bar_pair_shows_the_score_by_default(self):
+        data = bar_pair_data()
+
         assert data['show_score'] is True
 
     def test_carries_the_alive_score_toggle(self):
@@ -48,22 +76,30 @@ class TeamHpWidgetTest(unittest.TestCase):
 
         assert payload['data']['score_alive'] is True
 
-    def test_side_hp_is_the_stock_team_health_once_fed(self):
-        teams = preview_teams()
-        teams.set_team_health(3000, 800, 5300, 5200)
-
-        data = team_hp_widget(teams, Settings({}, SCHEMA), ALL_ON)['data']
+    def test_the_allies_hp_is_the_stock_team_health_once_fed(self):
+        data = team_hp_widget(teams_with_stock_health(), Settings({}, SCHEMA), ALL_ON)['data']
 
         assert data['allies']['hp'] == 3000
+
+    def test_the_enemies_side_is_the_stock_team_health_once_fed(self):
+        data = team_hp_widget(teams_with_stock_health(), Settings({}, SCHEMA), ALL_ON)['data']
+
         assert data['enemies'] == {'hp': 800, 'max': 5200, 'alive': 1, 'count': 3, 'frags': 1}
 
-    def test_icon_strip_tints_classes_by_side(self):
-        data = strip_data(NO_TIERS)
+    def test_ally_class_icons_are_green(self):
+        allies = strip_data(NO_TIERS)['vehicles']['allies']
 
-        allies, enemies = data['vehicles']['allies'], data['vehicles']['enemies']
         assert allies[0]['icon'].startswith('img://gui/maps/icons/vehicleTypes/green/mediumTank.png')
+
+    def test_enemy_class_icons_are_red(self):
+        enemies = strip_data(NO_TIERS)['vehicles']['enemies']
+
         assert enemies[0]['icon'] == 'img://gui/maps/icons/vehicleTypes/red/at-spg.png|otmetki:class_td'
         assert enemies[2]['icon'].startswith('img://gui/maps/icons/vehicleTypes/red/spg.png')
+
+    def test_the_strip_carries_whether_each_vehicle_is_alive(self):
+        enemies = strip_data(NO_TIERS)['vehicles']['enemies']
+
         assert [vehicle['alive'] for vehicle in enemies] == [True, False, False]
 
     def test_icons_follow_the_stock_vehicle_icons_option(self):
@@ -86,11 +122,15 @@ class TeamHpWidgetTest(unittest.TestCase):
 
         assert [vehicle['tier'] for vehicle in data['vehicles']['allies']] == ['X', 'IX', 'VIII']
 
-    def test_without_tier_grouping_the_arena_order_stays_unlabelled(self):
-        data = strip_data(NO_TIERS)
+    def test_without_tier_grouping_the_arena_order_stays(self):
+        allies = strip_data(NO_TIERS)['vehicles']['allies']
 
-        assert [vehicle['max'] for vehicle in data['vehicles']['allies']] == [1800, 1500, 2000]
-        assert [vehicle['tier'] for vehicle in data['vehicles']['allies']] == [None, None, None]
+        assert [vehicle['max'] for vehicle in allies] == [1800, 1500, 2000]
+
+    def test_without_tier_grouping_the_strip_is_unlabelled(self):
+        allies = strip_data(NO_TIERS)['vehicles']['allies']
+
+        assert [vehicle['tier'] for vehicle in allies] == [None, None, None]
 
     def test_one_tier_battle_shows_no_tier_labels(self):
         rows = strip_rows(one_tier_battle(), True, ALL_ON)
@@ -98,8 +138,10 @@ class TeamHpWidgetTest(unittest.TestCase):
         assert [tier for _, tier in rows] == [None, None]
 
     def test_every_style_is_known_to_the_schema(self):
-        for style in ('full', 'segments', 'icons', 'compact', 'minimal', 'numbers', 'bars'):
-            assert Settings({'style': style}, SCHEMA).get('style') == style
+        styles = ('full', 'segments', 'icons', 'compact', 'minimal', 'numbers', 'bars')
+
+        for style in styles:
+            assert Settings({'style': style}, SCHEMA).get('style') == style, style
 
     def test_fixture_for_the_page(self):
         payload = preview_widget(Settings({'style': 'icons'}, SCHEMA), None)

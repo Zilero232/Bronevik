@@ -21,54 +21,92 @@ class ManifestError(ValueError):
     pass
 
 
-def _fallback(package, catalog):
-    title = Localized(package.name, package.name)
-    return title, Localized(package.description, package.description), catalog.fallback_fair_play
+def _uncatalogued_fields(package, catalog, warnings):
+    """What a package with no catalog entry gets: its own name and description, unticked, in the fallback category."""
+    warnings.append(
+        'package %s has no catalog entry: shipped unticked in category %s' % (package.key, catalog.fallback_category),
+    )
+    return {
+        'title': Localized(package.name, package.name),
+        'description': Localized(package.description, package.description),
+        'fair_play': catalog.fallback_fair_play,
+        'category': catalog.fallback_category,
+        'presets': (),
+        'required': False,
+        'preview': Preview(),
+        'extra_dependencies': (),
+        'perf': None,
+        'context': None,
+    }
+
+
+def _catalogued_fields(package, entry):
+    image = '%s/%s.png' % (PREVIEWS_DIR, package.key) if entry.preview.image else None
+    audio = audio_path(package.key, entry.preview.audio) if entry.preview.audio else None
+    return {
+        'title': entry.title,
+        'description': entry.description,
+        'fair_play': entry.fair_play,
+        'category': entry.category,
+        'presets': entry.presets,
+        'required': entry.required,
+        'preview': Preview(image, entry.preview.video, audio),
+        'extra_dependencies': entry.dependencies,
+        'perf': entry.perf,
+        'context': entry.context,
+    }
+
+
+def _dependency_keys(package, extra_dependencies):
+    """The package's own dependencies, then the catalog's extra ones, each once."""
+    keys = []
+    for dependency in [depend.key for depend in package.depends] + list(extra_dependencies):
+        if dependency not in keys:
+            keys.append(dependency)
+    return tuple(keys)
+
+
+def _file_stats(file_name, packages_dir):
+    """(sha256, size) of the built package file, or (None, None) when no packages folder is given."""
+    if packages_dir is None:
+        return None, None
+    path = os.path.join(packages_dir, file_name)
+    if not os.path.isfile(path):
+        raise ManifestError(
+            '%s not found in %s: build the packages first (tools/build/build.py)' % (file_name, packages_dir),
+        )
+    return fileio.sha256(path), os.path.getsize(path)
 
 
 def _component(package, catalog, platform, packages_dir, warnings):
     entry = catalog.entry(package.key)
-    if entry is None:
-        warnings.append('package %s has no catalog entry: shipped unticked in category %s' % (package.key, catalog.fallback_category))
-        title, description, fair_play = _fallback(package, catalog)
-        category, presets, required, preview, extra, perf, context = catalog.fallback_category, (), False, Preview(), (), None, None
-    else:
-        title, description, fair_play = entry.title, entry.description, entry.fair_play
-        category, presets, required, extra, perf, context = (entry.category, entry.presets, entry.required, entry.dependencies, entry.perf,
-                                                             entry.context)
-        image = '%s/%s.png' % (PREVIEWS_DIR, package.key) if entry.preview.image else None
-        audio = audio_path(package.key, entry.preview.audio) if entry.preview.audio else None
-        preview = Preview(image, entry.preview.video, audio)
-    dependencies = []
-    for dependency in [depend.key for depend in package.depends] + list(extra):
-        if dependency not in dependencies:
-            dependencies.append(dependency)
+    is_catalogued = entry is not None
+    fields = _catalogued_fields(package, entry) if is_catalogued else _uncatalogued_fields(package, catalog, warnings)
+    required = fields['required']
+    all_presets = tuple(preset.id for preset in catalog.presets)
+    presets = all_presets if required else tuple(fields['presets'])
+
     file_name = archive.file_name(package, platform)
-    sha256 = size = None
-    if packages_dir is not None:
-        path = os.path.join(packages_dir, file_name)
-        if not os.path.isfile(path):
-            raise ManifestError('%s not found in %s: build the packages first (tools/build/build.py)' % (file_name, packages_dir))
-        sha256, size = fileio.sha256(path), os.path.getsize(path)
+    sha256, size = _file_stats(file_name, packages_dir)
     return Component(
         id=package.key,
         package_id=package.package_id,
         version=package.version,
         file=file_name,
-        category=category,
-        title=title,
-        description=description,
-        fair_play=fair_play,
+        category=fields['category'],
+        title=fields['title'],
+        description=fields['description'],
+        fair_play=fields['fair_play'],
         required=required,
-        default=required or catalog.default_preset in presets,
-        presets=tuple(preset.id for preset in catalog.presets) if required else tuple(presets),
-        preview=preview,
-        dependencies=tuple(dependencies),
-        catalogued=entry is not None,
+        default=required or catalog.default_preset in fields['presets'],
+        presets=presets,
+        preview=fields['preview'],
+        dependencies=_dependency_keys(package, fields['extra_dependencies']),
+        catalogued=is_catalogued,
         sha256=sha256,
         size=size,
-        perf=perf,
-        context=context,
+        perf=fields['perf'],
+        context=fields['context'],
     )
 
 
@@ -85,21 +123,14 @@ def build_manifest(packages, catalog, platform='lesta', packages_dir=None, stric
     for entry in catalog.components:
         if entry.id not in keys:
             warnings.append('catalog entry %s has no package (not built by this layout)' % entry.id)
-    problems = []
-    for component in components:
-        missing = [dependency for dependency in component.dependencies if dependency not in keys]
-        if missing:
-            problems.append('%s depends on %s, which this build does not ship' % (component.id, ', '.join(missing)))
-        if not any(fnmatch.fnmatch(component.file, pattern) for pattern in catalog.owned_patterns):
-            problems.append('%s matches no ownedPatterns mask: uninstall would not recognise it' % component.file)
+    problems = _component_problems(components, catalog, keys)
     dependencies = _dependencies(catalog, keys, warnings)
     if strict:
         problems.extend(warnings)
     if problems:
         raise ManifestError('\n'.join(problems))
-    category_order = dict((category.id, index) for index, category in enumerate(catalog.categories))
-    catalog_order = dict((entry.id, index) for index, entry in enumerate(catalog.components))
-    components.sort(key=lambda component: (category_order[component.category], catalog_order.get(component.id, len(catalog_order)), component.id))
+
+    components.sort(key=_catalog_order(catalog))
     used = set(component.category for component in components)
     manifest = Manifest(
         modpack_version=layout.modpack_version(),
@@ -114,6 +145,28 @@ def build_manifest(packages, catalog, platform='lesta', packages_dir=None, stric
         conflicts=_conflicts(catalog, keys),
     )
     return manifest, warnings
+
+
+def _component_problems(components, catalog, keys):
+    problems = []
+    for component in components:
+        missing = [dependency for dependency in component.dependencies if dependency not in keys]
+        if missing:
+            problems.append('%s depends on %s, which this build does not ship' % (component.id, ', '.join(missing)))
+        if not any(fnmatch.fnmatch(component.file, pattern) for pattern in catalog.owned_patterns):
+            problems.append('%s matches no ownedPatterns mask: uninstall would not recognise it' % component.file)
+    return problems
+
+
+def _catalog_order(catalog):
+    """Sort key: category order, then the catalog's component order (uncatalogued last), then the id."""
+    category_order = dict((category.id, index) for index, category in enumerate(catalog.categories))
+    catalog_order = dict((entry.id, index) for index, entry in enumerate(catalog.components))
+
+    def key(component):
+        position = catalog_order.get(component.id, len(catalog_order))
+        return category_order[component.category], position, component.id
+    return key
 
 
 def _conflicts(catalog, keys):
@@ -131,9 +184,10 @@ def _dependencies(catalog, keys, warnings):
     shipped = []
     for dependency in catalog.dependencies:
         required_by = tuple(component_id for component_id in dependency.required_by if component_id in keys)
-        left_out = [component_id for component_id in dependency.required_by if component_id not in keys]
+        left_out = ', '.join(component_id for component_id in dependency.required_by if component_id not in keys)
         if left_out:
-            warnings.append('dependency %s is required by %s, which this build does not ship' % (dependency.id, ', '.join(left_out)))
+            message = 'dependency %s is required by %s, which this build does not ship'
+            warnings.append(message % (dependency.id, left_out))
         if required_by:
             shipped.append(dataclasses.replace(dependency, required_by=required_by))
     return tuple(shipped)

@@ -8,14 +8,35 @@ import unittest
 
 import _support
 from otmetki.core.hud import ComponentConfig, HudBackend, HudLayer, panel_schema
-from otmetki.core.hud.icons import (artefact_icon, class_icon, efficiency_icon, flag_icon, glyph, item_name, mark_icon, outcome_icon, resolve,
-                                    shell_icon, shell_icon_of, split, tier_icon)
+from otmetki.core.hud.icons import (
+    artefact_icon,
+    class_icon,
+    efficiency_icon,
+    flag_icon,
+    glyph,
+    item_name,
+    mark_icon,
+    outcome_icon,
+    resolve,
+    shell_icon,
+    shell_icon_of,
+    split,
+    tier_icon,
+)
 from otmetki.core.hud.stock import BATTLE_DAMAGE_LOG_PANEL, FRAG_CORRELATION_BAR, SIXTH_SENSE, StockSuppression
 from otmetki.core.hud.surface import SPACE_BATTLE, HudSurface
 from otmetki.core.hud.widget import TONES, WIDGET_VERSION, tone, widget
 from otmetki.core.storage import MemoryFile
 
-HUD_PROTOCOL_CONSTANTS = os.path.join(_support.MODPACK_DIR, 'ui-web', 'src', 'shared', 'api', 'hud-protocol', 'hud-protocol.constants.ts')
+HUD_PROTOCOL_CONSTANTS = os.path.join(
+    _support.MODPACK_DIR,
+    'ui-web',
+    'src',
+    'shared',
+    'api',
+    'hud-protocol',
+    'hud-protocol.constants.ts',
+)
 
 
 class Recorder(HudBackend):
@@ -45,99 +66,294 @@ class Recorder(HudBackend):
         return True
 
 
+def read_hud_protocol_constants():
+    with io.open(HUD_PROTOCOL_CONSTANTS, encoding='utf-8') as handle:
+        return handle.read()
+
+
+def page_tones(source):
+    tone_list = re.search(r'tones: \[([^\]]*)\]', source).group(1)
+    return tuple(re.findall(r"'([a-z]+)'", tone_list))
+
+
+def page_widget_version(source):
+    return re.search(r'widgetVersion: (\d+)', source).group(1)
+
+
+def layer_with_a_panel(backend):
+    layer = HudLayer(backend, ComponentConfig(MemoryFile()))
+    layer.register('panel', panel_schema({}))
+    return layer
+
+
+def hidden_layer_with_a_held_widget(backend):
+    layer = layer_with_a_panel(backend)
+    layer.show('panel', 'text', widget('x', {}))
+    layer.set_gui_hidden(True)
+    layer.show('panel', 'next', widget('x', {'n': 3}))
+    return layer
+
+
+def payload_with_client_icons():
+    row = {'icon': class_icon('SPG'), 'shell': artefact_icon('gone'), 'name': 'img'}
+    return {'rows': [row], 'plain': 'x'}
+
+
+def stock_shared_by_two_owners():
+    stock = StockSuppression()
+    stock.want('a', (SIXTH_SENSE,))
+    stock.want('b', (SIXTH_SENSE, BATTLE_DAMAGE_LOG_PANEL))
+    return stock
+
+
 class WidgetPayloadTest(unittest.TestCase):
 
-    def test_payload_shape_and_tones(self):
-        assert widget('team_hp', {'a': 1}) == {'kind': 'team_hp', 'v': WIDGET_VERSION, 'data': {'a': 1}}
-        assert tone('accent') == 'accent' and tone('pink') == 'text' and tone(None, 'muted') == 'muted'
+    def test_payload_shape(self):
+        payload = widget('team_hp', {'a': 1})
 
-    def test_tones_and_version_match_the_page(self):
-        with io.open(HUD_PROTOCOL_CONSTANTS, encoding='utf-8') as handle:
-            source = handle.read()
-        assert tuple(re.findall(r"'([a-z]+)'", re.search(r'tones: \[([^\]]*)\]', source).group(1))) == TONES
-        assert re.search(r'widgetVersion: (\d+)', source).group(1) == str(WIDGET_VERSION)
+        assert payload == {'kind': 'team_hp', 'v': WIDGET_VERSION, 'data': {'a': 1}}
+
+    def test_known_tone_is_kept(self):
+        assert tone('accent') == 'accent'
+
+    def test_unknown_tone_falls_back_to_text(self):
+        assert tone('pink') == 'text'
+
+    def test_missing_tone_takes_the_given_fallback(self):
+        assert tone(None, 'muted') == 'muted'
+
+    def test_tones_match_the_page(self):
+        source = read_hud_protocol_constants()
+
+        assert page_tones(source) == TONES
+
+    def test_version_matches_the_page(self):
+        source = read_hud_protocol_constants()
+
+        assert page_widget_version(source) == str(WIDGET_VERSION)
 
     def test_layer_sends_the_widget_and_skips_an_unchanged_one(self):
         backend = Recorder()
-        layer = HudLayer(backend, ComponentConfig(MemoryFile()))
-        layer.register('panel', panel_schema({}))
+        layer = layer_with_a_panel(backend)
         payload = widget('x', {'n': 1})
+
         layer.show('panel', 'text', payload)
         layer.show('panel', 'text', payload)
         layer.show('panel', 'text', widget('x', {'n': 2}))
+
         assert [call[0] for call in backend.calls] == ['create', 'update']
-        assert backend.calls[0][1]['widget'] == payload and backend.calls[1][1]['widget']['data'] == {'n': 2}
+        assert backend.calls[0][1]['widget'] == payload
+        assert backend.calls[1][1]['widget']['data'] == {'n': 2}
+
+    def test_layer_renders_widgets_when_the_backend_does(self):
+        layer = layer_with_a_panel(Recorder())
+
         assert layer.renders_widgets()
 
-    def test_hidden_gui_holds_text_and_widget(self):
+    def test_hidden_gui_removes_the_panel(self):
         backend = Recorder()
-        layer = HudLayer(backend, ComponentConfig(MemoryFile()))
-        layer.register('panel', panel_schema({}))
+        layer = layer_with_a_panel(backend)
         layer.show('panel', 'text', widget('x', {}))
+
         layer.set_gui_hidden(True)
+
         assert backend.calls[-1] == ('delete', 'otmetki.hud.panel')
-        layer.show('panel', 'next', widget('x', {'n': 3}))
+
+    def test_shown_gui_brings_back_the_widget_held_while_hidden(self):
+        backend = Recorder()
+        layer = hidden_layer_with_a_held_widget(backend)
+
         layer.set_gui_hidden(False)
-        assert backend.calls[-1][0] == 'create' and backend.calls[-1][1]['widget']['data'] == {'n': 3}
 
-    def test_surface_keeps_only_a_dict_widget(self):
+        assert backend.calls[-1][0] == 'create'
+        assert backend.calls[-1][1]['widget']['data'] == {'n': 3}
+
+    def test_surface_keeps_a_dict_widget(self):
         surface = HudSurface()
+
         surface.create('a', {'text': 't', 'widget': widget('k', {})}, SPACE_BATTLE)
+
+        assert surface.panel('a')['widget']['kind'] == 'k'
+
+    def test_surface_drops_a_widget_that_is_not_a_dict(self):
+        surface = HudSurface()
+
         surface.create('b', {'text': 't', 'widget': 'bad'}, SPACE_BATTLE)
-        assert surface.panel('a')['widget']['kind'] == 'k' and surface.panel('b')['widget'] is None
+
+        assert surface.panel('b')['widget'] is None
 
 
-class IconTest(unittest.TestCase):
+class ClassIconTest(unittest.TestCase):
 
-    def test_class_icons_follow_the_client_file_names(self):
+    def test_white_class_icon_keeps_the_client_file_name(self):
         assert class_icon('AT-SPG') == 'img://gui/maps/icons/vehicleTypes/white/AT-SPG.png|otmetki:class_td'
+
+    def test_red_td_icon_is_lower_case(self):
         assert class_icon('AT-SPG', 'red').startswith('img://gui/maps/icons/vehicleTypes/red/at-spg.png')
+
+    def test_green_spg_icon_is_lower_case(self):
         assert class_icon('SPG', 'green').startswith('img://gui/maps/icons/vehicleTypes/green/spg.png')
+
+    def test_gold_heavy_icon_keeps_the_camel_case(self):
         assert class_icon('heavyTank', 'gold').startswith('img://gui/maps/icons/vehicleTypes/gold/heavyTank.png')
-        assert class_icon('ufo') is None and class_icon('lightTank', 'blue').startswith('img://gui/maps/icons/vehicleTypes/white/')
 
-    def test_shells_from_battle_log_names_codes_and_descriptor_stems(self):
-        assert shell_icon('HE_LEGACY_STUN').startswith('img://gui/maps/icons/shell/small/HIGH_EXPLOSIVE_SPG_STUN.png')
-        assert shell_icon('ARMOR_PIERCING_CR', premium=True).startswith('img://gui/maps/icons/shell/small/ARMOR_PIERCING_CR_PREMIUM.png')
-        assert shell_icon('ARMOR_PIERCING_CR_PREMIUM.png', premium=True, kind='battle_ammo').startswith(
-            'img://gui/maps/icons/ammopanel/battle_ammo/ARMOR_PIERCING_CR_PREMIUM.png')
+    def test_unknown_class_has_no_icon(self):
+        assert class_icon('ufo') is None
+
+    def test_unknown_color_falls_back_to_white(self):
+        assert class_icon('lightTank', 'blue').startswith('img://gui/maps/icons/vehicleTypes/white/')
+
+
+class ShellIconTest(unittest.TestCase):
+
+    def test_battle_log_name(self):
+        icon = shell_icon('HE_LEGACY_STUN')
+
+        assert icon.startswith('img://gui/maps/icons/shell/small/HIGH_EXPLOSIVE_SPG_STUN.png')
+
+    def test_premium_shell(self):
+        icon = shell_icon('ARMOR_PIERCING_CR', premium=True)
+
+        assert icon.startswith('img://gui/maps/icons/shell/small/ARMOR_PIERCING_CR_PREMIUM.png')
+
+    def test_descriptor_stem_in_the_ammo_panel_folder(self):
+        icon = shell_icon('ARMOR_PIERCING_CR_PREMIUM.png', premium=True, kind='battle_ammo')
+
+        assert icon.startswith('img://gui/maps/icons/ammopanel/battle_ammo/ARMOR_PIERCING_CR_PREMIUM.png')
+
+    def test_shell_code(self):
         assert shell_icon_of('heat').startswith('img://gui/maps/icons/shell/small/HOLLOW_CHARGE.png')
-        assert shell_icon('bad name') is None and shell_icon_of('smoke') is None and shell_icon(None) is None
 
-    def test_other_client_icons(self):
-        assert artefact_icon(('../maps/icons/artefact/largeRepairkit.png',)) == 'img://gui/maps/icons/artefact/largeRepairkit.png'
-        assert artefact_icon('rammer') == 'img://gui/maps/icons/artefact/rammer.png' and artefact_icon(None) is None
-        assert efficiency_icon('help').startswith('img://gui/maps/icons/library/efficiency/48x48/help.png') and efficiency_icon('x') is None
-        assert outcome_icon('pen') == 'otmetki:damage' and outcome_icon('ricochet').endswith('hit_ricochet.png|otmetki:blocked')
-        assert mark_icon(5).startswith('img://gui/maps/icons/library/marksOnGun/mark_3.png') and mark_icon(0) is None
-        assert flag_icon('ussr') == 'img://gui/maps/icons/flags/25x17/ussr.png' and flag_icon('mars') is None
-        assert tier_icon(10) == 'img://gui/maps/icons/levels/tank_level_small_10.png' and tier_icon(12) is None
-        assert item_name('..\\x\\y.png') == 'y' and item_name('../..') is None and glyph('fire') == 'otmetki:fire'
+    def test_bad_name_has_no_icon(self):
+        assert shell_icon('bad name') is None
+
+    def test_unknown_code_has_no_icon(self):
+        assert shell_icon_of('smoke') is None
+
+    def test_missing_name_has_no_icon(self):
+        assert shell_icon(None) is None
+
+
+class ClientIconTest(unittest.TestCase):
+
+    def test_artefact_icon_from_a_descriptor_path(self):
+        icon = artefact_icon(('../maps/icons/artefact/largeRepairkit.png',))
+
+        assert icon == 'img://gui/maps/icons/artefact/largeRepairkit.png'
+
+    def test_artefact_icon_from_a_name(self):
+        assert artefact_icon('rammer') == 'img://gui/maps/icons/artefact/rammer.png'
+
+    def test_missing_artefact_has_no_icon(self):
+        assert artefact_icon(None) is None
+
+    def test_efficiency_icon(self):
+        assert efficiency_icon('help').startswith('img://gui/maps/icons/library/efficiency/48x48/help.png')
+
+    def test_unknown_efficiency_has_no_icon(self):
+        assert efficiency_icon('x') is None
+
+    def test_penetration_outcome_is_our_glyph(self):
+        assert outcome_icon('pen') == 'otmetki:damage'
+
+    def test_ricochet_outcome_is_the_client_icon_with_our_fallback(self):
+        assert outcome_icon('ricochet').endswith('hit_ricochet.png|otmetki:blocked')
+
+    def test_mark_icon_caps_at_three_marks(self):
+        assert mark_icon(5).startswith('img://gui/maps/icons/library/marksOnGun/mark_3.png')
+
+    def test_no_mark_icon_without_marks(self):
+        assert mark_icon(0) is None
+
+    def test_flag_icon(self):
+        assert flag_icon('ussr') == 'img://gui/maps/icons/flags/25x17/ussr.png'
+
+    def test_unknown_nation_has_no_flag(self):
+        assert flag_icon('mars') is None
+
+    def test_tier_icon(self):
+        assert tier_icon(10) == 'img://gui/maps/icons/levels/tank_level_small_10.png'
+
+    def test_unknown_tier_has_no_icon(self):
+        assert tier_icon(12) is None
+
+    def test_item_name_is_the_file_stem(self):
+        assert item_name('..\\x\\y.png') == 'y'
+
+    def test_a_path_without_a_file_has_no_item_name(self):
+        assert item_name('../..') is None
+
+    def test_glyph_is_our_icon_name(self):
+        assert glyph('fire') == 'otmetki:fire'
+
+
+class ResolveTest(unittest.TestCase):
 
     def test_missing_client_files_fall_back_to_our_glyph(self):
-        payload = {'rows': [{'icon': class_icon('SPG'), 'shell': artefact_icon('gone'), 'name': 'img'}], 'plain': 'x'}
+        payload = payload_with_client_icons()
+
         resolved = resolve(payload, lambda path: 'vehicleTypes' not in path)
-        assert resolved['rows'][0] == {'icon': 'otmetki:class_spg', 'shell': 'img://gui/maps/icons/artefact/gone.png', 'name': 'img'}
-        assert resolve(payload, lambda path: False)['rows'][0]['shell'] is None
-        assert split('img://a.png|otmetki:b') == ('a.png', 'otmetki:b') and split('otmetki:c') == (None, 'otmetki:c') and split(3) == (None, None)
+
+        expected = {'icon': 'otmetki:class_spg', 'shell': 'img://gui/maps/icons/artefact/gone.png', 'name': 'img'}
+        assert resolved['rows'][0] == expected
+
+    def test_a_missing_client_file_without_a_glyph_is_dropped(self):
+        payload = payload_with_client_icons()
+
+        resolved = resolve(payload, lambda path: False)
+
+        assert resolved['rows'][0]['shell'] is None
+
+    def test_split_a_client_icon_with_a_fallback(self):
+        assert split('img://a.png|otmetki:b') == ('a.png', 'otmetki:b')
+
+    def test_split_our_glyph(self):
+        assert split('otmetki:c') == (None, 'otmetki:c')
+
+    def test_split_garbage(self):
+        assert split(3) == (None, None)
 
 
 class StockSuppressionTest(unittest.TestCase):
 
+    def test_want_reports_the_known_aliases_to_hide(self):
+        stock = StockSuppression()
+
+        changes = stock.want('team_hp', (FRAG_CORRELATION_BAR, 'unknownAlias'))
+
+        assert changes == (frozenset([FRAG_CORRELATION_BAR]), frozenset())
+
     def test_suppressed_aliases_never_come_back_while_wanted(self):
         stock = StockSuppression()
-        assert stock.want('team_hp', (FRAG_CORRELATION_BAR, 'unknownAlias')) == (frozenset([FRAG_CORRELATION_BAR]), frozenset())
-        visible, hidden = stock.filter({FRAG_CORRELATION_BAR, 'minimap'}, set())
-        assert visible == {'minimap'} and hidden == {FRAG_CORRELATION_BAR}
+        stock.want('team_hp', (FRAG_CORRELATION_BAR,))
 
-    def test_shared_owners_and_release(self):
-        stock = StockSuppression()
-        stock.want('a', (SIXTH_SENSE,))
-        stock.want('b', (SIXTH_SENSE, BATTLE_DAMAGE_LOG_PANEL))
-        assert stock.want('a', ()) == (frozenset(), frozenset())
-        assert stock.want('b', (SIXTH_SENSE,)) == (frozenset(), frozenset([BATTLE_DAMAGE_LOG_PANEL]))
-        assert stock.release_all() == frozenset([SIXTH_SENSE]) and stock.aliases == frozenset()
-        assert stock.filter(None, None) == (set(), set())
+        visible, hidden = stock.filter({FRAG_CORRELATION_BAR, 'minimap'}, set())
+
+        assert visible == {'minimap'}
+        assert hidden == {FRAG_CORRELATION_BAR}
+
+    def test_an_alias_another_owner_wants_stays_hidden(self):
+        stock = stock_shared_by_two_owners()
+
+        changes = stock.want('a', ())
+
+        assert changes == (frozenset(), frozenset())
+
+    def test_the_last_owner_releasing_an_alias_shows_it(self):
+        stock = stock_shared_by_two_owners()
+        stock.want('a', ())
+
+        changes = stock.want('b', (SIXTH_SENSE,))
+
+        assert changes == (frozenset(), frozenset([BATTLE_DAMAGE_LOG_PANEL]))
+
+    def test_aliases_are_every_alias_any_owner_hides(self):
+        stock = stock_shared_by_two_owners()
+
+        assert stock.aliases == frozenset([SIXTH_SENSE, BATTLE_DAMAGE_LOG_PANEL])
+
+    def test_filter_without_sets_is_empty(self):
+        assert StockSuppression().filter(None, None) == (set(), set())
 
 
 if __name__ == '__main__':

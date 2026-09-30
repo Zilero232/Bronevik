@@ -7,7 +7,8 @@ Pure (Python 2/3, no client imports); one concern per subpackage:
 - `backend`: the renderer interface (`HudBackend`), `NullBackend` and `BackendChain` (the runtime choice);
 - `layer`: `HudLayer`, what features call (`register`, `show`, `hide`, `update_settings`);
 - `label`: `HangarLabel`, one hangar label of a feature on `app.ui` (redrawn only when its text changed);
-- `edit`: `HudPreview`, a panel's side of the HUD edit protocol (`hud_edit`, `hud_describe`, `hud_reset_layout` on the bus);
+- `edit`: `HudPreview`, a panel's side of the HUD edit protocol (`hud_edit`, `hud_describe`, `hud_reset_layout`
+  on the bus);
 - `modes`: battle types (random, comp7, frontline, event, battle_royale), their panel sets and per-type places;
 - `modifier`: the key the player holds to move and resize panels (Alt by default);
 - `surface`: `HudSurface`, the labels as the Gameface HUD page's state and its messages back.
@@ -24,8 +25,37 @@ from .edit import EVENT_DESCRIBE, EVENT_EDIT, EVENT_RESET_LAYOUT, HudPreview
 from .label import HangarLabel
 from .layer import HudLayer
 from .surface import HudSurface
-from .panel import PANEL_DEFAULTS, alias_of, component_schema, hex_color, layout_props, matching, max_length, panel_schema, sound_event
+from .panel import (
+    PANEL_DEFAULTS,
+    alias_of,
+    component_schema,
+    hex_color,
+    layout_props,
+    matching,
+    max_length,
+    panel_schema,
+    sound_event,
+)
 
-__all__ = ('BackendChain', 'ComponentConfig', 'EVENT_DESCRIBE', 'EVENT_EDIT', 'EVENT_RESET_LAYOUT', 'HangarLabel', 'HudBackend', 'HudLayer',
-           'HudPreview', 'HudSurface', 'NullBackend', 'PANEL_DEFAULTS', 'alias_of', 'component_schema', 'hex_color', 'layout_props', 'matching',
-           'max_length', 'panel_schema', 'sound_event')
+__all__ = (
+    'BackendChain',
+    'ComponentConfig',
+    'EVENT_DESCRIBE',
+    'EVENT_EDIT',
+    'EVENT_RESET_LAYOUT',
+    'HangarLabel',
+    'HudBackend',
+    'HudLayer',
+    'HudPreview',
+    'HudSurface',
+    'NullBackend',
+    'PANEL_DEFAULTS',
+    'alias_of',
+    'component_schema',
+    'hex_color',
+    'layout_props',
+    'matching',
+    'max_length',
+    'panel_schema',
+    'sound_event',
+)

@@ -5,7 +5,7 @@ import time
 from ...core.compat import is_int, string_types, to_text
 from ...core.errors import ReasonError
 from ...core.vendor import attr
-from .constants import BIND_PATH, CODE_ALPHABET, CODE_LENGTH, CODE_PATTERN, CODE_SEPARATORS, MIN_SECRET_LENGTH  # noqa: F401
+from .constants import BIND_PATH, CODE_PATTERN, CODE_SEPARATORS, MIN_SECRET_LENGTH  # noqa: F401
 
 
 class BindError(ReasonError):
@@ -45,11 +45,10 @@ class Credentials(object):
     bound_at = attr.ib(default=None)
 
     def is_valid(self):
-        return (
-            isinstance(self.device_id, string_types) and len(self.device_id) > 0
-            and isinstance(self.secret, string_types) and len(self.secret) >= MIN_SECRET_LENGTH
-            and is_int(self.account_id) and self.account_id > 0
-        )
+        has_device = isinstance(self.device_id, string_types) and len(self.device_id) > 0
+        has_secret = isinstance(self.secret, string_types) and len(self.secret) >= MIN_SECRET_LENGTH
+        has_account = is_int(self.account_id) and self.account_id > 0
+        return has_device and has_secret and has_account
 
     def to_dict(self):
         return attr.asdict(self)
@@ -58,8 +57,8 @@ class Credentials(object):
     def from_dict(cls, data):
         if not isinstance(data, dict):
             return None
-        creds = cls(data.get('device_id'), data.get('secret'), data.get('account_id'), data.get('bound_at'))
-        return creds if creds.is_valid() else None
+        credentials = cls(data.get('device_id'), data.get('secret'), data.get('account_id'), data.get('bound_at'))
+        return credentials if credentials.is_valid() else None
 
 
 def parse_bind_response(data, expected_account_id, now=None):
@@ -70,10 +69,11 @@ def parse_bind_response(data, expected_account_id, now=None):
     account_id = data.get('account_id')
     if account_id != expected_account_id:
         raise BindError('account_mismatch')
-    creds = Credentials(data.get('device_id'), data.get('secret'), account_id, int(now if now is not None else time.time()))
-    if not creds.is_valid():
+    bound_at = int(now if now is not None else time.time())
+    credentials = Credentials(data.get('device_id'), data.get('secret'), account_id, bound_at)
+    if not credentials.is_valid():
         raise BindError('bad_response')
-    return creds
+    return credentials
 
 
 class CredentialStore(object):
@@ -92,9 +92,9 @@ class CredentialStore(object):
             return None
         return Credentials.from_dict(self._read()['accounts'].get(str(account_id)))
 
-    def save(self, creds):
+    def save(self, credentials):
         data = self._read()
-        data['accounts'][str(creds.account_id)] = creds.to_dict()
+        data['accounts'][str(credentials.account_id)] = credentials.to_dict()
         self.storage.write(data)
 
     def remove(self, account_id):

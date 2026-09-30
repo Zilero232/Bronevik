@@ -11,8 +11,29 @@ PRESETS = (NATIVE, 'classic', 'minimal', 'contrast', 'clean')
 MODES = ('both', 'arcade', 'sniper')
 # Centre marks drawn over the game's own reticle centre: our originals, our one-colour marks (in MARK_COLORS), then
 # five of Kenney's CC0 pack.
-MARKS = ('none', 'dot', 'cross', 'ring', 'chevron', 'streamer', 'colorblind', 'triad', 'arcs', 'aim_box', 'stack', 'tint_dot', 'tint_cross',
-         'tint_ring', 'tint_brackets', 'tint_diamond', 'kenney_dotted', 'kenney_cluster', 'kenney_pincer', 'kenney_arrows', 'kenney_scope')
+MARKS = (
+    'none',
+    'dot',
+    'cross',
+    'ring',
+    'chevron',
+    'streamer',
+    'colorblind',
+    'triad',
+    'arcs',
+    'aim_box',
+    'stack',
+    'tint_dot',
+    'tint_cross',
+    'tint_ring',
+    'tint_brackets',
+    'tint_diamond',
+    'kenney_dotted',
+    'kenney_cluster',
+    'kenney_pincer',
+    'kenney_arrows',
+    'kenney_scope',
+)
 
 # x/y are the mark's offset from the reticle centre, not a screen position: the mark follows the reticle,
 # so it is not dragged (a drag would save a screen position).

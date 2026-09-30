@@ -17,7 +17,6 @@ def _older(path, index):
 
 
 def rotate(path, keep=FILE_KEEP):
-    """Shifts `path` to `<root>.1<ext>`, that one to `.2` and so on, dropping what falls past `keep` files in all."""
     for index in range(keep - 1, 0, -1):
         source = path if index == 1 else _older(path, index - 1)
         target = _older(path, index)
@@ -28,11 +27,11 @@ def rotate(path, keep=FILE_KEEP):
         os.rename(source, target)
 
 
+# The mod's own log that outlives the client's python.log: every line stamped with the local time, appended and closed
+# at once (a crash loses nothing written), one file per session (`open` starts it and shifts the older ones, `keep` in
+# all), a session past `max_bytes` shifted too. Lines written before `open` are held (up to `pending_lines`) and written
+# after the header; a disk error stops the file, never the caller.
 class LogFile(object):
-    """The mod's own log that outlives the client's python.log: every line stamped with the local time, appended
-    and closed at once (a crash loses nothing written), one file per session (`open` starts it and shifts the
-    older ones, `keep` in all), a session past `max_bytes` shifted too. Lines written before `open` are held
-    (up to `pending_lines`) and written after the header; a disk error stops the file, never the caller."""
 
     def __init__(self, clock=time.time, keep=FILE_KEEP, max_bytes=FILE_MAX_BYTES, pending_lines=FILE_PENDING_LINES):
         self.clock = clock
@@ -45,7 +44,6 @@ class LogFile(object):
         self.failed = False
 
     def open(self, path, header):
-        """Starts this session's file at `path` with the `header` lines, then the held ones."""
         if self.path is not None or self.failed:
             return False
         try:
@@ -72,7 +70,8 @@ class LogFile(object):
         self._append([stamped])
 
     def _stamped(self, line):
-        return to_bytes('%s %s' % (_stamp(self.clock()), line.decode('utf-8', 'replace') if isinstance(line, bytes) else line))
+        text = line.decode('utf-8', 'replace') if isinstance(line, bytes) else line
+        return to_bytes('%s %s' % (_stamp(self.clock()), text))
 
     def _append(self, lines):
         data = b''.join(line + b'\n' for line in lines)

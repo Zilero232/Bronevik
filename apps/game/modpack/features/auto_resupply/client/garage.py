@@ -17,7 +17,9 @@ def _flag(vehicle, name):
             value = value()
         except Exception:
             return None
-    return bool(value) if value is not None else None
+    if value is None:
+        return None
+    return bool(value)
 
 
 def summary(vehicle):

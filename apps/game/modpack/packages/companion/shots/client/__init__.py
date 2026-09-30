@@ -51,16 +51,18 @@ class ShotTracker(object):
             return
         for event in events:
             kind = event.getBattleEventType()
-            target_id = event.getTargetID()
             if kind == BATTLE_EVENT_TYPE.KILL:
-                self.log.mark_fatal(self.last_by_target.get(target_id))
-                continue
-            if kind != BATTLE_EVENT_TYPE.DAMAGE:
-                continue
-            extra = event.getExtra()
-            if extra is None or not call(extra, 'isShot', False) or not is_enemy(target_id):
-                continue
-            shell = normalize_shell(call(extra, 'getShellType'))
-            nominal = nominal_for(self.options, shell, call(extra, 'isShellGold'))
-            if self.log.add(build_shot(call(extra, 'getDamage', 0), nominal, shell)):
-                self.last_by_target[target_id] = len(self.log.shots) - 1
+                self.log.mark_fatal(self.last_by_target.get(event.getTargetID()))
+            elif kind == BATTLE_EVENT_TYPE.DAMAGE:
+                self._on_damage(event)
+
+    def _on_damage(self, event):
+        target_id = event.getTargetID()
+        extra = event.getExtra()
+        if extra is None or not call(extra, 'isShot', False) or not is_enemy(target_id):
+            return
+
+        shell = normalize_shell(call(extra, 'getShellType'))
+        nominal = nominal_for(self.options, shell, call(extra, 'isShellGold'))
+        if self.log.add(build_shot(call(extra, 'getDamage', 0), nominal, shell)):
+            self.last_by_target[target_id] = len(self.log.shots) - 1

@@ -4,7 +4,7 @@ import time
 
 from ....core.client.battle import arena, server_time
 from ....core.client.game import values_by_name
-from ....core.client.hud.panel import BattlePanel
+from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.client.timer import Ticker
 from ....core.hud.stock import BATTLE_TIMER
 from ....core.log import safe
@@ -22,6 +22,15 @@ except ImportError:
     ARENA_PERIOD = None
 
 
+PANEL_SPEC = PanelSpec(
+    panel_id=PANEL_ID,
+    schema=SCHEMA,
+    switch=SWITCH,
+    strings=STRINGS,
+    preview_size=PREVIEW_SIZE,
+)
+
+
 class BattleClockPanel(BattlePanel):
 
     start_event = 'battle_enter'
@@ -29,7 +38,7 @@ class BattleClockPanel(BattlePanel):
     def __init__(self, app):
         self.periods = values_by_name(ARENA_PERIOD, PERIOD_NAMES)
         self.ticker = Ticker(TICK_S, self.render)
-        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE)
+        BattlePanel.__init__(self, app, PANEL_SPEC)
 
     def start(self):
         self.render()
@@ -45,12 +54,17 @@ class BattleClockPanel(BattlePanel):
         return preview_widget(self.settings, time.localtime())
 
     def stock_aliases(self):
-        return (BATTLE_TIMER,) if self.settings.get('replace_timer') and self.settings.get('show_timer') else ()
+        if self.settings.get('replace_timer') and self.settings.get('show_timer'):
+            return (BATTLE_TIMER,)
+        return ()
 
     @safe
     def render(self):
         current = arena()
         period = self.periods.get(getattr(current, 'period', None))
-        seconds = timer_seconds(period, getattr(current, 'periodEndTime', None), server_time())
+        period_end = getattr(current, 'periodEndTime', None)
+        seconds = timer_seconds(period, period_end, server_time())
+
         values = clock_values(time.localtime(), self.settings, period, seconds)
-        self.show(format_battle_clock(values, self.settings, self.app.translate), clock_widget(values, self.settings))
+        text = format_battle_clock(values, self.settings, self.app.translate)
+        self.show(text, clock_widget(values, self.settings))

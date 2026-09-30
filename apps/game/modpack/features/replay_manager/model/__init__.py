@@ -1,14 +1,36 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from .constants import (ACTION_DELETE, ACTION_FAVOURITE, ACTION_FOLDER, ACTION_PLAY, ACTION_REFRESH, ACTION_RENAME,  # noqa: F401
-                        ACTION_UPLOAD, ERROR_EXISTS, ERROR_MISSING, ERROR_NO_ARENA, ERROR_NOT_OWN, INDEX_FILE, LAUNCH_FILE, LIBRARY_FILE)
+from .analysis import AnalysisWatch, analysis_notice, parse_statuses  # noqa: F401
+from .auto_name import AutoNamer, name_values, render_name  # noqa: F401
+from .constants import (  # noqa: F401
+    ACTION_DELETE,
+    ACTION_FAVOURITE,
+    ACTION_FOLDER,
+    ACTION_PLAY,
+    ACTION_REFRESH,
+    ACTION_RENAME,
+    ACTION_UPLOAD,
+    ERROR_EXISTS,
+    ERROR_MISSING,
+    ERROR_NO_ARENA,
+    INDEX_FILE,
+    LAUNCH_FILE,
+    LIBRARY_FILE,
+)
 from .errors import ReplayActionError  # noqa: F401
 from .index import UploadedIndex  # noqa: F401
-from .library import ReplayLibrary, find_own  # noqa: F401
-from .auto_name import AutoNamer, name_values, render_name  # noqa: F401
-from .names import rename_target  # noqa: F401
-from .page import ItemCache, PageContext, battle_type, build_page, item_of, page_status, vehicle_label, vehicle_parts  # noqa: F401
-from .play import play_refusal  # noqa: F401
 from .launch import launch_request, pending_launch, stop_on_teardown  # noqa: F401
+from .library import ReplayLibrary, find_own  # noqa: F401
+from .names import rename_target  # noqa: F401
+from .page import (  # noqa: F401
+    ItemCache,
+    PageContext,
+    battle_type,
+    build_page,
+    item_of,
+    page_status,
+    vehicle_label,
+    vehicle_parts,
+)
+from .play import play_refusal  # noqa: F401
 from .version import compatible, version_key  # noqa: F401
-from .analysis import AnalysisWatch, analysis_notice, parse_statuses  # noqa: F401

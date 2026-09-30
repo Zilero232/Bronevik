@@ -23,16 +23,29 @@ describe(isFindKey, () => {
   });
 });
 
-describe(bindFindKey, () => {
-  it('finds on Ctrl+F and keeps the key from the engine', () => {
-    const found: boolean[] = [];
-    const unbind = bindFindKey({ root: document, onFind: () => found.push(true) });
-    const press = new KeyboardEvent('keydown', { key: 'f', keyCode: 70, ctrlKey: true, cancelable: true });
+const ctrlF = () => new KeyboardEvent('keydown', { key: 'f', keyCode: 70, ctrlKey: true, cancelable: true });
 
-    document.dispatchEvent(press);
-    unbind();
+const pressBound = (press: KeyboardEvent, onFind: () => void = () => undefined): void => {
+  const unbind = bindFindKey({ root: document, onFind });
+
+  document.dispatchEvent(press);
+  unbind();
+};
+
+describe(bindFindKey, () => {
+  it('finds on Ctrl+F', () => {
+    const found: boolean[] = [];
+
+    pressBound(ctrlF(), () => found.push(true));
 
     expect(found).toEqual([true]);
+  });
+
+  it('keeps Ctrl+F from the engine', () => {
+    const press = ctrlF();
+
+    pressBound(press);
+
     expect(press.defaultPrevented).toBe(true);
   });
 });

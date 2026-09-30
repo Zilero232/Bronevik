@@ -1,5 +1,5 @@
 import type { HudWidget } from '../../../../shared/api/hud-protocol';
-import type { ResolvedWidget } from './widget-registry.types';
+import type { CountRowsInput, ResolvedWidget } from './widget-registry.types';
 
 import { HUD_PROTOCOL } from '../../../../shared/api/hud-protocol';
 import { fontSafeData } from '../../../../shared/lib/font-safe';
@@ -15,7 +15,7 @@ export const resolveWidget = (widget: HudWidget | null | undefined): ResolvedWid
   return (entry && widget ? entry.parse(fontSafeData(widget.data)) : undefined) ?? null;
 };
 
-const countRows = (value: unknown, depth: number): number => {
+const countRows = ({ value, depth }: CountRowsInput): number => {
   if (Array.isArray(value)) {
     return value.length;
   }
@@ -24,9 +24,9 @@ const countRows = (value: unknown, depth: number): number => {
     return 0;
   }
 
-  return Object.values(value).reduce<number>((total, item) => total + countRows(item, depth - 1), 0);
+  return Object.values(value).reduce<number>((total, item) => total + countRows({ value: item, depth: depth - 1 }), 0);
 };
 
-export const widgetLines = ({ data }: ResolvedWidget): number => WIDGET_LINES.base + countRows(data, WIDGET_LINES.depth);
+export const widgetLines = ({ data }: ResolvedWidget): number => WIDGET_LINES.base + countRows({ value: data, depth: WIDGET_LINES.depth });
 
 export const widgetKinds = (): string[] => [...byKind.keys()];

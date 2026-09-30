@@ -9,9 +9,16 @@ from ....core.events import EVENT_REPLAY_UPLOAD_REQUEST, EVENT_REPLAY_UPLOADED
 from ....core.log import log, safe
 from ....core.net.transport import BackgroundRunner, SyncTransport
 from ....core.storage import account_file
-from ..model import ReplayQueue, ReplayUploader, battle_started_at, find_replay
-from ..model.constants import (REQUEST_INVALID, REQUEST_OFF, REQUEST_READY, REQUEST_UNBOUND, UPLOAD_PATH, VISIBILITY_PRIVATE,
-                               VISIBILITY_PUBLIC)
+from ..model import Endpoint, ReplayFiles, ReplayQueue, ReplayUploader, battle_started_at, find_replay
+from ..model.constants import (
+    REQUEST_INVALID,
+    REQUEST_OFF,
+    REQUEST_READY,
+    REQUEST_UNBOUND,
+    UPLOAD_PATH,
+    VISIBILITY_PRIVATE,
+    VISIBILITY_PUBLIC,
+)
 from ..settings import PUBLISH, SWITCH
 from .constants import QUEUE_FILE, REPLAY_SETTING, STARTED_KEEP, UPLOAD_TIMEOUT_S
 
@@ -28,7 +35,9 @@ def game_records_replays():
 
 def server_to_local(server_time):
     convert = client_attr('helpers.time_utils', 'makeLocalServerTime')
-    return convert(server_time) if convert is not None else server_time
+    if convert is None:
+        return server_time
+    return convert(server_time)
 
 
 # Never turns replay recording on: it uploads files the client already wrote, for battles of the bound
@@ -60,20 +69,25 @@ class ReplayAutoUpload(object):
     def _enabled(self):
         return self.app.config.is_enabled(SWITCH) and self.app.is_bound() and not self.app.auth_failed
 
+    def _endpoint(self):
+        is_public = self.app.config.is_enabled(PUBLISH)
+        return Endpoint(
+            transport=self.transport,
+            url=self.app.config.endpoint(UPLOAD_PATH),
+            user_agent=self.app.user_agent(),
+            credentials=self.app.current_credentials(),
+            visibility=VISIBILITY_PUBLIC if is_public else VISIBILITY_PRIVATE,
+        )
+
     def on_account(self, account_id):
         self.queue = ReplayQueue(account_file(self.config_dir, QUEUE_FILE, account_id))
         self.uploader = ReplayUploader(
-            self.queue,
-            self.app.current_credentials(),
-            self.runner,
-            self.transport,
-            self.app.config.endpoint(UPLOAD_PATH),
-            self.app.user_agent(),
-            self._find,
-            time.time,
-            on_auth_failed=self.app.on_auth_failed,
-            on_uploaded=self._on_uploaded,
-            on_replay_id=self._on_replay_id,
+            queue=self.queue,
+            endpoint=self._endpoint(),
+            files=ReplayFiles(find=self._find),
+            runner=self.runner,
+            clock=time.time,
+            listener=self,
         )
         if self.in_battle:
             self.uploader.pause()
@@ -113,35 +127,40 @@ class ReplayAutoUpload(object):
     # The replay manager's 'upload' (core.events.EVENT_REPLAY_UPLOAD_REQUEST): the same opt-in switch and binding as the
     # automatic upload; `request` None only asks whether an upload would be accepted.
     def on_request(self, request, reply):
+        reply(self._request_state(request))
+
+    def _request_state(self, request):
         if not self.app.config.is_enabled(SWITCH):
-            reply(REQUEST_OFF)
-        elif not self.app.is_bound() or self.app.auth_failed or self.queue is None:
-            reply(REQUEST_UNBOUND)
-        elif request is None:
-            reply(REQUEST_READY)
-        elif request.get('account_id') != self.app.account_id:
-            reply(REQUEST_INVALID)
-        else:
-            reply(self.queue.request(request.get('arena_unique_id'), request.get('account_id'), request.get('started_at'), time.time()))
+            return REQUEST_OFF
+        if not self.app.is_bound() or self.app.auth_failed or self.queue is None:
+            return REQUEST_UNBOUND
+        if request is None:
+            return REQUEST_READY
+        if request.get('account_id') != self.app.account_id:
+            return REQUEST_INVALID
+        return self.queue.request(
+            request.get('arena_unique_id'),
+            request.get('account_id'),
+            request.get('started_at'),
+            time.time(),
+        )
 
     def _find(self, item):
         # Runs on the worker thread: plain file access in the folder the main thread resolved.
         return find_replay(self.folder, item['account_id'], item['arena_unique_id'], item.get('started_at'))
 
-    @safe
-    def _on_uploaded(self, arena_unique_id):
-        log('replay uploaded: %s' % arena_unique_id)
+    def on_auth_failed(self):
+        self.app.on_auth_failed()
 
     @safe
-    def _on_replay_id(self, arena_unique_id, replay_id):
+    def on_uploaded(self, arena_unique_id, replay_id):
+        log('replay uploaded: %s' % arena_unique_id)
         self.app.bus.emit(EVENT_REPLAY_UPLOADED, arena_unique_id, replay_id)
 
     def tick(self, now):
         self.runner.poll()
         if self.uploader is None or not self._enabled():
             return
-        self.uploader.credentials = self.app.current_credentials()
-        self.uploader.url = self.app.config.endpoint(UPLOAD_PATH)
-        self.uploader.visibility = VISIBILITY_PUBLIC if self.app.config.is_enabled(PUBLISH) else VISIBILITY_PRIVATE
+        self.uploader.endpoint = self._endpoint()
         self.folder = replay_dir()
         self.uploader.tick(now)

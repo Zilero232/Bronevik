@@ -8,22 +8,60 @@ ARCADE = 'arcade'
 SNIPER = 'sniper'
 SERVER_RETICLE = 'useServerAim'
 
-RETICLE_PARTS = ('net', 'netType', 'centralTag', 'centralTagType', 'mixing', 'mixingType', 'gunTag', 'gunTagType', 'reloader',
-                 'reloaderTimer', 'condition', 'cassette', 'zoomIndicator')
-OPACITY_PARTS = ('net', 'centralTag', 'mixing', 'gunTag', 'reloader', 'reloaderTimer', 'condition', 'cassette', 'zoomIndicator')
-# The number of styles per part the settings window offers (options.AimSetting.VIRTUAL_OPTIONS, RU 1.45): index 0..count-1.
-STYLE_COUNTS = {'netType': 4, 'centralTagType': 14, 'mixingType': 4, 'gunTagType': 15}
-STYLE_PARTS = tuple(sorted(STYLE_COUNTS))
-
 PRESET_PARTS = {
-    'classic': {'net': 100, 'netType': 0, 'centralTag': 100, 'centralTagType': 0, 'mixing': 100, 'mixingType': 0, 'gunTag': 100,
-                'gunTagType': 0, 'reloader': 100, 'reloaderTimer': 100, 'condition': 100, 'cassette': 100, 'zoomIndicator': 100},
-    'minimal': {'net': 0, 'centralTag': 100, 'centralTagType': 0, 'mixing': 60, 'gunTag': 100, 'reloader': 60, 'reloaderTimer': 100,
-                'condition': 0, 'cassette': 100, 'zoomIndicator': 0},
-    'contrast': {'net': 100, 'netType': 1, 'centralTag': 100, 'centralTagType': 4, 'mixing': 100, 'mixingType': 2, 'gunTag': 100,
-                 'gunTagType': 3, 'reloader': 100, 'reloaderTimer': 100, 'condition': 100, 'cassette': 100, 'zoomIndicator': 100},
-    'clean': {'net': 0, 'centralTag': 0, 'mixing': 100, 'gunTag': 100, 'reloader': 100, 'reloaderTimer': 100, 'condition': 0,
-              'cassette': 100, 'zoomIndicator': 0},
+    'classic': {
+        'net': 100,
+        'netType': 0,
+        'centralTag': 100,
+        'centralTagType': 0,
+        'mixing': 100,
+        'mixingType': 0,
+        'gunTag': 100,
+        'gunTagType': 0,
+        'reloader': 100,
+        'reloaderTimer': 100,
+        'condition': 100,
+        'cassette': 100,
+        'zoomIndicator': 100,
+    },
+    'minimal': {
+        'net': 0,
+        'centralTag': 100,
+        'centralTagType': 0,
+        'mixing': 60,
+        'gunTag': 100,
+        'reloader': 60,
+        'reloaderTimer': 100,
+        'condition': 0,
+        'cassette': 100,
+        'zoomIndicator': 0,
+    },
+    'contrast': {
+        'net': 100,
+        'netType': 1,
+        'centralTag': 100,
+        'centralTagType': 4,
+        'mixing': 100,
+        'mixingType': 2,
+        'gunTag': 100,
+        'gunTagType': 3,
+        'reloader': 100,
+        'reloaderTimer': 100,
+        'condition': 100,
+        'cassette': 100,
+        'zoomIndicator': 100,
+    },
+    'clean': {
+        'net': 0,
+        'centralTag': 0,
+        'mixing': 100,
+        'gunTag': 100,
+        'reloader': 100,
+        'reloaderTimer': 100,
+        'condition': 0,
+        'cassette': 100,
+        'zoomIndicator': 0,
+    },
 }
 
 MODE_RETICLES = {

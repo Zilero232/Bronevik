@@ -49,15 +49,23 @@ class BattleSounds(FeatureComponent):
             play_sound(self.picker.pick(key, time.time()))
 
     def _on_vehicle_state(self, state, value):
-        if self.picker is None or state not in (self.fire_state, self.devices_state) or not controls_own_vehicle():
+        if self.picker is None or state not in (self.fire_state, self.devices_state):
+            return
+        if not controls_own_vehicle():
             return
         if state == self.fire_state:
-            burning = bool(value)
-            if burning and not self.burning:
-                self.play('fire')
-            self.burning = burning
-            return
-        key = device_event(*device_change(value))
+            self._on_fire(bool(value))
+        else:
+            self._on_device(value)
+
+    def _on_fire(self, burning):
+        if burning and not self.burning:
+            self.play('fire')
+        self.burning = burning
+
+    def _on_device(self, value):
+        device, device_state = device_change(value)
+        key = device_event(device, device_state)
         if key is not None:
             self.play(key)
 

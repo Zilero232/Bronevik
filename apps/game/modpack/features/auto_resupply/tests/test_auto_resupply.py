@@ -15,27 +15,43 @@ def vehicle(inv_id, locked=False, **flags):
     return {'inv_id': inv_id, 'locked': locked, 'flags': base}
 
 
+def chosen(values):
+    return Settings(values, SCHEMA).to_dict()
+
+
 class PlanTest(unittest.TestCase):
 
-    def test_native_changes_nothing(self):
-        assert wanted(Settings(None, SCHEMA).to_dict()) == {}
-        assert plan([vehicle(1)], Settings(None, SCHEMA).to_dict()) == ([], REFUSE_UNSET)
+    def test_native_wants_nothing(self):
+        assert wanted(chosen(None)) == {}
 
-    def test_only_differences(self):
-        values = Settings({'auto_repair': 'on', 'auto_load': 'on', 'auto_boosters': 'off'}, SCHEMA).to_dict()
-        requests, refusal = plan([vehicle(1), vehicle(2, auto_load=True), vehicle(3, locked=True)], values)
-        assert refusal is None
-        assert requests == [(1, 'auto_load', True)]
+    def test_native_is_refused_as_unset(self):
+        assert plan([vehicle(1)], chosen(None)) == ([], REFUSE_UNSET)
 
-    def test_refusals(self):
-        values = {'auto_repair': 'on'}
-        assert plan([vehicle(1)], values) == ([], REFUSE_NOTHING)
-        assert plan([vehicle(1, locked=True)], values) == ([], REFUSE_LOCKED)
-        assert plan([], values) == ([], REFUSE_NOTHING)
+    def test_only_the_flags_that_differ_are_sent(self):
+        values = chosen({'auto_repair': 'on', 'auto_load': 'on', 'auto_boosters': 'off'})
+        vehicles = [vehicle(1), vehicle(2, auto_load=True), vehicle(3, locked=True)]
 
-    def test_settings(self):
+        assert plan(vehicles, values) == ([(1, 'auto_load', True)], None)
+
+    def test_flags_already_as_wanted_are_nothing_to_do(self):
+        assert plan([vehicle(1)], {'auto_repair': 'on'}) == ([], REFUSE_NOTHING)
+
+    def test_only_locked_vehicles_are_refused(self):
+        assert plan([vehicle(1, locked=True)], {'auto_repair': 'on'}) == ([], REFUSE_LOCKED)
+
+    def test_no_vehicles_are_nothing_to_do(self):
+        assert plan([], {'auto_repair': 'on'}) == ([], REFUSE_NOTHING)
+
+
+class SettingsTest(unittest.TestCase):
+
+    def test_an_unknown_value_falls_back_to_native(self):
         assert Settings({'auto_repair': 'maybe'}, SCHEMA).get('auto_repair') == 'native'
+
+    def test_the_component_switch_is_hangar_auto_resupply(self):
         assert SETTINGS == ('hangar_auto_resupply',)
+
+    def test_both_languages_have_the_same_strings(self):
         assert sorted(STRINGS['ru']) == sorted(STRINGS['en'])
 
 

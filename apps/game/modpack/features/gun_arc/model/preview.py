@@ -6,8 +6,10 @@ from .widget import panel_widget
 
 
 def preview_text(settings, translate):
-    return format_panel(arc_state(PREVIEW_YAW, PREVIEW_LIMITS), settings, translate) or u''
+    state = arc_state(PREVIEW_YAW, PREVIEW_LIMITS)
+    return format_panel(state, settings, translate) or u''
 
 
 def preview_widget(settings, translate):
-    return panel_widget(arc_state(PREVIEW_YAW, PREVIEW_LIMITS), settings, translate)
+    state = arc_state(PREVIEW_YAW, PREVIEW_LIMITS)
+    return panel_widget(state, settings, translate)

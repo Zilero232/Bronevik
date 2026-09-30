@@ -1,6 +1,15 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from .constants import CONTEXT_BATTLE, CONTEXT_HANGAR, GROUP_BATTLE, GROUP_DATA, PLACEMENT, SECTION_BATTLE, SECTION_DATA, SECTION_HANGAR
+from .constants import (
+    CONTEXT_BATTLE,
+    CONTEXT_HANGAR,
+    GROUP_BATTLE,
+    GROUP_DATA,
+    PLACEMENT,
+    SECTION_BATTLE,
+    SECTION_DATA,
+    SECTION_HANGAR,
+)
 
 
 def placement_of(component_id, group, panel=False):

@@ -22,26 +22,32 @@ class Schema(object):
         if isinstance(default, bool):
             return value if isinstance(value, bool) else None
         if is_int(default):
-            if not is_number(value):
-                return None
-            value = int(value)
-            low, high = self.limits.get(key, (None, None))
-            if low is not None:
-                value = max(low, min(high, value))
-            return value
+            return self._coerce_int(key, value)
         if isinstance(default, string_types):
-            if not isinstance(value, string_types):
-                return None
-            value = to_text(value).strip()
-            normalize = self.normalizers.get(key)
-            if normalize is not None:
-                value = normalize(value)
-                if value is None:
-                    return None
-            if key in self.choices and value not in self.choices[key]:
-                return None
-            return value
+            return self._coerce_text(key, value)
         return None
+
+    def _coerce_int(self, key, value):
+        if not is_number(value):
+            return None
+        value = int(value)
+        low, high = self.limits.get(key, (None, None))
+        if low is None:
+            return value
+        return max(low, min(high, value))
+
+    def _coerce_text(self, key, value):
+        if not isinstance(value, string_types):
+            return None
+        value = to_text(value).strip()
+        normalize = self.normalizers.get(key)
+        if normalize is not None:
+            value = normalize(value)
+        if value is None:
+            return None
+        if key in self.choices and value not in self.choices[key]:
+            return None
+        return value
 
 
 class Settings(object):
@@ -57,17 +63,15 @@ class Settings(object):
 
     def update(self, values):
         """Merge `values`; returns the sorted keys that changed."""
-        changed = []
         if not isinstance(values, dict):
-            return changed
-        defaults = self.schema.defaults
+            return []
+
+        changed = []
         for key, value in values.items():
-            if key not in defaults:
+            if key not in self.schema.defaults:
                 continue
             coerced = self.schema.coerce(key, value)
-            if coerced is None:
-                continue
-            if self.values.get(key) != coerced:
+            if coerced is not None and self.values.get(key) != coerced:
                 self.values[key] = coerced
                 changed.append(key)
         return sorted(changed)

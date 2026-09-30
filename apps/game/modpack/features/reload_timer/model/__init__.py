@@ -10,6 +10,12 @@ from .constants import BAR_CHAR, BAR_WIDTH
 # Lesta's rule 3 concerns the reload of enemies, which is never read).
 
 
+def _positive_float(value):
+    if is_number(value) and value > 0:
+        return float(value)
+    return None
+
+
 class GunState(object):
 
     def __init__(self):
@@ -19,10 +25,13 @@ class GunState(object):
         self.in_clip = None
 
     def set_reload(self, left, total):
-        left = float(left) if is_number(left) and left > 0 else 0.0
-        total = float(total) if is_number(total) and total > 0 else max(self.total, left)
+        left = _positive_float(left) or 0.0
+        total = _positive_float(total)
+        if total is None:
+            total = max(self.total, left)
         changed = (left, total) != (self.left, self.total)
-        self.left, self.total = left, max(total, left)
+        self.left = left
+        self.total = max(total, left)
         return changed
 
     def set_clip(self, size):
@@ -59,19 +68,30 @@ def bar(left, total):
     return font(BAR_CHAR * done, COLOR_WARN) + font(BAR_CHAR * (BAR_WIDTH - done), COLOR_MUTED)
 
 
+def _reload_line(gun, settings, translate, size):
+    line = font(translate('reload_left', **gun.values()), COLOR_WARN, size)
+    if settings.get('show_bar'):
+        line += u' ' + bar(gun.left, gun.total)
+    return line
+
+
+def _shows_clip(gun, settings):
+    return settings.get('show_clip') and gun.clip > 1 and gun.in_clip is not None
+
+
 def format_panel(gun, settings, translate):
     size = settings.get('font_size')
     values = gun.values()
     if settings.get('template'):
         return font(render(settings.get('template'), values), COLOR_NEUTRAL, size)
+
     lines = []
     if not values['ready']:
-        line = font(translate('reload_left', **values), COLOR_WARN, size)
-        if settings.get('show_bar'):
-            line += u' ' + bar(gun.left, gun.total)
-        lines.append(line)
+        lines.append(_reload_line(gun, settings, translate, size))
     elif settings.get('show_ready'):
         lines.append(font(translate('reload_ready'), COLOR_UP, size))
-    if settings.get('show_clip') and gun.clip > 1 and gun.in_clip is not None:
+    if _shows_clip(gun, settings):
         lines.append(font(translate('reload_clip', **values), COLOR_NEUTRAL, size))
-    return u'\n'.join(lines) if lines else None
+    if not lines:
+        return None
+    return u'\n'.join(lines)

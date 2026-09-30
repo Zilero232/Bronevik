@@ -9,10 +9,24 @@ import unittest
 import _support
 from otmetki.core.replay_file import MAGIC, own_outcome, own_stats, read_header_from
 
-ARENA = {'playerID': 36306577, 'playerName': 'Zilero', 'dateTime': '28.09.2026 00:13:29', 'mapName': '127_japort',
-         'mapDisplayName': u'Старая гавань', 'playerVehicle': 'ussr-R45_IS-7', 'battleType': 1, 'gameplayID': 'ctf',
-         'clientVersionFromExe': '1.45.0.0', 'clientVersionFromXml': u'«Мир танков» v.1.45.0.0 #2284', 'serverName': 'RU1',
-         'arenaUniqueID': 214987871146837746, 'vehicles': {'9': {'name': 'enemy', 'team': 2, 'vehicleType': 'germany:G04_PzVI_Tiger_I'}}}
+RESULTS_FIXTURE = 'battle_results_random.json'
+ENEMY = {'name': 'enemy', 'team': 2, 'vehicleType': 'germany:G04_PzVI_Tiger_I'}
+ARENA = {
+    'playerID': 36306577,
+    'playerName': 'Zilero',
+    'dateTime': '28.09.2026 00:13:29',
+    'mapName': '127_japort',
+    'mapDisplayName': u'Старая гавань',
+    'playerVehicle': 'ussr-R45_IS-7',
+    'battleType': 1,
+    'gameplayID': 'ctf',
+    'clientVersionFromExe': '1.45.0.0',
+    'clientVersionFromXml': u'«Мир танков» v.1.45.0.0 #2284',
+    'serverName': 'RU1',
+    'arenaUniqueID': 214987871146837746,
+    'vehicles': {'9': ENEMY},
+}
+NO_OWN_ENTRY = {'personal': {'avatar': {'team': 1}}}
 
 
 def replay(*blocks):
@@ -23,58 +37,146 @@ def replay(*blocks):
     return io.BytesIO(data + b'\x00' * 16)
 
 
-def results():
-    data = _support.fixture('battle_results_random.json')
-    return [data, {}, {}]
+def battle_results():
+    return _support.fixture(RESULTS_FIXTURE)
 
 
-class HeaderTest(unittest.TestCase):
+def results_block():
+    return [battle_results(), {}, {}]
 
-    def test_arena_block_of_a_battle_left_early(self):
-        header = read_header_from(replay(ARENA))
-        assert header['player_id'] == 36306577 and header['player_name'] == 'Zilero'
-        assert header['arena_unique_id'] == '214987871146837746'
-        assert (header['map_name'], header['map_title'], header['vehicle']) == ('127_japort', u'Старая гавань', 'ussr-R45_IS-7')
-        assert (header['battle_type'], header['gameplay'], header['client_version'], header['server']) == (1, 'ctf', '1.45.0.0', 'RU1')
-        assert (header['result'], header['damage'], header['stats']) == (None, None, None)
-        assert header['date_time'] is not None
 
-    def test_results_block_gives_the_own_outcome_and_numbers(self):
-        header = read_header_from(replay(dict(ARENA, arenaUniqueID=None), results()))
-        assert header['arena_unique_id'] == str(_support.fixture('battle_results_random.json')['arenaUniqueID'])
-        assert (header['result'], header['damage']) == ('win', 2150)
-        stats = header['stats']
-        assert (stats['assist'], stats['assist_radio'], stats['assist_track'], stats['kills'], stats['xp']) == (950, 640, 310, 2, 1150)
-        assert (stats['duration'], stats['bonus_type'], stats['survived'], stats['tank_id']) == (402, 1, True, 1)
-        assert 'mastery' not in stats
+def arena_without_id():
+    return dict(ARENA, arenaUniqueID=None)
+
+
+def results_with_a_loud_enemy():
+    data = battle_results()
+    data['vehicles'] = {'9': [{'damageDealt': 99999, 'kills': 15, 'team': 2}]}
+    data['players'] = {'1': {'name': 'someone'}}
+    return data
+
+
+def results_with_mistyped_own_values():
+    data = battle_results()
+    data['personal']['1'].update({'kills': '2', 'xp': True, 'deathReason': None})
+    return data
+
+
+def results_with_winner(team):
+    data = battle_results()
+    data['common']['winnerTeam'] = team
+    return data
+
+
+class ArenaHeaderTest(unittest.TestCase):
+
+    def setUp(self):
+        self.header = read_header_from(replay(ARENA))
+
+    def test_the_recorder_is_read(self):
+        assert self.header['player_id'] == 36306577
+        assert self.header['player_name'] == 'Zilero'
+
+    def test_the_arena_id_is_read_as_a_string(self):
+        assert self.header['arena_unique_id'] == '214987871146837746'
+
+    def test_the_map_and_vehicle_are_read(self):
+        assert self.header['map_name'] == '127_japort'
+        assert self.header['map_title'] == u'Старая гавань'
+        assert self.header['vehicle'] == 'ussr-R45_IS-7'
+
+    def test_the_battle_kind_and_client_are_read(self):
+        assert self.header['battle_type'] == 1
+        assert self.header['gameplay'] == 'ctf'
+        assert self.header['client_version'] == '1.45.0.0'
+        assert self.header['server'] == 'RU1'
+
+    def test_the_date_is_read(self):
+        assert self.header['date_time'] is not None
+
+    def test_a_battle_left_early_has_no_outcome(self):
+        assert self.header['result'] is None
+        assert self.header['damage'] is None
+        assert self.header['stats'] is None
+
+
+class ResultsHeaderTest(unittest.TestCase):
+
+    def setUp(self):
+        self.header = read_header_from(replay(arena_without_id(), results_block()))
+
+    def test_the_arena_id_comes_from_the_results_when_the_arena_block_lacks_it(self):
+        assert self.header['arena_unique_id'] == '1152921504606847123'
+
+    def test_the_own_outcome_and_damage_are_read(self):
+        assert self.header['result'] == 'win'
+        assert self.header['damage'] == 2150
+
+    def test_the_own_assist_kills_and_xp_are_read(self):
+        stats = self.header['stats']
+
+        assert stats['assist'] == 950
+        assert stats['assist_radio'] == 640
+        assert stats['assist_track'] == 310
+        assert stats['kills'] == 2
+        assert stats['xp'] == 1150
+
+    def test_the_battle_facts_are_read(self):
+        stats = self.header['stats']
+
+        assert stats['duration'] == 402
+        assert stats['bonus_type'] == 1
+        assert stats['survived'] is True
+        assert stats['tank_id'] == 1
+
+    def test_mastery_is_left_out(self):
+        assert 'mastery' not in self.header['stats']
+
+
+class OwnResultsTest(unittest.TestCase):
 
     def test_only_the_recorders_own_entry_is_read(self):
-        data = _support.fixture('battle_results_random.json')
-        data['vehicles'] = {'9': [{'damageDealt': 99999, 'kills': 15, 'team': 2}]}
-        data['players'] = {'1': {'name': 'someone'}}
-        stats = own_stats(data)
-        assert stats['kills'] == 2 and 99999 not in stats.values()
-        assert own_outcome({'personal': {'avatar': {'team': 1}}}) == (None, None)
-        assert own_stats({'personal': {'avatar': {'team': 1}}}) is None
+        stats = own_stats(results_with_a_loud_enemy())
+
+        assert stats['kills'] == 2
+        assert 99999 not in stats.values()
+
+    def test_results_without_an_own_entry_have_no_outcome(self):
+        assert own_outcome(NO_OWN_ENTRY) == (None, None)
+
+    def test_results_without_an_own_entry_have_no_stats(self):
+        assert own_stats(NO_OWN_ENTRY) is None
 
     def test_values_of_the_wrong_type_are_left_out(self):
-        data = _support.fixture('battle_results_random.json')
-        own = data['personal']['1']
-        own.update({'kills': '2', 'xp': True, 'deathReason': None})
-        stats = own_stats(data)
-        assert 'kills' not in stats and 'xp' not in stats and stats['survived'] is None
+        stats = own_stats(results_with_mistyped_own_values())
 
-    def test_a_draw_and_a_loss(self):
-        data = _support.fixture('battle_results_random.json')
-        data['common']['winnerTeam'] = 0
-        assert own_outcome(data)[0] == 'draw'
-        data['common']['winnerTeam'] = 2
-        assert own_outcome(data)[0] == 'loss'
+        assert 'kills' not in stats
+        assert 'xp' not in stats
+        assert stats['survived'] is None
 
-    def test_not_a_replay(self):
+    def test_no_winner_is_a_draw(self):
+        result, _ = own_outcome(results_with_winner(0))
+
+        assert result == 'draw'
+
+    def test_the_other_team_winning_is_a_loss(self):
+        result, _ = own_outcome(results_with_winner(2))
+
+        assert result == 'loss'
+
+
+class NotAReplayTest(unittest.TestCase):
+
+    def test_a_file_without_the_magic_is_not_a_replay(self):
         assert read_header_from(io.BytesIO(b'\x00' * 16)) is None
+
+    def test_a_replay_whose_first_block_is_not_an_object_is_not_read(self):
         assert read_header_from(replay('text')) is None
-        assert read_header_from(replay(dict(ARENA, arenaUniqueID=True)))['arena_unique_id'] is None
+
+    def test_an_arena_id_of_the_wrong_type_is_left_out(self):
+        header = read_header_from(replay(dict(ARENA, arenaUniqueID=True)))
+
+        assert header['arena_unique_id'] is None
 
 
 if __name__ == '__main__':

@@ -4,23 +4,40 @@ import time
 
 from ....core.client.battle.damage import DamageTracker
 from ....core.client.game import player_tank_id, vehicle_short_name
-from ....core.client.hud.panel import BattlePanel
-from ....core.client.me import can_read, signed_body, signed_read
+from ....core.client.hud.panel import BattlePanel, PanelSpec
+from ....core.client.me import SignedRead, can_read, signed_body, signed_read
 from ....core.client.sound import play_mp3
 from ....core.hud import HangarLabel
 from ....core.log import safe
 from ....core.me import REFRESH_AFTER_BATTLE_S, ReadState
 from ..i18n import STRINGS
 from ..model import Announced, format_battle, format_done, format_hangar, page_actions, parse_goals
-from ..model.constants import ACTION_REFRESH, GOALS_KEY, GOALS_PATH, HANGAR_LAYOUT, HANGAR_PANEL, PREVIEW_SIZE, SOUND, STATE_KEY
+from ..model.constants import (
+    GOALS_KEY,
+    GOALS_PATH,
+    HANGAR_LAYOUT,
+    HANGAR_PANEL,
+    PREVIEW_SIZE,
+    SOUND,
+    STATE_KEY,
+)
 from ..model.preview import preview_text, preview_widget
 from ..model.widget import battle_widget, hangar_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
 
 
+PANEL_SPEC = PanelSpec(
+    panel_id=PANEL_ID,
+    schema=SCHEMA,
+    switch=SWITCH,
+    strings=STRINGS,
+    preview_size=PREVIEW_SIZE,
+    preview_text=preview_text,
+    preview_widget=preview_widget,
+)
+
+
 class SessionGoals(BattlePanel):
-    """The goals from the site: a hangar label with their progress, the battle line of the goals this battle can
-    move, and a notice with our sound when the site reports a goal met."""
 
     def __init__(self, app):
         self.reads = ReadState()
@@ -30,7 +47,7 @@ class SessionGoals(BattlePanel):
         self.tank_id = None
         self.damage = DamageTracker(self.render)
         self.announced = Announced(app.state.get(STATE_KEY))
-        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text, preview_widget)
+        BattlePanel.__init__(self, app, PANEL_SPEC)
         app.register_state(STATE_KEY, self.announced.to_list)
         bus = app.bus
         bus.on('account', self._on_account)
@@ -72,7 +89,15 @@ class SessionGoals(BattlePanel):
         self.render_hangar()
 
     def fetch(self):
-        signed_read(self.app, self.reads, GOALS_KEY, GOALS_PATH, lambda: signed_body(self.app), lambda: self.account_id, self._on_goals)
+        app = self.app
+        read = SignedRead(
+            reads=self.reads,
+            key=GOALS_KEY,
+            path=GOALS_PATH,
+            build=lambda: signed_body(app),
+            account_of=lambda: self.account_id,
+        )
+        signed_read(app, read, self._on_goals)
 
     def _on_goals(self, data, account_id):
         self.goals = parse_goals(data, account_id)
@@ -82,19 +107,24 @@ class SessionGoals(BattlePanel):
     def _announce(self, goals):
         if not goals:
             return
-        self.app.save_state()
+        app = self.app
+        app.save_state()
         for goal in goals:
-            self.app.ui.notify(format_done(goal, self.app.translate, vehicle_short_name(goal.get('tank_id'))))
+            vehicle_name = vehicle_short_name(goal.get('tank_id'))
+            app.ui.notify(format_done(goal, app.translate, vehicle_name))
         if self.settings.get('sound'):
             play_mp3(SOUND)
 
     def render_hangar(self):
         if not self.settings.get('show_hangar') or not self.active():
             return
-        names = dict((goal['tank_id'], vehicle_short_name(goal['tank_id'])) for goal in self.goals if goal.get('tank_id'))
+        tank_ids = [goal['tank_id'] for goal in self.goals if goal.get('tank_id')]
+        names = dict((tank_id, vehicle_short_name(tank_id)) for tank_id in tank_ids)
         translate = self.app.translate
-        self.hangar.show(format_hangar(self.goals, self.settings, translate, names), HANGAR_LAYOUT,
-                         widget=hangar_widget(self.goals, self.settings, translate, names))
+
+        text = format_hangar(self.goals, self.settings, translate, names)
+        widget = hangar_widget(self.goals, self.settings, translate, names)
+        self.hangar.show(text, HANGAR_LAYOUT, widget=widget)
 
     def start(self, player):
         if not self.settings.get('show_battle') or not self.goals:
@@ -109,21 +139,21 @@ class SessionGoals(BattlePanel):
     @safe
     def render(self):
         damage = self.damage.damage
-        if damage is not None:
-            text = format_battle(self.goals, self.tank_id, damage, self.settings, self.app.translate)
-            if text:
-                self.show(text, battle_widget(self.goals, self.tank_id, damage, self.settings, self.app.translate))
-            else:
-                self.hide()
+        if damage is None:
+            return
+        translate = self.app.translate
+        text = format_battle(self.goals, self.tank_id, damage, self.settings, translate)
+        if not text:
+            self.hide()
+            return
+        self.show(text, battle_widget(self.goals, self.tank_id, damage, self.settings, translate))
 
     def ui_actions(self):
         return page_actions(self.app.translate) if self.enabled() else []
 
     def ui_action(self, action, row=None, value=None):
-        if action != ACTION_REFRESH:
-            return None
-        if not self.app.is_bound():
-            return self.notice_error('goals_unbound')
+        return self.refresh_action(action, 'goals_unbound', 'goals_refreshing', self._refresh)
+
+    def _refresh(self):
         self.reads.refresh_all()
         self.update(time.time())
-        return self.notice_info('goals_refreshing')

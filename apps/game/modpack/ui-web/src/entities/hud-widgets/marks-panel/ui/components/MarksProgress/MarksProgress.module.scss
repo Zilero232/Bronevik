@@ -1,0 +1,21 @@
+@use '../../../../../../shared/styles/gameface' as *;
+
+.line {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.secondary {
+  margin-right: 8px;
+  color: token(color-text-muted);
+  font-size: 11px;
+}
+
+.battles {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  color: token(color-text-muted);
+}

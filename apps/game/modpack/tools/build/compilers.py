@@ -42,7 +42,9 @@ def _runs(command, args, expect=None):
         output = subprocess.run(command + args, capture_output=True, text=True, timeout=20)
     except (OSError, subprocess.SubprocessError):
         return False
-    return output.returncode == 0 and (expect is None or output.stdout.strip() == expect)
+    if output.returncode != 0:
+        return False
+    return expect is None or output.stdout.strip() == expect
 
 
 def find_owg(explicit=None):
@@ -88,7 +90,12 @@ def compile_py27(python27, entries, staging):
         os.makedirs(os.path.dirname(target), exist_ok=True)
         jobs.append([path, target, in_package_path(archive_path)])
         compiled.append((target, archive_path + 'c'))
-    result = subprocess.run(python27 + ['-c', PY27_COMPILE_SCRIPT], input=json.dumps(jobs), capture_output=True, text=True)
+    result = subprocess.run(
+        python27 + ['-c', PY27_COMPILE_SCRIPT],
+        input=json.dumps(jobs),
+        capture_output=True,
+        text=True,
+    )
     if result.returncode != 0:
         sys.stderr.write(result.stdout + result.stderr)
         raise SystemExit('Python 2.7 compilation failed')
@@ -106,8 +113,15 @@ def compile_owg(owg, entries, staging):
         target = os.path.join(source_root, in_package_path(archive_path).replace('/', os.sep))
         os.makedirs(os.path.dirname(target), exist_ok=True)
         shutil.copyfile(path, target)
-    command = owg + ['compile', '--source', os.path.join(source_root, 'scripts'), '--target', os.path.join(target_root, 'scripts'),
-                     '--filename-root', 'scripts', '--timestamp', str(ZIP_EPOCH), '--strict', '--quiet']
+    command = owg + [
+        'compile',
+        '--source', os.path.join(source_root, 'scripts'),
+        '--target', os.path.join(target_root, 'scripts'),
+        '--filename-root', 'scripts',
+        '--timestamp', str(ZIP_EPOCH),
+        '--strict',
+        '--quiet',
+    ]
     result = subprocess.run(command, capture_output=True, text=True)
     if result.returncode != 0:
         sys.stderr.write(result.stdout + result.stderr)

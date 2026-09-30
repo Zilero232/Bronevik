@@ -26,7 +26,6 @@ class MoeService(object):
         app.bus.on('battle_event', self._on_battle_event)
 
     def listen(self, callback):
-        """`callback(tank_id)` after a curve read finishes."""
         self.listeners.append(callback)
 
     def snapshot(self, tank_id):

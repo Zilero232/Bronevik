@@ -13,10 +13,12 @@ def copy_audio(manifest, catalog, modpack_dir, out_dir):
     written = []
     for component in manifest.components:
         entry = catalog.entry(component.id)
-        if component.preview.audio and entry is not None and entry.preview.audio:
-            source = os.path.join(modpack_dir, AUDIO_DIR, *entry.preview.audio.split('/'))
-            target = os.path.join(out_dir, *component.preview.audio.split('/'))
-            os.makedirs(os.path.dirname(target), exist_ok=True)
-            shutil.copyfile(source, target)
-            written.append(target)
+        has_audio = component.preview.audio and entry is not None and entry.preview.audio
+        if not has_audio:
+            continue
+        source = os.path.join(modpack_dir, AUDIO_DIR, *entry.preview.audio.split('/'))
+        target = os.path.join(out_dir, *component.preview.audio.split('/'))
+        os.makedirs(os.path.dirname(target), exist_ok=True)
+        shutil.copyfile(source, target)
+        written.append(target)
     return written

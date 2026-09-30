@@ -41,7 +41,10 @@ def _trophy(device):
 # set, dimmed when isUsed() (gui/Scaleform/daapi/view/battle/shared/consumables_panel.py _updateOptionalDeviceSlot).
 # The controller follows the attached vehicle, so the states are read only while that is the own one.
 def _state(device):
-    controller = optional_devices() if controls_own_vehicle() else None
+    if not controls_own_vehicle():
+        return False, False
+
+    controller = optional_devices()
     if controller is None:
         return False, False
 
@@ -152,24 +155,30 @@ def _setups():
         return set(), [], {}
 
     boosters = vehicle.battleBoosters.installed.getItems()
-    return _boosted(boosters, vehicle), [_booster(booster, vehicle) for booster in boosters], _sets(vehicle)
+    boosted = _boosted(boosters, vehicle)
+    directives = [_booster(booster, vehicle) for booster in boosters]
+    return boosted, directives, _sets(vehicle)
 
 
 def _devices(boosted):
     descriptor = player().getVehicleDescriptor()
-    return [_device(device, slot, boosted) for device, slot in descriptor.iterOptDevsWithSlots() if device is not None]
+    devices = []
+    for device, slot in descriptor.iterOptDevsWithSlots():
+        if device is not None:
+            devices.append(_device(device, slot, boosted))
+    return devices
 
 
 def own_loadout():
     try:
-        boosted, boosters, sets = _setups()
+        boosted, directives, sets = _setups()
     except Exception:
         log_exception('battle loadout: own setups')
-        boosted, boosters, sets = set(), [], {}
+        boosted, directives, sets = set(), [], {}
 
     try:
         devices = _devices(boosted)
     except Exception:
         log_exception('battle loadout: own devices')
         devices = []
-    return devices + boosters, sets
+    return devices + directives, sets

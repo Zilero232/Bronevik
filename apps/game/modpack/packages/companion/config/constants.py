@@ -57,15 +57,29 @@ FEATURES = (
     'publish_replays',
     'share_session_report',
 )
-# Off until the player turns them on: the uploads (privacy) and the secondary battle panels, so a default battle shows only
-# the essentials (team HP, damage and hit logs, marks, the reload timer, the equipment over the stock consumables panel, the
-# sixth sense lamp, the death card). The consumables bar repeats the stock panel and is opt-in too.
-OPT_IN_FEATURES = ('upload_replays', 'publish_replays', 'share_session_report', 'battle_main_gun', 'battle_efficiency', 'battle_personal_best',
-                   'battle_gun_arc', 'battle_arty_meter', 'battle_platoon_points', 'battle_received_hits', 'battle_consumables', 'battle_clock',
-                   'hangar_event_trackers')
+# Off until the player turns them on: the uploads (privacy) and the secondary battle panels, so a default
+# battle shows only the essentials (team HP, damage and hit logs, marks, the reload timer, the equipment over
+# the stock consumables panel, the sixth sense lamp, the death card). The consumables bar repeats the stock
+# panel and is opt-in too.
+OPT_IN_FEATURES = (
+    'upload_replays',
+    'publish_replays',
+    'share_session_report',
+    'battle_main_gun',
+    'battle_efficiency',
+    'battle_personal_best',
+    'battle_gun_arc',
+    'battle_arty_meter',
+    'battle_platoon_points',
+    'battle_received_hits',
+    'battle_consumables',
+    'battle_clock',
+    'hangar_event_trackers',
+)
 SHARE_CHANNELS = ('telegram', 'discord', 'both')
-# config.json keeps every default it was written with: a switch whose default changed is moved to the new one when it still
-# holds the old default and the file predates the change (`defaults_revision`). (revision, key, old default, new default).
+# config.json keeps every default it was written with: a switch whose default changed is moved to the new
+# one when it still holds the old default and the file predates the change (`defaults_revision`).
+# (revision, key, old default, new default).
 DEFAULTS_REVISION = 1
 RETIRED_DEFAULTS = (
     (1, 'battle_consumables', True, False),

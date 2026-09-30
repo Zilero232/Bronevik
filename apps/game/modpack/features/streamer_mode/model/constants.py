@@ -13,5 +13,10 @@ HOTKEY_CHOICES = ('ctrl_shift_h', 'ctrl_shift_s', 'f9', 'f10', 'f11', 'none')
 
 # The hangar labels with the player's own numbers (ratings, session, goals, missions, marks history) that a private
 # stream keeps off the screen.
-PRIVATE_HANGAR_LABELS = ('otmetki.hangar_ratings', 'otmetki.session', 'otmetki.session_goals', 'otmetki.personal_missions',
-                         'otmetki.marks_history')
+PRIVATE_HANGAR_LABELS = (
+    'otmetki.hangar_ratings',
+    'otmetki.session',
+    'otmetki.session_goals',
+    'otmetki.personal_missions',
+    'otmetki.marks_history',
+)

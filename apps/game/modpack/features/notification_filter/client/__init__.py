@@ -27,7 +27,9 @@ class NotificationFilter(FeatureComponent):
         FeatureComponent.__init__(self, app, FEATURE_ID, SCHEMA, SWITCH, STRINGS)
         self.hidden = 0
         model, types = _client_classes()
-        self.types = type_table_of(types) if types is not None else {}
+        self.types = {}
+        if types is not None:
+            self.types = type_table_of(types)
         if model is None:
             log('notification filter: notification centre not found, feature off')
             return
@@ -39,7 +41,8 @@ class NotificationFilter(FeatureComponent):
         return hidden_names(self.settings.to_dict())
 
     def _add_notification(self, original, model, notification, *args, **kwargs):
-        if hides(notification.getType(), type(notification).__name__, self.blocked(), self.types):
+        class_name = type(notification).__name__
+        if hides(notification.getType(), class_name, self.blocked(), self.types):
             self.hidden += 1
             return None
         return original(model, notification, *args, **kwargs)

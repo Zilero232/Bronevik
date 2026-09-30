@@ -11,10 +11,31 @@ dimmed footer.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ...compat import is_number, string_types, to_text
-from .constants import CARD_KIND, CARD_LIMITS, HEX_COLOR, RAILS, STATUSES, TONES, WIDGET_VERSION
+from ...compat import is_number, keyword_options, string_types, to_text
+from .constants import (
+    CARD_KIND,
+    CARD_LIMITS,
+    CARD_OPTIONS,
+    HEX_COLOR,
+    RAILS,
+    ROW_OPTIONS,
+    STATUSES,
+    TONES,
+    WIDGET_VERSION,
+)
 
-__all__ = ('CARD_KIND', 'RAILS', 'STATUSES', 'TONES', 'WIDGET_VERSION', 'card', 'card_chip', 'card_row', 'tone', 'widget')
+__all__ = (
+    'CARD_KIND',
+    'RAILS',
+    'STATUSES',
+    'TONES',
+    'WIDGET_VERSION',
+    'card',
+    'card_chip',
+    'card_row',
+    'tone',
+    'widget',
+)
 
 
 def widget(kind, data):
@@ -26,82 +47,100 @@ def tone(value, default='text'):
     return value if value in TONES else default
 
 
+def _is_plain_number(value):
+    return is_number(value) and not isinstance(value, bool)
+
+
 def _text(value, limit):
-    if value is None or (isinstance(value, string_types) and not value):
-        return None
-    if is_number(value) and not isinstance(value, bool):
+    if _is_plain_number(value):
         value = to_text(value)
     if not isinstance(value, string_types):
         return None
     text = to_text(value).strip()
-    return text[:limit] if text else None
+    return text[:limit] or None
 
 
 def _icon(value):
-    return to_text(value) if isinstance(value, string_types) and value else None
+    if isinstance(value, string_types) and value:
+        return to_text(value)
+    return None
 
 
 def _progress(value):
-    if not is_number(value) or isinstance(value, bool):
+    if not _is_plain_number(value):
         return None
     return round(max(0.0, min(1.0, float(value))), 3)
 
 
 def _color(value):
-    return to_text(value).upper() if isinstance(value, string_types) and HEX_COLOR.match(value) else None
+    if isinstance(value, string_types) and HEX_COLOR.match(value):
+        return to_text(value).upper()
+    return None
 
 
-def card_row(text=None, value=None, icon=None, tone_name='text', label=None, note=None, detail=None, progress=None, status=None,
-             progress_tone='accent', text_tone='text', color=None):
+def _width(value):
+    if not _is_plain_number(value):
+        return None
+    low, high = CARD_LIMITS['width']
+    return int(max(low, min(high, value)))
+
+
+def card_row(text=None, value=None, **style):
     """One row: `[icon|status] label text ....... value note`, then `detail` (one dimmed line) and a thin progress bar.
-    `color` (`#RRGGBB`, a rating scale colour) paints the value instead of its tone."""
-    limit = CARD_LIMITS['text']
+
+    `style` takes `icon`, `status` (STATUSES), `label`, `note`, `detail`, `progress` (0..1), the tones `tone_name`
+    (the value), `text_tone` and `progress_tone`, and `color` (`#RRGGBB`, a rating scale colour) that paints the value
+    instead of its tone."""
+    style = keyword_options(style, ROW_OPTIONS)
     return {
-        'icon': _icon(icon),
-        'status': status if status in STATUSES else None,
-        'label': _text(label, limit),
-        'text': _text(text, limit),
-        'text_tone': tone(text_tone),
+        'icon': _icon(style['icon']),
+        'status': style['status'] if style['status'] in STATUSES else None,
+        'label': _text(style['label'], CARD_LIMITS['text']),
+        'text': _text(text, CARD_LIMITS['text']),
+        'text_tone': tone(style['text_tone']),
         'value': _text(value, CARD_LIMITS['value']),
-        'tone': tone(tone_name),
-        'color': _color(color),
-        'note': _text(note, CARD_LIMITS['value']),
-        'detail': _text(detail, CARD_LIMITS['detail']),
-        'progress': _progress(progress),
-        'progress_tone': tone(progress_tone, 'accent'),
+        'tone': tone(style['tone_name']),
+        'color': _color(style['color']),
+        'note': _text(style['note'], CARD_LIMITS['value']),
+        'detail': _text(style['detail'], CARD_LIMITS['detail']),
+        'progress': _progress(style['progress']),
+        'progress_tone': tone(style['progress_tone'], 'accent'),
     }
 
 
 def card_chip(value, icon=None, tone_name='text', label=None, color=None):
     """An icon + number in the chips strip (`label` is a dimmed caption before the number, `color` as in `card_row`)."""
-    return {'icon': _icon(icon), 'value': _text(value, CARD_LIMITS['value']) or u'', 'tone': tone(tone_name),
-            'label': _text(label, CARD_LIMITS['value']), 'color': _color(color)}
+    return {
+        'icon': _icon(icon),
+        'value': _text(value, CARD_LIMITS['value']) or u'',
+        'tone': tone(tone_name),
+        'label': _text(label, CARD_LIMITS['value']),
+        'color': _color(color),
+    }
 
 
 def _strip(marks):
     tones = [tone(mark, 'muted') for mark in marks]
-
     return tones[-CARD_LIMITS['strip']:]
 
 
-def card(title=None, icon=None, rows=(), value=None, value_tone='text', subtitle=None, rail='info', chips=(),
-         footer=None, width=None, strip=()):
-    """The `card` widget: `title` in caps with `icon` and `subtitle`, `value` big on the right, then `chips`, `strip` (a
-    row of small marks, one tone each, e.g. the last battles' results; the newest kept), `rows` and `footer`. `rail` is
-    the plate's category (RAILS), the colour of its left edge; `width` (design px) fixes the plate's width."""
-    rows = [row for row in rows if row][:CARD_LIMITS['rows']]
-    chips = [chip for chip in chips if chip][:CARD_LIMITS['chips']]
-    low, high = CARD_LIMITS['width']
+def card(title=None, icon=None, rows=(), **layout):
+    """The `card` widget: `title` in caps with `icon`, then `rows`.
+
+    `layout` takes `subtitle` (next to the title), `value` big on the right with its `value_tone`, `chips`, `strip` (a
+    row of small marks, one tone each, e.g. the last battles' results; the newest kept), `footer`, `rail` (the plate's
+    category, RAILS, the colour of its left edge) and `width` (design px, fixes the plate's width)."""
+    layout = keyword_options(layout, CARD_OPTIONS)
     return widget(CARD_KIND, {
         'title': _text(title, CARD_LIMITS['title']),
         'icon': _icon(icon),
-        'subtitle': _text(subtitle, CARD_LIMITS['title']),
-        'value': _text(value, CARD_LIMITS['value']),
-        'value_tone': tone(value_tone),
-        'rail': rail if rail in RAILS else 'info',
-        'chips': chips,
-        'strip': _strip(strip),
-        'rows': rows,
-        'footer': _text(footer, CARD_LIMITS['detail']),
-        'width': int(max(low, min(high, width))) if is_number(width) and not isinstance(width, bool) else None,
+        'subtitle': _text(layout['subtitle'], CARD_LIMITS['title']),
+        'value': _text(layout['value'], CARD_LIMITS['value']),
+        'value_tone': tone(layout['value_tone']),
+        'rail': layout['rail'] if layout['rail'] in RAILS else 'info',
+        'chips': [chip for chip in layout['chips'] if chip][:CARD_LIMITS['chips']],
+        'strip': _strip(layout['strip']),
+        'rows': [row for row in rows if row][:CARD_LIMITS['rows']],
+        'footer': _text(layout['footer'], CARD_LIMITS['detail']),
+        'width': _width(layout['width']),
     })

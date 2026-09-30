@@ -7,7 +7,8 @@ from .widget import marks_widget
 
 
 def preview_state(settings):
-    return panel_state(PREVIEW_SNAPSHOT, PREVIEW_COMBINED, ThresholdCurve.from_api(PREVIEW_THRESHOLDS), PREVIEW_PACE, settings)
+    curve = ThresholdCurve.from_api(PREVIEW_THRESHOLDS)
+    return panel_state(PREVIEW_SNAPSHOT, PREVIEW_COMBINED, curve, PREVIEW_PACE, settings)
 
 
 def preview_text(settings, translate):

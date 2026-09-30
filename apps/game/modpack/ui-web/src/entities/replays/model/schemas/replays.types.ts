@@ -1,6 +1,6 @@
 import type * as z from 'zod/mini';
 
-import type { REPLAY_FILTER, REPLAYS } from '../config';
+import type { REPLAY_FILTER, REPLAYS } from '../../config';
 import type { replaysPageSchema } from './replays.schemas';
 
 export type ReplayItem = ReplaysPage['items'][number];

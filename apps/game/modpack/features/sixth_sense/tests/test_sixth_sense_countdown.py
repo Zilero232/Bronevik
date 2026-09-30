@@ -62,17 +62,19 @@ class CountdownTest(unittest.TestCase):
 
     def test_one_tick_per_whole_second_down_to_one(self):
         lamp = lit_lamp(10.0)
-
         moments = [100.0 + half / 2.0 for half in range(0, 24)]
 
-        assert ticks(lamp, moments) == [101.0, 102.0, 103.0, 104.0, 105.0, 106.0, 107.0, 108.0, 109.0]
+        ticked = ticks(lamp, moments)
+
+        assert ticked == [101.0, 102.0, 103.0, 104.0, 105.0, 106.0, 107.0, 108.0, 109.0]
 
     def test_ticks_follow_the_shown_number_of_a_fractional_duration(self):
         lamp = lit_lamp(8.5)
-
         moments = [100.0 + half / 2.0 for half in range(0, 6)]
 
-        assert ticks(lamp, moments) == [100.5, 101.5, 102.5]
+        ticked = ticks(lamp, moments)
+
+        assert ticked == [100.5, 101.5, 102.5]
 
     def test_the_same_second_ticks_once(self):
         lamp = lit_lamp(10.0)
@@ -95,9 +97,9 @@ class CountdownTest(unittest.TestCase):
         lamp.vehicle_state(OBSERVED, False, 106.0)
         lamp.vehicle_state(OBSERVED, True, 200.0, 8.0)
 
-        moments = [200.5, 201.0, 202.0]
+        ticked = ticks(lamp, [200.5, 201.0, 202.0])
 
-        assert ticks(lamp, moments) == [201.0, 202.0]
+        assert ticked == [201.0, 202.0]
 
 
 class HideConditionsTest(unittest.TestCase):
@@ -108,7 +110,13 @@ class HideConditionsTest(unittest.TestCase):
         change = lamp.vehicle_state(OBSERVED, True, 100.0, 10.0)
 
         assert change == 'show'
-        assert lamp.duration == 10.0
+
+    def test_detection_takes_the_lamp_duration(self):
+        lamp = SixthSense()
+
+        lamp.vehicle_state(OBSERVED, True, 100.0, 8.5)
+
+        assert lamp.duration == 8.5
 
     def test_losing_detection_hides_the_lamp(self):
         lamp = lit_lamp()

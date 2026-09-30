@@ -1,3 +1,3 @@
-export { designRect, placeRect, rectStyle } from './anchor';
+export { placeRect, rectStyle } from './anchor';
 
-export type { Anchor, AnchorStyle, PageBoxInput, PlaceInput, Rect, RectStyleInput, Size } from './anchor.types';
+export type { Anchor, AnchorStyle, PlaceInput, Rect, RectStyleInput, Size } from './anchor.types';

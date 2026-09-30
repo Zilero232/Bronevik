@@ -48,3 +48,13 @@ EFFICIENCY_KEYS = (
     ('STUN', 'stun'),
     ('RECEIVED_DAMAGE', 'received'),
 )
+
+# The two python.log lines of `BattleTally.summary`.
+SUMMARY_LINE = (
+    'battle: hits %(hits)d, pens %(pens)d, dealt %(dealt)d, blocked %(blocked)d, assist %(assist)d, stun %(stun)d, '
+    'received %(received)d'
+)
+DETAIL_LINE = (
+    'battle detail: markers [%s]; events %d batches, damaging hits %d, crits %d, kills %d; vanilla totals [%s]; '
+    'hooks [%s]'
+)

@@ -4,9 +4,9 @@ from ....core.hud.modes import MODES, allowed_panels
 from .constants import ACTION_RESET_PLACES
 
 
+# The shape HudLayer.set_policy takes: per battle type, the panels its layout shows and whether it keeps places of
+# its own.
 def layout_policy(settings, is_enabled):
-    """The HUD layer's policy (`HudLayer.set_policy`): per battle type, the panels its layout shows and whether it keeps
-    places of its own; with the component switched off every panel shows at its own place."""
     def policy(mode):
         if not is_enabled() or mode not in MODES:
             return None, False
@@ -15,9 +15,11 @@ def layout_policy(settings, is_enabled):
 
 
 def place_actions(modes, translate):
-    """The window button that forgets the per-type places, while there are any."""
     if not modes:
         return []
     names = u', '.join(translate('hud_layouts_' + mode) for mode in modes)
-    return [{'id': ACTION_RESET_PLACES, 'label': translate('hud_layouts_reset_places'),
-             'confirm': translate('hud_layouts_reset_places_confirm', modes=names)}]
+    return [{
+        'id': ACTION_RESET_PLACES,
+        'label': translate('hud_layouts_reset_places'),
+        'confirm': translate('hud_layouts_reset_places_confirm', modes=names),
+    }]

@@ -3,15 +3,16 @@
 RU 1.45 client source (gui/Scaleform/daapi/view/battle/shared/page.py): `SharedPage._setComponentsVisibility(visible,
 hidden)` is how the battle page shows and hides its components, again and again (control mode, full stats, postmortem),
 so a one-off hide gets undone. We wrap it: the original always runs, with our suppressed aliases moved from `visible` to
-`hidden` (`core.hud.stock`). Only `ClassicPage` and its subclasses are touched, and only in the battle types that replace
-stock elements (`core.hud.modes.suppresses`: random, training, comp7); the event pages built on ClassicPage (Waffentrager,
-story mode), Frontline and Steel Hunter keep every stock element. An alias the page has no component for is never hidden
-(`page.components`, the DAAPI components the page registered). An alias we gave back is shown again at once
-(`as_setComponentsVisibilityS`), or handed to the page's full-stats set while Tab is open so it comes back with the rest.
+`hidden` (`core.hud.stock`). Only `ClassicPage` and its subclasses are touched, and only in the battle types that
+replace stock elements (`core.hud.modes.suppresses`: random, training, comp7); the event pages built on ClassicPage
+(Waffentrager, story mode), Frontline and Steel Hunter keep every stock element. An alias the page has no component for
+is never hidden (`page.components`, the DAAPI components the page registered). An alias we gave back is shown again at
+once (`as_setComponentsVisibilityS`), or handed to the page's full-stats set while Tab is open so it comes back with the
+rest.
 
-`GameEvent.GUI_VISIBILITY` (V) and `GameEvent.FULL_STATS` (Tab) take our battle panels off the screen with the stock GUI.
-`GameEvent.SHOW_EXTENDED_INFO` (Alt held, the key the stock markers, players panel and damage log expand on) goes out as
-`battle_extended_info(held)` on the app bus for the panels with an alternate mode.
+`GameEvent.GUI_VISIBILITY` (V) and `GameEvent.FULL_STATS` (Tab) take our battle panels off the screen with the stock
+GUI. `GameEvent.SHOW_EXTENDED_INFO` (Alt held, the key the stock markers, players panel and damage log expand on) goes
+out as `battle_extended_info(held)` on the app bus for the panels with an alternate mode.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -78,7 +79,8 @@ class StockControl(object):
             return
         self.page = page
         self.hidden = frozenset()
-        self.gui_visible, self.full_stats = True, False
+        self.gui_visible = True
+        self.full_stats = False
         self.layer.set_gui_hidden(False)
         self._set_extended(False)
         self.sync()
@@ -91,33 +93,31 @@ class StockControl(object):
             self._set_extended(False)
 
     def present(self, alias):
-        """Whether the attached page has a stock component `alias` (True while the page has registered none yet)."""
         components = getattr(self.page, 'components', None)
         if not isinstance(components, dict) or not components:
             return True
         return alias in components
 
     def in_force(self):
-        """The suppressed aliases that apply to the attached page in the current battle type."""
         if self.page is None or not suppresses(self.layer.mode):
             return frozenset()
         return frozenset(alias for alias in self.suppression.aliases if self.present(alias))
 
     def want(self, owner, aliases):
-        """Replace `aliases` for `owner` (a component id); `()` gives them back to the stock page."""
         self.install()
         self.suppression.want(owner, aliases)
         self.sync(owner)
 
     def sync(self, owner=None):
-        """Hide what is in force and not hidden yet, give back what we hid and no longer replace."""
         target = self.in_force()
-        hidden, released = target - self.hidden, self.hidden - target
+        hidden = target - self.hidden
+        released = self.hidden - target
         self.hidden = target
         self._hide(hidden)
         self._show(released)
         if hidden or released:
-            log('HUD: stock %s hidden, %s restored (%s)' % (sorted(hidden) or '-', sorted(released) or '-', owner or 'battle type'))
+            reason = owner or 'battle type'
+            log('HUD: stock %s hidden, %s restored (%s)' % (sorted(hidden) or '-', sorted(released) or '-', reason))
 
     def _hide(self, aliases):
         page = self.page
@@ -147,25 +147,29 @@ class StockControl(object):
         except ImportError:
             return
         game_event = getattr(events, 'GameEvent', None)
-        for name, handler in (('GUI_VISIBILITY', self._on_gui_visibility), ('FULL_STATS', self._on_full_stats),
-                              ('SHOW_EXTENDED_INFO', self._on_extended_info)):
+        handlers = (
+            ('GUI_VISIBILITY', self._on_gui_visibility),
+            ('FULL_STATS', self._on_full_stats),
+            ('SHOW_EXTENDED_INFO', self._on_extended_info),
+        )
+        for name, handler in handlers:
             event = getattr(game_event, name, None)
             if event is not None:
                 g_eventBus.addListener(event, handler, EVENT_BUS_SCOPE.BATTLE)
 
     @safe
     def _on_gui_visibility(self, event):
-        self.gui_visible = bool((getattr(event, 'ctx', None) or {}).get(GUI_VISIBLE, True))
+        self.gui_visible = _event_flag(event, GUI_VISIBLE, True)
         self._follow()
 
     @safe
     def _on_full_stats(self, event):
-        self.full_stats = bool((getattr(event, 'ctx', None) or {}).get(FULL_STATS_DOWN, False))
+        self.full_stats = _event_flag(event, FULL_STATS_DOWN, False)
         self._follow()
 
     @safe
     def _on_extended_info(self, event):
-        self._set_extended(bool((getattr(event, 'ctx', None) or {}).get(EXTENDED_INFO_DOWN, False)))
+        self._set_extended(_event_flag(event, EXTENDED_INFO_DOWN, False))
 
     def _set_extended(self, held):
         if held != self.extended:
@@ -173,4 +177,10 @@ class StockControl(object):
             self.bus.emit(EXTENDED_INFO_EVENT, held)
 
     def _follow(self):
-        self.layer.set_gui_hidden(self.page is not None and (not self.gui_visible or self.full_stats))
+        is_gui_off = not self.gui_visible or self.full_stats
+        self.layer.set_gui_hidden(self.page is not None and is_gui_off)
+
+
+def _event_flag(event, key, default):
+    context = getattr(event, 'ctx', None) or {}
+    return bool(context.get(key, default))

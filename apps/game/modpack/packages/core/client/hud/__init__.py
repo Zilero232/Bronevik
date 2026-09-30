@@ -22,7 +22,6 @@ _state = {'layer': None, 'config': None, 'backend': None, 'stock': None}
 
 
 def build_backend(backends=BACKENDS, log_missing=True):
-    """A chain of the installed backends; logs why each missing one was left out."""
     installed = []
     for backend in backends:
         if backend.usable():
@@ -36,7 +35,6 @@ def build_backend(backends=BACKENDS, log_missing=True):
 
 
 def create_backend(backends=BACKENDS):
-    """The process-wide renderer chain (built on first use)."""
     if _state['backend'] is None:
         _state['backend'] = build_backend(backends)
     return _state['backend']
@@ -57,7 +55,6 @@ def hud_layer(app):
 
 
 def stock_control(app):
-    """The process-wide stock-element suppression of the battle page (created on first use)."""
     if _state['stock'] is None:
         _state['stock'] = StockControl(hud_layer(app), app.bus)
         _state['stock'].install()

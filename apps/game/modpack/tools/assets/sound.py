@@ -28,10 +28,20 @@ CHIMES = {
     'sixthSense': ((0.0, 659.26, 0.9, 1.0), (0.11, 987.77, 0.8, 0.9), (0.11, 1318.51, 0.5, 0.25)),
     'sixthSense_off': ((0.0, 987.77, 0.5, 0.55), (0.09, 659.26, 0.6, 0.5)),
     # A goal from the site met (session_goals): a rising major arpeggio.
-    'otmetki_goal': ((0.0, 523.25, 0.7, 0.8), (0.1, 659.26, 0.7, 0.8), (0.2, 783.99, 0.7, 0.85), (0.3, 1046.5, 0.9, 0.9)),
+    'otmetki_goal': (
+        (0.0, 523.25, 0.7, 0.8),
+        (0.1, 659.26, 0.7, 0.8),
+        (0.2, 783.99, 0.7, 0.85),
+        (0.3, 1046.5, 0.9, 0.9),
+    ),
     # A new personal best on the tank (personal_best): a short fanfare that lands on a held chord.
-    'otmetki_record': ((0.0, 392.0, 0.25, 0.7), (0.14, 523.25, 0.25, 0.75), (0.28, 659.26, 1.0, 0.9), (0.28, 783.99, 1.0, 0.8),
-                       (0.28, 1046.5, 0.9, 0.35)),
+    'otmetki_record': (
+        (0.0, 392.0, 0.25, 0.7),
+        (0.14, 523.25, 0.25, 0.75),
+        (0.28, 659.26, 1.0, 0.9),
+        (0.28, 783.99, 1.0, 0.8),
+        (0.28, 1046.5, 0.9, 0.35),
+    ),
     # A second of the sixth-sense countdown (sixth_sense tick_sound): one short high click.
     'otmetki_tick': ((0.0, 1760.0, 0.12, 1.0),),
 }
@@ -39,20 +49,32 @@ CHIMES = {
 PARTIALS = ((1.0, 1.0, 1.0), (2.01, 0.35, 1.6), (3.02, 0.12, 2.4), (4.17, 0.05, 3.2))
 ATTACK_S = 0.006
 DECAY_PER_S = 6.5
+TAIL_S = 0.05
+
+
+def bell(frequency, seconds):
+    """The bell's partials summed at `seconds` after the strike, before the attack envelope."""
+    value = 0.0
+    for ratio, partial_gain, decay in PARTIALS:
+        amplitude = partial_gain * math.exp(-DECAY_PER_S * decay * seconds)
+        value += amplitude * math.sin(2 * math.pi * frequency * ratio * seconds)
+    return value
+
+
+def add_note(samples, note):
+    start, frequency, duration, gain = note
+    first = int(start * RATE)
+    for index in range(int(duration * RATE)):
+        seconds = index / float(RATE)
+        envelope = min(1.0, seconds / ATTACK_S)
+        samples[first + index] += gain * envelope * bell(frequency, seconds)
 
 
 def render(notes):
-    length = int(RATE * max(start + duration for start, _, duration, _ in notes)) + int(RATE * 0.05)
+    length = int(RATE * max(start + duration for start, _, duration, _ in notes)) + int(RATE * TAIL_S)
     samples = [0.0] * length
-    for start, frequency, duration, gain in notes:
-        first = int(start * RATE)
-        for index in range(int(duration * RATE)):
-            t = index / float(RATE)
-            envelope = min(1.0, t / ATTACK_S)
-            value = 0.0
-            for ratio, partial_gain, decay in PARTIALS:
-                value += partial_gain * math.exp(-DECAY_PER_S * decay * t) * math.sin(2 * math.pi * frequency * ratio * t)
-            samples[first + index] += gain * envelope * value
+    for note in notes:
+        add_note(samples, note)
     top = max(abs(value) for value in samples) or 1.0
     return array.array('h', [int(round(value / top * PEAK * 32767)) for value in samples])
 

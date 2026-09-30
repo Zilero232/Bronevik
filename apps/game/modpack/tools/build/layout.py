@@ -37,9 +37,12 @@ ASSET_DIRS = ('gameface', 'res_map')
 # The vendored third-party libraries ship their licence texts next to them (packages/core/vendor/licenses).
 VENDOR_LICENCES = 'vendor/licenses'
 ROOT_INIT = '"""Three Marks: the core, companion and features/<id> packages share this namespace."""\n'
+PACKAGE_CONSTANTS = ('PACKAGE_ID', 'PACKAGE_NAME', 'VERSION')
 DESCRIPTIONS = {
     'core': 'Three Marks core runtime for the companion and its features (triotmetki.ru)',
-    'companion': 'Three Marks companion: own battle results, marks of excellence and session stats for triotmetki.ru',
+    'companion': (
+        'Three Marks companion: own battle results, marks of excellence and session stats for triotmetki.ru'
+    ),
 }
 
 
@@ -82,11 +85,15 @@ def entries(base):
     entry_dir = os.path.join(base, 'entry')
     if not os.path.isdir(entry_dir):
         return []
-    return [(os.path.join(entry_dir, name), MODS_ROOT + '/' + name) for name in sorted(os.listdir(entry_dir)) if name.endswith('.py')]
+    names = [name for name in sorted(os.listdir(entry_dir)) if name.endswith('.py')]
+    return [(os.path.join(entry_dir, name), MODS_ROOT + '/' + name) for name in names]
 
 
 def feature_ids():
-    return sorted(name for name in os.listdir(FEATURES_DIR) if os.path.isfile(os.path.join(FEATURES_DIR, name, '__init__.py')))
+    return sorted(
+        name for name in os.listdir(FEATURES_DIR)
+        if os.path.isfile(os.path.join(FEATURES_DIR, name, '__init__.py'))
+    )
 
 
 def vendor_licences(base):
@@ -94,14 +101,15 @@ def vendor_licences(base):
     root = os.path.join(base, *VENDOR_LICENCES.split('/'))
     if not os.path.isdir(root):
         return []
-    return [(os.path.join(root, name), PACKAGE_ROOT + '/core/' + VENDOR_LICENCES + '/' + name) for name in sorted(os.listdir(root))
-            if os.path.isfile(os.path.join(root, name))]
+    archive_dir = PACKAGE_ROOT + '/core/' + VENDOR_LICENCES
+    names = [name for name in sorted(os.listdir(root)) if os.path.isfile(os.path.join(root, name))]
+    return [(os.path.join(root, name), archive_dir + '/' + name) for name in names]
 
 
 def core_package(root_init):
     """`root_init` is the path of the generated otmetki/__init__.py (the build writes ROOT_INIT there)."""
     base = os.path.join(PACKAGES_DIR, 'core')
-    package_id, name, version = read_constants(os.path.join(base, 'version.py'), ('PACKAGE_ID', 'PACKAGE_NAME', 'VERSION'))
+    package_id, name, version = read_constants(os.path.join(base, 'version.py'), PACKAGE_CONSTANTS)
     files = [(root_init, PACKAGE_ROOT + '/__init__.py')]
     files += list(tree(base, PACKAGE_ROOT + '/core'))
     files += vendor_licences(base)
@@ -133,22 +141,28 @@ def asset_files(base, name):
 
 def extension_ids():
     """packages/<name> with a version.py, besides the core and the companion (today: ui)."""
-    return sorted(name for name in os.listdir(PACKAGES_DIR)
-                  if name not in CORE_PACKAGES and os.path.isfile(os.path.join(PACKAGES_DIR, name, 'version.py')))
+    return sorted(
+        name for name in os.listdir(PACKAGES_DIR)
+        if name not in CORE_PACKAGES and os.path.isfile(os.path.join(PACKAGES_DIR, name, 'version.py'))
+    )
 
 
 def extension_package(name, core, companion):
     base = os.path.join(PACKAGES_DIR, name)
-    package_id, package_name, version = read_constants(os.path.join(base, 'version.py'), ('PACKAGE_ID', 'PACKAGE_NAME', 'VERSION'))
+    package_id, package_name, version = read_constants(os.path.join(base, 'version.py'), PACKAGE_CONSTANTS)
     files = entries(base) + list(tree(base, PACKAGE_ROOT + '/' + name)) + asset_files(base, name)
-    return Package(name, package_id, package_name, version, package_name + ' (triotmetki.ru)', files, [core, companion])
+    description = package_name + ' (triotmetki.ru)'
+    return Package(name, package_id, package_name, version, description, files, [core, companion])
 
 
 def feature_package(feature_id, core, companion):
     base = os.path.join(FEATURES_DIR, feature_id)
-    package_id, name, version = read_constants(os.path.join(base, '__init__.py'), ('PACKAGE_ID', 'PACKAGE_NAME', 'VERSION'))
-    files = entries(base) + list(tree(base, PACKAGE_ROOT + '/features/' + feature_id)) + asset_sets.feature_files(feature_id)
-    return Package(feature_id, package_id, name, version, name + ' (triotmetki.ru)', files, [core, companion])
+    package_id, name, version = read_constants(os.path.join(base, '__init__.py'), PACKAGE_CONSTANTS)
+    files = entries(base)
+    files += list(tree(base, PACKAGE_ROOT + '/features/' + feature_id))
+    files += asset_sets.feature_files(feature_id)
+    description = name + ' (triotmetki.ru)'
+    return Package(feature_id, package_id, name, version, description, files, [core, companion])
 
 
 def modpack_version():
@@ -161,7 +175,8 @@ def split_packages(root_init):
     core = core_package(root_init)
     companion = companion_package(core)
     extensions = [extension_package(name, core, companion) for name in extension_ids()]
-    return [core, companion] + extensions + [feature_package(feature_id, core, companion) for feature_id in feature_ids()]
+    features = [feature_package(feature_id, core, companion) for feature_id in feature_ids()]
+    return [core, companion] + extensions + features
 
 
 def single_package(root_init):
@@ -169,4 +184,11 @@ def single_package(root_init):
     packages = split_packages(root_init)
     companion = packages[1]
     files = [item for package in packages for item in package.files]
-    return Package('single', companion.package_id, companion.name, modpack_version(), companion.description, files)
+    return Package(
+        'single',
+        companion.package_id,
+        companion.name,
+        modpack_version(),
+        companion.description,
+        files,
+    )

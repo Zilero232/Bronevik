@@ -46,7 +46,7 @@ from ...config import Config
 from ...i18n import Translator, resolve_language
 from ...marks.client import MarksCapture
 from ...outbox import Outbox
-from ...sender import INGEST_PATH, IngestSender
+from ...sender import INGEST_PATH, IngestEndpoint, IngestSender
 from ...settings_share.client import SettingsShare
 from ...settings_ui.client import create_settings_ui
 from ...version import MOD_ID, VERSION
@@ -150,14 +150,17 @@ class OtmetkiApp(object):
             return
         self.outbox.unblock()
         self.bus.emit('rebind')
+        endpoint = IngestEndpoint(
+            url=self.config.endpoint(INGEST_PATH),
+            user_agent=self.user_agent(),
+            mod_version=VERSION,
+            client_version=client_version(),
+        )
         self.sender = IngestSender(
             self.outbox,
             self.current_credentials(),
             self.transport,
-            self.config.endpoint(INGEST_PATH),
-            VERSION,
-            client_version(),
-            self.user_agent(),
+            endpoint,
             on_response=self._on_ingest_response,
             on_auth_failed=self.on_auth_failed,
             clock=time.time,
@@ -181,13 +184,18 @@ class OtmetkiApp(object):
             return
         now = time.time()
         self.battles.poll_pending_results(now)
-        interval = self.config.get('flush_interval_seconds')
-        if self.sender is not None and (self.flush_requested or now - self.last_flush >= interval):
+        if self._is_flush_due(now):
             self.flush_requested = False
             self.last_flush = now
             self.sender.tick(now)
         self.settings_share.tick(now)
         self.bus.emit('tick', now)
+
+    def _is_flush_due(self, now):
+        if self.sender is None:
+            return False
+        interval = self.config.get('flush_interval_seconds')
+        return self.flush_requested or now - self.last_flush >= interval
 
     def _on_account_show_gui(self, *args):
         log('hangar shown')

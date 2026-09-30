@@ -13,3 +13,7 @@ export type ViewEventInput = {
   on: boolean;
   text?: TooltipText;
 };
+
+export type ResourceIdInput = { root: unknown; path: readonly string[] };
+
+export type ValueProxyInput = { name: string; value: string };

@@ -1,6 +1,6 @@
 import type { InputArea, InputAreaOfInput } from './input-area.types';
 
-const NONE: InputArea = { left: 0, top: 0, width: 0, height: 0 };
+import { HUD_OVERLAY } from '../../config';
 
 export const inputAreaOf = ({ whole, screen, rects }: InputAreaOfInput): InputArea => {
   if (whole) {
@@ -8,7 +8,7 @@ export const inputAreaOf = ({ whole, screen, rects }: InputAreaOfInput): InputAr
   }
 
   if (rects.length === 0) {
-    return NONE;
+    return HUD_OVERLAY.emptyRect;
   }
 
   const left = Math.min(...rects.map((rect) => rect.left));

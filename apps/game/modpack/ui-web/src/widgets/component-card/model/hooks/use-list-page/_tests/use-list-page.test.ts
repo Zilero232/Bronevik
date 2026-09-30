@@ -21,6 +21,16 @@ const mount = () => {
   return { onRun, hook: renderHook(() => useListPage({ rows: ROWS, onRun })) };
 };
 
+type Page = ReturnType<typeof mount>['hook'];
+
+const openRename = (hook: Page) => {
+  hook.run(() => hook.current()[0]?.actions[0]?.onClick());
+};
+
+const toggleDetails = ({ hook, row }: { hook: Page; row: number }) => {
+  hook.run(() => hook.current()[row]?.toggleDetails());
+};
+
 describe(useListPage, () => {
   it('runs an action without input at once', () => {
     const { hook, onRun } = mount();
@@ -30,49 +40,73 @@ describe(useListPage, () => {
     expect(onRun).toHaveBeenCalledWith({ action: DELETE, row: 'b' });
   });
 
-  it('opens an editor with the preset value for an action with input and submits the edit', () => {
-    const { hook, onRun } = mount();
+  it('opens an editor with the preset value only on the row of an action with input', () => {
+    const { hook } = mount();
 
-    hook.run(() => hook.current()[0]?.actions[0]?.onClick());
+    openRename(hook);
 
     expect(hook.current()[0]?.draftValue).toBe(RENAME.input);
     expect(hook.current()[1]?.draftValue).toBeNull();
+  });
 
+  it('runs the action with the edited value on submit', () => {
+    const { hook, onRun } = mount();
+
+    openRename(hook);
     hook.run(() => hook.current()[0]?.editDraft('new name'));
     hook.run(() => hook.current()[0]?.submit());
 
     expect(onRun).toHaveBeenCalledWith({ action: RENAME, row: 'a', value: 'new name' });
+  });
+
+  it('closes the editor after submit', () => {
+    const { hook } = mount();
+
+    openRename(hook);
+    hook.run(() => hook.current()[0]?.submit());
+
     expect(hook.current()[0]?.draftValue).toBeNull();
   });
 
   it('closes the editor on cancel without running anything', () => {
     const { hook, onRun } = mount();
 
-    hook.run(() => hook.current()[0]?.actions[0]?.onClick());
+    openRename(hook);
     hook.run(() => hook.current()[0]?.cancel());
 
     expect(hook.current()[0]?.draftValue).toBeNull();
     expect(onRun).not.toHaveBeenCalled();
   });
 
-  it('keeps one row of details open at a time', () => {
+  it('offers details only on rows with details or a figure', () => {
     const { hook } = mount();
 
     expect(hook.current().map((row) => row.hasDetails)).toEqual([true, false, true]);
+  });
 
-    hook.run(() => hook.current()[0]?.toggleDetails());
+  it('opens the details of a row on toggle', () => {
+    const { hook } = mount();
+
+    toggleDetails({ hook, row: 0 });
 
     expect(hook.current()[0]?.detailsOpen).toBe(true);
+  });
 
-    hook.run(() => hook.current()[0]?.toggleDetails());
+  it('closes the details of a row on a second toggle', () => {
+    const { hook } = mount();
+
+    toggleDetails({ hook, row: 0 });
+    toggleDetails({ hook, row: 0 });
 
     expect(hook.current()[0]?.detailsOpen).toBe(false);
   });
 
-  it('treats a figure as details to open', () => {
+  it('keeps one row of details open at a time', () => {
     const { hook } = mount();
 
-    expect(hook.current()[2]?.hasDetails).toBe(true);
-    expect(hook.current()[1]?.hasDetails).toBe(false);
+    toggleDetails({ hook, row: 0 });
+    toggleDetails({ hook, row: 2 });
+
+    expect(hook.current().map((row) => row.detailsOpen)).toEqual([false, false, true]);
   });
 });

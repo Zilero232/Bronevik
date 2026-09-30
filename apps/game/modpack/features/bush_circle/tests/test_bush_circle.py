@@ -10,36 +10,108 @@ from otmetki.features.bush_circle.model.constants import COLOR_CHOICES, HOTKEY_C
 from otmetki.features.bush_circle.settings import CHOICES, SCHEMA, SETTINGS
 
 
-class CircleStateTest(unittest.TestCase):
+def toggled_state():
+    state = CircleState('hotkey')
+    state.toggle()
+    return state
 
-    def test_hotkey_mode_toggles(self):
-        state = CircleState('hotkey')
+
+class HotkeyModeTest(unittest.TestCase):
+
+    def test_the_circle_starts_hidden(self):
+        assert not CircleState('hotkey').wanted()
+
+    def test_the_hotkey_toggle_is_accepted(self):
+        assert CircleState('hotkey').toggle()
+
+    def test_the_hotkey_shows_the_circle(self):
+        state = toggled_state()
+
+        assert state.wanted()
+
+    def test_a_second_press_hides_the_circle(self):
+        state = toggled_state()
+
+        state.toggle()
+
         assert not state.wanted()
-        assert state.toggle() and state.wanted()
-        assert state.toggle() and not state.wanted()
 
-    def test_always_mode_ignores_the_hotkey(self):
-        state = CircleState('always')
-        assert state.wanted() and not state.toggle() and state.wanted()
 
-    def test_gone_once_the_tank_is_destroyed(self):
+class AlwaysModeTest(unittest.TestCase):
+
+    def test_the_circle_is_shown_from_the_start(self):
+        assert CircleState('always').wanted()
+
+    def test_the_hotkey_is_refused(self):
+        assert not CircleState('always').toggle()
+
+    def test_the_hotkey_keeps_the_circle_shown(self):
         state = CircleState('always')
-        assert state.killed() and not state.killed()
+
+        state.toggle()
+
+        assert state.wanted()
+
+
+class DestroyedTankTest(unittest.TestCase):
+
+    def test_the_first_kill_is_a_change(self):
+        assert CircleState('always').killed()
+
+    def test_a_second_kill_is_no_change(self):
+        state = CircleState('always')
+        state.killed()
+
+        assert not state.killed()
+
+    def test_the_circle_is_gone_once_the_tank_is_destroyed(self):
+        state = CircleState('always')
+
+        state.killed()
+
         assert not state.wanted()
 
 
 class ValuesTest(unittest.TestCase):
 
-    def test_fixed_radius_colours_and_hotkeys(self):
-        assert RADIUS_M == 15.0 and diameter() == 30.0
-        assert color_of('green') == 0xFF7CD35B and color_of('purple') == 0xFFFFFFFF
-        assert sorted(HOTKEYS) == sorted(HOTKEY_CHOICES) and HOTKEYS['none'] == (None, ())
-        assert all(color in CHOICES['color'] for color in COLOR_CHOICES) and CHOICES['hotkey'] == HOTKEY_CHOICES
+    def test_the_radius_is_the_games_15_m(self):
+        assert RADIUS_M == 15.0
 
-    def test_settings_and_strings(self):
+    def test_the_diameter_is_twice_the_radius(self):
+        assert diameter() == 30.0
+
+    def test_a_colour_is_its_argb_value(self):
+        assert color_of('green') == 0xFF7CD35B
+
+    def test_an_unknown_colour_is_white(self):
+        assert color_of('purple') == 0xFFFFFFFF
+
+    def test_every_hotkey_choice_has_a_key(self):
+        assert sorted(HOTKEYS) == sorted(HOTKEY_CHOICES)
+
+    def test_no_hotkey_has_no_key(self):
+        assert HOTKEYS['none'] == (None, ())
+
+    def test_the_settings_offer_every_colour(self):
+        for color in COLOR_CHOICES:
+            assert color in CHOICES['color']
+
+    def test_the_settings_offer_the_hotkey_choices(self):
+        assert CHOICES['hotkey'] == HOTKEY_CHOICES
+
+
+class SettingsTest(unittest.TestCase):
+
+    def test_the_component_switch_is_battle_bush_circle(self):
         assert SETTINGS == ('battle_bush_circle',)
+
+    def test_the_default_mode_is_the_hotkey(self):
         assert SCHEMA.defaults['mode'] == 'hotkey'
+
+    def test_both_languages_have_the_same_strings(self):
         assert sorted(STRINGS['ru']) == sorted(STRINGS['en'])
+
+    def test_every_choice_has_a_label(self):
         for key, values in CHOICES.items():
             for value in values:
                 assert 'bush_circle_%s_%s' % (key, value) in STRINGS['ru']

@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 # about other players (README "hangar_ratings").
 
 from .cache import RatingsCache  # noqa: F401
-from .constants import ACTION_REFRESH, ACTION_SITE, OVERVIEW_KEY, OVERVIEW_PATH, SITE_PATH  # noqa: F401
-from .panel import layout_of, metric_enabled, metric_text, metrics_line, page_actions, panel_text, stars, tier_color  # noqa: F401
+from .constants import ACTION_REFRESH, OVERVIEW_KEY, OVERVIEW_PATH  # noqa: F401
+from .panel import layout_of, page_actions, panel_text  # noqa: F401
 from .requests import parse_overview  # noqa: F401
 from .widget import ratings_widget  # noqa: F401

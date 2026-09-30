@@ -147,13 +147,38 @@ norecursedirs = [".*", "dist", "__pycache__", "entry", "fixtures"]
 
 [tool.ruff]
 # ruff's oldest target is py37; the py2.7 syntax rules live in tools/tests/test_py27_compat.py and vermin.
+# ruff format stays off: with a py37 target it adds trailing commas after *args/**kwargs, a SyntaxError on 2.7.
 target-version = "py37"
-line-length = 160
+line-length = 120
 extend-exclude = ["dist", "packages/core/vendor"]
 
 [tool.ruff.lint]
 # pyupgrade (UP), bugbear (B) and friends stay off: they suggest Python-3-only rewrites.
-select = ["E", "F", "W"]
+# E30x (blank lines) and PLR1702 (nesting) are preview rules: explicit-preview-rules turns on only
+# those two, and uv.lock pins the ruff that checks them.
+preview = true
+explicit-preview-rules = true
+select = [
+  "E", "F", "W",
+  "E301", "E302", "E303", "E304", "E305", "E306",
+  "C901",
+  "PT018",
+  "PLR0911", "PLR0912", "PLR0913", "PLR0915", "PLR1702",
+  "RET",
+  "SIM",
+]
+# SIM105 suggests contextlib.suppress, which is Python 3.4+.
+ignore = ["SIM105"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.pylint]
+max-args = 7
+max-branches = 10
+max-returns = 6
+max-statements = 30
+max-nested-blocks = 3
 
 [tool.ruff.lint.per-file-ignores]
 # Entry scripts and the test runner import after sys.path set-up.

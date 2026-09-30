@@ -1,10 +1,4 @@
-import type { UiAction, UiComponent, UiField } from '../../../../../shared/api/protocol';
-
-export type RunActionInput = {
-  action: UiAction;
-  row?: string;
-  value?: string;
-};
+import type { UiComponent, UiField } from '../../../../../shared/api/protocol';
 
 export type UseComponentCardInput = {
   component: UiComponent;

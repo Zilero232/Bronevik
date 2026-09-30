@@ -8,7 +8,9 @@ from .constants import DRAW_RANGE, MAX_VIEW_RANGE, SIZE, TRANSPARENCY, VEHICLE_N
 
 
 def _number(value):
-    return None if value == NATIVE else int(value)
+    if value == NATIVE:
+        return None
+    return int(value)
 
 
 FIELDS = {

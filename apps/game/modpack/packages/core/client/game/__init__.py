@@ -83,10 +83,10 @@ def player_tank_id(player):
     return getattr(vehicle_type, 'compactDescr', None)
 
 
+# `tank_id` as the int items.vehicles.getVehicleType decodes, or None. RU 1.45 source: only an int or a long is read as
+# a type id (isVehicleTypeCompactDescr); any other value is parsed as a packed vehicle descriptor, so a digit string
+# would name another vehicle.
 def type_compact_descr(tank_id):
-    """`tank_id` as the int items.vehicles.getVehicleType decodes, or None. RU 1.45 source: only an int or a long is read
-    as a type id (isVehicleTypeCompactDescr); any other value is parsed as a packed vehicle descriptor, so a digit string
-    would name another vehicle."""
     if is_int(tank_id):
         value = tank_id
     elif isinstance(tank_id, string_types) and tank_id.isdigit():

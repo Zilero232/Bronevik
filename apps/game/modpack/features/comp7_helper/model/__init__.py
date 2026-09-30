@@ -12,13 +12,17 @@ from .constants import DIVISION_LETTERS, LEGEND_RANK, MAX_SKILL, RANK_IDS, THRES
 def _int(value, low=None):
     if not is_int(value) or isinstance(value, bool):
         return None
-    return value if low is None or value >= low else None
+    if low is not None and value < low:
+        return None
+    return value
 
 
 def clean_division(item):
     if not isinstance(item, dict):
         return None
-    rank, index, begin = _int(item.get('rank')), _int(item.get('index')), _int(item.get('begin'), 0)
+    rank = _int(item.get('rank'))
+    index = _int(item.get('index'))
+    begin = _int(item.get('begin'), 0)
     if rank not in RANK_IDS or index not in DIVISION_LETTERS or begin is None:
         return None
     return {'rank': rank, 'index': index, 'begin': begin, 'elite_percent': _int(item.get('elite_percent'), 0) or 0}
@@ -35,7 +39,6 @@ def _skill(value):
 
 
 def clean_state(raw):
-    """The Onslaught reads (`client/reads.py`) checked and ordered, or None outside the Onslaught hangar."""
     if not isinstance(raw, dict):
         return None
     divisions = [clean_division(item) for item in raw.get('divisions') or ()]
@@ -62,15 +65,21 @@ def next_division(state):
     return None
 
 
+# (the next division, points left to its lower bound, the share of the way there from the current one) or None.
 def progress(state):
-    """(the next division, points left to its lower bound, the share of the way there from the current one) or None."""
-    current, target = state['division'], next_division(state)
+    target = next_division(state)
     if target is None:
         return None
+    current = state['division']
     left = max(0, target['begin'] - state['rating'])
-    span = target['begin'] - current['begin']
-    share = 1.0 if span <= 0 else max(0.0, min(1.0, float(state['rating'] - current['begin']) / span))
-    return target, left, share
+    return target, left, _share(state['rating'], current['begin'], target['begin'])
+
+
+def _share(rating, begin, end):
+    span = end - begin
+    if span <= 0:
+        return 1.0
+    return max(0.0, min(1.0, float(rating - begin) / span))
 
 
 def threshold_status(step, state):
@@ -79,11 +88,12 @@ def threshold_status(step, state):
         return 'idle'
     if division_key(step) == division_key(current):
         return 'active'
-    return 'done' if division_key(step) < division_key(current) else 'idle'
+    if division_key(step) < division_key(current):
+        return 'done'
+    return 'idle'
 
 
 def thresholds(state):
-    """The Champion and Legend divisions, lowest first: [(division, status)]."""
     return [(step, threshold_status(step, state)) for step in state['divisions'] if step['rank'] in THRESHOLD_RANKS]
 
 
@@ -95,14 +105,14 @@ def threshold_value(step, translate):
 
 
 def next_text(state, translate):
-    """What the player reaches next, or None (qualification, no division, the top one)."""
     found = progress(state)
     if found is None:
         return None
-    target, left, _ = found
+    target, left, _share_done = found
+    name = division_name(target, translate)
     if state['division']['rank'] == LEGEND_RANK:
-        return translate('comp7_helper_next_legend', name=division_name(target, translate))
-    return translate('comp7_helper_next', name=division_name(target, translate), points=counted(left, 'points', translate))
+        return translate('comp7_helper_next_legend', name=name)
+    return translate('comp7_helper_next', name=name, points=counted(left, 'points', translate))
 
 
 def status_text(state, translate):
@@ -115,7 +125,9 @@ def format_hangar(state, settings, translate):
     if state is None:
         return None
     size = settings.get('font_size')
-    title = translate('comp7_helper_title', status=status_text(state, translate), points=counted(state['rating'], 'points', translate))
+    points = counted(state['rating'], 'points', translate)
+    title = translate('comp7_helper_title', status=status_text(state, translate), points=points)
+
     lines = [font(title, COLOR_NEUTRAL, size + TITLE_SIZE_STEP)]
     upcoming = next_text(state, translate)
     if upcoming:

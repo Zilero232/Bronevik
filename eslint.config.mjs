@@ -145,6 +145,22 @@ export default eslint(
     }
   },
 
+  // The modpack's pages keep functions small and flat (docs/guides/shared/readability.md): a component
+  // or hook past these limits is split into named steps, subcomponents or model hooks. Tests are exempt
+  // (a describe callback is a list of cases, not a function to read).
+  {
+    name: 'otmetki/modpack-size',
+    files: ['apps/game/modpack/ui-web/src/**/*.{ts,tsx}'],
+    ignores: ['**/_tests/**'],
+    rules: {
+      complexity: ['error', 10],
+      'max-depth': ['error', 3],
+      'max-lines-per-function': ['error', { max: 60, skipBlankLines: true, skipComments: true }],
+      'max-nested-callbacks': ['error', 3],
+      'max-params': ['error', 3]
+    }
+  },
+
   // A scrollable region (role='region' with an accessible name) must take focus so
   // keyboard users can scroll it (WCAG 2.1.1, axe `scrollable-region-focusable`).
   // The first entry repeats the rule's default list, which options replace.

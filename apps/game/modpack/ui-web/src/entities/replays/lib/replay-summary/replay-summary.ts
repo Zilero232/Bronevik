@@ -1,9 +1,9 @@
 import { meanBy } from 'remeda';
 
-import type { ReplayItem } from '../../model';
-import type { ReplaySummary } from './replay-summary.types';
+import type { ReplayItem } from '../../model/schemas';
+import type { AverageOfInput, ReplaySummary } from './replay-summary.types';
 
-const averageOf = (items: readonly ReplayItem[], pick: (item: ReplayItem) => number | null): number | null => {
+const averageOf = ({ items, pick }: AverageOfInput): number | null => {
   const known = items.map(pick).filter((value): value is number => value !== null);
 
   return known.length > 0 ? meanBy(known, (value) => value) : null;
@@ -17,8 +17,8 @@ export const summarizeReplays = (items: readonly ReplayItem[]): ReplaySummary =>
     battles: items.length,
     wins,
     winRate: decided.length > 0 ? (wins / decided.length) * 100 : null,
-    avgDamage: averageOf(items, (item) => item.damage),
-    avgAssist: averageOf(items, (item) => item.assist),
-    avgXp: averageOf(items, (item) => item.xp)
+    avgDamage: averageOf({ items, pick: (item) => item.damage }),
+    avgAssist: averageOf({ items, pick: (item) => item.assist }),
+    avgXp: averageOf({ items, pick: (item) => item.xp })
   };
 };

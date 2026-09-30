@@ -2,7 +2,7 @@ import { useState } from 'preact/hooks';
 
 import type { UseTextFieldInput } from './use-text-field.types';
 
-import { KEYS } from '../../../../../shared/config';
+import { onEnterKey } from '../../../../../shared/lib/enter-key';
 
 export const useTextField = ({ value, onCommit }: UseTextFieldInput) => {
   const [draft, setDraft] = useState<string | null>(null);
@@ -19,10 +19,6 @@ export const useTextField = ({ value, onCommit }: UseTextFieldInput) => {
     text: draft ?? value,
     edit: setDraft,
     commit,
-    onKey: (key: string) => {
-      if (key === KEYS.enter) {
-        commit();
-      }
-    }
+    onKey: onEnterKey(commit)
   };
 };

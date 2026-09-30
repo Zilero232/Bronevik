@@ -16,7 +16,6 @@ POSTED_EVENT = 'onResultPosted'
 
 
 def cached_results(arena_id):
-    """The full-form results of `arena_id` the client already saved on disk, or None. No server request."""
     name = getattr(BigWorld.player(), 'name', None)
     if not name or not arena_id:
         return None

@@ -4,7 +4,7 @@ import os
 
 from ...log import log, safe
 from ...packaging import mixed_install
-from .constants import MODS_ROOT
+from .constants import MIXED_INSTALL_WARNING, MODS_ROOT
 
 
 @safe
@@ -20,7 +20,5 @@ def warn_mixed_install(root=MODS_ROOT):
             continue
         single, split = mixed
         found.append(path)
-        log('WARNING: %s holds both the single package (%s) and %d split packages (%s, ...): the client mounts two copies of '
-            'every file and either may win. Keep one set: delete %s, or delete the split net.triotmetki.* / otmetki.companion_* '
-            'files.' % (path, ', '.join(single), len(split), split[0], ', '.join(single)))
+        log(MIXED_INSTALL_WARNING % (path, ', '.join(single), len(split), split[0], ', '.join(single)))
     return found

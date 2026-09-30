@@ -26,22 +26,36 @@ DEFAULT_OUT = os.path.join(MODPACK_DIR, 'dist', 'catalog')
 
 
 def parse_args(argv=None):
-    parser = argparse.ArgumentParser(description='Build the Three Marks component catalogue (components.json + previews)')
+    parser = argparse.ArgumentParser(
+        description='Build the Three Marks component catalogue (components.json + previews)',
+    )
     parser.add_argument('--packages', help='folder with the split .mtmod release packages')
     parser.add_argument('--out', default=DEFAULT_OUT, help='output folder')
-    parser.add_argument('--strict', action='store_true', help='fail when a package has no catalog entry or an entry has no package')
-    parser.add_argument('--skip-artwork', action='store_true', help='do not render previews (needs resvg-py and pillow)')
+    parser.add_argument(
+        '--strict',
+        action='store_true',
+        help='fail when a package has no catalog entry or an entry has no package',
+    )
+    parser.add_argument(
+        '--skip-artwork',
+        action='store_true',
+        help='do not render previews (needs resvg-py and pillow)',
+    )
     return parser.parse_args(argv)
 
 
 def generate(args):
     """components.json (+ previews); returns the manifest."""
     catalog = catalog_module.load(CATALOG_PATH, ASSETS_DIR)
-    manifest, warnings = build_manifest(layout.split_packages('root_init.py'), catalog, packages_dir=args.packages, strict=args.strict)
+    packages = layout.split_packages('root_init.py')
+    manifest, warnings = build_manifest(packages, catalog, packages_dir=args.packages, strict=args.strict)
     for warning in warnings:
         print('WARNING: %s' % warning)
-    write_json(os.path.join(args.out, 'components.json'), manifest.to_json())
-    print('Wrote %s (%d components, %d dependencies)' % (os.path.join(args.out, 'components.json'), len(manifest.components), len(manifest.dependencies)))
+
+    manifest_path = write_json(os.path.join(args.out, 'components.json'), manifest.to_json())
+    component_count = len(manifest.components)
+    dependency_count = len(manifest.dependencies)
+    print('Wrote %s (%d components, %d dependencies)' % (manifest_path, component_count, dependency_count))
     print('Copied %d audio previews' % len(copy_audio(manifest, catalog, MODPACK_DIR, args.out)))
     if not args.skip_artwork:
         from setupkit.artwork.render import render_previews

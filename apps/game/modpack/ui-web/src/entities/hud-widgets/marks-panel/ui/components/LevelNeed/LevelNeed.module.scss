@@ -1,0 +1,11 @@
+@use '../../../../../../shared/styles/gameface' as *;
+
+.level {
+  margin-right: 4px;
+  color: token(color-text-muted);
+}
+
+.need {
+  color: token(color-text);
+  font-weight: 700;
+}

@@ -29,8 +29,11 @@ KIND_BY_EVENT = (
 
 PREVIEW_SIZE = (320, 50)
 PREVIEW_TOTALS = {'damage': 2150, 'spot': 2, 'frag': 1, 'def': 0}
-PREVIEW_ROW = {'avg_damage': 1720.0, 'wn8': {'value': 2104.9, 'tier': 'very_good'},
-               'expected': {'damage': 1180.0, 'spot': 1.42, 'frag': 0.98, 'def': 0.75, 'win_rate': 52.3}}
+PREVIEW_ROW = {
+    'avg_damage': 1720.0,
+    'wn8': {'value': 2104.9, 'tier': 'very_good'},
+    'expected': {'damage': 1180.0, 'spot': 1.42, 'frag': 0.98, 'def': 0.75, 'win_rate': 52.3},
+}
 
 # The card (model/widget.py), design px.
 CARD_WIDTH = 260

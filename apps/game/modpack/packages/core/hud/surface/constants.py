@@ -7,7 +7,8 @@ HUD_STATE_PROPERTY = 'state'
 HUD_SEND_COMMAND = 'send'
 HUD_MESSAGE_ARG = 'message'
 HUD_COMMANDS = ('ready', 'moved', 'resized', 'pressed', 'mouse')
-# What the page reports once per page the first time it sees it in edit mode: a panel under the pointer, a press, a wheel turn.
+# What the page reports once per page the first time it sees it in edit mode: a panel under the pointer, a press,
+# a wheel turn.
 MOUSE_EVENTS = ('hover', 'down', 'wheel')
 HUD_MAX_MESSAGE_CHARS = 4 * 1024
 HUD_RES_MAP_ID = 'otmetki/ui/hud'
@@ -41,3 +42,5 @@ PANEL_KEYS = (
     ('widget', 'widget', None),
     ('dock', 'dock', None),
 )
+# The optional int keys of a panel's `dock` (core.hud.panel.dock_of).
+DOCK_NUMBERS = ('reserve', 'ceiling')

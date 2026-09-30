@@ -9,16 +9,27 @@ import { ArtyMeterWidget } from '../ArtyMeterWidget';
 
 const data = artyMeterSchema.parse(readWidgetFixture('arty_meter'));
 
-describe(ArtyMeterWidget, () => {
-  it('fills the thermometer by the shells that landed and lists what they did', () => {
-    const html = mount({ Component: ArtyMeterWidget, props: { data } });
+const withTotal = (total: number) => ({ ...data, battle: { ...data.battle, total } });
 
-    expect(artyView(data)).toMatchObject({ level: Math.round((5 / 10) * 84), tone: 'warning' });
-    expect(html.textContent).toContain('-740');
-    expect(html.textContent).toContain('7 · 17 · -2 310');
+describe(artyView, () => {
+  it('fills the thermometer by the shells that landed', () => {
+    const view = artyView(data);
+
+    expect(view).toMatchObject({ level: 42, tone: 'warning' });
   });
 
   it('caps the scale at ten and turns red', () => {
-    expect(artyView({ ...data, battle: { ...data.battle, total: 14 } })).toMatchObject({ level: 84, tone: 'received' });
+    const view = artyView(withTotal(14));
+
+    expect(view).toMatchObject({ level: 84, tone: 'received' });
+  });
+});
+
+describe(ArtyMeterWidget, () => {
+  it('lists the damage of the battle and the day totals', () => {
+    const html = mount({ Component: ArtyMeterWidget, props: { data } });
+
+    expect(html.textContent).toContain('-740');
+    expect(html.textContent).toContain('7 · 17 · -2 310');
   });
 });

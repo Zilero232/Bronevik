@@ -11,34 +11,47 @@ from otmetki.features.sixth_sense.model.widget import sixth_sense_widget
 from otmetki.features.sixth_sense.settings import SCHEMA
 
 
+def lamp_lit_at(moment, duration=10.0):
+    lamp = SixthSense()
+    lamp.observed(True, moment, duration)
+    return lamp
+
+
+def widget_data(lamp, now, **values):
+    return sixth_sense_widget(lamp, Settings(values, SCHEMA), None, now)['data']
+
+
 class SixthSenseWidgetTest(unittest.TestCase):
 
-    def test_lamp_with_a_draining_ring(self):
-        lamp = SixthSense()
-        lamp.observed(True, 100.0)
-
-        data = sixth_sense_widget(lamp, Settings({}, SCHEMA), None, 103.6)['data']
+    def test_the_shipped_lamp_is_the_default_icon(self):
+        data = widget_data(lamp_lit_at(100.0), 103.6)
 
         assert data['icon'] == 'img://gui/maps/icons/otmetki/sixth_sense/icons/lamp_64.png|otmetki:lamp'
+
+    def test_the_ring_drains_over_the_default_duration(self):
+        data = widget_data(lamp_lit_at(100.0), 103.6)
+
         assert data['elapsed'] == 3.6
         assert data['duration'] == 10.0
+
+    def test_the_timer_shows_by_default(self):
+        data = widget_data(lamp_lit_at(100.0), 103.6)
+
         assert data['timer']
+
+    def test_the_second_half_second_is_the_dimmed_frame(self):
+        data = widget_data(lamp_lit_at(100.0), 103.6)
+
         assert data['dim']
 
     def test_the_ring_drains_over_the_lamps_own_duration(self):
-        lamp = SixthSense()
-        lamp.observed(True, 100.0, 8.5)
-
-        data = sixth_sense_widget(lamp, Settings({}, SCHEMA), None, 102.0)['data']
+        data = widget_data(lamp_lit_at(100.0, 8.5), 102.0)
 
         assert data['elapsed'] == 2.0
         assert data['duration'] == 8.5
 
     def test_the_elapsed_time_stops_at_the_duration(self):
-        lamp = SixthSense()
-        lamp.observed(True, 100.0, 8.0)
-
-        data = sixth_sense_widget(lamp, Settings({}, SCHEMA), None, 130.0)['data']
+        data = widget_data(lamp_lit_at(100.0, 8.0), 130.0)
 
         assert data['elapsed'] == 8.0
 
@@ -47,14 +60,20 @@ class SixthSenseWidgetTest(unittest.TestCase):
 
         assert data['duration'] == 6.0
 
-    def test_custom_icon_or_text_only(self):
-        lamp = SixthSense()
-        lamp.observed(True, 0.0)
-        assert sixth_sense_widget(lamp, Settings({'icon_set': 'custom', 'text': 'SPOTTED'}, SCHEMA), None, 1.0)['data']['icon'] is None
-        assert sixth_sense_widget(lamp, Settings({'icon_set': 'custom'}, SCHEMA), None, 1.0)['data']['icon'] == 'otmetki:lamp'
+    def test_an_empty_custom_icon_with_own_text_shows_the_text_only(self):
+        data = widget_data(lamp_lit_at(0.0), 1.0, icon_set='custom', text='SPOTTED')
+
+        assert data['icon'] is None
+
+    def test_an_empty_custom_icon_without_text_falls_back_to_the_lamp_glyph(self):
+        data = widget_data(lamp_lit_at(0.0), 1.0, icon_set='custom')
+
+        assert data['icon'] == 'otmetki:lamp'
 
     def test_fixture_for_the_page(self):
-        assert _support.widget_fixture('sixth_sense', preview_widget(Settings({}, SCHEMA), None))
+        payload = preview_widget(Settings({}, SCHEMA), None)
+
+        assert _support.widget_fixture('sixth_sense', payload)
 
 
 if __name__ == '__main__':

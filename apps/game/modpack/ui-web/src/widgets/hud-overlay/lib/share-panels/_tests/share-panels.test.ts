@@ -1,14 +1,16 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+import type { HudState } from '../../../../../shared/api/hud-protocol';
 
 import { parseHudState } from '../../../../../shared/api/hud-protocol';
 import { clearedRecord, remember, sharePanels } from '../share-panels';
 
-const raw = readFileSync(path.resolve(import.meta.dirname, '../../../../../shared/api/hud-protocol/_tests/fixtures/hud-state.sample.json'), 'utf8');
+const RAW = readFileSync(path.resolve(import.meta.dirname, '../../../../../shared/api/hud-protocol/_tests/fixtures/hud-state.sample.json'), 'utf8');
 
-const parse = (text: string) => {
-  const state = parseHudState(text);
+const sampleState = (): HudState => {
+  const state = parseHudState(RAW);
 
   if (!state) {
     throw new Error('the HUD fixture does not parse');
@@ -17,43 +19,77 @@ const parse = (text: string) => {
   return state;
 };
 
+const twoPanelState = (): HudState => {
+  const state = sampleState();
+
+  return { ...state, panels: state.panels.flatMap((panel) => [panel, { ...panel, id: `${panel.id}.copy` }]) };
+};
+
+const withFirstPanelText = (text: string): HudState => {
+  const state = twoPanelState();
+
+  return { ...state, panels: state.panels.map((panel, index) => (index === 0 ? { ...panel, text } : panel)) };
+};
+
 describe(sharePanels, () => {
-  it('keeps the previous state when nothing changed and the previous panel objects that did not change', () => {
-    const previous = parse(raw);
+  it('keeps the previous state when nothing changed', () => {
+    const previous = sampleState();
 
-    expect(sharePanels({ previous, next: parse(raw) })).toBe(previous);
-    expect(sharePanels({ previous: null, next: previous })).toBe(previous);
+    expect(sharePanels({ previous, next: sampleState() })).toBe(previous);
+  });
 
-    const data = parse(raw);
-    const changed = { ...data, panels: data.panels.map((panel, index) => (index === 0 ? { ...panel, text: 'changed' } : panel)) };
-    const next = sharePanels({ previous, next: parse(JSON.stringify(changed)) });
+  it('takes the next state as it is when there is no previous one', () => {
+    const next = sampleState();
+
+    expect(sharePanels({ previous: null, next })).toBe(next);
+  });
+
+  it('gives a new state carrying the panel that changed', () => {
+    const previous = sampleState();
+
+    const next = sharePanels({ previous, next: withFirstPanelText('changed') });
 
     expect(next).not.toBe(previous);
     expect(next.panels[0]?.text).toBe('changed');
-    expect(next.panels.slice(1).every((panel, index) => panel === previous.panels[index + 1])).toBe(true);
   });
 
-  it('builds a value once per panel object and clears a record only when it holds something', () => {
+  it('keeps the previous objects of the panels that did not change', () => {
+    const previous = twoPanelState();
+
+    const next = sharePanels({ previous, next: withFirstPanelText('changed') });
+
+    const rebuilt = next.panels.filter((panel, index) => panel !== previous.panels[index]);
+
+    expect(rebuilt.map((panel) => panel.text)).toEqual(['changed']);
+  });
+});
+
+describe(remember, () => {
+  it('builds a value once per panel object', () => {
     const cache = new WeakMap<object, number>();
-    const [panel] = parse(raw).panels;
-    let builds = 0;
+    const [panel] = sampleState().panels;
+    const build = vi.fn(() => 1);
 
     if (!panel) {
       throw new Error('the HUD fixture has no panels');
     }
 
-    const build = () => {
-      builds += 1;
+    remember({ cache, panel, build });
+    const second = remember({ cache, panel, build });
 
-      return builds;
-    };
+    expect(second).toBe(1);
+    expect(build).toHaveBeenCalledOnce();
+  });
+});
 
-    expect(remember({ cache, panel, build })).toBe(1);
-    expect(remember({ cache, panel, build })).toBe(1);
-
+describe(clearedRecord, () => {
+  it('keeps an empty record as it is', () => {
     const empty = {};
 
     expect(clearedRecord(empty)).toBe(empty);
+  });
+
+  it('clears a record that holds something', () => {
     expect(clearedRecord({ a: 1 })).toEqual({});
   });
 });

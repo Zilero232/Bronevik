@@ -1,6 +1,6 @@
 import * as z from 'zod/mini';
 
-import { REPLAYS } from '../config';
+import { REPLAYS } from '../../config';
 
 const count = z.nullable(z.number());
 const text = z.nullable(z.string());

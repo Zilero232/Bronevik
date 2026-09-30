@@ -24,6 +24,15 @@ const advance = (ms: number) =>
 
 const flush = () => advance(1);
 
+const showUndo = async (entries: Parameters<typeof $undo.set>[0]) => {
+  const hook = renderHook(useUndoToast);
+
+  hook.run(() => $undo.set(entries));
+  await flush();
+
+  return hook;
+};
+
 beforeEach(() => {
   vi.useFakeTimers();
   $undo.set([]);
@@ -38,27 +47,32 @@ describe(useUndoToast, () => {
     expect(renderHook(useUndoToast).current().visible).toBe(false);
   });
 
-  it('names the change, counts the undo steps and hides after a while', async () => {
-    const hook = renderHook(useUndoToast);
-
-    hook.run(() => $undo.set([entry(1, 'Масштаб'), entry(2, '')]));
-    await flush();
+  it('names the last change and counts the undo steps', async () => {
+    const hook = await showUndo([entry(1, 'Масштаб'), entry(2, '')]);
 
     expect(hook.current()).toMatchObject({ visible: true, text: 'Миникарта: Сброшено к стандартным', undoLabel: 'Отменить (2)' });
+  });
+
+  it('hides after a while', async () => {
+    const hook = await showUndo([entry(1, 'Масштаб')]);
 
     await advance(UNDO_TOAST.hideMs);
 
     expect(hook.current().visible).toBe(false);
   });
 
-  it('comes back for the next change after a dismiss', async () => {
-    const hook = renderHook(useUndoToast);
+  it('hides on dismiss', async () => {
+    const hook = await showUndo([entry(1, 'Масштаб')]);
 
-    hook.run(() => $undo.set([entry(1, 'Масштаб')]));
-    await flush();
     hook.run(() => hook.current().dismiss());
 
     expect(hook.current().visible).toBe(false);
+  });
+
+  it('comes back for the next change after a dismiss', async () => {
+    const hook = await showUndo([entry(1, 'Масштаб')]);
+
+    hook.run(() => hook.current().dismiss());
 
     hook.run(() => $undo.set([entry(1, 'Масштаб'), entry(2, 'Прозрачность')]));
     await flush();
@@ -67,10 +81,7 @@ describe(useUndoToast, () => {
   });
 
   it('says whether a switch went on or off', async () => {
-    const hook = renderHook(useUndoToast);
-
-    hook.run(() => $undo.set([{ ...entry(1, 'Миникарта'), kind: 'switch', switchedOn: false }]));
-    await flush();
+    const hook = await showUndo([{ ...entry(1, 'Миникарта'), kind: 'switch', switchedOn: false }]);
 
     expect(hook.current().text).toBe('Миникарта: Выкл');
   });

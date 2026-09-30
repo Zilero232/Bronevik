@@ -1,0 +1,34 @@
+@use '../../../../../shared/styles/gameface' as *;
+
+.titles {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+.titleRow {
+  display: flex;
+  min-width: 0;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.hint {
+  margin-top: 3px;
+  color: token(color-text-muted);
+  font-size: 12px;
+  line-height: 1.35;
+
+  @include ellipsis;
+}
+
+.hintFull {
+  white-space: normal;
+}

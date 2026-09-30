@@ -6,30 +6,34 @@ from .constants import PACE_BATTLES, PACE_MIN, PACE_TANKS
 
 
 def battle_combined(event):
-    """(tank_id, arena, combined damage) of the companion's own battle_result event, or None."""
     if not isinstance(event, dict):
         return None
     tank_id = (event.get('vehicle') or {}).get('tank_id')
     stats = event.get('stats') or {}
     if not is_int(tank_id) or not is_number(stats.get('damage_dealt')):
         return None
-    combined = combined_damage(as_int(stats.get('damage_dealt')), as_int(stats.get('damage_assisted_radio')),
-                               as_int(stats.get('damage_assisted_track')), as_int(stats.get('damage_assisted_stun')))
+    combined = combined_damage(
+        as_int(stats.get('damage_dealt')),
+        as_int(stats.get('damage_assisted_radio')),
+        as_int(stats.get('damage_assisted_track')),
+        as_int(stats.get('damage_assisted_stun')),
+    )
     return tank_id, event.get('arena_unique_id'), combined
 
 
+def _is_row(row):
+    return isinstance(row, list) and len(row) == 2 and is_number(row[1])
+
+
 class PaceBook(object):
-    """The combined damage of the player's last own battles per tank: the pace of the battles-to-mark
-    forecast. Stored in the app state as {tank_id: [[arena, combined], ...]}."""
 
     def __init__(self, data=None, keep=PACE_BATTLES):
         self.keep = keep
         self.tanks = {}
-        if isinstance(data, dict):
-            for key, rows in data.items():
-                cleaned = [[row[0], int(row[1])] for row in rows or [] if isinstance(row, list) and len(row) == 2 and is_number(row[1])]
-                if cleaned:
-                    self.tanks[str(key)] = cleaned[-keep:]
+        for key, rows in (data if isinstance(data, dict) else {}).items():
+            cleaned = [[row[0], int(row[1])] for row in rows or [] if _is_row(row)]
+            if cleaned:
+                self.tanks[str(key)] = cleaned[-keep:]
 
     def record(self, tank_id, arena, combined):
         if not is_int(tank_id) or not is_number(combined) or combined < 0:
@@ -39,9 +43,13 @@ class PaceBook(object):
             return False
         rows.append([arena, int(combined)])
         del rows[:-self.keep]
-        while len(self.tanks) > PACE_TANKS:
-            del self.tanks[next(key for key in self.tanks if key != str(tank_id))]
+        self._forget_other_tanks(str(tank_id))
         return True
+
+    def _forget_other_tanks(self, kept):
+        while len(self.tanks) > PACE_TANKS:
+            oldest = next(key for key in self.tanks if key != kept)
+            del self.tanks[oldest]
 
     def record_event(self, event):
         found = battle_combined(event)

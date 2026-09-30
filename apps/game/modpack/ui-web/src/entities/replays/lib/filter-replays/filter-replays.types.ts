@@ -1,4 +1,4 @@
-import type { ReplayFilters, ReplayItem } from '../../model';
+import type { ReplayFilters, ReplayItem } from '../../model/schemas';
 
 export type FilterReplaysInput = {
   items: readonly ReplayItem[];
@@ -16,3 +16,5 @@ export type MatchChoiceInput<Value> = {
   chosen: Value | null;
   actual: Value | null;
 };
+
+export type CompareInput = Pick<ReplayFilters, 'descending' | 'sort'>;

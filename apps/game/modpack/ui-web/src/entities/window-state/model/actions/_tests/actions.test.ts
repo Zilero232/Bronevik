@@ -22,12 +22,33 @@ const component = (id: string): UiComponent => {
   return found;
 };
 
+const changedDamageLog = (): UiComponent => {
+  const damage = component('damage_log');
+
+  return {
+    ...damage,
+    fields: damage.fields.map((field) => {
+      if (field.type === 'int' && field.key === 'lines') {
+        return { ...field, value: 9 };
+      }
+
+      return field.type === 'bool' ? { ...field, value: true } : field;
+    })
+  };
+};
+
 const install = () => {
   const mock = createGamefaceMock({ state: sample, clientSize: () => ({ width: 1920, height: 1080 }), onSend: () => null });
 
   installGamefaceMock(mock);
 
   return () => mock.sent().map((message) => JSON.parse(message));
+};
+
+const undoEntries = () => $undo.get().map(({ kind, component: id, label, switchedOn, values }) => [kind, id, label, switchedOn, values]);
+
+const changeInterval = (value: number): void => {
+  changeSetting({ component: component('companion'), key: 'flush_interval_seconds', value });
 };
 
 beforeEach(() => {
@@ -38,25 +59,80 @@ afterEach(() => {
   Object.values(GAMEFACE.globals).forEach((name) => Reflect.deleteProperty(globalThis, name));
 });
 
-describe('setting actions', () => {
-  it('applies a change at once and undoes it with the previous value', () => {
+describe(changeSetting, () => {
+  it('sends a changed setting to the mod at once', () => {
     const sent = install();
 
-    changeSetting({ component: component('companion'), key: 'flush_interval_seconds', value: 30 });
+    changeInterval(30);
+
+    expect(sent()).toEqual([{ type: 'set', component: 'companion', key: 'flush_interval_seconds', value: 30 }]);
+  });
+
+  it('remembers the previous value of the field for undo', () => {
+    install();
+
+    changeInterval(30);
+
+    expect(undoEntries()).toEqual([['field', 'companion', 'Интервал отправки, с', false, { flush_interval_seconds: 15 }]]);
+  });
+
+  it('skips a change to the same value', () => {
+    const sent = install();
+
+    changeInterval(15);
+
+    expect(sent()).toEqual([]);
+    expect($undo.get()).toEqual([]);
+  });
+});
+
+describe(toggleSwitch, () => {
+  it('switches a card off at once', () => {
+    const sent = install();
+
     toggleSwitch(component('marks_panel'));
 
-    expect($undo.get().map(({ kind, component: id, label, switchedOn, values }) => [kind, id, label, switchedOn, values])).toEqual([
-      ['field', 'companion', 'Интервал отправки, с', false, { flush_interval_seconds: 15 }],
-      ['switch', 'marks_panel', 'Отметка в бою', false, { battle_moe_panel: true }]
-    ]);
+    expect(sent()).toEqual([{ type: 'set', component: 'marks_panel', key: 'battle_moe_panel', value: false }]);
+  });
+
+  it('remembers the switch was on for undo', () => {
+    install();
+
+    toggleSwitch(component('marks_panel'));
+
+    expect(undoEntries()).toEqual([['switch', 'marks_panel', 'Отметка в бою', false, { battle_moe_panel: true }]]);
+  });
+});
+
+describe(resetComponent, () => {
+  it('sends nothing for a card already at its defaults', () => {
+    const sent = install();
+
+    resetComponent(component('damage_log'));
+
+    expect(sent()).toEqual([]);
+  });
+
+  it('resets a card to its defaults in one message', () => {
+    const sent = install();
+
+    resetComponent(changedDamageLog());
+
+    expect(sent()).toEqual([{ type: 'set_many', component: 'damage_log', values: { border: false, lines: 5 } }]);
+  });
+});
+
+describe(undoLast, () => {
+  it('undoes the latest change first, sending the previous values back', () => {
+    const sent = install();
+
+    changeInterval(30);
+    toggleSwitch(component('marks_panel'));
 
     undoLast();
     undoLast();
-    undoLast();
 
-    expect(sent()).toEqual([
-      { type: 'set', component: 'companion', key: 'flush_interval_seconds', value: 30 },
-      { type: 'set', component: 'marks_panel', key: 'battle_moe_panel', value: false },
+    expect(sent().slice(2)).toEqual([
       { type: 'set', component: 'marks_panel', key: 'battle_moe_panel', value: true },
       { type: 'set', component: 'companion', key: 'flush_interval_seconds', value: 15 }
     ]);
@@ -64,36 +140,22 @@ describe('setting actions', () => {
     expect($undo.get()).toEqual([]);
   });
 
-  it('skips a change to the same value', () => {
+  it('sends nothing when there is nothing to undo', () => {
     const sent = install();
 
-    changeSetting({ component: component('companion'), key: 'flush_interval_seconds', value: 15 });
-
-    expect(sent()).toEqual([]);
-    expect($undo.get()).toEqual([]);
-  });
-
-  it('resets a card to its defaults in one message and undoes the reset in one', () => {
-    const sent = install();
-    const damage = component('damage_log');
-    const changed = {
-      ...damage,
-      fields: damage.fields.map((field) => {
-        if (field.type === 'int' && field.key === 'lines') {
-          return { ...field, value: 9 };
-        }
-
-        return field.type === 'bool' ? { ...field, value: true } : field;
-      })
-    };
-
-    resetComponent(damage);
-    resetComponent(changed);
     undoLast();
 
-    expect(sent()).toEqual([
-      { type: 'set_many', component: 'damage_log', values: { border: false, lines: 5 } },
-      { type: 'set_many', component: 'damage_log', values: { border: true, lines: 9 } }
-    ]);
+    expect(sent()).toEqual([]);
+  });
+
+  it('undoes a reset in one message', () => {
+    const sent = install();
+
+    resetComponent(changedDamageLog());
+
+    undoLast();
+
+    expect(sent()).toHaveLength(2);
+    expect(sent().at(-1)).toEqual({ type: 'set_many', component: 'damage_log', values: { border: true, lines: 9 } });
   });
 });

@@ -11,21 +11,39 @@ const OPTIONS = [
   { value: 'damage', label: 'Damage' }
 ];
 
+const openDropdown = (chosen: string[]): HTMLElement => {
+  const container = mount({
+    Component: Dropdown<string>,
+    props: { label: 'Sort', value: 'date', options: OPTIONS, onSelect: (value: string) => chosen.push(value) }
+  });
+
+  act(() => container.querySelector('button')?.click());
+
+  return container;
+};
+
+const pressEsc = (): void => {
+  act(() => {
+    stepBack();
+  });
+};
+
 describe(Dropdown, () => {
-  it('closes its open list on Esc and keeps the value', () => {
-    const chosen: string[] = [];
-    const container = mount({
-      Component: Dropdown<string>,
-      props: { label: 'Sort', value: 'date', options: OPTIONS, onSelect: (value: string) => chosen.push(value) }
-    });
+  it('closes its open list on Esc', () => {
+    const container = openDropdown([]);
 
-    act(() => container.querySelector('button')?.click());
-
-    act(() => {
-      stepBack();
-    });
+    pressEsc();
 
     expect(container.querySelector('[role="listbox"]')).toBeNull();
+  });
+
+  it('keeps the value when Esc closes the list', () => {
+    const chosen: string[] = [];
+
+    openDropdown(chosen);
+
+    pressEsc();
+
     expect(chosen).toEqual([]);
   });
 });

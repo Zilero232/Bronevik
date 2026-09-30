@@ -4,13 +4,21 @@ import type { ArtyView } from './arty-view.types';
 import { formatNumber } from '../../../../../shared/lib/hud-format';
 import { ARTY_METER } from '../../config';
 
+const heatTone = (total: number): ArtyView['tone'] => {
+  if (total >= ARTY_METER.hotFrom) {
+    return 'received';
+  }
+
+  return total >= ARTY_METER.warmFrom ? 'warning' : 'success';
+};
+
 export const artyView = (data: ArtyMeterData): ArtyView => {
   const { battle } = data;
   const level = Math.min(battle.total, data.scale);
 
   return {
     level: Math.round((level / Math.max(1, data.scale)) * ARTY_METER.tube.height),
-    tone: battle.total >= ARTY_METER.hotFrom ? 'received' : battle.total >= ARTY_METER.warmFrom ? 'warning' : 'success',
+    tone: heatTone(battle.total),
     counters: [
       { key: 'hits', icon: ARTY_METER.glyphs.hits, value: formatNumber(battle.hits), tone: 'text' },
       { key: 'splash', icon: ARTY_METER.glyphs.splash, value: formatNumber(battle.splash), tone: 'text' },

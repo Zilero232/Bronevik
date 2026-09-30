@@ -5,26 +5,42 @@ from ....core.format import format_number
 from ....core.me import owned
 from .constants import ANALYSIS_FINAL, ANALYSIS_IDS_PER_READ, ANALYSIS_WATCH_S, PARSED
 
+HIGHLIGHT_CHECKS = (
+    ('accuracy', is_number),
+    ('damage', is_int),
+    ('penetrations', is_int),
+)
+
+
+def _is_status_row(row):
+    if not isinstance(row, dict):
+        return False
+    return isinstance(row.get('id'), string_types) and isinstance(row.get('status'), string_types)
+
+
+def _highlights(row):
+    raw = row.get('highlights')
+    if not isinstance(raw, dict):
+        raw = {}
+    highlights = {}
+    for key, is_valid in HIGHLIGHT_CHECKS:
+        value = raw.get(key)
+        highlights[key] = value if is_valid(value) else None
+    return highlights
+
 
 def parse_statuses(data, account_id):
     if not owned(data, account_id) or not isinstance(data.get('replays'), list):
         return {}
     statuses = {}
     for row in data['replays']:
-        if not isinstance(row, dict) or not isinstance(row.get('id'), string_types) or not isinstance(row.get('status'), string_types):
-            continue
-        raw = row.get('highlights') if isinstance(row.get('highlights'), dict) else {}
-        highlights = {
-            'accuracy': raw.get('accuracy') if is_number(raw.get('accuracy')) else None,
-            'damage': raw.get('damage') if is_int(raw.get('damage')) else None,
-            'penetrations': raw.get('penetrations') if is_int(raw.get('penetrations')) else None,
-        }
-        statuses[to_text(row['id'])] = (to_text(row['status']), highlights)
+        if _is_status_row(row):
+            statuses[to_text(row['id'])] = (to_text(row['status']), _highlights(row))
     return statuses
 
 
+# The replays this game session uploaded whose analysis the site has not finished yet, and the ones it has.
 class AnalysisWatch(object):
-    """The replays this game session uploaded whose analysis the site has not finished yet, and the ones it has."""
 
     def __init__(self):
         self.pending = {}
@@ -38,7 +54,8 @@ class AnalysisWatch(object):
         for replay_id, uploaded_at in list(self.pending.items()):
             if now - uploaded_at > ANALYSIS_WATCH_S:
                 del self.pending[replay_id]
-        return sorted(self.pending, key=self.pending.get)[:ANALYSIS_IDS_PER_READ]
+        oldest_first = sorted(self.pending, key=self.pending.get)
+        return oldest_first[:ANALYSIS_IDS_PER_READ]
 
     def apply(self, statuses):
         finished = []
@@ -55,11 +72,14 @@ class AnalysisWatch(object):
 def analysis_notice(highlights, translate):
     details = []
     if highlights.get('accuracy') is not None:
-        details.append(translate('replay_manager_analysis_accuracy', accuracy=int(round(highlights['accuracy']))))
+        accuracy = int(round(highlights['accuracy']))
+        details.append(translate('replay_manager_analysis_accuracy', accuracy=accuracy))
     if highlights.get('damage') is not None:
-        details.append(translate('replay_manager_analysis_damage', damage=format_number(highlights['damage'])))
+        damage = format_number(highlights['damage'])
+        details.append(translate('replay_manager_analysis_damage', damage=damage))
     if highlights.get('penetrations') is not None:
         details.append(translate('replay_manager_analysis_penetrations', penetrations=highlights['penetrations']))
+
     if not details:
         return translate('replay_manager_analysis_plain')
     return translate('replay_manager_analysis_ready', details=', '.join(details))

@@ -5,14 +5,32 @@ own battle. Pure: the events are the client's objects, read only through their p
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ..compat import call, is_number
-from .constants import CRIT_KEYS, DAMAGE_KEYS, EFFICIENCY_KEYS, ENEMY_ONLY_KEYS, EVENT_KEYS, MARKER_OUTCOMES, PEN_OUTCOMES
+from .constants import (
+    CRIT_KEYS,
+    DAMAGE_KEYS,
+    EFFICIENCY_KEYS,
+    ENEMY_ONLY_KEYS,
+    EVENT_KEYS,
+    DETAIL_LINE,
+    MARKER_OUTCOMES,
+    PEN_OUTCOMES,
+    SUMMARY_LINE,
+)
 
-__all__ = ('BattleTally', 'Counters', 'EFFICIENCY_KEYS', 'EVENT_KEYS', 'MARKER_OUTCOMES', 'assist_with_stun', 'efficiency_totals', 'extra_amount',
-           'own_damage')
+__all__ = (
+    'BattleTally',
+    'Counters',
+    'EFFICIENCY_KEYS',
+    'EVENT_KEYS',
+    'MARKER_OUTCOMES',
+    'assist_with_stun',
+    'efficiency_totals',
+    'extra_amount',
+    'own_damage',
+)
 
 
 def extra_amount(extra, name='getDamage'):
-    """The positive int the extra reports through `name`, else 0."""
     value = call(extra, name, 0)
     return int(value) if is_number(value) and value > 0 else 0
 
@@ -22,13 +40,16 @@ def own_damage(events, damage_type, is_enemy):
     targets `is_enemy(vehicle_id)` accepts)."""
     if damage_type is None:
         return 0
-    return sum(extra_amount(call(event, 'getExtra')) for event in events or ()
-               if call(event, 'getBattleEventType') == damage_type and is_enemy(call(event, 'getTargetID')))
+
+    def is_own_damage(event):
+        return call(event, 'getBattleEventType') == damage_type and is_enemy(call(event, 'getTargetID'))
+
+    return sum(extra_amount(call(event, 'getExtra')) for event in events or () if is_own_damage(event))
 
 
+# The summary's assist with its stun assist added: BattleSummaryFeedbackEvent (feedback_events, RU 1.45) reports
+# getTotalAssistDamage() (track + radio) and getTotalStunDamage() apart.
 def assist_with_stun(assist, stun):
-    """The summary's assist with its stun assist added: BattleSummaryFeedbackEvent (feedback_events, RU 1.45)
-    reports getTotalAssistDamage() (track + radio) and getTotalStunDamage() apart."""
     return assist + stun if is_number(assist) and is_number(stun) else assist
 
 
@@ -64,7 +85,6 @@ class Counters(object):
 
 
 class BattleTally(object):
-    """What the client reported this battle; `summary()` gives the two python.log lines."""
 
     def __init__(self):
         self.markers = {}
@@ -81,23 +101,13 @@ class BattleTally(object):
         return True
 
     def add_events(self, events, keys_by_kind, is_enemy):
-        """Counts one onPlayerFeedbackReceived batch; `is_enemy(vehicle_id)` decides the enemy-only keys."""
         self.batches += 1
         added = 0
         for event in events or ():
-            key = keys_by_kind.get(call(event, 'getBattleEventType'))
+            key = _event_key(event, keys_by_kind, is_enemy)
             if key is None:
                 continue
-            if key in ENEMY_ONLY_KEYS and not is_enemy(call(event, 'getTargetID')):
-                continue
-            extra = call(event, 'getExtra')
-            if key in DAMAGE_KEYS:
-                amount = extra_amount(extra)
-            elif key in CRIT_KEYS:
-                amount = extra_amount(extra, 'getCritsCount')
-            else:
-                amount = 1
-            self.events[key] += amount
+            self.events[key] += _event_amount(event, key)
             self.event_counts[key] += 1
             added += 1
         return added
@@ -127,10 +137,38 @@ class BattleTally(object):
 
     def summary(self):
         values = self.values()
-        hooks = ', '.join('%s %s' % (name, 'ok' if attached else 'MISSING') for name, attached in self.hooks) or 'none'
-        vanilla = ', '.join('%s %d' % (key, self.vanilla[key]) for key in sorted(self.vanilla)) or 'none'
-        markers = ', '.join('%s %d' % (key, self.markers[key]) for key in sorted(self.markers)) or 'none'
-        return ('battle: hits %(hits)d, pens %(pens)d, dealt %(dealt)d, blocked %(blocked)d, assist %(assist)d, stun %(stun)d, '
-                'received %(received)d' % values,
-                'battle detail: markers [%s]; events %d batches, damaging hits %d, crits %d, kills %d; vanilla totals [%s]; hooks [%s]'
-                % (markers, self.batches, values['damaging_hits'], self.events['crits'], self.events['kills'], vanilla, hooks))
+        hooks = _listing('%s %s' % (name, 'ok' if attached else 'MISSING') for name, attached in self.hooks)
+        vanilla = _listing('%s %d' % (key, self.vanilla[key]) for key in sorted(self.vanilla))
+        markers = _listing('%s %d' % (key, self.markers[key]) for key in sorted(self.markers))
+
+        totals = SUMMARY_LINE % values
+        detail = DETAIL_LINE % (
+            markers,
+            self.batches,
+            values['damaging_hits'],
+            self.events['crits'],
+            self.events['kills'],
+            vanilla,
+            hooks,
+        )
+        return totals, detail
+
+
+def _event_key(event, keys_by_kind, is_enemy):
+    key = keys_by_kind.get(call(event, 'getBattleEventType'))
+    if key in ENEMY_ONLY_KEYS and not is_enemy(call(event, 'getTargetID')):
+        return None
+    return key
+
+
+def _event_amount(event, key):
+    extra = call(event, 'getExtra')
+    if key in DAMAGE_KEYS:
+        return extra_amount(extra)
+    if key in CRIT_KEYS:
+        return extra_amount(extra, 'getCritsCount')
+    return 1
+
+
+def _listing(items):
+    return ', '.join(items) or 'none'

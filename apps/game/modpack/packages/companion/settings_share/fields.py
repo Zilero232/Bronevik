@@ -70,6 +70,5 @@ FIELDS = (
     ('sixthSenseIcon', 'battleUi', 'sixthSenseIcon', TEXT),
 )
 
-RAW_KEYS = tuple(entry[0] for entry in FIELDS)
 BY_RAW = dict((entry[0], entry) for entry in FIELDS)
 BY_PATH = dict(((entry[1], entry[2]), entry) for entry in FIELDS)

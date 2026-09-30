@@ -11,7 +11,11 @@ LIBRARY_VERSION = 2
 NAME_MAX_CHARS = 100
 SCAN_MAX_FILES = 1000
 FORBIDDEN_CHARS = re.compile(r'[<>:"/\\|?*\x00-\x1f]+')
-RESERVED_NAMES = ('con', 'prn', 'aux', 'nul') + tuple('com%d' % n for n in range(1, 10)) + tuple('lpt%d' % n for n in range(1, 10))
+RESERVED_NAMES = (
+    ('con', 'prn', 'aux', 'nul')
+    + tuple('com%d' % number for number in range(1, 10))
+    + tuple('lpt%d' % number for number in range(1, 10))
+)
 
 # The folder is listed again at most this often while the window reads the page; headers are read in slices of the
 # main thread's time so a first look at a large folder never stalls the hangar.
@@ -32,7 +36,6 @@ STATUS_READY = 'ready'
 STATUS_INDEXING = 'indexing'
 STATUS_NO_ACCOUNT = 'no_account'
 
-SITE_LIST_PATH = '/replays'
 SITE_REPLAY_PATH = '/replays/%s'
 
 SITE_QUEUED = 'queued'
@@ -45,7 +48,6 @@ UPLOAD_MISSING = 'missing'
 ERROR_NAME = 'name'
 ERROR_EXISTS = 'exists'
 ERROR_MISSING = 'missing'
-ERROR_NOT_OWN = 'not_own'
 ERROR_VERSION = 'version'
 ERROR_BATTLE = 'battle'
 ERROR_PLAYING = 'playing'
@@ -53,8 +55,8 @@ ERROR_UNAVAILABLE = 'unavailable'
 ERROR_NO_ARENA = 'no_arena'
 
 # BattleReplay (RU 1.45 client source, :235 and :1030) hands the engine BigWorld.getProductVersion(); a replay whose
-# clientVersionFromExe differs pops the client's own 'version differs' dialog, and its 'no' calls stop() on a replay that
-# never started, which has no way back to the hangar. The mod starts only replays of the exact running version.
+# clientVersionFromExe differs pops the client's own 'version differs' dialog, and its 'no' calls stop() on a replay
+# that never started, which has no way back to the hangar. The mod starts only replays of the exact running version.
 VERSION_PARTS = 4
 VERSION_SPLIT = re.compile(r'[^0-9]+')
 
@@ -115,6 +117,23 @@ MAX_MASTERY = 4
 VEHICLE_NAME = re.compile(r'^[a-z]+-[A-Za-z0-9_\-]+$')
 MAP_NAME = re.compile(r'^[A-Za-z0-9_]+$')
 
+STAT_KEYS = (
+    'assist',
+    'kills',
+    'xp',
+    'base_xp',
+    'credits',
+    'spotted',
+    'marks',
+    'shots',
+    'hits',
+    'pens',
+    'received',
+    'blocked',
+    'duration',
+    'life_time',
+)
+
 # contract/replay-analysis.schema.json: the site's analysis of an uploaded replay.
 ANALYSIS_PATH = '/mod/me/replays'
 ANALYSIS_POLL_S = 60
@@ -130,8 +149,9 @@ NOT_SERVED_STATUS = 404
 # this is dropped, so a crash or a manual restart never plays a replay the player no longer asked for.
 LAUNCH_FILE = 'replay_manager_play.json'
 LAUNCH_TTL_S = 180
-# BattleReplay.stop(self, rewindToTime=None, delete=False, isDestroyed=False) (RU 1.45 client source :403): game.fini and
-# BattleReplay.destroy stop a playing replay with isDestroyed=True while the client is closing; that stop still calls
-# BigWorld.quit(), which must stay a quit (turned into a restart it would relaunch a client the player just closed).
+# BattleReplay.stop(self, rewindToTime=None, delete=False, isDestroyed=False) (RU 1.45 client source :403): game.fini
+# and BattleReplay.destroy stop a playing replay with isDestroyed=True while the client is closing; that stop still
+# calls BigWorld.quit(), which must stay a quit (turned into a restart it would relaunch a client the player just
+# closed).
 STOP_DESTROYED_ARG = 'isDestroyed'
 STOP_DESTROYED_INDEX = 2

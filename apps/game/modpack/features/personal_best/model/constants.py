@@ -12,7 +12,8 @@ KIND_BY_EVENT = (
     ('KILL', 'frags'),
 )
 ASSIST_STATS = ('damage_assisted_radio', 'damage_assisted_track', 'damage_assisted_stun')
-# The fallback when the client's bonus caps cannot be read: the random battle, the main type the dossier's max15x15 counts.
+# The fallback when the client's bonus caps cannot be read: the random battle, the main type the dossier's max15x15
+# counts.
 RANDOM_BONUS_TYPE = 1
 STORE_FILE = 'personal_best_%d.json'
 MAX_TANKS = 500

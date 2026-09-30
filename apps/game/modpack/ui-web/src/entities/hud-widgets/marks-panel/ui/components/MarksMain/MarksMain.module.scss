@@ -1,0 +1,30 @@
+.main {
+  display: flex;
+  height: 24px;
+  flex-direction: row;
+  align-items: center;
+}
+
+.percent {
+  min-width: 78px;
+  margin: 0 6px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.delta {
+  font-size: 13px;
+}
+
+.up {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-left: 8px;
+  font-size: 11px;
+}
+
+.badge {
+  margin-left: 8px;
+  font-size: 10px;
+}

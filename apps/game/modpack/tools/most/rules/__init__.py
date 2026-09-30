@@ -53,10 +53,16 @@ class Problem(object):
         self.error = error
 
     def to_json(self):
-        return {'where': self.where, 'message': self.message, 'rule': SOURCES[self.rule], 'level': 'error' if self.error else 'warning'}
+        return {
+            'where': self.where,
+            'message': self.message,
+            'rule': SOURCES[self.rule],
+            'level': 'error' if self.error else 'warning',
+        }
 
     def __str__(self):
-        return '%s %s: %s' % ('ERROR' if self.error else 'WARNING', self.where, self.message)
+        level = 'ERROR' if self.error else 'WARNING'
+        return '%s %s: %s' % (level, self.where, self.message)
 
 
 class Findings(object):

@@ -1,4 +1,4 @@
-import type { BattleType, ReplayNation } from '../../model';
+import type { BattleType, ReplayNation } from '../../model/schemas';
 
 type FacetOption<Value> = {
   value: Value;

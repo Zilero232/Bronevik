@@ -6,7 +6,15 @@ from ...core.compat import as_int, is_int, string_types, to_text
 from ..loadout import normalize_loadout
 from ..shots import MAX_SHOTS
 from ..version import SCHEMA_VERSION
-from .constants import COST_FIELDS, MASTERY_BADGES, MAX_ACHIEVEMENTS, MAX_ACHIEVEMENT_NAME, MAX_PLATOON_SIZE, REALM, STAT_FIELDS  # noqa: F401
+from .constants import (
+    COST_FIELDS,
+    MASTERY_BADGES,
+    MAX_ACHIEVEMENT_NAME,
+    MAX_ACHIEVEMENTS,
+    MAX_PLATOON_SIZE,
+    REALM,
+    STAT_FIELDS,
+)
 
 
 class PayloadError(Exception):
@@ -86,25 +94,37 @@ def _player_key(value):
 
 # Fair play / privacy: the players block is read only to count the own platoon (same prebattleID on the
 # own team); the size is all that leaves the client, never another player's account id or name.
-def extract_platoon(results, account_id):
-    players = results.get('players')
-    if not isinstance(players, dict) or not is_int(account_id):
-        return None
+def _players_by_id(players):
     by_id = {}
     for key, value in players.items():
         player_id = _player_key(key)
         if player_id is not None and isinstance(value, dict):
             by_id[player_id] = value
+    return by_id
+
+
+def _is_platoon_mate(player, own):
+    same_platoon = player.get('prebattleID') == own.get('prebattleID')
+    return same_platoon and player.get('team') == own.get('team')
+
+
+def extract_platoon(results, account_id):
+    players = results.get('players')
+    if not isinstance(players, dict) or not is_int(account_id):
+        return None
+    by_id = _players_by_id(players)
     own = by_id.get(account_id)
     if own is None:
         return None
     prebattle = own.get('prebattleID')
     if not is_int(prebattle) or prebattle <= 0:
         return None
-    size = 1 + sum(
-        1 for player_id, player in by_id.items()
-        if player_id != account_id and player.get('prebattleID') == prebattle and player.get('team') == own.get('team')
-    )
+
+    mates = [
+        player for player_id, player in by_id.items()
+        if player_id != account_id and _is_platoon_mate(player, own)
+    ]
+    size = 1 + len(mates)
     if size < 2:
         return None
     return {'size': min(size, MAX_PLATOON_SIZE)}
@@ -117,68 +137,98 @@ def normalize_shots(shots):
     return result or None
 
 
+def _record_ids(vehicle):
+    ids = vehicle.get('achievements')
+    if not isinstance(ids, (list, tuple)):
+        return []
+    return [record_id for record_id in ids if is_int(record_id)]
+
+
+def _is_achievement_name(name):
+    return isinstance(name, string_types) and 0 < len(name) <= MAX_ACHIEVEMENT_NAME
+
+
 def extract_achievements(vehicle, name_of):
     names = []
     mastery = MASTERY_BADGES.get(as_int(vehicle.get('markOfMastery')))
     if mastery is not None:
         names.append(mastery)
-    ids = vehicle.get('achievements')
-    for record_id in ids if isinstance(ids, (list, tuple)) else ():
-        name = name_of(record_id) if is_int(record_id) else None
-        if isinstance(name, string_types) and 0 < len(name) <= MAX_ACHIEVEMENT_NAME and name not in names:
+    for record_id in _record_ids(vehicle):
+        name = name_of(record_id)
+        if _is_achievement_name(name) and name not in names:
             names.append(to_text(name))
     return names[:MAX_ACHIEVEMENTS]
 
 
-def build_battle_event(results, extras=None):
-    extras = extras or {}
+def extract_stats(vehicle):
+    death_reason = as_int(vehicle.get('deathReason'), -1)
+    stats = dict((target, as_int(vehicle.get(source))) for target, source in STAT_FIELDS)
+    stats['is_alive'] = death_reason == -1
+    stats['death_reason'] = death_reason
+    stats['is_premium'] = bool(vehicle.get('isPremium', False))
+    stats.update(extract_economy(vehicle))
+    return stats
+
+
+def _arena_unique_id(results):
     if not isinstance(results, dict):
         raise PayloadError('results must be a dict')
     arena_unique_id = results.get('arenaUniqueID')
     if not is_int(arena_unique_id) or arena_unique_id <= 0:
         raise PayloadError('no arenaUniqueID')
-    common = results.get('common') or {}
-    avatar = (results.get('personal') or {}).get('avatar') or {}
-    vehicle = find_own_vehicle(results)
-    team = as_int(vehicle.get('team'), as_int(avatar.get('team'), 0))
-    death_reason = as_int(vehicle.get('deathReason'), -1)
-    stats = {}
-    for target, source in STAT_FIELDS:
-        stats[target] = as_int(vehicle.get(source))
-    stats['is_alive'] = death_reason == -1
-    stats['death_reason'] = death_reason
-    stats['is_premium'] = bool(vehicle.get('isPremium', False))
-    stats.update(extract_economy(vehicle))
-    tank_id = as_int(vehicle.get('typeCompDescr'))
-    event = {
-        'type': 'battle_result',
-        'event_id': 'battle:' + str(arena_unique_id),
-        'occurred_at': as_int(extras.get('occurred_at'), as_int(common.get('arenaCreateTime')) + as_int(common.get('duration'))),
-        'arena_unique_id': str(arena_unique_id),
+    return arena_unique_id
+
+
+def _arena_fields(common, extras):
+    created_at = as_int(common.get('arenaCreateTime'))
+    duration = as_int(common.get('duration'))
+    return {
+        'occurred_at': as_int(extras.get('occurred_at'), created_at + duration),
         'arena_type_id': as_int(common.get('arenaTypeID')),
         'map_name': extras.get('map_name'),
         'bonus_type': as_int(common.get('bonusType')),
         'gui_type': as_int(common.get('guiType')),
-        'arena_created_at': as_int(common.get('arenaCreateTime')),
-        'duration_s': as_int(common.get('duration')),
+        'arena_created_at': created_at,
+        'duration_s': duration,
         'finish_reason': as_int(common.get('finishReason')),
         'winner_team': as_int(common.get('winnerTeam')),
+    }
+
+
+def _no_achievement_name(record_id):
+    return None
+
+
+def build_battle_event(results, extras=None):
+    extras = extras or {}
+    arena_unique_id = _arena_unique_id(results)
+    common = results.get('common') or {}
+    avatar = (results.get('personal') or {}).get('avatar') or {}
+    vehicle = find_own_vehicle(results)
+    team = as_int(vehicle.get('team'), as_int(avatar.get('team'), 0))
+    achievement_name = extras.get('achievement_name') or _no_achievement_name
+
+    event = _arena_fields(common, extras)
+    event.update({
+        'type': 'battle_result',
+        'event_id': 'battle:' + str(arena_unique_id),
+        'arena_unique_id': str(arena_unique_id),
         'team': team,
-        'result': battle_outcome(as_int(common.get('winnerTeam')), team),
+        'result': battle_outcome(event['winner_team'], team),
         'vehicle': {
-            'tank_id': tank_id,
+            'tank_id': as_int(vehicle.get('typeCompDescr')),
             'name': extras.get('vehicle_name'),
             'tier': extras.get('vehicle_tier'),
         },
-        'stats': stats,
+        'stats': extract_stats(vehicle),
         'moe': extract_moe(vehicle),
         'queue_time_s': extras.get('queue_time_s'),
         'session_id': extras.get('session_id'),
-        'loadout': normalize_loadout(extras.get('loadout'), as_int(common.get('arenaTypeID'))),
+        'loadout': normalize_loadout(extras.get('loadout'), event['arena_type_id']),
         'platoon': extract_platoon(results, as_int(avatar.get('accountDBID'), None)),
         'shots': normalize_shots(extras.get('shots')),
-        'achievements': extract_achievements(vehicle, extras.get('achievement_name') or (lambda record_id: None)),
-    }
+        'achievements': extract_achievements(vehicle, achievement_name),
+    })
     return event
 
 

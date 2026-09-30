@@ -4,19 +4,35 @@ from ....core.compat import string_types, to_text
 from .constants import FAVOURITES_MAX, INDEX_MAX
 
 
+def _is_text_pair(item):
+    if not isinstance(item, list) or len(item) != 2:
+        return False
+    arena_unique_id, replay_id = item
+    return isinstance(arena_unique_id, string_types) and isinstance(replay_id, string_types)
+
+
+def _list_of(data, key):
+    value = data.get(key)
+    return value if isinstance(value, list) else []
+
+
+# One account's replay marks: the site id of each uploaded battle (by arena) and the favourites (by arena, or by
+# file name for a replay without one).
 class UploadedIndex(object):
-    """One account's replay marks: the site id of each uploaded battle (by arena) and the favourites (by arena, or by
-    file name for a replay without one)."""
 
     def __init__(self, store):
         self.store = store
-        data = store.read({})
-        data = data if isinstance(data, dict) else {}
-        items = data.get('uploaded') if isinstance(data.get('uploaded'), list) else []
-        self.items = [(to_text(a), to_text(r)) for a, r in (item for item in items if isinstance(item, list) and len(item) == 2)
-                      if isinstance(a, string_types) and isinstance(r, string_types)]
-        favourites = data.get('favourites') if isinstance(data.get('favourites'), list) else []
-        self.favourites = [to_text(key) for key in favourites if isinstance(key, string_types) and key][-FAVOURITES_MAX:]
+        self.items = []
+        self.favourites = []
+        self._load(store.read({}))
+
+    def _load(self, data):
+        if not isinstance(data, dict):
+            return
+        uploaded = [item for item in _list_of(data, 'uploaded') if _is_text_pair(item)]
+        self.items = [(to_text(arena_unique_id), to_text(replay_id)) for arena_unique_id, replay_id in uploaded]
+        favourites = [key for key in _list_of(data, 'favourites') if isinstance(key, string_types) and key]
+        self.favourites = [to_text(key) for key in favourites][-FAVOURITES_MAX:]
 
     def _persist(self):
         self.store.write({'uploaded': [list(item) for item in self.items], 'favourites': list(self.favourites)})
@@ -25,8 +41,9 @@ class UploadedIndex(object):
         if not arena_unique_id or not isinstance(replay_id, string_types) or not replay_id:
             return False
         arena_unique_id = to_text(arena_unique_id)
-        self.items = [item for item in self.items if item[0] != arena_unique_id] + [(arena_unique_id, to_text(replay_id))]
-        self.items = self.items[-INDEX_MAX:]
+
+        others = [item for item in self.items if item[0] != arena_unique_id]
+        self.items = (others + [(arena_unique_id, to_text(replay_id))])[-INDEX_MAX:]
         self._persist()
         return True
 
@@ -39,18 +56,21 @@ class UploadedIndex(object):
     def is_favourite(self, key):
         return bool(key) and to_text(key) in self.favourites
 
-    def set_favourite(self, key, on):
+    def set_favourite(self, key, is_on):
         if not key:
             return False
         key = to_text(key)
-        if on == (key in self.favourites):
+        if is_on == (key in self.favourites):
             return False
-        self.favourites = [item for item in self.favourites if item != key] + ([key] if on else [])
-        self.favourites = self.favourites[-FAVOURITES_MAX:]
+
+        others = [item for item in self.favourites if item != key]
+        added = [key] if is_on else []
+        self.favourites = (others + added)[-FAVOURITES_MAX:]
         self._persist()
         return True
 
     def moved(self, old_key, new_key):
-        if old_key != new_key and self.is_favourite(old_key):
-            self.favourites = [new_key if item == old_key else item for item in self.favourites]
-            self._persist()
+        if old_key == new_key or not self.is_favourite(old_key):
+            return
+        self.favourites = [new_key if item == old_key else item for item in self.favourites]
+        self._persist()

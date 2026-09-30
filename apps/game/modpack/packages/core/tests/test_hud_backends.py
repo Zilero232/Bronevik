@@ -8,13 +8,44 @@ import re
 import unittest
 
 import _support
-from otmetki.core.hud import BackendChain, ComponentConfig, HudBackend, HudLayer, HudSurface, NullBackend, alias_of, panel_schema
-from otmetki.core.hud.surface import HUD_COMMANDS, HUD_PROTOCOL_VERSION, SPACE_BATTLE, SPACE_LOBBY, FramePush, decode_hud_message
+from otmetki.core.hud import (
+    BackendChain,
+    ComponentConfig,
+    HudBackend,
+    HudLayer,
+    HudSurface,
+    NullBackend,
+    alias_of,
+    panel_schema,
+)
+from otmetki.core.hud.surface import (
+    HUD_COMMANDS,
+    HUD_PROTOCOL_VERSION,
+    SPACE_BATTLE,
+    SPACE_LOBBY,
+    FramePush,
+    decode_hud_message,
+)
 from otmetki.core.hud.surface.constants import MOUSE_EVENTS
 from otmetki.core.storage import MemoryFile
 
 HUD_PROTOCOL_DIR = os.path.join(_support.MODPACK_DIR, 'ui-web', 'src', 'shared', 'api', 'hud-protocol')
+HUD_PROTOCOL_CONSTANTS = os.path.join(HUD_PROTOCOL_DIR, 'hud-protocol.constants.ts')
 HUD_STATE_FIXTURE = os.path.join(HUD_PROTOCOL_DIR, '_tests', 'fixtures', 'hud-state.sample.json')
+DAMAGE_LOG = 'otmetki.hud.damage_log'
+HANGAR_INFO = 'otmetki.hangar_info'
+MALFORMED_MESSAGES = (
+    None,
+    'not json',
+    '[]',
+    '{"type": "close"}',
+    '{"type": "moved", "id": "x", "x": 1}',
+    '{"type": "moved", "id": 5, "x": 1, "y": 2}',
+    '{"type": "moved", "id": "x", "x": true, "y": 2}',
+    'x' * 5000,
+    '{"type": "resized", "id": "x", "scale": "big"}',
+    '{"type": "pressed"}',
+)
 
 
 class Recorder(HudBackend):
@@ -48,6 +79,49 @@ class Recorder(HudBackend):
         self.listeners.append(on_moved)
 
 
+def damage_log_props():
+    return {
+        'text': u'<font color="#F2EAD3">урон 1 200</font>',
+        'x': 20,
+        'y': -140,
+        'alignX': 'left',
+        'alignY': 'bottom',
+        'alpha': 0.9,
+        'drag': True,
+        'border': False,
+        'visible': True,
+    }
+
+
+def hangar_info_props():
+    return {'text': '12:00', 'x': -10, 'y': 4, 'alignX': 'right', 'alignY': 'top'}
+
+
+def moved_message():
+    return json.dumps({
+        'type': 'moved',
+        'id': DAMAGE_LOG,
+        'x': 30.6,
+        'y': 99999,
+        'align_x': 'center',
+        'align_y': 'middle',
+    })
+
+
+def resized_message():
+    return json.dumps({'type': 'resized', 'id': DAMAGE_LOG, 'scale': 9})
+
+
+def names_in_list(source, key):
+    block = re.search(key + r': \[([^\]]*)\]', source).group(1)
+    return tuple(re.findall(r"'([a-z_]+)'", block))
+
+
+def read_page_constants():
+    with io.open(HUD_PROTOCOL_CONSTANTS, 'r', encoding='utf-8') as handle:
+        return handle.read()
+
+
 class BackendChainTest(unittest.TestCase):
 
     def setUp(self):
@@ -55,37 +129,92 @@ class BackendChainTest(unittest.TestCase):
         self.guiflash = Recorder('guiflash')
         self.chain = BackendChain([self.gameface, self.guiflash])
 
-    def test_first_available_wins(self):
-        assert self.chain.name == 'gameface'
-        assert self.chain.create('a', {'text': '1'})
-        assert 'a' in self.gameface.labels and self.guiflash.labels == {}
+    def switch_every_backend_off(self):
         self.gameface.is_available = False
+        self.guiflash.is_available = False
+
+    def test_the_first_available_backend_names_the_chain(self):
+        assert self.chain.name == 'gameface'
+
+    def test_create_goes_to_the_first_available_backend(self):
+        created = self.chain.create('a', {'text': '1'})
+
+        assert created
+        assert 'a' in self.gameface.labels
+        assert self.guiflash.labels == {}
+
+    def test_the_next_backend_names_the_chain_when_the_first_is_unavailable(self):
+        self.gameface.is_available = False
+
         assert self.chain.name == 'guiflash'
-        assert self.chain.create('b', {'text': '2'})
+
+    def test_create_falls_through_to_the_next_available_backend(self):
+        self.gameface.is_available = False
+
+        created = self.chain.create('b', {'text': '2'})
+
+        assert created
         assert 'b' in self.guiflash.labels
 
-    def test_a_label_stays_with_its_backend(self):
+    def test_an_update_stays_with_the_backend_of_the_label(self):
         self.chain.create('a', {'text': '1'})
         self.gameface.is_available = False
-        assert self.chain.update('a', {'text': '2'})
+
+        updated = self.chain.update('a', {'text': '2'})
+
+        assert updated
         assert self.gameface.labels['a']['text'] == '2'
+
+    def test_a_delete_stays_with_the_backend_of_the_label(self):
+        self.chain.create('a', {'text': '1'})
+        self.gameface.is_available = False
+
         assert self.chain.delete('a')
+
+    def test_a_deleted_label_cannot_be_deleted_again(self):
+        self.chain.create('a', {'text': '1'})
+        self.chain.delete('a')
+
         assert not self.chain.delete('a')
+
+    def test_a_deleted_label_cannot_be_updated(self):
+        self.chain.create('a', {'text': '1'})
+        self.chain.delete('a')
+
         assert not self.chain.update('a', {})
 
-    def test_none_available(self):
-        self.gameface.is_available = self.guiflash.is_available = False
+    def test_the_chain_is_unavailable_when_no_backend_is(self):
+        self.switch_every_backend_off()
+
         assert not self.chain.available()
+
+    def test_the_chain_is_named_after_the_null_backend_when_no_backend_is_available(self):
+        self.switch_every_backend_off()
+
         assert self.chain.name == NullBackend.name
+
+    def test_create_is_refused_when_no_backend_is_available(self):
+        self.switch_every_backend_off()
+
         assert not self.chain.create('a', {})
-        assert BackendChain([]).names == [] and not BackendChain([]).available()
+
+    def test_an_empty_chain_has_no_names(self):
+        assert BackendChain([]).names == []
+
+    def test_an_empty_chain_is_unavailable(self):
+        assert not BackendChain([]).available()
 
     def test_listen_reaches_every_backend(self):
         seen = []
+
         self.chain.listen(lambda alias, props: seen.append(alias))
         self.gameface.listeners[0]('x', {})
         self.guiflash.listeners[0]('y', {})
-        assert seen == ['x', 'y'] and self.chain.names == ['gameface', 'guiflash']
+
+        assert seen == ['x', 'y']
+
+    def test_names_lists_every_backend_in_order(self):
+        assert self.chain.names == ['gameface', 'guiflash']
 
 
 class LayerTest(unittest.TestCase):
@@ -97,34 +226,87 @@ class LayerTest(unittest.TestCase):
         self.layer.register('panel', panel_schema({'x': 5}))
         self.alias = alias_of('panel')
 
+    def drag(self, props):
+        return self.backend.listeners[0](self.alias, props)
+
     def test_unchanged_text_is_not_sent_again(self):
         self.layer.show('panel', 'one')
         self.layer.show('panel', 'one')
         self.layer.show('panel', 'two')
         self.layer.hide('panel')
         self.layer.show('panel', 'two')
-        assert [call[0] for call in self.backend.calls] == ['create', 'update', 'delete', 'create']
 
-    def test_place_is_transient(self):
+        calls = [call[0] for call in self.backend.calls]
+        assert calls == ['create', 'update', 'delete', 'create']
+
+    def test_place_of_a_hidden_panel_is_refused(self):
         assert not self.layer.place('panel', 1, 2)
+
+    def test_place_sends_the_rounded_position(self):
         self.layer.show('panel', 'mark')
-        assert self.layer.place('panel', 10.4, -3)
-        assert self.layer.place('panel', 10, -3)
+
+        placed = self.layer.place('panel', 10.4, -3)
+
+        assert placed
         assert self.backend.calls[1:] == [('update', self.alias, {'x': 10, 'y': -3})]
+
+    def test_placing_at_the_same_spot_sends_nothing_more(self):
+        self.layer.show('panel', 'mark')
+        self.layer.place('panel', 10.4, -3)
+
+        placed = self.layer.place('panel', 10, -3)
+
+        assert placed
+        assert self.backend.calls[1:] == [('update', self.alias, {'x': 10, 'y': -3})]
+
+    def test_a_placed_position_is_not_saved(self):
+        self.layer.show('panel', 'mark')
+
+        self.layer.place('panel', 10.4, -3)
+
         assert self.store.read()['panel']['x'] == 5
+
+    def test_place_without_a_coordinate_is_refused(self):
+        self.layer.show('panel', 'mark')
+
         assert not self.layer.place('panel', None, 1)
+
+    def test_place_is_sent_again_after_the_settings_change(self):
+        self.layer.show('panel', 'mark')
+        self.layer.place('panel', 10, -3)
         self.layer.update_settings('panel', {'align_x': 'left'})
-        assert self.layer.place('panel', 10, -3)
+
+        placed = self.layer.place('panel', 10, -3)
+
+        assert placed
         assert self.backend.calls[-1] == ('update', self.alias, {'x': 10, 'y': -3})
 
     def test_drag_saves_the_anchor(self):
         self.layer.show('panel', 'text')
-        assert self.backend.listeners[0](self.alias, {'x': 7, 'y': 8, 'alignX': 'right', 'alignY': 'bottom'})
+
+        moved = self.drag({'x': 7, 'y': 8, 'alignX': 'right', 'alignY': 'bottom'})
+
         saved = self.store.read()['panel']
-        assert (saved['x'], saved['y'], saved['align_x'], saved['align_y']) == (7, 8, 'right', 'bottom')
-        assert not self.backend.listeners[0](self.alias, {'x': True, 'alignX': 'middle'})
-        assert self.backend.listeners[0](self.alias, {'scale': 1.5})
+        assert moved
+        assert saved['x'] == 7
+        assert saved['y'] == 8
+        assert saved['align_x'] == 'right'
+        assert saved['align_y'] == 'bottom'
+
+    def test_a_drag_of_mistyped_values_is_refused(self):
+        self.layer.show('panel', 'text')
+
+        assert not self.drag({'x': True, 'alignX': 'middle'})
+
+    def test_a_resize_saves_the_scale_as_a_percent(self):
+        self.layer.show('panel', 'text')
+
+        resized = self.drag({'scale': 1.5})
+
+        assert resized
         assert self.store.read()['panel']['scale'] == 150
+
+    def test_the_layer_reports_its_backend_name(self):
         assert self.layer.backend_name == 'fake'
 
 
@@ -138,90 +320,203 @@ class FramePushTest(unittest.TestCase):
         self.pusher = FramePush(self.frames.append, self.encode, self.sent.append)
 
     def encode(self):
-        return self.surface.encode(SPACE_BATTLE, False) if self.view else None
+        if not self.view:
+            return None
+        return self.surface.encode(SPACE_BATTLE, False)
 
     def next_frame(self):
         frames, self.frames[:] = list(self.frames), []
         for flush in frames:
             flush()
 
-    def test_changes_of_one_frame_become_one_push_of_the_latest_state(self):
+    def change_the_clock_three_times(self):
         self.surface.create('clock', {'text': '1'}, SPACE_BATTLE)
         for text in ('2', '3', '4'):
             self.surface.update('clock', {'text': text})
             self.pusher.request()
-        assert len(self.frames) == 1 and self.sent == []
-        self.next_frame()
-        assert len(self.sent) == 1 and json.loads(self.sent[0])['panels'][0]['text'] == '4'
 
-    def test_an_unchanged_state_is_not_pushed_again_unless_the_page_is_new(self):
+    def push_the_same_state_twice(self):
         self.surface.create('clock', {'text': '1'}, SPACE_BATTLE)
         self.pusher.request()
         self.next_frame()
         self.surface.update('clock', {'text': '1'})
         self.pusher.request()
         self.next_frame()
-        assert len(self.sent) == 1 and self.pusher.pushes == 1
+
+    def test_changes_within_one_frame_ask_for_one_frame_and_send_nothing_yet(self):
+        self.change_the_clock_three_times()
+
+        assert len(self.frames) == 1
+        assert self.sent == []
+
+    def test_the_frame_pushes_the_latest_state_once(self):
+        self.change_the_clock_three_times()
+
+        self.next_frame()
+
+        assert len(self.sent) == 1
+        assert json.loads(self.sent[0])['panels'][0]['text'] == '4'
+
+    def test_an_unchanged_state_is_not_pushed_again(self):
+        self.push_the_same_state_twice()
+
+        assert len(self.sent) == 1
+
+    def test_a_new_page_gets_the_unchanged_state_again(self):
+        self.push_the_same_state_twice()
         self.pusher.forget()
-        assert self.pusher.flush() is True and len(self.sent) == 2
+
+        flushed = self.pusher.flush()
+
+        assert flushed is True
+        assert len(self.sent) == 2
 
     def test_no_page_no_push(self):
         self.view = False
+
         self.pusher.request()
         self.next_frame()
-        assert self.sent == [] and not self.pusher.pending
+
+        assert self.sent == []
+        assert not self.pusher.pending
 
 
 class SurfaceTest(unittest.TestCase):
 
     def setUp(self):
         self.surface = HudSurface()
-        self.surface.create('otmetki.hud.damage_log', {'text': u'<font color="#F2EAD3">урон 1 200</font>', 'x': 20, 'y': -140,
-                                                       'alignX': 'left', 'alignY': 'bottom', 'alpha': 0.9, 'drag': True,
-                                                       'border': False, 'visible': True}, SPACE_BATTLE)
-        self.surface.create('otmetki.hangar_info', {'text': '12:00', 'x': -10, 'y': 4, 'alignX': 'right', 'alignY': 'top'}, SPACE_LOBBY)
+        self.surface.create(DAMAGE_LOG, damage_log_props(), SPACE_BATTLE)
+        self.surface.create(HANGAR_INFO, hangar_info_props(), SPACE_LOBBY)
 
-    def test_state_per_space(self):
+    def test_the_state_carries_the_protocol_version_and_the_modes(self):
         state = self.surface.state(SPACE_BATTLE, False)
-        assert state['v'] == HUD_PROTOCOL_VERSION and state['cursor'] is False and state['edit'] is False
-        assert [panel['id'] for panel in state['panels']] == ['otmetki.hud.damage_log']
-        lobby = self.surface.state(SPACE_LOBBY, True)['panels'][0]
-        assert lobby == {'id': 'otmetki.hangar_info', 'text': '12:00', 'x': -10, 'y': 4, 'align_x': 'right', 'align_y': 'top', 'alpha': 1.0,
-                         'drag': False, 'border': False, 'visible': True, 'scale': 1.0, 'kind': 'label', 'widget': None, 'dock': None}
-        assert self.surface.state(SPACE_LOBBY, False, True)['edit'] is False
-        assert self.surface.state(SPACE_LOBBY, True, True)['edit'] is True
-        assert self.surface.state(SPACE_BATTLE, True, True)['hover'] is True and self.surface.state(SPACE_LOBBY, True)['hover'] is False
-        assert json.loads(self.surface.encode(SPACE_BATTLE, True))['panels'][0]['text'].endswith(u'урон 1 200</font>')
 
-    def test_update_and_delete(self):
-        assert self.surface.update('otmetki.hangar_info', {'text': '12:01', 'x': None})
-        assert self.surface.panel('otmetki.hangar_info')['text'] == '12:01'
-        assert self.surface.panel('otmetki.hangar_info')['x'] == 0
+        assert state['v'] == HUD_PROTOCOL_VERSION
+        assert state['cursor'] is False
+        assert state['edit'] is False
+
+    def test_the_state_lists_only_the_panels_of_its_space(self):
+        state = self.surface.state(SPACE_BATTLE, False)
+
+        assert [panel['id'] for panel in state['panels']] == [DAMAGE_LOG]
+
+    def test_a_panel_is_filled_with_the_defaults(self):
+        panel = self.surface.state(SPACE_LOBBY, True)['panels'][0]
+
+        assert panel == {
+            'id': 'otmetki.hangar_info',
+            'text': '12:00',
+            'x': -10,
+            'y': 4,
+            'align_x': 'right',
+            'align_y': 'top',
+            'alpha': 1.0,
+            'drag': False,
+            'border': False,
+            'visible': True,
+            'scale': 1.0,
+            'kind': 'label',
+            'widget': None,
+            'dock': None,
+        }
+
+    def test_edit_mode_needs_the_cursor(self):
+        assert self.surface.state(SPACE_LOBBY, False, True)['edit'] is False
+
+    def test_edit_mode_with_the_cursor_is_on(self):
+        assert self.surface.state(SPACE_LOBBY, True, True)['edit'] is True
+
+    def test_hover_is_on_while_editing_with_the_cursor(self):
+        assert self.surface.state(SPACE_BATTLE, True, True)['hover'] is True
+
+    def test_hover_is_off_outside_edit_mode(self):
+        assert self.surface.state(SPACE_LOBBY, True)['hover'] is False
+
+    def test_encode_keeps_the_panel_text(self):
+        encoded = json.loads(self.surface.encode(SPACE_BATTLE, True))
+
+        assert encoded['panels'][0]['text'].endswith(u'урон 1 200</font>')
+
+    def test_update_sets_the_text_and_resets_a_missing_value(self):
+        updated = self.surface.update(HANGAR_INFO, {'text': '12:01', 'x': None})
+
+        assert updated
+        assert self.surface.panel(HANGAR_INFO)['text'] == '12:01'
+        assert self.surface.panel(HANGAR_INFO)['x'] == 0
+
+    def test_update_of_a_missing_panel_is_refused(self):
         assert not self.surface.update('missing', {})
-        assert self.surface.delete('otmetki.hangar_info') and not self.surface.delete('otmetki.hangar_info')
+
+    def test_delete_removes_the_panel_from_its_space(self):
+        deleted = self.surface.delete(HANGAR_INFO)
+
+        assert deleted
         assert self.surface.aliases(SPACE_LOBBY) == []
 
-    def test_messages(self):
+    def test_a_deleted_panel_cannot_be_deleted_again(self):
+        self.surface.delete(HANGAR_INFO)
+
+        assert not self.surface.delete(HANGAR_INFO)
+
+
+class HudMessageTest(unittest.TestCase):
+
+    def setUp(self):
+        self.surface = HudSurface()
+        self.surface.create(DAMAGE_LOG, damage_log_props(), SPACE_BATTLE)
+        self.surface.create(HANGAR_INFO, hangar_info_props(), SPACE_LOBBY)
+
+    def test_ready_is_decoded(self):
         assert decode_hud_message('{"type": "ready"}') == ('ready', {})
+
+    def test_a_known_mouse_event_is_decoded(self):
         assert decode_hud_message('{"type": "mouse", "event": "hover"}') == ('mouse', {'event': 'hover'})
+
+    def test_an_unknown_mouse_event_is_refused(self):
         assert decode_hud_message('{"type": "mouse", "event": "click"}') is None
-        moved = self.surface.handle(json.dumps({'type': 'moved', 'id': 'otmetki.hud.damage_log', 'x': 30.6, 'y': 99999, 'align_x': 'center',
-                                                'align_y': 'middle'}))
-        assert moved == ('moved', {'id': 'otmetki.hud.damage_log', 'x': 31, 'y': 4000, 'alignX': 'center'})
-        assert self.surface.panel('otmetki.hud.damage_log')['align_x'] == 'center'
-        for raw in (None, 'not json', '[]', '{"type": "close"}', '{"type": "moved", "id": "x", "x": 1}',
-                    '{"type": "moved", "id": 5, "x": 1, "y": 2}', '{"type": "moved", "id": "x", "x": true, "y": 2}', 'x' * 5000):
-            assert decode_hud_message(raw) is None, raw
-        assert self.surface.handle('{"type": "moved", "id": "unknown", "x": 1, "y": 2}') is None
-        resized = self.surface.handle(json.dumps({'type': 'resized', 'id': 'otmetki.hud.damage_log', 'scale': 9}))
-        assert resized == ('resized', {'id': 'otmetki.hud.damage_log', 'scale': 3.0})
-        assert self.surface.panel('otmetki.hud.damage_log')['scale'] == 3.0
-        assert self.surface.handle(json.dumps({'type': 'pressed', 'id': 'otmetki.hangar_info'})) == ('pressed', {'id': 'otmetki.hangar_info'})
-        for raw in ('{"type": "resized", "id": "x", "scale": "big"}', '{"type": "pressed"}'):
+
+    def test_every_malformed_message_is_refused(self):
+        for raw in MALFORMED_MESSAGES:
             assert decode_hud_message(raw) is None, raw
 
+    def test_moved_is_rounded_and_clamped(self):
+        moved = self.surface.handle(moved_message())
+
+        assert moved == ('moved', {'id': 'otmetki.hud.damage_log', 'x': 31, 'y': 4000, 'alignX': 'center'})
+
+    def test_moved_updates_the_panel(self):
+        self.surface.handle(moved_message())
+
+        assert self.surface.panel(DAMAGE_LOG)['align_x'] == 'center'
+
+    def test_moved_of_an_unknown_panel_is_ignored(self):
+        assert self.surface.handle('{"type": "moved", "id": "unknown", "x": 1, "y": 2}') is None
+
+    def test_resized_is_clamped(self):
+        resized = self.surface.handle(resized_message())
+
+        assert resized == ('resized', {'id': 'otmetki.hud.damage_log', 'scale': 3.0})
+
+    def test_resized_updates_the_panel(self):
+        self.surface.handle(resized_message())
+
+        assert self.surface.panel(DAMAGE_LOG)['scale'] == 3.0
+
+    def test_pressed_names_the_panel(self):
+        pressed = self.surface.handle(json.dumps({'type': 'pressed', 'id': HANGAR_INFO}))
+
+        assert pressed == ('pressed', {'id': 'otmetki.hangar_info'})
+
+
+class HudPageContractTest(unittest.TestCase):
+
     def test_state_fixture_is_current(self):
-        state = self.surface.state(SPACE_BATTLE, True, True)
+        surface = HudSurface()
+        surface.create(DAMAGE_LOG, damage_log_props(), SPACE_BATTLE)
+        surface.create(HANGAR_INFO, hangar_info_props(), SPACE_LOBBY)
+
+        state = surface.state(SPACE_BATTLE, True, True)
+
         if os.environ.get('OTMETKI_UPDATE_FIXTURES') == '1':
             with io.open(HUD_STATE_FIXTURE, 'w', encoding='utf-8', newline='\n') as handle:
                 handle.write(json.dumps(state, sort_keys=True, indent=2, ensure_ascii=False) + '\n')
@@ -229,13 +524,15 @@ class SurfaceTest(unittest.TestCase):
             assert json.load(handle) == state
 
     def test_commands_match_the_page(self):
-        with io.open(os.path.join(HUD_PROTOCOL_DIR, 'hud-protocol.constants.ts'), 'r', encoding='utf-8') as handle:
-            source = handle.read()
-        block = re.search(r'commands: \[([^\]]*)\]', source).group(1)
-        assert tuple(re.findall(r"'([a-z_]+)'", block)) == HUD_COMMANDS
-        assert re.search(r'version: (\d+)', source).group(1) == str(HUD_PROTOCOL_VERSION)
-        events = re.search(r'mouseEvents: \[([^\]]*)\]', source).group(1)
-        assert tuple(re.findall(r"'([a-z_]+)'", events)) == MOUSE_EVENTS
+        assert names_in_list(read_page_constants(), 'commands') == HUD_COMMANDS
+
+    def test_protocol_version_matches_the_page(self):
+        version = re.search(r'version: (\d+)', read_page_constants()).group(1)
+
+        assert version == str(HUD_PROTOCOL_VERSION)
+
+    def test_mouse_events_match_the_page(self):
+        assert names_in_list(read_page_constants(), 'mouseEvents') == MOUSE_EVENTS
 
 
 if __name__ == '__main__':

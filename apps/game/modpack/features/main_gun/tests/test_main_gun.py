@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import unittest
 
 import _support
-from otmetki.core.hud.panel import DOCK_ANCHORS, DOCKS, dock_of, retired_reset
+from otmetki.core.hud.panel import dock_of, retired_reset
 from otmetki.core.settings import Settings
 from otmetki.features.main_gun.i18n import STRINGS
 from otmetki.features.main_gun.model import format_panel, medal_status, threshold, values
@@ -23,12 +23,16 @@ def threshold_row(state):
 
 class ThresholdTest(unittest.TestCase):
 
-    def test_is_a_fifth_of_the_enemy_hp_rounded_up(self):
+    def test_is_a_fifth_of_the_enemy_hp(self):
         assert threshold(14700) == 2940
+
+    def test_a_fifth_of_the_enemy_hp_is_rounded_up(self):
         assert threshold(14701) == 2941
 
     def test_is_at_least_1000(self):
         assert threshold(3000) == 1000
+
+    def test_is_1000_without_the_enemy_hp(self):
         assert threshold(None) == 1000
 
 
@@ -55,8 +59,15 @@ class ValuesTest(unittest.TestCase):
     def test_counts_the_damage_left_and_the_share_of_the_team_damage(self):
         state = values(1850, 14700, 8580)
 
-        assert state == {'damage': 1850, 'need': 2940, 'left': 1090, 'remaining': 8580, 'team': 6120, 'share': 30,
-                         'status': 'progress'}
+        assert state == {
+            'damage': 1850,
+            'need': 2940,
+            'left': 1090,
+            'remaining': 8580,
+            'team': 6120,
+            'share': 30,
+            'status': 'progress',
+        }
 
     def test_team_damage_is_never_below_the_own_damage(self):
         state = values(900, 14700, 14700)
@@ -94,12 +105,12 @@ class FormatTest(unittest.TestCase):
 
         assert u'Основной калибр недостижим: нужно ещё 1 090, у противника осталось 900' in text
 
-    def test_failed_line(self):
+    def test_failed_line_names_the_ally_hit(self):
         text = format_panel(values(1850, 14700, 8580, hit_ally=True), Settings({}, SCHEMA), translator('en'))
 
         assert 'High Caliber failed: an ally was hit' in text
 
-    def test_custom_template(self):
+    def test_a_custom_template_replaces_the_lines(self):
         settings = Settings({'template': '{damage}|{need}|{share}|{remaining}'}, SCHEMA)
 
         text = format_panel(values(1850, 14700, 8580), settings, translator())
@@ -152,8 +163,8 @@ class PanelTest(unittest.TestCase):
         dock = dock_of('otmetki.hud.main_gun', SCHEMA.defaults)
 
         assert dock['group'] == 'battle_right_top'
-        assert dock['order'] == DOCKS['otmetki.hud.main_gun'][1]
-        assert dock['reserve'] == DOCK_ANCHORS['battle_right_top']['reserve']
+        assert dock['order'] == 4
+        assert dock['reserve'] == 420
 
     def test_the_old_centre_place_moves_to_the_new_default(self):
         settings = Settings({'x': 0, 'y': 60, 'align_x': 'center', 'align_y': 'top'}, SCHEMA)

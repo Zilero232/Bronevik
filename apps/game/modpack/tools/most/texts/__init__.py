@@ -21,8 +21,10 @@ LABELS = {
         'external': 'Сторонние моды: не входят в пакет, ставятся отдельно (менеджер модпака ставит их сам).',
         'external_item': '- %(title)s %(version)s (`%(file)s`, лицензия %(licence)s, автор %(author)s): %(url)s',
         'data': 'Какие данные отправляются',
-        'data_text': ('Мод ничего не отправляет, пока вы не привяжете его кодом с сайта %s. После привязки уходят только ваши '
-                      'данные на api.triotmetki.ru по HTTPS; каждую отправку можно выключить в настройках.') % SITE,
+        'data_text': (
+            'Мод ничего не отправляет, пока вы не привяжете его кодом с сайта %s. После привязки уходят только '
+            'ваши данные на api.triotmetki.ru по HTTPS; каждую отправку можно выключить в настройках.'
+        ) % SITE,
         'install': 'Установка',
         'install_text': 'Через МОСТ. Вручную: скопируйте %s в папку mods/%s/ клиента.',
         'changes': 'Изменения',
@@ -33,11 +35,15 @@ LABELS = {
         'fair_play': 'Fair play',
         'dependencies': 'Dependencies',
         'no_dependencies': 'None: installs on its own.',
-        'external': 'Third-party mods: not in the package, installed separately (the modpack manager installs them itself).',
+        'external': (
+            'Third-party mods: not in the package, installed separately (the modpack manager installs them itself).'
+        ),
         'external_item': '- %(title)s %(version)s (`%(file)s`, %(licence)s licence, by %(author)s): %(url)s',
         'data': 'What data is sent',
-        'data_text': ('The mod sends nothing until you bind it with a code from %s. Once bound, only your own data goes to '
-                      'api.triotmetki.ru over HTTPS; every kind of upload can be switched off in the settings.') % SITE,
+        'data_text': (
+            'The mod sends nothing until you bind it with a code from %s. Once bound, only your own data goes to '
+            'api.triotmetki.ru over HTTPS; every kind of upload can be switched off in the settings.'
+        ) % SITE,
         'install': 'Installation',
         'install_text': 'Through МОСТ. By hand: copy %s into the client\'s mods/%s/ folder.',
         'changes': 'Changes',
@@ -114,7 +120,9 @@ def changes_text(changes, language):
     """The entry's text in `language`, else in the other language; None without an entry."""
     if not changes:
         return None
-    return changes.get(language) or next((changes[other] for other in LANGUAGES if changes.get(other)), None)
+    if changes.get(language):
+        return changes[language]
+    return next((changes[other] for other in LANGUAGES if changes.get(other)), None)
 
 
 def changelog_markdown(component, changes):
@@ -142,7 +150,8 @@ def dependency_list(component, manifest):
 
 
 def external_dependency_list(component, manifest):
-    """[{id, packageId, version, file, title: {ru, en}, author, licence, url}]: the third-party mods the component needs."""
+    """[{id, packageId, version, file, title: {ru, en}, author, licence, url}]:
+    the third-party mods the component needs."""
     return [{
         'id': dependency.id,
         'packageId': dependency.package_id,
@@ -159,6 +168,10 @@ def sends_data(component):
     return component.category == DATA_CATEGORY or component.id in DATA_COMPONENTS
 
 
+def _dependency_line(item, language):
+    return '- %s (`%s` %s)' % (item['title'][language], item['packageId'], item['version'])
+
+
 def description(component, manifest, language, game_version, changes):
     """The mod page text in one language (Markdown: the forum and МОСТ both take plain paragraphs)."""
     labels = LABELS[language]
@@ -170,7 +183,7 @@ def description(component, manifest, language, game_version, changes):
     dependencies = dependency_list(component, manifest)
     external = external_dependency_list(component, manifest)
     if dependencies:
-        lines += ['- %s (`%s` %s)' % (item['title'][language], item['packageId'], item['version']) for item in dependencies]
+        lines += [_dependency_line(item, language) for item in dependencies]
     if external:
         lines += ['', labels['external']] if dependencies else [labels['external']]
         lines += [labels['external_item'] % dict(item, title=item['title'][language]) for item in external]
@@ -182,24 +195,35 @@ def description(component, manifest, language, game_version, changes):
     return '\n'.join(lines) + '\n'
 
 
+def _check_catalog_texts(component, findings):
+    for language in LANGUAGES:
+        is_required = language in REQUIRED_LANGUAGES
+        for field in ('title', 'description', 'fair_play'):
+            if getattr(getattr(component, field), language).strip():
+                continue
+            message = 'no %s %s in catalog/catalog.json' % (language, field)
+            if is_required:
+                findings.error(component.id, message, 'most_topic')
+            else:
+                findings.warn(component.id, message, 'ours')
+
+
+def _check_changes(component, changes, findings):
+    version = component.version
+    if not changes:
+        message = 'no CHANGELOG.md entry for %s (## %s %s or ## %s)' % (version, component.id, version, version)
+        findings.warn(component.id, message, 'most_criteria')
+        return
+    for language in REQUIRED_LANGUAGES:
+        if not changes.get(language):
+            message = 'the CHANGELOG.md entry for %s has no ### %s text' % (version, language)
+            findings.warn(component.id, message, 'most_topic')
+
+
 def check_texts(component, changes):
     findings = Findings()
-    for language in LANGUAGES:
-        required = language in REQUIRED_LANGUAGES
-        for field in ('title', 'description', 'fair_play'):
-            if not getattr(getattr(component, field), language).strip():
-                message = 'no %s %s in catalog/catalog.json' % (language, field)
-                if required:
-                    findings.error(component.id, message, 'most_topic')
-                else:
-                    findings.warn(component.id, message, 'ours')
+    _check_catalog_texts(component, findings)
     if not component.catalogued:
         findings.error(component.id, 'no catalog entry: the page would carry the package description only', 'ours')
-    if not changes:
-        findings.warn(component.id, 'no CHANGELOG.md entry for %s (## %s %s or ## %s)' % (
-            component.version, component.id, component.version, component.version), 'most_criteria')
-    else:
-        for language in REQUIRED_LANGUAGES:
-            if not changes.get(language):
-                findings.warn(component.id, 'the CHANGELOG.md entry for %s has no ### %s text' % (component.version, language), 'most_topic')
+    _check_changes(component, changes, findings)
     return findings

@@ -5,17 +5,16 @@ import time
 from ....core.client.component import FeatureComponent
 from ....core.client.game import on_vehicle_changed, selected_tank_id, vehicle_class_tag, vehicle_short_name
 from ....core.hud import HangarLabel
-from .. import FEATURE_ID
 from ..i18n import STRINGS
 from ..model import ACTION_CLEAR, HISTORY_FILE, MarksHistory, build_page, hangar_widget, page_actions, panel_text
-from ..settings import SCHEMA, SWITCH
+from ..settings import SCHEMA, SECTION, SWITCH
 from .constants import HANGAR_PANEL, LAYOUT
 
 
 class MarksHistoryFeature(FeatureComponent):
 
     def __init__(self, app):
-        FeatureComponent.__init__(self, app, FEATURE_ID, SCHEMA, SWITCH, STRINGS)
+        FeatureComponent.__init__(self, app, SECTION, SCHEMA, SWITCH, STRINGS)
         self.history = None
         self.selected = None
         self.label = HangarLabel(app, HANGAR_PANEL)
@@ -34,14 +33,17 @@ class MarksHistoryFeature(FeatureComponent):
         if self.history is None or not self.enabled():
             return
         tank_id = (event.get('vehicle') or {}).get('tank_id')
-        if self.history.record_battle(event, vehicle_short_name(tank_id), vehicle_class_tag(tank_id)) is not None:
+        entry = self.history.record_battle(event, vehicle_short_name(tank_id), vehicle_class_tag(tank_id))
+        if entry is not None:
             self.history.save()
 
     def _on_vehicle_moe(self, snapshot):
         if self.history is None or not self.enabled():
             return
         self.selected = snapshot.get('tank_id')
-        if self.history.record_snapshot(snapshot, time.time(), vehicle_short_name(self.selected), vehicle_class_tag(self.selected)) is not None:
+        label = vehicle_short_name(self.selected)
+        entry = self.history.record_snapshot(snapshot, time.time(), label, vehicle_class_tag(self.selected))
+        if entry is not None:
             self.history.save()
         self.show()
 
@@ -55,23 +57,34 @@ class MarksHistoryFeature(FeatureComponent):
     def _on_battle_enter(self):
         self.label.hide()
 
+    def _summary(self):
+        if not self.history or not self.selected:
+            return None
+        return self.history.summary(self.selected, self.settings.get('trend_battles'))
+
     def show(self):
         app = self.app
         if app.in_battle:
             return
-        summary = self.history.summary(self.selected, self.settings.get('trend_battles')) if self.history and self.selected else None
+        summary = self._summary()
         if not self.enabled() or not self.settings.get('show_panel') or summary is None:
             self.label.clear()
             return
         self.label.show(panel_text(summary, app.translate), LAYOUT, widget=hangar_widget(summary, app.translate))
 
+    def _has_history(self):
+        return self.enabled() and self.history is not None
+
     def ui_actions(self):
-        return page_actions(self.app.translate) if self.enabled() and self.history is not None else []
+        if not self._has_history():
+            return []
+        return page_actions(self.app.translate)
 
     def ui_page(self):
-        if not self.enabled() or self.history is None:
+        if not self._has_history():
             return None
-        return build_page(self.history, self.app.translate, self.settings.get('trend_battles'), self.settings.get('page_rows'))
+        settings = self.settings
+        return build_page(self.history, self.app.translate, settings.get('trend_battles'), settings.get('page_rows'))
 
     def ui_action(self, action, row=None, value=None):
         if action != ACTION_CLEAR or self.history is None or not row:

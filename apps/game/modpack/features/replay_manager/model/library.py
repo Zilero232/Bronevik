@@ -11,9 +11,46 @@ def _stamp(size, mtime):
     return [int(size), round(float(mtime), 3)]
 
 
+def _stored_entry(name, entry):
+    if not isinstance(name, string_types) or not isinstance(entry, dict):
+        return None
+    if not isinstance(entry.get('stamp'), list):
+        return None
+    header = entry.get('header')
+    return {'stamp': entry['stamp'], 'header': header if isinstance(header, dict) else None}
+
+
+def _newest_files(folder, listdir, stat):
+    try:
+        names = listdir(folder)
+    except (IOError, OSError):
+        names = []
+
+    found = []
+    for name in names:
+        if not is_replay_name(name):
+            continue
+        path = os.path.join(folder, name)
+        try:
+            info = stat(path)
+        except (IOError, OSError):
+            continue
+        if is_number(info.st_size) and is_number(info.st_mtime):
+            found.append((info.st_mtime, info.st_size, to_text(name), path))
+
+    found.sort(reverse=True)
+    return found[:SCAN_MAX_FILES]
+
+
+def _is_own(header, account_id):
+    if not header or header.get('player_id') is None:
+        return False
+    return int(header['player_id']) == int(account_id)
+
+
+# The headers of the replays in the client's folder, read once per file version and kept on disk, so the list
+# opens at once; new or changed files are read a slice of time at a time.
 class ReplayLibrary(object):
-    """The headers of the replays in the client's folder, read once per file version and kept on disk, so the list
-    opens at once; new or changed files are read a slice of time at a time."""
 
     def __init__(self, store, read=None):
         self.store = store
@@ -22,41 +59,31 @@ class ReplayLibrary(object):
         self.files = {}
         self.pending = []
         self.dirty = False
-        self.scanned = False
-        data = store.read({}) if store is not None else {}
-        if isinstance(data, dict) and data.get('v') == LIBRARY_VERSION and isinstance(data.get('files'), dict):
-            for name, entry in data['files'].items():
-                if isinstance(name, string_types) and isinstance(entry, dict) and isinstance(entry.get('stamp'), list):
-                    header = entry.get('header')
-                    self.entries[to_text(name)] = {'stamp': entry['stamp'], 'header': header if isinstance(header, dict) else None}
+        self._load(store.read({}) if store is not None else {})
+
+    def _load(self, data):
+        if not isinstance(data, dict) or data.get('v') != LIBRARY_VERSION:
+            return
+        files = data.get('files')
+        if not isinstance(files, dict):
+            return
+        for name, entry in files.items():
+            stored = _stored_entry(name, entry)
+            if stored is not None:
+                self.entries[to_text(name)] = stored
 
     def scan(self, folder, listdir=None, stat=None):
-        listdir = listdir or os.listdir
-        stat = stat or os.stat
-        try:
-            names = listdir(folder)
-        except (IOError, OSError):
-            names = []
-        found = []
-        for name in names:
-            if not is_replay_name(name):
-                continue
-            path = os.path.join(folder, name)
-            try:
-                info = stat(path)
-            except (IOError, OSError):
-                continue
-            if is_number(info.st_size) and is_number(info.st_mtime):
-                found.append((info.st_mtime, info.st_size, to_text(name), path))
-        found.sort(reverse=True)
+        newest = _newest_files(folder, listdir or os.listdir, stat or os.stat)
+
         self.files = {}
-        for mtime, size, name, path in found[:SCAN_MAX_FILES]:
+        for mtime, size, name, path in newest:
             self.files[name] = {'name': name, 'path': path, 'size': int(size), 'mtime': float(mtime)}
+
         for name in [name for name in self.entries if name not in self.files]:
             del self.entries[name]
             self.dirty = True
-        self.pending = [name for mtime, size, name, path in found[:SCAN_MAX_FILES] if self._stale(name)]
-        self.scanned = True
+
+        self.pending = [name for _, _, name, _ in newest if self._stale(name)]
         return len(self.files)
 
     def _stale(self, name):
@@ -92,18 +119,21 @@ class ReplayLibrary(object):
     def indexing(self):
         return bool(self.pending)
 
+    def _fresh_header(self, name):
+        entry = self.entries.get(name)
+        if entry is None or self._stale(name):
+            return None
+        return entry['header']
+
+    # The account's own replays that are read, newest first: {name, path, size, mtime, header}.
     def replays(self, account_id):
-        """The account's own replays that are read, newest first: {name, path, size, mtime, header}."""
         if account_id is None:
             return []
         own = []
         for name, info in self.files.items():
-            entry = self.entries.get(name)
-            header = entry['header'] if entry is not None and not self._stale(name) else None
-            if header and header.get('player_id') is not None and int(header['player_id']) == int(account_id):
-                replay = dict(info)
-                replay['header'] = header
-                own.append(replay)
+            header = self._fresh_header(name)
+            if _is_own(header, account_id):
+                own.append(dict(info, header=header))
         own.sort(key=lambda replay: (replay['mtime'], replay['name']), reverse=True)
         return own
 
@@ -117,8 +147,7 @@ class ReplayLibrary(object):
         entry = self.entries.pop(old_name, None)
         if info is None:
             return
-        info = dict(info, name=new_name, path=path)
-        self.files[new_name] = info
+        self.files[new_name] = dict(info, name=new_name, path=path)
         if entry is not None:
             self.entries[new_name] = entry
         self.dirty = True

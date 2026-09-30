@@ -42,8 +42,13 @@ class HangarButton(object):
 
     def layout(self):
         settings = self.settings
-        return {'x': settings.get('x'), 'y': settings.get('y'), 'alignX': settings.get('align_x'), 'alignY': settings.get('align_y'),
-                'scale': round(settings.get('scale') / 100, 2)}
+        return {
+            'x': settings.get('x'),
+            'y': settings.get('y'),
+            'alignX': settings.get('align_x'),
+            'alignY': settings.get('align_y'),
+            'scale': round(settings.get('scale') / 100, 2),
+        }
 
     @safe
     def show(self):

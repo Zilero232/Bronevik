@@ -3,11 +3,15 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
 
+import type { UiSection } from '../../../../../../shared/api/protocol';
+
 import { $state, $view, CONTEXT_FILTER, receiveState, SECTION_NAV } from '../../../../../../entities/window-state';
 import { renderHook } from '../../../../../../shared/lib/testing/render-hook';
 import { useSectionCards } from '../use-section-cards';
 
 const sample = readFileSync(path.resolve(import.meta.dirname, '../../../../../../shared/api/protocol/_tests/fixtures/state.sample.json'), 'utf8');
+
+const cardsOf = (section: UiSection) => renderHook(() => useSectionCards({ section, columns: 1 })).current();
 
 beforeEach(() => {
   $state.set(null);
@@ -17,10 +21,15 @@ beforeEach(() => {
 
 describe(useSectionCards, () => {
   it('lists the cards of a tool page whatever the context filter says', () => {
-    const hud = renderHook(() => useSectionCards({ section: 'hud', columns: 1 }));
+    const hud = cardsOf('hud');
 
-    expect(hud.current().empty).toBe(false);
-    expect(hud.current().columns[0]?.items.map(({ component }) => component.id)).toEqual(['hud_layouts']);
-    expect(renderHook(() => useSectionCards({ section: 'streamer', columns: 1 })).current().empty).toBe(true);
+    expect(hud.empty).toBe(false);
+    expect(hud.columns[0]?.items.map(({ component }) => component.id)).toEqual(['hud_layouts']);
+  });
+
+  it('reports a page with no cards as empty', () => {
+    const streamer = cardsOf('streamer');
+
+    expect(streamer.empty).toBe(true);
   });
 });

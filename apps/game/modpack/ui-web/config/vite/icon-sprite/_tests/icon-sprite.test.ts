@@ -14,42 +14,61 @@ const COLORS = new Map([
   ['danger', '#f1705b']
 ]);
 
-describe('icon sprite', () => {
-  it('reads the geometry of a lucide icon module', () => {
-    const source = [
-      'const __iconData = { name: "x", node: [',
-      '  ["path", { d: "M18 6 6 18", key: "1bl5f8" }],',
-      '  ["circle", { cx: "12", cy: "12", r: "10", key: "a" }],',
-      '  ["line", { x1: "22", x2: "18", y1: "12", y2: "12", key: "b" }]',
-      '] };'
-    ].join('\n');
+const LUCIDE_MODULE = [
+  'const __iconData = { name: "x", node: [',
+  '  ["path", { d: "M18 6 6 18", key: "1bl5f8" }],',
+  '  ["circle", { cx: "12", cy: "12", r: "10", key: "a" }],',
+  '  ["line", { x1: "22", x2: "18", y1: "12", y2: "12", key: "b" }]',
+  '] };'
+].join('\n');
 
-    expect(parseIconModule(source)).toEqual([
+const ICON_NODES = loadIconNodes();
+
+const pngSize = (png: Uint8Array) => {
+  const header = new DataView(png.buffer, png.byteOffset, png.byteLength);
+
+  return { width: header.getUint32(16), height: header.getUint32(20) };
+};
+
+describe(parseIconModule, () => {
+  it('reads the geometry of a lucide icon module', () => {
+    const nodes = parseIconModule(LUCIDE_MODULE);
+
+    expect(nodes).toEqual([
       ['path', { d: 'M18 6 6 18', key: '1bl5f8' }],
       ['circle', { cx: '12', cy: '12', r: '10', key: 'a' }],
       ['line', { x1: '22', x2: '18', y1: '12', y2: '12', key: 'b' }]
     ]);
   });
+});
 
-  it('finds geometry for every icon the pages use', () => {
-    const nodes = loadIconNodes();
-
-    UI_ICONS.names.forEach((name) => expect(nodes.get(name)?.length, name).toBeGreaterThan(0));
+describe(loadIconNodes, () => {
+  it.each(UI_ICONS.names)('finds geometry for the %s icon the pages use', (name) => {
+    expect(ICON_NODES.get(name)?.length).toBeGreaterThan(0);
   });
+});
 
+describe(spriteSvg, () => {
   it('draws every icon once per tone', () => {
-    const svg = spriteSvg({ nodes: loadIconNodes(), colors: COLORS });
+    const svg = spriteSvg({ nodes: ICON_NODES, colors: COLORS });
 
     expect(svg.match(/<g /g)).toHaveLength(UI_ICONS.names.length * UI_ICONS.tones.length);
-    expect(svg).not.toContain(' key=');
   });
 
+  it('leaves the lucide keys out of the markup', () => {
+    const svg = spriteSvg({ nodes: ICON_NODES, colors: COLORS });
+
+    expect(svg).not.toContain(' key=');
+  });
+});
+
+describe(spritePng, () => {
   it('rasterises into one PNG of the sprite size', () => {
-    const png = spritePng({ nodes: loadIconNodes(), colors: COLORS });
-    const header = new DataView(png.buffer, png.byteOffset, png.byteLength);
     const { columns, rows } = spriteSize();
 
+    const png = spritePng({ nodes: ICON_NODES, colors: COLORS });
+
     expect(Array.from(png.subarray(0, 8))).toEqual(PNG_SIGNATURE);
-    expect([header.getUint32(16), header.getUint32(20)]).toEqual([columns * UI_ICONS.cell, rows * UI_ICONS.cell]);
+    expect(pngSize(png)).toEqual({ width: columns * UI_ICONS.cell, height: rows * UI_ICONS.cell });
   }, 30_000);
 });

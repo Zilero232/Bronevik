@@ -1,0 +1,19 @@
+@use '../../../../../shared/styles/gameface' as *;
+
+.tile {
+  display: flex;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid token(color-border-strong);
+  border-radius: token(radius-md);
+  margin-right: 12px;
+  background-color: token(color-bg-deep);
+}
+
+.tileOn {
+  border-color: token(color-accent);
+  background-color: token(color-accent-soft);
+}

@@ -6,8 +6,8 @@ handler is logged without stopping the ones after it, so one feature cannot brea
 
 Events sent between packages (not by the app host) are named here: `component_settings(component_id,
 changed_keys)` from the settings window and a profile load, `replay_uploaded(arena_unique_id, replay_id)`
-from the replay upload, `replay_upload_request(request, reply)` from the replay manager, `settings_open(section)` to open the
-settings window at a page.
+from the replay upload, `replay_upload_request(request, reply)` from the replay manager, `settings_open(section)`
+to open the settings window at a page.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -15,11 +15,24 @@ from collections import OrderedDict  # novermin (2.7 has it; vermin counts 3.1 f
 
 from ..log import log_exception
 from ..vendor.blinker import NamedSignal, Namespace
-from .constants import EVENT_COMPONENT_SETTINGS, EVENT_REPLAY_UPLOAD_REQUEST, EVENT_REPLAY_UPLOADED, EVENT_SETTINGS_OPEN  # noqa: F401
+from .constants import (
+    EVENT_COMPONENT_SETTINGS,
+    EVENT_REPLAY_UPLOAD_REQUEST,
+    EVENT_REPLAY_UPLOADED,
+    EVENT_SETTINGS_OPEN,
+)
+
+__all__ = (
+    'EVENT_COMPONENT_SETTINGS',
+    'EVENT_REPLAY_UPLOAD_REQUEST',
+    'EVENT_REPLAY_UPLOADED',
+    'EVENT_SETTINGS_OPEN',
+    'EventBus',
+)
 
 
+# A blinker signal whose receivers keep their connection order (2.7's dict does not).
 class OrderedSignal(NamedSignal):
-    """A blinker signal whose receivers keep their connection order (2.7's dict does not)."""
 
     def __init__(self, name, doc=None):
         NamedSignal.__init__(self, name, doc)
@@ -52,9 +65,6 @@ class EventBus(object):
     def off(self, name, handler):
         if name in self.signals:
             self.signals[name].disconnect(handler)
-
-    def has(self, name):
-        return name in self.signals and bool(self.signals[name].receivers)
 
     def emit(self, name, *args, **kwargs):
         signal = self.signals.get(name)

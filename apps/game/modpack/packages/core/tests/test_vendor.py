@@ -19,43 +19,76 @@ def pins():
     return script.PINS
 
 
-class VendorTest(unittest.TestCase):
+def licence_path(name):
+    return os.path.join(_support.VENDOR_DIR, 'licenses', name + '.txt')
 
-    def test_versions(self):
-        self.assertEqual(six.__version__, VENDORED['six'])
-        self.assertEqual(blinker.__version__, VENDORED['blinker'])
-        self.assertEqual(attr.__version__, VENDORED['attrs'])
+
+class VendorVersionTest(unittest.TestCase):
+
+    def test_the_vendored_set_is_six_blinker_attrs_and_enum34(self):
         self.assertEqual(set(VENDORED), set(['six', 'blinker', 'attrs', 'enum34']))
+
+    def test_six_reports_its_vendored_version(self):
+        self.assertEqual(six.__version__, VENDORED['six'])
+
+    def test_blinker_reports_its_vendored_version(self):
+        self.assertEqual(blinker.__version__, VENDORED['blinker'])
+
+    def test_attrs_reports_its_vendored_version(self):
+        self.assertEqual(attr.__version__, VENDORED['attrs'])
 
     @unittest.skipIf(sys.version_info[0] < 3, 'the vendoring script is Python 3 tooling')
     def test_versions_match_the_pins(self):
-        self.assertEqual(dict((pin[0], pin[1]) for pin in pins()), VENDORED)
+        pinned = dict((pin[0], pin[1]) for pin in pins())
 
-    def test_every_library_ships_its_licence(self):
+        self.assertEqual(pinned, VENDORED)
+
+
+class VendorLicenceTest(unittest.TestCase):
+
+    def test_every_library_ships_its_licence_file(self):
         for name in VENDORED:
-            path = os.path.join(_support.VENDOR_DIR, 'licenses', name + '.txt')
-            self.assertTrue(os.path.isfile(path) and os.path.getsize(path) > 0, path)
+            self.assertTrue(os.path.isfile(licence_path(name)), name)
 
-    def test_libraries_work_under_the_game_package_name(self):
+    def test_every_licence_file_has_text(self):
+        for name in VENDORED:
+            self.assertGreater(os.path.getsize(licence_path(name)), 0, name)
+
+
+class VendorImportTest(unittest.TestCase):
+
+    def test_six_moves_resolve_under_the_game_package_name(self):
         self.assertTrue(six.moves.queue.Queue)
         self.assertTrue(six.moves.urllib.request.urlopen)
 
+    def test_enum_looks_members_up_by_value(self):
         class Color(Enum):
             RED = 'red'
 
         self.assertIs(Color('red'), Color.RED)
-        self.assertEqual(IntEnum('Shell', [('AP', 1)]).AP, 1)
 
+    def test_int_enum_members_are_ints(self):
+        shell = IntEnum('Shell', [('AP', 1)])
+
+        self.assertEqual(shell.AP, 1)
+
+    def test_attrs_classes_fill_defaults(self):
         @attr.s
         class Point(object):
             x = attr.ib()
             y = attr.ib(default=0)
 
-        self.assertEqual(attr.asdict(Point(1)), {'x': 1, 'y': 0})
+        point = Point(1)
+
+        self.assertEqual(attr.asdict(point), {'x': 1, 'y': 0})
+
+    def test_blinker_signals_reach_their_receivers(self):
         signal = blinker.Namespace().signal('x')
         received = []
         signal.connect(received.append, weak=False)
+
         signal.send('sender')
+
         self.assertEqual(received, ['sender'])
 
 

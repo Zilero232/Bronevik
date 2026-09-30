@@ -14,9 +14,16 @@ def threshold_row(state, translate):
     progress = min(1.0, float(state['damage']) / need) if need else None
     note = translate(look['note'], **shown_numbers(state)) if look['note'] else None
 
-    return card_row(translate('main_gun_row_threshold'), format_number(need), status=look['status'],
-                    tone_name=look['tone'], progress=progress, progress_tone=look['tone'], note=note,
-                    text_tone='muted')
+    return card_row(
+        translate('main_gun_row_threshold'),
+        format_number(need),
+        status=look['status'],
+        tone_name=look['tone'],
+        progress=progress,
+        progress_tone=look['tone'],
+        note=note,
+        text_tone='muted',
+    )
 
 
 def team_row(state, translate):
@@ -33,5 +40,12 @@ def panel_widget(state, settings, translate):
         rows.append(team_row(state, translate))
 
     look = STATE_LOOKS[state['status']]
-    return card(translate('main_gun_card_title'), glyph('target'), rows, value=format_number(state['damage']),
-                value_tone=look['tone'], rail='progress', width=CARD_WIDTH)
+    return card(
+        translate('main_gun_card_title'),
+        glyph('target'),
+        rows,
+        value=format_number(state['damage']),
+        value_tone=look['tone'],
+        rail='progress',
+        width=CARD_WIDTH,
+    )

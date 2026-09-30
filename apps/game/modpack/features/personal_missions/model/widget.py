@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.format import format_number
 from ....core.hud.icons import glyph
 from ....core.hud.widget import card, card_chip, card_row
-from . import counts, in_progress
+from . import counts, shown_missions
 from .constants import CARD_WIDTH, STATUS_OF
 
 # The hangar card: the counters as three chips, then the missions in progress as one line each (the short name) with
@@ -20,8 +20,7 @@ def hangar_widget(missions, settings, translate, totals=None):
     if not missions:
         return None
     totals = totals or counts(missions)
-    shown = in_progress(missions)[:settings.get('max_missions')]
-    rows = [mission_row(mission, settings) for mission in shown]
+    rows = [mission_row(mission, settings) for mission in shown_missions(missions, settings)]
     if not rows:
         rows = [card_row(translate('pm_none_active'), status='idle', text_tone='muted')]
     chips = [
@@ -33,8 +32,8 @@ def hangar_widget(missions, settings, translate, totals=None):
 
 
 def battle_widget(missions, vehicle_class, settings, translate, vehicle_level=None):
-    shown = in_progress(missions, vehicle_class, vehicle_level)[:settings.get('max_missions')]
+    shown = shown_missions(missions, settings, vehicle_class, vehicle_level)
     if not shown:
         return None
-    return card(translate('pm_card_title'), glyph('mission'), [mission_row(mission, settings) for mission in shown], rail='progress',
-                width=CARD_WIDTH)
+    rows = [mission_row(mission, settings) for mission in shown]
+    return card(translate('pm_card_title'), glyph('mission'), rows, rail='progress', width=CARD_WIDTH)

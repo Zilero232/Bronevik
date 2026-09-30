@@ -4,20 +4,28 @@ import time
 
 from ....core.client.component import FeatureComponent
 from ....core.client.game import on_vehicle_changed, selected_tank_id, vehicle_short_name
-from ....core.client.me import signed_body, signed_read, tank_ratings
+from ....core.client.me import SignedRead, signed_body, signed_read, tank_ratings
 from ....core.hud import HangarLabel
 from ....core.log import safe
-from .. import FEATURE_ID
 from ..i18n import STRINGS
-from ..model import ACTION_REFRESH, OVERVIEW_KEY, OVERVIEW_PATH, RatingsCache, layout_of, page_actions, panel_text, parse_overview, ratings_widget
-from ..settings import SCHEMA, SWITCH
+from ..model import (
+    OVERVIEW_KEY,
+    OVERVIEW_PATH,
+    RatingsCache,
+    layout_of,
+    page_actions,
+    panel_text,
+    parse_overview,
+    ratings_widget,
+)
+from ..settings import SCHEMA, SECTION, SWITCH
 from .constants import HANGAR_PANEL
 
 
 class HangarRatings(FeatureComponent):
 
     def __init__(self, app):
-        FeatureComponent.__init__(self, app, FEATURE_ID, SCHEMA, SWITCH, STRINGS)
+        FeatureComponent.__init__(self, app, SECTION, SCHEMA, SWITCH, STRINGS)
         self.cache = RatingsCache(app.account_id)
         self.tanks = tank_ratings(app)
         self.selected = None
@@ -25,13 +33,13 @@ class HangarRatings(FeatureComponent):
         bus = app.bus
         bus.on('account', self._on_account)
         bus.on('rebind', self._on_rebind)
-        bus.on('hangar', self._on_hangar)
-        bus.on('tick', self._on_tick)
+        bus.on('hangar', self._on_selection)
+        bus.on('tick', self.update)
         bus.on('battle_enter', self.label.hide)
         bus.on('battle_event', self._on_battle_event)
         bus.on('ingest_response', self._on_ingest_response)
         self.tanks.listen(self._on_tank)
-        on_vehicle_changed(self._on_vehicle_changed, 'hangar ratings')
+        on_vehicle_changed(self._on_selection, 'hangar ratings')
 
     def active(self):
         app = self.app
@@ -44,16 +52,9 @@ class HangarRatings(FeatureComponent):
     def _on_rebind(self):
         self._on_account(self.app.account_id)
 
-    def _on_hangar(self):
+    def _on_selection(self):
         self.selected = selected_tank_id()
         self.update(time.time())
-
-    def _on_vehicle_changed(self):
-        self.selected = selected_tank_id()
-        self.update(time.time())
-
-    def _on_tick(self, now):
-        self.update(now)
 
     def _on_tank(self, tank_id):
         if tank_id == self.selected:
@@ -78,34 +79,49 @@ class HangarRatings(FeatureComponent):
         self.render()
 
     def fetch(self, now):
-        settings = self.settings
-        if settings.get('show_tank') and self.selected:
+        if self.settings.get('show_tank') and self.selected:
             self.tanks.ensure(self.selected, now)
-        if not (settings.get('show_account') or settings.get('show_session')) or not self.cache.wants(OVERVIEW_KEY, now):
-            return
-        signed_read(self.app, self.cache, OVERVIEW_KEY, OVERVIEW_PATH, lambda: signed_body(self.app), lambda: self.cache.account_id,
-                    lambda data, account_id: self.cache.store_overview(parse_overview(data, account_id)), self.render)
+        if self._wants_overview(now):
+            self._read_overview()
+
+    def _wants_overview(self, now):
+        shows_overview = self.settings.get('show_account') or self.settings.get('show_session')
+        return bool(shows_overview) and self.cache.wants(OVERVIEW_KEY, now)
+
+    def _read_overview(self):
+        app = self.app
+        read = SignedRead(
+            reads=self.cache,
+            key=OVERVIEW_KEY,
+            path=OVERVIEW_PATH,
+            build=lambda: signed_body(app),
+            account_of=lambda: self.cache.account_id,
+        )
+        signed_read(app, read, self._on_overview, self.render)
+
+    def _on_overview(self, data, account_id):
+        self.cache.store_overview(parse_overview(data, account_id))
 
     @safe
     def render(self):
-        app = self.app
         if not self.active():
             return
         tank = self.tanks.row(self.selected) if self.selected else None
         label = vehicle_short_name(self.selected) if tank is not None else None
         overview = self.cache.overview
-        self.label.show(panel_text(overview, tank, label, self.settings, app.translate), layout_of(self.settings), self.save_place,
-                        widget=ratings_widget(overview, tank, label, self.settings, app.translate))
+        translate = self.app.translate
+
+        text = panel_text(overview, tank, label, self.settings, translate)
+        widget = ratings_widget(overview, tank, label, self.settings, translate)
+        self.label.show(text, layout_of(self.settings), self.save_place, widget=widget)
 
     def ui_actions(self):
         return page_actions(self.app.translate) if self.enabled() else []
 
     def ui_action(self, action, row=None, value=None):
-        if action != ACTION_REFRESH:
-            return None
-        if not self.app.is_bound():
-            return self.notice_error('hangar_ratings_unbound')
+        return self.refresh_action(action, 'hangar_ratings_unbound', 'hangar_ratings_refreshing', self._refresh)
+
+    def _refresh(self):
         self.cache.refresh_all()
         self.tanks.reads.refresh_all()
         self.update(time.time())
-        return self.notice_info('hangar_ratings_refreshing')

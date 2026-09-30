@@ -367,8 +367,8 @@
         "en": "Team HP and score"
       },
       "description": {
-        "ru": "Суммарная прочность команд и счёт уничтоженных машин; вид «Полоска на каждый танк» показывает прочность каждой машины обеих команд. Встаёт ровно на место стандартной панели счёта вверху экрана и заменяет её (стиль «Только числа» — под ней).",
-        "en": "Total team hit points and the frag score; the “A bar per tank” style shows the hit points of every vehicle of both teams. Takes the stock score strip's exact place at the top of the screen and replaces it (the «Numbers only» style sits under it)."
+        "ru": "Суммарная прочность команд и счёт уничтоженных машин; вид «Полоска на каждый танк» показывает прочность каждой машины обеих команд. Встаёт ровно на место стандартной панели счёта вверху экрана и заменяет её (стиль «Только числа» — справа от неё).",
+        "en": "Total team hit points and the frag score; the “A bar per tank” style shows the hit points of every vehicle of both teams. Takes the stock score strip's exact place at the top of the screen and replaces it (the «Numbers only» style sits right of it)."
       },
       "fairPlay": {
         "ru": "Те же данные, что в списках команд («ушах») стандартного интерфейса.",

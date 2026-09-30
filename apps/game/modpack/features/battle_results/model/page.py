@@ -1,18 +1,33 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.compat import is_int, is_number
-from ....core.format import format_epoch, format_number, format_timer
-from .constants import ACTION_CLEAR, HISTORY_KEYS, SESSION_ROW, SITE_BATTLES_PATH
+from ....core.format import format_epoch, format_number, format_percent, format_timer
+from .constants import ACTION_CLEAR, COST_KEYS, HISTORY_KEYS, SESSION_ROW, SITE_BATTLES_PATH
+from .text import result_label, signed
 
 
 def compact(summary):
     return dict((key, summary.get(key)) for key in HISTORY_KEYS)
 
 
+def restore_history(stored):
+    if not isinstance(stored, list):
+        return []
+    return [entry for entry in stored if isinstance(entry, dict)]
+
+
+def _idle_gap_between(later, earlier, idle_s):
+    later_time = later.get('time')
+    earlier_time = earlier.get('time')
+    if not is_int(later_time) or not is_int(earlier_time):
+        return False
+    return later_time - earlier_time > idle_s
+
+
 def session_of(entries, idle_s):
     run = []
     for entry in reversed(entries):
-        if run and is_int(run[-1].get('time')) and is_int(entry.get('time')) and run[-1]['time'] - entry['time'] > idle_s:
+        if run and _idle_gap_between(run[-1], entry, idle_s):
             break
         run.append(entry)
     return list(reversed(run))
@@ -20,20 +35,32 @@ def session_of(entries, idle_s):
 
 def _average(entries, key):
     values = [entry.get(key) for entry in entries if is_number(entry.get(key))]
-    return float(sum(values)) / len(values) if values else None
+    if not values:
+        return None
+    return float(sum(values)) / len(values)
+
+
+def _win_rate(entries):
+    if not entries:
+        return 0.0
+    wins = len([entry for entry in entries if entry.get('result') == 'win'])
+    return 100.0 * wins / len(entries)
 
 
 def session_row(entries, translate):
-    battles = len(entries)
-    wins = len([entry for entry in entries if entry.get('result') == 'win'])
-    rate = 100.0 * wins / battles if battles else 0.0
-    net = sum(entry.get('net_credits') or 0 for entry in entries)
+    net_credits = sum(entry.get('net_credits') or 0 for entry in entries)
+    subtitle = translate(
+        'br_session_line',
+        winrate='%.1f%%' % _win_rate(entries),
+        damage=format_number(_average(entries, 'damage')),
+        assist=format_number(_average(entries, 'assist')),
+        xp=format_number(_average(entries, 'xp')),
+    )
     return {
         'id': SESSION_ROW,
-        'title': translate('br_session_title', battles=battles),
-        'subtitle': translate('br_session_line', winrate='%.1f%%' % rate, damage=format_number(_average(entries, 'damage')),
-                              assist=format_number(_average(entries, 'assist')), xp=format_number(_average(entries, 'xp'))),
-        'meta': translate('br_session_credits', credits=format_number(net)),
+        'title': translate('br_session_title', battles=len(entries)),
+        'subtitle': subtitle,
+        'meta': translate('br_session_credits', credits=format_number(net_credits)),
         'badge': None,
         'link': None,
         'details': [],
@@ -41,46 +68,84 @@ def session_row(entries, translate):
     }
 
 
-def _pair(label, value):
-    return {'label': label, 'value': value}
+def _numbers(entry, keys):
+    return ' / '.join(format_number(entry.get(key)) for key in keys)
+
+
+def _moe_text(entry):
+    percent = entry.get('moe_percent')
+    if percent is None:
+        return None
+
+    text = format_percent(percent)
+    if entry.get('moe_delta') is not None:
+        text += ' (%s)' % signed(entry['moe_delta'], True)
+
+    return text
+
+
+def _detail_values(entry):
+    assist = format_number(entry.get('assist'))
+    assist_parts = _numbers(entry, ('assist_radio', 'assist_track', 'assist_stun'))
+    xp = format_number(entry.get('xp'))
+    free_xp = format_number(entry.get('free_xp'))
+    life = format_timer(entry.get('life_time'))
+    duration = format_timer(entry.get('duration'))
+    return (
+        ('br_detail_damage', format_number(entry.get('damage'))),
+        ('br_detail_assist', '%s (%s)' % (assist, assist_parts)),
+        ('br_detail_blocked', format_number(entry.get('blocked'))),
+        ('br_detail_frags_spotted', _numbers(entry, ('frags', 'spotted'))),
+        ('br_detail_shots', _numbers(entry, ('shots', 'hits', 'pens'))),
+        ('br_detail_xp', '%s (%s)' % (xp, free_xp)),
+        ('br_detail_credits', format_number(entry.get('credits'))),
+        ('br_detail_costs', _numbers(entry, COST_KEYS)),
+        ('br_detail_net', format_number(entry.get('net_credits'))),
+        ('br_detail_life', '%s / %s' % (life, duration)),
+        ('br_detail_moe', _moe_text(entry)),
+    )
 
 
 def detail_rows(entry, translate):
-    signed_moe = entry.get('moe_delta')
-    moe = '%.2f%%' % entry['moe_percent'] if entry.get('moe_percent') is not None else None
-    if moe and signed_moe is not None:
-        moe += ' (%s%.2f%%)' % ('+' if signed_moe > 0 else '', signed_moe)
-    rows = [
-        _pair(translate('br_detail_damage'), format_number(entry.get('damage'))),
-        _pair(translate('br_detail_assist'), '%s (%s / %s / %s)' % (format_number(entry.get('assist')), format_number(entry.get('assist_radio')),
-                                                                    format_number(entry.get('assist_track')), format_number(entry.get('assist_stun')))),
-        _pair(translate('br_detail_blocked'), format_number(entry.get('blocked'))),
-        _pair(translate('br_detail_frags_spotted'), '%s / %s' % (format_number(entry.get('frags')), format_number(entry.get('spotted')))),
-        _pair(translate('br_detail_shots'), '%s / %s / %s' % (format_number(entry.get('shots')), format_number(entry.get('hits')),
-                                                              format_number(entry.get('pens')))),
-        _pair(translate('br_detail_xp'), '%s (%s)' % (format_number(entry.get('xp')), format_number(entry.get('free_xp')))),
-        _pair(translate('br_detail_credits'), format_number(entry.get('credits'))),
-        _pair(translate('br_detail_costs'), '%s / %s / %s' % (format_number(entry.get('repair')), format_number(entry.get('ammo')),
-                                                              format_number(entry.get('consumables')))),
-        _pair(translate('br_detail_net'), format_number(entry.get('net_credits'))),
-        _pair(translate('br_detail_life'), '%s / %s' % (format_timer(entry.get('life_time')), format_timer(entry.get('duration')))),
+    return [
+        {'label': translate(label), 'value': value}
+        for label, value in _detail_values(entry)
+        if value is not None
     ]
-    if moe:
-        rows.append(_pair(translate('br_detail_moe'), moe))
-    return rows
+
+
+def _battle_time(entry):
+    if not is_int(entry.get('time')):
+        return None
+    return format_epoch(entry['time'])
+
+
+def _moe_badge(entry):
+    if entry.get('moe_delta') is None:
+        return None
+    return signed(entry['moe_delta'], True)
 
 
 def battle_row(index, entry, translate):
-    head = translate('br_row_title', result=translate('br_result_' + (entry.get('result') or 'draw')), vehicle=entry.get('vehicle') or '',
-                     map=entry.get('map') or '')
-    delta = entry.get('moe_delta')
+    title = translate(
+        'br_row_title',
+        result=result_label(entry.get('result'), translate),
+        vehicle=entry.get('vehicle') or '',
+        map=entry.get('map') or '',
+    )
+    subtitle = translate(
+        'br_row_line',
+        damage=format_number(entry.get('damage')),
+        assist=format_number(entry.get('assist')),
+        frags=format_number(entry.get('frags')),
+        xp=format_number(entry.get('xp')),
+    )
     return {
         'id': str(entry.get('arena') or index),
-        'title': head,
-        'subtitle': translate('br_row_line', damage=format_number(entry.get('damage')), assist=format_number(entry.get('assist')),
-                              frags=format_number(entry.get('frags')), xp=format_number(entry.get('xp'))),
-        'meta': format_epoch(entry.get('time')) if is_int(entry.get('time')) else None,
-        'badge': ('%s%.2f%%' % ('+' if delta > 0 else '', delta)) if delta is not None else None,
+        'title': title,
+        'subtitle': subtitle,
+        'meta': _battle_time(entry),
+        'badge': _moe_badge(entry),
         'link': None,
         'details': detail_rows(entry, translate),
         'actions': [],
@@ -89,11 +154,14 @@ def battle_row(index, entry, translate):
 
 def build_page(entries, translate, idle_s):
     rows = []
+
     session = session_of(entries, idle_s)
     if session:
         rows.append(session_row(session, translate))
-    for index in range(len(entries) - 1, -1, -1):
-        rows.append(battle_row(index, entries[index], translate))
+
+    for index, entry in reversed(list(enumerate(entries))):
+        rows.append(battle_row(index, entry, translate))
+
     return {'kind': 'list', 'empty': translate('br_empty'), 'rows': rows}
 
 

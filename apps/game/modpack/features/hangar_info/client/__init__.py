@@ -6,18 +6,26 @@ from ....core.client.component import FeatureComponent
 from ....core.client.game import selected_vehicle
 from ....core.hud import EVENT_RESET_LAYOUT, HangarLabel
 from ....core.log import safe
-from .. import FEATURE_ID
 from ..i18n import STRINGS
 from ..model import armor_actions, format_info, format_widget, layout_of
-from ..settings import SCHEMA, SWITCH
+from ..settings import SCHEMA, SECTION, SWITCH
 from .constants import HANGAR_PANEL, LAYOUT_KEYS, PING_REQUEST_S
-from .reads import accelerated_training, battle_tiers, crew_next_skill, online, ping, request_ping, server_name
+from .reads import (
+    accelerated_training,
+    battle_tiers,
+    crew_next_skill,
+    online,
+    ping,
+    request_ping,
+    server_name,
+    vehicle_name,
+)
 
 
 class HangarInfo(FeatureComponent):
 
     def __init__(self, app):
-        FeatureComponent.__init__(self, app, FEATURE_ID, SCHEMA, SWITCH, STRINGS)
+        FeatureComponent.__init__(self, app, SECTION, SCHEMA, SWITCH, STRINGS)
         self.label = HangarLabel(app, HANGAR_PANEL)
         self.pinged_at = 0.0
         app.bus.on('hangar', self._on_hangar)
@@ -39,23 +47,46 @@ class HangarInfo(FeatureComponent):
         if self.reset_place(LAYOUT_KEYS):
             self.settings_changed(LAYOUT_KEYS)
 
-    def info(self, now):
+    def _request_ping(self, now):
         if self.settings.get('show_ping') and now - self.pinged_at >= PING_REQUEST_S:
             self.pinged_at = now
             request_ping()
-        cluster, region = online() if self.settings.get('show_online') else (None, None)
+
+    def _online(self):
+        if not self.settings.get('show_online'):
+            return None, None
+        return online()
+
+    def _crew(self, vehicle):
+        if not self.settings.get('show_crew') or vehicle is None:
+            return None, None
+        return crew_next_skill(vehicle)
+
+    def _tiers(self, vehicle):
+        if not self.settings.get('show_tiers') or vehicle is None:
+            return None
+        return battle_tiers(vehicle)
+
+    def _accelerated(self, vehicle):
+        if not self.settings.get('show_training'):
+            return None
+        return accelerated_training(vehicle)
+
+    def info(self, now):
+        self._request_ping(now)
+        cluster, region = self._online()
         vehicle = selected_vehicle()
-        crew_xp, crew_role = crew_next_skill(vehicle) if self.settings.get('show_crew') and vehicle is not None else (None, None)
+        crew_xp, crew_role = self._crew(vehicle)
         return {
             'server': server_name(),
             'ping': ping(),
             'online': cluster,
             'region_online': region,
-            'vehicle': getattr(vehicle, 'shortUserName', None) or getattr(vehicle, 'userName', None),
-            'tiers': battle_tiers(vehicle) if self.settings.get('show_tiers') and vehicle is not None else None,
+            'vehicle': vehicle_name(vehicle),
+            'tiers': self._tiers(vehicle),
             'crew_xp': crew_xp,
             'crew_role': crew_role,
-            'accelerated': accelerated_training(vehicle) if self.settings.get('show_training') else None,
+            'accelerated': self._accelerated(vehicle),
         }
 
     def ui_actions(self):
@@ -70,5 +101,7 @@ class HangarInfo(FeatureComponent):
             return
         info = self.info(now)
         translate = self.app.translate
-        self.label.show(format_info(info, self.settings, translate, now), layout_of(self.settings), self.save_place,
-                        widget=format_widget(info, self.settings, translate, now))
+
+        text = format_info(info, self.settings, translate, now)
+        widget = format_widget(info, self.settings, translate, now)
+        self.label.show(text, layout_of(self.settings), self.save_place, widget=widget)

@@ -20,6 +20,10 @@ from otmetki.core.format import format_number, format_percent, single_spaces, st
 from otmetki.core.settings import Schema, Settings
 from otmetki.core.storage import JsonFile, account_file
 
+FEATURE_IDS = ('marks_panel', 'session_stats', 'replay_upload')
+INIT_ORDERS = list(itertools.permutations(('host',) + FEATURE_IDS))
+KIND_NAMES = (('DAMAGE', 'damage'), ('STUN', 'stun'), ('TANKING', 'blocked'))
+
 
 class FakeEvent(object):
 
@@ -39,87 +43,206 @@ class FakeEvent(object):
             handler(*args)
 
 
+def event_owner():
+    class Owner(object):
+        onChanged = FakeEvent()
+
+    return Owner
+
+
+def raise_value_error(value):
+    raise ValueError(value)
+
+
+def raise_runtime_error(value):
+    raise RuntimeError(value)
+
+
+def greeting_target():
+    class Target(object):
+        def greet(self, name):
+            return 'hi ' + name
+
+    @hooks.override(Target, 'greet')
+    def greet(original, self, name):
+        return original(self, name).upper()
+
+    return Target
+
+
+def overridden_child():
+    class Base(object):
+        def value(self):
+            return 1
+
+        @staticmethod
+        def twice(x):
+            return 2 * x
+
+    class Child(Base):
+        pass
+
+    hooks.override(Child, 'value')(lambda original, self: original(self) + 10)
+    hooks.override(Child, 'twice')(lambda original, x: original(x) + 1)
+    return Base, Child
+
+
+def settings_schema():
+    return Schema(
+        {'on': True, 'count': 5, 'mode': 'a', 'url': 'x'},
+        choices={'mode': ('a', 'b')},
+        limits={'count': (1, 9)},
+        normalizers={'url': lambda value: value.upper() if value.startswith('h') else None},
+    )
+
+
+def two_language_catalog():
+    return Catalog({'ru': {'a': u'А'}, 'en': {'a': u'A'}}, {'ru': {'b': u'Б {x}'}})
+
+
 class EventBusTest(unittest.TestCase):
 
-    def test_order_and_isolation(self):
-        errors = []
-        bus = EventBus(on_error=errors.append)
-        calls = []
+    def bus_with_a_broken_handler_in_the_middle(self):
+        self.errors = []
+        self.calls = []
+        bus = EventBus(on_error=self.errors.append)
+        bus.on('x', lambda value: self.calls.append(('a', value)))
+        bus.on('x', raise_value_error)
+        bus.on('x', lambda value: self.calls.append(('c', value)))
+        return bus
 
-        def broken(value):
-            raise ValueError(value)
+    def test_handlers_run_in_order_past_a_failing_one(self):
+        bus = self.bus_with_a_broken_handler_in_the_middle()
 
-        bus.on('x', lambda value: calls.append(('a', value)))
-        bus.on('x', broken)
-        bus.on('x', lambda value: calls.append(('c', value)))
         bus.emit('x', 1)
-        self.assertEqual(calls, [('a', 1), ('c', 1)])
-        self.assertEqual(errors, ['x handler'])
 
-    def test_off_and_duplicates(self):
+        self.assertEqual(self.calls, [('a', 1), ('c', 1)])
+
+    def test_a_failing_handler_is_reported(self):
+        bus = self.bus_with_a_broken_handler_in_the_middle()
+
+        bus.emit('x', 1)
+
+        self.assertEqual(self.errors, ['x handler'])
+
+    def test_a_handler_subscribed_twice_runs_once(self):
         bus = EventBus()
         calls = []
         handler = calls.append
         bus.on('x', handler)
         bus.on('x', handler)
+
         bus.emit('x', 1)
+
+        self.assertEqual(calls, [1])
+
+    def test_an_unsubscribed_handler_no_longer_runs(self):
+        bus = EventBus()
+        calls = []
+        handler = calls.append
+        bus.on('x', handler)
+        bus.on('x', handler)
+
         bus.off('x', handler)
         bus.emit('x', 2)
+
+        self.assertEqual(calls, [])
+
+    def test_a_handler_subscribed_twice_is_gone_after_one_off(self):
+        bus = EventBus()
+        calls = []
+        handler = calls.append
+        bus.on('x', handler)
+        bus.on('x', handler)
+
+        bus.off('x', handler)
+        bus.emit('x', 1)
+
+        self.assertEqual(calls, [])
+
+    def test_emitting_an_event_nobody_listens_to_does_nothing(self):
+        bus = EventBus()
+
+        result = bus.emit('nobody', 1)
+
+        self.assertIsNone(result)
+
+
+class SubscriptionsTest(unittest.TestCase):
+
+    def test_a_subscription_receives_the_event(self):
+        owner = event_owner()
+        calls = []
+        hooks.Subscriptions().add(owner, 'onChanged', calls.append)
+
+        owner.onChanged(1)
+
         self.assertEqual(calls, [1])
-        self.assertFalse(bus.has('x'))
-        bus.emit('nobody', 1)
 
-
-class HooksTest(unittest.TestCase):
-
-    def test_subscriptions(self):
-        class Owner(object):
-            onChanged = FakeEvent()
-
+    def test_cleared_subscriptions_receive_nothing(self):
+        owner = event_owner()
         calls = []
         subscriptions = hooks.Subscriptions()
-        subscriptions.add(Owner, 'onChanged', calls.append)
-        Owner.onChanged(1)
+        subscriptions.add(owner, 'onChanged', calls.append)
+
         subscriptions.clear()
-        Owner.onChanged(2)
-        self.assertEqual(calls, [1])
+        owner.onChanged(2)
 
-    def test_override_method_and_restore(self):
-        class Target(object):
-            def greet(self, name):
-                return 'hi ' + name
+        self.assertEqual(calls, [])
 
-        @hooks.override(Target, 'greet')
-        def greet(original, self, name):
-            return original(self, name).upper()
 
-        self.assertEqual(Target().greet('a'), 'HI A')
-        self.assertTrue(hooks.restore(Target, 'greet'))
-        self.assertEqual(Target().greet('a'), 'hi a')
-        self.assertFalse(hooks.restore(Target, 'greet'))
+class OverrideTest(unittest.TestCase):
 
-    def test_override_inherited_and_static(self):
-        class Base(object):
-            def value(self):
-                return 1
+    def test_override_wraps_the_original(self):
+        target = greeting_target()
 
-            @staticmethod
-            def twice(x):
-                return 2 * x
+        self.assertEqual(target().greet('a'), 'HI A')
 
-        class Child(Base):
-            pass
+    def test_restore_reports_the_override_it_removed(self):
+        target = greeting_target()
 
-        hooks.override(Child, 'value')(lambda original, self: original(self) + 10)
-        hooks.override(Child, 'twice')(lambda original, x: original(x) + 1)
-        self.assertEqual(Child().value(), 11)
-        self.assertEqual(Child().twice(3), 7)
-        self.assertEqual(Base().value(), 1)
-        self.assertTrue(hooks.restore(Child, 'value'))
-        self.assertTrue(hooks.restore(Child, 'twice'))
-        self.assertEqual(Child().value(), 1)
-        self.assertEqual(Child.twice(3), 6)
-        self.assertNotIn('value', Child.__dict__)
+        self.assertTrue(hooks.restore(target, 'greet'))
+
+    def test_restore_puts_the_original_back(self):
+        target = greeting_target()
+
+        hooks.restore(target, 'greet')
+
+        self.assertEqual(target().greet('a'), 'hi a')
+
+    def test_restore_without_an_override_reports_nothing_removed(self):
+        target = greeting_target()
+        hooks.restore(target, 'greet')
+
+        self.assertFalse(hooks.restore(target, 'greet'))
+
+    def test_override_of_an_inherited_method_changes_only_the_child(self):
+        base, child = overridden_child()
+
+        self.assertEqual(child().value(), 11)
+        self.assertEqual(base().value(), 1)
+
+    def test_override_of_a_static_method_wraps_it(self):
+        _, child = overridden_child()
+
+        self.assertEqual(child().twice(3), 7)
+
+    def test_restore_of_an_inherited_method_leaves_the_child_inheriting_again(self):
+        _, child = overridden_child()
+
+        restored = hooks.restore(child, 'value')
+
+        self.assertTrue(restored)
+        self.assertEqual(child().value(), 1)
+        self.assertNotIn('value', child.__dict__)
+
+    def test_restore_of_a_static_method_puts_the_original_back(self):
+        _, child = overridden_child()
+
+        restored = hooks.restore(child, 'twice')
+
+        self.assertTrue(restored)
+        self.assertEqual(child.twice(3), 6)
 
 
 class HookGuardTest(unittest.TestCase):
@@ -127,46 +250,68 @@ class HookGuardTest(unittest.TestCase):
     def setUp(self):
         self.logged = []
         self.saved = hooks.log_exception, log.log_exception
-        hooks.log_exception = log.log_exception = self.logged.append
+        hooks.log_exception = self.logged.append
+        log.log_exception = self.logged.append
 
     def tearDown(self):
         hooks.log_exception, log.log_exception = self.saved
 
-    def test_a_failing_subscriber_is_logged_and_the_rest_still_run(self):
-        class Owner(object):
-            onChanged = FakeEvent()
+    def owner_with_a_broken_subscriber(self):
+        owner = event_owner()
+        self.calls = []
+        self.guarded = hooks.subscribe(owner, 'onChanged', raise_runtime_error)
+        hooks.subscribe(owner, 'onChanged', self.calls.append)
+        return owner
 
-        calls = []
+    def test_the_other_subscribers_still_run_after_a_failing_one(self):
+        owner = self.owner_with_a_broken_subscriber()
 
-        def broken(value):
-            raise RuntimeError(value)
+        owner.onChanged(1)
 
-        guarded = hooks.subscribe(Owner, 'onChanged', broken)
-        hooks.subscribe(Owner, 'onChanged', calls.append)
-        Owner.onChanged(1)
-        self.assertEqual(calls, [1])
+        self.assertEqual(self.calls, [1])
+
+    def test_a_failing_subscriber_is_logged(self):
+        owner = self.owner_with_a_broken_subscriber()
+
+        owner.onChanged(1)
+
         self.assertEqual(len(self.logged), 1)
-        self.assertTrue(hooks.unsubscribe(Owner, 'onChanged', guarded))
-        self.assertEqual(len(Owner.onChanged.handlers), 1)
 
-    def test_override_failing_before_the_original_calls_it(self):
+    def test_unsubscribe_removes_the_guarded_handler(self):
+        owner = self.owner_with_a_broken_subscriber()
+
+        removed = hooks.unsubscribe(owner, 'onChanged', self.guarded)
+
+        self.assertTrue(removed)
+        self.assertEqual(len(owner.onChanged.handlers), 1)
+
+    def target_failing_before_the_original(self):
         class Target(object):
             def value(self):
                 return 7
 
-        def broken(original, target):
-            raise RuntimeError('before')
+        hooks.override(Target, 'value')(lambda original, target: raise_runtime_error('before'))
+        return Target
 
-        hooks.override(Target, 'value')(broken)
-        self.assertEqual(Target().value(), 7)
+    def test_override_failing_before_the_original_falls_back_to_it(self):
+        target = self.target_failing_before_the_original()
+
+        self.assertEqual(target().value(), 7)
+
+    def test_override_failing_before_the_original_is_logged(self):
+        target = self.target_failing_before_the_original()
+
+        target().value()
+
         self.assertEqual(self.logged, ['override value'])
 
-    def test_override_failing_after_the_original_keeps_its_result(self):
-        calls = []
+    def target_failing_after_the_original(self):
+        self.original_calls = []
+        original_calls = self.original_calls
 
         class Target(object):
             def value(self):
-                calls.append(1)
+                original_calls.append(1)
                 return 7
 
         def broken(original, target):
@@ -174,16 +319,39 @@ class HookGuardTest(unittest.TestCase):
             raise RuntimeError('after')
 
         hooks.override(Target, 'value')(broken)
-        self.assertEqual(Target().value(), 7)
-        self.assertEqual(calls, [1])
+        return Target
 
-    def test_override_lets_the_original_raise(self):
+    def test_override_failing_after_the_original_keeps_its_result(self):
+        target = self.target_failing_after_the_original()
+
+        self.assertEqual(target().value(), 7)
+
+    def test_override_failing_after_the_original_does_not_run_it_again(self):
+        target = self.target_failing_after_the_original()
+
+        target().value()
+
+        self.assertEqual(self.original_calls, [1])
+
+    def target_whose_original_raises(self):
         class Target(object):
             def value(self):
                 raise KeyError('client')
 
         hooks.override(Target, 'value')(lambda original, target: original(target))
-        self.assertRaises(KeyError, Target().value)
+        return Target
+
+    def test_override_lets_the_original_raise(self):
+        target = self.target_whose_original_raises()
+
+        self.assertRaises(KeyError, target().value)
+
+    def test_an_error_of_the_original_is_not_logged_as_an_override_failure(self):
+        target = self.target_whose_original_raises()
+
+        with self.assertRaises(KeyError):
+            target().value()
+
         self.assertEqual(self.logged, [])
 
 
@@ -208,59 +376,88 @@ class TickerTest(unittest.TestCase):
             else:
                 sys.modules[name] = module
 
-    def run_callbacks(self):
-        pending, self.callbacks = self.callbacks, []
-        for callback in pending:
-            callback()
+    def run_callbacks(self, rounds=1):
+        for _ in range(rounds):
+            pending, self.callbacks = self.callbacks, []
+            for callback in pending:
+                callback()
 
-    def test_ticks_until_the_handler_returns_false_and_survives_errors(self):
-        ticks = []
+    def set_game_time(self, seconds):
+        sys.modules['BigWorld'].time = lambda: seconds
+
+    def ticker_failing_once_then_stopping_on_the_third_tick(self):
+        self.ticks = []
 
         def on_tick():
-            ticks.append(1)
-            if len(ticks) == 1:
+            self.ticks.append(1)
+            if len(self.ticks) == 1:
                 raise RuntimeError('tick')
-            return len(ticks) < 3
+            return len(self.ticks) < 3
 
-        ticker = self.timer.Ticker(1.0, on_tick)
+        return self.timer.Ticker(1.0, on_tick)
+
+    def ticker_recording_elapsed(self):
+        self.set_game_time(10.0)
+        self.seen = []
+        ticker = self.timer.Ticker(0.1, lambda: self.seen.append(round(ticker.elapsed(), 3)))
+        return ticker
+
+    def test_a_failing_tick_does_not_stop_the_ticker(self):
+        ticker = self.ticker_failing_once_then_stopping_on_the_third_tick()
+
         ticker.start()
-        for _ in range(5):
-            self.run_callbacks()
-        self.assertEqual(len(ticks), 3)
+        self.run_callbacks(rounds=5)
+
+        self.assertEqual(len(self.ticks), 3)
+
+    def test_the_ticker_stops_when_the_handler_returns_false(self):
+        ticker = self.ticker_failing_once_then_stopping_on_the_third_tick()
+
+        ticker.start()
+        self.run_callbacks(rounds=5)
+
         self.assertFalse(ticker.running)
 
     def test_a_restart_never_runs_two_chains(self):
         ticks = []
         ticker = self.timer.Ticker(1.0, lambda: ticks.append(1))
+
         ticker.start()
         ticker.stop()
         ticker.start()
-        self.run_callbacks()
-        self.run_callbacks()
+        self.run_callbacks(rounds=2)
+
         self.assertEqual(len(ticks), 2)
 
     def test_elapsed_is_the_game_time_between_ticks(self):
-        clock = [10.0]
-        sys.modules['BigWorld'].time = lambda: clock[0]
-        seen = []
-        ticker = self.timer.Ticker(0.1, lambda: seen.append(round(ticker.elapsed(), 3)))
+        ticker = self.ticker_recording_elapsed()
+
         ticker.start()
-        clock[0] = 10.133
+        self.set_game_time(10.133)
         self.run_callbacks()
-        clock[0] = 10.25
+        self.set_game_time(10.25)
         self.run_callbacks()
-        self.assertEqual(seen, [0.133, 0.117])
-        clock[0] = 10.3
+
+        self.assertEqual(self.seen, [0.133, 0.117])
+
+    def test_restart_elapsed_counts_from_now(self):
+        ticker = self.ticker_recording_elapsed()
+        ticker.start()
+        self.set_game_time(10.3)
+
         ticker.restart_elapsed()
-        clock[0] = 10.35
+        self.set_game_time(10.35)
         self.run_callbacks()
-        self.assertEqual(seen[-1], 0.05)
+
+        self.assertEqual(self.seen, [0.05])
 
     def test_elapsed_falls_back_to_the_interval_without_a_clock(self):
         seen = []
         ticker = self.timer.Ticker(0.5, lambda: seen.append(ticker.elapsed()))
+
         ticker.start()
         self.run_callbacks()
+
         self.assertEqual(seen, [0.5])
 
 
@@ -268,63 +465,110 @@ class CoreHelpersTest(unittest.TestCase):
 
     def test_values_by_name_skips_names_the_client_lacks(self):
         holder = type(str('KINDS'), (object,), {'DAMAGE': 1, 'TANKING': 7})
-        self.assertEqual(values_by_name(holder, (('DAMAGE', 'damage'), ('STUN', 'stun'), ('TANKING', 'blocked'))), {1: 'damage', 7: 'blocked'})
+
+        values = values_by_name(holder, KIND_NAMES)
+
+        self.assertEqual(values, {1: 'damage', 7: 'blocked'})
+
+    def test_values_by_name_of_a_missing_holder_is_empty(self):
         self.assertEqual(values_by_name(None, (('DAMAGE', 'damage'),)), {})
 
-    def test_text_helpers(self):
+    def test_strip_tags_replaces_every_tag(self):
         self.assertEqual(strip_tags(u'<font color="#fff">a</font>b', u' '), u' a b')
+
+    def test_single_spaces_collapses_and_trims_whitespace(self):
         self.assertEqual(single_spaces(u'  a \n\t b  '), u'a b')
 
-    def test_reason_error(self):
-        error = ReasonError('code')
-        self.assertEqual(error.reason, 'code')
-        self.assertIsInstance(error, ValueError)
+    def test_reason_error_carries_its_reason(self):
+        self.assertEqual(ReasonError('code').reason, 'code')
+
+    def test_reason_error_is_a_value_error(self):
+        self.assertIsInstance(ReasonError('code'), ValueError)
 
 
 class RegistryTest(unittest.TestCase):
 
     def setUp(self):
         self.saved = registry.log, registry.log_exception
-        registry.log = registry.log_exception = lambda message: None
+        registry.log = lambda message: None
+        registry.log_exception = lambda message: None
         registry.reset()
 
     def tearDown(self):
         registry.log, registry.log_exception = self.saved
         registry.reset()
 
-    def test_any_init_order(self):
-        feature_ids = ('marks_panel', 'session_stats', 'replay_upload')
-        for order in itertools.permutations(['host'] + list(feature_ids)):
-            registry.reset()
-            host = object()
-            created = []
+    def factory_for(self, feature_id):
+        def factory(app):
+            self.created.append((feature_id, app))
+            return feature_id
+        return factory
 
-            def factory_for(feature_id):
-                def factory(app):
-                    created.append((feature_id, app))
-                    return feature_id
-                return factory
+    def init_in_order(self, order):
+        registry.reset()
+        self.host = object()
+        self.created = []
+        answers = []
+        for step in order:
+            if step == 'host':
+                answers.append(registry.registry().bind(self.host))
+            else:
+                answers.append(registry.registry().register(step, self.factory_for(step)))
+        return answers
 
-            for step in order:
-                if step == 'host':
-                    self.assertTrue(registry.registry().bind(host))
-                else:
-                    self.assertTrue(registry.registry().register(step, factory_for(step)))
-            self.assertFalse(registry.registry().register('marks_panel', factory_for('marks_panel')))
-            self.assertTrue(registry.registry().bind(host))
-            self.assertFalse(registry.registry().bind(object()))
-            self.assertEqual(sorted(created), sorted((feature_id, host) for feature_id in feature_ids), order)
-            for feature_id in feature_ids:
-                self.assertEqual(registry.registry().get(feature_id), feature_id)
+    def test_every_init_step_is_accepted_in_any_order(self):
+        for order in INIT_ORDERS:
+            answers = self.init_in_order(order)
 
-    def test_failing_feature_does_not_block_others(self):
-        def broken(app):
-            raise RuntimeError('boom')
+            self.assertEqual(answers, [True, True, True, True], order)
 
-        registry.registry().register('broken', broken)
+    def test_every_feature_is_created_once_with_the_host_in_any_order(self):
+        for order in INIT_ORDERS:
+            self.init_in_order(order)
+
+            expected = [('marks_panel', self.host), ('replay_upload', self.host), ('session_stats', self.host)]
+            self.assertEqual(sorted(self.created), expected, order)
+
+    def test_every_feature_is_reachable_by_its_id_in_any_order(self):
+        for order in INIT_ORDERS:
+            self.init_in_order(order)
+
+            for feature_id in FEATURE_IDS:
+                self.assertEqual(registry.registry().get(feature_id), feature_id, order)
+
+    def test_a_feature_registered_twice_is_refused(self):
+        for order in INIT_ORDERS:
+            self.init_in_order(order)
+
+            registered = registry.registry().register('marks_panel', self.factory_for('marks_panel'))
+
+            self.assertFalse(registered, order)
+
+    def test_binding_the_same_host_again_is_accepted(self):
+        for order in INIT_ORDERS:
+            self.init_in_order(order)
+
+            self.assertTrue(registry.registry().bind(self.host), order)
+
+    def test_binding_another_host_is_refused(self):
+        for order in INIT_ORDERS:
+            self.init_in_order(order)
+
+            self.assertFalse(registry.registry().bind(object()), order)
+
+    def bind_a_broken_and_a_fine_feature(self):
+        registry.registry().register('broken', raise_runtime_error)
         registry.registry().register('fine', lambda app: 'ok')
         registry.registry().bind(object())
+
+    def test_a_failing_feature_is_left_out(self):
+        self.bind_a_broken_and_a_fine_feature()
+
         self.assertIsNone(registry.registry().get('broken'))
+
+    def test_a_failing_feature_does_not_block_others(self):
+        self.bind_a_broken_and_a_fine_feature()
+
         self.assertEqual(registry.registry().get('fine'), 'ok')
 
     def test_lazy_singleton(self):
@@ -333,51 +577,93 @@ class RegistryTest(unittest.TestCase):
 
 class SettingsSchemaTest(unittest.TestCase):
 
-    def test_coerce(self):
-        schema = Schema({'on': True, 'count': 5, 'mode': 'a', 'url': 'x'}, choices={'mode': ('a', 'b')}, limits={'count': (1, 9)},
-                        normalizers={'url': lambda value: value.upper() if value.startswith('h') else None})
-        settings = Settings({'on': 'yes', 'count': 99.5, 'mode': 'c', 'url': ' http ', 'other': 1}, schema=schema)
+    def test_values_are_coerced_to_the_schema(self):
+        raw = {'on': 'yes', 'count': 99.5, 'mode': 'c', 'url': ' http ', 'other': 1}
+
+        settings = Settings(raw, schema=settings_schema())
+
         self.assertEqual(settings.to_dict(), {'on': True, 'count': 9, 'mode': 'a', 'url': 'HTTP'})
-        self.assertEqual(settings.update({'mode': 'b', 'url': 'ftp'}), ['mode'])
-        self.assertFalse(Settings({'on': False}, schema=schema).is_enabled('on'))
+
+    def test_update_reports_only_the_keys_that_took_a_valid_value(self):
+        settings = Settings({}, schema=settings_schema())
+
+        changed = settings.update({'mode': 'b', 'url': 'ftp'})
+
+        self.assertEqual(changed, ['mode'])
+
+    def test_a_switched_off_flag_is_not_enabled(self):
+        settings = Settings({'on': False}, schema=settings_schema())
+
+        self.assertFalse(settings.is_enabled('on'))
 
 
 class I18nCatalogTest(unittest.TestCase):
 
-    def test_catalog(self):
-        catalog = Catalog({'ru': {'a': u'А'}, 'en': {'a': u'A'}}, {'ru': {'b': u'Б {x}'}})
-        self.assertEqual(Translator(catalog, 'en')('b', x=1), u'Б 1')
-        self.assertEqual(Translator(catalog, 'en')('missing'), u'missing')
-        self.assertEqual(Translator(catalog, 'de').language, 'ru')
-        self.assertEqual(resolve_language(catalog, 'auto', 'uk'), 'ru')
-        self.assertEqual(resolve_language(catalog, 'auto', 'en_US'), 'en')
+    def test_a_key_missing_in_the_language_falls_back_to_russian(self):
+        translate = Translator(two_language_catalog(), 'en')
+
+        self.assertEqual(translate('b', x=1), u'Б 1')
+
+    def test_an_unknown_key_reads_as_itself(self):
+        translate = Translator(two_language_catalog(), 'en')
+
+        self.assertEqual(translate('missing'), u'missing')
+
+    def test_an_unknown_language_falls_back_to_russian(self):
+        translate = Translator(two_language_catalog(), 'de')
+
+        self.assertEqual(translate.language, 'ru')
+
+    def test_auto_picks_russian_for_an_unsupported_client_language(self):
+        self.assertEqual(resolve_language(two_language_catalog(), 'auto', 'uk'), 'ru')
+
+    def test_auto_picks_the_client_language_by_its_prefix(self):
+        self.assertEqual(resolve_language(two_language_catalog(), 'auto', 'en_US'), 'en')
 
 
-class StorageAndPanelsTest(unittest.TestCase):
+class JsonFileTest(unittest.TestCase):
 
-    def test_json_file_roundtrip(self):
+    def setUp(self):
         directory = tempfile.mkdtemp()
-        try:
-            path = os.path.join(directory, 'nested', 'config.json')
-            storage = JsonFile(path, pretty=True)
-            self.assertEqual(storage.read({}), {})
-            storage.write({'a': u'Три отметки'})
-            storage.write({'a': u'Три отметки', 'b': 2})
-            self.assertEqual(JsonFile(path).read(), {'a': u'Три отметки', 'b': 2})
-            with open(path, 'w') as handle:
-                handle.write('{broken')
-            self.assertEqual(JsonFile(path).read('fallback'), 'fallback')
-        finally:
-            shutil.rmtree(directory)
+        self.addCleanup(shutil.rmtree, directory)
+        self.path = os.path.join(directory, 'nested', 'config.json')
+
+    def test_a_missing_file_reads_as_the_default(self):
+        storage = JsonFile(self.path, pretty=True)
+
+        self.assertEqual(storage.read({}), {})
+
+    def test_the_last_write_reads_back(self):
+        storage = JsonFile(self.path, pretty=True)
+
+        storage.write({'a': u'Три отметки'})
+        storage.write({'a': u'Три отметки', 'b': 2})
+
+        self.assertEqual(JsonFile(self.path).read(), {'a': u'Три отметки', 'b': 2})
+
+    def test_a_broken_file_reads_as_the_fallback(self):
+        JsonFile(self.path).write({})
+        with open(self.path, 'w') as handle:
+            handle.write('{broken')
+
+        self.assertEqual(JsonFile(self.path).read('fallback'), 'fallback')
 
     def test_account_file_names_one_account_per_file(self):
         stored = account_file(os.path.join('configs', 'otmetki'), 'hits_%d.json', 12345)
+
         self.assertEqual(stored.path, os.path.join('configs', 'otmetki', 'hits_12345.json'))
         self.assertFalse(stored.pretty)
 
-    def test_number(self):
+
+class NumberFormatTest(unittest.TestCase):
+
+    def test_a_number_is_rounded_and_grouped_by_thousands(self):
         self.assertEqual(format_number(1234567.4), u'1 234 567')
+
+    def test_a_missing_number_reads_as_a_dash(self):
         self.assertEqual(format_number(None), u'-')
+
+    def test_a_percent_has_two_decimals(self):
         self.assertEqual(format_percent(60), u'60.00%')
 
 

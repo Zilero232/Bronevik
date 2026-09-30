@@ -10,8 +10,23 @@ import json
 import os
 import re
 
-from .model import (CONTEXTS, DEPENDENCY_KIND, ID_PATTERN, LANGUAGES, PERF_LEVELS, Author, Catalog, CatalogEntry, Category, ConflictRule, Dependency,
-                    Licence, Localized, Preset, Preview)
+from .model import (
+    CONTEXTS,
+    DEPENDENCY_KIND,
+    ID_PATTERN,
+    LANGUAGES,
+    PERF_LEVELS,
+    Author,
+    Catalog,
+    CatalogEntry,
+    Category,
+    ConflictRule,
+    Dependency,
+    Licence,
+    Localized,
+    Preset,
+    Preview,
+)
 
 PREVIEW_EXTENSIONS = ('.svg', '.png')
 AUDIO_EXTENSIONS = ('.mp3', '.ogg', '.wav')
@@ -24,8 +39,10 @@ SHA256_PATTERN = re.compile(r'^[0-9a-f]{64}$')
 PACKAGE_ID_PATTERN = re.compile(r'^[a-z0-9]+(?:[._-][a-z0-9]+)+$')
 VERSION_PATTERN = re.compile(r'^\d+(?:\.\d+)*$')
 DEPENDENCY_EXTENSION = '.mtmod'
-DEPENDENCY_FIELDS = ('id', 'kind', 'packageId', 'version', 'file', 'title', 'description', 'author', 'licence', 'sourceUrl', 'sha256', 'size',
-                     'requiredBy', 'optional', 'restartRequired')
+DEPENDENCY_FIELDS = (
+    'id', 'kind', 'packageId', 'version', 'file', 'title', 'description', 'author', 'licence', 'sourceUrl', 'sha256',
+    'size', 'requiredBy', 'optional', 'restartRequired',
+)
 
 
 class CatalogError(ValueError):
@@ -119,18 +136,30 @@ class _Reader(object):
         if not isinstance(components, list) or not components:
             self.fail(where + '.components', 'list the ids of our components it duplicates')
             components = []
-        return ConflictRule(self.ident(where, raw.get('id')), self.localized(where + '.title', raw.get('title')), tuple(patterns),
-                            tuple(str(item) for item in components), self.localized(where + '.note', raw.get('note')))
+        return ConflictRule(
+            self.ident(where, raw.get('id')),
+            self.localized(where + '.title', raw.get('title')),
+            tuple(patterns),
+            tuple(str(item) for item in components),
+            self.localized(where + '.note', raw.get('note')),
+        )
 
     def category(self, index, raw):
         where = 'categories[%d]' % index
-        return Category(self.ident(where, raw.get('id')), self.localized(where + '.title', raw.get('title')),
-                        self.localized(where + '.description', raw.get('description')))
+        return Category(
+            self.ident(where, raw.get('id')),
+            self.localized(where + '.title', raw.get('title')),
+            self.localized(where + '.description', raw.get('description')),
+        )
 
     def preset(self, index, raw):
         where = 'presets[%d]' % index
-        return Preset(self.ident(where, raw.get('id')), self.localized(where + '.title', raw.get('title')),
-                      self.localized(where + '.description', raw.get('description')), bool(raw.get('custom', False)))
+        return Preset(
+            self.ident(where, raw.get('id')),
+            self.localized(where + '.title', raw.get('title')),
+            self.localized(where + '.description', raw.get('description')),
+            bool(raw.get('custom', False)),
+        )
 
     def entry(self, index, raw):
         where = 'components[%d]' % index
@@ -166,27 +195,44 @@ class _Reader(object):
             return str(value)
         return value
 
+    def size(self, where, value):
+        if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
+            self.fail(where, 'must be the byte size of the release file')
+            return 0
+        return value
+
+    def required_by(self, where, value):
+        if not isinstance(value, list) or not value:
+            self.fail(where, 'list the ids of our components that need it')
+            return ()
+        return tuple(str(item) for item in value)
+
+    def flag(self, where, value):
+        if not isinstance(value, bool):
+            self.fail(where, 'must be true or false')
+        return bool(value)
+
+    def author(self, where, value):
+        author = value if isinstance(value, dict) else {}
+        return Author(self.text(where + '.name', author.get('name')), self.https(where + '.url', author.get('url')))
+
+    def licence(self, where, value):
+        licence = value if isinstance(value, dict) else {}
+        return Licence(
+            self.text(where + '.name', licence.get('name')),
+            self.https(where + '.url', licence.get('url')),
+            self.sha256(where + '.sha256', licence.get('sha256')),
+        )
+
     def dependency(self, index, raw):
         where = 'components[%d]' % index
         unknown = sorted(set(raw) - set(DEPENDENCY_FIELDS))
         if unknown:
             self.fail(where, 'a dependency has no %s (it is not our package)' % ', '.join(unknown))
-        author = raw.get('author') if isinstance(raw.get('author'), dict) else {}
-        licence = raw.get('licence') if isinstance(raw.get('licence'), dict) else {}
-        size = raw.get('size')
-        if isinstance(size, bool) or not isinstance(size, int) or size <= 0:
-            self.fail(where + '.size', 'must be the byte size of the release file')
-            size = 0
-        required_by = raw.get('requiredBy')
-        if not isinstance(required_by, list) or not required_by:
-            self.fail(where + '.requiredBy', 'list the ids of our components that need it')
-            required_by = []
-        optional = raw.get('optional')
-        if not isinstance(optional, bool):
-            self.fail(where + '.optional', 'must be true or false')
-        restart = raw.get('restartRequired')
-        if not isinstance(restart, bool):
-            self.fail(where + '.restartRequired', 'must be true or false')
+        size = self.size(where + '.size', raw.get('size'))
+        required_by = self.required_by(where + '.requiredBy', raw.get('requiredBy'))
+        optional = self.flag(where + '.optional', raw.get('optional'))
+        restart_required = self.flag(where + '.restartRequired', raw.get('restartRequired'))
         return Dependency(
             id=self.ident(where, raw.get('id')),
             kind=DEPENDENCY_KIND,
@@ -195,15 +241,14 @@ class _Reader(object):
             file=str(raw.get('file', '')),
             title=self.localized(where + '.title', raw.get('title')),
             description=self.localized(where + '.description', raw.get('description')),
-            author=Author(self.text(where + '.author.name', author.get('name')), self.https(where + '.author.url', author.get('url'))),
-            licence=Licence(self.text(where + '.licence.name', licence.get('name')), self.https(where + '.licence.url', licence.get('url')),
-                            self.sha256(where + '.licence.sha256', licence.get('sha256'))),
+            author=self.author(where + '.author', raw.get('author')),
+            licence=self.licence(where + '.licence', raw.get('licence')),
             source_url=self.https(where + '.sourceUrl', raw.get('sourceUrl')),
             sha256=self.sha256(where + '.sha256', raw.get('sha256')),
             size=size,
-            required_by=tuple(str(item) for item in required_by),
-            optional=bool(optional),
-            restart_required=bool(restart),
+            required_by=required_by,
+            optional=optional,
+            restart_required=restart_required,
         )
 
 
@@ -226,7 +271,8 @@ def parse(raw, assets_dir):
         if kind == DEPENDENCY_KIND:
             dependencies.append(reader.dependency(index, item))
         elif kind is not None:
-            reader.fail('components[%d]' % index, 'unknown kind %r (ours have none, third-party mods are "%s")' % (kind, DEPENDENCY_KIND))
+            message = 'unknown kind %r (ours have none, third-party mods are "%s")' % (kind, DEPENDENCY_KIND)
+            reader.fail('components[%d]' % index, message)
         else:
             entries.append(reader.entry(index, item))
     catalog = Catalog(
@@ -248,48 +294,78 @@ def parse(raw, assets_dir):
 
 def _check(reader, catalog):
     category_ids = [category.id for category in catalog.categories]
-    preset_ids = [preset.id for preset in catalog.presets]
     entry_ids = [entry.id for entry in catalog.components]
     _unique(reader, 'categories', category_ids)
-    _unique(reader, 'presets', preset_ids)
+    _unique(reader, 'presets', [preset.id for preset in catalog.presets])
     _unique(reader, 'components', entry_ids + [dependency.id for dependency in catalog.dependencies])
-    custom = [preset.id for preset in catalog.presets if preset.custom]
-    if len(custom) != 1 or not catalog.presets or not catalog.presets[-1].custom:
-        reader.fail('presets', 'exactly one preset must be custom, and it must come last')
-    elif catalog.presets[0].custom:
-        reader.fail('presets', 'the first preset is the default one and cannot be custom')
+    _check_presets(reader, catalog.presets)
     if catalog.fallback_category not in category_ids:
         reader.fail('fallbackCategory', 'unknown category %r' % catalog.fallback_category)
-    if not catalog.owned_patterns:
-        reader.fail('ownedPatterns', 'list the file masks of our packages (uninstall and clean-up rely on it)')
-    for pattern in catalog.owned_patterns:
-        if '\\' in pattern or '/' in pattern or not pattern.endswith(('.mtmod', '.wotmod')):
-            reader.fail('ownedPatterns', '%r must be a bare package file mask' % pattern)
+    _check_owned_patterns(reader, catalog.owned_patterns)
     for entry in catalog.components:
-        where = 'components.%s' % entry.id
-        if entry.category not in category_ids:
-            reader.fail(where, 'unknown category %r' % entry.category)
-        for preset in entry.presets:
-            if preset not in preset_ids or preset in custom:
-                reader.fail(where, 'unknown or custom preset %r' % preset)
-        if entry.required and entry.presets:
-            reader.fail(where, 'a required component is in every preset; drop its presets list')
-        for dependency in entry.dependencies:
-            if dependency not in entry_ids or dependency == entry.id:
-                reader.fail(where, 'unknown dependency %r' % dependency)
+        _check_entry(reader, catalog, entry)
     for dependency in catalog.dependencies:
         _check_dependency(reader, catalog, entry_ids, dependency)
-    for path in catalog.owned_paths:
-        if not isinstance(path, str) or not OWNED_PATH_PATTERN.match(path) or path.startswith(('/', 'res/')) or '..' in path:
-            reader.fail('ownedPaths', '%r must be a lowercase in-game path prefix without res/' % (path,))
+    _check_owned_paths(reader, catalog.owned_paths)
     _unique(reader, 'conflicts', [rule.id for rule in catalog.conflicts])
     for rule in catalog.conflicts:
-        for component_id in rule.components:
-            if component_id not in entry_ids:
-                reader.fail('conflicts.%s' % rule.id, 'unknown component %r' % component_id)
-        for pattern in rule.patterns:
-            if any(pattern.startswith(prefix.lower()) for prefix in our_prefixes(catalog.owned_patterns)):
-                reader.fail('conflicts.%s' % rule.id, '%r names our own packages' % pattern)
+        _check_conflict(reader, catalog, entry_ids, rule)
+
+
+def _check_presets(reader, presets):
+    custom = [preset.id for preset in presets if preset.custom]
+    if len(custom) != 1 or not presets or not presets[-1].custom:
+        reader.fail('presets', 'exactly one preset must be custom, and it must come last')
+    elif presets[0].custom:
+        reader.fail('presets', 'the first preset is the default one and cannot be custom')
+
+
+def _check_owned_patterns(reader, owned_patterns):
+    if not owned_patterns:
+        reader.fail('ownedPatterns', 'list the file masks of our packages (uninstall and clean-up rely on it)')
+    for pattern in owned_patterns:
+        if '\\' in pattern or '/' in pattern or not pattern.endswith(('.mtmod', '.wotmod')):
+            reader.fail('ownedPatterns', '%r must be a bare package file mask' % pattern)
+
+
+def _check_entry(reader, catalog, entry):
+    where = 'components.%s' % entry.id
+    category_ids = [category.id for category in catalog.categories]
+    preset_ids = [preset.id for preset in catalog.presets]
+    custom = [preset.id for preset in catalog.presets if preset.custom]
+    entry_ids = [component.id for component in catalog.components]
+    if entry.category not in category_ids:
+        reader.fail(where, 'unknown category %r' % entry.category)
+    for preset in entry.presets:
+        if preset not in preset_ids or preset in custom:
+            reader.fail(where, 'unknown or custom preset %r' % preset)
+    if entry.required and entry.presets:
+        reader.fail(where, 'a required component is in every preset; drop its presets list')
+    for dependency in entry.dependencies:
+        if dependency not in entry_ids or dependency == entry.id:
+            reader.fail(where, 'unknown dependency %r' % dependency)
+
+
+def _is_owned_path(path):
+    if not isinstance(path, str) or not OWNED_PATH_PATTERN.match(path):
+        return False
+    return not path.startswith(('/', 'res/')) and '..' not in path
+
+
+def _check_owned_paths(reader, owned_paths):
+    for path in owned_paths:
+        if not _is_owned_path(path):
+            reader.fail('ownedPaths', '%r must be a lowercase in-game path prefix without res/' % (path,))
+
+
+def _check_conflict(reader, catalog, entry_ids, rule):
+    where = 'conflicts.%s' % rule.id
+    for component_id in rule.components:
+        if component_id not in entry_ids:
+            reader.fail(where, 'unknown component %r' % component_id)
+    for pattern in rule.patterns:
+        if any(pattern.startswith(prefix.lower()) for prefix in our_prefixes(catalog.owned_patterns)):
+            reader.fail(where, '%r names our own packages' % pattern)
 
 
 def our_prefixes(owned_patterns):
@@ -301,7 +377,8 @@ def _check_dependency(reader, catalog, entry_ids, dependency):
     where = 'components.%s' % dependency.id
     if not PACKAGE_ID_PATTERN.match(dependency.package_id):
         reader.fail(where, 'packageId %r is not a package id' % dependency.package_id)
-    if any(dependency.package_id.lower().startswith(prefix.lower()) for prefix in our_prefixes(catalog.owned_patterns)):
+    package_id = dependency.package_id.lower()
+    if any(package_id.startswith(prefix.lower()) for prefix in our_prefixes(catalog.owned_patterns)):
         reader.fail(where, 'packageId %s is ours: a dependency is a third-party mod' % dependency.package_id)
     if any(fnmatch.fnmatch(dependency.file.lower(), pattern.lower()) for pattern in catalog.owned_patterns):
         reader.fail(where, 'file %s matches ownedPatterns: uninstall would take it for ours' % dependency.file)

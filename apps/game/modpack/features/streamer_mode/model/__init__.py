@@ -6,8 +6,9 @@ from .constants import PRIVATE_HANGAR_LABELS
 
 
 def blocked_labels(settings):
-    """The hangar labels a private stream keeps off the screen."""
-    return PRIVATE_HANGAR_LABELS if settings.get('private') and settings.get('hide_hangar_stats') else ()
+    if settings.get('private') and settings.get('hide_hangar_stats'):
+        return PRIVATE_HANGAR_LABELS
+    return ()
 
 
 def hides_chat(settings, in_battle):
@@ -15,7 +16,6 @@ def hides_chat(settings, in_battle):
 
 
 class PanelToggle(object):
-    """The hotkey's state: the mod's panels on or off the screen; a new battle starts with them on unless kept off."""
 
     def __init__(self):
         self.hidden = False

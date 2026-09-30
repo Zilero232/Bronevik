@@ -8,9 +8,21 @@ import os
 import time
 from email.utils import mktime_tz, parsedate_tz
 
-from ...compat import to_bytes, to_text
-from .constants import (DEVICE_HEADER, JSON_CONTENT_TYPE, NONCE_BYTES, NONCE_HEADER, SERVER_TIME_HEADER, SIGNATURE_HEADER,  # noqa: F401
-                        SIGNATURE_PREFIX, SIGNATURE_VERSION, STALE_REQUEST_STATUS, TIMESTAMP_HEADER)
+from ...compat import keyword_options, to_bytes, to_text
+from ...vendor import attr
+from .constants import (
+    DEVICE_HEADER,
+    HEADER_OPTIONS,
+    JSON_CONTENT_TYPE,
+    NONCE_BYTES,
+    NONCE_HEADER,
+    SERVER_TIME_HEADER,
+    SIGNATURE_HEADER,
+    SIGNATURE_PREFIX,
+    SIGNATURE_VERSION,
+    STALE_REQUEST_STATUS,
+    TIMESTAMP_HEADER,
+)
 
 _clock = {'offset': 0.0}
 
@@ -49,23 +61,27 @@ def new_nonce():
     return str(binascii.hexlify(os.urandom(NONCE_BYTES)).decode('ascii'))
 
 
+# v2 message: version, method, path, timestamp and nonce lines, then one `name:value` line per signed header (lower-case
+# name, in the order sent), then the raw body. Mirrors signedMessage in
+# apps/web/server/src/modules/mod/lib/request-signature.
 def signed_message(method, path, timestamp, nonce, body, extra_headers=()):
-    """v2 message: version, method, path, timestamp and nonce lines, then one `name:value` line per
-    signed header (lower-case name, in the order sent), then the raw body. Mirrors signedMessage in
-    apps/web/server/src/modules/mod/lib/request-signature."""
     lines = [SIGNATURE_VERSION, method.upper(), path, str(timestamp), nonce]
     lines.extend(to_text(name).lower() + ':' + to_text(value) for name, value in extra_headers)
     return to_bytes('\n'.join(lines) + '\n') + to_bytes(body)
 
 
 def verify_request(secret, method, url, headers, body, signed_names=()):
+    """Whether `headers` carry a valid v2 signature of the request (the server's check, for tests and tools)."""
     extra = [(name, headers[name]) for name in signed_names if name in headers]
-    message = signed_message(method, request_path(url), headers.get(TIMESTAMP_HEADER, ''), headers.get(NONCE_HEADER, ''), body, extra)
+    message = signed_message(
+        method,
+        request_path(url),
+        headers.get(TIMESTAMP_HEADER, ''),
+        headers.get(NONCE_HEADER, ''),
+        body,
+        extra,
+    )
     return verify(secret, message, headers.get(SIGNATURE_HEADER, ''))
-
-
-def clock_offset():
-    return _clock['offset']
 
 
 def server_time(headers):
@@ -87,34 +103,53 @@ def sync_clock(headers, now=None):
     return True
 
 
-def signed_headers(device_id, secret, body, user_agent, method, url, now=None, nonce=None, content_type=JSON_CONTENT_TYPE,
-                   extra_headers=()):
+def signed_headers(device_id, secret, body, user_agent, method, url, **options):
+    options = keyword_options(options, HEADER_OPTIONS)
+    now = options['now']
     timestamp = str(int(now if now is not None else time.time() + _clock['offset']))
-    nonce = nonce or new_nonce()
-    extra_headers = list(extra_headers)
+    nonce = options['nonce'] or new_nonce()
+    extra_headers = list(options['extra_headers'])
+    message = signed_message(method, request_path(url), timestamp, nonce, body, extra_headers)
+
     headers = {
-        'Content-Type': content_type,
+        'Content-Type': options['content_type'],
         'Accept': 'application/json',
         'User-Agent': user_agent,
         DEVICE_HEADER: device_id,
         TIMESTAMP_HEADER: timestamp,
         NONCE_HEADER: nonce,
-        SIGNATURE_HEADER: sign(secret, signed_message(method, request_path(url), timestamp, nonce, body, extra_headers)),
+        SIGNATURE_HEADER: sign(secret, message),
     }
     headers.update(extra_headers)
     return headers
 
 
-def signed_request(transport, method, url, device_id, secret, body, user_agent, callback, content_type=JSON_CONTENT_TYPE, signed_body=None,
-                   extra_headers=()):
-    """Signs and sends; on a 428 with a usable server time it re-syncs the clock and re-signs once.
+@attr.s(frozen=True)
+class SignedRequest(object):
+    """One request `signed_request` signs and sends.
 
-    `signed_body` is what the HMAC covers when it differs from the bytes on the wire: a multipart
-    upload is signed over the raw file, which is what the server verifies after parsing the form.
+    `content_type` is JSON by default; `signed_body` is what the HMAC covers when it differs from the bytes on the wire
+    (a multipart upload is signed over the raw file, which is what the server verifies after parsing the form);
     `extra_headers` are (name, value) pairs sent and covered by the signature (see signed_message).
     """
-    covered = body if signed_body is None else signed_body
 
+    method = attr.ib()
+    url = attr.ib()
+    device_id = attr.ib()
+    secret = attr.ib()
+    body = attr.ib()
+    user_agent = attr.ib()
+    content_type = attr.ib(default=JSON_CONTENT_TYPE)
+    signed_body = attr.ib(default=None)
+    extra_headers = attr.ib(default=())
+
+    def covered_body(self):
+        return self.body if self.signed_body is None else self.signed_body
+
+
+def signed_request(transport, request, callback):
+    """Signs and sends `request` (a SignedRequest); `callback(status, body, headers)` gets the answer. On a 428 with a
+    usable server time it re-syncs the clock and re-signs once."""
     def send(may_retry):
         def done(status, response_body, response_headers):
             if status == STALE_REQUEST_STATUS and may_retry and sync_clock(response_headers):
@@ -122,7 +157,16 @@ def signed_request(transport, method, url, device_id, secret, body, user_agent, 
                 return
             callback(status, response_body, response_headers)
 
-        headers = signed_headers(device_id, secret, covered, user_agent, method, url, content_type=content_type, extra_headers=extra_headers)
-        transport.request(method, url, headers, body, done)
+        headers = signed_headers(
+            request.device_id,
+            request.secret,
+            request.covered_body(),
+            request.user_agent,
+            request.method,
+            request.url,
+            content_type=request.content_type,
+            extra_headers=request.extra_headers,
+        )
+        transport.request(request.method, request.url, headers, request.body, done)
 
     send(True)

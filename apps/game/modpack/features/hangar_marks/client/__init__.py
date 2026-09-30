@@ -16,7 +16,6 @@ from ..settings import PANEL_ID, SCHEMA, SWITCH
 
 
 class HangarMarks(FeatureComponent):
-    """The marks of the tank selected in the hangar, a HUD panel of its own (movable in the HUD editor)."""
 
     def __init__(self, app):
         self.hud = hud_layer(app)
@@ -24,8 +23,15 @@ class HangarMarks(FeatureComponent):
         self.selected = None
         self.in_view = True
         FeatureComponent.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS)
-        self.preview = HudPreview(self.hud, PANEL_ID, self.preview_text, self.enabled, self.enabled_in_hangar, PREVIEW_SIZE,
-                                  self.preview_widget).attach(app.bus)
+        self.preview = HudPreview(
+            self.hud,
+            PANEL_ID,
+            self.preview_text,
+            self.enabled,
+            self.enabled_in_hangar,
+            PREVIEW_SIZE,
+            self.preview_widget,
+        ).attach(app.bus)
         bus = app.bus
         bus.on('vehicle_moe', self._on_vehicle_moe)
         bus.on('hangar', self.render)
@@ -77,15 +83,25 @@ class HangarMarks(FeatureComponent):
 
     @safe
     def render(self):
-        if not self.enabled_in_hangar() or not self.in_view or self.preview.previewing:
-            if not self.preview.previewing:
-                self.hide()
+        if self.preview.previewing:
             return
-        snapshot = self.moe.snapshot(self.selected) if self.selected is not None else None
-        if snapshot is None:
+        if not self.enabled_in_hangar() or not self.in_view:
             self.hide()
             return
-        state = hangar_state(snapshot, self.moe.curve(self.selected), self.moe.pace(self.selected))
+        state = self._state()
+        if state is None:
+            self.hide()
+            return
+
         translate = self.app.translate
-        self.hud.show(PANEL_ID, format_panel(state, self.settings, translate),
-                      hangar_widget(state, self.settings, translate, vehicle_short_name(self.selected)))
+        text = format_panel(state, self.settings, translate)
+        widget = hangar_widget(state, self.settings, translate, vehicle_short_name(self.selected))
+        self.hud.show(PANEL_ID, text, widget)
+
+    def _state(self):
+        if self.selected is None:
+            return None
+        snapshot = self.moe.snapshot(self.selected)
+        if snapshot is None:
+            return None
+        return hangar_state(snapshot, self.moe.curve(self.selected), self.moe.pace(self.selected))

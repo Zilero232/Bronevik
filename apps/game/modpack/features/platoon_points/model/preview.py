@@ -8,8 +8,8 @@ from .widget import points_widget
 
 def preview_platoon():
     platoon = Platoon()
-    for vehicle_id, name, own, vehicle_class, max_hp, hp, alive, frags in PREVIEW_MEMBERS:
-        platoon.add(vehicle_id, name, own, vehicle_class, max_hp, alive)
+    for vehicle_id, seen, hp, frags in PREVIEW_MEMBERS:
+        platoon.add(vehicle_id, seen)
         platoon.set_health(vehicle_id, hp)
         platoon.members[vehicle_id]['frags'] = frags
     platoon.add_own('damage', PREVIEW_OWN['damage'])

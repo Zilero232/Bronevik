@@ -8,37 +8,52 @@ import { useBindForm } from '../use-bind-form';
 
 vi.mock('../../../../../../shared/api/protocol/protocol', () => ({ send: vi.fn(() => true) }));
 
+const typed = (code: string) => {
+  const hook = renderHook(useBindForm);
+
+  hook.run(() => hook.current().setCode(code));
+
+  return hook;
+};
+
 beforeEach(() => {
   vi.mocked(send).mockClear();
 });
 
 describe(useBindForm, () => {
-  it('sends the trimmed code and clears the field', () => {
-    const hook = renderHook(useBindForm);
-
-    hook.run(() => hook.current().setCode('  ABCD-1234 '));
+  it('allows binding once a code is typed', () => {
+    const hook = typed('  ABCD-1234 ');
 
     expect(hook.current().canBind).toBe(true);
+  });
+
+  it('sends the trimmed code', () => {
+    const hook = typed('  ABCD-1234 ');
 
     hook.run(() => hook.current().bind());
 
     expect(send).toHaveBeenCalledWith({ type: 'bind', code: 'ABCD-1234' });
+  });
+
+  it('clears the field after binding', () => {
+    const hook = typed('  ABCD-1234 ');
+
+    hook.run(() => hook.current().bind());
+
     expect(hook.current().code).toBe('');
   });
 
   it('sends nothing for a blank code', () => {
-    const hook = renderHook(useBindForm);
+    const hook = typed('   ');
 
-    hook.run(() => hook.current().setCode('   '));
     hook.run(() => hook.current().bind());
 
     expect(send).not.toHaveBeenCalled();
   });
 
   it('binds on Enter', () => {
-    const hook = renderHook(useBindForm);
+    const hook = typed('CODE');
 
-    hook.run(() => hook.current().setCode('CODE'));
     hook.run(() => hook.current().onKey(KEYS.enter));
 
     expect(send).toHaveBeenCalledWith({ type: 'bind', code: 'CODE' });

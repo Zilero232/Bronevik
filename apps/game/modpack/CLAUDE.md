@@ -54,7 +54,7 @@ Keep as much as possible in the pure half — it is the only half the checks can
 ```bash
 bun run test:modpack                                         # stdlib runner over every tests/ folder
 cd apps/game/modpack && uv sync && uv run pytest                  # the same tests under pytest
-cd apps/game/modpack && uv run ruff check .                       # lint (E, F, W; pyupgrade off; core/vendor excluded)
+cd apps/game/modpack && uv run ruff check .                       # lint: 120 columns, blank lines, complexity/size limits, PT018, RET, SIM (pyupgrade and ruff format off: py2.7; core/vendor excluded)
 python apps/game/modpack/tools/vendor/vendor.py --check           # core/vendor matches the pinned wheels (downloads them)
 python apps/game/modpack/tools/build/build.py                     # dev build -> dist/*.mtmod, one per package
 python apps/game/modpack/tools/build/build.py --single --require-pyc   # release, single package -> dist/single/ (never next to the split set)

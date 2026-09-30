@@ -85,19 +85,8 @@ def override(owner, name):
         had_own, raw = _own_value(owner, name)
         if isinstance(raw, property):
             raise TypeError('override() does not wrap properties: %s' % name)
-        original = getattr(owner, name)
 
-        def wrapper(*args, **kwargs):
-            call = OriginalCall(original)
-            try:
-                return handler(call, *args, **kwargs)
-            except Exception:
-                if call.raised:
-                    raise
-                log_exception('override %s' % name)
-                return call.result if call.returned else original(*args, **kwargs)
-
-        wrapper.__name__ = getattr(handler, '__name__', str(name))
+        wrapper = _guarded(getattr(owner, name), handler, name)
         setattr(wrapper, RESTORE_ATTR, (had_own, raw))
         if isinstance(raw, (staticmethod, classmethod)):
             setattr(owner, name, staticmethod(wrapper))
@@ -105,6 +94,21 @@ def override(owner, name):
             setattr(owner, name, wrapper)
         return handler
     return decorator
+
+
+def _guarded(original, handler, name):
+    def wrapper(*args, **kwargs):
+        call = OriginalCall(original)
+        try:
+            return handler(call, *args, **kwargs)
+        except Exception:
+            if call.raised:
+                raise
+            log_exception('override %s' % name)
+            return call.result if call.returned else original(*args, **kwargs)
+
+    wrapper.__name__ = getattr(handler, '__name__', str(name))
+    return wrapper
 
 
 def restore(owner, name):

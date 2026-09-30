@@ -5,16 +5,20 @@ from ..panel import moved_values
 from .constants import PLACE_KEYS, PLACES_ATTR, PLACES_STATE_KEY
 
 
+def _saved_places(state):
+    saved = state.get(PLACES_STATE_KEY) if isinstance(state, dict) else None
+    if not isinstance(saved, dict):
+        return {}
+    return dict((alias, dict(place)) for alias, place in saved.items() if isinstance(place, dict))
+
+
 def hangar_places(app):
-    """Where the player dragged the hangar labels that keep no place of their own: `{alias: {x, y, alignX, alignY,
-    scale}}`, one dict per app, kept in the app state (`state.json`) when the app has one."""
     places = getattr(app, PLACES_ATTR, None)
     if places is not None:
         return places
-    state = getattr(app, 'state', None)
-    saved = state.get(PLACES_STATE_KEY) if isinstance(state, dict) else None
-    places = dict((alias, dict(place)) for alias, place in saved.items() if isinstance(place, dict)) if isinstance(saved, dict) else {}
+    places = _saved_places(getattr(app, 'state', None))
     setattr(app, PLACES_ATTR, places)
+
     register = getattr(app, 'register_state', None)
     if register is not None:
         register(PLACES_STATE_KEY, lambda: dict(places))

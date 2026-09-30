@@ -23,16 +23,14 @@ class SettingsBackup(object):
             return None
         return data
 
-    def has(self):
-        return bool(self.values())
-
     def save(self, current, changes, request_id, now):
         data = self._read() or {'values': {}}
         mine = clean_values(current)
         values = data['values']
         for group, field, _, _ in changes:
             key = raw_key_of(group, field)
-            if key is not None and key in mine and key not in values:
+            is_first_save = key is not None and key not in values
+            if is_first_save and key in mine:
                 values[key] = mine[key]
         data['request_id'] = request_id
         data['saved_at'] = int(now)

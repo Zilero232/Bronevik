@@ -5,9 +5,13 @@ from .constants import PREVIEW_PERIOD, PREVIEW_SECONDS_LEFT
 from .widget import clock_widget
 
 
+def _preview_values(settings, moment):
+    return clock_values(moment, settings, PREVIEW_PERIOD, PREVIEW_SECONDS_LEFT)
+
+
 def preview_text(settings, translate, moment):
-    return format_battle_clock(clock_values(moment, settings, PREVIEW_PERIOD, PREVIEW_SECONDS_LEFT), settings, translate)
+    return format_battle_clock(_preview_values(settings, moment), settings, translate)
 
 
 def preview_widget(settings, moment):
-    return clock_widget(clock_values(moment, settings, PREVIEW_PERIOD, PREVIEW_SECONDS_LEFT), settings)
+    return clock_widget(_preview_values(settings, moment), settings)

@@ -10,6 +10,7 @@ import type {
   FrameLayout,
   LayoutInput,
   MoveFrameInput,
+  OpeningFrameInput,
   ResizeFrameInput,
   ZoomStepInput
 } from './frame.types';
@@ -57,6 +58,14 @@ export const centredFrame = ({ bounds, size = WINDOW_FRAME.defaultSize }: Centre
 
 export const fitFrame = ({ saved, bounds }: FitFrameInput): Frame =>
   saved.width > 0 && saved.height > 0 ? centredFrame({ bounds, size: { width: saved.width, height: saved.height } }) : centredFrame({ bounds });
+
+export const openingFrame = ({ placed, saved, bounds }: OpeningFrameInput): Frame => {
+  if (placed) {
+    return clampFrame({ frame: placed, bounds });
+  }
+
+  return saved ? fitFrame({ saved, bounds }) : centredFrame({ bounds });
+};
 
 export const moveFrame = ({ frame, dx, dy, bounds }: MoveFrameInput): Frame =>
   clampFrame({ frame: { ...frame, x: frame.x + dx, y: frame.y + dy }, bounds });

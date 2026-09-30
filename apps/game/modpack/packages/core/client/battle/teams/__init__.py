@@ -55,10 +55,14 @@ class TeamTracker(object):
             return
         for info in provider.getVehiclesInfoIterator():
             vehicle_type = getattr(info, 'vehicleType', None)
-            self.teams.add(info.vehicleID, info.team, getattr(vehicle_type, 'maxHealth', None),
-                           alive=bool(call(info, 'isAlive', True)),
-                           kind=getattr(vehicle_type, 'classTag', None),
-                           level=getattr(vehicle_type, 'level', None))
+            self.teams.add(
+                info.vehicleID,
+                info.team,
+                getattr(vehicle_type, 'maxHealth', None),
+                alive=bool(call(info, 'isAlive', True)),
+                kind=getattr(vehicle_type, 'classTag', None),
+                level=getattr(vehicle_type, 'level', None),
+            )
         self._apply_feed()
         self.on_change()
 
@@ -85,13 +89,15 @@ class TeamTracker(object):
         if vehicle_id not in self.teams.vehicles and vehicle_id not in self.unknown:
             self.unknown.add(vehicle_id)
             self.sync()
-        changed = False
-        if event_id == self.health_event and isinstance(value, (list, tuple)) and value:
-            changed = self.teams.set_health(vehicle_id, value[0])
-        elif event_id == self.dead_event:
-            changed = self.teams.kill(vehicle_id)
-        if changed:
+        if self._apply_feedback(event_id, vehicle_id, value):
             self.on_change()
+
+    def _apply_feedback(self, event_id, vehicle_id, value):
+        if event_id == self.health_event and isinstance(value, (list, tuple)) and value:
+            return self.teams.set_health(vehicle_id, value[0])
+        if event_id == self.dead_event:
+            return self.teams.kill(vehicle_id)
+        return False
 
     def _on_vehicle_state(self, state, value):
         if self.teams is None or state != self.health_state or self.health_state is None:

@@ -12,9 +12,10 @@ def hides(element, values, enabled):
 
 
 def client_major_minor(version):
-    """(major, minor) of the first x.y.z in the client version text, or None."""
     match = CLIENT_VERSION.search(version or '')
-    return (int(match.group(1)), int(match.group(2))) if match else None
+    if match is None:
+        return None
+    return int(match.group(1)), int(match.group(2))
 
 
 def private_overrides_allowed(version):

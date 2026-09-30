@@ -1,6 +1,15 @@
 import { clamp } from 'remeda';
 
-import type { BindWheelScrollInput, Thumb, ThumbInput, TopFromThumbInput, WheelDelta, WheelRoot, WheelScrollInput } from './wheel-scroll.types';
+import type {
+  BindWheelScrollInput,
+  ScrollMetrics,
+  Thumb,
+  ThumbInput,
+  TopFromThumbInput,
+  WheelDelta,
+  WheelRoot,
+  WheelScrollInput
+} from './wheel-scroll.types';
 
 import { gameface } from '../../api/gameface';
 import { SCROLL_AREA } from '../../config';
@@ -8,13 +17,13 @@ import { rootScale } from '../hud-screen';
 import { reportOnce } from '../page-diag';
 import { createSmoothScroll } from '../smooth-scroll';
 
-const maxTop = (content: number, viewport: number): number => Math.max(content - viewport, 0);
+const maxTop = ({ content, viewport }: Pick<ScrollMetrics, 'content' | 'viewport'>): number => Math.max(content - viewport, 0);
 
 export const wheelScroll = ({ top, deltaY, max, step }: WheelScrollInput): number =>
   clamp(top + Math.sign(deltaY) * step, { min: 0, max: Math.max(max, 0) });
 
 export const thumbOf = ({ top, content, viewport, minThumb }: ThumbInput): Thumb => {
-  const max = maxTop(content, viewport);
+  const max = maxTop({ content, viewport });
 
   if (max <= 0 || viewport <= 0) {
     return { visible: false, size: 0, offset: 0 };
@@ -26,7 +35,7 @@ export const thumbOf = ({ top, content, viewport, minThumb }: ThumbInput): Thumb
 };
 
 export const topFromThumb = ({ offset, size, content, viewport }: TopFromThumbInput): number => {
-  const max = maxTop(content, viewport);
+  const max = maxTop({ content, viewport });
   const track = viewport - size;
 
   return track > 0 ? clamp((offset / track) * max, { min: 0, max }) : 0;

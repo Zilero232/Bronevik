@@ -1,6 +1,3 @@
-// The HUD colour roles (docs/specs/2026-09-29-hud-visual-redesign.md section 4.4) as hex values, for SVG fills and
-// inline colours: Gameface does not resolve `currentColor` reliably in inline SVG. The values are the dark theme of
-// @otmetki/design-tokens; _tests/hud-tones.test.ts keeps them equal.
 export const HUD_TONE_COLORS = {
   text: { token: 'color-text', hex: '#f2f2f3' },
   muted: { token: 'color-text-muted', hex: '#a3a3ad' },

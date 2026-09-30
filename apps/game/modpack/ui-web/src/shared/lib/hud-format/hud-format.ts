@@ -1,4 +1,4 @@
-import type { FormatPercentInput } from './hud-format.types';
+import type { FormatPercentInput, PercentSignInput } from './hud-format.types';
 
 import { HUD_FORMAT } from './hud-format.constants';
 
@@ -17,10 +17,22 @@ export const formatNumber = (value: number): string => {
 
 export const formatSigned = (value: number): string => (value > 0 ? `${HUD_FORMAT.plus}${formatNumber(value)}` : formatNumber(value));
 
+const percentSign = ({ value, rounded, signed }: PercentSignInput): string => {
+  if (rounded === 0) {
+    return '';
+  }
+
+  if (value < 0) {
+    return HUD_FORMAT.minus;
+  }
+
+  return signed ? HUD_FORMAT.plus : '';
+};
+
 export const formatPercent = ({ value, digits, signed = false }: FormatPercentInput): string => {
   const fixed = Math.abs(value).toFixed(digits).replace('.', HUD_FORMAT.decimalComma);
   const rounded = Number(Math.abs(value).toFixed(digits));
-  const sign = value < 0 && rounded > 0 ? HUD_FORMAT.minus : signed && rounded > 0 ? HUD_FORMAT.plus : '';
+  const sign = percentSign({ value, rounded, signed });
 
   return `${sign}${fixed}${HUD_FORMAT.thinSpace}%`;
 };

@@ -31,7 +31,7 @@ def name_values(event, map_label, vehicle_label, result_label):
 
 
 def render_name(template, values, old_name):
-    plain = dict((key, value if not is_int(value) else str(value)) for key, value in values.items())
+    plain = dict((key, str(value) if is_int(value) else value) for key, value in values.items())
     try:
         return rename_target(old_name, render(template, plain))
     except ReplayActionError:
@@ -47,31 +47,47 @@ class AutoNamer(object):
         arena = event.get('arena_unique_id')
         if not arena or any(item['arena'] == arena for item in self.pending):
             return False
+
         started = event.get('arena_created_at') or event.get('occurred_at')
         self.pending.append({'arena': arena, 'started': started, 'values': values, 'queued': now})
         return True
-
-    def _matches(self, item, replay):
-        header = replay.get('header') or {}
-        if header.get('arena_unique_id'):
-            return to_text(header['arena_unique_id']) == to_text(item['arena'])
-        started = header.get('date_time')
-        return started is not None and item['started'] is not None and abs(started - item['started']) <= AUTO_NAME_MATCH_S
 
     def plan(self, replays, template, now):
         renames = []
         keep = []
         for item in self.pending:
-            replay = next((candidate for candidate in replays if self._matches(item, candidate)), None)
-            if replay is None:
-                if now - item['queued'] < AUTO_NAME_GIVE_UP_S:
-                    keep.append(item)
-                continue
-            if now - replay['mtime'] < AUTO_NAME_SETTLE_S:
+            replay = _replay_of(item, replays)
+            if _is_waiting(item, replay, now):
                 keep.append(item)
+                continue
+            if replay is None:
                 continue
             name = render_name(template, item['values'], replay['name'])
             if name and name != replay['name']:
                 renames.append((replay, name))
+
         self.pending = keep
         return renames
+
+
+def _matches(item, replay):
+    header = replay.get('header') or {}
+    if header.get('arena_unique_id'):
+        return to_text(header['arena_unique_id']) == to_text(item['arena'])
+    started = header.get('date_time')
+    if started is None or item['started'] is None:
+        return False
+    return abs(started - item['started']) <= AUTO_NAME_MATCH_S
+
+
+def _replay_of(item, replays):
+    for replay in replays:
+        if _matches(item, replay):
+            return replay
+    return None
+
+
+def _is_waiting(item, replay, now):
+    if replay is None:
+        return now - item['queued'] < AUTO_NAME_GIVE_UP_S
+    return now - replay['mtime'] < AUTO_NAME_SETTLE_S

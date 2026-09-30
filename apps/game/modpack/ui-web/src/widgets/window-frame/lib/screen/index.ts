@@ -1,1 +1,1 @@
-export { readViewport, sameViewport } from './screen';
+export { readViewport } from './screen';

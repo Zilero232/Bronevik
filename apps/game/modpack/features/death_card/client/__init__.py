@@ -4,9 +4,19 @@ import time
 
 from BattleFeedbackCommon import BATTLE_EVENT_TYPE
 
-from ....core.client.battle import arena, call, damage_source, feedback, own_hull_yaw, player, vehicle_class, vehicle_name, vehicle_state
+from ....core.client.battle import (
+    arena,
+    call,
+    damage_source,
+    feedback,
+    own_hull_yaw,
+    player,
+    vehicle_class,
+    vehicle_name,
+    vehicle_state,
+)
 from ....core.client.game import client_attr
-from ....core.client.hud.panel import BattlePanel
+from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.client.timer import Ticker
 from ....core.hooks import override
 from ....core.log import log_exception, safe
@@ -25,24 +35,35 @@ except ImportError:
     VEHICLE_VIEW_STATE = None
 
 
-class DeathCardPanel(BattlePanel):
-    """The card of the own death: the last shot from the player's own feedback (RECEIVED_DAMAGE), the modules the damage
-    panel reported (VEHICLE_VIEW_STATE.DEVICES), the side of that hit as the game's own hit indicator got it
-    (PlayerAvatar.showOwnVehicleHitDirection, RU 1.45) and the killer the kill feed names (arena.onVehicleKilled)."""
+PANEL_SPEC = PanelSpec(
+    panel_id=PANEL_ID,
+    schema=SCHEMA,
+    switch=SWITCH,
+    strings=STRINGS,
+    preview_size=PREVIEW_SIZE,
+    preview_text=preview_text,
+    preview_widget=preview_widget,
+)
 
+
+# RU 1.45 client sources of the card: the own feedback's RECEIVED_DAMAGE (the last shot), the damage panel's
+# VEHICLE_VIEW_STATE.DEVICES (modules), PlayerAvatar.showOwnVehicleHitDirection (the side the game's own hit indicator
+# got) and arena.onVehicleKilled (the killer the kill feed names).
+class DeathCardPanel(BattlePanel):
     def __init__(self, app):
         self.devices_state = getattr(VEHICLE_VIEW_STATE, 'DEVICES', None)
         self.received = getattr(BATTLE_EVENT_TYPE, 'RECEIVED_DAMAGE', None)
         self.watch = None
         self.own_vehicle_id = None
         self.ticker = None
-        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text, preview_widget)
+        BattlePanel.__init__(self, app, PANEL_SPEC)
         self._hook_hit_direction()
 
     def _hook_hit_direction(self):
         avatar = client_attr(AVATAR_MODULE, AVATAR_CLASS)
         if avatar is None or not hasattr(avatar, HIT_DIRECTION_METHOD):
             return
+
         panel = self
 
         try:
@@ -67,36 +88,47 @@ class DeathCardPanel(BattlePanel):
             self.ticker = None
         self.watch = None
 
+    def _is_watching(self):
+        return self.watch is not None and self.watch.card is None
+
     @safe
     def on_hit_direction(self, hit_yaw):
-        if self.watch is not None and self.watch.card is None:
+        if self._is_watching():
             self.watch.hit_direction(sector_of(hit_yaw, own_hull_yaw()), time.time())
 
     # onPlayerFeedbackReceived carries only the player's own events; for received damage the target is the attacker.
     def _on_feedback(self, events):
-        if self.watch is None or self.watch.card is not None:
+        if not self._is_watching():
             return
         for event in events:
             if event.getBattleEventType() != self.received:
                 continue
             extra = event.getExtra()
             attacker = event.getTargetID()
-            self.watch.hit(vehicle_name(attacker), vehicle_class(attacker), shell_code(call(extra, 'getShellType')), call(extra, 'getDamage', 0),
-                           damage_source(extra), time.time())
+            self.watch.hit(
+                vehicle_name(attacker),
+                vehicle_class(attacker),
+                shell_code(call(extra, 'getShellType')),
+                call(extra, 'getDamage', 0),
+                damage_source(extra),
+                time.time(),
+            )
 
     def _on_vehicle_state(self, state, value):
-        if self.watch is None or self.watch.card is not None or state != self.devices_state or self.devices_state is None:
+        if not self._is_watching() or self.devices_state is None or state != self.devices_state:
             return
         if isinstance(value, (list, tuple)) and len(value) >= 2:
             self.watch.module(value[0], value[1], time.time())
 
     def _on_vehicle_killed(self, victim_id, killer_id, *args):
         own = self.own_vehicle_id or getattr(player(), 'playerVehicleID', None)
-        if self.watch is None or self.watch.card is not None or victim_id != own:
+        if not self._is_watching() or victim_id != own:
             return
+
         killer = killer_id if killer_id and killer_id != own else None
         self.watch.killed(vehicle_name(killer), vehicle_class(killer), time.time())
         self.render()
+
         seconds = self.settings.get('show_s')
         if seconds:
             self.ticker = Ticker(seconds, self._expire)

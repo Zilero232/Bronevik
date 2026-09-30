@@ -8,16 +8,23 @@ from ....core.hud import HangarLabel
 from ....core.log import safe
 from ..i18n import STRINGS
 from ..model import clean_caravan, format_caravan, format_triathlon, triathlon_view
-from ..model.constants import CARAVAN_PANEL, HANGAR_LAYOUT, MIN_TIER, REFRESH_EVERY_S, STORE_FILE, TRIATHLON_PANEL
+from ..model.constants import (
+    CARAVAN_PANEL,
+    HANGAR_LAYOUT,
+    MIN_TIER,
+    REFRESH_EVERY_S,
+    STORE_FILE,
+    TRIATHLON_PANEL,
+)
 from ..model.triathlon import TriathlonRounds, clean_event
 from ..model.widget import caravan_widget, triathlon_widget
 from ..settings import SCHEMA, SECTION, SWITCH
 from .reads import caravan, triathlon_event
 
 
+# Two hangar cards shown only while their event runs: the own Triathlon rounds (from the own battle results) and the
+# own Trading Caravan tokens; read every REFRESH_EVERY_S in the hangar.
 class EventTrackers(FeatureComponent):
-    """Two hangar cards shown only while their event runs: the own Triathlon rounds (from the own battle results) and the
-    own Trading Caravan tokens; read every REFRESH_EVERY_S in the hangar."""
 
     def __init__(self, app):
         FeatureComponent.__init__(self, app, SECTION, SCHEMA, SWITCH, STRINGS)
@@ -47,7 +54,8 @@ class EventTrackers(FeatureComponent):
         if not self.enabled() or not self.settings.get('show_triathlon'):
             return
         tank_id = (event.get('vehicle') or {}).get('tank_id')
-        if self.rounds.add(event, self.min_tier, vehicle_short_name(tank_id)) and self.store is not None:
+        is_added = self.rounds.add(event, self.min_tier, vehicle_short_name(tank_id))
+        if is_added and self.store is not None:
             self.store.write(self.rounds.dump())
 
     def settings_changed(self, changed):
@@ -79,7 +87,9 @@ class EventTrackers(FeatureComponent):
         self.min_tier = event['min_tier']
         translate = self.app.translate
         view = triathlon_view(self.rounds, event, now, translate)
-        self.triathlon.show(format_triathlon(view, self.settings, translate), HANGAR_LAYOUT, widget=triathlon_widget(view, translate))
+
+        text = format_triathlon(view, self.settings, translate)
+        self.triathlon.show(text, HANGAR_LAYOUT, widget=triathlon_widget(view, translate))
 
     def _show_caravan(self, now):
         found = clean_caravan(caravan()) if self.settings.get('show_caravan') else None
@@ -87,4 +97,6 @@ class EventTrackers(FeatureComponent):
             self.caravan.clear()
             return
         translate = self.app.translate
-        self.caravan.show(format_caravan(found, now, self.settings, translate), HANGAR_LAYOUT, widget=caravan_widget(found, now, translate))
+
+        text = format_caravan(found, now, self.settings, translate)
+        self.caravan.show(text, HANGAR_LAYOUT, widget=caravan_widget(found, now, translate))

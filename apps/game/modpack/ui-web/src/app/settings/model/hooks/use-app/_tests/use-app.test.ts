@@ -6,17 +6,25 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { $invalid, $state } from '../../../../../../entities/window-state';
 import { GAMEFACE } from '../../../../../../shared/api/gameface';
 import { createGamefaceMock, installGamefaceMock } from '../../../../../../shared/api/gameface/mock';
+import { forgetReports } from '../../../../../../shared/lib/page-diag';
 import { renderHook } from '../../../../../../shared/lib/testing/render-hook';
 import { useApp } from '../use-app';
 
-const sample = readFileSync(path.resolve(import.meta.dirname, '../../../../../../shared/api/protocol/_tests/fixtures/state.sample.json'), 'utf8');
+const SAMPLE = readFileSync(path.resolve(import.meta.dirname, '../../../../../../shared/api/protocol/_tests/fixtures/state.sample.json'), 'utf8');
 
-const install = (state: string) => {
+const startApp = async (state: string) => {
   const mock = createGamefaceMock({ state, clientSize: () => ({ width: 1920, height: 1080 }), onSend: () => null });
 
   installGamefaceMock(mock);
 
-  return mock;
+  const hook = renderHook(useApp);
+
+  await hook.settle();
+  await hook.settle();
+
+  const sent = () => mock.sent().map((message): { type: string } => JSON.parse(message));
+
+  return { mock, hook, sent };
 };
 
 beforeEach(() => {
@@ -25,47 +33,56 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  forgetReports();
   Object.values(GAMEFACE.globals).forEach((name) => Reflect.deleteProperty(globalThis, name));
 });
 
 describe(useApp, () => {
-  it('announces itself to the mod and takes the state it pushes', async () => {
-    const mock = install(sample);
-    const hook = renderHook(useApp);
+  it('announces itself to the mod once it starts', async () => {
+    const { sent } = await startApp(SAMPLE);
 
-    await hook.settle();
-    await hook.settle();
+    const messages = sent().filter((message) => message.type !== 'diag');
 
-    const sent = mock.sent().map((message): { type: string } => JSON.parse(message));
+    expect(messages).toEqual([{ type: 'ready' }]);
+  });
 
-    expect(sent.filter((message) => message.type !== 'diag')).toEqual([{ type: 'ready' }]);
-    expect(sent.map((message) => message.type)).toContain('diag');
-    expect(hook.current().state?.revision).toBe(JSON.parse(sample).revision);
+  it('reports its page diagnostics to the game log', async () => {
+    const { sent } = await startApp(SAMPLE);
+
+    const types = sent().map((message) => message.type);
+
+    expect(types).toContain('diag');
+  });
+
+  it('takes the state the mod pushes', async () => {
+    const { hook } = await startApp(SAMPLE);
+
+    const { state } = hook.current();
+
+    expect(state?.revision).toBe(1);
   });
 
   it('asks the mod to close the window when Esc comes with nothing open', async () => {
-    const mock = install(sample);
-    const hook = renderHook(useApp);
-
-    await hook.settle();
-    await hook.settle();
+    const { mock, sent } = await startApp(SAMPLE);
 
     mock.push({ escape: 1 });
 
-    const types = mock.sent().map((message): { type: string } => JSON.parse(message));
+    expect(sent().at(-1)).toEqual({ type: 'close' });
+  });
 
-    expect(types.at(-1)).toEqual({ type: 'close' });
+  it('shows no state when the push does not parse', async () => {
+    const { hook } = await startApp('{"v": 99}');
+
+    const { state } = hook.current();
+
+    expect(state).toBeNull();
   });
 
   it('shows the invalid-state note when the push does not parse', async () => {
-    install('{"v": 99}');
+    const { hook } = await startApp('{"v": 99}');
 
-    const hook = renderHook(useApp);
+    const { placeholderKey } = hook.current();
 
-    await hook.settle();
-    await hook.settle();
-
-    expect(hook.current().state).toBeNull();
-    expect(hook.current().placeholderKey).toBe('invalidState');
+    expect(placeholderKey).toBe('invalidState');
   });
 });

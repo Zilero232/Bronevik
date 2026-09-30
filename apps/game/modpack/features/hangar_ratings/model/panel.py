@@ -1,67 +1,49 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, counted, font, format_number, format_percent
-from .constants import (ACCOUNT_METRICS, ACTION_REFRESH, ACTION_SITE, METRIC_KEY, METRIC_SEPARATOR, RATING_METRICS, SESSION_METRICS, SITE_PATH, STAR,
-                        TANK_METRICS, TIER_COLORS, TITLE_SIZE_STEP)
+from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, font
+from .constants import (
+    ACCOUNT_METRICS,
+    ACTION_REFRESH,
+    ACTION_SITE,
+    METRIC_SEPARATOR,
+    RATING_METRICS,
+    SESSION_METRICS,
+    SITE_PATH,
+    TANK_METRICS,
+    TITLE_SIZE_STEP,
+)
+from .metrics import fact_text, metric_enabled, rating_color, rating_value
 
 
-def metric_enabled(settings, metric):
-    return bool(settings.get(METRIC_KEY % metric))
-
-
-def tier_color(rating, colored):
-    if not colored or not isinstance(rating, dict):
-        return COLOR_NEUTRAL
-    return TIER_COLORS.get(rating.get('tier'), COLOR_NEUTRAL)
-
-
-def stars(marks):
-    return STAR * marks if marks else u''
-
-
-def _rating_text(metric, rating, translate, colored, size):
-    value = rating.get('value') if isinstance(rating, dict) else None
+def _rating_text(metric, rating, translate, is_colored, size):
+    value = rating_value(rating)
     if value is None:
         return None
-    return u'%s %s' % (font(translate('hangar_ratings_short_' + metric), COLOR_MUTED, size), font(format_number(value), tier_color(rating, colored), size))
+    name = font(translate('hangar_ratings_short_' + metric), COLOR_MUTED, size)
+    color = rating_color(rating, is_colored) or COLOR_NEUTRAL
+    return u'%s %s' % (name, font(value, color, size))
 
 
-def _moe_text(row, size):
-    percent = row.get('moe_percent')
-    if percent is None:
-        return None
-    text = format_percent(percent)
-    marks = stars(row.get('marks_on_gun'))
-    return font(u'%s %s' % (text, marks) if marks else text, COLOR_NEUTRAL, size)
-
-
-def metric_text(metric, row, translate, colored, size):
+def metric_text(metric, row, translate, is_colored, size):
     if metric in RATING_METRICS:
-        return _rating_text(metric, row.get(metric), translate, colored, size)
-    if metric == 'win_rate':
-        value = row.get('win_rate')
-        return None if value is None else font(translate('hangar_ratings_win_rate_value', value=format_percent(value)), COLOR_NEUTRAL, size)
-    if metric == 'battles':
-        return font(counted(row.get('battles') or 0, 'battles', translate), COLOR_NEUTRAL, size)
-    if metric == 'avg_damage':
-        value = row.get('avg_damage')
-        return None if value is None else font(translate('hangar_ratings_avg_damage_value', value=format_number(value)), COLOR_NEUTRAL, size)
-    if metric == 'moe':
-        return _moe_text(row, size)
-    if metric == 'mastery':
-        mastery = row.get('mastery') or 0
-        return font(translate('hangar_ratings_mastery_%d' % mastery), COLOR_NEUTRAL, size) if mastery else None
-    return None
+        return _rating_text(metric, row.get(metric), translate, is_colored, size)
+    text = fact_text(metric, row, translate)
+    if text is None:
+        return None
+    return font(text, COLOR_NEUTRAL, size)
 
 
 def metrics_line(label, row, metrics, settings, translate):
     size = settings.get('font_size')
-    colored = settings.get('colored')
-    parts = [metric_text(metric, row, translate, colored, size) for metric in metrics if metric_enabled(settings, metric)]
-    parts = [part for part in parts if part]
+    is_colored = settings.get('colored')
+    enabled = [metric for metric in metrics if metric_enabled(settings, metric)]
+
+    texts = [metric_text(metric, row, translate, is_colored, size) for metric in enabled]
+    parts = [text for text in texts if text]
     if not parts:
         return None
+
     return u'%s %s' % (font(label, COLOR_MUTED, size), METRIC_SEPARATOR.join(parts))
 
 
@@ -81,6 +63,11 @@ def _session_line(overview, settings, translate):
     return metrics_line(label, session, SESSION_METRICS, settings, translate)
 
 
+def _tank_line(tank, tank_label, settings, translate):
+    label = tank_label or translate('hangar_ratings_tank')
+    return metrics_line(label, tank, TANK_METRICS, settings, translate)
+
+
 def panel_text(overview, tank, tank_label, settings, translate):
     lines = []
     if settings.get('show_account'):
@@ -88,16 +75,23 @@ def panel_text(overview, tank, tank_label, settings, translate):
     if settings.get('show_session'):
         lines.append(_session_line(overview, settings, translate))
     if settings.get('show_tank') and tank is not None:
-        lines.append(metrics_line(tank_label or translate('hangar_ratings_tank'), tank, TANK_METRICS, settings, translate))
+        lines.append(_tank_line(tank, tank_label, settings, translate))
+
     lines = [line for line in lines if line]
     if not lines:
         return None
+
     title = font(translate('hangar_ratings_title'), COLOR_NEUTRAL, settings.get('font_size') + TITLE_SIZE_STEP)
     return u'\n'.join([title] + lines)
 
 
 def layout_of(settings):
-    return {'x': settings.get('x'), 'y': settings.get('y'), 'alignX': settings.get('align_x'), 'alignY': settings.get('align_y')}
+    return {
+        'x': settings.get('x'),
+        'y': settings.get('y'),
+        'alignX': settings.get('align_x'),
+        'alignY': settings.get('align_y'),
+    }
 
 
 def page_actions(translate):

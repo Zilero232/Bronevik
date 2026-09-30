@@ -6,9 +6,11 @@ import { readWidgetFixture } from '../../../../../../shared/lib/testing/widget-f
 import { lastHitSchema } from '../../../model/schemas';
 import { LastHitWidget } from '../LastHitWidget';
 
+const data = lastHitSchema.parse(readWidgetFixture('last_hit'));
+
 describe(LastHitWidget, () => {
   it('shows the attacker, the damage and the shell of the last hit', () => {
-    const html = mount({ Component: LastHitWidget, props: { data: lastHitSchema.parse(readWidgetFixture('last_hit')) } });
+    const html = mount({ Component: LastHitWidget, props: { data } });
 
     expect(html.textContent).toContain('KV-1');
     expect(html.textContent).toContain('-310');

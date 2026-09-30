@@ -4,8 +4,8 @@ from ....core.me import REFRESH_AFTER_BATTLE_S, ReadState
 from .constants import OVERVIEW_KEY
 
 
+# The account overview for the game session; the tank rows are the shared core read (`tank_ratings`).
 class RatingsCache(ReadState):
-    """The account overview for the game session; the tank rows are the shared core read (`tank_ratings`)."""
 
     def __init__(self, account_id=None):
         ReadState.__init__(self)

@@ -15,7 +15,6 @@ def diameter():
 
 
 class CircleState(object):
-    """Whether the circle is wanted: the mode, the hotkey toggle and whether the own tank is alive."""
 
     def __init__(self, mode):
         self.mode = mode

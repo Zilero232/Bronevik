@@ -23,6 +23,7 @@ BOTH_CHANNELS = 'both'
 SHARE_STATE_KEY = 'session_share_synced'
 SHARE_RETRY_S = 300
 ACTION_SHARE = 'share_now'
+# A refused /send: 409 channel_not_linked and 404 session_not_found get their own short line.
 SHARE_SEND_FAILURES = {404: 'session_share_not_found', 409: 'session_share_not_linked'}
 SHARE_SEND_FAILED = 'session_share_failed'
 # A /session-share answer: stored, refused until the player changes the switch (409 channel_not_linked: the chosen
@@ -50,6 +51,21 @@ COUNTERS = (
     'direct_enemy_hits',
     'piercing_enemy_hits',
 )
+# The counters a battle event's `stats` (companion/payload) carries under the same name; the assist counter sums
+# ASSISTED_STATS.
+STAT_COUNTERS = (
+    'damage_dealt',
+    'damage_blocked',
+    'frags',
+    'spotted',
+    'xp',
+    'credits',
+    'shots',
+    'direct_enemy_hits',
+    'piercing_enemy_hits',
+)
+ASSISTED_STATS = ('damage_assisted_radio', 'damage_assisted_track', 'damage_assisted_stun')
+VEHICLE_COUNTERS = ('battles', 'wins', 'damage_dealt')
 
 # The hangar card (model/widget.py): width in design px, the win rate from which it shows as good.
 CARD_WIDTH = 260

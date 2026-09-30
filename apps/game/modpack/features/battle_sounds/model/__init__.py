@@ -12,8 +12,12 @@ def device_event(device, state):
     if device == AMMO_RACK:
         return 'ammo_rack'
     if device.rstrip('0123456789') in CREW_ROLES:
-        return 'crew_injured' if state == STATE_DESTROYED else None
-    return 'module_critical' if state == STATE_CRITICAL else 'module_destroyed'
+        if state == STATE_DESTROYED:
+            return 'crew_injured'
+        return None
+    if state == STATE_CRITICAL:
+        return 'module_critical'
+    return 'module_destroyed'
 
 
 def device_change(value):
@@ -33,9 +37,11 @@ class KillFeed(object):
         events = []
         if self.kills == 1:
             events.append('first_blood')
-        if killer_id and killer_id == self.own_vehicle_id and victim_id != self.own_vehicle_id:
+        is_own_death = victim_id == self.own_vehicle_id
+        is_own_kill = bool(killer_id) and killer_id == self.own_vehicle_id
+        if is_own_kill and not is_own_death:
             events.append('own_frag')
-        if victim_id == self.own_vehicle_id:
+        if is_own_death:
             events.append('own_death')
         return events
 

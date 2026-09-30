@@ -77,37 +77,73 @@ class UiContextTest(unittest.TestCase):
         self.watch = Watch()
         self.ui = load_ui()(self.backend, self.watch)
 
-    def test_labels_and_the_button_hide_off_the_plain_hangar_and_come_back(self):
+    def show_session_card_and_button(self):
         self.ui.show('otmetki.session', u'text', dock_layout('hangar_right'), widget={'kind': 'card'})
         self.ui.button('otmetki.ui.button', {'x': 1, 'y': 2}, lambda: None)
+
+    def aliases_updated_with(self, props, calls=None):
+        calls = self.backend.calls if calls is None else calls
+        return sorted(call[1] for call in calls if call[0] == 'update' and call[2] == props)
+
+    def test_labels_and_the_button_hide_off_the_plain_hangar(self):
+        self.show_session_card_and_button()
+
         self.watch.change(False)
-        hidden = sorted(call[1] for call in self.backend.calls if call[0] == 'update' and call[2] == {'visible': False})
-        assert hidden == ['otmetki.session', 'otmetki.ui.button']
+
+        assert self.aliases_updated_with({'visible': False}) == ['otmetki.session', 'otmetki.ui.button']
+
+    def test_a_label_updated_off_the_hangar_stays_hidden(self):
+        self.show_session_card_and_button()
+        self.watch.change(False)
+
         self.ui.show('otmetki.session', u'new', dock_layout('hangar_right'))
+
         assert self.backend.calls[-1][2]['visible'] is False
+
+    def test_labels_and_the_button_come_back_on_the_plain_hangar(self):
+        self.show_session_card_and_button()
+        self.watch.change(False)
+        self.ui.show('otmetki.session', u'new', dock_layout('hangar_right'))
+
         self.watch.change(True)
-        assert sorted(call[1] for call in self.backend.calls[-2:] if call[2] == {'visible': True}) == ['otmetki.session', 'otmetki.ui.button']
+
+        shown = self.aliases_updated_with({'visible': True}, self.backend.calls[-2:])
+        assert shown == ['otmetki.session', 'otmetki.ui.button']
 
     def test_a_new_label_off_the_hangar_is_created_hidden(self):
         self.watch.listen(lambda visible: None)
         self.ui.show('otmetki.a', u'', {'x': 0, 'y': 0})
         self.watch.change(False)
-        self.ui.show('otmetki.b', u'text', {'x': 0, 'y': 0})
-        assert self.backend.calls[-1][0] == 'create' and self.backend.calls[-1][2]['visible'] is False
 
-    def test_a_label_carries_its_widget_and_dock_and_leaves_the_column_when_moved(self):
+        self.ui.show('otmetki.b', u'text', {'x': 0, 'y': 0})
+
+        assert self.backend.calls[-1][0] == 'create'
+        assert self.backend.calls[-1][2]['visible'] is False
+
+    def test_a_label_carries_its_widget_and_dock(self):
+        self.ui.show('otmetki.personal_missions', u'text', dock_layout('hangar_right'), None, {'kind': 'card'})
+
+        props = self.backend.calls[0][2]
+        assert props['widget'] == {'kind': 'card'}
+        assert props['dock'] == {'group': 'hangar_right', 'order': 2, 'reserve': 190}
+
+    def test_a_moved_label_reports_the_move_and_leaves_the_column(self):
         moved = []
         self.ui.show('otmetki.personal_missions', u'text', dock_layout('hangar_right'), moved.append, {'kind': 'card'})
-        props = self.backend.calls[0][2]
-        assert props['widget'] == {'kind': 'card'} and props['dock'] == {'group': 'hangar_right', 'order': 2, 'reserve': 190}
+
         self.backend.moved('otmetki.personal_missions', {'x': 5, 'y': 6})
-        assert moved == [{'x': 5, 'y': 6}] and self.backend.calls[-1] == ('update', 'otmetki.personal_missions', {'dock': None})
+
+        assert moved == [{'x': 5, 'y': 6}]
+        assert self.backend.calls[-1] == ('update', 'otmetki.personal_missions', {'dock': None})
 
     def test_muted_labels_come_back_with_their_widget(self):
         self.ui.show('otmetki.a', u'text', {'x': 0, 'y': 0}, widget={'kind': 'card'})
         self.ui.set_muted(True)
+
         self.ui.set_muted(False)
-        assert self.backend.calls[-1][0] == 'create' and self.backend.calls[-1][2]['widget'] == {'kind': 'card'}
+
+        assert self.backend.calls[-1][0] == 'create'
+        assert self.backend.calls[-1][2]['widget'] == {'kind': 'card'}
 
 
 if __name__ == '__main__':

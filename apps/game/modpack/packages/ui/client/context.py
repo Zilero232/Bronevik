@@ -64,7 +64,12 @@ class UiContext(object):
 
     def status(self):
         app = self.app
-        return {'bound': bool(app.is_bound()), 'auth_failed': bool(app.auth_failed), 'account_id': app.account_id, 'text': app.status_text()}
+        return {
+            'bound': bool(app.is_bound()),
+            'auth_failed': bool(app.auth_failed),
+            'account_id': app.account_id,
+            'text': app.status_text(),
+        }
 
     def set_language(self, language):
         app = self.app

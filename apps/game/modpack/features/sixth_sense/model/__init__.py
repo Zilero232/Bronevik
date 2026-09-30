@@ -3,8 +3,19 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import math
 
 from ....core.format import font
-from .constants import (DETECTION_SOUND, DIM_SUFFIX, ENDED, ICON_RENDITIONS, ICON_ROOT, LAMP_DURATION_S, LAMP_SOUND_INDEX, OBSERVED,
-                        PULSE_PERIOD_S)
+from .constants import (
+    DETECTION_SOUND,
+    DIM_SUFFIX,
+    ENDED,
+    ICON_RENDITIONS,
+    ICON_ROOT,
+    LAMP_DURATION_S,
+    LAMP_SOUND_INDEX,
+    MIN_TIMER_FONT_SIZE,
+    OBSERVED,
+    PULSE_PERIOD_S,
+    TIMER_FONT_DECREASE,
+)
 
 # Fair play: follows the client's own sixth-sense lamp (the player's vehicle is spotted); nothing else.
 
@@ -12,6 +23,7 @@ from .constants import (DETECTION_SOUND, DIM_SUFFIX, ENDED, ICON_RENDITIONS, ICO
 def lamp_duration(hide_after_s, own_spotting_decrease):
     if hide_after_s > 0:
         return float(hide_after_s)
+
     return max(0.0, LAMP_DURATION_S - (own_spotting_decrease or 0.0))
 
 
@@ -19,7 +31,6 @@ class SixthSense(object):
 
     def __init__(self):
         self.lit_at = None
-        self.count = 0
         self.duration = LAMP_DURATION_S
         self.shown_seconds = 0
         self.over = False
@@ -42,7 +53,6 @@ class SixthSense(object):
             return None
 
         self.lit_at = now
-        self.count += 1
         self.duration = duration
         self.shown_seconds = int(math.ceil(duration))
         return 'show'
@@ -63,10 +73,16 @@ class SixthSense(object):
         self.reset()
 
     def elapsed(self, now):
-        return int(max(0, now - self.lit_at)) if self.lit else None
+        if not self.lit:
+            return None
+
+        return int(max(0, now - self.lit_at))
 
     def seconds_left(self, now):
-        return max(0.0, self.duration - (now - self.lit_at)) if self.lit else None
+        if not self.lit:
+            return None
+
+        return max(0.0, self.duration - (now - self.lit_at))
 
     def tick_due(self, now):
         seconds_left = self.seconds_left(now)
@@ -81,11 +97,17 @@ class SixthSense(object):
         return True
 
     def expired(self, now, hide_after_s):
-        return self.lit and hide_after_s > 0 and now - self.lit_at >= hide_after_s
+        if not self.lit or hide_after_s <= 0:
+            return False
+
+        return now - self.lit_at >= hide_after_s
 
     def dimmed(self, now):
-        """The pulse: every other half second of a lit lamp shows the dimmed frame."""
-        return self.lit and int(max(0, now - self.lit_at) / PULSE_PERIOD_S) % 2 == 1
+        if not self.lit:
+            return False
+
+        pulse_frame = int(max(0, now - self.lit_at) / PULSE_PERIOD_S)
+        return pulse_frame % 2 == 1
 
 
 def icon_html(path, size):
@@ -99,32 +121,55 @@ def rendition(size):
     return ICON_RENDITIONS[-1]
 
 
+# The client image path of the icon to show; '' when a custom icon is left empty (the text shows instead).
 def icon_path(settings, dimmed=False):
-    """The client image path of the icon to show, or '' for none."""
     icon_set = settings.get('icon_set')
     if icon_set == 'custom':
         return settings.get('icon')
-    suffix = DIM_SUFFIX if dimmed and settings.get('pulse') else ''
+
+    shows_dim_frame = dimmed and settings.get('pulse')
+    suffix = DIM_SUFFIX if shows_dim_frame else ''
     return '%s/%s%s_%d.png' % (ICON_ROOT, icon_set, suffix, rendition(settings.get('icon_size')))
 
 
+def lamp_text(settings, has_icon, translate):
+    own_text = settings.get('text')
+    if own_text:
+        return own_text
+    if has_icon:
+        return ''
+
+    return translate('sixth_sense_text')
+
+
+def timer_line(state, settings, translate, now):
+    elapsed = state.elapsed(now)
+    if not settings.get('show_timer') or elapsed is None:
+        return None
+
+    size = max(MIN_TIMER_FONT_SIZE, settings.get('font_size') - TIMER_FONT_DECREASE)
+    return font(translate('sixth_sense_timer', seconds=elapsed), settings.get('color'), size)
+
+
 def format_sixth_sense(state, settings, translate, now):
-    size = settings.get('font_size')
-    color = settings.get('color')
-    parts = []
     icon = icon_path(settings, state.dimmed(now))
+    text = lamp_text(settings, bool(icon), translate)
+    timer = timer_line(state, settings, translate, now)
+
+    parts = []
     if icon:
         parts.append(icon_html(icon, settings.get('icon_size')))
-    text = settings.get('text') or ('' if icon else translate('sixth_sense_text'))
     if text:
-        parts.append(font(text, color, size))
-    elapsed = state.elapsed(now)
-    if settings.get('show_timer') and elapsed is not None:
-        parts.append(font(translate('sixth_sense_timer', seconds=elapsed), color, max(8, size - 6)))
+        parts.append(font(text, settings.get('color'), settings.get('font_size')))
+    if timer:
+        parts.append(timer)
     return '\n'.join(parts)
 
 
+# The game's detection-sound setting for the chosen lamp sound; nothing while the sound is left to the game.
 def to_native(values):
-    """The game's detection-sound setting for the chosen lamp sound; nothing while it is left to the game."""
     index = LAMP_SOUND_INDEX.get(values.get('lamp_sound'))
-    return {DETECTION_SOUND: index} if index is not None else {}
+    if index is None:
+        return {}
+
+    return {DETECTION_SOUND: index}

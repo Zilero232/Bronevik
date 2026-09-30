@@ -1,1 +1,1 @@
-export { $feed, $watchedFeed, receiveFeed, unwatchFeed, watchFeed } from './feed';
+export { $feed, receiveFeed, unwatchFeed, watchFeed } from './feed';

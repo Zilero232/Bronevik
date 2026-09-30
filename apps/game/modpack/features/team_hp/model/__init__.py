@@ -3,8 +3,17 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, font, format_number
 from ....core.templates import render
 from ....core.teams import TeamHp  # noqa: F401
-from ..settings.constants import OVERLAY_STYLES, UNDER_STOCK_Y
-from .constants import BAR_CHAR, COMPACT_STYLES, PAIR_PARTS, SCORE_KEYS, SIDE_COLORS, STRIP_STYLES
+from ..settings.constants import BESIDE_STOCK_PLACE, OVERLAY_STYLES
+from .constants import (
+    BAR_CHAR,
+    COMPACT_STYLES,
+    DIFF_FONT_DECREASE,
+    MIN_DIFF_FONT_SIZE,
+    PAIR_PARTS,
+    SCORE_KEYS,
+    SIDE_COLORS,
+    STRIP_STYLES,
+)
 from .strip import strip_rows
 
 
@@ -12,13 +21,17 @@ def replaces_stock(settings):
     return bool(settings.get('replace_stock')) and settings.get('style') not in OVERLAY_STYLES
 
 
-def pinned_y(settings):
-    return settings.get('y') if replaces_stock(settings) else UNDER_STOCK_Y
+def pinned_place(settings):
+    if replaces_stock(settings):
+        return settings.get('x'), settings.get('y')
+
+    return BESIDE_STOCK_PLACE
 
 
 def bar(value, maximum, width, color):
     filled = int(round(width * value / maximum)) if maximum > 0 else 0
     filled = max(0, min(width, filled))
+
     return font(BAR_CHAR * filled, color) + font(BAR_CHAR * (width - filled), COLOR_MUTED)
 
 
@@ -48,10 +61,13 @@ def icon_row(rows, width, color):
 
 def format_icons(teams, settings, options):
     width = settings.get('icon_width')
-    parts = [icon_row(strip_rows(teams, True, options), width, settings.get('ally_color'))]
+    allies = icon_row(strip_rows(teams, True, options), width, settings.get('ally_color'))
+    enemies = icon_row(strip_rows(teams, False, options), width, settings.get('enemy_color'))
+
+    parts = [allies]
     if settings.get('show_score'):
         parts.append(score_text(teams.values(), settings))
-    parts.append(icon_row(strip_rows(teams, False, options), width, settings.get('enemy_color')))
+    parts.append(enemies)
     return font(u'   '.join(parts), COLOR_NEUTRAL, settings.get('font_size'))
 
 
@@ -83,7 +99,23 @@ def number_parts(values, settings, style):
     shown = PAIR_PARTS[style]
     allies = side_parts(values, settings, 'allies', shown)
     enemies = side_parts(values, settings, 'enemies', shown)
+
     return allies + score_parts(values, settings, style) + list(reversed(enemies))
+
+
+def pair_style(settings):
+    style = settings.get('style')
+    if style in COMPACT_STYLES:
+        return 'compact'
+
+    return style
+
+
+def diff_line(values, settings, translate):
+    diff = values['diff']
+    color_key = 'ally_color' if diff >= 0 else 'enemy_color'
+    size = max(MIN_DIFF_FONT_SIZE, settings.get('font_size') - DIFF_FONT_DECREASE)
+    return font(translate('team_hp_diff', diff=signed(diff)), settings.get(color_key), size)
 
 
 def format_team_hp(values, settings, translate):
@@ -91,9 +123,8 @@ def format_team_hp(values, settings, translate):
     if settings.get('template'):
         return font(render(settings.get('template'), values), COLOR_NEUTRAL, size)
 
-    style = 'compact' if settings.get('style') in COMPACT_STYLES else settings.get('style')
+    style = pair_style(settings)
     lines = [font('  '.join(number_parts(values, settings, style)), COLOR_NEUTRAL, size)]
     if settings.get('show_diff') and style != 'compact':
-        color = settings.get('ally_color') if values['diff'] >= 0 else settings.get('enemy_color')
-        lines.append(font(translate('team_hp_diff', diff=signed(values['diff'])), color, max(8, size - 2)))
+        lines.append(diff_line(values, settings, translate))
     return '\n'.join(lines)

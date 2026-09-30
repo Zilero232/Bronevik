@@ -5,56 +5,92 @@ from .constants import APPLICABLE_GROUPS, RESOLUTION_FIELDS, RESOLUTION_RE, TEXT
 from .fields import BY_PATH, BY_RAW, FIELDS, TEXT
 
 
+def _clean_bool(kind, value):
+    return value if isinstance(value, bool) else None
+
+
+def _clean_int(kind, value):
+    if not is_number(value) or int(value) != value:
+        return None
+    value = int(value)
+    return value if kind[1] <= value <= kind[2] else None
+
+
+def _clean_number(kind, value):
+    if not is_number(value):
+        return None
+    value = round(float(value), 4)
+    return value if kind[1] <= value <= kind[2] else None
+
+
+def _clean_text(kind, value):
+    if not isinstance(value, string_types):
+        return None
+    value = to_text(value).strip()
+    return value if 0 < len(value) <= TEXT_MAX else None
+
+
+def _clean_enum(kind, value):
+    is_choice = isinstance(value, string_types) and value in kind[1]
+    return value if is_choice else None
+
+
+def _clean_enum_list(kind, value):
+    if not isinstance(value, (list, tuple)):
+        return None
+    items = []
+    for item in value:
+        if not isinstance(item, string_types) or item not in kind[1]:
+            return None
+        if item not in items:
+            items.append(to_text(item))
+    return items
+
+
+def _clean_resolution(kind, value):
+    if not isinstance(value, string_types) or not RESOLUTION_RE.match(value):
+        return None
+    return to_text(value)
+
+
+def _clean_fov_range(kind, value):
+    if not isinstance(value, (list, tuple)) or len(value) != 2:
+        return None
+    if not all(is_int(item) for item in value):
+        return None
+    low, high = int(value[0]), int(value[1])
+    return [low, high] if kind[1] <= low <= high <= kind[2] else None
+
+
+def _clean_text_map(kind, value):
+    if not isinstance(value, dict):
+        return None
+    result = {}
+    for key, item in value.items():
+        text = _clean_text(TEXT, item)
+        if key in kind[1] and text is not None:
+            result[to_text(key)] = text
+    return result or None
+
+
+CLEANERS = {
+    'bool': _clean_bool,
+    'int': _clean_int,
+    'num': _clean_number,
+    'text': _clean_text,
+    'enum': _clean_enum,
+    'enum_list': _clean_enum_list,
+    'resolution': _clean_resolution,
+    'fov_range': _clean_fov_range,
+    'text_map': _clean_text_map,
+}
+
+
 def _clean(kind, value):
-    tag = kind[0]
-    if tag == 'bool':
-        return value if isinstance(value, bool) else None
-    if tag == 'int':
-        if not is_number(value) or int(value) != value:
-            return None
-        value = int(value)
-        return value if kind[1] <= value <= kind[2] else None
-    if tag == 'num':
-        if not is_number(value):
-            return None
-        value = round(float(value), 4)
-        return value if kind[1] <= value <= kind[2] else None
-    if tag == 'text':
-        if not isinstance(value, string_types):
-            return None
-        value = to_text(value).strip()
-        return value if 0 < len(value) <= TEXT_MAX else None
-    if tag == 'enum':
-        return value if isinstance(value, string_types) and value in kind[1] else None
-    if tag == 'enum_list':
-        if not isinstance(value, (list, tuple)):
-            return None
-        items = []
-        for item in value:
-            if not isinstance(item, string_types) or item not in kind[1]:
-                return None
-            if item not in items:
-                items.append(to_text(item))
-        return items
-    if tag == 'resolution':
-        if not isinstance(value, string_types) or not RESOLUTION_RE.match(value):
-            return None
-        return to_text(value)
-    if tag == 'fov_range':
-        if not isinstance(value, (list, tuple)) or len(value) != 2 or not all(is_int(v) for v in value):
-            return None
-        low, high = int(value[0]), int(value[1])
-        return [low, high] if kind[1] <= low <= high <= kind[2] else None
-    if tag == 'text_map':
-        if not isinstance(value, dict):
-            return None
-        result = {}
-        for key, item in value.items():
-            text = _clean(TEXT, item)
-            if key in kind[1] and text is not None:
-                result[to_text(key)] = text
-        return result or None
-    return None
+    cleaner = CLEANERS.get(kind[0])
+    if cleaner is None:
+        return None
+    return cleaner(kind, value)
 
 
 def clean_values(raw):
@@ -99,18 +135,27 @@ def flatten_settings(settings):
 
 
 def is_hardware_specific(group, field):
-    return (group == 'display' and field in RESOLUTION_FIELDS) or (group == 'controls' and field.startswith('sensitivity.'))
+    is_resolution = group == 'display' and field in RESOLUTION_FIELDS
+    is_sensitivity = group == 'controls' and field.startswith('sensitivity.')
+    return is_resolution or is_sensitivity
+
+
+def applicable_groups(groups):
+    return [group for group in groups or () if group in APPLICABLE_GROUPS]
 
 
 def plan_apply(current, request, include_resolution=False, include_sensitivity=False):
-    groups = [g for g in (request or {}).get('groups') or () if g in APPLICABLE_GROUPS]
-    target = flatten_settings((request or {}).get('settings'))
+    request = request or {}
+    groups = applicable_groups(request.get('groups'))
+    target = flatten_settings(request.get('settings'))
     mine = clean_values(current)
+    included_hardware_groups = {'controls': include_sensitivity, 'display': include_resolution}
+
     changes = []
     for raw_key, group, field, _ in FIELDS:
         if group not in groups or raw_key not in target:
             continue
-        if is_hardware_specific(group, field) and not (include_sensitivity if group == 'controls' else include_resolution):
+        if is_hardware_specific(group, field) and not included_hardware_groups[group]:
             continue
         old = mine.get(raw_key)
         new = target[raw_key]

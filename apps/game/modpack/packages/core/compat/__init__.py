@@ -44,6 +44,17 @@ def as_int(value, default=0):
     return int(value) if is_number(value) else default
 
 
+# `defaults` updated with the `**options` a function got: the keyword-only arguments Python 2 has no syntax for. An
+# unknown name raises TypeError, as a misspelt keyword argument would.
+def keyword_options(given, defaults):
+    unknown = set(given) - set(defaults)
+    if unknown:
+        raise TypeError('unexpected options: %s' % ', '.join(sorted(unknown)))
+    options = dict(defaults)
+    options.update(given)
+    return options
+
+
 def call(target, name, default=None, *args):
     """`target.name(*args)`, or `default` when the method is missing or raises (client API drift)."""
     method = getattr(target, name, None)

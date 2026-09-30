@@ -7,7 +7,18 @@ from ....core.classes import class_key
 from ....core.compat import is_number, to_text
 from ....core.format import COLOR_DOWN, COLOR_MUTED, COLOR_NEUTRAL, COLOR_WARN, font, format_number
 from ....core.shells import SHELL_CODES
-from .constants import (FULL_TURN, MAX_MODULES, MODULE_STATES, MODULE_WINDOW_S, MODULES, SECTOR_ARROWS, SECTORS, SHOT_WINDOW_S, SOURCES)
+from .constants import (
+    FULL_TURN,
+    MAX_MODULES,
+    MODULE_STATES,
+    MODULE_WINDOW_S,
+    MODULES,
+    NO_SHOT,
+    SECTOR_ARROWS,
+    SECTORS,
+    SHOT_WINDOW_S,
+    SOURCES,
+)
 
 # Fair play: only what the client already told the player about their own tank. The attacker is the one the damage
 # panel and the kill feed name; the direction is the coarse side the game's own hit indicator pointed to for that
@@ -15,17 +26,22 @@ from .constants import (FULL_TURN, MAX_MODULES, MODULE_STATES, MODULE_WINDOW_S, 
 # no trajectory is reconstructed.
 
 
+# `hit_yaw` and `hull_yaw` are radians in the same frame; each sector is centred on its direction, so the turn is
+# shifted by half a sector before it is cut into sectors.
 def sector_of(hit_yaw, hull_yaw):
-    """The hull side (SECTORS) a hit came from, `hit_yaw` and `hull_yaw` in radians in the same frame; None if unknown."""
     if not is_number(hit_yaw) or not is_number(hull_yaw):
         return None
+    sector_width = FULL_TURN / len(SECTORS)
     relative = (hit_yaw - hull_yaw) % FULL_TURN
-    index = int(math.floor((relative + FULL_TURN / 16) / (FULL_TURN / 8))) % 8
+    index = int(math.floor((relative + sector_width / 2) / sector_width)) % len(SECTORS)
     return SECTORS[index]
 
 
+def _is_recent(at, when, window):
+    return at - when <= window
+
+
 class DeathWatch(object):
-    """The last shot on the own tank, the modules it damaged and the side it came from, until the tank is destroyed."""
 
     def __init__(self):
         self.shot = None
@@ -42,12 +58,13 @@ class DeathWatch(object):
             'source': source if source in SOURCES else 'shot',
             'at': at,
         }
-        self.modules = [module for module in self.modules if at - module[1] <= MODULE_WINDOW_S]
+        self.modules = [module for module in self.modules if _is_recent(at, module[1], MODULE_WINDOW_S)]
 
     def module(self, name, state, at):
         if name not in MODULES or state not in MODULE_STATES:
             return False
-        self.modules = [module for module in self.modules if module[0] != name and at - module[1] <= MODULE_WINDOW_S]
+        kept = [module for module in self.modules if module[0] != name]
+        self.modules = [module for module in kept if _is_recent(at, module[1], MODULE_WINDOW_S)]
         self.modules.append((name, at))
         return True
 
@@ -55,16 +72,32 @@ class DeathWatch(object):
         if sector in SECTORS:
             self.direction = (sector, at)
 
+    def _killing_shot(self, at):
+        if self.shot is None or not _is_recent(at, self.shot['at'], SHOT_WINDOW_S):
+            return None
+        return self.shot
+
+    def _killing_modules(self, at):
+        window = max(MODULE_WINDOW_S, SHOT_WINDOW_S)
+        names = [name for name, when in self.modules if _is_recent(at, when, window)]
+        return names[-MAX_MODULES:]
+
+    def _killing_sector(self, at):
+        if self.direction is None:
+            return None
+        sector, when = self.direction
+        return sector if _is_recent(at, when, SHOT_WINDOW_S) else None
+
+    # The killer the kill feed named wins over an older or missing shot.
     def killed(self, killer, killer_class, at):
-        """The card of the own death; the killer the kill feed named wins over an older or missing shot."""
-        shot = self.shot if self.shot is not None and at - self.shot['at'] <= SHOT_WINDOW_S else None
-        card = dict(shot) if shot is not None else {'attacker': None, 'class': None, 'shell': None, 'damage': 0, 'source': None, 'at': at}
-        if killer and (shot is None or not card['attacker']):
+        shot = self._killing_shot(at)
+        card = dict(shot) if shot is not None else dict(NO_SHOT, at=at)
+        if killer and not card['attacker']:
             card['attacker'] = to_text(killer)
             card['class'] = class_key(killer_class)
-        card['modules'] = [name for name, when in self.modules if at - when <= max(MODULE_WINDOW_S, SHOT_WINDOW_S)][-MAX_MODULES:]
-        direction = self.direction if self.direction is not None and at - self.direction[1] <= SHOT_WINDOW_S else None
-        card['sector'] = direction[0] if direction is not None else None
+
+        card['modules'] = self._killing_modules(at)
+        card['sector'] = self._killing_sector(at)
         self.card = card
         return card
 
@@ -100,7 +133,8 @@ def direction_line(card, translate, size):
     if sector not in SECTORS:
         return None
     arrow = SECTOR_ARROWS[SECTORS.index(sector)]
-    return font(translate('death_card_direction', arrow=arrow, side=translate('death_card_side_' + sector)), COLOR_MUTED, size)
+    side = translate('death_card_side_' + sector)
+    return font(translate('death_card_direction', arrow=arrow, side=side), COLOR_MUTED, size)
 
 
 def format_card(card, settings, translate):
@@ -108,6 +142,7 @@ def format_card(card, settings, translate):
         return None
     size = settings.get('font_size')
     lines = [title_line(card, translate, size), shot_line(card, translate, size)]
+
     if settings.get('show_modules'):
         lines.append(modules_line(card, translate, size))
     if settings.get('show_direction'):

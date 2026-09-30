@@ -1,1 +1,1 @@
-export { classicScriptPlugin, toClassicScript } from './classic-script';
+export { classicScriptPlugin } from './classic-script';

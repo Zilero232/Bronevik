@@ -110,7 +110,9 @@ def schema_validator(name, definition=None):
     except ImportError:
         return None
     root = schema(name)
-    target = root if definition is None else dict(root['definitions'][definition], definitions=root['definitions'])
+    if definition is None:
+        return jsonschema.Draft7Validator(root)
+    target = dict(root['definitions'][definition], definitions=root['definitions'])
     return jsonschema.Draft7Validator(target)
 
 
@@ -126,7 +128,13 @@ class FakeTransport(object):
         self.requests = []
 
     def request(self, method, url, headers, body, callback):
-        self.requests.append({'method': method, 'url': url, 'headers': headers, 'body': body, 'callback': callback})
+        self.requests.append({
+            'method': method,
+            'url': url,
+            'headers': headers,
+            'body': body,
+            'callback': callback,
+        })
 
     def respond(self, status, body=b'', headers=None, index=-1):
         request = self.requests[index]
@@ -136,19 +144,27 @@ class FakeTransport(object):
         return 0
 
 
-WIDGET_FIXTURES_DIR = os.path.join(MODPACK_DIR, 'ui-web', 'src', 'shared', 'api', 'hud-protocol', '_tests', 'fixtures', 'widgets')
+WIDGET_FIXTURES_DIR = os.path.join(
+    MODPACK_DIR, 'ui-web', 'src', 'shared', 'api', 'hud-protocol', '_tests', 'fixtures', 'widgets',
+)
+
+
+def _write_widget_fixture(path, payload):
+    text = json.dumps(payload, sort_keys=True, indent=2, ensure_ascii=False) + '\n'
+    if not isinstance(text, type(u'')):
+        text = text.decode('utf-8')
+    if not os.path.isdir(WIDGET_FIXTURES_DIR):
+        os.makedirs(WIDGET_FIXTURES_DIR)
+    with io.open(path, 'w', encoding='utf-8', newline='\n') as handle:
+        handle.write(text)
 
 
 def widget_fixture(kind, payload):
     """Checks `payload` (a panel's widget, `core.hud.widget`) against the page's fixture of `kind`, which the ui-web
     tests render; OTMETKI_UPDATE_FIXTURES=1 rewrites it. Returns whether they match."""
     path = os.path.join(WIDGET_FIXTURES_DIR, '%s.sample.json' % kind)
-    text = json.dumps(payload, sort_keys=True, indent=2, ensure_ascii=False) + '\n'
     if os.environ.get('OTMETKI_UPDATE_FIXTURES') == '1':
-        if not os.path.isdir(WIDGET_FIXTURES_DIR):
-            os.makedirs(WIDGET_FIXTURES_DIR)
-        with io.open(path, 'w', encoding='utf-8', newline='\n') as handle:
-            handle.write(text if isinstance(text, type(u'')) else text.decode('utf-8'))
+        _write_widget_fixture(path, payload)
     if not os.path.isfile(path):
         return False
     return load_json(path) == json.loads(json.dumps(payload))

@@ -21,7 +21,12 @@ def plan_vehicle(vehicle, desired):
     if vehicle.get('locked'):
         return []
     current = vehicle.get('flags') or {}
-    return [(flag, desired[flag]) for flag in FLAGS if flag in desired and current.get(flag) is not None and current[flag] != desired[flag]]
+    changes = []
+    for flag in FLAGS:
+        is_known = flag in desired and current.get(flag) is not None
+        if is_known and current[flag] != desired[flag]:
+            changes.append((flag, desired[flag]))
+    return changes
 
 
 def plan(vehicles, values):
@@ -30,7 +35,10 @@ def plan(vehicles, values):
         return [], REFUSE_UNSET
     if vehicles and all(vehicle.get('locked') for vehicle in vehicles):
         return [], REFUSE_LOCKED
-    requests = [(vehicle['inv_id'], flag, value) for vehicle in vehicles for flag, value in plan_vehicle(vehicle, desired)]
+    requests = []
+    for vehicle in vehicles:
+        for flag, value in plan_vehicle(vehicle, desired):
+            requests.append((vehicle['inv_id'], flag, value))
     if not requests:
         return [], REFUSE_NOTHING
     return requests, None

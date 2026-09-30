@@ -6,6 +6,7 @@ MERGE_WINDOW_S = 2.0
 # (ricochet, spaced armour, tracks, missed armour) come only with damageFactor 0. no_pen takes an HE splash.
 DAMAGE_OUTCOMES = ('pen', 'crit', 'no_pen')
 MAX_ENTRIES = 60
+MIN_LINE_FONT_SIZE = 8
 
 # How much a line tells: always the same (`alt_mode` off), or with `alt_mode` on the short line (outcome, damage, name)
 # until Alt is held, then the full line with the class, HP left, shell and crits; Alt is the stock client's
@@ -31,8 +32,15 @@ PREVIEW_CLASSES = {1: ('mediumTank', 900), 2: ('mediumTank', 1100), 3: ('heavyTa
 
 KIND = 'hit_log'
 # Colour roles of the outcomes (docs/specs/2026-09-29-hud-visual-redesign.md section 4.4).
-OUTCOME_TONES = {'pen': 'success', 'crit': 'warning', 'no_pen': 'blocked', 'ricochet': 'blocked', 'spaced': 'blocked', 'tracks': 'track',
-                 'missed_armor': 'muted'}
+OUTCOME_TONES = {
+    'pen': 'success',
+    'crit': 'warning',
+    'no_pen': 'blocked',
+    'ricochet': 'blocked',
+    'spaced': 'blocked',
+    'tracks': 'track',
+    'missed_armor': 'muted',
+}
 
 # {c_outcome} per palette, in OUTCOMES order: pen, crit, no_pen, ricochet, spaced, tracks, missed_armor. graphite is
 # @otmetki/design-tokens, colorblind the Okabe-Ito set.

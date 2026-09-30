@@ -1,24 +1,6 @@
 export { parseFeed, parseState, send } from './protocol';
 export { PROTOCOL } from './protocol.constants';
-export {
-  actionSchema,
-  componentSchema,
-  detailSchema,
-  feedSchema,
-  fieldSchema,
-  figureSchema,
-  marksReportSchema,
-  messageSchema,
-  noticeSchema,
-  pageSchema,
-  panelSchema,
-  profileSchema,
-  profilesSchema,
-  rowSchema,
-  stateSchema,
-  statusSchema,
-  windowSchema
-} from './protocol.schemas';
+export { figureSchema, marksReportSchema, messageSchema } from './protocol.schemas';
 
 export type {
   FieldOf,

@@ -1,5 +1,6 @@
+export type { RunActionInput } from './use-card-actions';
 export { useComponentCard } from './use-component-card';
-export type { RunActionInput, UseComponentCardInput } from './use-component-card';
+export type { UseComponentCardInput } from './use-component-card';
 export { useIntField } from './use-int-field';
 
 export type { UseIntFieldInput } from './use-int-field';

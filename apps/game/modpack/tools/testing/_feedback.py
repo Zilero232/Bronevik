@@ -1,14 +1,17 @@
 """Battle feedback payloads shaped as the RU 1.45 client builds them (IzeBerg/wot-src, branch RU):
 
 - common/BattleFeedbackCommon.py: BATTLE_EVENT_TYPE, packDamage / unpackDamage, packCrits / unpackCrits
-- client/gui/battle_control/controllers/feedback_events.py: _DamageExtra, _CritsExtra, PlayerFeedbackEvent.fromDict,
-  BattleSummaryFeedbackEvent
-- client/gui/battle_control/controllers/feedback_adaptor.py: VEHICLE_HEALTH payload (newHealth, attackerInfo, reasonID)
-- client/gui/battle_control/battle_constants.py: FEEDBACK_EVENT_ID (range(1, 88)), PERSONAL_EFFICIENCY_TYPE
+- client/gui/battle_control/controllers/feedback_events.py: _DamageExtra, _CritsExtra,
+  PlayerFeedbackEvent.fromDict, BattleSummaryFeedbackEvent
+- client/gui/battle_control/controllers/feedback_adaptor.py: VEHICLE_HEALTH payload
+  (newHealth, attackerInfo, reasonID)
+- client/gui/battle_control/battle_constants.py: FEEDBACK_EVENT_ID (range(1, 88)),
+  PERSONAL_EFFICIENCY_TYPE
 - common/constants.py: ATTACK_REASONS order, BATTLE_LOG_SHELL_TYPES (an IntEnum)
 
-The server sends `{'eventType', 'targetID', 'count', 'details'}` dicts to Avatar.onBattleEvents; the adaptor turns
-each into a PlayerFeedbackEvent whose extra is decoded from the packed `details` int, as here.
+The server sends `{'eventType', 'targetID', 'count', 'details'}` dicts to Avatar.onBattleEvents;
+the adaptor turns each into a PlayerFeedbackEvent whose extra is decoded from the packed `details`
+int, as here.
 """
 NONE_SHELL_TYPE = 127
 
@@ -32,18 +35,24 @@ class BATTLE_EVENT_TYPE(object):
 
 
 _FEEDBACK_NAMES = (
-    'PLAYER_KILLED_ENEMY', 'PLAYER_DAMAGED_HP_ENEMY', 'PLAYER_DAMAGED_DEVICE_ENEMY', 'PLAYER_SPOTTED_ENEMY', 'PLAYER_ASSIST_TO_KILL_ENEMY',
-    'PLAYER_ASSIST_TO_STUN_ENEMY', 'PLAYER_USED_ARMOR', 'PLAYER_CAPTURED_BASE', 'PLAYER_DROPPED_CAPTURE', 'PLAYER_BLOCKED_CAPTURE',
-    'PLAYER_STUN_ENEMIES', 'VEHICLE_HEALTH', 'VEHICLE_HIT', 'VEHICLE_CRITICAL_HIT', 'VEHICLE_CRITICAL_HIT_DAMAGE', 'VEHICLE_CRITICAL_HIT_CHASSIS',
-    'VEHICLE_CRITICAL_HIT_CHASSIS_PIERCED', 'VEHICLE_RICOCHET', 'VEHICLE_ARMOR_PIERCED', 'VEHICLE_DEAD', 'VEHICLE_SHOW_MARKER',
-    'VEHICLE_ATTRS_CHANGED', 'ENTITY_IN_FOCUS', 'VEHICLE_HAS_AMMO', 'SHOW_VEHICLE_DAMAGES_DEVICES', 'HIDE_VEHICLE_DAMAGES_DEVICES',
-    'MINIMAP_SHOW_MARKER', 'MINIMAP_MARK_CELL', 'DAMAGE_LOG_SUMMARY', 'POSTMORTEM_SUMMARY', 'ENEMY_DAMAGED_HP_PLAYER',
-    'ENEMY_DAMAGED_DEVICE_PLAYER',
+    'PLAYER_KILLED_ENEMY', 'PLAYER_DAMAGED_HP_ENEMY', 'PLAYER_DAMAGED_DEVICE_ENEMY', 'PLAYER_SPOTTED_ENEMY',
+    'PLAYER_ASSIST_TO_KILL_ENEMY', 'PLAYER_ASSIST_TO_STUN_ENEMY', 'PLAYER_USED_ARMOR', 'PLAYER_CAPTURED_BASE',
+    'PLAYER_DROPPED_CAPTURE', 'PLAYER_BLOCKED_CAPTURE', 'PLAYER_STUN_ENEMIES', 'VEHICLE_HEALTH', 'VEHICLE_HIT',
+    'VEHICLE_CRITICAL_HIT', 'VEHICLE_CRITICAL_HIT_DAMAGE', 'VEHICLE_CRITICAL_HIT_CHASSIS',
+    'VEHICLE_CRITICAL_HIT_CHASSIS_PIERCED', 'VEHICLE_RICOCHET', 'VEHICLE_ARMOR_PIERCED', 'VEHICLE_DEAD',
+    'VEHICLE_SHOW_MARKER', 'VEHICLE_ATTRS_CHANGED', 'ENTITY_IN_FOCUS', 'VEHICLE_HAS_AMMO',
+    'SHOW_VEHICLE_DAMAGES_DEVICES', 'HIDE_VEHICLE_DAMAGES_DEVICES', 'MINIMAP_SHOW_MARKER', 'MINIMAP_MARK_CELL',
+    'DAMAGE_LOG_SUMMARY', 'POSTMORTEM_SUMMARY', 'ENEMY_DAMAGED_HP_PLAYER', 'ENEMY_DAMAGED_DEVICE_PLAYER',
 )
-FEEDBACK_EVENT_ID = type('FEEDBACK_EVENT_ID', (object,), dict((name, index + 1) for index, name in enumerate(_FEEDBACK_NAMES)))
-for _name, _value in (('VEHICLE_ARMOR_SCREEN_BLOCKED', 75), ('VEHICLE_TRACK_BLOCKED', 76), ('VEHICLE_WHEEL_BLOCKED', 77),
-                      ('VEHICLE_ARMOR_MISSED', 78)):
-    setattr(FEEDBACK_EVENT_ID, _name, _value)
+_BLOCKED_FEEDBACK_IDS = {
+    'VEHICLE_ARMOR_SCREEN_BLOCKED': 75,
+    'VEHICLE_TRACK_BLOCKED': 76,
+    'VEHICLE_WHEEL_BLOCKED': 77,
+    'VEHICLE_ARMOR_MISSED': 78,
+}
+_FEEDBACK_IDS = dict((name, index + 1) for index, name in enumerate(_FEEDBACK_NAMES))
+_FEEDBACK_IDS.update(_BLOCKED_FEEDBACK_IDS)
+FEEDBACK_EVENT_ID = type('FEEDBACK_EVENT_ID', (object,), _FEEDBACK_IDS)
 
 
 class PERSONAL_EFFICIENCY_TYPE(object):
@@ -59,8 +68,10 @@ ATTACK_REASONS = ('shot', 'fire', 'ramming', 'world_collision', 'death_zone', 'd
 REASON = dict((name, index) for index, name in enumerate(ATTACK_REASONS))
 
 
-SHELL_NAMES = ('HOLLOW_CHARGE', 'ARMOR_PIERCING', 'ARMOR_PIERCING_HE', 'ARMOR_PIERCING_CR', 'SMOKE', 'HE_MODERN', 'HE_LEGACY_STUN',
-               'HE_LEGACY_NO_STUN', 'FLAME')
+SHELL_NAMES = (
+    'HOLLOW_CHARGE', 'ARMOR_PIERCING', 'ARMOR_PIERCING_HE', 'ARMOR_PIERCING_CR', 'SMOKE', 'HE_MODERN',
+    'HE_LEGACY_STUN', 'HE_LEGACY_NO_STUN', 'FLAME',
+)
 SHELL = dict((name, index) for index, name in enumerate(SHELL_NAMES))
 
 
@@ -73,11 +84,18 @@ class ShellType(int):
 
 
 def pack_damage(damage, reason='shot', shell=NONE_SHELL_TYPE, gold=False):
-    return (int(damage) & 65535) << 25 | (REASON[reason] & 255) << 17 | (int(shell) & 127) << 9 | (1 if gold else 0) << 8
+    packed_damage = (int(damage) & 65535) << 25
+    packed_reason = (REASON[reason] & 255) << 17
+    packed_shell = (int(shell) & 127) << 9
+    packed_gold = (1 if gold else 0) << 8
+    return packed_damage | packed_reason | packed_shell | packed_gold
 
 
 def pack_crits(count, reason='shot', shell=NONE_SHELL_TYPE):
-    return (int(count) & 65535) << 24 | (REASON[reason] & 255) << 16 | (int(shell) & 127) << 9
+    packed_count = (int(count) & 65535) << 24
+    packed_reason = (REASON[reason] & 255) << 16
+    packed_shell = (int(shell) & 127) << 9
+    return packed_count | packed_reason | packed_shell
 
 
 def _shell_type(shell_id):
@@ -140,8 +158,16 @@ class CritsExtra(object):
         return ATTACK_REASONS[self._reason] == 'shot'
 
 
-_DAMAGE_KINDS = (BATTLE_EVENT_TYPE.DAMAGE, BATTLE_EVENT_TYPE.RADIO_ASSIST, BATTLE_EVENT_TYPE.TRACK_ASSIST, BATTLE_EVENT_TYPE.STUN_ASSIST,
-                 BATTLE_EVENT_TYPE.TANKING, BATTLE_EVENT_TYPE.RECEIVED_DAMAGE, BATTLE_EVENT_TYPE.SMOKE_ASSIST, BATTLE_EVENT_TYPE.INSPIRE_ASSIST)
+_DAMAGE_KINDS = (
+    BATTLE_EVENT_TYPE.DAMAGE,
+    BATTLE_EVENT_TYPE.RADIO_ASSIST,
+    BATTLE_EVENT_TYPE.TRACK_ASSIST,
+    BATTLE_EVENT_TYPE.STUN_ASSIST,
+    BATTLE_EVENT_TYPE.TANKING,
+    BATTLE_EVENT_TYPE.RECEIVED_DAMAGE,
+    BATTLE_EVENT_TYPE.SMOKE_ASSIST,
+    BATTLE_EVENT_TYPE.INSPIRE_ASSIST,
+)
 _CRIT_KINDS = (BATTLE_EVENT_TYPE.CRIT, BATTLE_EVENT_TYPE.RECEIVED_CRIT)
 
 

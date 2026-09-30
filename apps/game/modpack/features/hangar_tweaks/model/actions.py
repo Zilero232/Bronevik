@@ -6,7 +6,8 @@ from .constants import REFUSE_BERTHS, REFUSE_LOCKED, REFUSE_NOTHING
 def plan_demount(vehicle):
     if vehicle.get('locked'):
         return [], REFUSE_LOCKED
-    slots = [device['slot'] for device in vehicle.get('devices') or [] if device and device.get('removable')]
+    devices = vehicle.get('devices') or []
+    slots = [device['slot'] for device in devices if device and device.get('removable')]
     if not slots:
         return [], REFUSE_NOTHING
     return slots, None

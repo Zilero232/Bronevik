@@ -27,56 +27,148 @@ def row():
     return tank_rows(data, ACCOUNT)[1]
 
 
+def totals(damage=0, spot=0, frag=0, defence=0):
+    return {'damage': damage, 'spot': spot, 'frag': frag, 'def': defence}
+
+
+def settings(**values):
+    return Settings(values, SCHEMA)
+
+
+def good_battle_state():
+    return panel_state(totals(damage=1500, spot=1, frag=1), dict(row(), avg_damage=1200.0))
+
+
+def weak_battle_state():
+    return panel_state(totals(damage=300), row())
+
+
+def zero_average_state():
+    return panel_state(totals(damage=500), dict(row(), avg_damage=0.0))
+
+
+def counted_totals():
+    battle = BattleTotals()
+    battle.add('damage', 390)
+    battle.add('spot')
+    return battle
+
+
 class Wn8Test(unittest.TestCase):
 
     def test_an_expected_battle_scores_1565(self):
-        totals = {'damage': 1180, 'spot': 1.42, 'frag': 0.98, 'def': 0.75}
-        assert wn8(totals, EXPECTED) == 1565
+        assert wn8(totals(damage=1180, spot=1.42, frag=0.98, defence=0.75), EXPECTED) == 1565
 
-    def test_ratios_are_capped_and_floored(self):
-        assert wn8({'damage': 0, 'spot': 0, 'frag': 0, 'def': 0}, EXPECTED) == 145
-        big_frags = wn8({'damage': 1180, 'spot': 0, 'frag': 10, 'def': 0}, EXPECTED)
-        assert big_frags == int(round(980 + 210 * 1.2 + 145))
-        assert wn8({'damage': 2360, 'spot': 3, 'frag': 2, 'def': 0}, EXPECTED) > 2000
-        assert wn8({'damage': 1000, 'spot': 1, 'frag': 1, 'def': 0}, None) is None
-        assert wn8({'damage': 1000, 'spot': 1, 'frag': 1, 'def': 0}, dict(EXPECTED, spot=0, frag=0, **{'def': 0})) is not None
+    def test_an_empty_battle_scores_the_win_part_only(self):
+        assert wn8(totals(), EXPECTED) == 145
 
-    def test_totals(self):
-        totals = BattleTotals()
-        assert totals.add('damage', 390) and totals.add('spot') and not totals.add('xp', 1) and not totals.add('frag', 0)
-        assert totals.raise_to('damage', 2150) and not totals.raise_to('damage', 5)
-        assert totals.values == {'damage': 2150, 'spot': 1, 'frag': 0, 'def': 0}
+    def test_the_frag_ratio_is_capped_by_the_damage_ratio(self):
+        assert wn8(totals(damage=1180, frag=10), EXPECTED) == 1377
+
+    def test_a_strong_battle(self):
+        assert wn8(totals(damage=2360, spot=3, frag=2), EXPECTED) == 4233
+
+    def test_no_expected_values_no_estimate(self):
+        assert wn8(totals(damage=1000, spot=1, frag=1), None) is None
+
+    def test_zero_expected_values_count_as_zero_ratios(self):
+        expected = dict(EXPECTED, spot=0, frag=0, **{'def': 0})
+
+        assert wn8(totals(damage=1000, spot=1, frag=1), expected) == 933
 
 
-class PanelTest(unittest.TestCase):
+class TotalsTest(unittest.TestCase):
+
+    def test_known_counters_are_added(self):
+        assert counted_totals().values == {'damage': 390, 'spot': 1, 'frag': 0, 'def': 0}
+
+    def test_an_unknown_counter_is_not_added(self):
+        assert BattleTotals().add('xp', 1) is False
+
+    def test_a_zero_amount_is_not_added(self):
+        assert BattleTotals().add('frag', 0) is False
+
+    def test_the_summary_raises_the_damage(self):
+        battle = counted_totals()
+
+        raised = battle.raise_to('damage', 2150)
+
+        assert raised is True
+        assert battle.values['damage'] == 2150
+
+    def test_a_lower_summary_changes_nothing(self):
+        battle = counted_totals()
+
+        assert battle.raise_to('damage', 5) is False
+
+
+class PanelStateTest(unittest.TestCase):
 
     def test_state_from_the_site_row(self):
-        state = panel_state({'damage': 1506, 'spot': 1, 'frag': 1, 'def': 0}, row())
-        assert state['average'] == 1204.5 and state['tank_wn8'] == 2104.9 and state['delta'] == 25
-        assert state['wn8'] == wn8({'damage': 1506, 'spot': 1, 'frag': 1, 'def': 0}, EXPECTED)
-        empty = panel_state({'damage': 10, 'spot': 0, 'frag': 0, 'def': 0}, None)
-        assert empty['wn8'] is None and empty['delta'] is None
+        state = panel_state(totals(damage=1506, spot=1, frag=1), row())
 
-    def test_a_zero_average_shows_no_damage_line(self):
-        state = panel_state({'damage': 500, 'spot': 0, 'frag': 0, 'def': 0}, dict(row(), avg_damage=0.0))
-        assert state['average'] is None and state['delta'] is None
-        assert format_panel(state, Settings({}, SCHEMA), translator()) is not None
-        assert format_panel(state, Settings({'show_wn8': False}, SCHEMA), translator()) is None
+        assert state['average'] == 1204.5
+        assert state['tank_wn8'] == 2104.9
+        assert state['delta'] == 25
+        assert state['wn8'] == 1846
 
-    def test_format(self):
-        state = panel_state({'damage': 1500, 'spot': 1, 'frag': 1, 'def': 0}, dict(row(), avg_damage=1200.0))
-        text = format_panel(state, Settings({}, SCHEMA), translator())
-        assert u'WN8 боя ≈' in text and u'(на танке 2 105)' in text and u'Урон 1 500 / ср. 1 200' in text and '(+25%)' in text
+    def test_without_a_row_there_is_no_estimate(self):
+        state = panel_state(totals(damage=10), None)
+
+        assert state['wn8'] is None
+        assert state['delta'] is None
+
+    def test_a_zero_average_has_no_delta(self):
+        state = zero_average_state()
+
+        assert state['average'] is None
+        assert state['delta'] is None
+
+
+class FormatTest(unittest.TestCase):
+
+    def test_a_zero_average_still_shows_the_wn8_line(self):
+        assert format_panel(zero_average_state(), settings(), translator()) is not None
+
+    def test_a_zero_average_without_the_wn8_line_shows_nothing(self):
+        assert format_panel(zero_average_state(), settings(show_wn8=False), translator()) is None
+
+    def test_a_good_battle_line(self):
+        text = format_panel(good_battle_state(), settings(), translator())
+
+        assert u'WN8 боя ≈' in text
+        assert u'(на танке 2 105)' in text
+        assert u'Урон 1 500 / ср. 1 200' in text
+        assert '(+25%)' in text
         assert COLOR_UP in text
-        low = format_panel(panel_state({'damage': 300, 'spot': 0, 'frag': 0, 'def': 0}, row()), Settings({'show_wn8': False}, SCHEMA), translator('en'))
-        assert 'WN8' not in low and '(-75%)' in low and COLOR_DOWN in low
-        plain = format_panel(state, Settings({'colored': False, 'template': '{wn8}/{delta}'}, SCHEMA), translator())
-        assert '/+25%' in plain
-        assert format_panel(panel_state({'damage': 1, 'spot': 0, 'frag': 0, 'def': 0}, {}), Settings({}, SCHEMA), translator()) is None
 
-    def test_preview_settings_and_strings(self):
-        assert u'WN8 боя' in preview_text(Settings({}, SCHEMA), translator())
+    def test_a_weak_battle_line_in_red(self):
+        text = format_panel(weak_battle_state(), settings(show_wn8=False), translator('en'))
+
+        assert 'WN8' not in text
+        assert '(-75%)' in text
+        assert COLOR_DOWN in text
+
+    def test_the_template_gets_the_signed_delta(self):
+        text = format_panel(good_battle_state(), settings(colored=False, template='{wn8}/{delta}'), translator())
+
+        assert '/+25%' in text
+
+    def test_nothing_to_show_without_a_row(self):
+        state = panel_state(totals(damage=1), {})
+
+        assert format_panel(state, settings(), translator()) is None
+
+
+class SettingsTest(unittest.TestCase):
+
+    def test_preview_text(self):
+        assert u'WN8 боя' in preview_text(settings(), translator())
+
+    def test_settings_switch(self):
         assert SETTINGS == ('battle_efficiency',)
+
+    def test_strings_in_both_languages(self):
         assert sorted(STRINGS['ru']) == sorted(STRINGS['en'])
 
 

@@ -21,24 +21,58 @@ class Clock(object):
 
 class RepeatLimiterTest(unittest.TestCase):
 
-    def test_first_then_counted_per_window(self):
-        clock = Clock()
-        limiter = RepeatLimiter(clock, window_s=60, max_tracked=10)
-        assert limiter.admit('a') == (True, 0)
-        assert [limiter.admit('a') for _ in range(3)] == [(False, 0)] * 3
-        assert limiter.admit('b') == (True, 0)
-        clock.now += 61
-        assert limiter.admit('a') == (True, 3)
-        assert limiter.admit('a') == (False, 0)
+    def setUp(self):
+        self.clock = Clock()
+        self.limiter = RepeatLimiter(self.clock, window_s=60, max_tracked=10)
+
+    def admit_repeatedly(self, key, times):
+        return [self.limiter.admit(key) for _ in range(times)]
+
+    def test_the_first_occurrence_is_admitted(self):
+        admitted = self.limiter.admit('a')
+
+        assert admitted == (True, 0)
+
+    def test_repeats_within_the_window_are_held_back(self):
+        self.limiter.admit('a')
+
+        repeats = self.admit_repeatedly('a', 3)
+
+        assert repeats == [(False, 0), (False, 0), (False, 0)]
+
+    def test_another_key_is_admitted_on_its_own(self):
+        self.admit_repeatedly('a', 4)
+
+        admitted = self.limiter.admit('b')
+
+        assert admitted == (True, 0)
+
+    def test_the_first_occurrence_after_the_window_reports_the_held_back_count(self):
+        self.admit_repeatedly('a', 4)
+        self.clock.now += 61
+
+        admitted = self.limiter.admit('a')
+
+        assert admitted == (True, 3)
+
+    def test_a_new_window_holds_repeats_back_again(self):
+        self.admit_repeatedly('a', 4)
+        self.clock.now += 61
+        self.limiter.admit('a')
+
+        repeat = self.limiter.admit('a')
+
+        assert repeat == (False, 0)
 
     def test_tracks_a_bounded_number_of_keys(self):
-        clock = Clock()
-        limiter = RepeatLimiter(clock, window_s=60, max_tracked=2)
+        limiter = RepeatLimiter(self.clock, window_s=60, max_tracked=2)
         limiter.admit('a')
-        clock.now += 1
+        self.clock.now += 1
         limiter.admit('b')
-        clock.now += 1
+        self.clock.now += 1
+
         limiter.admit('c')
+
         assert sorted(limiter.seen) == ['b', 'c']
 
 
@@ -48,7 +82,8 @@ class LogExceptionTest(unittest.TestCase):
         self.saved = sys.stdout, log._repeats
         self.clock = Clock()
         log._repeats = RepeatLimiter(self.clock)
-        sys.stdout = self.out = io.StringIO() if sys.version_info[0] >= 3 else io.BytesIO()
+        self.out = io.StringIO() if sys.version_info[0] >= 3 else io.BytesIO()
+        sys.stdout = self.out
 
     def tearDown(self):
         sys.stdout, log._repeats = self.saved
@@ -56,25 +91,46 @@ class LogExceptionTest(unittest.TestCase):
     def broken(self):
         return 1 // 0
 
+    def fail_repeatedly(self, handler, times):
+        for _ in range(times):
+            handler()
+
     def test_identical_tracebacks_are_written_once_per_window(self):
         handler = log.safe(self.broken)
-        for _ in range(50):
-            handler()
-        text = self.out.getvalue()
-        assert text.count('Traceback') == 1
+
+        self.fail_repeatedly(handler, 50)
+
+        assert self.out.getvalue().count('Traceback') == 1
+
+    def test_the_next_window_writes_the_traceback_again(self):
+        handler = log.safe(self.broken)
+        self.fail_repeatedly(handler, 50)
         self.clock.now += 61
+
         handler()
-        text = self.out.getvalue()
-        assert text.count('Traceback') == 2
-        assert 'repeated 49 more times' in text
+
+        assert self.out.getvalue().count('Traceback') == 2
+
+    def test_the_next_window_reports_how_often_it_repeated(self):
+        handler = log.safe(self.broken)
+        self.fail_repeatedly(handler, 50)
+        self.clock.now += 61
+
+        handler()
+
+        assert 'repeated 49 more times' in self.out.getvalue()
 
 
 class ShellTypesTest(unittest.TestCase):
+    # RU 1.45 client source, common/constants.py BATTLE_LOG_SHELL_TYPES: 0..14.
 
-    def test_every_battle_log_shell_type_of_the_client(self):
-        # RU 1.45 client source, common/constants.py BATTLE_LOG_SHELL_TYPES: 0..14.
+    def test_the_last_client_shell_type_has_a_name(self):
         assert shell_name(14) == 'HE_MODERN_DF'
+
+    def test_the_last_client_shell_type_has_a_code(self):
         assert shell_code(14) == 'he'
+
+    def test_a_shell_type_past_the_client_range_has_no_name(self):
         assert shell_name(15) is None
 
 

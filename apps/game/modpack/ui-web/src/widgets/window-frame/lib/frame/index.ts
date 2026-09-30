@@ -1,4 +1,4 @@
-export { boundsOf, centredFrame, clampFrame, fitFrame, layoutOf, moveFrame, resizeFrame, toRem, zoomStep } from './frame';
+export { boundsOf, centredFrame, layoutOf, moveFrame, openingFrame, resizeFrame, toRem, zoomStep } from './frame';
 
 export type {
   Bounds,
@@ -10,6 +10,7 @@ export type {
   FrameLayout,
   LayoutInput,
   MoveFrameInput,
+  OpeningFrameInput,
   ResizeEdge,
   ResizeFrameInput,
   Viewport,

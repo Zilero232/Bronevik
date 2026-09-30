@@ -9,10 +9,21 @@ import time
 from ...codec import encode_json, parse_json_body, parse_retry_after
 from ...errors import ReasonError
 from ...log import log, log_exception, safe
-from ...me import (OK_STATUS, REFRESH_AFTER_BATTLE_S, TANKS_PATH, ReadState, device_body, is_auth_failure, retry_delay, tank_key, tank_rows,
-                   tanks_request)
+from ...me import (
+    OK_STATUS,
+    REFRESH_AFTER_BATTLE_S,
+    TANKS_PATH,
+    ReadState,
+    device_body,
+    is_auth_failure,
+    retry_delay,
+    tank_key,
+    tank_rows,
+    tanks_request,
+)
 from ...me.constants import MAX_WATCHED_TANKS
-from ...net.signing import signed_request
+from ...net.signing import SignedRequest, signed_request
+from ...vendor import attr
 
 _state = {'service': None}
 
@@ -34,37 +45,59 @@ def post_signed(app, path, payload, on_done):
     def done(status, body, headers):
         if is_auth_failure(status):
             app.on_auth_failed()
-        on_done(status, parse_json_body(body) if status == OK_STATUS else None, parse_retry_after(headers))
+        data = parse_json_body(body) if status == OK_STATUS else None
+        on_done(status, data, parse_retry_after(headers))
 
-    signed_request(app.transport, 'POST', app.config.endpoint(path), credentials.device_id, credentials.secret, encode_json(payload),
-                   app.user_agent(), done)
+    request = SignedRequest(
+        method='POST',
+        url=app.config.endpoint(path),
+        device_id=credentials.device_id,
+        secret=credentials.secret,
+        body=encode_json(payload),
+        user_agent=app.user_agent(),
+    )
+    signed_request(app.transport, request, done)
 
 
-def signed_read(app, reads, key, path, build, account_of, on_data, on_end=None):
-    """One keyed read of the bound account's own data: POSTs `build()` to `path` (a ReasonError from it skips the read
-    and is logged) with `key` of `reads` (a ReadState) pending. An answer that arrives after `account_of()` changed is
-    dropped; a 200 marks `key` done and gets `on_data(data, account_id)`, any other status backs `key` off
-    (`retry_delay`); `on_end()` runs after either. Returns True when the request went out."""
+@attr.s(frozen=True)
+class SignedRead(object):
+    """What `signed_read` reads: `build()` is the payload POSTed to `path` while `key` of `reads` (a ReadState) is
+    pending; `account_of()` names the account the answer is for."""
+
+    reads = attr.ib()
+    key = attr.ib()
+    path = attr.ib()
+    build = attr.ib()
+    account_of = attr.ib()
+
+
+def signed_read(app, read, on_data, on_end=None):
+    """One keyed read of the bound account's own data (`read`, a SignedRead). A ReasonError from `read.build()` skips
+    the read and is logged. An answer that arrives after `read.account_of()` changed is dropped; a 200 marks the key
+    done and gets `on_data(data, account_id)`, any other status backs the key off (`retry_delay`); `on_end()` runs
+    after either. Returns True when the request went out."""
     try:
-        payload = build()
+        payload = read.build()
     except ReasonError as error:
-        log('%s not requested: %s' % (path, error.reason))
+        log('%s not requested: %s' % (read.path, error.reason))
         return False
-    account_id = account_of()
-    reads.start([key])
+    account_id = read.account_of()
+    keys = [read.key]
+    read.reads.start(keys)
 
     def done(status, data, retry_after):
-        if account_of() != account_id:
+        if read.account_of() != account_id:
             return
+
         if status == OK_STATUS:
-            reads.done([key])
+            read.reads.done(keys)
             on_data(data, account_id)
         else:
-            reads.fail([key], time.time(), retry_delay(status, retry_after))
+            read.reads.fail(keys, time.time(), retry_delay(status, retry_after))
         if on_end is not None:
             on_end()
 
-    post_signed(app, path, payload, done)
+    post_signed(app, read.path, payload, done)
     return True
 
 
@@ -76,7 +109,6 @@ def signed_body(app, **fields):
 
 
 class TankRatings(object):
-    """Rows of the player's own tanks from /mod/me/tanks, per account, in memory for the game session."""
 
     def __init__(self, app):
         self.app = app
@@ -92,8 +124,6 @@ class TankRatings(object):
         bus.on('tick', self._on_tick)
 
     def listen(self, callback):
-        """`callback(tank_id)` after a read of that tank finished (with or without a row); a failing one is logged
-        and the others still run."""
         self.listeners.append(callback)
 
     def row(self, tank_id):
@@ -117,24 +147,33 @@ class TankRatings(object):
             self.ensure(tank_id, now)
 
     def ensure(self, tank_id, now=None):
-        """Reads `tank_id` when it is due (hangar, bound); returns True when a request went out."""
         if not tank_id or not can_read(self.app):
             return False
-        if tank_id in self.watched:
-            self.watched.remove(tank_id)
-        self.watched.append(tank_id)
-        del self.watched[:-MAX_WATCHED_TANKS]
+        self._watch(tank_id)
         now = time.time() if now is None else now
         key = tank_key(tank_id)
         if not self.reads.wants(key, now):
             return False
+
         def store(data, account_id):
             rows = tank_rows(data, account_id)
             if tank_id in rows:
                 self.rows[tank_id] = rows[tank_id]
 
-        return signed_read(self.app, self.reads, key, TANKS_PATH, lambda: tanks_request(self.app.current_credentials(), [tank_id]),
-                           lambda: self.account_id, store, lambda: self._notify(tank_id))
+        read = SignedRead(
+            reads=self.reads,
+            key=key,
+            path=TANKS_PATH,
+            build=lambda: tanks_request(self.app.current_credentials(), [tank_id]),
+            account_of=lambda: self.account_id,
+        )
+        return signed_read(self.app, read, store, lambda: self._notify(tank_id))
+
+    def _watch(self, tank_id):
+        if tank_id in self.watched:
+            self.watched.remove(tank_id)
+        self.watched.append(tank_id)
+        del self.watched[:-MAX_WATCHED_TANKS]
 
     def _notify(self, tank_id):
         for callback in list(self.listeners):

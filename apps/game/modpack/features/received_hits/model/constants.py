@@ -4,6 +4,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.format import COLOR_DOWN, COLOR_MUTED, COLOR_UP, COLOR_WARN
 
 OUTCOMES = ('pen', 'crit', 'blocked', 'ricochet')
+BLOCKING = ('blocked', 'ricochet')
+TOTAL_KEYS = ('hits', 'pen', 'crit', 'blocked', 'ricochet', 'damage', 'blocked_damage')
 OUTCOME_COLORS = {'pen': COLOR_DOWN, 'crit': COLOR_WARN, 'blocked': COLOR_UP, 'ricochet': COLOR_MUTED}
 # A shot's crits arrive as a separate RECEIVED_CRIT event right after its damage: they join that line.
 MERGE_WINDOW_S = 1.0
@@ -11,9 +13,6 @@ MERGE_WINDOW_S = 1.0
 # a shot's last point (Vehicle.showDamageFromShot, VehicleEffects.DamageFromShotDecoder.decodeSegment: the low byte)
 # tells a ricochet apart; the own feedback's TANKING does not. The two arrive close together, in either order.
 RICOCHET_CODES = (1, 2)
-CODE_MASK = 0xFF
-START_SHIFTS = (16, 24, 32)
-END_SHIFTS = (40, 48, 56)
 MAX_ENTRIES = 40
 SEPARATOR = u' · '
 MINUS = u'−'

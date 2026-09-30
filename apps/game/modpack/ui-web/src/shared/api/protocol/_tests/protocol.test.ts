@@ -6,61 +6,80 @@ import { parseFeed, parseState } from '../protocol';
 import { PROTOCOL } from '../protocol.constants';
 import { messageSchema } from '../protocol.schemas';
 
-const sample = readFileSync(path.resolve(import.meta.dirname, 'fixtures/state.sample.json'), 'utf8');
+const SAMPLE = readFileSync(path.resolve(import.meta.dirname, 'fixtures/state.sample.json'), 'utf8');
+
+const feed = (values: Record<string, unknown>): string => JSON.stringify({ v: 2, feed: 'replay_manager', rev: 1, base: null, page: null, ...values });
+
+const hudMove = (alignX: string) => ({ type: 'hud_move', panel: 'damage_log', x: 1, y: 2, align_x: alignX });
 
 describe('parseState', () => {
-  it('accepts the state the Python bridge builds (fixture written by packages/ui/tests)', () => {
-    const state = parseState(sample);
+  describe('the state the Python bridge builds (fixture written by packages/ui/tests)', () => {
+    const state = parseState(SAMPLE);
 
-    expect(state?.components.map(({ id }) => id)).toEqual([
-      'companion',
-      'marks_panel',
-      'session_stats',
-      'minimap',
-      'replay_manager',
-      'damage_log',
-      'hud_layouts'
-    ]);
+    it('reads every component in order', () => {
+      expect(state?.components.map(({ id }) => id)).toEqual([
+        'companion',
+        'marks_panel',
+        'session_stats',
+        'minimap',
+        'replay_manager',
+        'damage_log',
+        'hud_layouts'
+      ]);
+    });
 
-    expect(state?.hud.panels[0]).toMatchObject({ id: 'damage_log', preview: '1 200' });
-    expect(state?.profiles.active).toBe('p1');
+    it('reads the HUD panels with their previews', () => {
+      expect(state?.hud.panels[0]).toMatchObject({ id: 'damage_log', preview: '1 200' });
+    });
+
+    it('reads the active profile', () => {
+      expect(state?.profiles.active).toBe('p1');
+    });
   });
 
-  it('refuses text that is not the protocol', () => {
-    expect(parseState('not json')).toBeNull();
-    expect(parseState('{"v": 2}')).toBeNull();
-    expect(parseState(JSON.stringify({ ...JSON.parse(sample), v: 99 }))).toBeNull();
+  it.each([
+    ['text that is not JSON', 'not json'],
+    ['a message with only the version', '{"v": 2}'],
+    ['another protocol version', JSON.stringify({ ...JSON.parse(SAMPLE), v: 99 })]
+  ])('refuses %s', (_case, text) => {
+    expect(parseState(text)).toBeNull();
   });
 });
 
 describe('parseFeed', () => {
-  it('reads a snapshot and a delta of the feed channel', () => {
-    const snapshot = parseFeed(
-      JSON.stringify({ v: 2, feed: 'replay_manager', rev: 1, base: null, page: { kind: 'replays' }, items: [{ id: 'a', x: 1 }] })
-    );
-
-    const delta = parseFeed(JSON.stringify({ v: 2, feed: 'replay_manager', rev: 2, base: 1, page: null, set: [], del: ['a'] }));
+  it('reads the items of a snapshot', () => {
+    const snapshot = parseFeed(feed({ page: { kind: 'replays' }, items: [{ id: 'a', x: 1 }] }));
 
     expect(snapshot?.items).toEqual([{ id: 'a', x: 1 }]);
+  });
+
+  it('reads the removed ids of a delta', () => {
+    const delta = parseFeed(feed({ rev: 2, base: 1, set: [], del: ['a'] }));
+
     expect(delta?.del).toEqual(['a']);
   });
 
-  it('refuses another version, an item without an id and text that is not JSON', () => {
-    expect(parseFeed(JSON.stringify({ v: 1, feed: 'x', rev: 1, base: null, page: null }))).toBeNull();
-    expect(parseFeed(JSON.stringify({ v: 2, feed: 'x', rev: 1, base: null, page: null, items: [{ title: 'no id' }] }))).toBeNull();
-    expect(parseFeed('{')).toBeNull();
+  it.each([
+    ['another version', JSON.stringify({ v: 1, feed: 'x', rev: 1, base: null, page: null })],
+    ['an item without an id', feed({ items: [{ title: 'no id' }] })],
+    ['text that is not JSON', '{']
+  ])('refuses %s', (_case, text) => {
+    expect(parseFeed(text)).toBeNull();
   });
 });
 
-describe('messages', () => {
+describe('messageSchema', () => {
   it('has one schema per protocol command', () => {
     const types = messageSchema._zod.def.options.map((option) => option._zod.def.shape.type._zod.def.values[0]);
 
     expect(types).toEqual([...PROTOCOL.commands]);
   });
 
-  it('validates a HUD move with its alignment', () => {
-    expect(messageSchema.safeParse({ type: 'hud_move', panel: 'damage_log', x: 1, y: 2, align_x: 'right' }).success).toBe(true);
-    expect(messageSchema.safeParse({ type: 'hud_move', panel: 'damage_log', x: 1, y: 2, align_x: 'middle' }).success).toBe(false);
+  it('accepts a HUD move with a known alignment', () => {
+    expect(messageSchema.safeParse(hudMove('right')).success).toBe(true);
+  });
+
+  it('refuses a HUD move with an unknown alignment', () => {
+    expect(messageSchema.safeParse(hudMove('middle')).success).toBe(false);
   });
 });

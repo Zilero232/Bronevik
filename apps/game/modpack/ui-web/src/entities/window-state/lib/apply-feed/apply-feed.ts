@@ -1,5 +1,5 @@
-import type { UiFeedItem } from '../../../../shared/api/protocol';
-import type { ApplyFeedInput, FeedState, PatchItemsInput } from './apply-feed.types';
+import type { UiFeed, UiFeedItem } from '../../../../shared/api/protocol';
+import type { ApplyFeedInput, FeedState, PatchFeedInput, PatchItemsInput } from './apply-feed.types';
 
 const patchItems = ({ items, set, removed }: PatchItemsInput): UiFeedItem[] => {
   const gone = new Set(removed);
@@ -10,6 +10,20 @@ const patchItems = ({ items, set, removed }: PatchItemsInput): UiFeedItem[] => {
   return [...kept, ...set.filter((item) => !known.has(item.id))];
 };
 
+const snapshotOf = (message: UiFeed): FeedState => ({
+  component: message.feed,
+  rev: message.rev,
+  page: message.page,
+  items: message.items ?? []
+});
+
+const patchedFeed = ({ held, message }: PatchFeedInput): FeedState => ({
+  ...held,
+  rev: message.rev,
+  page: message.page,
+  items: patchItems({ items: held.items, set: message.set ?? [], removed: message.del ?? [] })
+});
+
 export const applyFeed = ({ held, message }: ApplyFeedInput): FeedState | null => {
   const current = held?.component === message.feed ? held : null;
 
@@ -18,17 +32,12 @@ export const applyFeed = ({ held, message }: ApplyFeedInput): FeedState | null =
   }
 
   if (message.base === null) {
-    return { component: message.feed, rev: message.rev, page: message.page, items: message.items ?? [] };
+    return snapshotOf(message);
   }
 
   if (current?.rev !== message.base) {
     return null;
   }
 
-  return {
-    ...current,
-    rev: message.rev,
-    page: message.page,
-    items: patchItems({ items: current.items, set: message.set ?? [], removed: message.del ?? [] })
-  };
+  return patchedFeed({ held: current, message });
 };

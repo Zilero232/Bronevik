@@ -4,5 +4,28 @@ Pure: file access only, no client imports. Shared by the replay upload and the r
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from .constants import EXTENSIONS, MAGIC, MAX_BLOCKS, MAX_HEADER_BLOCK_BYTES, RECORDING_NAME  # noqa: F401
-from .header import is_replay_name, own_outcome, own_stats, parse_date_time, read_header, read_header_from, read_json_blocks  # noqa: F401
+from .constants import EXTENSIONS, MAGIC, MAX_BLOCKS, MAX_HEADER_BLOCK_BYTES, RECORDING_NAME
+from .header import (
+    is_replay_name,
+    own_outcome,
+    own_stats,
+    parse_date_time,
+    read_header,
+    read_header_from,
+    read_json_blocks,
+)
+
+__all__ = (
+    'EXTENSIONS',
+    'MAGIC',
+    'MAX_BLOCKS',
+    'MAX_HEADER_BLOCK_BYTES',
+    'RECORDING_NAME',
+    'is_replay_name',
+    'own_outcome',
+    'own_stats',
+    'parse_date_time',
+    'read_header',
+    'read_header_from',
+    'read_json_blocks',
+)

@@ -8,34 +8,56 @@ import { resolveWidget, widgetKinds, widgetLines } from '../widget-registry';
 
 const FIXTURES = path.resolve(import.meta.dirname, '../../../../../shared/api/hud-protocol/_tests/fixtures/widgets');
 
-describe(resolveWidget, () => {
+const FIXTURE_KINDS = readdirSync(FIXTURES).map((file) => file.replace('.sample.json', ''));
+
+const isUnsafeGlyph = (char: string): boolean => (char.codePointAt(0) ?? 0) >= FONT_SAFE.firstUnsafe && !FONT_SAFE.kept.includes(char);
+
+const resolveFixture = (kind: string) => {
+  const resolved = resolveWidget(readWidget(kind));
+
+  if (!resolved) {
+    throw new Error(`the ${kind} fixture does not resolve`);
+  }
+
+  return resolved;
+};
+
+describe(widgetKinds, () => {
   it('knows every widget the Python side writes a fixture for', () => {
-    const written = readdirSync(FIXTURES).map((file) => file.replace('.sample.json', ''));
+    expect(widgetKinds().sort()).toEqual([...FIXTURE_KINDS].sort());
+  });
+});
 
-    expect(widgetKinds().sort()).toEqual(written.sort());
+describe(resolveWidget, () => {
+  it.each(FIXTURE_KINDS)('accepts the %s fixture', (kind) => {
+    expect(resolveWidget(readWidget(kind))?.kind).toBe(kind);
   });
 
-  it.each(readdirSync(FIXTURES).map((file) => file.replace('.sample.json', '')))(
-    'draws the %s fixture only in glyphs the client font has',
-    (kind) => {
-      const resolved = resolveWidget(readWidget(kind));
-      const text = JSON.stringify(resolved?.data);
+  it.each(FIXTURE_KINDS)('draws the %s fixture only in glyphs the client font has', (kind) => {
+    const text = JSON.stringify(resolveFixture(kind).data);
 
-      expect(Array.from(text).filter((char) => (char.codePointAt(0) ?? 0) >= FONT_SAFE.firstUnsafe && !FONT_SAFE.kept.includes(char))).toEqual([]);
-    }
-  );
-
-  it.each(readdirSync(FIXTURES).map((file) => file.replace('.sample.json', '')))('accepts the %s fixture', (kind) => {
-    const resolved = resolveWidget(readWidget(kind));
-
-    expect(resolved?.kind).toBe(kind);
-    expect(resolved && widgetLines(resolved)).toBeGreaterThanOrEqual(1000);
+    expect(Array.from(text).filter(isUnsafeGlyph)).toEqual([]);
   });
 
-  it('falls back to the text for an unknown kind, another version or data that fails its schema', () => {
+  it('gives nothing without a widget', () => {
     expect(resolveWidget(null)).toBeNull();
+  });
+
+  it('falls back to the text for an unknown kind', () => {
     expect(resolveWidget({ kind: 'nope', v: 1, data: {} })).toBeNull();
+  });
+
+  it('falls back to the text for another widget version', () => {
     expect(resolveWidget({ kind: 'team_hp', v: 2, data: readWidget('team_hp').data })).toBeNull();
+  });
+
+  it('falls back to the text for data that fails its schema', () => {
     expect(resolveWidget({ kind: 'team_hp', v: 1, data: { style: 'full' } })).toBeNull();
+  });
+});
+
+describe(widgetLines, () => {
+  it.each(FIXTURE_KINDS)('counts at least the base line budget for the %s fixture', (kind) => {
+    expect(widgetLines(resolveFixture(kind))).toBeGreaterThanOrEqual(1000);
   });
 });

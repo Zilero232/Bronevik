@@ -1,11 +1,11 @@
-import type { NativeTooltip, TooltipText, ViewEventInput } from './tooltip.types';
+import type { NativeTooltip, ResourceIdInput, TooltipText, ValueProxyInput, ViewEventInput } from './tooltip.types';
 
 import { GAMEFACE } from '../gameface.constants';
 import { invoke, readGlobal } from '../scope';
 
 const isNode = (value: unknown): value is object => (typeof value === 'object' || typeof value === 'function') && value !== null;
 
-const resourceId = (root: unknown, path: readonly string[]): number | null => {
+const resourceId = ({ root, path }: ResourceIdInput): number | null => {
   let parent: unknown = null;
   let node = root;
 
@@ -27,18 +27,20 @@ const resourceId = (root: unknown, path: readonly string[]): number | null => {
   return typeof id === 'number' ? id : null;
 };
 
-const valueProxy = (name: string, value: string) => ({ __Type: GAMEFACE.viewEvent.valueType, name, string: value });
+const valueProxy = ({ name, value }: ValueProxyInput) => ({ __Type: GAMEFACE.viewEvent.valueType, name, string: value });
 
 const eventArguments = (text: TooltipText | undefined) =>
-  text ? { isMouseEvent: true, arguments: [valueProxy('header', text.header ?? ''), valueProxy('body', text.body)] } : {};
+  text
+    ? { isMouseEvent: true, arguments: [valueProxy({ name: 'header', value: text.header ?? '' }), valueProxy({ name: 'body', value: text.body })] }
+    : {};
 
 const createNativeTooltip = (scope: object): NativeTooltip => {
   const viewEnv = () => readGlobal(scope, GAMEFACE.globals.viewEnv);
 
   const ids = () => {
     const resources: unknown = Reflect.get(scope, GAMEFACE.globals.resources);
-    const contentID = resourceId(resources, GAMEFACE.tooltip.content);
-    const decoratorID = resourceId(resources, GAMEFACE.tooltip.decorator);
+    const contentID = resourceId({ root: resources, path: GAMEFACE.tooltip.content });
+    const decoratorID = resourceId({ root: resources, path: GAMEFACE.tooltip.decorator });
 
     return contentID === null || decoratorID === null ? null : { contentID, decoratorID };
   };

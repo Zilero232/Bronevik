@@ -2,4 +2,12 @@ import type { UiStatus } from '../../../../shared/api/protocol';
 
 import { ACCOUNT_STATES } from '../../config';
 
-export const accountState = (status: UiStatus) => ACCOUNT_STATES[status.auth_failed ? 'authFailed' : status.bound ? 'bound' : 'unbound'];
+const accountKey = (status: UiStatus): keyof typeof ACCOUNT_STATES => {
+  if (status.auth_failed) {
+    return 'authFailed';
+  }
+
+  return status.bound ? 'bound' : 'unbound';
+};
+
+export const accountState = (status: UiStatus) => ACCOUNT_STATES[accountKey(status)];

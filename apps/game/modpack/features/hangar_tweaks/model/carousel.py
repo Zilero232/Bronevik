@@ -2,7 +2,15 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.compat import is_number
 from ....core.native_settings import from_table, native_values
-from .constants import CAROUSEL_ROW_MODES, CAROUSEL_TILE_MODES, CAROUSEL_TYPE, DOUBLE_CAROUSEL_TYPE, INTERFACE_SCALE, INTERFACE_SCALES, SCALE_TOLERANCE
+from .constants import (
+    CAROUSEL_ROW_MODES,
+    CAROUSEL_TILE_MODES,
+    CAROUSEL_TYPE,
+    DOUBLE_CAROUSEL_TYPE,
+    INTERFACE_SCALE,
+    INTERFACE_SCALES,
+    SCALE_TOLERANCE,
+)
 
 FIELDS = {
     'carousel_rows': (CAROUSEL_TYPE, from_table(CAROUSEL_ROW_MODES)),

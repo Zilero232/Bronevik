@@ -3,8 +3,18 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.hud.icons import class_icon, efficiency_icon, glyph, shell_icon, shell_icon_of
 from ....core.hud.widget import widget
 from . import detail_mode, entry_note
-from .constants import (COMPACT_STYLES, DETAIL_EXTENDED, KIND, KIND_GLYPHS, KIND_TONES, KINDS, LAST_HIT_KIND, LOG_KIND_FILTER,
-                        SOURCE_ICONS, TOTALS)
+from .constants import (
+    COMPACT_STYLES,
+    DETAIL_EXTENDED,
+    KIND,
+    KIND_TONES,
+    KINDS,
+    LAST_HIT_KIND,
+    LOG_KIND_FILTER,
+    SHELL_KINDS,
+    SOURCE_ICONS,
+    TOTALS,
+)
 
 # Fair play: the player's own damage, assist, blocked and received damage, what the stock damage log shows; for
 # received damage the attacker's name and class, as the stock log names it.
@@ -16,11 +26,11 @@ def total_icon(icon):
 
 def totals(log):
     values = log.values()
-    items = []
-    for key, icon, tone, always in TOTALS:
-        if always or values[key] > 0:
-            items.append({'key': key, 'icon': total_icon(icon), 'value': values[key], 'tone': tone})
-    return items
+    return [
+        {'key': key, 'icon': total_icon(icon), 'value': values[key], 'tone': tone}
+        for key, icon, tone, shown_when_zero in TOTALS
+        if shown_when_zero or values[key] > 0
+    ]
 
 
 def entry_shell(entry):
@@ -33,24 +43,32 @@ def source_icon(source):
     found = SOURCE_ICONS.get(source)
     if found is None:
         return None
-    kind, name = found
-    return efficiency_icon(name) if kind == 'efficiency' else glyph(name)
+
+    icon_set, name = found
+    if icon_set == 'efficiency':
+        return efficiency_icon(name)
+
+    return glyph(name)
+
+
+def ammo_rack_icon(entry):
+    return glyph('ammo_rack') if entry.get('ammo_rack') else None
 
 
 def row(entry, note=''):
     kind = entry['kind']
-    shell = entry_shell(entry) if kind in ('damage', 'blocked', 'received') else None
+    shell = entry_shell(entry) if kind in SHELL_KINDS else None
     return {
         'kind': kind,
         'amount': entry['amount'],
         'tone': KIND_TONES[kind],
         'received': kind == 'received',
-        'icon': shell or glyph(KIND_GLYPHS[kind]),
+        'icon': shell or glyph(kind),
         'gold': bool(entry.get('gold')) and shell is not None,
         'cls': class_icon(entry.get('class')),
         'name': entry.get('vehicle') or '',
         'source': source_icon(entry.get('source')),
-        'ammo_rack': glyph('ammo_rack') if entry.get('ammo_rack') else None,
+        'ammo_rack': ammo_rack_icon(entry),
         'note': note,
     }
 
@@ -96,6 +114,6 @@ def last_hit_widget(entry, settings):
         'cls': class_icon(entry.get('class'), 'red') if settings.get('show_class') else None,
         'shell': entry_shell(entry),
         'source': source_icon(entry.get('source')),
-        'ammo_rack': glyph('ammo_rack') if entry.get('ammo_rack') else None,
+        'ammo_rack': ammo_rack_icon(entry),
         'timeout_s': settings.get('timeout_s'),
     })

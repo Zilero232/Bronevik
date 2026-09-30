@@ -17,3 +17,8 @@ export type ApplyFeedInput = {
   held: FeedState | null;
   message: UiFeed;
 };
+
+export type PatchFeedInput = {
+  held: FeedState;
+  message: UiFeed;
+};

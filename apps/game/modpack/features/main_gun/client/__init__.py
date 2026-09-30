@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.client.battle import shared
 from ....core.client.battle.damage import DamageTracker
 from ....core.client.battle.teams import TeamTracker
-from ....core.client.hud.panel import BattlePanel
+from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.log import safe
 from ..i18n import STRINGS
 from ..model import format_panel, values
@@ -17,14 +17,24 @@ def battle_messages():
     return shared('messages')
 
 
+PANEL_SPEC = PanelSpec(
+    panel_id=PANEL_ID,
+    schema=SCHEMA,
+    switch=SWITCH,
+    strings=STRINGS,
+    preview_size=PREVIEW_SIZE,
+    preview_text=preview_text,
+    preview_widget=preview_widget,
+)
+
+
 class MainGunPanel(BattlePanel):
-    """Own damage against the High Caliber threshold, with the enemy HP the team HP panel reads."""
 
     def __init__(self, app):
         self.tracker = TeamTracker(self.render)
         self.damage = DamageTracker(self.render)
         self.hit_ally = False
-        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text, preview_widget)
+        BattlePanel.__init__(self, app, PANEL_SPEC)
 
     def start(self, player):
         self.hit_ally = False
@@ -51,5 +61,7 @@ class MainGunPanel(BattlePanel):
         enemies_max = teams.totals(False)['max']
         enemies_hp = teams.health(False)['hp']
         state = values(damage, enemies_max, enemies_hp, self.hit_ally)
+
         translate = self.app.translate
-        self.show(format_panel(state, self.settings, translate), panel_widget(state, self.settings, translate))
+        text = format_panel(state, self.settings, translate)
+        self.show(text, panel_widget(state, self.settings, translate))

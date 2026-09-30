@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from .constants import MAX_QUEUE_S  # noqa: F401
+from .constants import MAX_QUEUE_S
 
 
 class QueueTimer(object):
@@ -14,22 +14,19 @@ class QueueTimer(object):
         self.queue_type = queue_type
         self.started_at = now
 
-    def _finish(self, now):
+    def dequeued(self, now):
         if self.started_at is None:
             return None
         wait = now - self.started_at
-        result = (self.queue_type, wait) if 0 <= wait <= MAX_QUEUE_S else None
+        finished = (self.queue_type, wait) if 0 <= wait <= MAX_QUEUE_S else None
         self.queue_type = None
         self.started_at = None
-        return result
-
-    def dequeued(self, now):
-        return self._finish(now)
+        return finished
 
     def arena_created(self, now):
-        result = self._finish(now)
-        self.last_wait = round(result[1], 1) if result is not None else None
-        return result
+        finished = self.dequeued(now)
+        self.last_wait = round(finished[1], 1) if finished is not None else None
+        return finished
 
     def take_last_wait(self):
         wait = self.last_wait

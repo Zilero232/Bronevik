@@ -5,23 +5,21 @@ import time
 
 from BattleFeedbackCommon import BATTLE_EVENT_TYPE
 
-from ....core.client.battle import BattleHooks, call, feedback, vehicle_class, vehicle_name
+from ....core.client.battle import SHOT_METHOD, BattleHooks, call, feedback, on_own_shot, vehicle_class, vehicle_name
 from ....core.client.component import FeatureComponent
-from ....core.client.game import client_attr, values_by_name
-from ....core.hooks import override
+from ....core.client.game import values_by_name
 from ....core.hud import HangarLabel
-from ....core.log import log, log_exception, safe
+from ....core.log import log, safe
 from .. import FEATURE_ID
 from ..i18n import STRINGS
 from ..model import ACTION_CLEAR, BOOK_FILE, HitBook, build_page, hangar_widget, panel_text
 from ..settings import SCHEMA, SWITCH
-from .constants import HANGAR_PANEL, KIND_BY_EVENT, LAYOUT, OWN_VEHICLE_ATTR, SHOT_METHOD, VEHICLE_CLASS, VEHICLE_MODULE
+from .constants import HANGAR_PANEL, KIND_BY_EVENT, LAYOUT
 
 
+# Fair play: only the shots the client draws on the player's own tank (Vehicle.showDamageFromShot on the own vehicle)
+# and the damage the own feedback reported.
 class BattleHitsFeature(FeatureComponent):
-    """«Боевые раны»: the points of every shot that hit the player's own tank (Vehicle.showDamageFromShot on the own
-    vehicle only) with the damage the own feedback reported, kept per battle and shown in the hangar afterwards."""
-
     def __init__(self, app):
         FeatureComponent.__init__(self, app, FEATURE_ID, SCHEMA, SWITCH, STRINGS)
         self.book = None
@@ -37,21 +35,8 @@ class BattleHitsFeature(FeatureComponent):
         self._hook_shots()
 
     def _hook_shots(self):
-        vehicle = client_attr(VEHICLE_MODULE, VEHICLE_CLASS)
-        if vehicle is None or not hasattr(vehicle, SHOT_METHOD):
-            log('battle hits: Vehicle.%s not found, nothing is recorded' % SHOT_METHOD)
-            return
-        feature = self
-
-        try:
-            @override(vehicle, SHOT_METHOD)
-            def show_damage_from_shot(original, entity, attacker_id, points, *args, **kwargs):
-                result = original(entity, attacker_id, points, *args, **kwargs)
-                if getattr(entity, OWN_VEHICLE_ATTR, False):
-                    feature.on_own_shot(attacker_id, points)
-                return result
-        except Exception:
-            log_exception('battle hits: shots')
+        if not on_own_shot(self.on_own_shot):
+            log('battle hits: Vehicle.%s not hooked, nothing is recorded' % SHOT_METHOD)
 
     def _on_account(self, account_id):
         self.book = HitBook(self.account_file(BOOK_FILE, account_id), self.settings.get('keep_battles'))
@@ -66,7 +51,8 @@ class BattleHitsFeature(FeatureComponent):
         if self.book is None or not self.enabled():
             return
         battle_id = getattr(player, 'arenaUniqueID', None) or int(time.time())
-        self.book.start(battle_id, vehicle_name(getattr(player, 'playerVehicleID', None)), time.time())
+        own_vehicle = vehicle_name(getattr(player, 'playerVehicleID', None))
+        self.book.start(battle_id, own_vehicle, time.time())
         self.hooks.add(feedback, 'onPlayerFeedbackReceived', self._on_feedback)
 
     def _on_battle_enter(self):
@@ -79,27 +65,35 @@ class BattleHitsFeature(FeatureComponent):
 
     @safe
     def on_own_shot(self, attacker_id, points):
-        if self.book is not None and self.book.current is not None:
-            self.book.hit(points, vehicle_name(attacker_id), vehicle_class(attacker_id), time.time())
+        if self.book is None or self.book.current is None:
+            return
+        self.book.hit(points, vehicle_name(attacker_id), vehicle_class(attacker_id), time.time())
 
     def _on_feedback(self, events):
         if self.book is None or self.book.current is None:
             return
         now = time.time()
+
         for event in events:
             if self.kinds.get(event.getBattleEventType()) != 'received':
                 continue
             extra = event.getExtra()
             if call(extra, 'isShot', True):
-                self.book.damage(vehicle_name(event.getTargetID()), call(extra, 'getDamage', 0), now)
+                attacker = vehicle_name(event.getTargetID())
+                self.book.damage(attacker, call(extra, 'getDamage', 0), now)
+
+    def _is_panel_wanted(self):
+        return not self.app.in_battle and self.enabled() and self.settings.get('show_panel')
 
     @safe
     def show(self):
         latest = self.book.latest() if self.book is not None else None
-        if self.app.in_battle or latest is None or not self.enabled() or not self.settings.get('show_panel'):
+        if latest is None or not self._is_panel_wanted():
             self.label.clear()
             return
-        self.label.show(panel_text(latest, self.app.translate), LAYOUT, widget=hangar_widget(latest, self.app.translate))
+
+        translate = self.app.translate
+        self.label.show(panel_text(latest, translate), LAYOUT, widget=hangar_widget(latest, translate))
 
     def ui_page(self):
         if not self.enabled() or self.book is None:

@@ -25,10 +25,6 @@ OUTCOMES = ('pen', 'crit', 'blocked', 'ricochet', 'nodamage')
 DAMAGING = ('pen', 'crit')
 SIDED_PARTS = ('hull', 'turret')
 SIDES = ('front', 'left', 'right', 'rear')
-# RU 1.45 VehicleEffects.decodeSegment: each point is a byte per axis of the part's bounding box.
-BYTE = 255.0
-START_SHIFTS = (16, 24, 32)
-END_SHIFTS = (40, 48, 56)
 # A stored point: fractions of the part's box along each axis.
 AXES = ('x', 'y', 'z')
 MIDDLE = 0.5
@@ -44,3 +40,4 @@ FIGURE = {
     'gun': (0.47, 0.0, 0.06, 0.36),
 }
 FIGURE_ORDER = ('chassis_left', 'chassis_right', 'hull', 'turret', 'gun')
+SHAPE_KEYS = ('x', 'y', 'w', 'h')

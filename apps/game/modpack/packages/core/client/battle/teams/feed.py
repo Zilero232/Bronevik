@@ -24,9 +24,6 @@ except ImportError:
 
 
 class BattleFieldFeed(object):
-    """The last numbers of the battle's BattleFieldCtrl: `health` {vehicle_id: hp} of the alive vehicles, `dead`
-    (ids), `team_health` (allies_hp, enemies_hp, allies_total, enemies_total) or None. `listen(callback)` hears every
-    update."""
 
     def __init__(self):
         self.listeners = []
@@ -72,7 +69,6 @@ _state = {'feed': None}
 
 
 def battle_field_feed():
-    """The process-wide feed, linked to every battle page from its first use on."""
     if _state['feed'] is None:
         _state['feed'] = BattleFieldFeed()
         _install(_state['feed'])

@@ -24,6 +24,16 @@ def read_json(path):
         return json.load(handle)
 
 
+def entry_name(key):
+    component_id, version = key
+    return '%s %s' % (component_id or 'modpack', version)
+
+
+def is_translated(entry):
+    russian = entry.get('ru', '')
+    return russian != entry.get('en') and bool(CYRILLIC.search(russian))
+
+
 @unittest.skipUnless(PY3, 'the MOST bundler needs Python 3')
 class ChangelogTest(unittest.TestCase):
 
@@ -33,25 +43,34 @@ class ChangelogTest(unittest.TestCase):
         self.catalogued = [item['id'] for item in read_json(CATALOG)['components'] if 'kind' not in item]
 
     def test_every_catalogued_component_has_an_entry_for_its_version(self):
-        missing = ['%s %s' % (key, self.versions.get(key)) for key in self.catalogued
-                   if not self.changelog.get((key, self.versions.get(key)))]
+        keys = [(component_id, self.versions.get(component_id)) for component_id in self.catalogued]
+
+        missing = ['%s %s' % key for key in keys if not self.changelog.get(key)]
+
         self.assertEqual(missing, [])
 
     def test_entries_name_only_known_components(self):
-        unknown = sorted('%s %s' % key for key in self.changelog if key[0] is not None and key[0] not in self.versions)
+        component_keys = [key for key in self.changelog if key[0] is not None]
+
+        unknown = sorted('%s %s' % key for key in component_keys if key[0] not in self.versions)
+
         self.assertEqual(unknown, [])
 
     def test_release_entry_for_the_modpack_version(self):
-        self.assertTrue(self.changelog.get((None, read_json(PACKAGE_JSON)['version'])))
+        version = read_json(PACKAGE_JSON)['version']
+
+        self.assertTrue(self.changelog.get((None, version)))
 
     def test_every_entry_is_bilingual(self):
-        incomplete = sorted('%s %s' % (key[0] or 'modpack', key[1]) for key, entry in self.changelog.items()
-                            if sorted(entry) != sorted(texts.LANGUAGES))
+        languages = sorted(texts.LANGUAGES)
+
+        incomplete = sorted(entry_name(key) for key, entry in self.changelog.items() if sorted(entry) != languages)
+
         self.assertEqual(incomplete, [])
 
     def test_russian_texts_are_translations(self):
-        untranslated = sorted('%s %s' % (key[0] or 'modpack', key[1]) for key, entry in self.changelog.items()
-                              if entry.get('ru') == entry.get('en') or not CYRILLIC.search(entry.get('ru', '')))
+        untranslated = sorted(entry_name(key) for key, entry in self.changelog.items() if not is_translated(entry))
+
         self.assertEqual(untranslated, [])
 
     def test_every_package_is_catalogued(self):

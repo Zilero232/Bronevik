@@ -5,13 +5,17 @@ import { HUD_PROTOCOL } from '../../api/hud-protocol';
 import { HUD_TONE_COLORS } from '../hud-tones.constants';
 
 describe('HUD_TONE_COLORS', () => {
-  it('has a colour for every tone of the protocol, equal to the dark theme token', async () => {
+  it('has a colour for every tone of the protocol', () => {
+    const tones = new Set(Object.keys(HUD_TONE_COLORS));
+
+    expect(tones).toEqual(new Set(HUD_PROTOCOL.tones));
+  });
+
+  it.each(Object.entries(HUD_TONE_COLORS))('gives the %s tone the colour of its dark theme token', async (_tone, { token, hex }) => {
     const { themes, root } = await readDesignTokens();
 
-    expect(new Set(Object.keys(HUD_TONE_COLORS))).toEqual(new Set(HUD_PROTOCOL.tones));
+    const tokenColor = themes.dark[token] ?? root[token];
 
-    Object.values(HUD_TONE_COLORS).forEach(({ token, hex }) => {
-      expect((themes.dark[token] ?? root[token])?.toLowerCase(), token).toBe(hex);
-    });
+    expect(tokenColor?.toLowerCase()).toBe(hex);
   });
 });

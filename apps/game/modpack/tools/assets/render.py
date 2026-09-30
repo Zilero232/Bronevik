@@ -33,19 +33,34 @@ def rendition_name(stem, rendition):
     return '%s%s_%d.png' % (stem, rendition.get('suffix', ''), rendition['size'])
 
 
-def render_one(path, rendition):
-    resvg_py, Image = libraries()
+def recoloured_svg(path, recolor):
+    with io.open(path, encoding='utf-8') as handle:
+        svg = handle.read()
+    for source, target in sorted(recolor.items()):
+        svg = svg.replace(source, target)
+    return svg
+
+
+def svg_png(path, rendition):
+    """The PNG bytes resvg draws for an SVG source, recoloured first when the rendition asks for it."""
+    resvg_py, _ = libraries()
     size = rendition['size']
-    if path.endswith('.svg') and rendition.get('recolor'):
-        with io.open(path, encoding='utf-8') as handle:
-            svg = handle.read()
-        for source, target in sorted(rendition['recolor'].items()):
-            svg = svg.replace(source, target)
-        image = Image.open(io.BytesIO(bytes(resvg_py.svg_to_bytes(svg_string=svg, width=size, height=size)))).convert('RGBA')
-    elif path.endswith('.svg'):
-        image = Image.open(io.BytesIO(bytes(resvg_py.svg_to_bytes(svg_path=path, width=size, height=size)))).convert('RGBA')
-    else:
-        image = Image.open(path).convert('RGBA').resize((size, size), Image.LANCZOS)
+    if rendition.get('recolor'):
+        svg = recoloured_svg(path, rendition['recolor'])
+        return bytes(resvg_py.svg_to_bytes(svg_string=svg, width=size, height=size))
+    return bytes(resvg_py.svg_to_bytes(svg_path=path, width=size, height=size))
+
+
+def load_image(path, rendition):
+    _, Image = libraries()
+    if path.endswith('.svg'):
+        return Image.open(io.BytesIO(svg_png(path, rendition))).convert('RGBA')
+    size = rendition['size']
+    return Image.open(path).convert('RGBA').resize((size, size), Image.LANCZOS)
+
+
+def render_one(path, rendition):
+    image = load_image(path, rendition)
     alpha = rendition.get('alpha')
     if alpha is not None:
         image.putalpha(image.getchannel('A').point(lambda value: int(round(value * alpha))))
@@ -65,25 +80,29 @@ def planned(asset_set):
         stem, extension = os.path.splitext(name)
         if extension.lower() not in SOURCE_EXTENSIONS:
             continue
+        source = os.path.join(source_dir, name)
         for rendition in asset_set.renditions:
-            items.append((os.path.join(out_dir, rendition_name(stem, rendition)), os.path.join(source_dir, name), rendition))
+            items.append((os.path.join(out_dir, rendition_name(stem, rendition)), source, rendition))
     return items
 
 
+def write(output, data):
+    if not os.path.isdir(os.path.dirname(output)):
+        os.makedirs(os.path.dirname(output))
+    with open(output, 'wb') as handle:
+        handle.write(data)
+
+
 def main(argv):
-    check = '--check' in argv
+    is_check = '--check' in argv
     stale = []
     for asset_set in asset_sets.load():
         for output, source, rendition in planned(asset_set):
             data = render_one(source, rendition)
-            if check:
-                if not os.path.isfile(output):
-                    stale.append(output)
-                continue
-            if not os.path.isdir(os.path.dirname(output)):
-                os.makedirs(os.path.dirname(output))
-            with open(output, 'wb') as handle:
-                handle.write(data)
+            if not is_check:
+                write(output, data)
+            elif not os.path.isfile(output):
+                stale.append(output)
     if stale:
         sys.stderr.write('missing renditions (run tools/assets/render.py):\n  %s\n' % '\n  '.join(stale))
         return 1

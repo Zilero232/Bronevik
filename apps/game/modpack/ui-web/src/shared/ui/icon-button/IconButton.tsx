@@ -2,6 +2,7 @@ import clsx from 'clsx';
 
 import type { IconButtonProps } from './IconButton.types';
 
+import { ICON_BUTTON } from '../../config';
 import { useTooltip } from '../../lib/use-tooltip';
 import { Icon } from '../icon';
 
@@ -19,7 +20,7 @@ export const IconButton = ({ icon, label, variant = 'default', size = 'default',
       onClick={onClick}
       {...tip}
     >
-      <Icon name={icon} size={size === 'small' ? 14 : 16} tone={tone ?? (variant === 'accent' ? 'contrast' : 'text')} />
+      <Icon name={icon} size={ICON_BUTTON.iconSize[size]} tone={tone ?? ICON_BUTTON.iconTone[variant]} />
     </button>
   );
 };

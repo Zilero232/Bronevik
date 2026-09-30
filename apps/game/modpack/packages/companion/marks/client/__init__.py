@@ -44,8 +44,14 @@ class MarksCapture(object):
         signature = [snapshot['damage_rating'], snapshot['moving_avg_damage']]
         if self.moe_sent.get(key) == signature:
             return
-        event = build_moe_snapshot_event(snapshot['tank_id'], snapshot['damage_rating'], snapshot['moving_avg_damage'],
-                                         snapshot.get('marks_on_gun') or 0, snapshot.get('battles'), time.time())
+        event = build_moe_snapshot_event(
+            snapshot['tank_id'],
+            snapshot['damage_rating'],
+            snapshot['moving_avg_damage'],
+            snapshot.get('marks_on_gun') or 0,
+            snapshot.get('battles'),
+            time.time(),
+        )
         if app.enqueue(event):
             self.moe_sent[key] = signature
             app.save_state()

@@ -1,3 +1,3 @@
 export { useProfiles } from './use-profiles';
 
-export type { ProfileRowModel, RenameDraft } from './use-profiles';
+export type { ProfileRowModel } from './use-profiles';

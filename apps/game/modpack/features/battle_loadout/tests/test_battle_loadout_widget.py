@@ -24,12 +24,19 @@ def preview_data():
 
 class EquipmentWidgetTest(unittest.TestCase):
 
-    def test_icons_of_the_size_setting_with_tooltip_texts(self):
+    def test_icons_take_the_size_setting(self):
         data = preview_data()
 
-        first = data['items'][0]
         assert data['size'] == 45
-        assert len(data['items']) == 5
+
+    def test_every_sample_item_is_drawn(self):
+        items = preview_data()['items']
+
+        assert len(items) == 5
+
+    def test_an_item_carries_its_icon_and_the_tooltip_name(self):
+        first = preview_data()['items'][0]
+
         assert first['icon'] == 'img://gui/maps/icons/artefact/turbocharger.png|otmetki:module'
         assert first['name'] == u'Турбонагнетатель'
 
@@ -42,10 +49,13 @@ class EquipmentWidgetTest(unittest.TestCase):
         assert items[3]['active']
         assert items[4]['overlay'] == 'img://gui/maps/icons/artefact/battleBooster_overlay.png'
 
-    def test_set_badges(self):
+    def test_the_set_badges_of_the_sample(self):
         sets = preview_data()['sets']
 
-        assert sets == [{'group': 'devices', 'text': u'набор 2/2'}, {'group': 'consumables', 'text': u'снаряды 1/2'}]
+        assert sets == [
+            {'group': 'devices', 'text': u'набор 2/2'},
+            {'group': 'consumables', 'text': u'снаряды 1/2'},
+        ]
 
     def test_fixture_for_the_page(self):
         widget = preview_widget(Settings({}, SCHEMA), translator())

@@ -18,6 +18,13 @@ def classify_status(status):
     return Outcome.RETRY
 
 
+def _stored_events(data):
+    events = data.get('events') if isinstance(data, dict) else None
+    if not isinstance(events, list):
+        return []
+    return [event for event in events if isinstance(event, dict) and event.get('event_id')]
+
+
 class Outbox(object):
 
     def __init__(self, storage, max_events=MAX_EVENTS, max_batch=MAX_BATCH, rng=None):
@@ -29,12 +36,7 @@ class Outbox(object):
         self.attempt = 0
         self.retry_at = 0.0
         self.auth_blocked = False
-        self.events = []
-        self.dropped = 0
-        data = storage.read({}) or {}
-        events = data.get('events') if isinstance(data, dict) else None
-        if isinstance(events, list):
-            self.events = [e for e in events if isinstance(e, dict) and e.get('event_id')]
+        self.events = _stored_events(storage.read({}))
 
     def _persist(self):
         self.storage.write({'events': self.events})
@@ -46,14 +48,13 @@ class Outbox(object):
         event_id = event.get('event_id')
         if not event_id:
             return False
-        for existing in self.events:
-            if existing.get('event_id') == event_id:
-                return False
+        if any(existing.get('event_id') == event_id for existing in self.events):
+            return False
+
         self.events.append(event)
         overflow = len(self.events) - self.max_events
         if overflow > 0:
             self.events = self.events[overflow:]
-            self.dropped += overflow
         self._persist()
         return True
 
@@ -66,41 +67,42 @@ class Outbox(object):
         return list(self.events[:self.batch_size])
 
     def _remove(self, batch):
-        ids = set(e.get('event_id') for e in batch)
-        self.events = [e for e in self.events if e.get('event_id') not in ids]
+        ids = set(event.get('event_id') for event in batch)
+        self.events = [event for event in self.events if event.get('event_id') not in ids]
         self._persist()
 
     def _backoff(self, now, retry_after=None):
         self.attempt += 1
         delay = backoff_delay(self.attempt, BASE_BACKOFF_S, MAX_BACKOFF_S, JITTER, self.rng, retry_after)
         self.retry_at = now + delay
-        return delay
+
+    def _reset_backoff(self):
+        self.attempt = 0
+        self.retry_at = 0.0
 
     def complete(self, batch, status, now, retry_after=None):
         outcome = classify_status(status)
         if outcome == Outcome.SENT:
             self._remove(batch)
-            self.attempt = 0
-            self.retry_at = 0.0
+            self._reset_backoff()
             self.batch_size = self.max_batch
         elif outcome == Outcome.DROP:
             self._remove(batch)
-            self.dropped += len(batch)
-            self.attempt = 0
-            self.retry_at = 0.0
+            self._reset_backoff()
         elif outcome == Outcome.AUTH:
             self.auth_blocked = True
         elif outcome == Outcome.SHRINK:
-            if self.batch_size > 1:
-                self.batch_size = max(1, self.batch_size // 2)
-            else:
-                self._remove(batch)
-                self.dropped += len(batch)
+            self._shrink(batch)
         else:
             self._backoff(now, retry_after)
         return outcome
 
+    def _shrink(self, batch):
+        if self.batch_size > 1:
+            self.batch_size = self.batch_size // 2
+        else:
+            self._remove(batch)
+
     def unblock(self):
         self.auth_blocked = False
-        self.attempt = 0
-        self.retry_at = 0.0
+        self._reset_backoff()

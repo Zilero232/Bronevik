@@ -22,28 +22,45 @@ class AutoResupply(FeatureComponent):
             return []
         translate = self.app.translate
         return [
-            {'id': ACTION_SELECTED, 'label': translate('auto_resupply_apply_selected'), 'confirm': None},
-            {'id': ACTION_ALL, 'label': translate('auto_resupply_apply_all'), 'confirm': translate('auto_resupply_apply_all_confirm')},
+            {
+                'id': ACTION_SELECTED,
+                'label': translate('auto_resupply_apply_selected'),
+                'confirm': None,
+            },
+            {
+                'id': ACTION_ALL,
+                'label': translate('auto_resupply_apply_all'),
+                'confirm': translate('auto_resupply_apply_all_confirm'),
+            },
         ]
 
     def ui_action(self, action, row=None, value=None):
         if not self.enabled_in_hangar() or action not in (ACTION_SELECTED, ACTION_ALL):
             return None
-        if action == ACTION_SELECTED:
-            vehicle = selected_vehicle()
-            vehicles = [vehicle] if vehicle is not None else []
-        else:
-            vehicles = garage_vehicles()
-        by_inv = dict((getattr(vehicle, 'invID', None), vehicle) for vehicle in vehicles)
+        vehicles = self._vehicles_for(action)
         requests, refusal = plan([summary(vehicle) for vehicle in vehicles], self.settings.to_dict())
         if refusal:
             return self.notice_error('auto_resupply_refused_%s' % refusal)
-        idle = not self.queue
-        self.queue.extend((by_inv[inv_id], flag, flag_value) for inv_id, flag, flag_value in requests)
-        if idle:
+
+        self._enqueue(vehicles, requests)
+        return self.notice_info('auto_resupply_sent', count=len(requests))
+
+    def _vehicles_for(self, action):
+        if action == ACTION_ALL:
+            return garage_vehicles()
+        vehicle = selected_vehicle()
+        if vehicle is None:
+            return []
+        return [vehicle]
+
+    def _enqueue(self, vehicles, requests):
+        by_inventory_id = dict((getattr(vehicle, 'invID', None), vehicle) for vehicle in vehicles)
+        was_idle = not self.queue
+        for inventory_id, flag, flag_value in requests:
+            self.queue.append((by_inventory_id[inventory_id], flag, flag_value))
+        if was_idle:
             self.failed = 0
             self._next()
-        return self.notice_info('auto_resupply_sent', count=len(requests))
 
     def _next(self):
         if not self.queue:

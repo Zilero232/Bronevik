@@ -8,10 +8,27 @@ SHOT_WINDOW_S = 3.0
 MODULE_WINDOW_S = 1.5
 MAX_MODULES = 6
 # RU 1.45 client source: the damage panel's device names (VEHICLE_VIEW_STATE.DEVICES) and the states it colours.
-MODULES = ('engine', 'ammoBay', 'fuelTank', 'radio', 'gun', 'turretRotator', 'surveyingDevice', 'leftTrack', 'rightTrack', 'wheel',
-           'commander', 'driver', 'radioman', 'gunner', 'loader')
+MODULES = (
+    'engine',
+    'ammoBay',
+    'fuelTank',
+    'radio',
+    'gun',
+    'turretRotator',
+    'surveyingDevice',
+    'leftTrack',
+    'rightTrack',
+    'wheel',
+    'commander',
+    'driver',
+    'radioman',
+    'gunner',
+    'loader',
+)
 MODULE_STATES = ('critical', 'destroyed')
 SOURCES = ('shot', 'fire', 'ram', 'world')
+# The card of a death with no recent shot from the own feedback (the kill feed may still name the killer).
+NO_SHOT = {'attacker': None, 'class': None, 'shell': None, 'damage': 0, 'source': None}
 # Eight sectors around the hull, clockwise from the front, as the game's own hit indicator points.
 SECTORS = ('front', 'front_right', 'right', 'rear_right', 'rear', 'rear_left', 'left', 'front_left')
 SECTOR_ARROWS = (u'↑', u'↗', u'→', u'↘', u'↓', u'↙', u'←', u'↖')

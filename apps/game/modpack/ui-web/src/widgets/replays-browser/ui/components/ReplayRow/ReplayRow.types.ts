@@ -7,3 +7,5 @@ export type ReplayRowProps = {
   selected: boolean;
   onSelect: (id: string) => void;
 };
+
+export type RowPartProps = { item: ReplayItem };

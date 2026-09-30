@@ -3,8 +3,14 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from BattleFeedbackCommon import BATTLE_EVENT_TYPE
 
 from ....core.client.battle import arena, call, feedback, is_enemy, summary_assist
-from ....core.client.game import client_attr, on_vehicle_changed, player_tank_id, values_by_name, vehicle_short_name
-from ....core.client.hud.panel import BattlePanel
+from ....core.client.game import (
+    client_attr,
+    on_vehicle_changed,
+    player_tank_id,
+    values_by_name,
+    vehicle_short_name,
+)
+from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.client.me import tank_ratings
 from ....core.client.sound import play_mp3
 from ....core.log import safe
@@ -18,22 +24,34 @@ from .constants import CAPS_CLASS, CAPS_MODULE, DOSSIER_CAP
 from .dossier import selected_records
 
 
+# A battle whose results the dossier's max15x15 records take (random battles, Mapbox and the rest of the
+# DOSSIER_MAX15X15 types); only the random battle when the client's caps cannot be read.
 def counts_in_dossier(bonus_type):
-    """True for a battle whose results the dossier's max15x15 records take (random battles, Mapbox and the rest of the
-    DOSSIER_MAX15X15 types); only the random battle when the client's caps cannot be read."""
     caps = client_attr(CAPS_MODULE, CAPS_CLASS)
     cap = getattr(caps, DOSSIER_CAP, None)
     if cap is None or bonus_type is None:
         return bonus_type == RANDOM_BONUS_TYPE
+
     try:
         return bool(caps.checkAny(bonus_type, cap))
     except Exception:
         return bonus_type == RANDOM_BONUS_TYPE
 
 
+PANEL_SPEC = PanelSpec(
+    panel_id=PANEL_ID,
+    schema=SCHEMA,
+    switch=SWITCH,
+    strings=STRINGS,
+    preview_size=PREVIEW_SIZE,
+    preview_text=preview_text,
+    preview_widget=preview_widget,
+)
+
+
+# The battle line against the tank's record and the new-record card after the battle. Records come from the own
+# dossier (the selected vehicle), the site's career records (/mod/me/tanks) and the own battle results.
 class PersonalBestPanel(BattlePanel):
-    """The battle line against the tank's record and the new-record card after the battle. Records come from the
-    own dossier (the selected vehicle), the site's career records (/mod/me/tanks) and the own battle results."""
 
     def __init__(self, app):
         self.kinds = values_by_name(BATTLE_EVENT_TYPE, KIND_BY_EVENT)
@@ -43,10 +61,10 @@ class PersonalBestPanel(BattlePanel):
         self.record = {}
         self.live = None
         self.pending = []
-        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text, preview_widget)
-        bus = app.bus
-        bus.on('hangar', self._on_hangar)
-        bus.on('battle_event', self._on_battle_event)
+        BattlePanel.__init__(self, app, PANEL_SPEC)
+
+        app.bus.on('hangar', self._on_hangar)
+        app.bus.on('battle_event', self._on_battle_event)
         self.tanks.listen(self._on_site_row)
         on_vehicle_changed(self._on_vehicle_changed, 'personal best')
         self.follow_account(self._on_account)
@@ -74,6 +92,7 @@ class PersonalBestPanel(BattlePanel):
     def _on_vehicle_changed(self):
         if not self.enabled_in_hangar():
             return
+
         tank_id, values = selected_records()
         if tank_id:
             self._merge(tank_id, values)
@@ -88,22 +107,30 @@ class PersonalBestPanel(BattlePanel):
         self.render()
 
     def _on_battle_event(self, event, now):
-        tank_id = (event.get('vehicle') or {}).get('tank_id')
+        vehicle = event.get('vehicle') or {}
+        tank_id = vehicle.get('tank_id')
         if not counts_in_dossier(event.get('bonus_type')) or not tank_id:
             return
+
         values = event_values(event)
         broken = beaten(self.book.get(tank_id), values)
         self._merge(tank_id, values)
-        if broken and self.enabled() and self.settings.get('show_card'):
-            self.pending.append(format_card(broken, vehicle_short_name(tank_id), self.app.translate))
-            if not self.app.in_battle:
-                self._on_hangar()
+        if not broken or not self._shows_card():
+            return
+
+        self.pending.append(format_card(broken, vehicle_short_name(tank_id), self.app.translate))
+        if not self.app.in_battle:
+            self._on_hangar()
+
+    def _shows_card(self):
+        return self.enabled() and self.settings.get('show_card')
 
     def start(self, player):
         bonus_type = getattr(arena(), 'bonusType', RANDOM_BONUS_TYPE)
         record = self.book.get(player_tank_id(player))
         if not counts_in_dossier(bonus_type) or not record:
             return
+
         self.record = record
         self.live = LiveBattle()
         self.hooks.add(feedback, 'onPlayerFeedbackReceived', self._on_feedback)
@@ -118,23 +145,29 @@ class PersonalBestPanel(BattlePanel):
     def _on_feedback(self, events):
         if self.live is None:
             return
-        changed = False
+
+        is_changed = False
         for event in events:
-            metric = self.kinds.get(event.getBattleEventType())
-            if metric is None or not is_enemy(event.getTargetID()):
-                continue
-            if metric == 'frags':
-                changed = self.live.add(metric) or changed
-            else:
-                changed = self.live.add(metric, call(event.getExtra(), 'getDamage', 0)) or changed
-        if changed:
+            is_changed = self._count(event) or is_changed
+        if is_changed:
             self.render()
+
+    def _count(self, event):
+        metric = self.kinds.get(event.getBattleEventType())
+        if metric is None or not is_enemy(event.getTargetID()):
+            return False
+        if metric == 'frags':
+            return self.live.add(metric)
+
+        return self.live.add(metric, call(event.getExtra(), 'getDamage', 0))
 
     def _on_summary(self, event):
         if self.live is None:
             return
-        changed = self.live.raise_to('damage', call(event, 'getTotalDamage'))
-        if self.live.raise_to('assist', summary_assist(event)) or changed:
+
+        is_damage_raised = self.live.raise_to('damage', call(event, 'getTotalDamage'))
+        is_assist_raised = self.live.raise_to('assist', summary_assist(event))
+        if is_damage_raised or is_assist_raised:
             self.render()
 
     @safe
@@ -142,7 +175,8 @@ class PersonalBestPanel(BattlePanel):
         if self.live is None:
             return
         text = format_line(self.record, self.live, self.settings, self.app.translate)
-        if text:
-            self.show(text, line_widget(self.record, self.live, self.settings, self.app.translate))
-        else:
+        if not text:
             self.hide()
+            return
+
+        self.show(text, line_widget(self.record, self.live, self.settings, self.app.translate))

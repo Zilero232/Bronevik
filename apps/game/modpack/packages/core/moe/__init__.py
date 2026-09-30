@@ -17,6 +17,23 @@ from .ema import battles_to_reach, combined_damage, project_moving_avg, rating_t
 from .pace import PaceBook, battle_combined
 from .targets import moe_state, next_whole_percent
 
-__all__ = ('EMA_K', 'EMA_WINDOW', 'MARK_LEVELS', 'PaceBook', 'TARGET_LEVELS', 'ThresholdCache', 'ThresholdCurve', 'battle_combined', 'battles_to_reach',
-           'combined_damage', 'moe_color', 'moe_macros', 'moe_state', 'next_level', 'next_whole_percent',
-           'project_moving_avg', 'rating_to_percent', 'required_battle_damage')
+__all__ = (
+    'EMA_K',
+    'EMA_WINDOW',
+    'MARK_LEVELS',
+    'PaceBook',
+    'TARGET_LEVELS',
+    'ThresholdCache',
+    'ThresholdCurve',
+    'battle_combined',
+    'battles_to_reach',
+    'combined_damage',
+    'moe_color',
+    'moe_macros',
+    'moe_state',
+    'next_level',
+    'next_whole_percent',
+    'project_moving_avg',
+    'rating_to_percent',
+    'required_battle_damage',
+)

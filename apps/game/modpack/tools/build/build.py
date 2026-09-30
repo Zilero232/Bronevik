@@ -33,14 +33,35 @@ SINGLE_DIR = 'single'
 def parse_args(argv=None):
     parser = argparse.ArgumentParser(description='Build the Three Marks .mtmod / .wotmod packages')
     parser.add_argument('--single', action='store_true', help='one package with everything (the pre-split format)')
-    parser.add_argument('--wg', action='store_true', help='write .wotmod for WG clients instead of .mtmod for Lesta')
-    parser.add_argument('--require-pyc', action='store_true', help='fail when no compiler is available (release builds)')
-    parser.add_argument('--compiler', choices=('auto', 'owg', 'py27'), default='auto', help='bytecode compiler backend')
+    parser.add_argument(
+        '--wg',
+        action='store_true',
+        help='write .wotmod for WG clients instead of .mtmod for Lesta',
+    )
+    parser.add_argument(
+        '--require-pyc',
+        action='store_true',
+        help='fail when no compiler is available (release builds)',
+    )
+    parser.add_argument(
+        '--compiler',
+        choices=('auto', 'owg', 'py27'),
+        default='auto',
+        help='bytecode compiler backend',
+    )
     parser.add_argument('--owg-compiler', help='path to owg_python_compiler')
     parser.add_argument('--python27', help='path to a Python 2.7 interpreter')
-    parser.add_argument('--out', default=os.path.join(layout.MODPACK_DIR, 'dist'), help='output directory (--single writes into its single/)')
+    parser.add_argument(
+        '--out',
+        default=os.path.join(layout.MODPACK_DIR, 'dist'),
+        help='output directory (--single writes into its single/)',
+    )
     parser.add_argument('--install-dir', help='also copy the packages here, e.g. <game>/mods/<client version>')
-    parser.add_argument('--dry-run', action='store_true', help='list the packages and their in-game paths, write nothing')
+    parser.add_argument(
+        '--dry-run',
+        action='store_true',
+        help='list the packages and their in-game paths, write nothing',
+    )
     return parser.parse_args(argv)
 
 
@@ -48,43 +69,74 @@ def output_dir(args):
     return os.path.join(args.out, SINGLE_DIR) if args.single else args.out
 
 
+def platform_of(args):
+    return 'wg' if args.wg else 'lesta'
+
+
+def print_packages(packages, args):
+    for package in packages:
+        package_file = archive.file_name(package, platform_of(args), single=args.single)
+        print('%s  %s (%d files)' % (package_file, package.package_id, len(package.files)))
+        for _, archive_path in sorted(package.files, key=lambda item: item[1]):
+            print('    ' + archive_path)
+
+
+def select_compiler(args):
+    """The compile function of the chosen backend, or None: then the packages carry .py sources."""
+    _, compile_entries = compilers.select(args.compiler, args.owg_compiler, args.python27)
+    if compile_entries is not None:
+        return compile_entries
+    if args.require_pyc:
+        raise SystemExit(
+            'no Python 2.7 bytecode compiler found (owg_python_compiler or Python 2.7); release builds need .pyc',
+        )
+    print('WARNING: no compiler found, packaging .py sources (development client only)')
+    return None
+
+
+def package_entries(package, compile_entries, staging):
+    """(source path, archive path) of what goes into the archive: sources compiled when a compiler is set."""
+    sources = [item for item in package.files if item[1].endswith('.py')]
+    assets = [item for item in package.files if not item[1].endswith('.py')]
+    if compile_entries is None or not sources:
+        return sources + assets
+    return compile_entries(sources, staging) + assets
+
+
+def write_packages(packages, args, staging):
+    compile_entries = select_compiler(args)
+    out = output_dir(args)
+    os.makedirs(out, exist_ok=True)
+
+    outputs = []
+    for index, package in enumerate(packages):
+        entries = package_entries(package, compile_entries, os.path.join(staging, 'pkg%d' % index))
+        output = os.path.join(out, archive.file_name(package, platform_of(args), single=args.single))
+        archive.write_package(output, entries, archive.meta_xml(package))
+        print('Built %s (%d files)' % (output, len(entries)))
+        outputs.append(output)
+    return outputs
+
+
+def install(outputs, install_dir):
+    os.makedirs(install_dir, exist_ok=True)
+    for output in outputs:
+        shutil.copy2(output, install_dir)
+    print('Copied %d package(s) to %s' % (len(outputs), install_dir))
+
+
 def build(args):
     staging = tempfile.mkdtemp(prefix='otmetki-build-')
     try:
-        root_init = os.path.join(staging, 'root_init.py')
-        fileio.write_text(root_init, layout.ROOT_INIT)
+        root_init = fileio.write_text(os.path.join(staging, 'root_init.py'), layout.ROOT_INIT)
         packages = [layout.single_package(root_init)] if args.single else layout.split_packages(root_init)
-        platform = 'wg' if args.wg else 'lesta'
         if args.dry_run:
-            for package in packages:
-                print('%s  %s (%d files)' % (archive.file_name(package, platform, single=args.single), package.package_id, len(package.files)))
-                for _, archive_path in sorted(package.files, key=lambda item: item[1]):
-                    print('    ' + archive_path)
+            print_packages(packages, args)
             return []
-        name, compile_entries = compilers.select(args.compiler, args.owg_compiler, args.python27)
-        if compile_entries is None:
-            if args.require_pyc:
-                raise SystemExit('no Python 2.7 bytecode compiler found (owg_python_compiler or Python 2.7); release builds need .pyc')
-            print('WARNING: no compiler found, packaging .py sources (development client only)')
-        out = output_dir(args)
-        os.makedirs(out, exist_ok=True)
-        outputs = []
-        for index, package in enumerate(packages):
-            sources = [item for item in package.files if item[1].endswith('.py')]
-            assets = [item for item in package.files if not item[1].endswith('.py')]
-            entries = sources
-            if compile_entries is not None and sources:
-                entries = compile_entries(sources, os.path.join(staging, 'pkg%d' % index))
-            entries = entries + assets
-            output = os.path.join(out, archive.file_name(package, platform, single=args.single))
-            archive.write_package(output, entries, archive.meta_xml(package))
-            print('Built %s (%d files)' % (output, len(entries)))
-            outputs.append(output)
+
+        outputs = write_packages(packages, args, staging)
         if args.install_dir:
-            os.makedirs(args.install_dir, exist_ok=True)
-            for output in outputs:
-                shutil.copy2(output, args.install_dir)
-            print('Copied %d package(s) to %s' % (len(outputs), args.install_dir))
+            install(outputs, args.install_dir)
         return outputs
     finally:
         shutil.rmtree(staging, ignore_errors=True)

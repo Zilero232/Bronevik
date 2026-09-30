@@ -1,4 +1,3 @@
-// The `card` plate (core/hud/widget): icon sizes in design px and the glyph of each row status.
 export const CARD = {
   statuses: ['active', 'done', 'honors', 'failed', 'idle'],
   headerIcon: 16,

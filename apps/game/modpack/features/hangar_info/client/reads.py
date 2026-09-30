@@ -61,18 +61,33 @@ def online():
 # tier); accelerated crew training is on for elite and premium vehicles (crew_widget setIsAcceleratedTraining).
 
 
+def vehicle_name(vehicle):
+    return getattr(vehicle, 'shortUserName', None) or getattr(vehicle, 'userName', None)
+
+
+def _next_skill_cost(tankman):
+    if tankman is None:
+        return None
+    try:
+        cost = tankman.getNextSkillXpCost()
+    except Exception:
+        return None
+    if not cost or cost <= 0:
+        return None
+    return cost
+
+
 def crew_next_skill(vehicle):
-    best = (None, None)
+    costs = []
     for _, tankman in getattr(vehicle, 'crew', None) or []:
-        if tankman is None:
-            continue
-        try:
-            cost = tankman.getNextSkillXpCost()
-        except Exception:
-            continue
-        if cost and cost > 0 and (best[0] is None or cost < best[0]):
-            best = (cost, getattr(tankman, 'roleUserName', None))
-    return best
+        cost = _next_skill_cost(tankman)
+        if cost is not None:
+            costs.append((cost, tankman))
+    if not costs:
+        return None, None
+
+    cost, tankman = min(costs, key=lambda pair: pair[0])
+    return cost, getattr(tankman, 'roleUserName', None)
 
 
 def battle_tiers(vehicle):

@@ -26,7 +26,6 @@ def _emit(text):
 
 
 def open_file(path, header):
-    """Starts this session's own log file at `path` with the `header` lines; the lines logged before are kept for it."""
     return _file.open(path, [_line(PREFIX, line) for line in header])
 
 

@@ -38,7 +38,32 @@ def wait_for(transport, results, count, timeout=5.0):
         time.sleep(0.01)
 
 
-class ThreadTransportTest(unittest.TestCase):
+def echo(length):
+    return b'{"echo":' + str(length).encode('ascii') + b'}'
+
+
+def header_values(headers, name):
+    return [value for key, value in headers.items() if key.lower() == name]
+
+
+def broken_headers():
+    raise RuntimeError('no headers')
+
+
+def response_with_headers_attribute(headers):
+    return type(str('R'), (object,), {'headers': headers})()
+
+
+class FetchResponse(object):
+
+    def __init__(self, headers):
+        self._headers = headers
+
+    def headers(self):
+        return self._headers
+
+
+class LocalServerTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -54,93 +79,115 @@ class ThreadTransportTest(unittest.TestCase):
         cls.server.shutdown()
         cls.server.server_close()
 
-    def test_callbacks_run_on_poll_thread(self):
+    def setUp(self):
+        self.results = []
+
+    def record(self, *reply):
+        self.results.append(reply)
+
+
+class ThreadTransportTest(LocalServerTestCase):
+
+    def exchange(self, path, headers, body):
         transport = ThreadTransport(timeout=5)
-        results = []
         main = threading.current_thread()
 
-        def done(status, body, headers):
-            results.append((status, body, threading.current_thread() is main, headers))
+        def done(status, reply_body, reply_headers):
+            self.results.append((status, reply_body, threading.current_thread() is main, reply_headers))
 
-        transport.request('POST', self.base + '/ok', {'Content-Type': 'application/json'}, b'{"a":1}', done)
-        transport.request('POST', self.base + '/busy', {}, b'', done)
-        wait_for(transport, results, 2)
+        transport.request('POST', self.base + path, headers, body, done)
+        wait_for(transport, self.results, 1)
         transport.stop()
-        self.assertEqual(len(results), 2)
+        return self.results
+
+    def test_callbacks_run_on_the_poll_thread(self):
+        results = self.exchange('/ok', {'Content-Type': 'application/json'}, b'{"a":1}')
+
+        self.assertEqual(len(results), 1)
         self.assertEqual(results[0][:3], (200, b'{"echo":7}', True))
-        self.assertEqual(results[1][0], 429)
-        retry = [v for k, v in results[1][3].items() if k.lower() == 'retry-after']
-        self.assertEqual(retry, ['7'])
+
+    def test_an_error_status_comes_with_the_response_headers(self):
+        results = self.exchange('/busy', {}, b'')
+
+        status, _, _, headers = results[0]
+        self.assertEqual(status, 429)
+        self.assertEqual(header_values(headers, 'retry-after'), ['7'])
 
     def test_network_error(self):
         transport = ThreadTransport(timeout=2)
-        results = []
-        transport.request('POST', 'http://127.0.0.1:1/nothing', {}, b'', lambda s, b, h: results.append(s))
-        wait_for(transport, results, 1)
+        transport.request('POST', 'http://127.0.0.1:1/nothing', {}, b'', self.record)
+
+        wait_for(transport, self.results, 1)
+
         transport.stop()
-        self.assertEqual(results, [NETWORK_ERROR])
+        self.assertEqual([reply[0] for reply in self.results], [NETWORK_ERROR])
 
 
-class SyncTransportTest(ThreadTransportTest):
+class SyncTransportTest(LocalServerTestCase):
 
     def test_answers_inside_request(self):
-        transport = SyncTransport(timeout=5)
-        results = []
         body = b'--b' + b'x' * 70000 + b'--b--'
-        transport.request('POST', self.base + '/ok', {'Content-Type': 'multipart/form-data; boundary=b'}, body,
-                          lambda *args: results.append(args))
-        self.assertEqual(len(results), 1)
-        self.assertEqual(results[0][0], 200)
-        self.assertEqual(results[0][1], b'{"echo":' + str(len(body)).encode('ascii') + b'}')
+        headers = {'Content-Type': 'multipart/form-data; boundary=b'}
+
+        SyncTransport(timeout=5).request('POST', self.base + '/ok', headers, body, self.record)
+
+        self.assertEqual(len(self.results), 1)
+        self.assertEqual(self.results[0][0], 200)
+        self.assertEqual(self.results[0][1], echo(70008))
 
     def test_network_error_is_reported(self):
-        results = []
-        SyncTransport(timeout=2).request('POST', 'http://127.0.0.1:1/x', {}, b'x', lambda *args: results.append(args))
-        self.assertEqual(results[0][0], NETWORK_ERROR)
+        SyncTransport(timeout=2).request('POST', 'http://127.0.0.1:1/x', {}, b'x', self.record)
 
+        self.assertEqual(self.results[0][0], NETWORK_ERROR)
 
-    def test_a_stoppable_body_is_streamed_whole(self):
-        results = []
-        data = b'y' * 200000
-        body = StoppableBody(data, lambda: False)
+    def test_a_stoppable_body_is_streamed_whole_every_time(self):
+        body = StoppableBody(b'y' * 200000, lambda: False)
+        headers = {'Content-Type': 'application/octet-stream'}
         transport = SyncTransport(timeout=5)
+
         for _ in range(2):
-            transport.request('POST', self.base + '/ok', {'Content-Type': 'application/octet-stream'}, body, lambda *args: results.append(args))
-        self.assertEqual([result[1] for result in results], [b'{"echo":200000}'] * 2)
+            transport.request('POST', self.base + '/ok', headers, body, self.record)
+
+        self.assertEqual([result[1] for result in self.results], [b'{"echo":200000}'] * 2)
 
     def test_a_stopped_body_ends_the_exchange(self):
-        results = []
         body = StoppableBody(b'z' * 200000, lambda: True)
-        SyncTransport(timeout=5).request('POST', self.base + '/ok', {}, body, lambda *args: results.append(args))
-        self.assertEqual(results[0][0], NETWORK_ERROR)
 
+        SyncTransport(timeout=5).request('POST', self.base + '/ok', {}, body, self.record)
 
-class FetchResponse(object):
-
-    def __init__(self, headers):
-        self._headers = headers
-
-    def headers(self):
-        return self._headers
+        self.assertEqual(self.results[0][0], NETWORK_ERROR)
 
 
 class ResponseHeadersTest(unittest.TestCase):
 
     def test_headers_method_of_the_client_response(self):
-        headers = response_headers(FetchResponse({'Retry-After': '9', 'X-Otmetki-Server-Time': '1790000600'}))
+        response = FetchResponse({'Retry-After': '9', 'X-Otmetki-Server-Time': '1790000600'})
+
+        headers = response_headers(response)
+
         self.assertEqual(parse_retry_after(headers), 9.0)
         self.assertEqual(server_time(headers), 1790000600.0)
 
-    def test_pairs_dicts_and_garbage(self):
-        self.assertEqual(response_headers(FetchResponse([('Retry-After', 3), ('bad',)])), {'Retry-After': '3'})
-        self.assertEqual(response_headers(type(str('R'), (object,), {'headers': {'A': 'b'}})()), {'A': 'b'})
+    def test_header_pairs_become_text_and_bad_pairs_are_dropped(self):
+        response = FetchResponse([('Retry-After', 3), ('bad',)])
+
+        self.assertEqual(response_headers(response), {'Retry-After': '3'})
+
+    def test_a_headers_dict_attribute(self):
+        response = response_with_headers_attribute({'A': 'b'})
+
+        self.assertEqual(response_headers(response), {'A': 'b'})
+
+    def test_a_response_without_headers(self):
         self.assertEqual(response_headers(object()), {})
+
+    def test_missing_headers(self):
         self.assertEqual(response_headers(FetchResponse(None)), {})
 
     def test_a_failing_headers_method(self):
-        def broken():
-            raise RuntimeError('no headers')
-        self.assertEqual(response_headers(type(str('R'), (object,), {'headers': staticmethod(broken)})()), {})
+        response = response_with_headers_attribute(staticmethod(broken_headers))
+
+        self.assertEqual(response_headers(response), {})
 
 
 if __name__ == '__main__':

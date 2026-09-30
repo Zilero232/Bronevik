@@ -1,5 +1,5 @@
-import type { ReplayFilters, ReplayItem, ReplaySort } from '../../model';
-import type { FilterReplaysInput, MatchChoiceInput, MatchReplayInput } from './filter-replays.types';
+import type { ReplayFilters, ReplayItem } from '../../model/schemas';
+import type { CompareInput, FilterReplaysInput, MatchChoiceInput, MatchReplayInput } from './filter-replays.types';
 
 import { REPLAY_FILTER } from '../../config';
 
@@ -51,25 +51,25 @@ export const matchesReplay = (input: MatchReplayInput): boolean => {
   return checks.every(Boolean);
 };
 
-const sortValue = (item: ReplayItem, sort: ReplaySort): number | null => item[sort];
+const compare =
+  ({ sort, descending }: CompareInput) =>
+  (left: ReplayItem, right: ReplayItem): number => {
+    const a = left[sort];
+    const b = right[sort];
 
-const compare = (sort: ReplaySort, descending: boolean) => (left: ReplayItem, right: ReplayItem) => {
-  const a = sortValue(left, sort);
-  const b = sortValue(right, sort);
+    if (a === b) {
+      return right.time - left.time;
+    }
 
-  if (a === b) {
-    return right.time - left.time;
-  }
+    if (a === null || b === null) {
+      return a === null ? 1 : -1;
+    }
 
-  if (a === null || b === null) {
-    return a === null ? 1 : -1;
-  }
-
-  return descending ? b - a : a - b;
-};
+    return descending ? b - a : a - b;
+  };
 
 export const filterReplays = ({ items, filters, now }: FilterReplaysInput): ReplayItem[] =>
-  items.filter((item) => matchesReplay({ item, filters, now })).sort(compare(filters.sort, filters.descending));
+  items.filter((item) => matchesReplay({ item, filters, now })).sort(compare(filters));
 
 export const activeFilterCount = (filters: ReplayFilters): number =>
   [

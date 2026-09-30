@@ -3,92 +3,108 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.compat import as_int, is_int
 from ....core.format import COLOR_DOWN, COLOR_UP, font, format_number
 from ....core.templates import render
-from .constants import RANDOM_BONUS_TYPE, RESULT_COLORS
-from .page import build_page, compact, page_actions, session_of  # noqa: F401
+from .constants import ASSIST_KEYS, COST_KEYS, RANDOM_BONUS_TYPE, RESULT_COLORS, STAT_FIELDS
+from .page import build_page, compact, page_actions, restore_history, session_of  # noqa: F401
+from .text import percent_text, result_label, signed
 
 
 def moe_percent(damage_rating):
-    return round(damage_rating / 100, 2) if is_int(damage_rating) else None
+    if not is_int(damage_rating):
+        return None
+    return round(damage_rating / 100, 2)
 
 
-def build_summary(event, moe_before=None, map_label=None):
-    stats = event.get('stats') or {}
+def _battle_fields(event, map_label):
     vehicle = event.get('vehicle') or {}
-    moe = event.get('moe') or {}
-    radio = as_int(stats.get('damage_assisted_radio'))
-    track = as_int(stats.get('damage_assisted_track'))
-    stun = as_int(stats.get('damage_assisted_stun'))
-    summary = {
+    return {
         'result': event.get('result'),
         'bonus_type': event.get('bonus_type'),
         'vehicle': vehicle.get('name') or '',
         'tier': vehicle.get('tier'),
         'map': map_label or event.get('map_name') or '',
-        'xp': as_int(stats.get('xp')),
-        'credits': as_int(stats.get('credits')),
-        'damage': as_int(stats.get('damage_dealt')),
-        'assist': radio + track + stun,
-        'assist_radio': radio,
-        'assist_track': track,
-        'assist_stun': stun,
-        'blocked': as_int(stats.get('damage_blocked')),
-        'frags': as_int(stats.get('frags')),
-        'spotted': as_int(stats.get('spotted')),
-        'marks_on_gun': moe.get('marks_on_gun'),
-        'moe_percent': moe_percent(moe.get('damage_rating')),
-        'moe_delta': None,
-        'moving_avg': moe.get('moving_avg_damage'),
-        'moving_avg_delta': None,
-        'marks_delta': None,
         'arena': event.get('arena_unique_id'),
         'time': event.get('occurred_at'),
         'duration': as_int(event.get('duration_s')),
-        'free_xp': as_int(stats.get('free_xp')),
-        'repair': as_int(stats.get('repair_cost')),
-        'ammo': as_int(stats.get('ammo_cost')),
-        'consumables': as_int(stats.get('consumables_cost')),
-        'shots': as_int(stats.get('shots')),
-        'hits': as_int(stats.get('direct_enemy_hits')),
-        'pens': as_int(stats.get('piercing_enemy_hits')),
-        'life_time': as_int(stats.get('life_time_s')),
-        'alive': bool(stats.get('is_alive')),
     }
-    summary['net_credits'] = summary['credits'] - summary['repair'] - summary['ammo'] - summary['consumables']
-    before = moe_before or {}
-    if summary['moe_percent'] is not None and is_int(before.get('damage_rating')) and before.get('damage_rating') > 0:
-        summary['moe_delta'] = round(summary['moe_percent'] - moe_percent(before['damage_rating']), 2)
-    if is_int(summary['moving_avg']) and is_int(before.get('moving_avg_damage')):
-        summary['moving_avg_delta'] = summary['moving_avg'] - before['moving_avg_damage']
-    if is_int(summary['marks_on_gun']) and is_int(before.get('marks_on_gun')):
-        summary['marks_delta'] = summary['marks_on_gun'] - before['marks_on_gun']
+
+
+def _stat_fields(stats):
+    fields = dict((key, as_int(stats.get(source))) for key, source in STAT_FIELDS.items())
+    fields['alive'] = bool(stats.get('is_alive'))
+    fields['assist'] = sum(fields[key] for key in ASSIST_KEYS)
+    fields['net_credits'] = fields['credits'] - sum(fields[key] for key in COST_KEYS)
+    return fields
+
+
+def _moe_fields(moe):
+    return {
+        'marks_on_gun': moe.get('marks_on_gun'),
+        'moe_percent': moe_percent(moe.get('damage_rating')),
+        'moving_avg': moe.get('moving_avg_damage'),
+    }
+
+
+def _difference(after, before):
+    if is_int(after) and is_int(before):
+        return after - before
+    return None
+
+
+def _moe_delta(percent, rating_before):
+    if percent is None:
+        return None
+    if not is_int(rating_before) or rating_before <= 0:
+        return None
+    return round(percent - moe_percent(rating_before), 2)
+
+
+def _moe_deltas(summary, before):
+    return {
+        'moe_delta': _moe_delta(summary['moe_percent'], before.get('damage_rating')),
+        'moving_avg_delta': _difference(summary['moving_avg'], before.get('moving_avg_damage')),
+        'marks_delta': _difference(summary['marks_on_gun'], before.get('marks_on_gun')),
+    }
+
+
+def build_summary(event, moe_before=None, map_label=None):
+    summary = _battle_fields(event, map_label)
+    summary.update(_stat_fields(event.get('stats') or {}))
+    summary.update(_moe_fields(event.get('moe') or {}))
+
+    summary.update(_moe_deltas(summary, moe_before or {}))
+
     return summary
 
 
 def counts(summary, bonus_types):
-    return bonus_types == 'all' or summary.get('bonus_type') == RANDOM_BONUS_TYPE
-
-
-def signed(value, percent=False):
-    if value is None:
-        return ''
-    text = ('%.2f%%' % value) if percent else format_number(value)
-    return ('+' + text) if value > 0 else text
+    if bonus_types == 'all':
+        return True
+    return summary.get('bonus_type') == RANDOM_BONUS_TYPE
 
 
 def colored(text, color, enabled):
-    return font(text, color) if enabled and color else text
+    if enabled and color:
+        return font(text, color)
+    return text
+
+
+def _delta_color(value):
+    if value is None or value == 0:
+        return None
+    if value > 0:
+        return COLOR_UP
+    return COLOR_DOWN
 
 
 def delta(value, colors, percent=False):
-    color = COLOR_UP if value is not None and value > 0 else (COLOR_DOWN if value is not None and value < 0 else None)
-    return colored(signed(value, percent), color, colors)
+    return colored(signed(value, percent), _delta_color(value), colors)
 
 
 def macro_values(summary, translate):
     values = dict(summary)
     values.update({
-        'result': translate('br_result_' + (summary.get('result') or 'draw')),
-        'moe_percent': '%.2f%%' % summary['moe_percent'] if summary.get('moe_percent') is not None else '',
+        'result': result_label(summary.get('result'), translate),
+        'moe_percent': percent_text(summary.get('moe_percent')),
         'moe_delta': signed(summary.get('moe_delta'), True),
         'moving_avg_delta': signed(summary.get('moving_avg_delta')),
         'marks_delta': signed(summary.get('marks_delta')),
@@ -96,23 +112,61 @@ def macro_values(summary, translate):
     return values
 
 
+def _head_line(summary, colors, translate):
+    head = translate(
+        'br_head',
+        result=result_label(summary.get('result'), translate),
+        vehicle=summary['vehicle'],
+        map=summary['map'],
+    )
+    return colored(head, RESULT_COLORS.get(summary.get('result')), colors)
+
+
+def _economy_line(summary, translate):
+    return translate(
+        'br_economy',
+        xp=format_number(summary['xp']),
+        credits=format_number(summary['credits']),
+    )
+
+
+def _combat_line(summary, translate):
+    return translate(
+        'br_combat',
+        damage=format_number(summary['damage']),
+        assist=format_number(summary['assist']),
+        blocked=format_number(summary['blocked']),
+        frags=summary['frags'],
+        spotted=summary['spotted'],
+    )
+
+
+def _marks_line(summary, colors, translate):
+    line = translate(
+        'br_marks',
+        percent=percent_text(summary['moe_percent']),
+        marks=summary.get('marks_on_gun') or 0,
+    )
+
+    if summary.get('moe_delta') is not None:
+        line += ' (%s)' % delta(summary['moe_delta'], colors, True)
+    if summary.get('moving_avg_delta') is not None:
+        line += ', ' + translate('br_moving_avg', delta=delta(summary['moving_avg_delta'], colors))
+
+    return line
+
+
 def format_summary(summary, settings, translate):
-    colors = settings.get('colored')
     if settings.get('template'):
         return render(settings.get('template'), macro_values(summary, translate))
-    head = translate('br_head', result=translate('br_result_' + (summary.get('result') or 'draw')), vehicle=summary['vehicle'],
-                     map=summary['map'])
-    lines = [colored(head, RESULT_COLORS.get(summary.get('result')), colors)]
+
+    colors = settings.get('colored')
+    lines = [_head_line(summary, colors, translate)]
     if settings.get('show_economy'):
-        lines.append(translate('br_economy', xp=format_number(summary['xp']), credits=format_number(summary['credits'])))
+        lines.append(_economy_line(summary, translate))
     if settings.get('show_combat'):
-        lines.append(translate('br_combat', damage=format_number(summary['damage']), assist=format_number(summary['assist']),
-                               blocked=format_number(summary['blocked']), frags=summary['frags'], spotted=summary['spotted']))
+        lines.append(_combat_line(summary, translate))
     if settings.get('show_marks') and summary.get('moe_percent') is not None:
-        line = translate('br_marks', percent='%.2f%%' % summary['moe_percent'], marks=summary.get('marks_on_gun') or 0)
-        if summary.get('moe_delta') is not None:
-            line += ' (%s)' % delta(summary['moe_delta'], colors, True)
-        if summary.get('moving_avg_delta') is not None:
-            line += ', ' + translate('br_moving_avg', delta=delta(summary['moving_avg_delta'], colors))
-        lines.append(line)
+        lines.append(_marks_line(summary, colors, translate))
+
     return '\n'.join(lines)

@@ -34,7 +34,9 @@ class ChatFilterFeature(FeatureComponent):
         return True
 
     def _on_battle_ready(self, player):
-        self.filter = ChatFilter(self.settings) if self.enabled() else None
+        self.filter = None
+        if self.enabled():
+            self.filter = ChatFilter(self.settings)
 
     def _on_battle_leave(self):
         if self.filter is not None and self.filter.hidden:
@@ -45,22 +47,32 @@ class ChatFilterFeature(FeatureComponent):
     # (g_replayCtrl.onBattleChatMessage, RU 1.45 messenger/gui/Scaleform/channels/layout.py) leave it out too:
     # the replay shows the chat as the player saw it.
     def _add_message(self, original, layout, message, *args, **kwargs):
-        chat = self.filter
-        session_id = getattr(message, 'avatarSessionID', None)
-        if chat is not None and not is_own(session_id) and not chat.allow_message(session_id, getattr(message, 'text', ''), time.time()):
+        if self._hides_message(message):
             return True
         return original(layout, message, *args, **kwargs)
 
+    def _hides_message(self, message):
+        session_id = getattr(message, 'avatarSessionID', None)
+        if self.filter is None or is_own(session_id):
+            return False
+        text = getattr(message, 'text', '')
+        return not self.filter.allow_message(session_id, text, time.time())
+
     def _add_command(self, original, layout, command, *args, **kwargs):
-        chat = self.filter
-        if chat is not None and not is_own_command(command) and not chat.allow_command(command.getSenderID(), time.time()):
+        if self._hides_command(command):
             return None
         return original(layout, command, *args, **kwargs)
 
+    def _hides_command(self, command):
+        if self.filter is None or is_own_command(command):
+            return False
+        return not self.filter.allow_command(command.getSenderID(), time.time())
+
     def _format_message(self, original, controller, message, doFormatting=True):
         result = original(controller, message, doFormatting)
-        fmt = self.settings.get('timestamp_format')
-        if self.filter is None or not doFormatting or not fmt:
+        timestamp_format = self.settings.get('timestamp_format')
+        if self.filter is None or not doFormatting or not timestamp_format:
             return result
+
         is_current, text = result
-        return is_current, stamp(text, fmt, time.time())
+        return is_current, stamp(text, timestamp_format, time.time())

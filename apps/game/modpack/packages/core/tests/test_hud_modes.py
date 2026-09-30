@@ -5,8 +5,34 @@ import unittest
 
 import _support  # noqa: F401
 from otmetki.core.hud import ComponentConfig, HudBackend, HudLayer, panel_schema
-from otmetki.core.hud.modes import (COMPACT_PANELS, MODES, PLACES_SECTION, ModePlaces, allowed_panels, battle_mode, clean_place, suppresses)
+from otmetki.core.hud.modes import (
+    PLACES_SECTION,
+    ModePlaces,
+    allowed_panels,
+    battle_mode,
+    clean_place,
+    suppresses,
+)
 from otmetki.core.storage import MemoryFile
+
+GUI_TYPE_MODES = (
+    ((1, 1), 'random'),
+    ((30, 43), 'comp7'),
+    ((33, 47), 'comp7'),
+    ((21, 27), 'frontline'),
+    ((23, 29), 'battle_royale'),
+    ((301, 52), 'event'),
+    ((100,), 'event'),
+)
+FALLBACK_MODES = (
+    ((None, 43), 'comp7'),
+    ((None, 52), 'event'),
+    ((None, None, 'epicBattlePage'), 'frontline'),
+    ((999,), 'event'),
+    ((99,), 'random'),
+    ((None, None, None), 'random'),
+    ((True, None), 'random'),
+)
 
 
 class Backend(HudBackend):
@@ -42,66 +68,168 @@ def layer_with(*panel_ids):
 
 
 def compact_policy(mode):
-    return (allowed_panels('compact') if mode == 'event' else None, True)
+    if mode == 'event':
+        return allowed_panels('compact'), True
+    return None, True
+
+
+def compact_event_layer():
+    layer = layer_with('damage_log', 'team_hp')
+    layer.set_policy(compact_policy)
+    layer.show('team_hp', 'a')
+    layer.enter_mode('event')
+    return layer
+
+
+def event_layer_with_a_dragged_log():
+    layer = layer_with('damage_log')
+    layer.set_policy(compact_policy)
+    layer.enter_mode('event')
+    layer.show('damage_log', 'log')
+    layer.on_moved('otmetki.hud.damage_log', {'x': 300, 'y': 40})
+    return layer
+
+
+def rough_place():
+    return {'x': 5.6, 'y': 99999, 'align_x': 'left', 'align_y': 'middle', 'scale': 10, 'alpha': 3}
+
+
+def hand_edited_places():
+    return {'comp7': {'damage_log': {'x': 'far', 'y': 3}}, 'bad': {}, 'event': []}
+
+
+def places_with_a_comp7_log():
+    config = ComponentConfig(MemoryFile())
+    places = ModePlaces(config)
+    places.save('comp7', 'damage_log', {'x': 1, 'y': 2})
+    return config, places
 
 
 class BattleModeTest(unittest.TestCase):
 
-    def test_gui_type_first(self):
-        assert battle_mode(1, 1) == 'random'
-        assert battle_mode(30, 43) == 'comp7'
-        assert battle_mode(33, 47) == 'comp7'
-        assert battle_mode(21, 27) == 'frontline'
-        assert battle_mode(23, 29) == 'battle_royale'
-        assert battle_mode(301, 52) == 'event'
-        assert battle_mode(100) == 'event'
+    def test_gui_type_decides_first(self):
+        for arguments, mode in GUI_TYPE_MODES:
+            assert battle_mode(*arguments) == mode, arguments
 
     def test_bonus_type_then_page_then_random(self):
-        assert battle_mode(None, 43) == 'comp7'
-        assert battle_mode(None, 52) == 'event'
-        assert battle_mode(None, None, 'epicBattlePage') == 'frontline'
-        assert battle_mode(999) == 'event'
-        assert battle_mode(99) == 'random'
-        assert battle_mode(None, None, None) == 'random'
-        assert battle_mode(True, None) == 'random'
+        for arguments, mode in FALLBACK_MODES:
+            assert battle_mode(*arguments) == mode, arguments
 
-    def test_layouts(self):
+
+class AllowedPanelsTest(unittest.TestCase):
+
+    def test_full_layout_allows_every_panel(self):
         assert allowed_panels('full') is None
-        assert allowed_panels('compact') == frozenset(COMPACT_PANELS)
+
+    def test_compact_layout_allows_the_compact_panels(self):
+        assert allowed_panels('compact') == frozenset(('marks_panel', 'battle_clock', 'damage_log'))
+
+    def test_off_layout_allows_nothing(self):
         assert allowed_panels('off') == frozenset()
 
-    def test_suppressing_modes(self):
-        assert suppresses(None) and suppresses('random') and suppresses('comp7')
-        assert not suppresses('event') and not suppresses('frontline') and not suppresses('battle_royale')
 
-    def test_clean_place(self):
-        assert clean_place({'x': 5.6, 'y': 99999, 'align_x': 'left', 'align_y': 'middle', 'scale': 10, 'alpha': 3}) == {
-            'x': 6, 'y': 4000, 'align_x': 'left', 'scale': 50}
-        assert clean_place(None) == {} and clean_place({'x': True}) == {}
+class SuppressesTest(unittest.TestCase):
+
+    def test_unknown_mode_suppresses(self):
+        assert suppresses(None)
+
+    def test_random_suppresses(self):
+        assert suppresses('random')
+
+    def test_comp7_suppresses(self):
+        assert suppresses('comp7')
+
+    def test_event_keeps_the_stock_elements(self):
+        assert not suppresses('event')
+
+    def test_frontline_keeps_the_stock_elements(self):
+        assert not suppresses('frontline')
+
+    def test_battle_royale_keeps_the_stock_elements(self):
+        assert not suppresses('battle_royale')
+
+
+class CleanPlaceTest(unittest.TestCase):
+
+    def test_rounds_clamps_and_drops_unknown_values(self):
+        place = clean_place(rough_place())
+
+        assert place == {'x': 6, 'y': 4000, 'align_x': 'left', 'scale': 50}
+
+    def test_no_place_is_empty(self):
+        assert clean_place(None) == {}
+
+    def test_a_boolean_coordinate_is_dropped(self):
+        assert clean_place({'x': True}) == {}
 
 
 class ModePlacesTest(unittest.TestCase):
 
-    def test_saved_per_mode_and_never_for_random(self):
-        config = ComponentConfig(MemoryFile())
-        places = ModePlaces(config)
-        assert places.save('comp7', 'damage_log', {'x': 1, 'y': 2}) == ['x', 'y']
-        assert places.save('comp7', 'damage_log', {'x': 1}) == []
-        assert places.save('random', 'damage_log', {'x': 1}) == []
-        assert places.save('nowhere', 'damage_log', {'x': 1}) == []
+    def test_save_returns_the_changed_keys(self):
+        places = ModePlaces(ComponentConfig(MemoryFile()))
+
+        changed = places.save('comp7', 'damage_log', {'x': 1, 'y': 2})
+
+        assert changed == ['x', 'y']
+
+    def test_saving_the_same_place_changes_nothing(self):
+        _, places = places_with_a_comp7_log()
+
+        changed = places.save('comp7', 'damage_log', {'x': 1})
+
+        assert changed == []
+
+    def test_random_places_are_never_saved(self):
+        places = ModePlaces(ComponentConfig(MemoryFile()))
+
+        changed = places.save('random', 'damage_log', {'x': 1})
+
+        assert changed == []
+        assert places.modes() == []
+
+    def test_unknown_mode_places_are_never_saved(self):
+        places = ModePlaces(ComponentConfig(MemoryFile()))
+
+        changed = places.save('nowhere', 'damage_log', {'x': 1})
+
+        assert changed == []
+        assert places.modes() == []
+
+    def test_saved_place_reads_back_per_mode(self):
+        _, places = places_with_a_comp7_log()
+
         assert places.get('comp7', 'damage_log') == {'x': 1, 'y': 2}
         assert places.get('event', 'damage_log') == {}
         assert places.modes() == ['comp7']
-        assert config.store.read({})[PLACES_SECTION] == {'comp7': {'damage_log': {'x': 1, 'y': 2}}}
-        assert places.clear() and places.modes() == [] and not places.clear()
+
+    def test_saved_places_live_in_their_config_section(self):
+        config, places = places_with_a_comp7_log()
+
+        section = config.store.read({})[PLACES_SECTION]
+
+        assert section == {'comp7': {'damage_log': {'x': 1, 'y': 2}}}
+
+    def test_clear_forgets_every_mode(self):
+        _, places = places_with_a_comp7_log()
+
+        cleared = places.clear()
+
+        assert cleared
+        assert places.modes() == []
+
+    def test_clearing_nothing_reports_no_change(self):
+        places = ModePlaces(ComponentConfig(MemoryFile()))
+
+        assert not places.clear()
 
     def test_hand_edited_section_is_cleaned(self):
         config = ComponentConfig(MemoryFile())
-        config.set_raw(PLACES_SECTION, {'comp7': {'damage_log': {'x': 'far', 'y': 3}}, 'bad': {}, 'event': []})
+        config.set_raw(PLACES_SECTION, hand_edited_places())
+
         places = ModePlaces(config)
+
         assert places.get('comp7', 'damage_log') == {'y': 3}
         assert places.modes() == ['comp7']
-        assert set(MODES) >= set(places.modes())
 
 
 class LayerModeTest(unittest.TestCase):
@@ -109,16 +237,24 @@ class LayerModeTest(unittest.TestCase):
     def test_without_a_policy_every_panel_shows(self):
         layer = layer_with('damage_log', 'team_hp')
         layer.enter_mode('event')
-        assert layer.show('team_hp', 'a') and 'otmetki.hud.team_hp' in layer.backend.labels
+
+        shown = layer.show('team_hp', 'a')
+
+        assert shown
+        assert 'otmetki.hud.team_hp' in layer.backend.labels
 
     def test_compact_event_layout_holds_other_panels(self):
-        layer = layer_with('damage_log', 'team_hp')
-        layer.set_policy(compact_policy)
-        layer.show('team_hp', 'a')
-        layer.enter_mode('event')
-        assert not layer.allows('team_hp') and layer.allows('damage_log')
+        layer = compact_event_layer()
+
+        assert not layer.allows('team_hp')
+        assert layer.allows('damage_log')
         assert 'otmetki.hud.team_hp' not in layer.backend.labels
+
+    def test_leaving_the_compact_layout_brings_held_panels_back(self):
+        layer = compact_event_layer()
+
         layer.leave_mode()
+
         assert layer.backend.labels['otmetki.hud.team_hp']['text'] == 'a'
 
     def test_a_drag_in_a_battle_type_is_kept_for_that_type(self):
@@ -126,12 +262,26 @@ class LayerModeTest(unittest.TestCase):
         layer.set_policy(compact_policy)
         layer.enter_mode('event')
         layer.show('damage_log', 'log')
-        assert layer.on_moved('otmetki.hud.damage_log', {'x': 300, 'y': 40})
+
+        moved = layer.on_moved('otmetki.hud.damage_log', {'x': 300, 'y': 40})
+
+        assert moved
         assert layer.panels['damage_log'].get('x') == 10
         assert layer.mode_places.get('event', 'damage_log') == {'x': 300, 'y': 40}
+
+    def test_leaving_the_battle_type_restores_the_own_place(self):
+        layer = event_layer_with_a_dragged_log()
+
         layer.leave_mode()
+
         assert layer.backend.labels['otmetki.hud.damage_log']['x'] == 10
+
+    def test_entering_the_battle_type_again_restores_its_place(self):
+        layer = event_layer_with_a_dragged_log()
+        layer.leave_mode()
+
         layer.enter_mode('event')
+
         assert layer.backend.labels['otmetki.hud.damage_log']['x'] == 300
 
     def test_random_keeps_the_panels_own_places(self):
@@ -139,7 +289,9 @@ class LayerModeTest(unittest.TestCase):
         layer.set_policy(compact_policy)
         layer.enter_mode('random')
         layer.show('damage_log', 'log')
+
         layer.on_moved('otmetki.hud.damage_log', {'x': 50, 'y': 60})
+
         assert layer.panels['damage_log'].get('x') == 50
         assert layer.mode_places.modes() == []
 
@@ -148,7 +300,9 @@ class LayerModeTest(unittest.TestCase):
         layer.set_policy(lambda mode: (None, False))
         layer.enter_mode('comp7')
         layer.show('damage_log', 'log')
+
         layer.on_moved('otmetki.hud.damage_log', {'x': 70})
+
         assert layer.panels['damage_log'].get('x') == 70
 
 

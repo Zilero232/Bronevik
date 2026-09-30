@@ -3,23 +3,46 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.compat import is_int, is_number, string_types, to_text
 from .constants import MAX_NAME
 
-# Fair play: the player's own damage and assist; for platoon mates only what the stock UI shows every player in battle:
-# frags (the kill feed and Tab), alive state and HP (team panels, markers). The mates' damage is not known to the client
-# in battle and is never estimated.
+# Fair play: the player's own damage and assist; for platoon mates only what the stock UI shows every player in
+# battle: frags (the kill feed and Tab), alive state and HP (team panels, markers). The mates' damage is not known to
+# the client in battle and is never estimated.
 
 
 def rules_of(settings):
-    return {'damage': settings.get('damage_step'), 'assist': settings.get('assist_step'), 'frag': settings.get('frag_points'),
-            'alive': settings.get('alive_points')}
+    return {
+        'damage': settings.get('damage_step'),
+        'assist': settings.get('assist_step'),
+        'frag': settings.get('frag_points'),
+        'alive': settings.get('alive_points'),
+    }
 
 
-def points(rules, damage, assist, frags, alive):
-    total = frags * rules['frag'] + (rules['alive'] if alive else 0)
-    if damage is not None and rules['damage'] > 0:
-        total += int(damage) // rules['damage']
-    if assist is not None and rules['assist'] > 0:
-        total += int(assist) // rules['assist']
+def _steps(amount, step):
+    if amount is None or step <= 0:
+        return 0
+    return int(amount) // step
+
+
+# A member row's damage and assist are None for a mate: only the own ones are known.
+def points(rules, row):
+    total = row['frags'] * rules['frag']
+    if row['alive']:
+        total += rules['alive']
+    total += _steps(row['damage'], rules['damage'])
+    total += _steps(row['assist'], rules['assist'])
     return total
+
+
+def _positive_int(value):
+    if is_number(value) and value > 0:
+        return int(value)
+    return 0
+
+
+def _name(value):
+    if not isinstance(value, string_types) or not value:
+        return u'?'
+    return to_text(value)[:MAX_NAME]
 
 
 class Platoon(object):
@@ -31,20 +54,23 @@ class Platoon(object):
         self.assist = 0
         self.summary = {}
 
-    def add(self, vehicle_id, name, own, vehicle_class, max_hp, alive=True):
+    # `seen` is the member as the arena lists it: {name, own, class, max_hp, alive (True by default)}.
+    def add(self, vehicle_id, seen):
         if not is_int(vehicle_id):
             return False
         if vehicle_id not in self.members:
             self.order.append(vehicle_id)
         known = self.members.get(vehicle_id) or {}
-        max_hp = int(max_hp) if is_number(max_hp) and max_hp > 0 else 0
+        max_hp = _positive_int(seen.get('max_hp'))
+        is_alive = seen.get('alive', True)
+
         self.members[vehicle_id] = {
-            'name': to_text(name)[:MAX_NAME] if isinstance(name, string_types) and name else u'?',
-            'own': bool(own),
-            'class': vehicle_class,
+            'name': _name(seen.get('name')),
+            'own': bool(seen.get('own')),
+            'class': seen.get('class'),
             'max': max_hp,
-            'hp': known.get('hp', max_hp) if alive else 0,
-            'alive': bool(alive),
+            'hp': known.get('hp', max_hp) if is_alive else 0,
+            'alive': bool(is_alive),
             'frags': known.get('frags', 0),
         }
         return True
@@ -63,7 +89,8 @@ class Platoon(object):
         changed = False
         victim = self.members.get(victim_id)
         if victim is not None and victim['alive']:
-            victim['alive'], victim['hp'] = False, 0
+            victim['alive'] = False
+            victim['hp'] = 0
             changed = True
         killer = self.members.get(killer_id)
         if killer is not None and victim_is_enemy:
@@ -80,27 +107,35 @@ class Platoon(object):
     def apply_summary(self, damage=None, assist=None):
         changed = False
         for key, value in (('damage', damage), ('assist', assist)):
-            if is_number(value) and value >= 0 and self.summary.get(key) != int(value):
-                self.summary[key] = int(value)
-                changed = True
+            if not is_number(value) or value < 0:
+                continue
+            if self.summary.get(key) == int(value):
+                continue
+            self.summary[key] = int(value)
+            changed = True
         return changed
 
     def own_totals(self):
-        return max(self.damage, self.summary.get('damage', 0)), max(self.assist, self.summary.get('assist', 0))
+        damage = max(self.damage, self.summary.get('damage', 0))
+        assist = max(self.assist, self.summary.get('assist', 0))
+        return damage, assist
 
     def is_platoon(self):
         return len(self.members) > 1
 
     def rows(self, rules, with_mates=True):
         damage, assist = self.own_totals()
+        members = [self.members[vehicle_id] for vehicle_id in self.order]
+
         rows = []
-        for vehicle_id in self.order:
-            member = self.members[vehicle_id]
+        for member in members:
             if not member['own'] and not with_mates:
                 continue
-            own_damage = damage if member['own'] else None
-            own_assist = assist if member['own'] else None
-            rows.append(dict(member, damage=own_damage, assist=own_assist,
-                             points=points(rules, own_damage, own_assist, member['frags'], member['alive'])))
+            row = dict(member, damage=None, assist=None)
+            if member['own']:
+                row['damage'] = damage
+                row['assist'] = assist
+            row['points'] = points(rules, row)
+            rows.append(row)
         rows.sort(key=lambda row: not row['own'])
         return rows

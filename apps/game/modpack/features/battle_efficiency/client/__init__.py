@@ -4,7 +4,7 @@ from BattleFeedbackCommon import BATTLE_EVENT_TYPE
 
 from ....core.client.battle import call, feedback, is_enemy
 from ....core.client.game import on_vehicle_changed, player_tank_id, selected_tank_id, values_by_name
-from ....core.client.hud.panel import BattlePanel
+from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.client.me import tank_ratings
 from ....core.compat import is_number
 from ....core.log import safe
@@ -16,16 +16,36 @@ from ..model.widget import panel_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
 
 
+# RU 1.45 client source: the extra of BASE_CAPTURE_DROPPED is the plain points count
+# (feedback_events._unpackInteger), which the defence ribbon shows (ribbons_aggregator._BaseCaptureRibbon).
+def _defence_points(event):
+    extra = event.getExtra()
+    if is_number(extra):
+        return extra
+    return call(event, 'getCount', 0)
+
+
+PANEL_SPEC = PanelSpec(
+    panel_id=PANEL_ID,
+    schema=SCHEMA,
+    switch=SWITCH,
+    strings=STRINGS,
+    preview_size=PREVIEW_SIZE,
+    preview_text=preview_text,
+    preview_widget=preview_widget,
+)
+
+
+# This battle's WN8 estimate and damage against the own average on the tank. The tank's row (/mod/me/tanks: average,
+# WN8, expected values) is read in the hangar when the vehicle is selected and kept for the battle.
 class BattleEfficiencyPanel(BattlePanel):
-    """This battle's WN8 estimate and damage against the own average on the tank. The tank's row (/mod/me/tanks:
-    average, WN8, expected values) is read in the hangar when the vehicle is selected and kept for the battle."""
 
     def __init__(self, app):
         self.kinds = values_by_name(BATTLE_EVENT_TYPE, KIND_BY_EVENT)
         self.tanks = tank_ratings(app)
         self.totals = None
         self.row = None
-        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text, preview_widget)
+        BattlePanel.__init__(self, app, PANEL_SPEC)
         app.bus.on('hangar', self._on_vehicle_changed)
         on_vehicle_changed(self._on_vehicle_changed, 'battle efficiency')
 
@@ -55,21 +75,28 @@ class BattleEfficiencyPanel(BattlePanel):
             return
         changed = False
         for event in events:
-            key = self.kinds.get(event.getBattleEventType())
-            if key is None:
-                continue
-            if key == 'def':
-                # RU 1.45 client source: the extra of BASE_CAPTURE_DROPPED is the plain points count (feedback_events._unpackInteger),
-                # which the defence ribbon shows (ribbons_aggregator._BaseCaptureRibbon).
-                extra = event.getExtra()
-                changed = self.totals.add(key, extra if is_number(extra) else call(event, 'getCount', 0)) or changed
-            elif is_enemy(event.getTargetID()):
-                changed = self.totals.add(key, call(event.getExtra(), 'getDamage', 0) if key == 'damage' else 1) or changed
+            if self._add_event(event):
+                changed = True
+
         if changed:
             self.render()
 
+    def _add_event(self, event):
+        key = self.kinds.get(event.getBattleEventType())
+        if key is None:
+            return False
+        if key == 'def':
+            return self.totals.add(key, _defence_points(event))
+        if not is_enemy(event.getTargetID()):
+            return False
+        if key == 'damage':
+            return self.totals.add(key, call(event.getExtra(), 'getDamage', 0))
+        return self.totals.add(key, 1)
+
     def _on_summary(self, event):
-        if self.totals is not None and self.totals.raise_to('damage', call(event, 'getTotalDamage')):
+        if self.totals is None:
+            return
+        if self.totals.raise_to('damage', call(event, 'getTotalDamage')):
             self.render()
 
     @safe

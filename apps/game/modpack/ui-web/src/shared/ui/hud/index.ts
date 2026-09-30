@@ -4,6 +4,8 @@ export { Glyph } from './Glyph';
 export type { GlyphProps } from './Glyph';
 export { HudPlate } from './HudPlate';
 export type { HudPlateProps, HudRail } from './HudPlate';
+export { HudText } from './HudText';
+export type { HudTextProps } from './HudText';
 export { IconNumber } from './IconNumber';
 
 export type { IconNumberProps } from './IconNumber';

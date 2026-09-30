@@ -19,7 +19,8 @@ def format_controllers():
 
 def is_own_command(command):
     """True for a quick command the player sent. RU 1.45 messenger/proto/entities.py:140: isSender() is False when the
-    sender is not in the battle user storage, so the session id is checked too; a command that cannot tell counts as own."""
+    sender is not in the battle user storage, so the session id is checked too; a command that cannot tell counts as
+    own."""
     sender = call(command, 'getSenderID')
     is_sender = getattr(command, 'isSender', None)
     if sender is None and is_sender is None:

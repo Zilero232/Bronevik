@@ -1,0 +1,20 @@
+@use '../../../../../shared/styles/gameface' as *;
+
+.switch {
+  display: flex;
+  flex-direction: row;
+  flex-shrink: 0;
+  align-items: center;
+  padding-left: 12px;
+  border-left: 1px solid token(color-border);
+}
+
+.switchLabel {
+  width: 34px;
+  margin-right: 8px;
+  color: token(color-text-muted);
+  font-size: 11px;
+  text-align: right;
+
+  @include caps(0.5px);
+}

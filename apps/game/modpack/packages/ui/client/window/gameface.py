@@ -77,8 +77,12 @@ if AVAILABLE:
     class SettingsWindow(WindowImpl):
 
         def __init__(self, controller):
-            super(SettingsWindow, self).__init__(wndFlags=WindowFlags.WINDOW | WindowFlags.WINDOW_FULLSCREEN, content=SettingsGameView(controller),
-                                                 layer=getattr(WindowLayer, WINDOW_LAYER), parent=main_window())
+            super(SettingsWindow, self).__init__(
+                wndFlags=WindowFlags.WINDOW | WindowFlags.WINDOW_FULLSCREEN,
+                content=SettingsGameView(controller),
+                layer=getattr(WindowLayer, WINDOW_LAYER),
+                parent=main_window(),
+            )
 
 else:
     SettingsWindow = None

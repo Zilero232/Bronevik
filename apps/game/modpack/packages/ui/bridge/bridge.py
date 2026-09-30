@@ -11,7 +11,16 @@ from ..profiles import ProfileError, apply_snapshot, decode_profile, encode_prof
 from ..protocol import MAX_DIAG_CHARS, QUIET_COMMANDS, ProtocolError, decode_message, encode_feed
 from ..window_layout import WindowLayout
 from .companion import CompanionActions
-from .constants import CONFIG_COMPONENT, EVENT_COMPONENT_SETTINGS, LANGUAGE_CHOICES, LANGUAGES, NOTICE_CODE, NOTICE_ERROR, NOTICE_INFO, TOOL_PAGES
+from .constants import (
+    CONFIG_COMPONENT,
+    EVENT_COMPONENT_SETTINGS,
+    LANGUAGE_CHOICES,
+    LANGUAGES,
+    NOTICE_CODE,
+    NOTICE_ERROR,
+    NOTICE_INFO,
+    TOOL_PAGES,
+)
 from .links import site_link, site_url
 
 
@@ -27,39 +36,16 @@ class SettingsBridge(object):
         self.feeds = {}
         self.watched = None
         self.scroll = {}
-        self.handlers = {
-            'ready': self._on_ready,
-            'close': self._on_close,
-            'set': self._on_set,
-            'set_many': self._on_set_many,
-            'action': self._on_action,
-            'language': self._on_language,
-            'bind': self._on_bind,
-            'open': self._on_open,
-            'profile_save': self._on_profile_save,
-            'profile_load': self._on_profile_load,
-            'profile_rename': self._on_profile_rename,
-            'profile_delete': self._on_profile_delete,
-            'profile_export': self._on_profile_export,
-            'profile_import': self._on_profile_import,
-            'hud_edit': self._on_hud_edit,
-            'hud_move': self._on_hud_move,
-            'hud_reset': self._on_hud_reset,
-            'hud_reset_all': self._on_hud_reset_all,
-            'window_layout': self._on_window_layout,
-            'feed': self._on_feed,
-            'diag': self._on_diag,
-            'escape': self._on_escape,
-            'scroll': self._on_scroll,
-        }
 
     def labels(self):
         return Labels(self.context.catalog, self.context.language())
 
     def components(self):
-        context = self.context
-        return build_catalog(context.config, context.save_config, context.features(), context.component_config, context.layer,
-                             companion_instance=self.companion, switch_keys=context.switch_keys)
+        return build_catalog(self.context, companion_instance=self.companion)
+
+    def _instance_of(self, component_id):
+        component = find(self.components(), component_id)
+        return component.instance if component is not None else None
 
     def state(self):
         context = self.context
@@ -84,8 +70,8 @@ class SettingsBridge(object):
     def focus_page(self, page):
         if page not in SECTIONS + TOOL_PAGES:
             return False
-        seq = (self.focus or {}).get('seq', 0) + 1
-        self.focus = {'section': page, 'seq': seq}
+        sequence = (self.focus or {}).get('seq', 0) + 1
+        self.focus = {'section': page, 'seq': sequence}
         self.revision += 1
         return True
 
@@ -96,32 +82,33 @@ class SettingsBridge(object):
         return WindowLayout(self.context.component_config)
 
     def handle(self, raw):
-        """Apply one page message; True when the settings state changed and goes to the window again."""
         self.notice = None
-        quiet = False
+        is_quiet = False
         try:
             message = decode_message(raw)
-            self.handlers[message['type']](message)
-            quiet = message['type'] in QUIET_COMMANDS
+            handler = getattr(self, '_on_' + message['type'])
+            handler(message)
+            is_quiet = message['type'] in QUIET_COMMANDS
         except ProtocolError as error:
             self._notice(NOTICE_ERROR, 'error_protocol', reason=error.reason)
         except ProfileError as error:
             self._notice(NOTICE_ERROR, 'error_profile_%s' % error.reason)
-        if quiet:
+        if is_quiet:
             return False
         self.revision += 1
         return True
 
     def feed_text(self, now, force=False):
-        """The next message of the feed the window watches (its page from the instance's `ui_feed(poll)`), or None when
-        none is watched, it is not due yet or nothing changed. A forced read follows the player's own message."""
         if self.watched is None:
             return None
         component_id, instance = self.watched
         feed = self.feeds[component_id]
         if not feed.due(now, force):
             return None
-        message = feed.message(instance.ui_feed(poll=not force and feed.synced), now)
+
+        # A forced read follows the player's own message; only the tick's reads of a synced feed are polls.
+        is_poll = not force and feed.synced
+        message = feed.message(instance.ui_feed(poll=is_poll), now)
         return encode_feed(message) if message is not None else None
 
     def stop_feed(self):
@@ -146,8 +133,9 @@ class SettingsBridge(object):
     def _on_set(self, message):
         component = find(self.components(), message['component'])
         key = message['key']
-        if component is None or not isinstance(key, string_types) or not component.editable(key):
+        if component is None or not _is_editable(component, key):
             raise ProtocolError('unknown_setting')
+
         changed, kind = component.update(key, message['value'])
         if not changed:
             self._notice(NOTICE_ERROR, 'error_value')
@@ -161,8 +149,9 @@ class SettingsBridge(object):
         values = message['values']
         if component is None or not isinstance(values, dict) or not values:
             raise ProtocolError('unknown_setting')
-        if not all(isinstance(key, string_types) and component.editable(key) for key in values):
+        if not all(_is_editable(component, key) for key in values):
             raise ProtocolError('unknown_setting')
+
         changed, config_changed = [], []
         for key in sorted(values):
             keys, kind = component.update(key, values[key])
@@ -174,14 +163,15 @@ class SettingsBridge(object):
             self.context.config_changed(sorted(set(config_changed)))
 
     def _on_action(self, message):
-        component_id, action = message['component'], message['action']
+        component_id = message['component']
+        action = message['action']
         if component_id == COMPANION_ID and action in COMPANION_ACTIONS:
             self.context.companion_action(action)
             return
-        component = find(self.components(), component_id)
-        instance = component.instance if component is not None else None
+        instance = self._instance_of(component_id)
         if instance is None or not hasattr(instance, 'ui_action'):
             raise ProtocolError('unknown_action')
+
         notice = instance.ui_action(action, message.get('row'), message.get('value'))
         if isinstance(notice, dict):
             self.notice = {'kind': notice.get('kind', NOTICE_INFO), 'text': notice.get('text'), 'code': None}
@@ -210,9 +200,16 @@ class SettingsBridge(object):
         self._notice(NOTICE_INFO, 'notice_profile_saved', name=item['name'])
 
     def _on_profile_load(self, message):
-        item = self.context.profiles.activate(message['id'])
         context = self.context
-        changes = apply_snapshot(item['data'], context.config, context.save_config, context.component_config, context.layer)
+        item = context.profiles.activate(message['id'])
+        changes = apply_snapshot(
+            item['data'],
+            context.config,
+            context.save_config,
+            context.component_config,
+            context.layer,
+        )
+
         for component_id, changed in sorted(changes.items()):
             self._changed(component_id, changed)
         config_changed = changes.get(CONFIG_COMPONENT) or []
@@ -232,7 +229,8 @@ class SettingsBridge(object):
         item = self.context.profiles.get(message['id'])
         if item is None:
             raise ProfileError('missing')
-        self._notice(NOTICE_CODE, 'notice_profile_code', code=encode_profile(item['name'], item['data']))
+        code = encode_profile(item['name'], item['data'])
+        self._notice(NOTICE_CODE, 'notice_profile_code', code=code)
 
     def _on_profile_import(self, message):
         name, snapshot = decode_profile(message['code'])
@@ -255,16 +253,19 @@ class SettingsBridge(object):
     def _on_feed(self, message):
         component_id = message['component']
         if not message['active']:
-            if self.watched is not None and self.watched[0] == component_id:
-                self.stop_feed()
+            self._unwatch(component_id)
             return
-        component = find(self.components(), component_id)
-        instance = component.instance if component is not None else None
+        instance = self._instance_of(component_id)
         if instance is None or not hasattr(instance, 'ui_feed'):
             raise ProtocolError('unknown_feed')
+
         self.stop_feed()
         self.feeds.setdefault(component_id, Feed(component_id)).reset()
         self.watched = (component_id, instance)
+
+    def _unwatch(self, component_id):
+        if self.watched is not None and self.watched[0] == component_id:
+            self.stop_feed()
 
     def _on_diag(self, message):
         text = message['text']
@@ -291,3 +292,7 @@ class SettingsBridge(object):
             self._changed(panel_id, self.editor.reset(panel_id))
         self.context.bus.emit(EVENT_RESET_LAYOUT)
         self.context.reset_layout()
+
+
+def _is_editable(component, key):
+    return isinstance(key, string_types) and component.editable(key)

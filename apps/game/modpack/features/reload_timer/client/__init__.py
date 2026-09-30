@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.client.battle import ammo, call
-from ....core.client.hud.panel import BattlePanel
+from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.client.timer import Ticker
 from ....core.log import safe
 from ..i18n import STRINGS
@@ -16,16 +16,27 @@ def clip_size(gun_settings):
     return getattr(getattr(gun_settings, 'clip', None), 'size', None)
 
 
+PANEL_SPEC = PanelSpec(
+    panel_id=PANEL_ID,
+    schema=SCHEMA,
+    switch=SWITCH,
+    strings=STRINGS,
+    preview_size=PREVIEW_SIZE,
+    preview_text=preview_text,
+    preview_widget=preview_widget,
+)
+
+
+# Fair play: the own gun's reload and magazine only, what the vanilla reticle's reload indicator reads from the
+# client's ammo controller (RU 1.45 source: guiSessionProvider.shared.ammo, getCurrentShells() (quantity, inClip) or
+# SHELL_QUANTITY_UNKNOWN (-1) pairs while no shell is current, onGunReloadTimeSet(shellCD, snapshot, skipAutoLoader)
+# with the snapshot's getTimeLeft()/getBaseValue(), the gun settings' clip.size).
 class ReloadTimerPanel(BattlePanel):
-    """The own gun's reload and magazine from the client's ammo controller (RU 1.45 source:
-    guiSessionProvider.shared.ammo, getCurrentShells() (quantity, inClip) or SHELL_QUANTITY_UNKNOWN (-1) pairs
-    while no shell is current, onGunReloadTimeSet(shellCD, snapshot, skipAutoLoader) with the snapshot's
-    getTimeLeft()/getBaseValue(), the gun settings' clip.size), what the vanilla reticle's reload indicator reads."""
 
     def __init__(self, app):
         self.gun = None
         self.ticker = Ticker(TICK_S, self._on_tick)
-        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text, preview_widget)
+        BattlePanel.__init__(self, app, PANEL_SPEC)
 
     def start(self, player):
         self.gun = GunState()
@@ -47,9 +58,12 @@ class ReloadTimerPanel(BattlePanel):
 
     def _read_current(self):
         shells = call(ammo(), 'getCurrentShells')
-        return self.gun.set_in_clip(shells[1] if isinstance(shells, tuple) and len(shells) == 2 else None)
+        in_clip = None
+        if isinstance(shells, tuple) and len(shells) == 2:
+            _quantity, in_clip = shells
+        return self.gun.set_in_clip(in_clip)
 
-    def _on_reload(self, shell_cd, snapshot, *args):
+    def _on_reload(self, _shell_cd, snapshot, *args):
         if self.gun is None:
             return
         changed = self.gun.set_reload(call(snapshot, 'getTimeLeft', 0), call(snapshot, 'getBaseValue', 0))
@@ -58,15 +72,21 @@ class ReloadTimerPanel(BattlePanel):
             self.render()
 
     def _on_gun_settings(self, gun_settings):
-        if self.gun is not None and self.gun.set_clip(clip_size(gun_settings)):
+        if self.gun is None:
+            return
+        if self.gun.set_clip(clip_size(gun_settings)):
             self.render()
 
-    def _on_shells(self, int_cd, quantity, in_clip, *args):
-        if self.gun is not None and int_cd == call(ammo(), 'getCurrentShellCD') and self.gun.set_in_clip(in_clip):
+    def _on_shells(self, int_cd, _quantity, in_clip, *args):
+        if self.gun is None or int_cd != call(ammo(), 'getCurrentShellCD'):
+            return
+        if self.gun.set_in_clip(in_clip):
             self.render()
 
-    def _on_current_shell(self, int_cd):
-        if self.gun is not None and self._read_current():
+    def _on_current_shell(self, _int_cd):
+        if self.gun is None:
+            return
+        if self._read_current():
             self.render()
 
     def _on_tick(self):

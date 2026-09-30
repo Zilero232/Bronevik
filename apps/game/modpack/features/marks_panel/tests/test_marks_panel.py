@@ -39,17 +39,59 @@ def panel_text(combined=2100, snapshot=SNAPSHOT, held=False, language='en', **va
     return strip_tags(format_panel(panel, PanelView(chosen, held), translator(language)))
 
 
+def battle_totals():
+    totals = BattleTotals()
+    totals.add('damage', 1500)
+    totals.add('radio', 400)
+    totals.add('track', 600)
+    return totals
+
+
 class TotalsTest(unittest.TestCase):
 
-    def test_best_assist_and_summary(self):
+    def test_add_counts_a_known_positive_amount(self):
         totals = BattleTotals()
-        assert totals.add('damage', 1500) and totals.add('radio', 400) and totals.add('track', 600)
-        assert not totals.add('unknown', 100) and not totals.add('damage', -5) and not totals.add('stun', None)
+
+        assert totals.add('damage', 1500) is True
+
+    def test_add_ignores_an_unknown_kind(self):
+        totals = BattleTotals()
+
+        assert totals.add('unknown', 100) is False
+
+    def test_add_ignores_a_negative_amount(self):
+        totals = BattleTotals()
+
+        assert totals.add('damage', -5) is False
+
+    def test_add_ignores_a_missing_amount(self):
+        totals = BattleTotals()
+
+        assert totals.add('stun', None) is False
+
+    def test_combined_takes_the_damage_and_the_best_assist(self):
+        totals = battle_totals()
+
         assert totals.combined() == 2100
-        assert totals.apply_summary(damage=1800, stun=700)
-        assert not totals.apply_summary(damage=1800, stun=700)
-        assert totals.combined() == 1800 + 700
-        assert not totals.apply_summary(damage=-1, stun='x')
+
+    def test_summary_raises_the_totals(self):
+        totals = battle_totals()
+
+        changed = totals.apply_summary(damage=1800, stun=700)
+
+        assert changed is True
+        assert totals.combined() == 2500
+
+    def test_the_same_summary_twice_changes_nothing(self):
+        totals = battle_totals()
+        totals.apply_summary(damage=1800, stun=700)
+
+        assert totals.apply_summary(damage=1800, stun=700) is False
+
+    def test_summary_ignores_invalid_values(self):
+        totals = battle_totals()
+
+        assert totals.apply_summary(damage=-1, stun='x') is False
 
 
 class PanelTest(unittest.TestCase):

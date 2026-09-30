@@ -3,9 +3,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from .constants import DETAIL_SWITCHES, REST_STYLE
 
 
+# The settings one render reads. With `alt_detail` on the panel rests in its short style (compact instead of
+# extended) and shows the extended view with every line and the detail line while Alt is held.
 class PanelView(object):
-    """The settings one render reads. With `alt_detail` on the panel rests in its short style (compact instead of
-    extended) and shows the extended view with every line and the detail line while Alt is held."""
 
     def __init__(self, settings, held=False):
         self.settings = settings

@@ -1,3 +1,5 @@
+import type { ReplayItem } from '../../model/schemas';
+
 export type ReplaySummary = {
   battles: number;
   wins: number;
@@ -6,3 +8,5 @@ export type ReplaySummary = {
   avgAssist: number | null;
   avgXp: number | null;
 };
+
+export type AverageOfInput = { items: readonly ReplayItem[]; pick: (item: ReplayItem) => number | null };

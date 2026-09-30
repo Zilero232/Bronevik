@@ -1,5 +1,3 @@
-// The GUIFlash HTML subset the panels send (core/format `font`, `<img src="img://...">` of the sixth sense
-// and crosshair marks): parsed into runs, never set as innerHTML.
 export const RICH_TEXT = {
   tag: /<(\/?)([a-z]+)((?:\s+[a-z-]+\s*=\s*(?:"[^"]*"|'[^']*'))*)\s*\/?>/gi,
   attribute: /([a-z-]+)\s*=\s*(?:"([^"]*)"|'([^']*)')/gi,

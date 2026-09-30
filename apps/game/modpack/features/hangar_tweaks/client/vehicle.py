@@ -12,13 +12,22 @@ def _installed(vehicle):
     return getattr(getattr(vehicle, 'optDevices', None), 'installed', None) or []
 
 
+def _device_state(slot, device):
+    if device is None:
+        return None
+    return {'slot': slot, 'removable': bool(getattr(device, 'isRemovable', False))}
+
+
 def summary(vehicle):
-    devices = []
-    for slot, device in enumerate(_installed(vehicle)):
-        devices.append({'slot': slot, 'removable': bool(getattr(device, 'isRemovable', False))} if device is not None else None)
+    devices = [_device_state(slot, device) for slot, device in enumerate(_installed(vehicle))]
     crew = [member for _, member in (getattr(vehicle, 'crew', None) or []) if member is not None]
-    return {'locked': is_locked(vehicle), 'devices': devices, 'crew': len(crew), 'last_crew': bool(getattr(vehicle, 'lastCrew', None)),
-            'style': bool(getattr(vehicle, 'isStyleInstalled', False))}
+    return {
+        'locked': is_locked(vehicle),
+        'devices': devices,
+        'crew': len(crew),
+        'last_crew': bool(getattr(vehicle, 'lastCrew', None)),
+        'style': bool(getattr(vehicle, 'isStyleInstalled', False)),
+    }
 
 
 def device_in(vehicle, slot):

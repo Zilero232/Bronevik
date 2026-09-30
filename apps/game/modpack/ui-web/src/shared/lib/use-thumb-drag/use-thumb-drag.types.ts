@@ -13,3 +13,5 @@ export type UseThumbDragInput = {
   visible: boolean;
   onDragged: () => void;
 };
+
+export type DragOfInput = { element: HTMLElement; clientY: number };

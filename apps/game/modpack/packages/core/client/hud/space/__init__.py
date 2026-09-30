@@ -13,21 +13,21 @@ def current_space():
 
 
 def cursor_events():
-    """The client's (show, hide) cursor events on the global event bus, or None when they cannot be read."""
     try:
         from gui.shared import EVENT_BUS_SCOPE, events, g_eventBus
     except ImportError:
         return None
     game_event = getattr(events, 'GameEvent', None)
-    show, hide = getattr(game_event, 'SHOW_CURSOR', None), getattr(game_event, 'HIDE_CURSOR', None)
+    show = getattr(game_event, 'SHOW_CURSOR', None)
+    hide = getattr(game_event, 'HIDE_CURSOR', None)
     if show is None or hide is None:
         return None
     return g_eventBus, EVENT_BUS_SCOPE.GLOBAL, show, hide
 
 
+# Whether the client shows the mouse cursor (RU 1.45 client source: CursorManager.show/hide set `GUI.mcursor().visible`
+# and fire SHOW_CURSOR/HIDE_CURSOR; Ctrl in battle, Tab, the chat), or None when it cannot be read.
 def cursor_visible():
-    """Whether the client shows the mouse cursor (RU 1.45 client source: CursorManager.show/hide set `GUI.mcursor().visible`
-    and fire SHOW_CURSOR/HIDE_CURSOR; Ctrl in battle, Tab, the chat), or None when it cannot be read."""
     try:
         import GUI
         return bool(GUI.mcursor().visible)
@@ -36,7 +36,6 @@ def cursor_visible():
 
 
 def gui_spaces():
-    """(app loader, its GuiGlobalSpaceID) or (None, None) when the client has neither."""
     try:
         from helpers import dependency
         from skeletons.gui.app_loader import GuiGlobalSpaceID, IAppLoader

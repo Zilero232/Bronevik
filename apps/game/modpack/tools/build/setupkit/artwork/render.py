@@ -2,7 +2,7 @@
 
     catalog/previews/*.svg (or a .png screenshot)  -> previews/<component id>.png, 640x360
 
-tools/most reuses svg_png and the libraries for its submission sizes.
+tools/most reuses svg_png, cover and the libraries for its submission sizes.
 """
 import io
 import os
@@ -28,6 +28,17 @@ def svg_png(svg_path, width):
     return bytes(resvg_py.svg_to_bytes(svg_path=svg_path, width=width))
 
 
+def cover(image, size, image_module):
+    """Scales `image` to cover `size` and crops the overflow evenly from both sides."""
+    width, height = size
+    scale = max(float(width) / image.width, float(height) / image.height)
+    scaled_size = (max(width, round(image.width * scale)), max(height, round(image.height * scale)))
+    image = image.resize(scaled_size, image_module.LANCZOS)
+    left = (image.width - width) // 2
+    top = (image.height - height) // 2
+    return image.crop((left, top, left + width, top + height))
+
+
 def render_preview(source, out_path):
     """An SVG renders at 640 px wide; a PNG screenshot is scaled and centre-cropped to 640x360."""
     _, Image = _libraries()
@@ -35,12 +46,7 @@ def render_preview(source, out_path):
         image = Image.open(io.BytesIO(svg_png(source, PREVIEW_SIZE[0])))
     else:
         image = Image.open(source)
-    image = image.convert('RGB')
-    width, height = PREVIEW_SIZE
-    scale = max(float(width) / image.width, float(height) / image.height)
-    image = image.resize((max(width, round(image.width * scale)), max(height, round(image.height * scale))), Image.LANCZOS)
-    left, top = (image.width - width) // 2, (image.height - height) // 2
-    image = image.crop((left, top, left + width, top + height))
+    image = cover(image.convert('RGB'), PREVIEW_SIZE, Image)
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     image.save(out_path, format='PNG', optimize=True)
     return out_path
@@ -50,7 +56,9 @@ def render_previews(manifest, catalog, assets_dir, out_dir):
     """Every component preview at the manifest's path under out_dir; returns the written paths."""
     written = []
     for component in manifest.components:
-        if component.preview.image:
-            source = os.path.join(assets_dir, catalog.entry(component.id).preview.image)
-            written.append(render_preview(source, os.path.join(out_dir, *component.preview.image.split('/'))))
+        if not component.preview.image:
+            continue
+        source = os.path.join(assets_dir, catalog.entry(component.id).preview.image)
+        target = os.path.join(out_dir, *component.preview.image.split('/'))
+        written.append(render_preview(source, target))
     return written

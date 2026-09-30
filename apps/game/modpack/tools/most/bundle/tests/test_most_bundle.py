@@ -11,13 +11,29 @@ TOOLS_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.p
 if PY3:
     if TOOLS_DIR not in sys.path:
         sys.path.insert(0, TOOLS_DIR)
-    from most.bundle import BundleError, assemble
+    from most.bundle import BundleError, BundleRequest, assemble
     from most.testing import write_build
+
+CHANGELOG = u'## 0.1.0\n\n- First.\n\n## marks_panel 0.2.0\n\n- Panel.\n'
+PANEL_FILES = (
+    'net.triotmetki.marks_panel_0.2.0.mtmod',
+    'meta.xml',
+    'description.ru.md',
+    'description.en.md',
+    'changelog.md',
+    'submission.json',
+    os.path.join('screenshots', 'battle.png'),
+)
 
 
 def read_json(path):
     with io.open(path, encoding='utf-8') as handle:
         return json.load(handle)
+
+
+def read_text(path):
+    with io.open(path, encoding='utf-8') as handle:
+        return handle.read()
 
 
 @unittest.skipUnless(PY3, 'the MOST bundler needs Python 3')
@@ -31,53 +47,89 @@ class BundleTest(unittest.TestCase):
         self.out = os.path.join(self.tmp, 'most')
         self.changelog = os.path.join(self.tmp, 'CHANGELOG.md')
         with io.open(self.changelog, 'w', encoding='utf-8') as handle:
-            handle.write(u'## 0.1.0\n\n- First.\n\n## marks_panel 0.2.0\n\n- Panel.\n')
+            handle.write(CHANGELOG)
         self.screens = os.path.join(self.tmp, 'screens')
+        self.panel_folder = os.path.join(self.out, 'marks_panel')
 
-    def run_bundle(self, suffix='.pyc', **options):
+    def add_screenshot(self):
+        os.makedirs(os.path.join(self.screens, 'marks_panel'))
+        open(os.path.join(self.screens, 'marks_panel', 'battle.png'), 'wb').close()
+
+    def run_bundle(self, suffix='.pyc', game_version='1.45.0.0', **options):
         packages = write_build(self.packages_dir, suffix)
         options.setdefault('changelog', self.changelog)
         options.setdefault('screenshots_dir', self.screens)
-        return assemble(self.packages_dir, options.pop('game_version', '1.45.0.0'), self.out, packages=packages, **options)
+        request = BundleRequest(self.packages_dir, game_version, self.out, packages=packages, **options)
+        return assemble(request)
 
-    def test_writes_a_folder_per_component_and_an_index(self):
-        os.makedirs(os.path.join(self.screens, 'marks_panel'))
-        open(os.path.join(self.screens, 'marks_panel', 'battle.png'), 'wb').close()
-        index, findings = self.run_bundle(release=True)
+    def test_a_release_bundle_of_a_clean_build_has_no_errors(self):
+        self.add_screenshot()
+
+        _, findings = self.run_bundle(release=True)
+
         self.assertEqual(findings.errors, [], [str(item) for item in findings.errors])
+
+    def test_the_index_lists_every_component_and_the_game_version(self):
+        index, _ = self.run_bundle(release=True)
+
         self.assertEqual([item['id'] for item in index['components']], ['core', 'companion', 'marks_panel'])
         self.assertEqual(read_json(os.path.join(self.out, 'index.json'))['gameVersion'], '1.45.0.0')
-        folder = os.path.join(self.out, 'marks_panel')
-        for name in ('net.triotmetki.marks_panel_0.2.0.mtmod', 'meta.xml', 'description.ru.md', 'description.en.md',
-                     'changelog.md', 'submission.json', os.path.join('screenshots', 'battle.png')):
-            self.assertTrue(os.path.isfile(os.path.join(folder, name)), name)
-        self.assertTrue(os.listdir(os.path.join(folder, 'previews')))
-        submission = read_json(os.path.join(folder, 'submission.json'))
+
+    def test_a_component_folder_carries_the_package_texts_and_media(self):
+        self.add_screenshot()
+
+        self.run_bundle(release=True)
+
+        for name in PANEL_FILES:
+            self.assertTrue(os.path.isfile(os.path.join(self.panel_folder, name)), name)
+        self.assertTrue(os.listdir(os.path.join(self.panel_folder, 'previews')))
+
+    def test_the_submission_lists_dependencies_title_and_hash(self):
+        self.run_bundle(release=True)
+
+        submission = read_json(os.path.join(self.panel_folder, 'submission.json'))
+
         self.assertEqual([item['id'] for item in submission['dependencies']], ['core', 'companion'])
-        self.assertEqual([item['id'] for item in submission['externalDependencies']], ['openwg_gameface', 'guiflash'])
+        external = [item['id'] for item in submission['externalDependencies']]
+        self.assertEqual(external, ['openwg_gameface', 'guiflash'])
         self.assertTrue(submission['forumTitle']['ru'].startswith('[1.45.0.0] '))
         self.assertEqual(len(submission['sha256']), 64)
-        with io.open(os.path.join(folder, 'changelog.md'), encoding='utf-8') as handle:
-            self.assertIn('- Panel.', handle.read())
+
+    def test_the_changelog_carries_the_components_entry(self):
+        self.run_bundle(release=True)
+
+        changelog = read_text(os.path.join(self.panel_folder, 'changelog.md'))
+
+        self.assertIn('- Panel.', changelog)
 
     def test_bad_game_version_and_sources_in_a_release_are_errors(self):
         _, findings = self.run_bundle(suffix='.py', release=True, game_version='1.45', skip_images=True)
+
         wheres = sorted(set(item.where for item in findings.errors))
+
         self.assertEqual(wheres, ['bundle', 'companion', 'core', 'marks_panel'])
 
-    def test_only_selects_components_and_flags_missing_dependencies(self):
-        index, findings = self.run_bundle(only=('marks_panel',), skip_images=True)
+    def test_only_bundles_the_selected_components(self):
+        index, _ = self.run_bundle(only=('marks_panel',), skip_images=True)
+
         self.assertEqual([item['id'] for item in index['components']], ['marks_panel'])
-        self.assertTrue(any('leaves out' in item.message for item in findings.warnings))
         self.assertFalse(os.path.isdir(os.path.join(self.out, 'core')))
+
+    def test_only_warns_about_the_dependencies_it_leaves_out(self):
+        _, findings = self.run_bundle(only=('marks_panel',), skip_images=True)
+
+        self.assertTrue([item for item in findings.warnings if 'leaves out' in item.message])
+
+    def test_only_with_an_unknown_id_is_a_bundle_error(self):
         with self.assertRaises(BundleError):
             self.run_bundle(only=('nope',))
 
     def test_missing_package_file_is_a_bundle_error(self):
         packages = write_build(self.packages_dir)
         os.remove(os.path.join(self.packages_dir, 'net.triotmetki.core_0.1.0.mtmod'))
+
         with self.assertRaises(BundleError):
-            assemble(self.packages_dir, '1.45.0.0', self.out, packages=packages)
+            assemble(BundleRequest(self.packages_dir, '1.45.0.0', self.out, packages=packages))
 
 
 if __name__ == '__main__':

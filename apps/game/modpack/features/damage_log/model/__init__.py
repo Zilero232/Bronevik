@@ -4,9 +4,65 @@ from ....core.compat import is_number, string_types, to_text
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, font
 from ....core.shells import SHELL_CODES
 from ....core.templates import render
-from .constants import (AMMO_RACK_WINDOW_S, CLASS_GLYPHS, COLOR_MACROS, DETAIL_EXTENDED, DETAIL_FULL, DETAIL_SHORT,
-                        ENTRY_TEMPLATES, ICON_RENDITION, ICON_ROOT, KIND_COLOR, KINDS, LOG_KIND_FILTER, MAX_ENTRIES, PALETTES,
-                        SOURCES)
+from ....core.vendor import attr
+from .constants import (
+    AMMO_RACK_WINDOW_S,
+    CLASS_GLYPHS,
+    COLOR_MACROS,
+    DETAIL_EXTENDED,
+    DETAIL_FULL,
+    DETAIL_SHORT,
+    ENTRY_TEMPLATES,
+    ICON_RENDITION,
+    ICON_ROOT,
+    KIND_COLOR,
+    KINDS,
+    LOG_KIND_FILTER,
+    MAX_ENTRIES,
+    MIN_ENTRY_FONT_SIZE,
+    PALETTES,
+    SOURCES,
+    SUMMARY_KEYS,
+)
+
+
+@attr.s
+class Hit(object):
+
+    vehicle = attr.ib(default=None)
+    shell = attr.ib(default=None)
+    source = attr.ib(default=None)
+    vehicle_class = attr.ib(default=None)
+    at = attr.ib(default=None)
+    shell_name = attr.ib(default=None)
+    gold = attr.ib(default=False)
+
+
+def _is_amount(amount):
+    return is_number(amount) and amount > 0
+
+
+def _new_entry(kind, amount, hit):
+    is_received = kind == 'received'
+    return {
+        'kind': kind,
+        'amount': amount,
+        'vehicle': to_text(hit.vehicle) if hit.vehicle else None,
+        'shell': hit.shell if hit.shell in SHELL_CODES else None,
+        'source': hit.source if is_received and hit.source in SOURCES else None,
+        'class': hit.vehicle_class if hit.vehicle_class in CLASS_GLYPHS else None,
+        'ammo_rack': False,
+        'at': hit.at,
+        'shell_name': hit.shell_name if isinstance(hit.shell_name, string_types) else None,
+        'gold': bool(hit.gold),
+    }
+
+
+def _near(earlier, later):
+    if earlier is None or later is None:
+        return False
+
+    return abs(later - earlier) <= AMMO_RACK_WINDOW_S
 
 
 class DamageLog(object):
@@ -18,43 +74,29 @@ class DamageLog(object):
         self.entries = []
         self.ammo_rack_at = None
 
-    def add(self, kind, amount, vehicle=None, shell=None, source=None, vehicle_class=None, at=None, shell_name=None, gold=False):
-        if kind not in KINDS or not is_number(amount) or amount <= 0:
+    def add(self, kind, amount, hit=None):
+        if kind not in KINDS or not _is_amount(amount):
             return False
+
         amount = int(amount)
         self.totals[kind] += amount
         self.counts[kind] += 1
-        entry = {
-            'kind': kind,
-            'amount': amount,
-            'vehicle': to_text(vehicle) if vehicle else None,
-            'shell': shell if shell in SHELL_CODES else None,
-            'source': source if kind == 'received' and source in SOURCES else None,
-            'class': vehicle_class if vehicle_class in CLASS_GLYPHS else None,
-            'ammo_rack': False,
-            'at': at,
-            'shell_name': shell_name if isinstance(shell_name, string_types) else None,
-            'gold': bool(gold),
-        }
-        if kind == 'received' and self._near(self.ammo_rack_at, at):
+        entry = _new_entry(kind, amount, hit or Hit())
+        if kind == 'received' and _near(self.ammo_rack_at, entry['at']):
             entry['ammo_rack'] = True
             self.ammo_rack_at = None
+
         self.entries.append(entry)
         del self.entries[:-MAX_ENTRIES]
         return True
 
-    @staticmethod
-    def _near(earlier, later):
-        return earlier is not None and later is not None and abs(later - earlier) <= AMMO_RACK_WINDOW_S
-
     # The damage event may come before or after the ammo rack device state.
     def ammo_rack_hit(self, at):
-        for entry in reversed(self.entries):
-            if entry['kind'] == 'received':
-                if self._near(entry['at'], at) and not entry['ammo_rack']:
-                    entry['ammo_rack'] = True
-                    return True
-                break
+        received = self.last('received')
+        if received is not None and _near(received['at'], at) and not received['ammo_rack']:
+            received['ammo_rack'] = True
+            return True
+
         self.ammo_rack_at = at
         return False
 
@@ -66,7 +108,7 @@ class DamageLog(object):
 
     def apply_summary(self, damage=None, assist=None, blocked=None, stun=None):
         changed = False
-        for key, value in (('damage', damage), ('assist', assist), ('blocked', blocked), ('stun', stun)):
+        for key, value in zip(SUMMARY_KEYS, (damage, assist, blocked, stun)):
             if is_number(value) and value >= 0 and self.summary.get(key) != int(value):
                 self.summary[key] = int(value)
                 changed = True
@@ -93,6 +135,7 @@ class DamageLog(object):
     def recent(self, limit, kinds=KINDS):
         if limit <= 0:
             return []
+
         picked = [entry for entry in self.entries if entry['kind'] in kinds]
         return list(reversed(picked[-limit:]))
 
@@ -101,6 +144,7 @@ def totals_template(settings, translate):
     style = settings.get('style')
     if style == 'custom':
         return settings.get('template')
+
     return translate('dlog_template_' + style)
 
 
@@ -114,17 +158,17 @@ def kind_color(kind, settings):
     return settings.get(key) or palette_values(settings)[macro]
 
 
-def image(name, size):
-    return '<img src="img://%s/%s_%d.png" width="%d" height="%d"/>' % (ICON_ROOT, name, ICON_RENDITION, size, size)
-
-
 def kind_icon(kind, size):
-    return image(kind, size)
+    path = '%s/%s_%d.png' % (ICON_ROOT, kind, ICON_RENDITION)
+    return '<img src="img://%s" width="%d" height="%d"/>' % (path, size, size)
 
 
 def class_icon(vehicle_class, size):
     glyph = CLASS_GLYPHS.get(vehicle_class)
-    return image(glyph, size) if glyph and size else ''
+    if not glyph or not size:
+        return ''
+
+    return kind_icon(glyph, size)
 
 
 def source_text(entry, translate):
@@ -137,22 +181,25 @@ def source_text(entry, translate):
 
 
 def entry_values(entry, translate, index, icon_size=None, settings=None):
+    kind = entry['kind']
+    shell = entry.get('shell')
     return {
-        'icon': kind_icon(entry['kind'], icon_size) if icon_size else '',
+        'icon': kind_icon(kind, icon_size) if icon_size else '',
         'class': class_icon(entry.get('class'), icon_size),
         'index': index,
         'amount': entry['amount'],
-        'kind': translate('dlog_kind_' + entry['kind']),
+        'kind': translate('dlog_kind_' + kind),
         'vehicle': entry.get('vehicle') or '',
-        'shell': translate('dlog_shell_' + entry['shell']) if entry.get('shell') else '',
+        'shell': translate('dlog_shell_' + shell) if shell else '',
         'source': source_text(entry, translate),
-        'color': kind_color(entry['kind'], settings) if settings is not None else COLOR_MUTED,
+        'color': kind_color(kind, settings) if settings is not None else COLOR_MUTED,
     }
 
 
 def detail_mode(settings, extended):
     if not settings.get('alt_mode'):
         return DETAIL_FULL
+
     return DETAIL_EXTENDED if extended else DETAIL_SHORT
 
 
@@ -176,27 +223,42 @@ def entry_note(entry, translate, detail):
     return ' '.join(word for word in words if word)
 
 
-def format_damage_log(log, settings, translate, extended=False):
-    detail = detail_mode(settings, extended)
-    size = settings.get('font_size')
+def totals_line(log, settings, translate):
     values = log.values()
     values.update(palette_values(settings))
-    lines = [font(render(totals_template(settings, translate), values), COLOR_NEUTRAL, size)]
+    text = render(totals_template(settings, translate), values)
+    return font(text, COLOR_NEUTRAL, settings.get('font_size'))
+
+
+def entry_lines(log, settings, translate, detail):
+    kinds = LOG_KIND_FILTER.get(settings.get('log_kinds'), KINDS)
+    template = entry_template(settings, translate, detail)
+    entry_size = max(MIN_ENTRY_FONT_SIZE, settings.get('font_size') - 2)
+    icon_size = entry_size + 2 if settings.get('kind_icons') else None
+
+    lines = []
+    for index, entry in enumerate(log.recent(settings.get('log_lines'), kinds)):
+        item = entry_values(entry, translate, index + 1, icon_size, settings)
+        color = item['color'] if settings.get('kind_colors') else COLOR_MUTED
+        lines.append(font(render(template, item).strip(), color, entry_size))
+    return lines
+
+
+def format_damage_log(log, settings, translate, extended=False):
+    detail = detail_mode(settings, extended)
+
+    lines = [totals_line(log, settings, translate)]
     if shows_log(settings, detail):
-        kinds = LOG_KIND_FILTER.get(settings.get('log_kinds'), KINDS)
-        template = entry_template(settings, translate, detail)
-        entry_size = max(8, size - 2)
-        icon_size = entry_size + 2 if settings.get('kind_icons') else None
-        for index, entry in enumerate(log.recent(settings.get('log_lines'), kinds)):
-            item = entry_values(entry, translate, index + 1, icon_size, settings)
-            text = render(template, item).strip()
-            lines.append(font(text, item['color'] if settings.get('kind_colors') else COLOR_MUTED, entry_size))
+        lines.extend(entry_lines(log, settings, translate, detail))
     return '\n'.join(lines)
 
 
 def format_last_hit(entry, settings, translate):
     size = settings.get('font_size')
-    item = entry_values(entry, translate, 1, size + 2 if settings.get('show_class') else None, settings)
+    class_size = size + 2 if settings.get('show_class') else None
+    template = settings.get('template') or translate('dlog_last_hit_template')
+
+    item = entry_values(entry, translate, 1, class_size, settings)
     item['icon'] = ''
-    text = render(settings.get('template') or translate('dlog_last_hit_template'), item).strip()
+    text = render(template, item).strip()
     return font(text, kind_color('received', settings), size)

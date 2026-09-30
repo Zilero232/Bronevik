@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
+import type { UiComponent, UiState } from '../../../../../shared/api/protocol';
+
 import { fontSafeState } from '..';
 import { parseState } from '../../../../../shared/api/protocol';
 import sample from '../../../../../shared/api/protocol/_tests/fixtures/state.sample.json';
 
-const base = () => {
+const base = (): UiState => {
   const state = parseState(JSON.stringify(sample));
 
   if (!state) {
@@ -14,37 +16,55 @@ const base = () => {
   return state;
 };
 
+const withFirstComponent = (overrides: Partial<UiComponent>): UiState => {
+  const state = base();
+  const [first, ...rest] = state.components;
+
+  if (!first) {
+    throw new Error('the state fixture has no component');
+  }
+
+  return { ...state, components: [{ ...first, ...overrides }, ...rest] };
+};
+
+const unsafeField = { key: 'format★', label: 'Формат →', hint: null, type: 'text' as const, value: '{damage} →', default: '→', max_length: 40 };
+
 describe(fontSafeState, () => {
-  it('draws the glyphs the client font lacks with ones it has, in every display text', () => {
-    const state = base();
-    const [first, ...rest] = state.components;
+  it('draws the glyphs the client font lacks with ones it has in a hint', () => {
+    const state = withFirstComponent({ hint: 'Оборудование (★ — в слоте со своим бонусом) → панель' });
 
-    if (!first) {
-      throw new Error('the state fixture has no component');
-    }
-
-    const safe = fontSafeState({
-      ...state,
-      components: [{ ...first, hint: 'Оборудование (★ — в слоте со своим бонусом) → панель', title: 'Мод ✓' }, ...rest]
-    });
+    const safe = fontSafeState(state);
 
     expect(safe.components[0]?.hint).toBe('Оборудование (* — в слоте со своим бонусом) › панель');
+  });
+
+  it('draws the glyphs the client font lacks with ones it has in a title', () => {
+    const state = withFirstComponent({ title: 'Мод ✓' });
+
+    const safe = fontSafeState(state);
+
     expect(safe.components[0]?.title).toBe('Мод +');
   });
 
-  it('leaves the ids and values the page sends back as they are', () => {
-    const state = base();
-    const [first, ...rest] = state.components;
+  it('draws a field label with the glyphs the client font has', () => {
+    const state = withFirstComponent({ fields: [unsafeField] });
 
-    if (!first) {
-      throw new Error('the state fixture has no component');
-    }
+    const safe = fontSafeState(state);
 
-    const field = { key: 'format★', label: 'Формат →', hint: null, type: 'text' as const, value: '{damage} →', default: '→', max_length: 40 };
-    const safe = fontSafeState({ ...state, components: [{ ...first, id: 'id★', fields: [field] }, ...rest] });
+    expect(safe.components[0]?.fields[0]).toEqual({ ...unsafeField, label: 'Формат ›' });
+  });
+
+  it('leaves the ids the page sends back as they are', () => {
+    const state = withFirstComponent({ id: 'id★' });
+
+    const safe = fontSafeState(state);
 
     expect(safe.components[0]?.id).toBe('id★');
-    expect(safe.components[0]?.fields[0]).toEqual({ ...field, label: 'Формат ›' });
-    expect(safe.revision).toBe(state.revision);
+  });
+
+  it('keeps the revision of the state', () => {
+    const safe = fontSafeState(base());
+
+    expect(safe.revision).toBe(1);
   });
 });

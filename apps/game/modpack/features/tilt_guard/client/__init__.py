@@ -7,7 +7,6 @@ from ..settings import SCHEMA, SECTION, SWITCH
 
 
 class TiltGuard(FeatureComponent):
-    """Break reminders from the own battle results (`battle_event`), shown in the hangar as a system message."""
 
     def __init__(self, app):
         FeatureComponent.__init__(self, app, SECTION, SCHEMA, SWITCH, STRINGS)

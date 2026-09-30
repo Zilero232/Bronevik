@@ -5,15 +5,22 @@ from ....core.compat import is_number
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, counted, font
 from ....core.moe import combined_damage, moe_color, moe_macros, moe_state, rating_to_percent
 from ....core.templates import render
-from .constants import (APPROX, KINDS, LINE_SEPARATOR, SOURCE_ESTIMATED, SOURCE_VERIFIED, TARGET_SEPARATOR,
-                        TITLE_SIZE_STEP)
+from .constants import (
+    APPROX,
+    KINDS,
+    LINE_SEPARATOR,
+    SOURCE_ESTIMATED,
+    SOURCE_VERIFIED,
+    TARGET_SEPARATOR,
+    TITLE_SIZE_STEP,
+)
 from .view import PanelView
 
-__all__ = ('BattleTotals', 'PanelView', 'format_panel', 'panel_state', 'percent_source')
+__all__ = ('BattleTotals', 'PanelView', 'format_panel', 'panel_state', 'percent_source', 'target_levels')
 
 
+# The player's own damage and assist of this battle, raised to the client's summary of the server's totals.
 class BattleTotals(object):
-    """The player's own damage and assist of this battle, raised to the client's summary of the server's totals."""
 
     def __init__(self):
         self.values = dict((kind, 0) for kind in KINDS)
@@ -28,9 +35,12 @@ class BattleTotals(object):
     def apply_summary(self, damage=None, stun=None):
         changed = False
         for key, value in (('damage', damage), ('stun', stun)):
-            if is_number(value) and value >= 0 and self.summary.get(key) != int(value):
-                self.summary[key] = int(value)
-                changed = True
+            if not is_number(value) or value < 0:
+                continue
+            if self.summary.get(key) == int(value):
+                continue
+            self.summary[key] = int(value)
+            changed = True
         return changed
 
     def get(self, kind):
@@ -40,14 +50,16 @@ class BattleTotals(object):
         return combined_damage(self.get('damage'), self.get('radio'), self.get('track'), self.get('stun'))
 
 
+# `verified` when the starting percent is the client's own damageRating (the dossier read when the tank was selected,
+# updated from the own battle results since): the server's value, not ours. `estimated` when the dossier has none
+# (missing or 0) and the percent is the site curve at the dossier's EMA.
 def percent_source(snapshot, curve):
-    """`verified` when the starting percent is the client's own damageRating (the dossier read when the tank was
-    selected, updated from the own battle results since): the server's value, not ours. `estimated` when the dossier
-    has none (missing or 0) and the percent is the site curve at the dossier's EMA."""
     rating = snapshot.get('damage_rating')
     if is_number(rating) and rating > 0:
         return SOURCE_VERIFIED
-    return SOURCE_ESTIMATED if curve is not None else None
+    if curve is None:
+        return None
+    return SOURCE_ESTIMATED
 
 
 def panel_state(snapshot, combined, curve, pace, settings):
@@ -70,16 +82,24 @@ def _shows_up(state, settings):
     return state['up_level'] is not None
 
 
+# 100% is listed only once it is the next mark.
+def target_levels(state):
+    return [level for level in sorted(state['need']) if level != 100 or state['next_level'] == 100]
+
+
 def _targets(state, values, translate):
+    template = translate('marks_panel_line_target')
     items = []
-    for level in sorted(state['need']):
-        if level == 100 and state['next_level'] != 100:
-            continue
-        items.append(render(translate('marks_panel_line_target'), {'level': u'%d' % level, 'need': values['need%d' % level]}))
+    for level in target_levels(state):
+        macros = {'level': u'%d' % level, 'need': values['need%d' % level]}
+        items.append(render(template, macros))
     return TARGET_SEPARATOR.join(items)
 
 
-def _extended(state, values, settings, translate, color, size):
+def _extended(state, values, settings, translate):
+    color = moe_color(state, settings.get('color_mode'))
+    size = settings.get('font_size')
+
     lines = [font(render(translate('marks_panel_line_head'), values), color, size + TITLE_SIZE_STEP)]
     if settings.get('show_battle'):
         lines.append(font(render(translate('marks_panel_line_battle'), values), COLOR_NEUTRAL, size))
@@ -119,8 +139,6 @@ def _values(state, translate):
 
 
 def format_panel(state, settings, translate):
-    """The panel text in the style of `settings` (a PanelView); `custom` renders the player's template with every
-    macro."""
     values = _values(state, translate)
     color = moe_color(state, settings.get('color_mode'))
     size = settings.get('font_size')
@@ -134,4 +152,4 @@ def format_panel(state, settings, translate):
     if style == 'compact':
         key = 'marks_panel_line_compact_up' if _shows_up(state, settings) else 'marks_panel_line_compact'
         return font(render(translate(key), values), color, size)
-    return LINE_SEPARATOR.join(_extended(state, values, settings, translate, color, size))
+    return LINE_SEPARATOR.join(_extended(state, values, settings, translate))

@@ -12,6 +12,11 @@ PAIR_PARTS = {
     'compact': {'bars': False, 'numbers': True},
 }
 SIDE_COLORS = {'allies': 'ally_color', 'enemies': 'enemy_color'}
+# The class icon tint of each side, keyed by whether it is the allies, as on the stock strip.
+SIDE_TINTS = {True: 'green', False: 'red'}
+# The difference line under the bars: this much smaller than the bars, never below the smallest readable size.
+DIFF_FONT_DECREASE = 2
+MIN_DIFF_FONT_SIZE = 8
 
 # The score pair: frags, or the vehicles still alive with the `show_alive` setting.
 SCORE_KEYS = {

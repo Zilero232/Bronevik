@@ -43,7 +43,7 @@ describe(createSmoothScroll, () => {
     glide.scrollTo(97);
     vi.advanceTimersByTime(SMOOTH_SCROLL.durationMs + FRAME_MS * 2);
 
-    expect(tops.every((top) => Number.isInteger(top))).toBe(true);
+    expect(tops.filter((top) => !Number.isInteger(top))).toEqual([]);
   });
 
   it('adds a second notch to the target of the running glide', () => {

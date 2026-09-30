@@ -10,8 +10,19 @@ from .. import FEATURE_ID
 from ..i18n import STRINGS
 from ..model import EVENT_ENTRIES, OFFER_BANNERS, TEASER, hides, private_overrides_allowed
 from ..settings import SCHEMA, SWITCH
-from .constants import (BANNER_WINDOW_CLASS, BANNER_WINDOW_METHOD, BANNER_WINDOW_MODULE, EVENT_ENTRY_FLASH, EVENT_ENTRY_METHOD, HANGAR_CLASS,
-                        HANGAR_MODULE, OFFERS_METHOD, OFFERS_SKELETON, OFFERS_SKELETON_MODULE, TEASER_METHOD)
+from .constants import (
+    BANNER_WINDOW_CLASS,
+    BANNER_WINDOW_METHOD,
+    BANNER_WINDOW_MODULE,
+    EVENT_ENTRY_FLASH,
+    EVENT_ENTRY_METHOD,
+    HANGAR_CLASS,
+    HANGAR_MODULE,
+    OFFERS_METHOD,
+    OFFERS_SKELETON,
+    OFFERS_SKELETON_MODULE,
+    TEASER_METHOD,
+)
 
 
 def _own_function(owner, name):
@@ -24,13 +35,18 @@ class HangarCleaner(FeatureComponent):
         FeatureComponent.__init__(self, app, FEATURE_ID, SCHEMA, SWITCH, STRINGS)
         self.installed = []
         self._install_hangar()
+        self._install_offers()
+
+        hooks = ', '.join(self.installed) or 'none, feature off'
+        log('hangar cleaner: hooks %s' % hooks)
+
+    def _install_offers(self):
         offers = service(client_attr(OFFERS_SKELETON_MODULE, OFFERS_SKELETON))
         if offers is not None:
             self._install(offers, OFFERS_METHOD, self._offers)
         banner_window = client_attr(BANNER_WINDOW_MODULE, BANNER_WINDOW_CLASS)
         if banner_window is not None:
             self._install(banner_window, BANNER_WINDOW_METHOD, self._banner_window)
-        log('hangar cleaner: hooks %s' % (', '.join(self.installed) or 'none, feature off'))
 
     def _install_hangar(self):
         hangar = client_attr(HANGAR_MODULE, HANGAR_CLASS)

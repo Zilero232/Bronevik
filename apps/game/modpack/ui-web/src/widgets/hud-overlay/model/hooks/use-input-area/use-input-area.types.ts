@@ -1,7 +1,7 @@
 import type { ClientSize } from '../../../../../shared/api/gameface';
 import type { Rect } from '../../../../../shared/lib/hud-geometry';
+import type { DragTarget } from '../../../lib/hit-panel';
 import type { MouseReport } from '../../../lib/mouse-report';
-import type { DragTarget } from '../use-panel-drag';
 
 export type UseInputAreaInput = {
   edit: boolean;

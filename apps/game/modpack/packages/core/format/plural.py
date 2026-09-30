@@ -6,13 +6,14 @@ from .constants import FORMS, PLURAL_SEPARATOR
 from .number import format_number
 
 
+# The form of `count` among `forms`: three forms follow the Russian rule (1 бой, 2 боя, 5 боёв, 21 бой, 11 боёв), two
+# the English one (1 battle, 2 battles).
 def plural_index(count, forms):
-    """The form of `count` among `forms`: three forms follow the Russian rule (1 бой, 2 боя, 5 боёв, 21 бой,
-    11 боёв), two the English one (1 battle, 2 battles)."""
     number = abs(int(count)) if is_number(count) else 0
     if forms == 2:
         return 0 if number == 1 else 1
-    last, tens = number % 10, number % 100
+    last = number % 10
+    tens = number % 100
     if last == 1 and tens != 11:
         return 0
     if 2 <= last <= 4 and not 12 <= tens <= 14:
@@ -21,8 +22,6 @@ def plural_index(count, forms):
 
 
 def plural(count, forms):
-    """The word for `count` out of `forms`, `бой|боя|боёв` or `battle|battles` (one text, so a catalog string or a
-    FORMS entry carries all forms of its language)."""
     words = to_text(forms).split(PLURAL_SEPARATOR)
     if len(words) < 2:
         return words[0]
@@ -30,12 +29,10 @@ def plural(count, forms):
 
 
 def count_phrase(count, forms):
-    """`5 боёв`: the number with the thousands separator and its word."""
     return u'%s %s' % (format_number(count), plural(count, forms))
 
 
 def forms_of(words, translate):
-    """The forms of `words` (a FORMS entry: language -> forms) in the translator's language, Russian by default."""
     language = getattr(translate, 'language', None)
     return words.get(language) or words.get('ru') or u''
 

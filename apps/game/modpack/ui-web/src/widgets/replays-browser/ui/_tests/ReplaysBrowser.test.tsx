@@ -11,53 +11,81 @@ vi.mock('../../../../shared/api/protocol/protocol', () => ({ send: vi.fn(() => t
 
 const PAGE = pageSample();
 
-const buttonNamed = (root: HTMLElement, text: string): HTMLButtonElement => {
-  const found = [...root.querySelectorAll('button')].find((button) => button.textContent?.trim() === text);
+const mountBrowser = () => mount({ Component: ReplaysBrowser, props: { page: PAGE, enabled: true, onTurnOn: vi.fn() } });
+
+const buttonWhere = (root: HTMLElement, matches: (text: string) => boolean): HTMLButtonElement => {
+  const found = [...root.querySelectorAll('button')].find((button) => matches(button.textContent?.trim() ?? ''));
 
   if (!found) {
-    throw new Error(`no button «${text}»`);
+    throw new Error('no such button');
   }
 
   return found;
 };
 
+const buttonNamed = (root: HTMLElement, text: string): HTMLButtonElement => buttonWhere(root, (label) => label === text);
+
+const click = (button: HTMLButtonElement): void => {
+  void act(() => button.click());
+};
+
+const selectTigerReplay = (html: HTMLElement): void => {
+  click(buttonWhere(html, (label) => label.includes('Tiger I')));
+};
+
 describe(ReplaysBrowser, () => {
-  it('draws the rows with the client images and the chosen replay with its stats', () => {
-    const html = mount({ Component: ReplaysBrowser, props: { page: PAGE, enabled: true, onTurnOn: vi.fn() } });
+  it('draws the map images from the client', () => {
+    const html = mountBrowser();
 
     expect(imageSources(html)).toEqual(
       expect.arrayContaining(['img://gui/maps/icons/map/small/05_prohorovka.png', 'img://gui/maps/icons/map/stats/05_prohorovka.png'])
     );
+  });
+
+  it('draws a row for every replay', () => {
+    const html = mountBrowser();
 
     expect(html.textContent).toContain('Т-34');
     expect(html.textContent).toContain('Tiger I');
+  });
+
+  it('shows the chosen replay with its outcome and offers to watch it', () => {
+    const html = mountBrowser();
+
     expect(html.textContent).toContain(REPLAYS_RU.outcome_win);
     expect(buttonNamed(html, REPLAYS_RU.watch).disabled).toBe(false);
   });
 
-  it('warns about a replay of another client version and does not offer to watch it', () => {
-    const html = mount({ Component: ReplaysBrowser, props: { page: PAGE, enabled: true, onTurnOn: vi.fn() } });
-    const second = PAGE.items[1];
+  it('names the client version of a replay from another client', () => {
+    const html = mountBrowser();
 
-    if (!second) {
-      throw new Error('the sample needs two replays');
-    }
+    selectTigerReplay(html);
 
-    const row = [...html.querySelectorAll('button')].find((button) => button.textContent?.includes('Tiger I'));
+    expect(html.textContent).toContain('1.44.1.0');
+  });
 
-    void act(() => row?.click());
+  it('shows a replay from another client without an outcome', () => {
+    const html = mountBrowser();
 
-    expect(html.textContent).toContain(second.version ?? '');
+    selectTigerReplay(html);
+
     expect(html.textContent).toContain(REPLAYS_RU.noResults);
+  });
+
+  it('does not offer to watch a replay from another client', () => {
+    const html = mountBrowser();
+
+    selectTigerReplay(html);
+
     expect(buttonNamed(html, REPLAYS_RU.watch).disabled).toBe(true);
   });
 
   it('narrows the list to the nation picked in the filter bar', () => {
-    const html = mount({ Component: ReplaysBrowser, props: { page: PAGE, enabled: true, onTurnOn: vi.fn() } });
-    const trigger = [...html.querySelectorAll('button')].find((button) => button.textContent?.startsWith(REPLAYS_RU.filterNation));
+    const html = mountBrowser();
 
-    void act(() => trigger?.click());
-    void act(() => buttonNamed(html, `${REPLAYS_RU.nation_germany}1`).click());
+    click(buttonWhere(html, (label) => label.startsWith(REPLAYS_RU.filterNation)));
+
+    click(buttonNamed(html, `${REPLAYS_RU.nation_germany}1`));
 
     expect(html.textContent).toContain('Tiger I');
     expect(html.textContent).not.toContain('Т-34');
@@ -67,7 +95,7 @@ describe(ReplaysBrowser, () => {
     const onTurnOn = vi.fn();
     const html = mount({ Component: ReplaysBrowser, props: { page: null, enabled: false, onTurnOn } });
 
-    void act(() => buttonNamed(html, REPLAYS_RU.turnOn).click());
+    click(buttonNamed(html, REPLAYS_RU.turnOn));
 
     expect(onTurnOn).toHaveBeenCalledOnce();
   });

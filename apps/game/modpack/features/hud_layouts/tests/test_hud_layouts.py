@@ -38,41 +38,88 @@ def translator(language='ru'):
     return _support.translator(STRINGS, language)
 
 
-class HudLayoutsTest(unittest.TestCase):
+def default_policy():
+    return layout_policy(Settings({}, SCHEMA), lambda: True)
 
-    def test_default_policy_per_battle_type(self):
-        policy = layout_policy(Settings({}, SCHEMA), lambda: True)
-        assert policy('random') == (None, True)
-        assert policy('comp7') == (None, True)
-        assert policy('event') == (frozenset(COMPACT_PANELS), True)
-        assert policy('frontline') == (frozenset(COMPACT_PANELS), True)
-        assert policy('battle_royale') == (frozenset(), True)
-        assert policy('unknown') == (None, False)
+
+def layer_in_compact_comp7():
+    layer = HudLayer(Backend(), ComponentConfig(MemoryFile()))
+    for panel_id in ('damage_log', 'team_hp'):
+        layer.register(panel_id, panel_schema({}))
+    settings = Settings({'comp7': 'compact', 'own_places': False}, SCHEMA)
+    layer.set_policy(layout_policy(settings, lambda: True))
+    layer.enter_mode('comp7')
+    return layer
+
+
+def reset_action():
+    return place_actions(['comp7', 'event'], translator())[0]
+
+
+class PolicyTest(unittest.TestCase):
+
+    def test_random_battles_show_every_panel(self):
+        assert default_policy()('random') == (None, True)
+
+    def test_onslaught_shows_every_panel(self):
+        assert default_policy()('comp7') == (None, True)
+
+    def test_events_show_the_essentials(self):
+        assert default_policy()('event') == (frozenset(COMPACT_PANELS), True)
+
+    def test_frontline_shows_the_essentials(self):
+        assert default_policy()('frontline') == (frozenset(COMPACT_PANELS), True)
+
+    def test_steel_hunter_shows_no_panels(self):
+        assert default_policy()('battle_royale') == (frozenset(), True)
+
+    def test_an_unknown_battle_type_shows_every_panel_at_its_own_place(self):
+        assert default_policy()('unknown') == (None, False)
 
     def test_switched_off_shows_every_panel_at_its_own_place(self):
         policy = layout_policy(Settings({'event': 'off'}, SCHEMA), lambda: False)
+
         assert policy('event') == (None, False)
 
-    def test_the_layer_follows_the_chosen_layout(self):
-        layer = HudLayer(Backend(), ComponentConfig(MemoryFile()))
-        for panel_id in ('damage_log', 'team_hp'):
-            layer.register(panel_id, panel_schema({}))
-        settings = Settings({'comp7': 'compact', 'own_places': False}, SCHEMA)
-        layer.set_policy(layout_policy(settings, lambda: True))
-        layer.enter_mode('comp7')
-        assert layer.allows('damage_log') and not layer.allows('team_hp') and not layer.own_places
 
-    def test_reset_places_action(self):
-        translate = translator()
-        assert place_actions([], translate) == []
-        action = place_actions(['comp7', 'event'], translate)[0]
-        assert action['id'] == 'reset_places' and u'Натиск, События' in action['confirm']
+class LayerTest(unittest.TestCase):
 
-    def test_settings_and_strings(self):
+    def test_the_layer_allows_an_essential_panel(self):
+        assert layer_in_compact_comp7().allows('damage_log')
+
+    def test_the_layer_hides_a_panel_outside_the_layout(self):
+        assert not layer_in_compact_comp7().allows('team_hp')
+
+    def test_the_layer_keeps_the_shared_places_when_asked(self):
+        assert not layer_in_compact_comp7().own_places
+
+
+class ResetPlacesTest(unittest.TestCase):
+
+    def test_no_per_type_places_offer_no_button(self):
+        assert place_actions([], translator()) == []
+
+    def test_the_button_is_the_reset_action(self):
+        assert reset_action()['id'] == 'reset_places'
+
+    def test_the_confirmation_names_the_battle_types(self):
+        assert u'Натиск, События' in reset_action()['confirm']
+
+
+class SettingsTest(unittest.TestCase):
+
+    def test_the_component_switch_is_battle_hud_layouts(self):
         assert SETTINGS == ('battle_hud_layouts',)
+
+    def test_both_languages_have_the_same_strings(self):
         assert sorted(STRINGS['ru']) == sorted(STRINGS['en'])
+
+    def test_every_battle_type_has_a_label(self):
         for mode in MODES:
             assert 'hud_layouts_' + mode in STRINGS['ru']
+
+    def test_every_layout_of_every_battle_type_has_a_label(self):
+        for mode in MODES:
             for layout in SCHEMA.choices[mode]:
                 assert 'hud_layouts_%s_%s' % (mode, layout) in STRINGS['en']
 

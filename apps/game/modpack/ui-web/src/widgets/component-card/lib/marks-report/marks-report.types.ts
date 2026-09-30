@@ -14,4 +14,6 @@ export type MarksReportView = {
   chart: { bars: { key: string; height: string }[]; min: string; max: string } | null;
 };
 
+export type RecordCardInput = { label: 'best' | 'last'; record: UiMarksReport['last'] };
+
 export type { UiMarksReport };

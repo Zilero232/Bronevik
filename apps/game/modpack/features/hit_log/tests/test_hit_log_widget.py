@@ -22,27 +22,57 @@ def crit_log():
     return log
 
 
+def two_hits_on_one_target():
+    log = HitLog()
+    log.describe(5, 'lightTank', 700)
+    log.add_damage(5, 100, 0.0, 'M24')
+    log.add_damage(5, 150, 10.0, 'M24')
+    return log
+
+
+def preview_rows():
+    return hit_log_widget(preview_log(), Settings({}, SCHEMA), TRANSLATE)['data']['rows']
+
+
 class HitLogWidgetTest(unittest.TestCase):
 
-    def test_rows_carry_outcome_icon_class_and_hp_left(self):
+    def test_header_counts_hits_pens_and_damage(self):
         data = hit_log_widget(preview_log(), Settings({}, SCHEMA), TRANSLATE)['data']
+
         assert data['header'] == {'hits': 3, 'pens': 2, 'damage': 670}
-        newest, ricochet, first = data['rows']
-        assert newest['icon'] == 'otmetki:damage' and newest['tone'] == 'success'
-        assert (newest['damage'], newest['hp'], newest['max']) == (280, 360, 1500)
+
+    def test_pen_row_carries_the_outcome_class_and_hp_left(self):
+        newest = preview_rows()[0]
+
+        assert newest['icon'] == 'otmetki:damage'
+        assert newest['tone'] == 'success'
+        assert newest['damage'] == 280
+        assert newest['hp'] == 360
+        assert newest['max'] == 1500
         assert newest['cls'].startswith('img://gui/maps/icons/vehicleTypes/red/heavyTank.png')
-        assert ricochet['icon'].startswith('img://gui/maps/icons/library/critical_damage/hit_ricochet.png') and ricochet['damage'] is None
+
+    def test_ricochet_row_has_its_marker_icon_and_no_damage(self):
+        ricochet = preview_rows()[1]
+
+        assert ricochet['icon'].startswith('img://gui/maps/icons/library/critical_damage/hit_ricochet.png')
+        assert ricochet['damage'] is None
+
+    def test_oldest_row_is_last(self):
+        first = preview_rows()[2]
+
         assert first['name'] == 'Pz. IV'
 
-    def test_grouped_by_target_and_no_header(self):
-        log = HitLog()
-        log.describe(5, 'lightTank', 700)
-        log.add_damage(5, 100, 0.0, 'M24')
-        log.add_damage(5, 150, 10.0, 'M24')
-        data = hit_log_widget(log, Settings({'group_by_target': True, 'show_header': False}, SCHEMA), TRANSLATE)['data']
-        assert data['header'] is None and data['grouped'] is True
+    def test_grouped_rows_sum_the_hits_of_a_target(self):
+        settings = Settings({'group_by_target': True, 'show_header': False}, SCHEMA)
+
+        data = hit_log_widget(two_hits_on_one_target(), settings, TRANSLATE)['data']
+
+        assert data['header'] is None
+        assert data['grouped'] is True
         assert [(item['hits'], item['damage']) for item in data['rows']] == [(2, 250)]
-        assert not log.describe('x')
+
+    def test_describe_rejects_a_target_that_is_not_an_id(self):
+        assert not HitLog().describe('x')
 
     def test_rows_are_full_without_the_alt_mode(self):
         settings = Settings({}, SCHEMA)

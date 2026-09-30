@@ -4,7 +4,8 @@ SWITCH = 'battle_damage_log'
 PANEL_ID = 'damage_log'
 STYLES = ('full', 'compact', 'minimal', 'custom')
 LOG_KINDS = ('all', 'dealt', 'received')
-# Colour sets of the totals line (model PALETTES): the classic one, our graphite and gold, high contrast, colour-blind safe.
+# Colour sets of the totals line (model PALETTES): the classic one, our graphite and gold, high contrast,
+# colour-blind safe.
 PALETTES = ('classic', 'graphite', 'contrast', 'colorblind')
 MAX_TEMPLATE = 600
 TEMPLATE_KEYS = ('template', 'entry_template', 'alt_entry_template')

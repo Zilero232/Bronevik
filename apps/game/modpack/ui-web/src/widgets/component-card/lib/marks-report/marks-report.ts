@@ -1,7 +1,7 @@
 import { fromUnixTime, isValid, lightFormat } from 'date-fns';
 import { clamp } from 'remeda';
 
-import type { MarksReportView, ReportCard, ReportRow, ReportTone, UiMarksReport } from './marks-report.types';
+import type { MarksReportView, RecordCardInput, ReportCard, ReportRow, ReportTone, UiMarksReport } from './marks-report.types';
 
 import { formatNumber, formatPercent, HUD_FORMAT } from '../../../../shared/lib/hud-format';
 import { MARKS_REPORT } from './marks-report.constants';
@@ -9,7 +9,15 @@ import { MARKS_REPORT } from './marks-report.constants';
 const plain = (text: string): string =>
   text.replaceAll(HUD_FORMAT.minus, MARKS_REPORT.glyphs.minus).replaceAll(HUD_FORMAT.thinSpace, MARKS_REPORT.glyphs.space);
 
-const toneOf = (delta: number | null): ReportTone => ((delta ?? 0) > 0 ? 'good' : (delta ?? 0) < 0 ? 'bad' : 'muted');
+const toneOf = (delta: number | null): ReportTone => {
+  const change = delta ?? 0;
+
+  if (change > 0) {
+    return 'good';
+  }
+
+  return change < 0 ? 'bad' : 'muted';
+};
 
 const deltaText = (delta: number | null): string =>
   delta === null ? MARKS_REPORT.dash : plain(formatPercent({ value: delta, digits: 2, signed: true }));
@@ -41,44 +49,23 @@ const chartOf = (values: number[]): MarksReportView['chart'] => {
   return { bars, min: percentText(min), max: percentText(max) };
 };
 
-const cardsOf = (report: UiMarksReport): ReportCard[] => {
-  const cards: ReportCard[] = [];
+const recordCard = ({ label, record }: RecordCardInput): ReportCard[] =>
+  record ? [{ key: label, label, window: null, value: numberText(record.damage), delta: deltaText(record.delta), tone: toneOf(record.delta) }] : [];
 
-  if (report.last) {
-    cards.push({
-      key: 'last',
-      label: 'last',
-      window: null,
-      value: numberText(report.last.damage),
-      delta: deltaText(report.last.delta),
-      tone: toneOf(report.last.delta)
-    });
-  }
+const trendCard = (trend: UiMarksReport['trends'][number]): ReportCard => ({
+  key: `trend-${trend.window}`,
+  label: 'trend',
+  window: trend.window,
+  value: String(trend.battles),
+  delta: deltaText(trend.delta),
+  tone: toneOf(trend.delta)
+});
 
-  if (report.best) {
-    cards.push({
-      key: 'best',
-      label: 'best',
-      window: null,
-      value: numberText(report.best.damage),
-      delta: deltaText(report.best.delta),
-      tone: toneOf(report.best.delta)
-    });
-  }
-
-  report.trends.forEach((trend) =>
-    cards.push({
-      key: `trend-${trend.window}`,
-      label: 'trend',
-      window: trend.window,
-      value: String(trend.battles),
-      delta: deltaText(trend.delta),
-      tone: toneOf(trend.delta)
-    })
-  );
-
-  return cards;
-};
+const cardsOf = (report: UiMarksReport): ReportCard[] => [
+  ...recordCard({ label: 'last', record: report.last }),
+  ...recordCard({ label: 'best', record: report.best }),
+  ...report.trends.map(trendCard)
+];
 
 export const marksReportView = (report: UiMarksReport): MarksReportView => ({
   percent: percentText(report.percent),

@@ -18,8 +18,13 @@ def notification_names(type_id, class_name, type_table):
     names = [name for name, value in type_table.items() if value == type_id]
     if len(names) < 2:
         return names
-    matched = [name for name in names if CLASS_MARKERS.get(name) and CLASS_MARKERS[name] in (class_name or '')]
+    matched = [name for name in names if _class_matches(name, class_name)]
     return matched or names
+
+
+def _class_matches(name, class_name):
+    marker = CLASS_MARKERS.get(name)
+    return bool(marker) and marker in (class_name or '')
 
 
 def hides(type_id, class_name, hidden, type_table):
@@ -28,4 +33,8 @@ def hides(type_id, class_name, hidden, type_table):
 
 
 def type_table_of(holder):
-    return dict((name, value) for name, value in vars(holder).items() if not name.startswith('_') and is_int(value))
+    table = {}
+    for name, value in vars(holder).items():
+        if not name.startswith('_') and is_int(value):
+            table[name] = value
+    return table

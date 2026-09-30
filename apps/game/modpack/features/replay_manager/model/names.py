@@ -12,7 +12,8 @@ def rename_target(old_name, title):
     if not isinstance(title, string_types):
         raise ReplayActionError(ERROR_NAME)
     extension = os.path.splitext(to_text(old_name))[1]
-    stem = single_spaces(FORBIDDEN_CHARS.sub(' ', to_text(title))).strip('.')
+    spaced = FORBIDDEN_CHARS.sub(' ', to_text(title))
+    stem = single_spaces(spaced).strip('.')
     if stem.lower().endswith(extension.lower()):
         stem = stem[:-len(extension)].strip()
     stem = stem[:NAME_MAX_CHARS].strip()

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import type { ReplayFilters } from '../../../model';
+import type { ReplayFilters } from '../../../model/schemas';
 
 import { replayItem } from '../../../_tests/fixtures';
 import { REPLAY_FILTER } from '../../../config';
@@ -55,24 +55,34 @@ const ITEMS = [
 const ids = (filters: Partial<ReplayFilters>): string[] =>
   filterReplays({ items: ITEMS, filters: { ...DEFAULT_REPLAY_FILTERS, ...filters }, now: NOW }).map((item) => item.id);
 
+const withFilters = (filters: Partial<ReplayFilters>): ReplayFilters => ({ ...DEFAULT_REPLAY_FILTERS, ...filters });
+
 describe(filterReplays, () => {
   it('lists the newest first by default', () => {
     expect(ids({})).toEqual(['a', 'b', 'c']);
   });
 
-  it('searches the map, the tank and the file name in any case', () => {
-    expect(ids({ query: 'ПРОХОР' })).toEqual(['a']);
-    expect(ids({ query: 'т-34' })).toEqual(['a', 'c']);
-    expect(ids({ query: '  tiger ' })).toEqual(['b']);
+  it.each([
+    { query: 'ПРОХОР', expected: ['a'] },
+    { query: 'т-34', expected: ['a', 'c'] },
+    { query: '  tiger ', expected: ['b'] }
+  ])('searches the map, the tank and the file name in any case: "$query"', ({ query, expected }) => {
+    const visible = ids({ query });
+
+    expect(visible).toEqual(expected);
   });
 
-  it('combines the result, map, vehicle, tier, type and favourite filters', () => {
-    expect(ids({ result: 'loss' })).toEqual(['b']);
-    expect(ids({ map: '02_malinovka' })).toEqual(['c']);
-    expect(ids({ vehicle: 'ussr-R04_T-34', tier: 5 })).toEqual(['a', 'c']);
-    expect(ids({ type: 'ranked' })).toEqual(['b']);
-    expect(ids({ favourites: true })).toEqual(['a']);
-    expect(ids({ vehicle: 'ussr-R04_T-34', result: 'loss' })).toEqual([]);
+  it.each([
+    { filters: { result: 'loss' }, expected: ['b'] },
+    { filters: { map: '02_malinovka' }, expected: ['c'] },
+    { filters: { vehicle: 'ussr-R04_T-34', tier: 5 }, expected: ['a', 'c'] },
+    { filters: { type: 'ranked' }, expected: ['b'] },
+    { filters: { favourites: true }, expected: ['a'] },
+    { filters: { vehicle: 'ussr-R04_T-34', result: 'loss' }, expected: [] }
+  ] as const)('combines the result, map, vehicle, tier, type and favourite filters: $filters', ({ filters, expected }) => {
+    const visible = ids(filters);
+
+    expect(visible).toEqual(expected);
   });
 
   it.each([
@@ -80,9 +90,7 @@ describe(filterReplays, () => {
     { nation: 'germany', expected: ['b'] },
     { nation: 'france', expected: [] }
   ] as const)('keeps only the replays of the $nation nation', ({ nation, expected }) => {
-    const filters = { nation };
-
-    const visible = ids(filters);
+    const visible = ids({ nation });
 
     expect(visible).toEqual(expected);
   });
@@ -92,9 +100,7 @@ describe(filterReplays, () => {
     { result: 'loss', expected: ['b'] },
     { result: 'draw', expected: [] }
   ] as const)('keeps only the replays with the $result result', ({ result, expected }) => {
-    const filters = { result };
-
-    const visible = ids(filters);
+    const visible = ids({ result });
 
     expect(visible).toEqual(expected);
   });
@@ -111,38 +117,65 @@ describe(filterReplays, () => {
     expect(visible).toEqual(expected);
   });
 
-  it('keeps a period by the age of the battle', () => {
-    expect(ids({ period: 'today' })).toEqual(['a']);
-    expect(ids({ period: 'week' })).toEqual(['a', 'b']);
-    expect(ids({ period: 'month' })).toEqual(['a', 'b']);
+  it.each([
+    { period: 'today', expected: ['a'] },
+    { period: 'week', expected: ['a', 'b'] },
+    { period: 'month', expected: ['a', 'b'] }
+  ] as const)('keeps the $period period by the age of the battle', ({ period, expected }) => {
+    const visible = ids({ period });
+
+    expect(visible).toEqual(expected);
   });
 
-  it('sorts by a stat in both directions and puts unknown values last', () => {
+  it('sorts by a stat from the highest and puts unknown values last', () => {
     expect(ids({ sort: 'damage' })).toEqual(['b', 'a', 'c']);
+  });
+
+  it('sorts by a stat from the lowest and still puts unknown values last', () => {
     expect(ids({ sort: 'damage', descending: false })).toEqual(['a', 'b', 'c']);
+  });
+
+  it('lists the oldest first when the time order is reversed', () => {
     expect(ids({ sort: 'time', descending: false })).toEqual(['c', 'b', 'a']);
   });
 });
 
 describe(matchesReplay, () => {
-  it('treats a period boundary as inside', () => {
-    const item = replayItem({ time: NOW - REPLAY_FILTER.periodSeconds.week });
-    const filters = { ...DEFAULT_REPLAY_FILTERS, period: 'week' as const };
+  const item = replayItem({ time: NOW - REPLAY_FILTER.periodSeconds.week });
+  const filters = withFilters({ period: 'week' });
 
+  it('treats a battle exactly on the period boundary as inside', () => {
     expect(matchesReplay({ item, filters, now: NOW })).toBe(true);
+  });
+
+  it('drops a battle one second past the period boundary', () => {
     expect(matchesReplay({ item, filters, now: NOW + 1 })).toBe(false);
   });
 });
 
 describe(activeFilterCount, () => {
-  it('counts what narrows the list but not the order', () => {
+  it('counts nothing for the default filters', () => {
     expect(activeFilterCount(DEFAULT_REPLAY_FILTERS)).toBe(0);
-    expect(activeFilterCount({ ...DEFAULT_REPLAY_FILTERS, sort: 'xp', descending: false, query: '   ' })).toBe(0);
-    expect(activeFilterCount({ ...DEFAULT_REPLAY_FILTERS, tier: 5, favourites: true, period: 'week' })).toBe(3);
+  });
+
+  it('does not count the order or a blank query', () => {
+    const filters = withFilters({ sort: 'xp', descending: false, query: '   ' });
+
+    const count = activeFilterCount(filters);
+
+    expect(count).toBe(0);
+  });
+
+  it('counts each filter that narrows the list', () => {
+    const filters = withFilters({ tier: 5, favourites: true, period: 'week' });
+
+    const count = activeFilterCount(filters);
+
+    expect(count).toBe(3);
   });
 
   it('counts the nation and the result as two filters', () => {
-    const filters = { ...DEFAULT_REPLAY_FILTERS, nation: 'ussr' as const, result: 'win' as const };
+    const filters = withFilters({ nation: 'ussr', result: 'win' });
 
     const count = activeFilterCount(filters);
 
@@ -152,7 +185,9 @@ describe(activeFilterCount, () => {
 
 describe(clearFilters, () => {
   it('drops every filter and keeps the order', () => {
-    const cleared = clearFilters({ ...DEFAULT_REPLAY_FILTERS, map: 'x', nation: 'ussr', result: 'win', sort: 'xp', descending: false });
+    const filters = withFilters({ map: 'x', nation: 'ussr', result: 'win', sort: 'xp', descending: false });
+
+    const cleared = clearFilters(filters);
 
     expect(cleared).toEqual({ ...DEFAULT_REPLAY_FILTERS, sort: 'xp', descending: false });
   });

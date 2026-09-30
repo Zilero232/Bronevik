@@ -4,6 +4,24 @@ The modpack's release notes. Every package has its own entry, `## <id> <version>
 
 Add the new entry on top of the component's previous ones when you bump a `VERSION`.
 
+## 0.1.4
+
+### ru
+
+Боевые панели больше не закрывают полосы захвата баз и прогресс боевых задач, код мода переписан начисто.
+
+- «Эффективность в бою» по умолчанию в левой колонке под отметкой, «Только числа» ХП команд — справа от стандартной панели счёта.
+- В таблице отчёта по отметкам снова видно цвет изменения процента.
+- Код мода и окна настроек разобран на короткие функции с понятными именами, повторы вынесены в общее ядро, мёртвый код удалён; поведение компонентов не менялось.
+
+### en
+
+The battle panels no longer cover the base capture bars and the quest progress, and the mod's code is rewritten cleanly.
+
+- «Battle efficiency» sits in the left column under the marks by default, the team HP «Numbers only» right of the stock score strip.
+- The marks report table shows the colour of the percentage change again.
+- The code of the mod and of the settings window is split into short functions with clear names, repeats moved into the shared core, dead code removed; the components behave as before.
+
 ## 0.1.3
 
 ### ru
@@ -692,6 +710,18 @@ A new component: Event trackers (off by default).
 
 - The High Caliber counter: your damage against the medal threshold (20% of the enemy HP, at least 1,000), the team damage and your share.
 
+## battle_efficiency 0.2.2
+
+### ru
+
+- По умолчанию в левой колонке под отметкой, а не посередине под панелью счёта: панель больше не закрывает полосы захвата баз и прогресс боевых задач.
+- Панель, которую вы не двигали, переезжает на новое место сама.
+
+### en
+
+- Sits in the left column under the marks by default, not in the middle under the score strip, so it no longer covers the base capture bars and the quest progress.
+- A panel you never moved moves to the new place on its own.
+
 ## battle_efficiency 0.2.1
 
 ### ru
@@ -767,6 +797,16 @@ A new component: Event trackers (off by default).
 ### en
 
 - Your gun's reload countdown with a bar and the shells in the magazine; your own gun only. It counts by game time and keeps pace with the reticle.
+
+## core 0.6.4
+
+### ru
+
+- Ни одна колонка боевых панелей больше не начинается под панелью счёта посередине верхнего края: там игра показывает полосы захвата баз и прогресс боевых задач.
+
+### en
+
+- No battle panel column starts under the score strip in the middle of the top edge any more: the game shows the base capture bars and the quest progress there.
 
 ## core 0.6.3
 
@@ -1003,6 +1043,16 @@ A new component: Event trackers (off by default).
 - Binding to triotmetki.ru with a one-time code from the site; nothing is collected or sent before it.
 - After each own battle: the `personal` block of the battle results, MoE snapshots and distribution, queue times, the loadout and shots, sent in signed batches through an outbox that survives a restart and backs off on errors.
 - Per-feature data switches in `config.json`, the ModsSettingsAPI window as the fallback settings UI, and the streamer settings share (export, apply with a confirmation, restore).
+
+## ui 0.6.1
+
+### ru
+
+- В таблице отчёта по отметкам снова видно цвет изменения процента.
+
+### en
+
+- The marks report table shows the colour of the percentage change again.
 
 ## ui 0.6.0
 
@@ -1525,6 +1575,16 @@ A new component: Event trackers (off by default).
 ### en
 
 - In battle: the local time, optionally the date, and the time left in the current arena period.
+
+## team_hp 0.5.1
+
+### ru
+
+- «Только числа» и полоса, которая оставляет стандартную панель счёта, стоят справа от неё в верхнем ряду, а не под ней: полосы захвата баз и прогресс боевых задач больше ничем не закрыты.
+
+### en
+
+- «Numbers only» and a strip that keeps the stock score strip sit right of it in the top row, not under it, so nothing covers the base capture bars and the quest progress any more.
 
 ## team_hp 0.5.0
 

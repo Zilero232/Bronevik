@@ -7,17 +7,30 @@ from ....core.errors import ReasonError
 from ....core.hud import HangarLabel
 from ....core.events import EVENT_COMPONENT_SETTINGS
 from ....core.log import log
-from ....core.me import OK_STATUS
 from .. import FEATURE_ID
 from ..i18n import STRINGS
 from ..model import SessionAggregator, format_session_panel, format_session_plain, session_widget
-from ..model.constants import (ACTION_RESET, ACTION_SHARE, SHARE_PATH, SHARE_REFUSED, SHARE_REFUSED_NOTICE,
-                               SHARE_RETRY_S, SHARE_SEND_PATH, SHARE_STATE_KEY, SHARE_SYNCED)
-from ..model.share import preference_body, preference_of, preference_outcome, send_body, send_failure_key
+from ..model.constants import (
+    ACTION_RESET,
+    ACTION_SHARE,
+    SHARE_PATH,
+    SHARE_REFUSED,
+    SHARE_REFUSED_NOTICE,
+    SHARE_RETRY_S,
+    SHARE_SEND_PATH,
+    SHARE_STATE_KEY,
+    SHARE_SYNCED,
+)
+from ..model.share import (
+    preference_body,
+    preference_of,
+    preference_outcome,
+    restore_synced,
+    send_body,
+    send_failure_key,
+)
 from ..settings import IDLE_MINUTES, SHARE, SHARE_CHANNEL, SWITCH
-from .constants import HANGAR_PANEL, LAYOUT, STATE_KEY
-
-SENT_STATUSES = (OK_STATUS, 202)
+from .constants import HANGAR_PANEL, LAYOUT, SENT_STATUSES, STATE_KEY
 
 
 class SessionStats(object):
@@ -26,15 +39,17 @@ class SessionStats(object):
         self.app = app
         self.label = HangarLabel(app, HANGAR_PANEL)
         app.translate.catalog.add(STRINGS)
+
         self.session = SessionAggregator(idle_seconds=app.config.get(IDLE_MINUTES) * 60)
         self.session.load(app.state.get(STATE_KEY))
         app.register_state(STATE_KEY, self.session.to_dict)
-        synced = app.state.get(SHARE_STATE_KEY)
-        self.share_synced = tuple(synced) if isinstance(synced, list) and len(synced) == 2 else None
+
+        self.share_synced = restore_synced(app.state.get(SHARE_STATE_KEY))
         self.share_sending = False
         self.share_retry_at = 0.0
         self.share_refused = None
-        app.register_state(SHARE_STATE_KEY, lambda: list(self.share_synced) if self.share_synced else None)
+        app.register_state(SHARE_STATE_KEY, self._stored_share)
+
         bus = app.bus
         bus.on('hangar', self._on_hangar)
         bus.on('battle_enter', self._on_battle_enter)
@@ -46,6 +61,11 @@ class SessionStats(object):
         bus.on('rebind', self._on_rebind)
         bus.on('tick', self._on_tick)
         bus.on(EVENT_COMPONENT_SETTINGS, self._on_settings)
+
+    def _stored_share(self):
+        if not self.share_synced:
+            return None
+        return list(self.share_synced)
 
     def _on_hangar(self):
         self.show(False)
@@ -72,9 +92,13 @@ class SessionStats(object):
 
     def _on_ingest_response(self, data):
         summary = data.get('session')
-        if isinstance(summary, dict) and self.session.set_server_summary(summary.get('session_id'), summary):
-            self.app.save_state()
-            self.show(False)
+        if not isinstance(summary, dict):
+            return
+        if not self.session.set_server_summary(summary.get('session_id'), summary):
+            return
+
+        self.app.save_state()
+        self.show(False)
 
     def _on_rebind(self):
         self.share_synced = None
@@ -85,9 +109,13 @@ class SessionStats(object):
             self.sync_share(now)
 
     def _on_settings(self, component_id, changed):
-        if component_id == FEATURE_ID and (SHARE in changed or SHARE_CHANNEL in changed):
-            self.share_retry_at = 0.0
-            self.sync_share(time.time())
+        if component_id != FEATURE_ID:
+            return
+        if SHARE not in changed and SHARE_CHANNEL not in changed:
+            return
+
+        self.share_retry_at = 0.0
+        self.sync_share(time.time())
 
     def show(self, after_battle):
         app = self.app
@@ -103,7 +131,8 @@ class SessionStats(object):
 
         translate = app.translate
         if app.ui.has_panels:
-            self.label.show(format_session_panel(summary, translate), LAYOUT, widget=session_widget(summary, translate))
+            text = format_session_panel(summary, translate)
+            self.label.show(text, LAYOUT, widget=session_widget(summary, translate))
         elif after_battle:
             app.ui.notify(format_session_plain(summary, translate))
 
@@ -125,33 +154,49 @@ class SessionStats(object):
 
         return {'kind': 'info', 'text': self.app.translate('session_reset_done')}
 
-    # A never-synced "off" is the server's default: nothing is posted before the player turned sharing on once.
     def sync_share(self, now):
         wanted = preference_of(self.app.config)
-        if self.share_sending or wanted in (self.share_synced, self.share_refused) or not can_read(self.app):
+        if not self._needs_sync(wanted):
             return
-        if self.share_synced is None and not wanted[0]:
-            return
+
+        is_enabled, channel = wanted
         try:
-            payload = preference_body(self.app.current_credentials(), wanted[0], wanted[1])
+            payload = preference_body(self.app.current_credentials(), is_enabled, channel)
         except ReasonError as error:
             log('session share not synced: %s' % error.reason)
             return
+
         self.share_sending = True
 
         def done(status, data, retry_after):
-            self.share_sending = False
-            outcome = preference_outcome(status)
-            if outcome == SHARE_SYNCED:
-                self.share_synced = wanted
-                self.app.save_state()
-            elif outcome == SHARE_REFUSED:
-                self.share_refused = wanted
-                self.app.ui.notify(self.app.translate(SHARE_REFUSED_NOTICE))
-            else:
-                self.share_retry_at = time.time() + SHARE_RETRY_S
+            self._on_share_answer(wanted, status)
 
         post_signed(self.app, SHARE_PATH, payload, done)
+
+    # A never-synced "off" is the server's default: nothing is posted before the player turned sharing on once.
+    def _needs_sync(self, wanted):
+        if self.share_sending:
+            return False
+        if wanted in (self.share_synced, self.share_refused):
+            return False
+        if not can_read(self.app):
+            return False
+
+        is_enabled = wanted[0]
+        return is_enabled or self.share_synced is not None
+
+    def _on_share_answer(self, wanted, status):
+        self.share_sending = False
+
+        outcome = preference_outcome(status)
+        if outcome == SHARE_SYNCED:
+            self.share_synced = wanted
+            self.app.save_state()
+        elif outcome == SHARE_REFUSED:
+            self.share_refused = wanted
+            self.app.ui.notify(self.app.translate(SHARE_REFUSED_NOTICE))
+        else:
+            self.share_retry_at = time.time() + SHARE_RETRY_S
 
     def ui_actions(self):
         translate = self.app.translate
@@ -174,17 +219,28 @@ class SessionStats(object):
     def ui_action(self, action, row=None, value=None):
         if action == ACTION_RESET:
             return self.reset()
-        if action != ACTION_SHARE:
-            return None
-        app = self.app
-        translate = app.translate
-        if not app.config.get(SHARE):
-            return {'kind': 'error', 'text': translate('session_share_off')}
-        if not app.is_bound():
-            return {'kind': 'error', 'text': translate('session_share_unbound')}
+        if action == ACTION_SHARE:
+            return self._share_now()
+        return None
+
+    def _share_refusal(self):
+        if not self.app.config.get(SHARE):
+            return 'session_share_off'
+        if not self.app.is_bound():
+            return 'session_share_unbound'
+
         now = time.time()
         if self.session.is_expired(now) or not self.session.summary(now)['battles']:
-            return {'kind': 'error', 'text': translate('session_share_empty')}
+            return 'session_share_empty'
+        return None
+
+    def _share_now(self):
+        app = self.app
+        translate = app.translate
+        refusal = self._share_refusal()
+        if refusal:
+            return {'kind': 'error', 'text': translate(refusal)}
+
         payload = send_body(app.current_credentials(), self.session.session_id, app.config.get(SHARE_CHANNEL))
 
         def done(status, data, retry_after):

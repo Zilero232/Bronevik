@@ -2,8 +2,8 @@ import { useState } from 'preact/hooks';
 
 import type { UseIntFieldInput } from './use-int-field.types';
 
-import { KEYS } from '../../../../../shared/config';
 import { clampInt } from '../../../../../shared/lib/clamp-int';
+import { onEnterKey } from '../../../../../shared/lib/enter-key';
 import { INT_FIELD } from '../../../config';
 
 export const useIntField = ({ value, min, max, onCommit }: UseIntFieldInput) => {
@@ -29,11 +29,7 @@ export const useIntField = ({ value, min, max, onCommit }: UseIntFieldInput) => 
     canIncrease: max === null || value < max,
     edit: setDraft,
     commit,
-    onKey: (key: string) => {
-      if (key === KEYS.enter) {
-        commit();
-      }
-    },
+    onKey: onEnterKey(commit),
     decrease: () => apply(String(value - INT_FIELD.step)),
     increase: () => apply(String(value + INT_FIELD.step))
   };

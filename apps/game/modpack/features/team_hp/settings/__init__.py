@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.hud import hex_color, max_length, panel_schema
-from .constants import DEFAULTS, MAX_TEMPLATE, OVERLAY_STYLES, PANEL_ID, RETIRED_PLACES, STYLES, SWITCH, UNDER_STOCK_Y  # noqa: F401
+from .constants import DEFAULTS, MAX_TEMPLATE, OVERLAY_STYLES, PANEL_ID, RETIRED_PLACES, STYLES, SWITCH  # noqa: F401
 
 SETTINGS = (SWITCH,)
 

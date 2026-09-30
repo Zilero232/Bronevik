@@ -1,11 +1,62 @@
-"""Battle-session glue shared by the HUD components: session reads and waiting subscriptions."""
+"""Battle-session glue shared by the HUD components: session reads, waiting subscriptions and the hooks on the hit
+effects drawn on the player's own vehicle."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from .hooks import BattleHooks
-from .session import (ammo, arena, arena_dp, call, controls_own_vehicle, crosshair, damage_source, dealt_damage, equipments, feedback, is_enemy,
-                      optional_devices, own_hull_yaw, personal_efficiency, player, server_time, session_provider, shared, summary_assist, vehicle_class,
-                      vehicle_info, vehicle_name, vehicle_state)
+from .own_vehicle import EXPLOSION_METHOD, SHOT_METHOD, on_own_shot, on_own_vehicle_effect
+from .session import (
+    ammo,
+    arena,
+    arena_dp,
+    call,
+    controls_own_vehicle,
+    crosshair,
+    damage_source,
+    dealt_damage,
+    equipments,
+    feedback,
+    is_enemy,
+    optional_devices,
+    own_hull_yaw,
+    personal_efficiency,
+    player,
+    server_time,
+    session_provider,
+    shared,
+    summary_assist,
+    vehicle_class,
+    vehicle_info,
+    vehicle_name,
+    vehicle_state,
+)
 
-__all__ = ('BattleHooks', 'ammo', 'arena', 'arena_dp', 'call', 'controls_own_vehicle', 'crosshair', 'damage_source', 'dealt_damage', 'equipments',
-           'feedback', 'is_enemy', 'optional_devices', 'own_hull_yaw', 'personal_efficiency', 'player', 'server_time', 'session_provider', 'shared',
-           'summary_assist', 'vehicle_class', 'vehicle_info', 'vehicle_name', 'vehicle_state')
+__all__ = (
+    'EXPLOSION_METHOD',
+    'SHOT_METHOD',
+    'BattleHooks',
+    'ammo',
+    'arena',
+    'arena_dp',
+    'call',
+    'controls_own_vehicle',
+    'crosshair',
+    'damage_source',
+    'dealt_damage',
+    'equipments',
+    'feedback',
+    'is_enemy',
+    'on_own_shot',
+    'on_own_vehicle_effect',
+    'optional_devices',
+    'own_hull_yaw',
+    'personal_efficiency',
+    'player',
+    'server_time',
+    'session_provider',
+    'shared',
+    'summary_assist',
+    'vehicle_class',
+    'vehicle_info',
+    'vehicle_name',
+    'vehicle_state',
+)

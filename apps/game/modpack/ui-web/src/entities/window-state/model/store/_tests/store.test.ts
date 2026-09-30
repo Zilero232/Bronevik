@@ -19,61 +19,113 @@ import {
 } from '../store';
 
 const sample = readFileSync(path.resolve(import.meta.dirname, '../../../../../shared/api/protocol/_tests/fixtures/state.sample.json'), 'utf8');
+
 const withRevision = (revision: number): string => JSON.stringify({ ...JSON.parse(sample), revision });
 
-describe('store', () => {
-  beforeEach(() => {
-    $state.set(null);
-    $invalid.set(false);
-    $query.set('');
-    $focusSeq.set(0);
-    $view.set({ section: SECTION_NAV.first, expanded: [], context: CONTEXT_FILTER.all });
+const focusedOnReplays = (seq: number): string => JSON.stringify({ ...JSON.parse(sample), revision: seq + 10, focus: { section: 'replays', seq } });
+
+beforeEach(() => {
+  $state.set(null);
+  $invalid.set(false);
+  $query.set('');
+  $focusSeq.set(0);
+  $view.set({ section: SECTION_NAV.first, expanded: [], context: CONTEXT_FILTER.all });
+});
+
+describe(receiveState, () => {
+  it('takes a pushed state', () => {
+    const taken = receiveState(withRevision(5));
+
+    expect(taken).toBe(true);
+    expect($state.get()?.revision).toBe(5);
   });
 
-  it('keeps the newest revision and flags invalid pushes', () => {
-    expect(receiveState(withRevision(5))).toBe(true);
-    expect(receiveState(withRevision(3))).toBe(true);
+  it('accepts an older push but keeps the newest revision', () => {
+    receiveState(withRevision(5));
+
+    const taken = receiveState(withRevision(3));
+
+    expect(taken).toBe(true);
     expect($state.get()?.revision).toBe(5);
-    expect(receiveState('{')).toBe(false);
+  });
+
+  it('flags an invalid push and keeps the state it has', () => {
+    receiveState(withRevision(5));
+
+    const taken = receiveState('{');
+
+    expect(taken).toBe(false);
     expect($invalid.get()).toBe(true);
     expect($state.get()?.revision).toBe(5);
+  });
+
+  it('rejects a missing push', () => {
     expect(receiveState(null)).toBe(false);
   });
 
-  it('summarises the pages and searches the cards of the latest state', () => {
-    receiveState(sample);
-    setQuery('minimap');
-
-    expect($summaries.get()).toHaveLength(7);
-    expect($hits.get().map(({ component }) => component.id)).toEqual(['minimap']);
-  });
-
-  it('opens the page a package asked for once per request', () => {
-    const focused = (seq: number) => JSON.stringify({ ...JSON.parse(sample), revision: seq + 10, focus: { section: 'replays', seq } });
-
-    receiveState(focused(1));
+  it('opens the page a package asked for', () => {
+    receiveState(focusedOnReplays(1));
 
     expect($view.get().section).toBe(SECTION.replays);
+  });
 
+  it('does not reopen the page for a request it already served', () => {
+    receiveState(focusedOnReplays(1));
     openSection(SECTION.hud);
-    receiveState(focused(1));
+
+    receiveState(focusedOnReplays(1));
 
     expect($view.get().section).toBe(SECTION.hud);
+  });
 
-    receiveState(focused(2));
+  it('opens the page again for a new request', () => {
+    receiveState(focusedOnReplays(1));
+    openSection(SECTION.hud);
+
+    receiveState(focusedOnReplays(2));
 
     expect($view.get().section).toBe(SECTION.replays);
   });
+});
 
-  it('opens a page with its filter cleared and the search closed, and remembers open cards', () => {
+describe('$summaries', () => {
+  it('summarises the pages of the latest state', () => {
+    receiveState(sample);
+
+    expect($summaries.get()).toHaveLength(7);
+  });
+});
+
+describe('$hits', () => {
+  it('searches the cards of the latest state', () => {
+    receiveState(sample);
+
+    setQuery('minimap');
+
+    expect($hits.get().map(({ component }) => component.id)).toEqual(['minimap']);
+  });
+});
+
+describe(openSection, () => {
+  it('opens a page with its filter cleared and the search closed', () => {
     setQuery('zoom');
     setContextFilter(CONTEXT_FILTER.hangar);
-    toggleExpanded('minimap');
-    toggleExpanded('damage_log');
-    toggleExpanded('minimap');
+
     openSection(SECTION.profiles);
 
     expect($query.get()).toBe('');
-    expect($view.get()).toEqual({ section: SECTION.profiles, expanded: ['damage_log'], context: CONTEXT_FILTER.all });
+    expect($view.get()).toMatchObject({ section: SECTION.profiles, context: CONTEXT_FILTER.all });
+  });
+});
+
+describe(toggleExpanded, () => {
+  it('opens and closes cards and remembers the open ones across pages', () => {
+    toggleExpanded('minimap');
+    toggleExpanded('damage_log');
+    toggleExpanded('minimap');
+
+    openSection(SECTION.profiles);
+
+    expect($view.get().expanded).toEqual(['damage_log']);
   });
 });

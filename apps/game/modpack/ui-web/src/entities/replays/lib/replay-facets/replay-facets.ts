@@ -1,6 +1,6 @@
 import { countBy, sortBy, uniqueBy } from 'remeda';
 
-import type { ReplayItem } from '../../model';
+import type { ReplayItem } from '../../model/schemas';
 import type { ReplayFacets } from './replay-facets.types';
 
 import { REPLAYS } from '../../config';

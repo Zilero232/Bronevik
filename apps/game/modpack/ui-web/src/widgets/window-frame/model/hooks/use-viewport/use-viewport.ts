@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'preact/hooks';
+import { isDeepEqual } from 'remeda';
 
 import type { Viewport } from '../../../lib/frame';
 
@@ -6,7 +7,7 @@ import { gameface } from '../../../../../shared/api/gameface';
 import { reportOnce } from '../../../../../shared/lib/page-diag';
 import { WINDOW_FRAME } from '../../../config';
 import { describeViewport } from '../../../lib/describe';
-import { readViewport, sameViewport } from '../../../lib/screen';
+import { readViewport } from '../../../lib/screen';
 
 export const useViewport = (): Viewport => {
   const [viewport, setViewport] = useState<Viewport>(readViewport);
@@ -16,7 +17,7 @@ export const useViewport = (): Viewport => {
       const next = readViewport();
 
       setViewport((current) => {
-        if (sameViewport(current, next)) {
+        if (isDeepEqual(current, next)) {
           return current;
         }
 

@@ -16,12 +16,3 @@ export const readViewport = (bridge: GamefaceBridge = gameface): Viewport => {
 
   return { screen, view: bridge.viewRect() ?? { x: 0, y: 0, ...inner }, scale };
 };
-
-export const sameViewport = (a: Viewport, b: Viewport): boolean =>
-  a.scale === b.scale &&
-  a.screen.width === b.screen.width &&
-  a.screen.height === b.screen.height &&
-  a.view.x === b.view.x &&
-  a.view.y === b.view.y &&
-  a.view.width === b.view.width &&
-  a.view.height === b.view.height;

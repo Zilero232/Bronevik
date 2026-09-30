@@ -23,18 +23,30 @@ try:
 except ImportError:
     HAVE_LIBRARIES = False
 
+PNG_SIGNATURE = b'\x89PNG\r\n\x1a\n'
+PREVIEW_PACKAGES = ('core', 'companion', 'marks_panel')
+
 
 def png_size(path):
     with open(path, 'rb') as handle:
         header = handle.read(24)
-    assert header[:8] == b'\x89PNG\r\n\x1a\n', path
+    assert header[:8] == PNG_SIGNATURE, path
     return struct.unpack('>II', header[16:24])
+
+
+def preview_manifest():
+    catalog = catalog_module.load(CATALOG_PATH, ASSETS_DIR)
+    packages = [package for package in layout.split_packages('root_init.py') if package.key in PREVIEW_PACKAGES]
+    manifest, _ = build_manifest(packages, catalog)
+    return manifest, catalog
 
 
 class SourcesTest(unittest.TestCase):
 
     def test_sources_exist(self):
-        self.assertTrue(glob.glob(os.path.join(ASSETS_DIR, 'previews', '*.svg')))
+        sources = glob.glob(os.path.join(ASSETS_DIR, 'previews', '*.svg'))
+
+        self.assertTrue(sources)
 
 
 @unittest.skipUnless(HAVE_LIBRARIES, 'resvg-py and pillow are not installed (uv sync)')
@@ -44,22 +56,31 @@ class RenderTest(unittest.TestCase):
         self.tmp = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, self.tmp)
 
-    def test_previews_are_16_by_9(self):
-        preview = render.render_preview(os.path.join(ASSETS_DIR, 'previews', 'marks_panel.svg'), os.path.join(self.tmp, 'p.png'))
+    def test_an_svg_preview_renders_at_16_by_9(self):
+        source = os.path.join(ASSETS_DIR, 'previews', 'marks_panel.svg')
+
+        preview = render.render_preview(source, os.path.join(self.tmp, 'p.png'))
+
         self.assertEqual(png_size(preview), render.PREVIEW_SIZE)
+
+    def test_a_png_screenshot_is_cropped_to_16_by_9(self):
         from PIL import Image
         screenshot = os.path.join(self.tmp, 'shot.png')
         Image.new('RGB', (1920, 1200), '#18181b').save(screenshot)
-        self.assertEqual(png_size(render.render_preview(screenshot, os.path.join(self.tmp, 'q.png'))), render.PREVIEW_SIZE)
+
+        preview = render.render_preview(screenshot, os.path.join(self.tmp, 'q.png'))
+
+        self.assertEqual(png_size(preview), render.PREVIEW_SIZE)
 
     def test_previews_land_at_the_manifest_paths(self):
-        catalog = catalog_module.load(CATALOG_PATH, ASSETS_DIR)
-        packages = [package for package in layout.split_packages('root_init.py') if package.key in ('core', 'companion', 'marks_panel')]
-        manifest, _ = build_manifest(packages, catalog)
+        manifest, catalog = preview_manifest()
+
         written = render.render_previews(manifest, catalog, ASSETS_DIR, self.tmp)
-        expected = [os.path.join(self.tmp, *component.preview.image.split('/')) for component in manifest.components if component.preview.image]
-        self.assertEqual(written, expected)
-        self.assertTrue(all(png_size(path) == render.PREVIEW_SIZE for path in written))
+
+        images = [component.preview.image for component in manifest.components if component.preview.image]
+        self.assertEqual(written, [os.path.join(self.tmp, *image.split('/')) for image in images])
+        for path in written:
+            self.assertEqual(png_size(path), render.PREVIEW_SIZE)
 
 
 if __name__ == '__main__':

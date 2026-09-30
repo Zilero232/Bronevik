@@ -1,67 +1,122 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.format import COLOR_DOWN, COLOR_MUTED, COLOR_NEUTRAL, COLOR_UP, counted, font, format_epoch, format_number
-from .constants import ACTION_CLEAR, MAX_DETAIL_LINES, SITE_PROGRESS_PATH, SOURCE_BATTLE
-from .history import percent
+from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, counted, font, format_epoch, format_number
+from .constants import (
+    ACTION_CLEAR,
+    DELTA_COLORS,
+    ENTRY_MOMENT_FORMAT,
+    MAX_DETAIL_LINES,
+    NO_VALUE,
+    PANEL_TITLE_SIZE,
+    PERCENT_FORMAT,
+    SITE_PROGRESS_PATH,
+    SOURCE_BATTLE,
+    STAR,
+)
+from .history import percent, rating_delta
 from .report import marks_report
 
 
 def signed_percent(value):
     if value is None:
         return u''
-    return (u'+%.2f%%' if value > 0 else u'%.2f%%') % value
+    if value > 0:
+        return u'+' + PERCENT_FORMAT % value
+    return PERCENT_FORMAT % value
+
+
+def percent_text(value):
+    if value is None:
+        return None
+    return PERCENT_FORMAT % value
+
+
+def delta_sign(value):
+    if value > 0:
+        return 1
+    if value < 0:
+        return -1
+    return 0
 
 
 def _stars(marks):
-    return u'★' * marks if marks else u'—'
+    if not marks:
+        return NO_VALUE
+    return STAR * marks
+
+
+def _source_text(entry, translate):
+    if entry.get('source') == SOURCE_BATTLE:
+        return translate('marks_history_battle', damage=format_number(entry.get('combined')))
+    return translate('marks_history_hangar')
 
 
 def _entry_line(before, entry, translate):
-    moment = format_epoch(entry.get('t'), '%d.%m %H:%M') or u''
+    moment = format_epoch(entry.get('t'), ENTRY_MOMENT_FORMAT) or u''
     value = percent(entry.get('rating'))
-    text = u'%s  %.2f%%' % (moment, value) if value is not None else moment
-    if before is not None and percent(before.get('rating')) is not None and value is not None:
-        text += u' (%s)' % signed_percent(round(value - percent(before.get('rating')), 2))
-    if entry.get('source') == SOURCE_BATTLE:
-        text += u', ' + translate('marks_history_battle', damage=format_number(entry.get('combined')))
-    else:
-        text += u', ' + translate('marks_history_hangar')
-    return text
+    text = moment if value is None else u'%s  %s' % (moment, percent_text(value))
+    delta = rating_delta(before, entry)
+    if delta is not None:
+        text += u' (%s)' % signed_percent(delta)
+    return text + u', ' + _source_text(entry, translate)
 
 
-def detail_rows(vehicle, translate):
-    rows = []
+def _reached_rows(vehicle, translate):
     reached = vehicle.get('reached') or {}
+    rows = []
     for mark in sorted(reached, key=int):
-        rows.append({'label': translate('marks_history_reached', mark=mark), 'value': format_epoch(reached[mark]) or u''})
+        label = translate('marks_history_reached', mark=mark)
+        rows.append({'label': label, 'value': format_epoch(reached[mark]) or u''})
+    return rows
+
+
+def _entry_rows(vehicle, translate):
     entries = vehicle.get('entries') or []
     start = max(0, len(entries) - MAX_DETAIL_LINES)
-    for index in range(len(entries) - 1, start - 1, -1):
+    rows = []
+    for index in reversed(range(start, len(entries))):
         before = entries[index - 1] if index > 0 else None
         rows.append({'label': u'', 'value': _entry_line(before, entries[index], translate)})
     return rows
 
 
-def row_of(tank_id, vehicle, summary, translate):
-    subtitle = u'%s  %s' % (u'%.2f%%' % summary['percent'] if summary['percent'] is not None else u'—', _stars(summary['marks']))
+def detail_rows(vehicle, translate):
+    return _reached_rows(vehicle, translate) + _entry_rows(vehicle, translate)
+
+
+def _subtitle(summary, translate):
+    subtitle = u'%s  %s' % (percent_text(summary['percent']) or NO_VALUE, _stars(summary['marks']))
     if summary.get('avg'):
         subtitle += u'  ' + translate('marks_history_avg', avg=format_number(summary['avg']))
-    trend = summary.get('trend')
+    return subtitle
+
+
+def _meta(summary, translate):
     meta = format_epoch(summary.get('updated')) or u''
-    if trend is not None:
-        meta += u' / ' + translate('marks_history_trend', battles=counted(summary['trend_battles'], 'battles', translate), delta=signed_percent(trend))
+    trend = summary.get('trend')
+    if trend is None:
+        return meta
+    battles = counted(summary['trend_battles'], 'battles', translate)
+    return meta + u' / ' + translate('marks_history_trend', battles=battles, delta=signed_percent(trend))
+
+
+def _clear_action(tank_id, summary, translate):
+    confirm = translate('marks_history_clear_confirm', vehicle=summary['label'] or tank_id)
+    return {'id': ACTION_CLEAR, 'label': translate('marks_history_clear'), 'confirm': confirm}
+
+
+def row_of(tank_id, vehicle, summary, translate):
     return {
         'id': str(tank_id),
         'title': summary['label'] or str(tank_id),
-        'subtitle': subtitle,
-        'meta': meta,
+        'subtitle': _subtitle(summary, translate),
+        'meta': _meta(summary, translate),
         'badge': signed_percent(summary['last_delta']) or None,
         'link': None,
         'details': detail_rows(vehicle, translate),
         'report': marks_report(int(tank_id), vehicle),
-        'actions': [{'id': ACTION_CLEAR, 'label': translate('marks_history_clear'),
-                     'confirm': translate('marks_history_clear_confirm', vehicle=summary['label'] or tank_id)}],
+        'actions': [_clear_action(tank_id, summary, translate)],
     }
 
 
@@ -81,16 +136,23 @@ def page_actions(translate):
 def _colored_delta(value):
     if value is None:
         return u''
-    return font(signed_percent(value), COLOR_UP if value > 0 else (COLOR_DOWN if value < 0 else COLOR_NEUTRAL))
+    return font(signed_percent(value), DELTA_COLORS[delta_sign(value)])
+
+
+def _labelled_delta(label, value):
+    return u'%s %s' % (font(label, COLOR_MUTED), _colored_delta(value))
 
 
 def panel_text(summary, translate):
-    lines = [font(translate('marks_history_title'), COLOR_NEUTRAL, 15)]
-    value = u'%.2f%%' % summary['percent'] if summary['percent'] is not None else u'—'
-    lines.append(u'%s %s' % (font(value, COLOR_NEUTRAL), font(_stars(summary['marks']), COLOR_NEUTRAL)))
+    value = percent_text(summary['percent']) or NO_VALUE
+    lines = [
+        font(translate('marks_history_title'), COLOR_NEUTRAL, PANEL_TITLE_SIZE),
+        u'%s %s' % (font(value, COLOR_NEUTRAL), font(_stars(summary['marks']), COLOR_NEUTRAL)),
+    ]
     if summary.get('last_delta') is not None:
-        lines.append(u'%s %s' % (font(translate('marks_history_last'), COLOR_MUTED), _colored_delta(summary['last_delta'])))
+        lines.append(_labelled_delta(translate('marks_history_last'), summary['last_delta']))
     if summary.get('trend') is not None and summary.get('trend_battles', 0) > 1:
-        label = translate('marks_history_trend_label', battles=counted(summary['trend_battles'], 'battles', translate))
-        lines.append(u'%s %s' % (font(label, COLOR_MUTED), _colored_delta(summary['trend'])))
+        battles = counted(summary['trend_battles'], 'battles', translate)
+        label = translate('marks_history_trend_label', battles=battles)
+        lines.append(_labelled_delta(label, summary['trend']))
     return u'\n'.join(lines)

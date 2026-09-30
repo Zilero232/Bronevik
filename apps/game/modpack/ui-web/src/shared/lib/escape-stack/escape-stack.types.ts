@@ -6,3 +6,5 @@ export type EscapeLayer = {
   kind: EscapeLayerKind;
   onEscape: () => void;
 };
+
+export type OutranksInput = { layer: EscapeLayer; current: EscapeLayer | null };

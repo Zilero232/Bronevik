@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import type { UiState } from '../../../../../shared/api/protocol';
+
 import { parseState } from '../../../../../shared/api/protocol';
 import sample from '../../../../../shared/api/protocol/_tests/fixtures/state.sample.json';
 import { DEV_MOCK } from '../../../config';
@@ -11,39 +13,46 @@ if (!parsed) {
   throw new Error('state fixture does not parse');
 }
 
-const state = parsed;
+const STATE = parsed;
+
+const fieldValue = ({ state, component, key }: { state: UiState; component: string; key: string }) =>
+  state.components.find(({ id }) => id === component)?.fields.find((field) => field.key === key)?.value;
 
 describe(applyMessage, () => {
-  it('writes a set message into the field and bumps the revision', () => {
-    const component = state.components[0];
-    const field = component?.fields.find((candidate) => candidate.type === 'bool');
+  it('writes a set message into its field', () => {
+    const next = applyMessage({ state: STATE, message: { type: 'set', component: 'companion', key: 'send_battle_results', value: false } });
 
-    expect(component && field).toBeTruthy();
-
-    const next = applyMessage({ state, message: { type: 'set', component: component?.id ?? '', key: field?.key ?? '', value: !field?.value } });
-
-    expect(next.revision).toBe(state.revision + 1);
-    expect(next.components[0]?.fields.find((candidate) => candidate.key === field?.key)?.value).toBe(!field?.value);
+    expect(fieldValue({ state: next, component: 'companion', key: 'send_battle_results' })).toBe(false);
   });
 
-  it('applies a whole reset and keeps the window where it was left', () => {
-    const next = applyMessage({ state, message: { type: 'set_many', component: 'damage_log', values: { lines: 9, border: true } } });
-    const fields = next.components.find(({ id }) => id === 'damage_log')?.fields ?? [];
+  it('bumps the revision on every message', () => {
+    const next = applyMessage({ state: STATE, message: { type: 'set', component: 'companion', key: 'send_battle_results', value: false } });
 
-    expect(fields.filter(({ key }) => key === 'lines' || key === 'border').map(({ value }) => value)).toEqual([true, 9]);
-
-    expect(applyMessage({ state, message: { type: 'window_layout', x: 1, y: 2, width: 900, height: 600, zoom: 110 } }).window).toEqual({
-      placed: true,
-      x: 1,
-      y: 2,
-      width: 900,
-      height: 600,
-      zoom: 110
-    });
+    expect(next.revision).toBe(2);
   });
 
-  it('switches the language and reports other messages as a notice', () => {
-    expect(applyMessage({ state, message: { type: 'language', language: 'en' } }).language).toBe('en');
-    expect(applyMessage({ state, message: { type: 'close' } }).notice).toEqual({ kind: 'info', text: `${DEV_MOCK.noticePrefix} close`, code: null });
+  it('writes every value of a set_many message into its field', () => {
+    const next = applyMessage({ state: STATE, message: { type: 'set_many', component: 'damage_log', values: { lines: 9, border: true } } });
+
+    expect(fieldValue({ state: next, component: 'damage_log', key: 'lines' })).toBe(9);
+    expect(fieldValue({ state: next, component: 'damage_log', key: 'border' })).toBe(true);
+  });
+
+  it('keeps the window where it was left', () => {
+    const next = applyMessage({ state: STATE, message: { type: 'window_layout', x: 1, y: 2, width: 900, height: 600, zoom: 110 } });
+
+    expect(next.window).toEqual({ placed: true, x: 1, y: 2, width: 900, height: 600, zoom: 110 });
+  });
+
+  it('switches the language', () => {
+    const next = applyMessage({ state: STATE, message: { type: 'language', language: 'en' } });
+
+    expect(next.language).toBe('en');
+  });
+
+  it('reports any other message as a notice', () => {
+    const next = applyMessage({ state: STATE, message: { type: 'close' } });
+
+    expect(next.notice).toEqual({ kind: 'info', text: `${DEV_MOCK.noticePrefix} close`, code: null });
   });
 });

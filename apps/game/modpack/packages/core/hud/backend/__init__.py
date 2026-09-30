@@ -47,10 +47,9 @@ class NullBackend(HudBackend):
     """No renderer installed: every panel stays hidden, features fall back to notifications."""
 
 
+# The installed renderers in preference order. A label goes to the first one available when it is created and stays
+# there until deleted, so a renderer that appears or drops out later never splits a panel between two of them.
 class BackendChain(HudBackend):
-    """The installed renderers in preference order. A label goes to the first one available when it is
-    created and stays there until deleted, so a renderer that appears or drops out later never splits a
-    panel between two of them."""
 
     def __init__(self, backends):
         self.backends = list(backends)

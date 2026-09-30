@@ -13,7 +13,14 @@ class CompanionActions(object):
         if not self.config.is_enabled('share_settings'):
             return []
         labels = self.labels()
-        return [
-            {'id': ACTION_SETTINGS_EXPORT, 'label': labels.text('action_settings_export'), 'confirm': None},
-            {'id': ACTION_SETTINGS_RESTORE, 'label': labels.text('action_settings_restore'), 'confirm': labels.text('confirm_settings_restore')},
-        ]
+        export = {
+            'id': ACTION_SETTINGS_EXPORT,
+            'label': labels.text('action_settings_export'),
+            'confirm': None,
+        }
+        restore = {
+            'id': ACTION_SETTINGS_RESTORE,
+            'label': labels.text('action_settings_restore'),
+            'confirm': labels.text('confirm_settings_restore'),
+        }
+        return [export, restore]

@@ -20,23 +20,32 @@ const ITEMS = [
 
 describe(replayFacets, () => {
   it('offers each map once, by name, with its count', () => {
-    expect(replayFacets(ITEMS).maps).toEqual([
+    const facets = replayFacets(ITEMS);
+
+    expect(facets.maps).toEqual([
       { value: '02_malinovka', label: 'Малиновка', count: 2 },
       { value: '05_prohorovka', label: 'Прохоровка', count: 1 }
     ]);
   });
 
   it('offers the most played vehicles first', () => {
-    expect(replayFacets(ITEMS).vehicles.map((option) => [option.value, option.count, option.tier])).toEqual([
+    const facets = replayFacets(ITEMS);
+
+    expect(facets.vehicles.map((option) => [option.value, option.count, option.tier])).toEqual([
       ['ussr-R04_T-34', 2, 5],
       ['germany-G04_PzVI_Tiger_I', 1, 7]
     ]);
   });
 
-  it('offers the tiers in order and the battle types in the fixed order', () => {
+  it('offers the tiers in order', () => {
     const facets = replayFacets(ITEMS);
 
     expect(facets.tiers.map((option) => option.value)).toEqual([5, 7]);
+  });
+
+  it('offers the battle types in the fixed order', () => {
+    const facets = replayFacets(ITEMS);
+
     expect(facets.types.map((option) => option.value)).toEqual(['random', 'ranked', 'other']);
   });
 

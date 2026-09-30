@@ -1,10 +1,11 @@
 import { useLayoutEffect, useRef, useState } from 'preact/hooks';
+import { isDeepEqual } from 'remeda';
 
 import type { Measured } from '../../../lib/panel-size';
 import type { MeasureRef, Sizes, UsePanelSizesInput } from './use-panel-sizes.types';
 
 import { rootScale } from '../../../../../shared/lib/hud-screen';
-import { sameSize, stickySize } from '../../../lib/panel-size';
+import { stickySize } from '../../../lib/panel-size';
 import { widgetLines } from '../../../lib/widget-registry';
 
 export const usePanelSizes = ({ lines, widgets }: UsePanelSizesInput) => {
@@ -24,7 +25,7 @@ export const usePanelSizes = ({ lines, widgets }: UsePanelSizesInput) => {
       const size = stickySize({ previous: sizes[id], next });
 
       measured[id] = size;
-      changed = changed || !sameSize(sizes[id], size);
+      changed = changed || !isDeepEqual(sizes[id], size);
     });
 
     if (changed) {

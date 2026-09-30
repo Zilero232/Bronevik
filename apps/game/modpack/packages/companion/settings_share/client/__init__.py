@@ -7,9 +7,23 @@ from ....core.codec import decode_json
 from ....core.log import log, log_exception, safe
 from ....core.storage import JsonFile
 from ...version import MOD_ID, VERSION
-from .. import (POLL_PATH, SETTINGS_PATH, SettingsBackup, SettingsShareError, backup_path, build_export_request,
-                              build_poll_request, build_result_request, changes_to_values, clean_values, parse_poll_response,
-                              plan_apply, raw_key_of, result_path, signed_post)
+from .. import (
+    POLL_PATH,
+    SETTINGS_PATH,
+    SettingsBackup,
+    SettingsShareError,
+    backup_path,
+    build_export_request,
+    build_poll_request,
+    build_result_request,
+    changes_to_values,
+    clean_values,
+    parse_poll_response,
+    plan_apply,
+    raw_key_of,
+    result_path,
+    signed_post,
+)
 from .constants import CORE_NAMES, POLL_EVERY_S
 
 
@@ -17,18 +31,21 @@ def read_client_settings():
     current = read_settings(CORE_NAMES.values())
     if current is None:
         return None
-    return clean_values(dict((key, current[name]) for key, name in CORE_NAMES.items() if name in current))
+    values = dict((key, current[name]) for key, name in CORE_NAMES.items() if name in current)
+    return clean_values(values)
 
 
 def write_client_settings(values):
-    return apply_settings(dict((CORE_NAMES[key], value) for key, value in clean_values(values).items() if key in CORE_NAMES))
+    writable = dict((key, value) for key, value in clean_values(values).items() if key in CORE_NAMES)
+    return apply_settings(dict((CORE_NAMES[key], value) for key, value in writable.items()))
 
 
 def show_confirm(title, message, callback):
     try:
         from gui import DialogsInterface
         from gui.Scaleform.daapi.view.dialogs import I18nConfirmDialogButtons, SimpleDialogMeta
-        DialogsInterface.showDialog(SimpleDialogMeta(title=title, message=message, buttons=I18nConfirmDialogButtons()), callback)
+        meta = SimpleDialogMeta(title=title, message=message, buttons=I18nConfirmDialogButtons())
+        DialogsInterface.showDialog(meta, callback)
         return True
     except Exception:
         log_exception('settings confirm dialog')
@@ -48,14 +65,17 @@ class SettingsShare(object):
         return not self.app.in_battle and self.app.account_id is not None
 
     def _enabled(self):
-        return self.app.config.is_enabled('share_settings') and self.app.is_bound() and not self.app.auth_failed
+        app = self.app
+        return app.config.is_enabled('share_settings') and app.is_bound() and not app.auth_failed
 
     def _backup(self):
         return SettingsBackup(JsonFile(backup_path(self.config_dir, self.app.account_id)))
 
     def _post(self, path, payload, callback):
-        creds = self.app.current_credentials()
-        signed_post(self.app.transport, self.app.config.endpoint(path), creds, payload, '%s/%s' % (MOD_ID, VERSION), callback)
+        app = self.app
+        url = app.config.endpoint(path)
+        user_agent = '%s/%s' % (MOD_ID, VERSION)
+        signed_post(app.transport, url, app.current_credentials(), payload, user_agent, callback)
 
     @safe
     def on_hangar(self):
@@ -78,8 +98,13 @@ class SettingsShare(object):
             return
         config = self.app.config
         try:
-            payload = build_export_request(self.app.current_credentials(), VERSION, config.get('settings_target'),
-                                           config.get('settings_anonymous_stats'), values)
+            payload = build_export_request(
+                self.app.current_credentials(),
+                VERSION,
+                config.get('settings_target'),
+                config.get('settings_anonymous_stats'),
+                values,
+            )
         except SettingsShareError as error:
             self.app.ui.notify(self.app.translate('settings_export_failed', reason=error.reason))
             return
@@ -107,9 +132,14 @@ class SettingsShare(object):
         else:
             self.app.ui.notify(self.app.translate('settings_unavailable'))
 
+    def _should_poll(self, now):
+        if self.polling or now - self.last_poll < POLL_EVERY_S:
+            return False
+        return self._in_hangar() and self._enabled()
+
     @safe
     def tick(self, now):
-        if self.polling or now - self.last_poll < POLL_EVERY_S or not self._in_hangar() or not self._enabled():
+        if not self._should_poll(now):
             return
         self.last_poll = now
         self.polling = True
@@ -124,12 +154,15 @@ class SettingsShare(object):
                 data = decode_json(body)
             except (ValueError, UnicodeDecodeError):
                 return
-            for request in parse_poll_response(data):
-                if request['id'] not in self.asked:
-                    self._ask(request)
-                    return
+            self._ask_first_new(parse_poll_response(data))
 
         self._post(POLL_PATH, build_poll_request(self.app.current_credentials()), done)
+
+    def _ask_first_new(self, requests):
+        for request in requests:
+            if request['id'] not in self.asked:
+                self._ask(request)
+                return
 
     def _ask(self, request):
         self.asked.add(request['id'])
@@ -137,18 +170,30 @@ class SettingsShare(object):
         if current is None:
             log('settings core unavailable, apply request %s stays pending' % request['id'])
             return
+
         config = self.app.config
-        changes = plan_apply(current, request, config.get('settings_include_resolution'), config.get('settings_include_sensitivity'))
+        changes = plan_apply(
+            current,
+            request,
+            config.get('settings_include_resolution'),
+            config.get('settings_include_sensitivity'),
+        )
         writable = [change for change in changes if raw_key_of(change[0], change[1]) in CORE_NAMES]
         if not writable:
-            if changes:
-                log('apply request %s has no settings this client can write' % request['id'])
-            self._report(request['id'], 'rejected' if changes else 'applied')
+            self._report_nothing_writable(request, changes)
             return
-        changes = writable
+        self._confirm(request, current, writable)
+
+    def _report_nothing_writable(self, request, changes):
+        if changes:
+            log('apply request %s has no settings this client can write' % request['id'])
+        self._report(request['id'], 'rejected' if changes else 'applied')
+
+    def _confirm(self, request, current, changes):
         translate = self.app.translate
+        groups = ', '.join(sorted(set(change[0] for change in changes)))
         title = translate('settings_apply_title', slug=request['profile_slug'])
-        message = translate('settings_apply_body', count=len(changes), groups=', '.join(sorted(set(c[0] for c in changes))))
+        message = translate('settings_apply_body', count=len(changes), groups=groups)
 
         @safe
         def answered(confirmed):

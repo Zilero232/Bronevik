@@ -13,15 +13,13 @@ from ..settings import SCHEMA, SECTION, SWITCH
 
 
 class StreamerMode(FeatureComponent):
-    """The hotkey that takes the mod's panels off the screen (the HUD layer and the hangar labels hold their texts) and
-    the private mode: the hangar labels with the player's own numbers blocked, the battle chat of others not drawn."""
 
     def __init__(self, app):
         FeatureComponent.__init__(self, app, SECTION, SCHEMA, SWITCH, STRINGS)
         self.toggle = PanelToggle()
         self.hotkey = HotkeyChoice(HOTKEYS, self._on_hotkey)
         self.hotkey_choice = None
-        self.chat_hooked = self._hook_chat()
+        self._hook_chat()
         bus = app.bus
         bus.on('hangar', self._on_hangar)
         bus.on('battle_ready', self._on_battle_ready)
@@ -30,28 +28,32 @@ class StreamerMode(FeatureComponent):
         layout = battle_layout()
         if layout is None:
             log('streamer mode: battle chat classes not found, the chat stays')
-            return False
+            return
         override(layout, 'addMessage')(self._add_message)
         override(layout, 'addCommand')(self._add_command)
-        return True
 
     def _on_hangar(self):
         self._install_hotkey()
         self._apply_private()
 
     def _on_battle_ready(self, player):
-        self._set_hidden(self.toggle.battle_started(self.enabled() and self.settings.get('keep_hidden')))
+        keep_hidden = self.enabled() and self.settings.get('keep_hidden')
+        self._set_hidden(self.toggle.battle_started(keep_hidden))
 
     def settings_changed(self, changed):
         self._install_hotkey()
         self._apply_private()
 
     def _install_hotkey(self):
-        choice = self.settings.get('hotkey') if self.enabled() else 'none'
+        choice = 'none'
+        if self.enabled():
+            choice = self.settings.get('hotkey')
         if choice == self.hotkey_choice:
             return
+
         self.hotkey_choice = choice
-        if not self.hotkey.set(choice) and self.toggle.hidden:
+        has_hotkey = self.hotkey.set(choice)
+        if not has_hotkey and self.toggle.hidden:
             self.toggle.hidden = False
             self._set_hidden(False)
 
@@ -62,15 +64,23 @@ class StreamerMode(FeatureComponent):
         hidden = self.toggle.toggle()
         self._set_hidden(hidden)
         if not self.app.in_battle:
-            hotkey = self.app.translate('streamer_mode_hotkey_%s' % self.hotkey_choice)
-            self.app.ui.notify(self.app.translate('streamer_mode_hidden' if hidden else 'streamer_mode_shown', hotkey=hotkey))
+            self._notify_toggled(hidden)
+
+    def _notify_toggled(self, hidden):
+        translate = self.app.translate
+        hotkey = translate('streamer_mode_hotkey_%s' % self.hotkey_choice)
+        key = 'streamer_mode_hidden' if hidden else 'streamer_mode_shown'
+        self.app.ui.notify(translate(key, hotkey=hotkey))
 
     def _set_hidden(self, hidden):
         hud_layer(self.app).set_muted(hidden)
         self.app.ui.set_muted(hidden)
 
     def _apply_private(self):
-        self.app.ui.set_blocked(blocked_labels(self.settings) if self.enabled() else ())
+        blocked = ()
+        if self.enabled():
+            blocked = blocked_labels(self.settings)
+        self.app.ui.set_blocked(blocked)
 
     def _hides_chat(self):
         return self.enabled() and hides_chat(self.settings, self.app.in_battle)
@@ -78,7 +88,8 @@ class StreamerMode(FeatureComponent):
     # The own lines and commands are never touched (a command that cannot tell counts as own); a hidden line skips the
     # client's addMessage like chat_filter's.
     def _add_message(self, original, layout, message, *args, **kwargs):
-        if self._hides_chat() and not is_own(getattr(message, 'avatarSessionID', None)):
+        is_own_line = is_own(getattr(message, 'avatarSessionID', None))
+        if self._hides_chat() and not is_own_line:
             return True
         return original(layout, message, *args, **kwargs)
 

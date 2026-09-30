@@ -17,11 +17,12 @@ beforeEach(() => {
 });
 
 describe(useSidebar, () => {
-  it('lists the component pages with their on/total counts, then the tools', () => {
-    const hook = renderHook(useSidebar);
-    const { components, tools } = hook.current();
+  it('lists the component pages with their on/total counts', () => {
+    const { components } = renderHook(useSidebar).current();
 
-    expect(components.map(({ section, count }) => [section, count])).toEqual([
+    const counts = components.map(({ section, count }) => [section, count]);
+
+    expect(counts).toEqual([
       ['battle', '1/2'],
       ['hangar', null],
       ['marks', '2/2'],
@@ -29,12 +30,21 @@ describe(useSidebar, () => {
       ['streamer', null],
       ['data', '1/1']
     ]);
+  });
+
+  it('lists the tools after the component pages', () => {
+    const { tools } = renderHook(useSidebar).current();
 
     expect(tools.map(({ section }) => section)).toEqual([SECTION.profiles, SECTION.hud]);
+  });
+
+  it('marks the current page active', () => {
+    const { components } = renderHook(useSidebar).current();
+
     expect(components[0]?.active).toBe(true);
   });
 
-  it('opens a page and marks nothing active while a search is shown', async () => {
+  it('opens a page', async () => {
     const hook = renderHook(useSidebar);
 
     hook.run(() => hook.current().tools[0]?.open());
@@ -42,6 +52,13 @@ describe(useSidebar, () => {
 
     expect($view.get().section).toBe(SECTION.profiles);
     expect(hook.current().tools[0]?.active).toBe(true);
+  });
+
+  it('marks nothing active while a search is shown', async () => {
+    const hook = renderHook(useSidebar);
+
+    hook.run(() => hook.current().tools[0]?.open());
+    await hook.settle();
 
     hook.run(() => $query.set('zoom'));
     await hook.settle();

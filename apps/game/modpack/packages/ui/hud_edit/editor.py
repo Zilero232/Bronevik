@@ -4,7 +4,15 @@ from ...core.compat import is_number, string_types, to_text
 from ...core.format import strip_tags
 from ...core.hud import EVENT_DESCRIBE, EVENT_EDIT
 from ..components import PANEL_POSITION_KEYS
-from .constants import DEFAULT_HEIGHT, DEFAULT_WIDTH, MAX_SIZE, POSITION_ALIGNS, POSITION_NUMBERS, PREVIEW_MAX_CHARS
+from .constants import (
+    DEFAULT_HEIGHT,
+    DEFAULT_WIDTH,
+    MAX_SIZE,
+    NO_DESCRIPTION,
+    POSITION_ALIGNS,
+    POSITION_NUMBERS,
+    PREVIEW_MAX_CHARS,
+)
 
 
 def _size(value, default):
@@ -22,11 +30,13 @@ def plain_preview(text):
 def move_values(message):
     values = {}
     for key in POSITION_NUMBERS:
-        if is_number(message.get(key)) and not isinstance(message.get(key), bool):
-            values[key] = int(round(message[key]))
+        value = message.get(key)
+        if is_number(value) and not isinstance(value, bool):
+            values[key] = int(round(value))
     for key in POSITION_ALIGNS:
-        if isinstance(message.get(key), string_types):
-            values[key] = to_text(message[key])
+        value = message.get(key)
+        if isinstance(value, string_types):
+            values[key] = to_text(value)
     return values
 
 
@@ -44,8 +54,12 @@ class HudEditor(object):
         found = {}
 
         def collect(panel_id, preview=None, width=None, height=None, enabled=False):
-            found[panel_id] = {'preview': plain_preview(preview), 'width': _size(width, DEFAULT_WIDTH),
-                               'height': _size(height, DEFAULT_HEIGHT), 'enabled': bool(enabled)}
+            found[panel_id] = {
+                'preview': plain_preview(preview),
+                'width': _size(width, DEFAULT_WIDTH),
+                'height': _size(height, DEFAULT_HEIGHT),
+                'enabled': bool(enabled),
+            }
 
         self.bus.emit(EVENT_DESCRIBE, collect)
         return found
@@ -55,8 +69,7 @@ class HudEditor(object):
         described = []
         for panel_id in self.panel_ids():
             settings = self.layer.panels[panel_id]
-            extra = descriptions.get(panel_id) or {'preview': None, 'width': DEFAULT_WIDTH, 'height': DEFAULT_HEIGHT,
-                                                   'enabled': False}
+            extra = descriptions.get(panel_id) or NO_DESCRIPTION
             item = {'id': panel_id, 'title': labels.title(panel_id)}
             for key in POSITION_NUMBERS + POSITION_ALIGNS:
                 item[key] = settings.get(key)
@@ -73,7 +86,8 @@ class HudEditor(object):
         if panel_id not in self.panel_ids():
             return []
         defaults = self.layer.panels[panel_id].schema.defaults
-        return self.layer.update_settings(panel_id, dict((key, defaults[key]) for key in PANEL_POSITION_KEYS if key in defaults))
+        position = dict((key, defaults[key]) for key in PANEL_POSITION_KEYS if key in defaults)
+        return self.layer.update_settings(panel_id, position)
 
     def set_editing(self, active):
         active = bool(active)

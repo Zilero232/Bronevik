@@ -14,7 +14,6 @@ def _account_settings():
 
 
 def read_account_settings(names):
-    """{name: value} of the player's AccountSettings the client knows (a missing one is left out), or None."""
     store = _account_settings()
     if store is None:
         return None
@@ -30,7 +29,6 @@ def read_account_settings(names):
 
 
 def apply_account_changed(values):
-    """Writes the AccountSettings values that differ from the current ones (unknown names are skipped)."""
     current = read_account_settings(list(values))
     if current is None:
         return False

@@ -1,3 +1,3 @@
-export { hitPanel, pointerPoint } from './hit-panel';
+export { hitPanel, pointerPoint, targetAt } from './hit-panel';
 
-export type { HitPanelInput, HitTarget, PointerPointInput } from './hit-panel.types';
+export type { DragTarget, HitPanelInput, HitTarget, PointerPointInput, TargetAtInput } from './hit-panel.types';

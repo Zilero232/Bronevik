@@ -53,7 +53,8 @@ def crosshair():
 
 
 def personal_efficiency():
-    """The controller behind the vanilla damage log totals (repositories.personalEfficiencyCtrl, RU 1.45 client source)."""
+    """The controller behind the vanilla damage log totals (RU 1.45 client source:
+    repositories.personalEfficiencyCtrl)."""
     return shared('personalEfficiencyCtrl')
 
 
@@ -93,22 +94,25 @@ def vehicle_name(vehicle_id):
 
 
 def vehicle_class(vehicle_id):
-    """The class tag (lightTank, mediumTank, heavyTank, AT-SPG, SPG) the player panels and the vanilla damage log show."""
-    return getattr(getattr(vehicle_info(vehicle_id), 'vehicleType', None), 'classTag', None)
+    """The class tag (lightTank, mediumTank, heavyTank, AT-SPG, SPG) the player panels and the vanilla damage log
+    show."""
+    vehicle_type = getattr(vehicle_info(vehicle_id), 'vehicleType', None)
+    return getattr(vehicle_type, 'classTag', None)
 
 
 def is_enemy(vehicle_id):
     """True for a vehicle of an enemy team. RU 1.45 arena_dp.getVehicleInfo answers an unknown id with a blank
     VehicleArenaInfoVO of team 0, which isEnemyTeam would call an enemy, so a vehicle without a team is not one."""
     provider = arena_dp()
-    info = vehicle_info(vehicle_id)
-    team = getattr(info, 'team', None)
-    return bool(team) and provider is not None and bool(provider.isEnemyTeam(team))
+    team = getattr(vehicle_info(vehicle_id), 'team', None)
+    if not team or provider is None:
+        return False
+    return bool(provider.isEnemyTeam(team))
 
 
+# The damage one onPlayerFeedbackReceived batch reports the player dealt to enemies (that event carries only the
+# player's own events: feedback_adaptor, RU 1.45).
 def dealt_damage(events):
-    """The damage one onPlayerFeedbackReceived batch reports the player dealt to enemies (that event carries only
-    the player's own events: feedback_adaptor, RU 1.45)."""
     return own_damage(events, getattr(BATTLE_EVENT_TYPE, 'DAMAGE', None), is_enemy)
 
 
@@ -129,5 +133,6 @@ def own_hull_yaw():
     """The world yaw (radians) of the player's own vehicle, or None. Only the own vehicle: never another entity."""
     getter = getattr(BigWorld, 'entity', None)
     vehicle_id = getattr(player(), 'playerVehicleID', None)
-    entity = getter(vehicle_id) if getter is not None and vehicle_id else None
-    return getattr(entity, 'yaw', None)
+    if getter is None or not vehicle_id:
+        return None
+    return getattr(getter(vehicle_id), 'yaw', None)

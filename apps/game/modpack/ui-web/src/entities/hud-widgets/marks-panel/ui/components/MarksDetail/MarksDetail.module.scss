@@ -1,0 +1,19 @@
+@use '../../../../../../shared/styles/gameface' as *;
+
+.line {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.level {
+  margin-right: 4px;
+  color: token(color-text-muted);
+}
+
+.secondary {
+  margin-right: 8px;
+  color: token(color-text-muted);
+  font-size: 11px;
+}

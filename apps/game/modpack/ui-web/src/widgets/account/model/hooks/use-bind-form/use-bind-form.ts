@@ -1,7 +1,7 @@
 import { useState } from 'preact/hooks';
 
 import { send } from '../../../../../shared/api/protocol';
-import { KEYS } from '../../../../../shared/config';
+import { onEnterKey } from '../../../../../shared/lib/enter-key';
 
 export const useBindForm = () => {
   const [code, setCode] = useState('');
@@ -22,10 +22,6 @@ export const useBindForm = () => {
     canBind: code.trim().length > 0,
     bind,
     setCode,
-    onKey: (key: string) => {
-      if (key === KEYS.enter) {
-        bind();
-      }
-    }
+    onKey: onEnterKey(bind)
   };
 };

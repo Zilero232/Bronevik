@@ -10,8 +10,15 @@ describe(choiceLayout, () => {
     expect(choiceLayout(['Alt', 'Ctrl', 'Shift'].map(choice))).toBe('segmented');
   });
 
-  it('stacks many or long choices into a list', () => {
-    expect(choiceLayout(Array.from({ length: CHOICE_LAYOUT.maxSegments + 1 }, (_, index) => choice(String(index))))).toBe('list');
-    expect(choiceLayout([choice('x'.repeat(CHOICE_LAYOUT.maxSegmentChars)), choice('y')])).toBe('list');
+  it('stacks more choices than the row holds into a list', () => {
+    const many = Array.from({ length: CHOICE_LAYOUT.maxSegments + 1 }, (_, index) => choice(String(index)));
+
+    expect(choiceLayout(many)).toBe('list');
+  });
+
+  it('stacks choices whose labels run longer than the row into a list', () => {
+    const long = [choice('x'.repeat(CHOICE_LAYOUT.maxSegmentChars)), choice('y')];
+
+    expect(choiceLayout(long)).toBe('list');
   });
 });

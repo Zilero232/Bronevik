@@ -10,10 +10,14 @@ const data = battleClockSchema.parse(readWidgetFixture('battle_clock'));
 
 describe(BattleClockWidget, () => {
   it('shows the local time under the stock timer and the battle timer beside it', () => {
-    expect(mount({ Component: BattleClockWidget, props: { data } }).textContent).toBe('21:4707:00');
+    const html = mount({ Component: BattleClockWidget, props: { data } });
+
+    expect(html.textContent).toBe('21:4707:00');
   });
 
   it('puts the timer in front when it replaces the stock one', () => {
-    expect(mount({ Component: BattleClockWidget, props: { data: { ...data, big_timer: true } } }).textContent).toBe('07:0021:47');
+    const html = mount({ Component: BattleClockWidget, props: { data: { ...data, big_timer: true } } });
+
+    expect(html.textContent).toBe('07:0021:47');
   });
 });

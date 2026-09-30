@@ -13,12 +13,18 @@ def next_row(state, translate):
     text = next_text(state, translate)
     if found is None or text is None:
         return None
-    return card_row(text, icon=glyph('trend_up'), progress=found[2], progress_tone='gold')
+    _target, _left, share = found
+    return card_row(text, icon=glyph('trend_up'), progress=share, progress_tone='gold')
 
 
 def threshold_row(step, status, translate):
-    return card_row(division_name(step, translate), threshold_value(step, translate), status=status, tone_name=STATUS_TONES[status],
-                    text_tone='muted' if status == 'idle' else 'text')
+    return card_row(
+        division_name(step, translate),
+        threshold_value(step, translate),
+        status=status,
+        tone_name=STATUS_TONES[status],
+        text_tone='muted' if status == 'idle' else 'text',
+    )
 
 
 def hangar_widget(state, settings, translate):
@@ -29,5 +35,14 @@ def hangar_widget(state, settings, translate):
         rows.extend(threshold_row(step, status, translate) for step, status in thresholds(state))
     if settings.get('show_skill') and state['skill']:
         rows.append(card_row(state['skill'], icon=glyph('module'), label=translate('comp7_helper_skill')))
-    return card(translate('comp7_helper_card_title'), glyph('record'), rows, value=format_number(state['rating']), value_tone='gold',
-                subtitle=status_text(state, translate), rail='progress', footer=translate('comp7_helper_footer'), width=CARD_WIDTH)
+    return card(
+        translate('comp7_helper_card_title'),
+        glyph('record'),
+        rows,
+        value=format_number(state['rating']),
+        value_tone='gold',
+        subtitle=status_text(state, translate),
+        rail='progress',
+        footer=translate('comp7_helper_footer'),
+        width=CARD_WIDTH,
+    )

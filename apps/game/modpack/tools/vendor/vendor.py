@@ -10,6 +10,7 @@ vendor/__init__.py with the pinned versions. `--check` compares the tree with a 
 fails on any difference (nothing is written).
 """
 import argparse
+import collections
 import hashlib
 import io
 import json
@@ -32,18 +33,54 @@ ATTR_NEXT_GEN = (
     '\n'
     '    __all__.extend(("define", "field", "frozen", "mutable"))\n'
 )
-ATTR_NEXT_GEN_NOTE = '# Vendored for Python 2.7: attr._next_gen (define/field/frozen/mutable, Python 3.6+ only) is left out.\n'
+ATTR_NEXT_GEN_NOTE = (
+    '# Vendored for Python 2.7: attr._next_gen (define/field/frozen/mutable, Python 3.6+ only) is left out.\n'
+)
 
-# (distribution, version, wheel file, sha256, licence member, {wheel member prefix: vendor path}, skipped members, patches)
+# members: {wheel member prefix: vendor path}; skipped: wheel members left out; patches: (regex, replacement).
+Pin = collections.namedtuple('Pin', 'name version wheel sha256 licence members skipped patches')
+
 PINS = (
-    ('six', '1.17.0', 'six-1.17.0-py2.py3-none-any.whl', '4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274',
-     'six-1.17.0.dist-info/LICENSE', {'six.py': 'six.py'}, (), ()),
-    ('blinker', '1.5', 'blinker-1.5-py2.py3-none-any.whl', '1eb563df6fdbc39eeddc177d953203f99f097e9bf0e2b8f9f3cf18b6ca425e36',
-     'blinker-1.5.dist-info/LICENSE.rst', {'blinker/': 'blinker/'}, (), ((r'\bfrom blinker\.', 'from .'),)),
-    ('attrs', '21.4.0', 'attrs-21.4.0-py2.py3-none-any.whl', '2d27e3784d7a565d36ab851fe94887c5eccd6a463168875832a1be79c82828b4',
-     'attrs-21.4.0.dist-info/LICENSE', {'attr/': 'attr/'}, ('attr/_next_gen.py',), ((re.escape(ATTR_NEXT_GEN), ATTR_NEXT_GEN_NOTE),)),
-    ('enum34', '1.1.10', 'enum34-1.1.10-py2-none-any.whl', 'a98a201d6de3f2ab3db284e70a33b0f896fbf35f8086594e8c9e74b909058d53',
-     'enum/LICENSE', {'enum/__init__.py': 'enum34/__init__.py'}, (), ()),
+    Pin(
+        name='six',
+        version='1.17.0',
+        wheel='six-1.17.0-py2.py3-none-any.whl',
+        sha256='4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274',
+        licence='six-1.17.0.dist-info/LICENSE',
+        members={'six.py': 'six.py'},
+        skipped=(),
+        patches=(),
+    ),
+    Pin(
+        name='blinker',
+        version='1.5',
+        wheel='blinker-1.5-py2.py3-none-any.whl',
+        sha256='1eb563df6fdbc39eeddc177d953203f99f097e9bf0e2b8f9f3cf18b6ca425e36',
+        licence='blinker-1.5.dist-info/LICENSE.rst',
+        members={'blinker/': 'blinker/'},
+        skipped=(),
+        patches=((r'\bfrom blinker\.', 'from .'),),
+    ),
+    Pin(
+        name='attrs',
+        version='21.4.0',
+        wheel='attrs-21.4.0-py2.py3-none-any.whl',
+        sha256='2d27e3784d7a565d36ab851fe94887c5eccd6a463168875832a1be79c82828b4',
+        licence='attrs-21.4.0.dist-info/LICENSE',
+        members={'attr/': 'attr/'},
+        skipped=('attr/_next_gen.py',),
+        patches=((re.escape(ATTR_NEXT_GEN), ATTR_NEXT_GEN_NOTE),),
+    ),
+    Pin(
+        name='enum34',
+        version='1.1.10',
+        wheel='enum34-1.1.10-py2-none-any.whl',
+        sha256='a98a201d6de3f2ab3db284e70a33b0f896fbf35f8086594e8c9e74b909058d53',
+        licence='enum/LICENSE',
+        members={'enum/__init__.py': 'enum34/__init__.py'},
+        skipped=(),
+        patches=(),
+    ),
 )
 
 INIT = '''"""Third-party libraries vendored for the game's Python 2.7 (see tools/vendor/vendor.py; do not edit by hand).
@@ -57,26 +94,27 @@ VENDORED = {
 '''
 
 
-def wheel_url(name, version, file_name, sha256):
-    with urllib.request.urlopen(PYPI_JSON % (name, version), timeout=60) as response:
+def wheel_url(pin):
+    with urllib.request.urlopen(PYPI_JSON % (pin.name, pin.version), timeout=60) as response:
         release = json.loads(response.read().decode('utf-8'))
     for entry in release.get('urls', ()):
-        if entry.get('filename') == file_name and entry.get('digests', {}).get('sha256') == sha256:
+        is_pinned_file = entry.get('filename') == pin.wheel
+        if is_pinned_file and entry.get('digests', {}).get('sha256') == pin.sha256:
             return entry['url']
-    raise SystemExit('%s %s: %s with the pinned sha256 is not on PyPI' % (name, version, file_name))
+    raise SystemExit('%s %s: %s with the pinned sha256 is not on PyPI' % (pin.name, pin.version, pin.wheel))
 
 
-def download(name, version, file_name, sha256, cache):
-    path = os.path.join(cache, file_name)
+def download(pin, cache):
+    path = os.path.join(cache, pin.wheel)
     if not os.path.isfile(path):
-        with urllib.request.urlopen(wheel_url(name, version, file_name, sha256), timeout=120) as response:
+        with urllib.request.urlopen(wheel_url(pin), timeout=120) as response:
             data = response.read()
         with open(path, 'wb') as handle:
             handle.write(data)
     with open(path, 'rb') as handle:
         digest = hashlib.sha256(handle.read()).hexdigest()
-    if digest != sha256:
-        raise SystemExit('%s: sha256 %s does not match the pin %s' % (file_name, digest, sha256))
+    if digest != pin.sha256:
+        raise SystemExit('%s: sha256 %s does not match the pin %s' % (pin.wheel, digest, pin.sha256))
     return path
 
 
@@ -89,33 +127,50 @@ def patch(text, patches, member):
     return text
 
 
+def write_text(path, text):
+    with io.open(path, 'w', encoding='utf-8', newline='\n') as handle:
+        handle.write(text)
+
+
+def vendor_paths(member, members):
+    """The vendor paths (relative, '/'-separated) a wheel member is copied to: one per matching prefix."""
+    for prefix, destination in members.items():
+        if prefix.endswith('/') and member.startswith(prefix):
+            yield destination + member[len(prefix):]
+        elif member == prefix:
+            yield destination
+
+
+def vendor_member(wheel, member, pin, target):
+    """Copies one wheel module into target with the pin's patches; returns the patterns that applied."""
+    applied = set()
+    for relative in vendor_paths(member, pin.members):
+        text = wheel.read(member).decode('utf-8')
+        applicable = [item for item in pin.patches if re.search(item[0], text)]
+        applied.update(item[0] for item in applicable)
+        path = os.path.join(target, *relative.split('/'))
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        write_text(path, patch(text, applicable, member))
+    return applied
+
+
+def vendor_pin(pin, target, cache):
+    applied = set()
+    with zipfile.ZipFile(download(pin, cache)) as wheel:
+        for member in wheel.namelist():
+            if member.endswith('.py') and member not in pin.skipped:
+                applied.update(vendor_member(wheel, member, pin, target))
+        if len(applied) != len(pin.patches):
+            raise SystemExit('%s: a patch matched no file' % pin.name)
+        write_text(os.path.join(target, 'licenses', pin.name + '.txt'), wheel.read(pin.licence).decode('utf-8'))
+
+
 def vendor_into(target, cache):
     os.makedirs(os.path.join(target, 'licenses'))
-    versions = []
-    for name, version, file_name, sha256, licence, members, skipped, patches in PINS:
-        applied = set()
-        with zipfile.ZipFile(download(name, version, file_name, sha256, cache)) as wheel:
-            for member in wheel.namelist():
-                if not member.endswith('.py') or member in skipped:
-                    continue
-                for prefix, destination in members.items():
-                    if member == prefix or (prefix.endswith('/') and member.startswith(prefix)):
-                        relative = destination + member[len(prefix):] if prefix.endswith('/') else destination
-                        text = wheel.read(member).decode('utf-8')
-                        applicable = [item for item in patches if re.search(item[0], text)]
-                        applied.update(item[0] for item in applicable)
-                        text = patch(text, applicable, member)
-                        path = os.path.join(target, *relative.split('/'))
-                        os.makedirs(os.path.dirname(path), exist_ok=True)
-                        with io.open(path, 'w', encoding='utf-8', newline='\n') as handle:
-                            handle.write(text)
-            if len(applied) != len(patches):
-                raise SystemExit('%s: a patch matched no file' % name)
-            with io.open(os.path.join(target, 'licenses', name + '.txt'), 'w', encoding='utf-8', newline='\n') as handle:
-                handle.write(wheel.read(licence).decode('utf-8'))
-        versions.append("    '%s': '%s',\n" % (name, version))
-    with io.open(os.path.join(target, '__init__.py'), 'w', encoding='utf-8', newline='\n') as handle:
-        handle.write(INIT % ''.join(versions))
+    for pin in PINS:
+        vendor_pin(pin, target, cache)
+    versions = ["    '%s': '%s',\n" % (pin.name, pin.version) for pin in PINS]
+    write_text(os.path.join(target, '__init__.py'), INIT % ''.join(versions))
 
 
 def snapshot(root):
@@ -131,11 +186,32 @@ def snapshot(root):
     return files
 
 
-def main(argv=None):
+def check_against(fresh):
+    expected = snapshot(fresh)
+    actual = snapshot(VENDOR_DIR)
+    differ = sorted(name for name in set(expected) | set(actual) if expected.get(name) != actual.get(name))
+    if differ:
+        raise SystemExit('packages/core/vendor differs from the pins: %s' % ', '.join(differ))
+    print('packages/core/vendor matches the pins')
+
+
+def replace_vendor_dir(fresh):
+    if os.path.isdir(VENDOR_DIR):
+        shutil.rmtree(VENDOR_DIR)
+    shutil.copytree(fresh, VENDOR_DIR)
+    pinned = ', '.join('%s %s' % (pin.name, pin.version) for pin in PINS)
+    print('vendored %s into %s' % (pinned, VENDOR_DIR))
+
+
+def parse_args(argv):
     parser = argparse.ArgumentParser(description='Vendor the pinned py2.7 libraries into packages/core/vendor')
     parser.add_argument('--check', action='store_true', help='fail when packages/core/vendor differs from the pins')
     parser.add_argument('--cache', help='a folder with the pinned wheels (downloaded when missing)')
-    args = parser.parse_args(argv)
+    return parser.parse_args(argv)
+
+
+def main(argv=None):
+    args = parse_args(argv)
     work = tempfile.mkdtemp(prefix='otmetki-vendor-')
     try:
         cache = args.cache or os.path.join(work, 'wheels')
@@ -143,16 +219,9 @@ def main(argv=None):
         fresh = os.path.join(work, 'vendor')
         vendor_into(fresh, cache)
         if args.check:
-            expected, actual = snapshot(fresh), snapshot(VENDOR_DIR)
-            differ = sorted(name for name in set(expected) | set(actual) if expected.get(name) != actual.get(name))
-            if differ:
-                raise SystemExit('packages/core/vendor differs from the pins: %s' % ', '.join(differ))
-            print('packages/core/vendor matches the pins')
-            return
-        if os.path.isdir(VENDOR_DIR):
-            shutil.rmtree(VENDOR_DIR)
-        shutil.copytree(fresh, VENDOR_DIR)
-        print('vendored %s into %s' % (', '.join('%s %s' % (pin[0], pin[1]) for pin in PINS), VENDOR_DIR))
+            check_against(fresh)
+        else:
+            replace_vendor_dir(fresh)
     finally:
         shutil.rmtree(work, ignore_errors=True)
 

@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....hud import HudPreview
 from ....log import log
+from ....vendor import attr
 from ...battle import BattleHooks
 from ...component import FeatureComponent
 from .. import hud_layer, stock_control
@@ -9,34 +10,55 @@ from ..modes import current_mode
 from ..stock.constants import EXTENDED_INFO_EVENT
 
 
+@attr.s(frozen=True)
+class PanelSpec(object):
+    """What a BattlePanel is: its HUD `panel_id` (also its settings component), settings `schema`, config `switch`,
+    i18n `strings`, the edit-mode `preview_size` and the optional `preview_text` / `preview_widget` sample builders,
+    each called as `(settings, translate)`."""
+
+    panel_id = attr.ib()
+    schema = attr.ib()
+    switch = attr.ib()
+    strings = attr.ib()
+    preview_size = attr.ib()
+    preview_text = attr.ib(default=None)
+    preview_widget = attr.ib(default=None)
+
+
 class BattlePanel(FeatureComponent):
-    """A battle HUD panel of the shared HUD layer. `start(*args)` runs on `start_event` (the player's own
-    battle, never a replay) when the switch is on, `stop()` on `battle_leave` and before every start;
-    subscriptions made through `self.hooks` are removed and the panel is hidden then. `preview_text()` is
-    the sample the HUD editor and the hangar preview show: `preview(settings, translate)` unless overridden.
+    """A battle HUD panel of the shared HUD layer. `start(*args)` runs on `start_event` (the player's own battle, never
+    a replay) when the switch is on, `stop()` on `battle_leave` and before every start; subscriptions made through
+    `self.hooks` are removed and the panel is hidden then. `preview_text()` is the sample the HUD editor and the hangar
+    preview show. `spec` is the panel's PanelSpec.
 
     At the start the layer takes the layout of the battle type (`core.hud.modes`): a panel the type leaves out does not
     start (so it replaces nothing), and the layout ends with the battle.
 
     `show(text, widget)` sends the GUIFlash text and the Gameface widget payload. A panel that replaces a stock element
-    returns its aliases from `stock_aliases()`: they are hidden while the panel runs and the Gameface page draws widgets,
-    and come back when the panel stops, is switched off or the renderer is GUIFlash.
+    returns its aliases from `stock_aliases()`: they are hidden while the panel runs and the Gameface page draws
+    widgets, and come back when the panel stops, is switched off or the renderer is GUIFlash.
 
     A panel with an alternate mode reads `extended()` (Alt held, the stock extended-info key) while it builds its
     payload and re-renders from `extended_changed(held)`, called while it runs."""
 
     start_event = 'battle_ready'
 
-    def __init__(self, app, panel_id, schema, switch, strings, preview_size, preview=None, preview_widget=None):
+    def __init__(self, app, spec):
         self.hud = hud_layer(app)
         self.stock = stock_control(app)
-        self.preview_source = preview
-        self.preview_widget_source = preview_widget
+        self.spec = spec
         self.running = False
-        FeatureComponent.__init__(self, app, panel_id, schema, switch, strings)
+        FeatureComponent.__init__(self, app, spec.panel_id, spec.schema, spec.switch, spec.strings)
         self.hooks = BattleHooks()
-        self.preview = HudPreview(self.hud, panel_id, self.preview_text, self.enabled, self._in_hangar, preview_size,
-                                  self.preview_widget).attach(app.bus)
+        self.preview = HudPreview(
+            self.hud,
+            spec.panel_id,
+            self.preview_text,
+            self.enabled,
+            self._in_hangar,
+            spec.preview_size,
+            self.preview_widget,
+        ).attach(app.bus)
         app.bus.on(self.start_event, self._on_start)
         app.bus.on('battle_leave', self._leave_battle)
         app.bus.on(EXTENDED_INFO_EVENT, self._on_extended_info)
@@ -106,13 +128,6 @@ class BattlePanel(FeatureComponent):
     def hide(self):
         self.hud.hide(self.component_id)
 
-    def show_text(self, text):
-        """Show `text`, or hide the panel when it is empty."""
-        if text:
-            self.show(text)
-        else:
-            self.hide()
-
     def start(self, *args):
         pass
 
@@ -120,8 +135,13 @@ class BattlePanel(FeatureComponent):
         pass
 
     def preview_text(self):
-        return self.preview_source(self.settings, self.app.translate) if self.preview_source is not None else ''
+        """The sample text the edit mode shows: the spec's `preview_text(settings, translate)` unless overridden."""
+        if self.spec.preview_text is None:
+            return ''
+        return self.spec.preview_text(self.settings, self.app.translate)
 
     def preview_widget(self):
-        """The widget the edit mode shows: `preview_widget(settings, translate)` unless overridden."""
-        return self.preview_widget_source(self.settings, self.app.translate) if self.preview_widget_source is not None else None
+        """The widget the edit mode shows: the spec's `preview_widget(settings, translate)` unless overridden."""
+        if self.spec.preview_widget is None:
+            return None
+        return self.spec.preview_widget(self.settings, self.app.translate)

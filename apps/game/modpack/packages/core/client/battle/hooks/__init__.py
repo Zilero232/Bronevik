@@ -1,6 +1,8 @@
 """Subscriptions to battle-session events that may not exist yet when the avatar becomes ready."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import functools
+
 import BigWorld
 
 from ....hooks import subscribe, unsubscribe
@@ -27,20 +29,27 @@ class BattleHooks(object):
         if generation != self.generation:
             return
         try:
-            owner = resolve()
-            if owner is not None:
-                self.items.append((owner, name, subscribe(owner, name, handler)))
-                self._report(on_result, name, True)
-                return
+            attached = self._attach(resolve(), name, handler)
         except Exception:
             log_exception('hook %s' % name)
             self._report(on_result, name, False)
             return
+
+        if attached:
+            self._report(on_result, name, True)
+            return
         if attempt + 1 < self.attempts:
-            BigWorld.callback(self.retry_s, lambda: self._try(generation, resolve, name, handler, attempt + 1, on_result))
+            retry = functools.partial(self._try, generation, resolve, name, handler, attempt + 1, on_result)
+            BigWorld.callback(self.retry_s, retry)
             return
         log('battle hook %s: no owner after %d tries' % (name, self.attempts))
         self._report(on_result, name, False)
+
+    def _attach(self, owner, name, handler):
+        if owner is None:
+            return False
+        self.items.append((owner, name, subscribe(owner, name, handler)))
+        return True
 
     @staticmethod
     def _report(on_result, name, attached):

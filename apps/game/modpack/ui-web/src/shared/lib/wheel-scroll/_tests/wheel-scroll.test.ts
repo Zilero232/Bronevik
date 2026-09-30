@@ -9,62 +9,12 @@ import { forgetReports } from '../../page-diag';
 import { SMOOTH_SCROLL } from '../../smooth-scroll';
 import { bindWheelScroll, blockPageWheel, thumbOf, topFromThumb, wheelDelta, wheelScroll } from '../wheel-scroll';
 
+const STEP = 60;
+const unbinders: (() => void)[] = [];
+
 const glideOut = (): void => {
   vi.advanceTimersByTime(SMOOTH_SCROLL.durationMs * 2);
 };
-
-afterEach(() => {
-  forgetReports();
-  vi.useRealTimers();
-});
-
-describe(wheelScroll, () => {
-  it('scrolls down on a positive delta and up on a negative one, as the client scroll areas read it', () => {
-    expect(wheelScroll({ top: 100, deltaY: 120, max: 1000, step: 60 })).toBe(160);
-    expect(wheelScroll({ top: 100, deltaY: -3, max: 1000, step: 60 })).toBe(40);
-  });
-
-  it('moves one step per notch whatever the delta size', () => {
-    expect(wheelScroll({ top: 0, deltaY: 1, max: 1000, step: 60 })).toBe(60);
-    expect(wheelScroll({ top: 0, deltaY: 900, max: 1000, step: 60 })).toBe(60);
-  });
-
-  it('stays inside the content', () => {
-    expect(wheelScroll({ top: 980, deltaY: 100, max: 1000, step: 60 })).toBe(1000);
-    expect(wheelScroll({ top: 20, deltaY: -100, max: 1000, step: 60 })).toBe(0);
-    expect(wheelScroll({ top: 0, deltaY: 100, max: -50, step: 60 })).toBe(0);
-    expect(wheelScroll({ top: 40, deltaY: 0, max: 1000, step: 60 })).toBe(40);
-  });
-});
-
-describe(wheelDelta, () => {
-  it('reads deltaY, or the legacy wheelDelta an engine without deltaY sends, down as positive', () => {
-    expect(wheelDelta({ deltaY: 100 })).toBe(100);
-    expect(wheelDelta({ deltaY: 0, wheelDeltaY: -120 })).toBe(120);
-    expect(wheelDelta({ deltaY: Number.NaN, wheelDelta: 120 })).toBe(-120);
-    expect(wheelDelta({ deltaY: 0 })).toBe(0);
-  });
-});
-
-describe(thumbOf, () => {
-  it('hides the bar when everything fits', () => {
-    expect(thumbOf({ top: 0, content: 300, viewport: 400, minThumb: 24 }).visible).toBe(false);
-  });
-
-  it('sizes the thumb by the visible share and moves it along the track', () => {
-    expect(thumbOf({ top: 0, content: 800, viewport: 400, minThumb: 24 })).toEqual({ visible: true, size: 200, offset: 0 });
-    expect(thumbOf({ top: 400, content: 800, viewport: 400, minThumb: 24 })).toEqual({ visible: true, size: 200, offset: 200 });
-    expect(thumbOf({ top: 0, content: 40_000, viewport: 400, minThumb: 24 }).size).toBe(24);
-  });
-});
-
-describe(topFromThumb, () => {
-  it('turns a dragged thumb back into a scroll position', () => {
-    expect(topFromThumb({ offset: 100, size: 200, content: 800, viewport: 400, top: 0 })).toBe(200);
-    expect(topFromThumb({ offset: 900, size: 200, content: 800, viewport: 400, top: 0 })).toBe(400);
-    expect(topFromThumb({ offset: 50, size: 400, content: 400, viewport: 400, top: 0 })).toBe(0);
-  });
-});
 
 const box = ({ content, height, top = 0 }: { content: number; height: number; top?: number }): HTMLDivElement => {
   const element = document.createElement('div');
@@ -79,7 +29,6 @@ const box = ({ content, height, top = 0 }: { content: number; height: number; to
 
 const install = (scale: number) => {
   const mock = createGamefaceMock({ state: '', clientSize: () => ({ width: 1920, height: 1080 }), onSend: () => null });
-
   const viewEnv = mock.scope[GAMEFACE.globals.viewEnv];
 
   if (!isRecord(viewEnv)) {
@@ -94,86 +43,227 @@ const install = (scale: number) => {
 
 const notch = (deltaY: number) => new WheelEvent('wheel', { deltaY, bubbles: true, cancelable: true });
 
-describe(bindWheelScroll, () => {
-  it('glides its box on the wheel Gameface sends to a row inside it, by a step at the interface scale', () => {
-    vi.useFakeTimers({ toFake: ['requestAnimationFrame'] });
+const scrollArea = () => {
+  vi.useFakeTimers({ toFake: ['requestAnimationFrame'] });
 
-    const mock = install(2);
-    const area = box({ content: 2000, height: 500 });
-    const row = document.createElement('div');
-    const onScrolled = vi.fn();
+  const mock = install(2);
+  const area = box({ content: 2000, height: 500 });
+  const row = document.createElement('div');
+  const onScrolled = vi.fn();
 
-    area.append(row);
-    document.body.append(area);
+  area.append(row);
+  document.body.append(area);
 
-    const unbind = bindWheelScroll({ element: area, onScrolled });
-    const down = notch(100);
+  const unbind = bindWheelScroll({ element: area, onScrolled });
 
-    row.dispatchEvent(down);
+  unbinders.push(unbind);
+
+  const wheel = (deltaY: number) => {
+    const event = notch(deltaY);
+
+    row.dispatchEvent(event);
     glideOut();
 
-    expect(area.scrollTop).toBe(SCROLL_AREA.step * 2);
-    expect(down.defaultPrevented).toBe(true);
-    expect(onScrolled).toHaveBeenCalled();
+    return event;
+  };
 
-    expect(
-      mock
-        .sent()
-        .map((raw): { type: string } => JSON.parse(raw))
-        .map((message) => message.type)
-    ).toEqual(['diag']);
+  return { mock, area, onScrolled, unbind, wheel };
+};
 
-    row.dispatchEvent(notch(-100));
+const nestedAreas = () => {
+  vi.useFakeTimers({ toFake: ['requestAnimationFrame'] });
+  install(1);
+
+  const outer = box({ content: 2000, height: 500 });
+  const inner = box({ content: 900, height: 300 });
+  const leaf = document.createElement('span');
+
+  inner.append(leaf);
+  outer.append(inner);
+  document.body.append(outer);
+  unbinders.push(bindWheelScroll({ element: outer }), bindWheelScroll({ element: inner }));
+
+  const wheelDown = () => {
+    leaf.dispatchEvent(notch(100));
     glideOut();
+  };
 
-    expect(area.scrollTop).toBe(0);
+  return { outer, inner, wheelDown };
+};
 
-    unbind();
-    row.dispatchEvent(notch(100));
-    glideOut();
+afterEach(() => {
+  unbinders.splice(0).forEach((unbind) => unbind());
+  document.body.replaceChildren();
+  forgetReports();
+  vi.useRealTimers();
+});
 
-    expect(area.scrollTop).toBe(0);
-    area.remove();
+describe(wheelScroll, () => {
+  it('scrolls down on a positive delta, as the client scroll areas read it', () => {
+    expect(wheelScroll({ top: 100, deltaY: 120, max: 1000, step: STEP })).toBe(160);
   });
 
-  it('keeps the wheel for the inner box and hands it to the outer one at the inner end', () => {
-    vi.useFakeTimers({ toFake: ['requestAnimationFrame'] });
-    install(1);
+  it('scrolls up on a negative delta', () => {
+    expect(wheelScroll({ top: 100, deltaY: -3, max: 1000, step: STEP })).toBe(40);
+  });
 
-    const outer = box({ content: 2000, height: 500 });
-    const inner = box({ content: 900, height: 300 });
-    const leaf = document.createElement('span');
+  it.each([1, 900])('moves one step per notch for a delta of %d', (deltaY) => {
+    expect(wheelScroll({ top: 0, deltaY, max: 1000, step: STEP })).toBe(60);
+  });
 
-    inner.append(leaf);
-    outer.append(inner);
-    document.body.append(outer);
+  it('stops at the end of the content', () => {
+    expect(wheelScroll({ top: 980, deltaY: 100, max: 1000, step: STEP })).toBe(1000);
+  });
 
-    const unbind = [bindWheelScroll({ element: outer }), bindWheelScroll({ element: inner })];
+  it('stops at the start of the content', () => {
+    expect(wheelScroll({ top: 20, deltaY: -100, max: 1000, step: STEP })).toBe(0);
+  });
 
-    leaf.dispatchEvent(notch(100));
-    glideOut();
+  it('stays at the top when the content fits', () => {
+    expect(wheelScroll({ top: 0, deltaY: 100, max: -50, step: STEP })).toBe(0);
+  });
 
-    expect([inner.scrollTop, outer.scrollTop]).toEqual([SCROLL_AREA.step, 0]);
+  it('stays put without a delta', () => {
+    expect(wheelScroll({ top: 40, deltaY: 0, max: 1000, step: STEP })).toBe(40);
+  });
+});
+
+describe(wheelDelta, () => {
+  it('reads deltaY, down as positive', () => {
+    expect(wheelDelta({ deltaY: 100 })).toBe(100);
+  });
+
+  it('reads the legacy wheelDeltaY an engine without deltaY sends, down as positive', () => {
+    expect(wheelDelta({ deltaY: 0, wheelDeltaY: -120 })).toBe(120);
+  });
+
+  it('reads the legacy wheelDelta when deltaY is not a number', () => {
+    expect(wheelDelta({ deltaY: Number.NaN, wheelDelta: 120 })).toBe(-120);
+  });
+
+  it('reads no movement from an event without any delta', () => {
+    expect(wheelDelta({ deltaY: 0 })).toBe(0);
+  });
+});
+
+describe(thumbOf, () => {
+  it('hides the bar when everything fits', () => {
+    expect(thumbOf({ top: 0, content: 300, viewport: 400, minThumb: 24 }).visible).toBe(false);
+  });
+
+  it('sizes the thumb by the visible share', () => {
+    expect(thumbOf({ top: 0, content: 800, viewport: 400, minThumb: 24 })).toEqual({ visible: true, size: 200, offset: 0 });
+  });
+
+  it('moves the thumb along the track with the scroll position', () => {
+    expect(thumbOf({ top: 400, content: 800, viewport: 400, minThumb: 24 })).toEqual({ visible: true, size: 200, offset: 200 });
+  });
+
+  it('never shrinks the thumb below its minimum', () => {
+    expect(thumbOf({ top: 0, content: 40_000, viewport: 400, minThumb: 24 }).size).toBe(24);
+  });
+});
+
+describe(topFromThumb, () => {
+  it('turns a dragged thumb back into a scroll position', () => {
+    expect(topFromThumb({ offset: 100, size: 200, content: 800, viewport: 400, top: 0 })).toBe(200);
+  });
+
+  it('stops at the end of the content for a thumb dragged past the track', () => {
+    expect(topFromThumb({ offset: 900, size: 200, content: 800, viewport: 400, top: 0 })).toBe(400);
+  });
+
+  it('stays at the top when the content fits', () => {
+    expect(topFromThumb({ offset: 50, size: 400, content: 400, viewport: 400, top: 0 })).toBe(0);
+  });
+});
+
+describe(bindWheelScroll, () => {
+  it('glides its box on the wheel Gameface sends to a row inside it, by a step at the interface scale', () => {
+    const { area, wheel } = scrollArea();
+
+    wheel(100);
+
+    expect(area.scrollTop).toBe(SCROLL_AREA.step * 2);
+  });
+
+  it('keeps the wheel it handles from the engine', () => {
+    const { wheel } = scrollArea();
+
+    const event = wheel(100);
+
+    expect(event.defaultPrevented).toBe(true);
+  });
+
+  it('tells the page it scrolled', () => {
+    const { onScrolled, wheel } = scrollArea();
+
+    wheel(100);
+
+    expect(onScrolled).toHaveBeenCalled();
+  });
+
+  it('reports the wheel it hears to the game log only', () => {
+    const { mock, wheel } = scrollArea();
+
+    wheel(100);
+
+    const types = mock
+      .sent()
+      .map((raw): { type: string } => JSON.parse(raw))
+      .map((message) => message.type);
+
+    expect(types).toEqual(['diag']);
+  });
+
+  it('glides back up on a notch the other way', () => {
+    const { area, wheel } = scrollArea();
+
+    wheel(100);
+
+    wheel(-100);
+
+    expect(area.scrollTop).toBe(0);
+  });
+
+  it('ignores the wheel once unbound', () => {
+    const { area, unbind, wheel } = scrollArea();
+
+    unbind();
+
+    wheel(100);
+
+    expect(area.scrollTop).toBe(0);
+  });
+
+  it('keeps the wheel for the inner box while it can scroll', () => {
+    const { outer, inner, wheelDown } = nestedAreas();
+
+    wheelDown();
+
+    expect(inner.scrollTop).toBe(SCROLL_AREA.step);
+    expect(outer.scrollTop).toBe(0);
+  });
+
+  it('hands the wheel to the outer box at the inner end', () => {
+    const { outer, inner, wheelDown } = nestedAreas();
 
     inner.scrollTop = 600;
-    leaf.dispatchEvent(notch(100));
-    glideOut();
 
-    expect([inner.scrollTop, outer.scrollTop]).toEqual([600, SCROLL_AREA.step]);
+    wheelDown();
 
-    unbind.forEach((off) => off());
-    outer.remove();
+    expect(inner.scrollTop).toBe(600);
+    expect(outer.scrollTop).toBe(SCROLL_AREA.step);
   });
 });
 
 describe(blockPageWheel, () => {
   it('never lets the engine scroll the page natively', () => {
-    const unbind = blockPageWheel(document);
+    unbinders.push(blockPageWheel(document));
     const outside = notch(100);
 
     document.body.dispatchEvent(outside);
 
     expect(outside.defaultPrevented).toBe(true);
-    unbind();
   });
 });

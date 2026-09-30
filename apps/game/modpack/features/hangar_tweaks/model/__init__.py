@@ -7,4 +7,13 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from .actions import plan_crew_return, plan_crew_unload, plan_demount, plan_style_removal  # noqa: F401
 from .carousel import scale_index, to_native, with_interface_scale  # noqa: F401
-from .constants import ACTION_CREW, ACTION_DEMOUNT, ACTION_RETURN, ACTION_STYLE, REFUSE_BERTHS, REFUSE_LOCKED, REFUSE_NOTHING  # noqa: F401
+from .constants import (  # noqa: F401
+    ACTION_CREW,
+    ACTION_DEMOUNT,
+    ACTION_KEYS,
+    ACTION_RETURN,
+    ACTION_STYLE,
+    REFUSE_BERTHS,
+    REFUSE_LOCKED,
+    REFUSE_NOTHING,
+)

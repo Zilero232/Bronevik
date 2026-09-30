@@ -12,7 +12,6 @@ class FramePush(object):
         self.send = send
         self.pending = False
         self.sent = None
-        self.pushes = 0
 
     def request(self):
         if not self.pending:
@@ -25,7 +24,6 @@ class FramePush(object):
         if text is None or text == self.sent:
             return False
         self.sent = text
-        self.pushes += 1
         self.send(text)
         return True
 

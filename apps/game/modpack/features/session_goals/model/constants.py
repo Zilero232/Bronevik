@@ -29,9 +29,26 @@ TITLE_SIZE_STEP = 2
 
 PREVIEW_SIZE = (340, 50)
 PREVIEW_GOALS = (
-    {'id': 'preview-1', 'metric': 'avgDamage', 'tank_id': None, 'target': 3000.0, 'baseline': 2410.0, 'current': 2740.4, 'battles': 12,
-     'status': 'active'},
-    {'id': 'preview-2', 'metric': 'battles', 'tank_id': None, 'target': 10.0, 'baseline': 0.0, 'current': 9.0, 'battles': 9, 'status': 'active'},
+    {
+        'id': 'preview-1',
+        'metric': 'avgDamage',
+        'tank_id': None,
+        'target': 3000.0,
+        'baseline': 2410.0,
+        'current': 2740.4,
+        'battles': 12,
+        'status': 'active',
+    },
+    {
+        'id': 'preview-2',
+        'metric': 'battles',
+        'tank_id': None,
+        'target': 10.0,
+        'baseline': 0.0,
+        'current': 9.0,
+        'battles': 9,
+        'status': 'active',
+    },
 )
 PREVIEW_DAMAGE = 1450
 

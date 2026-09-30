@@ -33,17 +33,17 @@ def describe_field(settings, key, component_id, labels):
         field['min'] = low
         field['max'] = high
     elif kind == TYPE_CHOICE:
-        field['choices'] = [{'value': value, 'label': labels.choice(component_id, key, value)} for value in schema.choices[key]]
+        field['choices'] = [_choice(labels, component_id, key, value) for value in schema.choices[key]]
     elif kind == TYPE_TEXT:
         field['max_length'] = TEXT_MAX_LENGTH
     return field
 
 
+def _choice(labels, component_id, key, value):
+    return {'value': value, 'label': labels.choice(component_id, key, value)}
+
+
 def describe_fields(settings, keys, component_id, labels):
-    fields = []
-    for key in keys:
-        if key in settings.schema.defaults:
-            field = describe_field(settings, key, component_id, labels)
-            if field is not None:
-                fields.append(field)
-    return fields
+    known_keys = [key for key in keys if key in settings.schema.defaults]
+    fields = [describe_field(settings, key, component_id, labels) for key in known_keys]
+    return [field for field in fields if field is not None]

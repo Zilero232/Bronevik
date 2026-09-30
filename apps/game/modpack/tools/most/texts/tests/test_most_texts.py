@@ -41,6 +41,13 @@ CHANGELOG = u"""# Changelog
 - Old.
 """
 FIRST = {'ru': '- First release.', 'en': '- First release.'}
+PANEL_CHANGES = {'ru': u'- Крупнее шрифт.', 'en': '- Bigger font.'}
+ENGLISH_ONLY = {'en': '- English only.'}
+GAME_VERSION = '1.45.0.0'
+GAMEFACE_LINE_RU = (
+    u'- OpenWG Gameface 1.2.2 (`net.openwg.gameface_1.2.2.mtmod`, лицензия MIT, автор OpenWG): '
+    u'https://gitlab.com/openwg/wot.gameface'
+)
 
 
 @unittest.skipUnless(PY3, 'the MOST bundler needs Python 3')
@@ -51,91 +58,139 @@ class TextsTest(unittest.TestCase):
         self.addCleanup(shutil.rmtree, self.tmp)
         self.manifest, _, _ = load_manifest(self.tmp, write_build(self.tmp))
 
-    def test_changelog_entries_by_component_then_version(self):
+    def component(self, key):
+        return self.manifest.component(key)
+
+    def description(self, key, language, changes):
+        return texts.description(self.component(key), self.manifest, language, GAME_VERSION, changes)
+
+    def test_parse_changelog_reads_a_component_entry_per_language(self):
         changelog = texts.parse_changelog(CHANGELOG)
-        self.assertEqual(changelog[('marks_panel', '0.2.0')], {'ru': u'- Крупнее шрифт.', 'en': '- Bigger font.'})
-        self.assertEqual(texts.changelog_entry(changelog, self.manifest.component('marks_panel')), changelog[('marks_panel', '0.2.0')])
-        self.assertEqual(texts.changelog_entry(changelog, self.manifest.component('core')), FIRST)
-        self.assertIsNone(texts.changelog_entry({}, self.manifest.component('core')))
+
+        self.assertEqual(changelog[('marks_panel', '0.2.0')], PANEL_CHANGES)
+
+    def test_changelog_entry_prefers_the_components_own_entry(self):
+        changelog = texts.parse_changelog(CHANGELOG)
+
+        entry = texts.changelog_entry(changelog, self.component('marks_panel'))
+
+        self.assertEqual(entry, PANEL_CHANGES)
+
+    def test_changelog_entry_falls_back_to_the_modpack_entry_of_its_version(self):
+        changelog = texts.parse_changelog(CHANGELOG)
+
+        entry = texts.changelog_entry(changelog, self.component('core'))
+
+        self.assertEqual(entry, FIRST)
+
+    def test_changelog_entry_is_none_without_an_entry(self):
+        entry = texts.changelog_entry({}, self.component('core'))
+
+        self.assertIsNone(entry)
 
     def test_an_entry_without_language_sections_serves_both_languages(self):
         entry = texts.parse_changelog(CHANGELOG)[(None, '0.1.0')]
-        self.assertEqual(sorted(entry), sorted(texts.LANGUAGES))
-        self.assertEqual(len(set(entry.values())), 1)
 
-    def test_ru_text_is_preferred_and_falls_back_to_en(self):
-        changelog = texts.parse_changelog(CHANGELOG)
-        bilingual = changelog[('marks_panel', '0.2.0')]
-        english_only = changelog[('core', '0.3.0')]
-        self.assertEqual(texts.changes_text(bilingual, 'ru'), bilingual['ru'])
-        self.assertEqual(texts.changes_text(bilingual, 'en'), bilingual['en'])
-        self.assertEqual(texts.changes_text(english_only, 'ru'), english_only['en'])
+        self.assertEqual(entry, FIRST)
+
+    def test_changes_text_takes_the_asked_language(self):
+        self.assertEqual(texts.changes_text(PANEL_CHANGES, 'ru'), PANEL_CHANGES['ru'])
+        self.assertEqual(texts.changes_text(PANEL_CHANGES, 'en'), PANEL_CHANGES['en'])
+
+    def test_changes_text_falls_back_to_the_other_language(self):
+        text = texts.changes_text(ENGLISH_ONLY, 'ru')
+
+        self.assertEqual(text, '- English only.')
+
+    def test_changes_text_is_none_without_an_entry(self):
         self.assertIsNone(texts.changes_text(None, 'ru'))
 
     def test_description_takes_the_changes_in_its_language(self):
-        panel = self.manifest.component('marks_panel')
-        changes = texts.parse_changelog(CHANGELOG)[('marks_panel', '0.2.0')]
-        russian = texts.description(panel, self.manifest, 'ru', '1.45.0.0', changes)
-        english = texts.description(panel, self.manifest, 'en', '1.45.0.0', changes)
-        self.assertIn(changes['ru'], russian)
-        self.assertNotIn(changes['en'], russian)
-        self.assertIn(changes['en'], english)
+        russian = self.description('marks_panel', 'ru', PANEL_CHANGES)
+        english = self.description('marks_panel', 'en', PANEL_CHANGES)
+
+        self.assertIn(PANEL_CHANGES['ru'], russian)
+        self.assertNotIn(PANEL_CHANGES['en'], russian)
+        self.assertIn(PANEL_CHANGES['en'], english)
 
     def test_changelog_markdown_reads_back_as_the_same_entry(self):
-        panel = self.manifest.component('marks_panel')
-        changes = texts.parse_changelog(CHANGELOG)[('marks_panel', '0.2.0')]
-        self.assertEqual(texts.parse_changelog(texts.changelog_markdown(panel, changes))[(panel.id, panel.version)], changes)
+        panel = self.component('marks_panel')
+
+        markdown = texts.changelog_markdown(panel, PANEL_CHANGES)
+
+        self.assertEqual(texts.parse_changelog(markdown)[(panel.id, panel.version)], PANEL_CHANGES)
 
     def test_an_entry_without_russian_text_is_a_warning(self):
-        english_only = texts.parse_changelog(CHANGELOG)[('core', '0.3.0')]
-        findings = texts.check_texts(self.manifest.component('core'), english_only)
+        findings = texts.check_texts(self.component('core'), ENGLISH_ONLY)
+
         self.assertEqual(findings.errors, [])
-        self.assertTrue(any('### ru' in item.message for item in findings.warnings))
-        self.assertEqual(texts.check_texts(self.manifest.component('core'), FIRST).items, [])
+        self.assertTrue([item for item in findings.warnings if '### ru' in item.message])
+
+    def test_a_bilingual_entry_passes(self):
+        findings = texts.check_texts(self.component('core'), FIRST)
+
+        self.assertEqual(findings.items, [])
+
+    def test_missing_changelog_is_one_warning(self):
+        findings = texts.check_texts(self.component('core'), None)
+
+        self.assertEqual(findings.errors, [])
+        self.assertEqual(len(findings.warnings), 1)
 
     def test_forum_title_starts_with_the_client_version(self):
-        title = texts.forum_title('1.45.0.0', self.manifest.component('core'), 'ru')
+        title = texts.forum_title(GAME_VERSION, self.component('core'), 'ru')
+
         self.assertTrue(title.startswith(u'[1.45.0.0] Три отметки — '))
 
-    def test_description_lists_dependencies_fair_play_and_data(self):
-        companion = self.manifest.component('companion')
-        text = texts.description(companion, self.manifest, 'ru', '1.45.0.0', FIRST)
+    def test_description_lists_fair_play_dependencies_data_and_install_folder(self):
+        companion = self.component('companion')
+
+        text = self.description('companion', 'ru', FIRST)
+
         self.assertIn(companion.fair_play.ru, text)
         self.assertIn('`net.triotmetki.core` 0.1.0', text)
         self.assertIn(texts.LABELS['ru']['data'], text)
         self.assertIn('mods/1.45.0.0/', text)
-        english = texts.description(self.manifest.component('core'), self.manifest, 'en', '1.45.0.0', None)
+
+    def test_description_without_dependencies_or_changes_says_so(self):
+        english = self.description('core', 'en', None)
+
         self.assertIn(texts.LABELS['en']['no_dependencies'], english)
         self.assertIn(texts.LABELS['en']['no_changes'], english)
         self.assertNotIn(texts.LABELS['en']['data'], english)
+        self.assertNotIn(texts.LABELS['en']['external'], english)
 
     def test_description_lists_third_party_mods_as_external_requirements(self):
-        panel = self.manifest.component('marks_panel')
-        russian = texts.description(panel, self.manifest, 'ru', '1.45.0.0', FIRST)
-        english = texts.description(panel, self.manifest, 'en', '1.45.0.0', FIRST)
+        russian = self.description('marks_panel', 'ru', FIRST)
+        english = self.description('marks_panel', 'en', FIRST)
+
         self.assertIn(texts.LABELS['ru']['external'], russian)
-        self.assertIn(u'- OpenWG Gameface 1.2.2 (`net.openwg.gameface_1.2.2.mtmod`, лицензия MIT, автор OpenWG): https://gitlab.com/openwg/wot.gameface',
-                      russian)
+        self.assertIn(GAMEFACE_LINE_RU, russian)
         self.assertIn('- GUIFlash 0.6.6 (`gambiter.guiflash_0.6.6.mtmod`, MIT licence', english)
         self.assertIn('`net.triotmetki.core` 0.1.0', english)
-        self.assertNotIn(texts.LABELS['en']['external'], texts.description(self.manifest.component('core'), self.manifest, 'en', '1.45.0.0', None))
 
     def test_external_dependency_list_names_the_upstream(self):
-        items = texts.external_dependency_list(self.manifest.component('marks_panel'), self.manifest)
-        self.assertEqual([(item['id'], item['packageId'], item['version']) for item in items],
-                         [('openwg_gameface', 'net.openwg.gameface', '1.2.2'), ('guiflash', 'gambiter.guiflash', '0.6.6')])
+        items = texts.external_dependency_list(self.component('marks_panel'), self.manifest)
+
+        upstream = [(item['id'], item['packageId'], item['version']) for item in items]
+        self.assertEqual(
+            upstream,
+            [('openwg_gameface', 'net.openwg.gameface', '1.2.2'), ('guiflash', 'gambiter.guiflash', '0.6.6')],
+        )
         self.assertEqual(items[1]['url'], 'https://github.com/CH4MPi/GUIFlash')
-        self.assertEqual(texts.external_dependency_list(self.manifest.component('companion'), self.manifest), [])
+
+    def test_external_dependency_list_is_empty_for_a_component_without_them(self):
+        items = texts.external_dependency_list(self.component('companion'), self.manifest)
+
+        self.assertEqual(items, [])
 
     def test_dependency_list_carries_titles(self):
-        items = texts.dependency_list(self.manifest.component('marks_panel'), self.manifest)
-        self.assertEqual([item['id'] for item in items], ['core', 'companion'])
-        self.assertTrue(all(item['title']['ru'] and item['title']['en'] for item in items))
+        items = texts.dependency_list(self.component('marks_panel'), self.manifest)
 
-    def test_missing_changelog_is_a_warning(self):
-        findings = texts.check_texts(self.manifest.component('core'), None)
-        self.assertEqual(findings.errors, [])
-        self.assertEqual(len(findings.warnings), 1)
+        self.assertEqual([item['id'] for item in items], ['core', 'companion'])
+        for item in items:
+            self.assertTrue(item['title']['ru'])
+            self.assertTrue(item['title']['en'])
 
 
 if __name__ == '__main__':

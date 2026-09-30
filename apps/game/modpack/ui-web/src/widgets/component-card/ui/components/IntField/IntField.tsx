@@ -21,7 +21,7 @@ export const IntField = ({ field, onSet }: IntFieldProps) => {
         inputMode='numeric'
         value={control.text}
         onBlur={control.commit}
-        onInput={(event) => control.edit(event.currentTarget.value)}
+        onChange={(event) => control.edit(event.currentTarget.value)}
         onKeyDown={(event) => control.onKey(event.key)}
       />
       <IconButton disabled={!control.canIncrease} icon='plus' label={t('increase')} size='small' onClick={control.increase} />

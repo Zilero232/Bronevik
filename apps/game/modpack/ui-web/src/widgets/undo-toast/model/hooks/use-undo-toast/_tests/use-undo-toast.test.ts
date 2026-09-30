@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act } from 'preact/test-utils';
+import { act } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { $undo } from '../../../../../../entities/window-state';

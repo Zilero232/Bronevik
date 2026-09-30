@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useEffectEvent, useState } from 'react';
 
 import type { UseHoveredPanelInput } from './use-hovered-panel.types';
 
@@ -21,16 +21,14 @@ const hoveredId = ({ targets }: Pick<UseHoveredPanelInput, 'targets'>): string |
 
 export const useHoveredPanel = ({ active, targets }: UseHoveredPanelInput): string | null => {
   const [hovered, setHovered] = useState<string | null>(null);
-  const targetsRef = useRef(targets);
-
-  targetsRef.current = targets;
+  const poll = useEffectEvent(() => setHovered(hoveredId({ targets })));
 
   useEffect(() => {
     if (!active) {
       return undefined;
     }
 
-    const timer = setInterval(() => setHovered(hoveredId({ targets: targetsRef.current })), HUD_OVERLAY.hoverPollMs);
+    const timer = setInterval(poll, HUD_OVERLAY.hoverPollMs);
 
     return () => {
       clearInterval(timer);

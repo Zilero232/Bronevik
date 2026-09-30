@@ -1,4 +1,4 @@
-import { useState } from 'preact/hooks';
+import { useState } from 'react';
 
 import type { RowChoice, RowDraft, UseListPageInput } from './use-list-page.types';
 

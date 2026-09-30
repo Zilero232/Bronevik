@@ -23,8 +23,8 @@ export const SearchBox = ({ query, onChange, onClear }: SearchBoxProps) => {
         placeholder={t('searchPlaceholder')}
         value={query}
         variant='wide'
+        onChange={(event) => onChange(event.currentTarget.value)}
         onEscape={search.onEscape}
-        onInput={(event) => onChange(event.currentTarget.value)}
       />
       {query && <IconButton className={s.clear} icon='x' label={t('searchClear')} size='small' variant='ghost' onClick={onClear} />}
     </div>

@@ -1,4 +1,4 @@
-import { useMemo } from 'preact/hooks';
+import { useMemo } from 'react';
 
 import type { UseHudSampleInput } from './use-hud-sample.types';
 

@@ -1,12 +1,12 @@
 // @vitest-environment jsdom
-import { h } from 'preact';
+import { createElement } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { mountOnce } from '../mount-once';
 
 const ID = 'otmetki-test-host';
 
-const mountText = (text: string) => mountOnce({ id: ID, node: h('span', null, text) });
+const mountText = (text: string) => mountOnce({ id: ID, node: createElement('span', null, text) });
 
 const hostText = () => document.getElementById(ID)?.textContent;
 

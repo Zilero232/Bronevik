@@ -1,4 +1,4 @@
-import { useState } from 'preact/hooks';
+import { useState } from 'react';
 
 import type { UiProfile } from '../../../../../shared/api/protocol';
 import type { RenameDraft } from './use-profile-rename.types';

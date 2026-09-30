@@ -1,5 +1,5 @@
-import { useStore } from '@nanostores/preact';
-import { useEffect, useState } from 'preact/hooks';
+import { useStore } from '@nanostores/react';
+import { useEffect, useState } from 'react';
 
 import type { UndoEntry } from '../../../../../entities/window-state';
 

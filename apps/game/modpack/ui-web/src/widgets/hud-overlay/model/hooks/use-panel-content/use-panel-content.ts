@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'preact/hooks';
+import { useMemo, useRef } from 'react';
 
 import type { ResolvedWidget } from '../../../../../entities/hud-widgets/registry';
 import type { HudPanel, HudState } from '../../../../../shared/api/hud-protocol';

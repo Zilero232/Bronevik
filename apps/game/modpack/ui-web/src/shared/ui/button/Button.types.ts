@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes } from 'preact';
+import type { ButtonHTMLAttributes } from 'react';
 
 export type ButtonVariant = 'accent' | 'danger' | 'default' | 'ghost';
 

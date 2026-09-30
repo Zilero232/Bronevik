@@ -8,7 +8,7 @@ export const RowDraftEditor = ({ item, draftValue }: RowDraftEditorProps) => {
 
   return (
     <ListItemActions>
-      <ListItemInput aria-label={item.row.title} value={draftValue} onInput={(event) => item.editDraft(event.currentTarget.value)} />
+      <ListItemInput aria-label={item.row.title} value={draftValue} onChange={(event) => item.editDraft(event.currentTarget.value)} />
       <ListItemButton variant='accent' onClick={item.submit}>
         {t('save')}
       </ListItemButton>

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'react';
 
 import type { UiWindow } from '../../../../../shared/api/protocol';
 import type { Frame } from '../../../lib/frame';

@@ -1,4 +1,4 @@
-import { useEffect } from 'preact/hooks';
+import { useEffect } from 'react';
 
 import type { EquipmentItem } from '../../schemas';
 import type { ItemTooltip } from './use-item-tooltip.types';

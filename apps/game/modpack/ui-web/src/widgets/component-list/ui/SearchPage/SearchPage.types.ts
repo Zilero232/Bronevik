@@ -1,4 +1,4 @@
-import type { ComponentType } from 'preact';
+import type { ComponentType } from 'react';
 
 import type { CardProps } from '../components';
 

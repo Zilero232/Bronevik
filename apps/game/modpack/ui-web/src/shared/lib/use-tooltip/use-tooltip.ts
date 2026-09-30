@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'preact/hooks';
+import { useCallback, useEffect, useRef } from 'react';
 
 import type { TooltipProps } from './use-tooltip.types';
 

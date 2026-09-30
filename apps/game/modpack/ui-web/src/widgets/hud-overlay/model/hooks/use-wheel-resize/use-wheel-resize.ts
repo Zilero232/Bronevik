@@ -1,8 +1,9 @@
+import { useWindowEvent } from '@siberiacancode/reactuse';
+
 import type { UseWheelResizeInput } from './use-wheel-resize.types';
 
 import { sendHud } from '../../../../../shared/api/hud-protocol';
 import { rootScale } from '../../../../../shared/lib/hud-screen';
-import { useWindowEvent } from '../../../../../shared/lib/use-window-event';
 import { targetAt } from '../../../lib/hit-panel';
 import { wheelScale } from '../../../lib/panel-size';
 
@@ -25,5 +26,5 @@ export const useWheelResize = ({ edit, targets, onScaled, report }: UseWheelResi
     }
   };
 
-  useWindowEvent({ type: 'wheel', handler: resize });
+  useWindowEvent('wheel', resize, { passive: false });
 };

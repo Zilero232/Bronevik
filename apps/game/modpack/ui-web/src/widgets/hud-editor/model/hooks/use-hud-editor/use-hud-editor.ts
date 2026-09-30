@@ -1,4 +1,4 @@
-import { useRef, useState } from 'preact/hooks';
+import { useRef, useState } from 'react';
 
 import type { ClientSize } from '../../../../../shared/api/gameface';
 import type { UiPanel } from '../../../../../shared/api/protocol';

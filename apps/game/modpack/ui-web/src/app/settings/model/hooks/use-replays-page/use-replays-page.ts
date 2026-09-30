@@ -1,5 +1,5 @@
-import { useStore } from '@nanostores/preact';
-import { useEffect, useMemo } from 'preact/hooks';
+import { useStore } from '@nanostores/react';
+import { useEffect, useMemo } from 'react';
 
 import { REPLAYS } from '../../../../../entities/replays';
 import { $components, $feed, toggleSwitch, unwatchFeed, watchFeed } from '../../../../../entities/window-state';

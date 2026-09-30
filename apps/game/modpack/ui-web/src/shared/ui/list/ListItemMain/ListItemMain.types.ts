@@ -1,7 +1,7 @@
-import type { ComponentChildren } from 'preact';
+import type { ReactNode } from 'react';
 
 export type ListItemMainProps = {
   title: string;
-  badge?: ComponentChildren;
-  children?: ComponentChildren;
+  badge?: ReactNode;
+  children?: ReactNode;
 };

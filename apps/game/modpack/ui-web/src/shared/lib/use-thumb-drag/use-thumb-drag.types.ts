@@ -1,4 +1,4 @@
-import type { RefObject } from 'preact';
+import type { RefObject } from 'react';
 
 export type ThumbPress = Pick<MouseEvent, 'clientY' | 'preventDefault' | 'stopPropagation'>;
 
@@ -9,7 +9,7 @@ export type ThumbDrag = {
 };
 
 export type UseThumbDragInput = {
-  viewportRef: RefObject<HTMLElement>;
+  viewportRef: RefObject<HTMLElement | null>;
   visible: boolean;
   onDragged: () => void;
 };

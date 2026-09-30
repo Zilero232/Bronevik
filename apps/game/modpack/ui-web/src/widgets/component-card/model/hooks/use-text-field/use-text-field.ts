@@ -1,4 +1,4 @@
-import { useState } from 'preact/hooks';
+import { useState } from 'react';
 
 import type { UseTextFieldInput } from './use-text-field.types';
 

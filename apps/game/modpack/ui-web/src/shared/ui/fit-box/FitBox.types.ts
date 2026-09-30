@@ -1,3 +1,3 @@
-import type { ComponentChildren } from 'preact';
+import type { ReactNode } from 'react';
 
-export type FitBoxProps = { className?: string; children: ComponentChildren };
+export type FitBoxProps = { className?: string; children: ReactNode };

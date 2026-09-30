@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act } from 'preact/test-utils';
+import { act } from 'react';
 import { describe, expect, it } from 'vitest';
 
 import { stepBack } from '../../../lib/escape-stack';

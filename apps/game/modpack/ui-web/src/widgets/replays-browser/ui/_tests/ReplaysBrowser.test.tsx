@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act } from 'preact/test-utils';
+import { act } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { pageSample } from '../../../../entities/replays/_tests/fixtures';

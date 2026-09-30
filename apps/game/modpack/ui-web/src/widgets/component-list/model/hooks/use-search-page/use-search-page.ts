@@ -1,4 +1,4 @@
-import { useStore } from '@nanostores/preact';
+import { useStore } from '@nanostores/react';
 
 import { $hits, $query } from '../../../../../entities/window-state';
 import { splitColumns } from '../../../lib/columns';

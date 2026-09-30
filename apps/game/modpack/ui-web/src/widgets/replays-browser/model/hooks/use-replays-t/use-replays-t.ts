@@ -1,5 +1,5 @@
-import { useStore } from '@nanostores/preact';
-import { useMemo } from 'preact/hooks';
+import { useStore } from '@nanostores/react';
+import { useMemo } from 'react';
 
 import type { ReplaysText } from '../../../lib/replays-text';
 

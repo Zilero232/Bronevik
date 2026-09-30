@@ -10,7 +10,7 @@ import { UI_BUILD } from '../vite.constants';
 
 const BUNDLE_FILES = ['hud.html', 'icon.png', 'icons.png', 'index.html'];
 const CLASSIC_SCRIPT_AT_BODY_END = /<script>\(function\(\)\{[\s\S]*\}\)\(\);<\/script>\s*<\/body>\s*<\/html>\s*$/;
-const POLYFILLED_ELEMENTS = /[\w$]\([`'"](?:ul|ol|li|dl|dt|dd|select|option)[`'"][,)]/;
+const POLYFILLED_ELEMENTS = /\.jsxs?\)\([`'"](?:ul|ol|li|dl|dt|dd|select|option)[`'"],/;
 
 let outDir = '';
 
@@ -48,7 +48,7 @@ describe('committed Gameface bundle', () => {
     const page = await read(outDir, file);
 
     expect(page).not.toContain('type="module"');
-    expect(page.match(/<script/g)).toHaveLength(1);
+    expect(page.match(/<\/script>/g)).toHaveLength(1);
     expect(page).toMatch(CLASSIC_SCRIPT_AT_BODY_END);
   });
 

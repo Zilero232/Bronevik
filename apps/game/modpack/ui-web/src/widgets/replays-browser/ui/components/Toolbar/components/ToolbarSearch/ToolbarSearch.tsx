@@ -23,7 +23,7 @@ export const ToolbarSearch = ({ browser }: ToolbarProps) => {
         placeholder={t('search')}
         type='text'
         value={query}
-        onInput={(event) => browser.patch({ query: event.currentTarget.value })}
+        onChange={(event) => browser.patch({ query: event.currentTarget.value })}
         {...searchFocus}
       />
       {query !== '' && (

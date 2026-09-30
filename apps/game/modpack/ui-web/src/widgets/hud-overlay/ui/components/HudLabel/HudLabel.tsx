@@ -30,7 +30,7 @@ export const HudLabel = ({ label }: HudLabelProps) => (
     {label.button ? (
       <img alt='' className={s.buttonIcon} draggable={false} src={HUD_OVERLAY.buttonIcon} />
     ) : label.widget ? (
-      <HudPointerContext.Provider value={label.interactive}>{label.widget.node}</HudPointerContext.Provider>
+      <HudPointerContext value={label.interactive}>{label.widget.node}</HudPointerContext>
     ) : (
       <HudLines lines={label.lines} />
     )}

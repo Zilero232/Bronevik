@@ -1,4 +1,4 @@
-import { useStore } from '@nanostores/preact';
+import { useStore } from '@nanostores/react';
 
 import { $state, accountState } from '../../../../../entities/window-state';
 

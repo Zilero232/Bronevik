@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useInterval, useWindowEvent } from '@siberiacancode/reactuse';
+import { useState } from 'react';
 
 import type { ClientSize } from '../../../../../shared/api/gameface';
 
@@ -9,30 +10,22 @@ import { readScreen } from '../../../lib/overlay-screen';
 export const useHudScreen = (): ClientSize => {
   const [screen, setScreen] = useState<ClientSize>(readScreen);
 
-  useEffect(() => {
-    const check = (): void => {
-      const next = readScreen();
+  const check = (): void => {
+    const next = readScreen();
 
-      setScreen((current) => {
-        if (current.width === next.width && current.height === next.height) {
-          return current;
-        }
+    setScreen((current) => {
+      if (current.width === next.width && current.height === next.height) {
+        return current;
+      }
 
-        gameface.fitView();
+      gameface.fitView();
 
-        return next;
-      });
-    };
+      return next;
+    });
+  };
 
-    const timer = setInterval(check, HUD_OVERLAY.screenCheckMs);
-
-    window.addEventListener('resize', check);
-
-    return () => {
-      clearInterval(timer);
-      window.removeEventListener('resize', check);
-    };
-  }, []);
+  useInterval(check, HUD_OVERLAY.screenCheckMs);
+  useWindowEvent('resize', check);
 
   return screen;
 };

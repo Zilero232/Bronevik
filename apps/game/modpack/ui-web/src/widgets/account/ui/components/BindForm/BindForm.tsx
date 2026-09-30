@@ -19,7 +19,7 @@ export const BindForm = () => {
         placeholder={t('bindPlaceholder')}
         value={form.code}
         variant='code'
-        onInput={(event) => form.setCode(event.currentTarget.value)}
+        onChange={(event) => form.setCode(event.currentTarget.value)}
         onKeyDown={(event) => form.onKey(event.key)}
       />
       <Button disabled={!form.canBind} variant='accent' onClick={form.bind}>

@@ -37,7 +37,7 @@ export const ProfileRow = ({ row }: ProfileRowProps) => {
             aria-label={t('profileName')}
             maxLength={PROFILES.nameMaxLength}
             value={row.renameValue}
-            onInput={(event) => row.editRename(event.currentTarget.value)}
+            onChange={(event) => row.editRename(event.currentTarget.value)}
             onKeyDown={(event) => row.onRenameKey(event.key)}
           />
           <ListItemButton variant='accent' onClick={row.commitRename}>

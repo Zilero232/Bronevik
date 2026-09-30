@@ -1,4 +1,4 @@
-import { useStore } from '@nanostores/preact';
+import { useStore } from '@nanostores/react';
 
 import type { ContextFilter } from '../../../../../entities/window-state';
 import type { UseSectionPageInput } from './use-section-page.types';

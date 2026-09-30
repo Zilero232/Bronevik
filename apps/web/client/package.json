@@ -42,7 +42,7 @@
     "@react-three/drei": "^10.7.8",
     "@react-three/fiber": "^9.8.1",
     "@serwist/turbopack": "^9.5.12",
-    "@siberiacancode/reactuse": "^1.0.17",
+    "@siberiacancode/reactuse": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.14.13",

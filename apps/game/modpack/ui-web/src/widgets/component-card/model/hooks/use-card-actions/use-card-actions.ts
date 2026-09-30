@@ -1,4 +1,4 @@
-import { useState } from 'preact/hooks';
+import { useState } from 'react';
 
 import type { UiComponent } from '../../../../../shared/api/protocol';
 import type { RunActionInput } from './use-card-actions.types';

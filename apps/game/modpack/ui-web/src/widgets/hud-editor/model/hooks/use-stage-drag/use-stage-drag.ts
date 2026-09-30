@@ -1,11 +1,11 @@
-import { useRef, useState } from 'preact/hooks';
+import { useWindowEvent } from '@siberiacancode/reactuse';
+import { useRef, useState } from 'react';
 
 import type { Drag, LiveRect } from '../../../../../shared/lib/hud-geometry';
 import type { UseStageDragInput } from './use-stage-drag.types';
 
 import { send } from '../../../../../shared/api/protocol';
 import { dragTo, moveMessage } from '../../../../../shared/lib/hud-geometry';
-import { useWindowEvent } from '../../../../../shared/lib/use-window-event';
 import { HUD_EDITOR } from '../../../config';
 
 export const useStageDrag = ({ screenRef, throttle }: UseStageDragInput) => {
@@ -30,8 +30,8 @@ export const useStageDrag = ({ screenRef, throttle }: UseStageDragInput) => {
       }
     };
 
-  useWindowEvent({ type: 'mousemove', handler: follow(false) });
-  useWindowEvent({ type: 'mouseup', handler: follow(true) });
+  useWindowEvent('mousemove', follow(false));
+  useWindowEvent('mouseup', follow(true));
 
   return {
     live,

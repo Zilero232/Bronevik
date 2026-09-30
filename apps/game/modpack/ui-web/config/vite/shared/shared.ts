@@ -1,6 +1,6 @@
 import type { UserConfig } from 'vite';
 
-import preact from '@preact/preset-vite';
+import react from '@vitejs/plugin-react';
 import pxtorem from 'postcss-pxtorem';
 
 import { scopedClassName } from '../class-name';
@@ -9,7 +9,7 @@ import { UI_BUILD } from '../vite.constants';
 // Shared by the Gameface builds, the dev server and the modpack-ui Vitest project.
 export const sharedConfig = (): UserConfig => ({
   root: UI_BUILD.root,
-  plugins: [preact()],
+  plugins: [react()],
   css: {
     modules: { generateScopedName: scopedClassName, localsConvention: 'camelCaseOnly' },
     // Gameface scales the page through the root font size, so every length is written in px

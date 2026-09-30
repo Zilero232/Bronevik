@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'preact/hooks';
+import { useEffect, useRef } from 'react';
 
 import type { UseInputAreaInput } from './use-input-area.types';
 

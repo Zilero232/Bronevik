@@ -1,5 +1,5 @@
-import type { ComponentChildren } from 'preact';
+import type { ReactNode } from 'react';
 
 export type EmptyProps = {
-  children: ComponentChildren;
+  children: ReactNode;
 };

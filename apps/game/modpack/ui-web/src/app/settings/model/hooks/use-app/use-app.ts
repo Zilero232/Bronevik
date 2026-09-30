@@ -1,12 +1,14 @@
-import { useStore } from '@nanostores/preact';
-import { useEffect } from 'preact/hooks';
+import { useStore } from '@nanostores/react';
+import { useEffect } from 'react';
 
 import type { StringKey } from '../../../../../shared/i18n';
 
 import { $invalid, $query, $state, $view, receiveFeed, receiveState, WINDOW_VIEW } from '../../../../../entities/window-state';
 import { gameface } from '../../../../../shared/api/gameface';
 import { send } from '../../../../../shared/api/protocol';
+import { engineReport } from '../../../../../shared/lib/engine-shims/install';
 import { onDistinct } from '../../../../../shared/lib/on-distinct';
+import { reportOnce } from '../../../../../shared/lib/page-diag';
 import { bindUiSounds } from '../../../../../shared/lib/ui-sounds';
 import { blockPageWheel } from '../../../../../shared/lib/wheel-scroll';
 import { useWindowFrame } from '../../../../../widgets/window-frame';
@@ -37,6 +39,7 @@ export const useApp = () => {
     });
 
     send({ type: 'ready' });
+    reportOnce({ kind: 'engine', text: engineReport() });
   }, []);
 
   const placeholderKey: StringKey = invalid ? 'invalidState' : 'loading';

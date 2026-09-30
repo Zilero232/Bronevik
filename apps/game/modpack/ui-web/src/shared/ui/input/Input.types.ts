@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes, Ref } from 'preact';
+import type { InputHTMLAttributes, Ref } from 'react';
 
 import type { UiIconName } from '../../lib/icon-sprite';
 

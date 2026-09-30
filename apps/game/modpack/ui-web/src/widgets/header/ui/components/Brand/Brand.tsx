@@ -12,7 +12,7 @@ export const Brand = ({ compact, dragRef, onRecentre }: BrandProps) => {
   const tip = useTooltip(t('dragHint'));
 
   return (
-    <div ref={dragRef} aria-label={t('dragHint')} className={s.brand} onDblClick={onRecentre} {...tip}>
+    <div ref={dragRef} aria-label={t('dragHint')} className={s.brand} onDoubleClick={onRecentre} {...tip}>
       <LogoMark className={s.mark} size={HEADER.logoSize} />
       <div className={s.text}>
         <span className={s.title}>{t('title')}</span>

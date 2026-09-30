@@ -1,4 +1,5 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
+import { useInterval } from '@siberiacancode/reactuse';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { funnel, isDeepEqual } from 'remeda';
 
 import type { ScrollMetrics } from '../scroll-metrics';
@@ -34,11 +35,7 @@ export const useScrollArea = ({ initialTop = 0, onScrollEnd }: UseScrollAreaInpu
     measureRef.current();
   });
 
-  useEffect(() => {
-    const timer = setInterval(() => measureRef.current(), SCROLL_AREA.measureMs);
-
-    return () => clearInterval(timer);
-  }, []);
+  useInterval(() => measureRef.current(), SCROLL_AREA.measureMs);
 
   useEffect(() => {
     const element = viewportRef.current;

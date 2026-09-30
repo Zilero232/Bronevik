@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useInterval, useWindowEvent } from '@siberiacancode/reactuse';
+import { useEffect, useEffectEvent, useState } from 'react';
 import { isDeepEqual } from 'remeda';
 
 import type { Viewport } from '../../../lib/frame';
@@ -12,31 +13,29 @@ import { readViewport } from '../../../lib/screen';
 export const useViewport = (): Viewport => {
   const [viewport, setViewport] = useState<Viewport>(readViewport);
 
+  const check = (): void => {
+    const next = readViewport();
+
+    setViewport((current) => {
+      if (isDeepEqual(current, next)) {
+        return current;
+      }
+
+      reportOnce({ kind: 'window viewport changed', text: describeViewport(next) });
+
+      return next;
+    });
+  };
+
+  const firstCheck = useEffectEvent(check);
+
+  useInterval(check, WINDOW_FRAME.screenCheckMs);
+  useWindowEvent('resize', check);
+
   useEffect(() => {
-    const check = (): void => {
-      const next = readViewport();
+    const first = setTimeout(firstCheck, 0);
 
-      setViewport((current) => {
-        if (isDeepEqual(current, next)) {
-          return current;
-        }
-
-        reportOnce({ kind: 'window viewport changed', text: describeViewport(next) });
-
-        return next;
-      });
-    };
-
-    const first = setTimeout(check, 0);
-    const timer = setInterval(check, WINDOW_FRAME.screenCheckMs);
-
-    window.addEventListener('resize', check);
-
-    return () => {
-      clearTimeout(first);
-      clearInterval(timer);
-      window.removeEventListener('resize', check);
-    };
+    return () => clearTimeout(first);
   }, []);
 
   useEffect(() => {

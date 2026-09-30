@@ -1,6 +1,6 @@
-import type { ComponentChildren } from 'preact';
+import type { ReactNode } from 'react';
 
 export type ListProps = {
   label?: string;
-  children: ComponentChildren;
+  children: ReactNode;
 };

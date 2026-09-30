@@ -1,13 +1,11 @@
-import { useEffect, useRef } from 'preact/hooks';
+import { useEffect, useEffectEvent } from 'react';
 
 import type { PageMouseHandlers, PickHandler } from './use-page-mouse.types';
 
 import { FRAME_GESTURE } from '../../../config';
 
 export const usePageMouse = (handlers: PageMouseHandlers): void => {
-  const handlersRef = useRef(handlers);
-
-  handlersRef.current = handlers;
+  const current = useEffectEvent(() => handlers);
 
   useEffect(() => {
     let last: Event | null = null;
@@ -20,7 +18,7 @@ export const usePageMouse = (handlers: PageMouseHandlers): void => {
         }
 
         last = event;
-        pick(handlersRef.current)(event);
+        pick(current())(event);
       };
 
     const press = once(({ onPress }) => onPress);

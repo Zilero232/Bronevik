@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useState } from 'react';
 
 import type { HudState } from '../../../../../shared/api/hud-protocol';
 import type { Overrides, Scales } from '../../../lib/label-layout';

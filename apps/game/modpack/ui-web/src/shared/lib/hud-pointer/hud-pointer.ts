@@ -1,6 +1,5 @@
-import { createContext } from 'preact';
-import { useContext } from 'preact/hooks';
+import { createContext, use } from 'react';
 
 export const HudPointerContext = createContext(false);
 
-export const useHudPointer = (): boolean => useContext(HudPointerContext);
+export const useHudPointer = (): boolean => use(HudPointerContext);

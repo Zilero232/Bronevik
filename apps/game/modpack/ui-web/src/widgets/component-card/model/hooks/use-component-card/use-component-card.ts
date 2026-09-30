@@ -1,4 +1,4 @@
-import { useStore } from '@nanostores/preact';
+import { useStore } from '@nanostores/react';
 
 import type { SettingInput } from '../../../../../entities/window-state';
 import type { StringKey } from '../../../../../shared/i18n';

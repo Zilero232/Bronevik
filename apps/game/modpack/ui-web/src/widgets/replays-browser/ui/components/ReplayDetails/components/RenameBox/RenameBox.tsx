@@ -22,7 +22,7 @@ export const RenameBox = ({ browser }: RenameBoxProps) => {
         maxLength={REPLAYS_BROWSER.renameMaxLength}
         type='text'
         value={browser.draft}
-        onInput={(event) => browser.editRename(event.currentTarget.value)}
+        onChange={(event) => browser.editRename(event.currentTarget.value)}
         onKeyDown={(event) => onEnterKey(browser.submitRename)(event.key)}
       />
       <Button className={s.confirmButton} size='small' variant='accent' onClick={browser.submitRename}>

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'preact/hooks';
+import { useEffect, useEffectEvent, useRef } from 'react';
 
 import type { DragOfInput, ThumbDrag, ThumbPress, UseThumbDragInput } from './use-thumb-drag.types';
 
@@ -17,11 +17,9 @@ const dragOf = ({ element, clientY }: DragOfInput): ThumbDrag => {
 export const useThumbDrag = ({ viewportRef, visible, onDragged }: UseThumbDragInput) => {
   const thumbRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<ThumbDrag | null>(null);
-  const draggedRef = useRef(onDragged);
+  const dragged = useEffectEvent(onDragged);
 
-  draggedRef.current = onDragged;
-
-  const onThumbDown = (event: ThumbPress): void => {
+  const onThumbDown = useEffectEvent((event: ThumbPress): void => {
     const element = viewportRef.current;
 
     event.preventDefault();
@@ -30,15 +28,11 @@ export const useThumbDrag = ({ viewportRef, visible, onDragged }: UseThumbDragIn
     if (element) {
       dragRef.current = dragOf({ element, clientY: event.clientY });
     }
-  };
-
-  const thumbDownRef = useRef(onThumbDown);
-
-  thumbDownRef.current = onThumbDown;
+  });
 
   useEffect(() => {
     const element = thumbRef.current;
-    const listener = (event: MouseEvent): void => thumbDownRef.current(event);
+    const listener = (event: MouseEvent): void => onThumbDown(event);
 
     element?.addEventListener('mousedown', listener);
 
@@ -59,7 +53,7 @@ export const useThumbDrag = ({ viewportRef, visible, onDragged }: UseThumbDragIn
       const offset = drag.startOffset + (event.clientY - drag.startY) / drag.factor;
 
       element.scrollTop = topFromThumb({ ...current, size, offset });
-      draggedRef.current();
+      dragged();
     };
 
     const onUp = (): void => {

@@ -11,7 +11,7 @@ export const UI_BUILD = {
     hud: path.resolve(UI_WEB_ROOT, 'hud.html')
   },
   script: {
-    target: 'es2017'
+    target: 'chrome94'
   },
   dev: {
     mockEntry: '/src/app/dev/main.ts'

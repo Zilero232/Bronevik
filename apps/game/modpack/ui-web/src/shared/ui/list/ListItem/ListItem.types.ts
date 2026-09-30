@@ -1,6 +1,6 @@
-import type { ComponentChildren } from 'preact';
+import type { ReactNode } from 'react';
 
 export type ListItemProps = {
   active?: boolean;
-  children: ComponentChildren;
+  children: ReactNode;
 };

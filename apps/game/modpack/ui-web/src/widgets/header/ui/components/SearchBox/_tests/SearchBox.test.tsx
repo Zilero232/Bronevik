@@ -1,20 +1,13 @@
 // @vitest-environment jsdom
-import { h, render } from 'preact';
-import { act } from 'preact/test-utils';
-import { afterEach, describe, expect, it } from 'vitest';
+import { render } from '@testing-library/react';
+import { act, createElement } from 'react';
+import { describe, expect, it } from 'vitest';
 
 import { stepBack } from '../../../../../../shared/lib/escape-stack';
 import { SearchBox } from '../SearchBox';
 
-const container = document.createElement('div');
-
 const mountSearch = (query: string, cleared: string[] = []): HTMLInputElement => {
-  document.body.append(container);
-
-  void act(() => {
-    render(h(SearchBox, { query, onChange: () => undefined, onClear: () => cleared.push(query) }), container);
-  });
-
+  const { container } = render(createElement(SearchBox, { query, onChange: () => undefined, onClear: () => cleared.push(query) }));
   const input = container.querySelector('input');
 
   if (!input) {
@@ -35,14 +28,6 @@ const pressEsc = (): void => {
     stepBack();
   });
 };
-
-afterEach(() => {
-  void act(() => {
-    render(null, container);
-  });
-
-  container.remove();
-});
 
 describe(SearchBox, () => {
   it('takes the focus on Ctrl+F', () => {

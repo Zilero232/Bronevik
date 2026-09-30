@@ -1,4 +1,5 @@
-import { render } from 'preact';
+import { flushSync } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import type { MountOnceInput, Unmount } from './mount-once.types';
 
@@ -23,12 +24,17 @@ export const mountOnce = ({ id, node }: MountOnceInput): Unmount => {
   }
 
   const host = existing ?? createHost(id);
+  const root = createRoot(host);
 
   mountedHosts.add(host);
-  render(node, host);
+
+  // eslint-disable-next-line react/dom-no-flush-sync -- the page mounts once and its first frame must be drawn before the engine shows the view
+  flushSync(() => {
+    root.render(node);
+  });
 
   return () => {
-    render(null, host);
+    root.unmount();
     mountedHosts.delete(host);
 
     if (!existing) {

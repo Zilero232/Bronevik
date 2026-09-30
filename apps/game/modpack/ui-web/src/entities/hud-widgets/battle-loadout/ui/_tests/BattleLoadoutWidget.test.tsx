@@ -1,6 +1,7 @@
+import type { RenderResult } from '@testing-library/react';
+
 // @vitest-environment jsdom
-import { render } from 'preact';
-import { act } from 'preact/test-utils';
+import { fireEvent, render } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { GAMEFACE } from '../../../../../shared/api/gameface';
@@ -42,20 +43,27 @@ afterEach(() => {
   Reflect.deleteProperty(globalThis, GAMEFACE.globals.viewEnv);
 });
 
+const panel = (pointer: boolean, widget = data) => (
+  <HudPointerContext value={pointer}>
+    <BattleLoadoutWidget data={widget} />
+  </HudPointerContext>
+);
+
+const drawn = new WeakMap<HTMLElement, RenderResult>();
+
+const drawNew = (pointer: boolean, widget = data): HTMLElement => {
+  const result = render(panel(pointer, widget));
+
+  drawn.set(result.container, result);
+
+  return result.container;
+};
+
 const draw = (container: HTMLElement, pointer: boolean, widget = data): HTMLElement => {
-  void act(() => {
-    render(
-      <HudPointerContext.Provider value={pointer}>
-        <BattleLoadoutWidget data={widget} />
-      </HudPointerContext.Provider>,
-      container
-    );
-  });
+  drawn.get(container)?.rerender(panel(pointer, widget));
 
   return container;
 };
-
-const drawNew = (pointer: boolean, widget = data): HTMLElement => draw(document.createElement('div'), pointer, widget);
 
 const cellOf = (container: HTMLElement, name: string): HTMLElement | undefined => {
   const index = data.items.findIndex((item) => item.name === name);
@@ -63,12 +71,12 @@ const cellOf = (container: HTMLElement, name: string): HTMLElement | undefined =
   return container.querySelectorAll<HTMLElement>(`.${s.cell}`)[index];
 };
 
-const hover = (container: HTMLElement, event: string): void => {
+const hover = (container: HTMLElement, event: 'mouseenter' | 'mouseleave'): void => {
   const cell = container.querySelectorAll<HTMLElement>(`.${s.cell}`)[1];
 
-  void act(() => {
-    cell?.dispatchEvent(new MouseEvent(event));
-  });
+  if (cell) {
+    (event === 'mouseenter' ? fireEvent.mouseEnter : fireEvent.mouseLeave)(cell);
+  }
 };
 
 const spentAttention = () => {

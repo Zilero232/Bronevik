@@ -1,4 +1,4 @@
-import type { RefObject } from 'preact';
+import type { RefObject } from 'react';
 
 import type { Language } from '../../../shared/i18n';
 
@@ -8,7 +8,7 @@ export type HeaderFrame = {
   canZoomOut: boolean;
   zoomIn: () => void;
   zoomOut: () => void;
-  handles: { move: RefObject<HTMLDivElement> };
+  handles: { move: RefObject<HTMLDivElement | null> };
   onRecentre: () => void;
 };
 

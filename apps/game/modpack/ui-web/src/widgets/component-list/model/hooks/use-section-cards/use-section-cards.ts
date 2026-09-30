@@ -1,4 +1,4 @@
-import { useStore } from '@nanostores/preact';
+import { useStore } from '@nanostores/react';
 
 import type { UseSectionCardsInput } from './use-section-cards.types';
 

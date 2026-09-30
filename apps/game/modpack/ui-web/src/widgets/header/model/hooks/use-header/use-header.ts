@@ -1,4 +1,4 @@
-import { useStore } from '@nanostores/preact';
+import { useStore } from '@nanostores/react';
 
 import { $query, $state, accountState, openSection, SECTION, setQuery } from '../../../../../entities/window-state';
 

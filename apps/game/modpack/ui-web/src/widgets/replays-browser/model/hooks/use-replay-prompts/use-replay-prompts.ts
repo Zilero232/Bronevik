@@ -1,4 +1,4 @@
-import { useState } from 'preact/hooks';
+import { useState } from 'react';
 
 import type { ReplayItem } from '../../../../../entities/replays';
 import type { PendingAction, RenameDraft } from './use-replay-prompts.types';

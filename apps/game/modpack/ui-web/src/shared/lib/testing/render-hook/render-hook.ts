@@ -1,20 +1,15 @@
-import { h, render } from 'preact';
-import { act } from 'preact/test-utils';
+import { act, renderHook as renderReactHook } from '@testing-library/react';
 
 import type { HookHandle } from './render-hook.types';
 
 export const renderHook = <Result>(useHook: () => Result): HookHandle<Result> => {
-  const container = document.createElement('div');
   const results: Result[] = [];
+  const handle = renderReactHook(() => {
+    const result = useHook();
 
-  const Probe = () => {
-    results.push(useHook());
+    results.push(result);
 
-    return null;
-  };
-
-  void act(() => {
-    render(h(Probe, null), container);
+    return result;
   });
 
   return {
@@ -28,7 +23,7 @@ export const renderHook = <Result>(useHook: () => Result): HookHandle<Result> =>
       return latest;
     },
     run: (callback) => {
-      void act(callback);
+      act(callback);
     },
     settle: () =>
       act(async () => {
@@ -36,10 +31,6 @@ export const renderHook = <Result>(useHook: () => Result): HookHandle<Result> =>
           setTimeout(resolve, 0);
         });
       }),
-    unmount: () => {
-      void act(() => {
-        render(null, container);
-      });
-    }
+    unmount: handle.unmount
   };
 };

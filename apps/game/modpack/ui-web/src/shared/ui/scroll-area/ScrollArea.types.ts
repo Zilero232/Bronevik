@@ -1,4 +1,4 @@
-import type { ComponentChildren } from 'preact';
+import type { ReactNode } from 'react';
 
 export type ScrollAreaProps = {
   className?: string;
@@ -6,5 +6,5 @@ export type ScrollAreaProps = {
   label?: string;
   initialTop?: number;
   onScrollEnd?: (top: number) => void;
-  children: ComponentChildren;
+  children: ReactNode;
 };

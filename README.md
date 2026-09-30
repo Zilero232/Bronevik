@@ -141,7 +141,7 @@ flowchart LR
 | API      | NestJS 11 on Bun, better-auth (Lesta ID, Telegram, VK Mini App), Zod contracts, OpenAPI                                               |
 | Worker   | BullMQ jobs, a shared Redis rate limiter, cockatiel circuit breaker                                                                   |
 | Data     | PostgreSQL 17 + TimescaleDB, Prisma 7, Redis                                                                                          |
-| Game mod | Python 2.7 `.mtmod` packages (logic tested on Python 3), Preact Gameface UI                                                           |
+| Game mod | Python 2.7 `.mtmod` packages (logic tested on Python 3), React Gameface UI                                                            |
 | Manager  | Tauri 2: Rust core + React UI                                                                                                         |
 | Tooling  | Bun workspaces + catalog, ESLint, Prettier, Stylelint, Vitest, Playwright, knip, jscpd, madge, Husky, commitlint                      |
 

@@ -21,7 +21,7 @@ export const Glyph = ({ name, size, tone, className }: GlyphProps) => {
         xmlns='http://www.w3.org/2000/svg'
       >
         {shapes.map((d) => (
-          <path key={d} d={d} fill={fill} stroke={HUD_GLYPHS.outline} stroke-linejoin='round' stroke-width={HUD_GLYPHS.outlineWidth} />
+          <path key={d} d={d} fill={fill} stroke={HUD_GLYPHS.outline} strokeLinejoin='round' strokeWidth={HUD_GLYPHS.outlineWidth} />
         ))}
         {details.map((d) => (
           <path key={d} d={d} fill={HUD_GLYPHS.outline} />

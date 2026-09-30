@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'preact/hooks';
+import { useMemo, useState } from 'react';
 
 import type { ReplayFilters, ReplaySort } from '../../../../../entities/replays';
 import type { FilterPatch, UseReplaysBrowserInput } from './use-replays-browser.types';

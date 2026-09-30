@@ -1,6 +1,5 @@
 // @vitest-environment jsdom
-import { h } from 'preact';
-import { act } from 'preact/test-utils';
+import { act, createElement } from 'react';
 import { describe, expect, it } from 'vitest';
 
 import { mount } from '../../../lib/testing/mount';
@@ -12,7 +11,7 @@ const sized = (element: Element | null | undefined, { width, height }: { width: 
 };
 
 const fitted = ({ frame, content }: { frame: { width: number; height: number }; content: { width: number; height: number } }) => {
-  const html = mount({ Component: FitBox, props: { children: h('span', null, 'sample') } });
+  const html = mount({ Component: FitBox, props: { children: createElement('span', null, 'sample') } });
   const frameElement = html.firstElementChild;
   const contentElement = frameElement?.firstElementChild;
 

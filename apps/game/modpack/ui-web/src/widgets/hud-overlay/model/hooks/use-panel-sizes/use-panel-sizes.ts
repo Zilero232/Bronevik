@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'preact/hooks';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { isDeepEqual } from 'remeda';
 
 import type { Measured } from '../../../lib/panel-size';

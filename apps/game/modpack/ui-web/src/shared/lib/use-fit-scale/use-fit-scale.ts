@@ -1,7 +1,7 @@
-import { useLayoutEffect, useRef, useState } from 'preact/hooks';
+import { useWindowEvent } from '@siberiacancode/reactuse';
+import { useLayoutEffect, useRef, useState } from 'react';
 
 import { fitScale } from '../fit-scale';
-import { useWindowEvent } from '../use-window-event';
 
 const sizeOf = (element: HTMLElement | null) => ({ width: element?.offsetWidth ?? 0, height: element?.offsetHeight ?? 0 });
 
@@ -20,7 +20,7 @@ export const useFitScale = () => {
     measureRef.current();
   });
 
-  useWindowEvent({ type: 'resize', handler: () => measureRef.current() });
+  useWindowEvent('resize', () => measureRef.current());
 
   return { frameRef, contentRef, scale };
 };

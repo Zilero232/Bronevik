@@ -1,4 +1,4 @@
-import { useRef, useState } from 'preact/hooks';
+import { useRef, useState } from 'react';
 
 import type { DragTarget } from '../../../lib/hit-panel';
 import type { LabelLayout } from '../../../lib/label-layout';

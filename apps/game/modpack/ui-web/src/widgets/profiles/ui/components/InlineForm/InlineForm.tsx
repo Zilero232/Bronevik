@@ -14,7 +14,7 @@ export const InlineForm = ({ value, label, placeholder, submitLabel, maxLength, 
       placeholder={placeholder}
       value={value}
       variant='wide'
-      onInput={(event) => onValue(event.currentTarget.value)}
+      onChange={(event) => onValue(event.currentTarget.value)}
       onKeyDown={(event) => onKey(event.key)}
     />
     <Button variant={accent ? 'accent' : 'default'} onClick={onSubmit}>

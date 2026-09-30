@@ -14,7 +14,7 @@ export const TextField = ({ field, onSet }: TextFieldProps) => {
       value={control.text}
       variant='wide'
       onBlur={control.commit}
-      onInput={(event) => control.edit(event.currentTarget.value)}
+      onChange={(event) => control.edit(event.currentTarget.value)}
       onKeyDown={(event) => control.onKey(event.key)}
     />
   );

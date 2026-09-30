@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act } from 'preact/test-utils';
+import { act } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { SCROLL_AREA } from '../../../config';

@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useWindowEvent } from '@siberiacancode/reactuse';
+import { useEffect, useRef, useState } from 'react';
 
 import type { LiveRect } from '../../../../../shared/lib/hud-geometry';
 import type { OverlayDrag, PanelPress } from '../../../lib/drag-motion';
@@ -6,7 +7,6 @@ import type { SettleDragInput, UsePanelDragInput } from './use-panel-drag.types'
 
 import { sendHud } from '../../../../../shared/api/hud-protocol';
 import { rootScale } from '../../../../../shared/lib/hud-screen';
-import { useWindowEvent } from '../../../../../shared/lib/use-window-event';
 import { beyondSlop, dragOutcome, liveAt, pressDrag } from '../../../lib/drag-motion';
 import { targetAt } from '../../../lib/hit-panel';
 import { readScreen } from '../../../lib/overlay-screen';
@@ -76,10 +76,10 @@ export const usePanelDrag = ({ edit, targets, onMoved, report }: UsePanelDragInp
 
   finishRef.current = finish;
 
-  useWindowEvent({ type: 'mousedown', handler: press });
-  useWindowEvent({ type: 'mousemove', handler: follow });
-  useWindowEvent({ type: 'mouseup', handler: finish });
-  useWindowEvent({ type: 'dragstart', handler: blockImageDrag });
+  useWindowEvent('mousedown', press);
+  useWindowEvent('mousemove', follow);
+  useWindowEvent('mouseup', finish);
+  useWindowEvent('dragstart', blockImageDrag);
 
   useEffect(() => {
     const drag = dragRef.current;

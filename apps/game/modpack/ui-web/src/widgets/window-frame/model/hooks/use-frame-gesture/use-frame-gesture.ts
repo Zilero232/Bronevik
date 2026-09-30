@@ -1,4 +1,4 @@
-import { useRef } from 'preact/hooks';
+import { useRef } from 'react';
 
 import type { Gesture } from '../../../lib/gesture';
 import type { Handles, UseFrameGestureInput } from './use-frame-gesture.types';

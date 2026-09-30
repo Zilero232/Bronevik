@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'preact/hooks';
+import { useCallback, useRef } from 'react';
 
 import type { UseWheelScrollInput, WheelScrollRef } from './use-wheel-scroll.types';
 

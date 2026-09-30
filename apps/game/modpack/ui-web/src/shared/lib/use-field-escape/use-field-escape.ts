@@ -1,4 +1,4 @@
-import { useState } from 'preact/hooks';
+import { useState } from 'react';
 
 import type { FieldFocusHandlers, UseFieldEscapeInput } from './use-field-escape.types';
 

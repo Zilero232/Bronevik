@@ -1,4 +1,4 @@
-import type { FunctionComponent, VNode } from 'preact';
+import type { FunctionComponent, ReactElement } from 'react';
 import type * as z from 'zod/mini';
 
 export type HudWidgetProps<Data> = { data: Data };
@@ -14,7 +14,7 @@ export type ParsedHudWidget = {
   kind: string;
   data: unknown;
   pointer: boolean;
-  node: VNode;
+  node: ReactElement;
 };
 
 export type HudWidgetEntry = {

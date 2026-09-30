@@ -4,6 +4,20 @@ The modpack's release notes. Every package has its own entry, `## <id> <version>
 
 Add the new entry on top of the component's previous ones when you bump a `VERSION`.
 
+## 0.1.7
+
+### ru
+
+Внутриигровое окно и панели HUD переведены с Preact на React 19; для игрока ничего не меняется.
+
+- Окно настроек и страница HUD собраны на React 19. Внешний вид, панели и настройки те же.
+
+### en
+
+The in-game window and the HUD panels move from Preact to React 19; nothing changes for the player.
+
+- The settings window and the HUD page are built on React 19. The look, the panels and the settings stay the same.
+
 ## 0.1.6
 
 ### ru
@@ -1125,6 +1139,16 @@ A new component: Event trackers (off by default).
 - Binding to triotmetki.ru with a one-time code from the site; nothing is collected or sent before it.
 - After each own battle: the `personal` block of the battle results, MoE snapshots and distribution, queue times, the loadout and shots, sent in signed batches through an outbox that survives a restart and backs off on errors.
 - Per-feature data switches in `config.json`, the ModsSettingsAPI window as the fallback settings UI, and the streamer settings share (export, apply with a confirmation, restore).
+
+## ui 0.6.4
+
+### ru
+
+- Окно настроек и страница HUD работают на React 19 вместо Preact. Внешний вид и поведение не меняются; при открытии окна в `otmetki.log` пишется строка `engine:` о том, чего не хватает движку Gameface.
+
+### en
+
+- The settings window and the HUD page run on React 19 instead of Preact. The look and the behaviour do not change; opening the window writes an `engine:` line to `otmetki.log` about what the Gameface engine lacks.
 
 ## ui 0.6.3
 

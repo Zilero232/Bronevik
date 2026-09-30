@@ -26,7 +26,7 @@ through hoisting and fails on a clean CI install.
 
 ## The modpack's UI is not an exception
 
-The modpack's pages (`apps/game/modpack/ui-web`) are HTML + Preact, so the same rule applies: a maintained library first — `remeda`, `ts-pattern`, `date-fns`, `zod/mini`, `nanostores`, `clsx`, `@tanstack/virtual-core` and whatever else fits. Gameface is a reason to *check* a library, not to skip it: build it with the page's ES2017 target, grep the output for built-ins newer than ES2017 (`Object.hasOwn`, `Array#at`, `structuredClone`, `Intl`), and weigh the added size. Custom code stays only when that check fails, and then it gets an entry below with the measured reason.
+The modpack's pages (`apps/game/modpack/ui-web`) are HTML + React 19, so the same rule applies: a maintained library first — `remeda`, `ts-pattern`, `date-fns`, `zod/mini`, `nanostores` (through `@nanostores/react`), `@siberiacancode/reactuse`, `clsx`, `@tanstack/virtual-core` and whatever else fits. Gameface is a reason to *check* a library, not to skip it: build it with the page's ES target (`chrome94`), grep the output for built-ins newer than Chrome 94 (`structuredClone`, `findLast`, `toSorted`, `Object.groupBy`) and for `Intl`, and weigh the added size. Custom code stays only when that check fails, and then it gets an entry below with the measured reason.
 
 ## Kept on purpose
 

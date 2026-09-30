@@ -1,8 +1,8 @@
-import type { ComponentChild } from 'preact';
+import type { ReactNode } from 'react';
 
 export type MountOnceInput = {
   id: string;
-  node: ComponentChild;
+  node: ReactNode;
 };
 
 export type Unmount = () => void;

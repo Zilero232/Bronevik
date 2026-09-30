@@ -1,4 +1,4 @@
-import { useEffect } from 'preact/hooks';
+import { useEffect } from 'react';
 
 import type { LabelLayout } from '../../../lib/label-layout';
 import type { PanelHint } from './use-panel-hint.types';

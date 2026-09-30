@@ -130,18 +130,47 @@ export default eslint(
         {
           selector: 'JSXOpeningElement[name.name="input"] > JSXAttribute[name.name="type"][value.value=/^(radio|range|checkbox)$/]',
           message: 'Gameface has no radio, range or checkbox input: use shared/ui/segmented, shared/ui/toggle or a stepper.'
+        },
+        {
+          selector: 'JSXAttribute[name.name=/^onWheel(Capture)?$/]',
+          message:
+            'React listens for wheel on the root as a passive listener, so preventDefault is ignored: bind a native non-passive listener (shared/lib/wheel-scroll, useWindowEvent with { passive: false }).'
         }
       ]
     }
   },
 
-  // The modpack's pages run Preact 10, which has neither `use` nor a context rendered as its own provider.
+  // A page entry imports the engine shims before anything else: React's scheduler picks setImmediate or
+  // MessageChannel when its module loads, and Gameface has neither. The groups repeat the base
+  // config's list with the shims as their own first group.
   {
-    name: 'otmetki/modpack-preact',
-    files: ['apps/game/modpack/ui-web/src/**/*.{ts,tsx}'],
+    name: 'otmetki/modpack-engine-shims-first',
+    files: ['apps/game/modpack/ui-web/src/app/*/main.tsx'],
     rules: {
-      'react/no-context-provider': 'off',
-      'react/no-use-context': 'off'
+      'perfectionist/sort-imports': [
+        'error',
+        {
+          customGroups: [{ groupName: 'engine-shims', elementNamePattern: 'engine-shims/install$' }],
+          groups: [
+            'engine-shims',
+            'type-import',
+            ['value-builtin', 'value-external'],
+            'type-internal',
+            'value-internal',
+            ['type-parent', 'type-sibling', 'type-index'],
+            ['value-parent', 'value-sibling', 'value-index'],
+            'style',
+            'side-effect',
+            'side-effect-style',
+            'ts-equals-import',
+            'unknown'
+          ],
+          internalPattern: ['^~/.+', '^@/.+'],
+          newlinesBetween: 1,
+          order: 'asc',
+          type: 'natural'
+        }
+      ]
     }
   },
 

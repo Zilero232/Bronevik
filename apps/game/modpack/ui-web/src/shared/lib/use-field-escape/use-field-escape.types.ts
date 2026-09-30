@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes } from 'preact';
+import type { InputHTMLAttributes } from 'react';
 
 export type FieldFocusHandlers = Pick<InputHTMLAttributes<HTMLInputElement>, 'onBlur' | 'onFocus'>;
 

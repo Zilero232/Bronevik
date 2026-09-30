@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
+import { renderHook } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { GAMEFACE } from '../../../api/gameface';
-import { renderHook } from '../../testing/render-hook';
 import { useTooltip } from '../use-tooltip';
 
 const CONTENT_ID = 11;
@@ -37,7 +37,7 @@ describe(useTooltip, () => {
   it('falls back to the title attribute outside the client', () => {
     const hook = renderHook(() => useTooltip('Zoom in'));
 
-    const props = hook.current();
+    const props = hook.result.current;
 
     expect(props).toEqual({ title: 'Zoom in' });
   });
@@ -46,7 +46,7 @@ describe(useTooltip, () => {
     const events = installClient();
     const hook = renderHook(() => useTooltip('Zoom in'));
 
-    hook.current().onMouseEnter?.();
+    hook.result.current.onMouseEnter?.();
 
     expect(events).toEqual([
       {
@@ -69,7 +69,7 @@ describe(useTooltip, () => {
     const events = installClient();
     const hook = renderHook(() => useTooltip('Zoom in'));
 
-    hook.current().onMouseEnter?.();
+    hook.result.current.onMouseEnter?.();
 
     hook.unmount();
 
@@ -86,7 +86,7 @@ describe(useTooltip, () => {
   it('gives no tooltip props without a text', () => {
     const hook = renderHook(() => useTooltip(undefined));
 
-    const props = hook.current();
+    const props = hook.result.current;
 
     expect(props).toEqual({});
   });

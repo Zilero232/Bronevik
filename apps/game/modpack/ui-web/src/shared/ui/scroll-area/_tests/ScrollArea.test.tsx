@@ -1,9 +1,8 @@
 // @vitest-environment jsdom
-import { act } from 'react';
+import { act, render } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { SCROLL_AREA } from '../../../config';
-import { mount } from '../../../lib/testing/mount';
 import { ScrollArea } from '../ScrollArea';
 
 const viewportOf = (container: HTMLElement): HTMLElement => {
@@ -22,7 +21,11 @@ afterEach(() => {
 
 describe(ScrollArea, () => {
   it('opens at the position the page was left at', () => {
-    const container = mount({ Component: ScrollArea, props: { label: 'Hangar', initialTop: 120, children: 'cards' } });
+    const { container } = render(
+      <ScrollArea initialTop={120} label='Hangar'>
+        cards
+      </ScrollArea>
+    );
 
     const viewport = viewportOf(container);
 
@@ -33,10 +36,11 @@ describe(ScrollArea, () => {
     vi.useFakeTimers();
 
     const settled: number[] = [];
-    const container = mount({
-      Component: ScrollArea,
-      props: { label: 'Hangar', onScrollEnd: (top: number) => settled.push(top), children: 'cards' }
-    });
+    const { container } = render(
+      <ScrollArea label='Hangar' onScrollEnd={(top) => settled.push(top)}>
+        cards
+      </ScrollArea>
+    );
 
     const viewport = viewportOf(container);
 

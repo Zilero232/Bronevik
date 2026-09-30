@@ -103,26 +103,30 @@ def require_also(component_id):
     return lambda entry: entry['requiredBy'].append(component_id)
 
 
-BAD_DEPENDENCIES = (
+SCHEMA_PROBLEMS = (
+    ("/sha256: 'abc' does not match", update(sha256='abc')),
+    ('/size: 0 is less than the minimum of 1', update(size=0)),
+    ("/sourceUrl: 'http://example.com/x.mtmod' does not match", update(sourceUrl='http://example.com/x.mtmod')),
+    ("/licence: 'sha256' is a required property", drop_licence('sha256')),
+    ("/licence/name: '' does not match", update_licence(name='')),
+    ("/licence/url: 'LICENSE' does not match", update_licence(url='LICENSE')),
+    ("'author' is a required property", drop('author')),
+    ("('category' was unexpected)", update(category='battle')),
+    ('/requiredBy: []', update(requiredBy=[])),
+    ('has non-unique elements', require_also('marks_panel')),
+    ("'restartRequired' is a required property", drop('restartRequired')),
+    ("/optional: 'yes' is not of type 'boolean'", update(optional='yes')),
+    ("/kind: 'dependency' was expected", update(kind='library')),
+    ("/version: '1.x' does not match", update(version='1.x')),
+    ("/packageId: 'guiflash' does not match", update(packageId='guiflash')),
+)
+CHECK_PROBLEMS = (
     ('is ours', update(packageId='net.triotmetki.guiflash', file='net.triotmetki.guiflash_0.6.6.mtmod')),
     ('matches ownedPatterns', update(packageId='otmetki.guiflash', file='otmetki.guiflash_0.6.6.mtmod')),
     ('file must be gambiter.guiflash_0.6.6.mtmod', update(file='guiflash.mtmod')),
     ('file must be', update(version='0.6.7')),
-    ('.sha256: must be a lowercase 64-hex sha256', update(sha256='abc')),
-    ('.size: must be', update(size=0)),
-    ('.sourceUrl: must be an https:// link', update(sourceUrl='http://example.com/x.mtmod')),
-    ('.licence.sha256: must be', drop_licence('sha256')),
-    ('.licence.name: must be', update_licence(name='')),
-    ('.licence.url: must be an https:// link', update_licence(url='LICENSE')),
-    ('.author.url: must be an https:// link', drop('author')),
-    ('a dependency has no category', update(category='battle')),
     ("unknown component 'nothing'", require_also('nothing')),
     ("unknown component 'guiflash'", require_also('guiflash')),
-    ('requiredBy: list the ids', update(requiredBy=[])),
-    ('twice', require_also('marks_panel')),
-    ('restartRequired: must be', drop('restartRequired')),
-    ('optional: must be', update(optional='yes')),
-    ('unknown kind', update(kind='library')),
     ('duplicate id', update(id='marks_panel')),
 )
 
@@ -196,12 +200,19 @@ class DependencyCatalogTest(unittest.TestCase):
         self.assertEqual([dependency.id for dependency in catalog.dependencies], [GAMEFACE, GUIFLASH, MODS_LIST])
         self.assertIsNone(catalog.entry(GAMEFACE))
 
-    def test_a_bad_dependency_is_rejected_with_the_problem_named(self):
-        for expected, mutate in BAD_DEPENDENCIES:
+    def assert_problems(self, cases):
+        for expected, mutate in cases:
             with self.subTest(expected=expected):
                 problems = self.problems(mutate)
 
                 self.assertIn(expected, problems)
+
+    @unittest.skipUnless(catalog_module.HAVE_SCHEMA, 'jsonschema is not installed (uv sync)')
+    def test_a_badly_shaped_dependency_is_rejected_at_its_schema_path(self):
+        self.assert_problems(SCHEMA_PROBLEMS)
+
+    def test_a_bad_dependency_is_rejected_with_the_problem_named(self):
+        self.assert_problems(CHECK_PROBLEMS)
 
 
 class DependencyManifestTest(unittest.TestCase):

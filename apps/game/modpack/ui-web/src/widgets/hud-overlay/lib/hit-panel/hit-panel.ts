@@ -1,3 +1,5 @@
+import { findLast } from 'remeda';
+
 import type { Point } from '../../../../shared/lib/hud-geometry';
 import type { HitPanelInput, HitTarget, PanelUnderInput, PointerPointInput, TargetAtInput } from './hit-panel.types';
 
@@ -5,10 +7,10 @@ const contains = ({ rect }: HitTarget, { x, y }: Point): boolean =>
   x >= rect.left && x <= rect.left + rect.width && y >= rect.top && y <= rect.top + rect.height;
 
 export const hitPanel = ({ targets, point, pointer = false }: HitPanelInput): HitTarget | null =>
-  [...targets].reverse().find((target) => (target.movable || (pointer && target.pointer)) && contains(target, point)) ?? null;
+  findLast(targets, (target) => (target.movable || (pointer && target.pointer)) && contains(target, point)) ?? null;
 
 export const panelUnder = <Target extends HitTarget>({ targets, point }: PanelUnderInput<Target>): Target | null =>
-  [...targets].reverse().find((target) => contains(target, point)) ?? null;
+  findLast(targets, (target) => contains(target, point)) ?? null;
 
 export const pointerPoint = ({ clientX, clientY, scale }: PointerPointInput): Point => ({
   x: clientX / (scale > 0 ? scale : 1),

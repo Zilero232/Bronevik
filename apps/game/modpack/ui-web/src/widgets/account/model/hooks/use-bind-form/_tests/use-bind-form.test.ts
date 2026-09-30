@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
+import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { send } from '../../../../../../shared/api/protocol/protocol';
 import { KEYS } from '../../../../../../shared/config';
-import { renderHook } from '../../../../../../shared/lib/testing/render-hook';
 import { useBindForm } from '../use-bind-form';
 
 vi.mock('../../../../../../shared/api/protocol/protocol', () => ({ send: vi.fn(() => true) }));
@@ -11,7 +11,7 @@ vi.mock('../../../../../../shared/api/protocol/protocol', () => ({ send: vi.fn((
 const typed = (code: string) => {
   const hook = renderHook(useBindForm);
 
-  hook.run(() => hook.current().setCode(code));
+  act(() => hook.result.current.setCode(code));
 
   return hook;
 };
@@ -24,13 +24,13 @@ describe(useBindForm, () => {
   it('allows binding once a code is typed', () => {
     const hook = typed('  ABCD-1234 ');
 
-    expect(hook.current().canBind).toBe(true);
+    expect(hook.result.current.canBind).toBe(true);
   });
 
   it('sends the trimmed code', () => {
     const hook = typed('  ABCD-1234 ');
 
-    hook.run(() => hook.current().bind());
+    act(() => hook.result.current.bind());
 
     expect(send).toHaveBeenCalledWith({ type: 'bind', code: 'ABCD-1234' });
   });
@@ -38,15 +38,15 @@ describe(useBindForm, () => {
   it('clears the field after binding', () => {
     const hook = typed('  ABCD-1234 ');
 
-    hook.run(() => hook.current().bind());
+    act(() => hook.result.current.bind());
 
-    expect(hook.current().code).toBe('');
+    expect(hook.result.current.code).toBe('');
   });
 
   it('sends nothing for a blank code', () => {
     const hook = typed('   ');
 
-    hook.run(() => hook.current().bind());
+    act(() => hook.result.current.bind());
 
     expect(send).not.toHaveBeenCalled();
   });
@@ -54,7 +54,7 @@ describe(useBindForm, () => {
   it('binds on Enter', () => {
     const hook = typed('CODE');
 
-    hook.run(() => hook.current().onKey(KEYS.enter));
+    act(() => hook.result.current.onKey(KEYS.enter));
 
     expect(send).toHaveBeenCalledWith({ type: 'bind', code: 'CODE' });
   });

@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { act, renderHook } from '@testing-library/react';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -7,7 +8,6 @@ import { $feed, $state, receiveFeed, receiveState } from '../../../../../../enti
 import { GAMEFACE } from '../../../../../../shared/api/gameface';
 import { createGamefaceMock, installGamefaceMock } from '../../../../../../shared/api/gameface/mock';
 import { parseState } from '../../../../../../shared/api/protocol';
-import { renderHook } from '../../../../../../shared/lib/testing/render-hook';
 import { useReplaysPage } from '../use-replays-page';
 
 const sample = parseState(
@@ -35,14 +35,14 @@ let sent: () => unknown[];
 const showPage = async () => {
   const hook = renderHook(useReplaysPage);
 
-  await hook.settle();
+  await act(async () => {});
 
   return hook;
 };
 
-const pushFeed = async ({ hook, messages }: { hook: Awaited<ReturnType<typeof showPage>>; messages: string[] }) => {
+const pushFeed = async (messages: string[]) => {
   messages.forEach((message) => receiveFeed(message));
-  await hook.settle();
+  await act(async () => {});
 };
 
 beforeEach(() => {
@@ -69,7 +69,7 @@ describe(useReplaysPage, () => {
   it('has no page until the feed arrives', async () => {
     const hook = await showPage();
 
-    const view = hook.current();
+    const view = hook.result.current;
 
     expect(view?.page).toBeUndefined();
   });
@@ -77,17 +77,17 @@ describe(useReplaysPage, () => {
   it('hands over the feed page with its items', async () => {
     const hook = await showPage();
 
-    await pushFeed({ hook, messages: [SNAPSHOT] });
+    await pushFeed([SNAPSHOT]);
 
-    expect(hook.current()?.page).toEqual({ kind: 'replays', status: 'ready', items: [{ id: 'a' }] });
+    expect(hook.result.current?.page).toEqual({ kind: 'replays', status: 'ready', items: [{ id: 'a' }] });
   });
 
   it('drops the page when a delta takes it away', async () => {
     const hook = await showPage();
 
-    await pushFeed({ hook, messages: [SNAPSHOT, PAGE_GONE] });
+    await pushFeed([SNAPSHOT, PAGE_GONE]);
 
-    expect(hook.current()?.page).toBeNull();
+    expect(hook.result.current?.page).toBeNull();
   });
 
   it('stops watching the feed once the page is gone', async () => {
@@ -101,7 +101,7 @@ describe(useReplaysPage, () => {
   it('forgets the feed once the page is gone', async () => {
     const hook = await showPage();
 
-    await pushFeed({ hook, messages: [SNAPSHOT] });
+    await pushFeed([SNAPSHOT]);
 
     hook.unmount();
 

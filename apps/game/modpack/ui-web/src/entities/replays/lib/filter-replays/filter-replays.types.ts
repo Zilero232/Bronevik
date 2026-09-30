@@ -16,5 +16,3 @@ export type MatchChoiceInput<Value> = {
   chosen: Value | null;
   actual: Value | null;
 };
-
-export type CompareInput = Pick<ReplayFilters, 'descending' | 'sort'>;

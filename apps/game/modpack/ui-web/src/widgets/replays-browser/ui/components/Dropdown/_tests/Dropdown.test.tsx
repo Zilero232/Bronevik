@@ -1,9 +1,8 @@
 // @vitest-environment jsdom
-import { act } from 'react';
+import { act, render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { stepBack } from '../../../../../../shared/lib/escape-stack';
-import { mount } from '../../../../../../shared/lib/testing/mount';
 import { Dropdown } from '../Dropdown';
 
 const OPTIONS = [
@@ -12,10 +11,7 @@ const OPTIONS = [
 ];
 
 const openDropdown = (chosen: string[]): HTMLElement => {
-  const container = mount({
-    Component: Dropdown<string>,
-    props: { label: 'Sort', value: 'date', options: OPTIONS, onSelect: (value: string) => chosen.push(value) }
-  });
+  const { container } = render(<Dropdown label='Sort' options={OPTIONS} value='date' onSelect={(value) => chosen.push(value)} />);
 
   act(() => container.querySelector('button')?.click());
 

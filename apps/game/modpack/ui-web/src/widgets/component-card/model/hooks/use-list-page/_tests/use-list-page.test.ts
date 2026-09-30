@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
+import { act, renderHook } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { UiRow } from '../../../../../../shared/api/protocol';
 
-import { renderHook } from '../../../../../../shared/lib/testing/render-hook';
 import { useListPage } from '../use-list-page';
 
 const RENAME = { id: 'rename', label: 'Rename', input: 'old name' };
@@ -24,18 +24,18 @@ const mount = () => {
 type Page = ReturnType<typeof mount>['hook'];
 
 const openRename = (hook: Page) => {
-  hook.run(() => hook.current()[0]?.actions[0]?.onClick());
+  act(() => hook.result.current[0]?.actions[0]?.onClick());
 };
 
 const toggleDetails = ({ hook, row }: { hook: Page; row: number }) => {
-  hook.run(() => hook.current()[row]?.toggleDetails());
+  act(() => hook.result.current[row]?.toggleDetails());
 };
 
 describe(useListPage, () => {
   it('runs an action without input at once', () => {
     const { hook, onRun } = mount();
 
-    hook.run(() => hook.current()[1]?.actions[0]?.onClick());
+    act(() => hook.result.current[1]?.actions[0]?.onClick());
 
     expect(onRun).toHaveBeenCalledWith({ action: DELETE, row: 'b' });
   });
@@ -45,16 +45,16 @@ describe(useListPage, () => {
 
     openRename(hook);
 
-    expect(hook.current()[0]?.draftValue).toBe(RENAME.input);
-    expect(hook.current()[1]?.draftValue).toBeNull();
+    expect(hook.result.current[0]?.draftValue).toBe(RENAME.input);
+    expect(hook.result.current[1]?.draftValue).toBeNull();
   });
 
   it('runs the action with the edited value on submit', () => {
     const { hook, onRun } = mount();
 
     openRename(hook);
-    hook.run(() => hook.current()[0]?.editDraft('new name'));
-    hook.run(() => hook.current()[0]?.submit());
+    act(() => hook.result.current[0]?.editDraft('new name'));
+    act(() => hook.result.current[0]?.submit());
 
     expect(onRun).toHaveBeenCalledWith({ action: RENAME, row: 'a', value: 'new name' });
   });
@@ -63,25 +63,25 @@ describe(useListPage, () => {
     const { hook } = mount();
 
     openRename(hook);
-    hook.run(() => hook.current()[0]?.submit());
+    act(() => hook.result.current[0]?.submit());
 
-    expect(hook.current()[0]?.draftValue).toBeNull();
+    expect(hook.result.current[0]?.draftValue).toBeNull();
   });
 
   it('closes the editor on cancel without running anything', () => {
     const { hook, onRun } = mount();
 
     openRename(hook);
-    hook.run(() => hook.current()[0]?.cancel());
+    act(() => hook.result.current[0]?.cancel());
 
-    expect(hook.current()[0]?.draftValue).toBeNull();
+    expect(hook.result.current[0]?.draftValue).toBeNull();
     expect(onRun).not.toHaveBeenCalled();
   });
 
   it('offers details only on rows with details or a figure', () => {
     const { hook } = mount();
 
-    expect(hook.current().map((row) => row.hasDetails)).toEqual([true, false, true]);
+    expect(hook.result.current.map((row) => row.hasDetails)).toEqual([true, false, true]);
   });
 
   it('opens the details of a row on toggle', () => {
@@ -89,7 +89,7 @@ describe(useListPage, () => {
 
     toggleDetails({ hook, row: 0 });
 
-    expect(hook.current()[0]?.detailsOpen).toBe(true);
+    expect(hook.result.current[0]?.detailsOpen).toBe(true);
   });
 
   it('closes the details of a row on a second toggle', () => {
@@ -98,7 +98,7 @@ describe(useListPage, () => {
     toggleDetails({ hook, row: 0 });
     toggleDetails({ hook, row: 0 });
 
-    expect(hook.current()[0]?.detailsOpen).toBe(false);
+    expect(hook.result.current[0]?.detailsOpen).toBe(false);
   });
 
   it('keeps one row of details open at a time', () => {
@@ -107,6 +107,6 @@ describe(useListPage, () => {
     toggleDetails({ hook, row: 0 });
     toggleDetails({ hook, row: 2 });
 
-    expect(hook.current().map((row) => row.detailsOpen)).toEqual([false, false, true]);
+    expect(hook.result.current.map((row) => row.detailsOpen)).toEqual([false, false, true]);
   });
 });

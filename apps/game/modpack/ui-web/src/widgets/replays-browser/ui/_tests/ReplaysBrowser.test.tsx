@@ -1,17 +1,18 @@
 // @vitest-environment jsdom
-import { act } from 'react';
+import { act, render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { pageSample } from '../../../../entities/replays/_tests/fixtures';
-import { imageSources, mount } from '../../../../shared/lib/testing/mount';
 import { REPLAYS_RU } from '../../config';
 import { ReplaysBrowser } from '../ReplaysBrowser';
+
+const sources = (html: HTMLElement) => [...html.querySelectorAll('img')].map((image) => image.getAttribute('src'));
 
 vi.mock('../../../../shared/api/protocol/protocol', () => ({ send: vi.fn(() => true) }));
 
 const PAGE = pageSample();
 
-const mountBrowser = () => mount({ Component: ReplaysBrowser, props: { page: PAGE, enabled: true, onTurnOn: vi.fn() } });
+const mountBrowser = () => render(<ReplaysBrowser enabled page={PAGE} onTurnOn={vi.fn()} />).container;
 
 const buttonWhere = (root: HTMLElement, matches: (text: string) => boolean): HTMLButtonElement => {
   const found = [...root.querySelectorAll('button')].find((button) => matches(button.textContent?.trim() ?? ''));
@@ -37,7 +38,7 @@ describe(ReplaysBrowser, () => {
   it('draws the map images from the client', () => {
     const html = mountBrowser();
 
-    expect(imageSources(html)).toEqual(
+    expect(sources(html)).toEqual(
       expect.arrayContaining(['img://gui/maps/icons/map/small/05_prohorovka.png', 'img://gui/maps/icons/map/stats/05_prohorovka.png'])
     );
   });
@@ -93,7 +94,7 @@ describe(ReplaysBrowser, () => {
 
   it('offers to turn the component on when it is off', () => {
     const onTurnOn = vi.fn();
-    const html = mount({ Component: ReplaysBrowser, props: { page: null, enabled: false, onTurnOn } });
+    const html = render(<ReplaysBrowser enabled={false} page={null} onTurnOn={onTurnOn} />).container;
 
     click(buttonNamed(html, REPLAYS_RU.turnOn));
 

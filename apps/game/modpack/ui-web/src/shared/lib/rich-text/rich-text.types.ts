@@ -31,6 +31,4 @@ export type RichLines = {
 
 export type ApplyTagInput = { lines: RichLines; match: RegExpExecArray };
 
-export type MatchesOfInput = { pattern: RegExp; text: string };
-
 export type TagStyleInput = { tag: string; attributes: Record<string, string> };

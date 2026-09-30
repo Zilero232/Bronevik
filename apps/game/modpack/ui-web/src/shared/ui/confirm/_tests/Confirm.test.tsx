@@ -1,9 +1,8 @@
 // @vitest-environment jsdom
-import { act } from 'react';
+import { act, render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { stepBack } from '../../../lib/escape-stack';
-import { mount } from '../../../lib/testing/mount';
 import { Confirm } from '../Confirm';
 
 const confirmProps = (answers: string[]) => ({
@@ -18,7 +17,7 @@ describe(Confirm, () => {
   it('cancels on Esc', () => {
     const answers: string[] = [];
 
-    mount({ Component: Confirm, props: confirmProps(answers) });
+    render(<Confirm {...confirmProps(answers)} />);
 
     act(() => {
       stepBack();

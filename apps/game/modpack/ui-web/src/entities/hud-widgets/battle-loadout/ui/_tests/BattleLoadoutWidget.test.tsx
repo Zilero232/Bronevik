@@ -1,17 +1,18 @@
+// @vitest-environment jsdom
 import type { RenderResult } from '@testing-library/react';
 
-// @vitest-environment jsdom
 import { fireEvent, render } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { GAMEFACE } from '../../../../../shared/api/gameface';
 import { HudPointerContext } from '../../../../../shared/lib/hud-pointer';
-import { imageSources } from '../../../../../shared/lib/testing/mount';
 import { readWidgetFixture } from '../../../../../shared/lib/testing/widget-fixture';
 import { battleLoadoutSchema } from '../../model/schemas';
 import { BattleLoadoutWidget } from '../BattleLoadoutWidget';
 
 import s from '../BattleLoadoutWidget.module.scss';
+
+const sources = (html: HTMLElement) => [...html.querySelectorAll('img')].map((image) => image.getAttribute('src'));
 
 const data = battleLoadoutSchema.parse(readWidgetFixture('battle_loadout'));
 
@@ -95,7 +96,7 @@ describe(BattleLoadoutWidget, () => {
   it('draws the equipment and the directive as client icons with their overlays', () => {
     const container = drawNew(false);
 
-    expect(imageSources(container)).toEqual([
+    expect(sources(container)).toEqual([
       'img://gui/maps/icons/artefact/turbocharger.png',
       'img://gui/maps/icons/artefact/improvedVentilation.png',
       'img://gui/maps/icons/quests/bonuses/small/equipmentPlus_overlay.png',

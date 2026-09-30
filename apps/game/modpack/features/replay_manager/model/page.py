@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import os
 
 from ....core.compat import is_int, to_text
+from ....core.vendor import attr
 from .constants import (
     BATTLE_TYPES,
     MAP_NAME,
@@ -94,17 +95,16 @@ def _no_image(path):
 
 # What a page needs beside the replays: the account's index, the client, and the client lookups the glue passes in
 # (`describe_vehicle(tank_id, vehicle)` -> {label, tier, cls}, `image(path)` -> an image string or None).
+@attr.s(eq=False)
 class PageContext(object):
 
-    def __init__(self, index=None, client_version=None, queued=(), analysed=(), upload=None, describe_vehicle=None,
-                 image=None):
-        self.index = index
-        self.client_version = client_version
-        self.queued = queued
-        self.analysed = analysed
-        self.upload = upload
-        self.describe_vehicle = describe_vehicle or _no_vehicle
-        self.image = image or _no_image
+    index = attr.ib(default=None)
+    client_version = attr.ib(default=None)
+    queued = attr.ib(default=())
+    analysed = attr.ib(default=())
+    upload = attr.ib(default=None)
+    describe_vehicle = attr.ib(default=None, converter=lambda value: value or _no_vehicle)
+    image = attr.ib(default=None, converter=lambda value: value or _no_image)
 
     def image_of(self, path):
         return self.image(path) if path else None

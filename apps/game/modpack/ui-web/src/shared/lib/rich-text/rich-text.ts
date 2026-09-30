@@ -1,7 +1,6 @@
 import type {
   ApplyTagInput,
   ImageRunInput,
-  MatchesOfInput,
   OpenTag,
   PushTextInput,
   RichImageRun,
@@ -16,17 +15,6 @@ import { RICH_TEXT } from './rich-text.constants';
 const ENTITIES = new Map<string, string>(Object.entries(RICH_TEXT.entities));
 const STYLE_TAGS = new Map<string, RichStyle>(Object.entries(RICH_TEXT.styleTags));
 const LINE_BREAK_TAGS = new Set<string>(RICH_TEXT.lineBreakTags);
-
-const matchesOf = ({ pattern, text }: MatchesOfInput): RegExpExecArray[] => {
-  const found: RegExpExecArray[] = [];
-  const scan = new RegExp(pattern.source, pattern.flags);
-
-  for (let match = scan.exec(text); match; match = scan.exec(text)) {
-    found.push(match);
-  }
-
-  return found;
-};
 
 const decodeEntities = (text: string): string =>
   text.replace(RICH_TEXT.entity, (whole, name: string) => {
@@ -46,7 +34,7 @@ const decodeEntities = (text: string): string =>
 const attributesOf = (source: string): Record<string, string> => {
   const found: Record<string, string> = {};
 
-  for (const match of matchesOf({ pattern: RICH_TEXT.attribute, text: source })) {
+  for (const match of source.matchAll(RICH_TEXT.attribute)) {
     const [, name = '', double, single] = match;
 
     found[name.toLowerCase()] = decodeEntities(double ?? single ?? '');
@@ -171,7 +159,7 @@ export const parseRichText = (html: string): RichLine[] => {
   const lines = createLines();
   let last = 0;
 
-  for (const match of matchesOf({ pattern: RICH_TEXT.tag, text: html })) {
+  for (const match of html.matchAll(RICH_TEXT.tag)) {
     lines.pushText({ raw: html.slice(last, match.index), start: last });
     applyTag({ lines, match });
     last = match.index + match[0].length;

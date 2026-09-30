@@ -1,3 +1,5 @@
+import { sortBy } from 'remeda';
+
 import type { UiComponent, UiField } from '../../../../shared/api/protocol';
 import type { UiIconName } from '../../../../shared/lib/icon-sprite';
 import type { ComponentsOfInput, ComponentValues, FieldRef, SearchHit, SearchInput, SectionSummary } from './components.types';
@@ -15,31 +17,18 @@ const isCyrillic = (title: string): boolean => {
 
 const scriptRank = (title: string): number => (isCyrillic(title) ? 0 : 1);
 
-const compareTitles = (left: UiComponent, right: UiComponent): number => {
-  const byScript = scriptRank(left.title) - scriptRank(right.title);
-
-  if (byScript !== 0) {
-    return byScript;
-  }
-
-  const leftKey = normalize(left.title);
-  const rightKey = normalize(right.title);
-
-  if (leftKey === rightKey) {
-    return 0;
-  }
-
-  return leftKey < rightKey ? -1 : 1;
-};
-
 export const isEnabled = (component: UiComponent): boolean => component.switch?.value ?? true;
 
 export const componentIcon = (componentId: string): UiIconName => COMPONENT_ICONS[componentId] ?? FALLBACK_COMPONENT_ICON;
 
 export const componentsOf = ({ components, section, context }: ComponentsOfInput): UiComponent[] =>
-  components
-    .filter((component) => component.section === section && (context === 'all' || component.context === context || component.context === 'any'))
-    .sort(compareTitles);
+  sortBy(
+    components.filter(
+      (component) => component.section === section && (context === 'all' || component.context === context || component.context === 'any')
+    ),
+    ({ title }) => scriptRank(title),
+    ({ title }) => normalize(title)
+  );
 
 export const summarize = (components: UiComponent[]): SectionSummary[] =>
   PROTOCOL.sections.map((section) => {

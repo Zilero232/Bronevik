@@ -1,21 +1,20 @@
 """Reads and checks catalog/catalog.json.
 
-Every problem is collected, then reported at once as a CatalogError. Texts are shown by the manager and
-copied into МОСТ pages, so control characters other than a newline are refused. Entries with
-`kind: "dependency"` are third-party runtime mods, checked here and passed through to components.json.
+catalog/catalog.schema.json (JSON Schema, Draft 7) checks the shape: types, required and unknown fields, id,
+version and package id patterns, texts without control characters (they are shown by the manager and copied into
+МОСТ pages), https links, hashes. This module then checks what a schema cannot: preview files on disk, ids that
+refer to each other, presets and the third-party masks. Every problem is collected, then reported at once as a
+CatalogError. Entries with `kind: "dependency"` are third-party runtime mods, passed through to components.json.
+jsonschema is a dev dependency (uv sync); on a bare Python the shape check is skipped and only the rest runs.
 """
 import fnmatch
 import io
 import json
 import os
-import re
 
+from .. import SCHEMA_PATH
 from .model import (
-    CONTEXTS,
     DEPENDENCY_KIND,
-    ID_PATTERN,
-    LANGUAGES,
-    PERF_LEVELS,
     Author,
     Catalog,
     CatalogEntry,
@@ -28,21 +27,15 @@ from .model import (
     Preview,
 )
 
-PREVIEW_EXTENSIONS = ('.svg', '.png')
-AUDIO_EXTENSIONS = ('.mp3', '.ogg', '.wav')
+try:
+    import jsonschema
+except ImportError:
+    jsonschema = None
+
+HAVE_SCHEMA = jsonschema is not None
 # Audio previews are the sounds a component already ships, so they are read from the modpack's assets/ folder.
 AUDIO_DIR = 'assets'
-MASK_PATTERN = re.compile(r'^[a-z0-9*?._-]+$')
-OWNED_PATH_PATTERN = re.compile(r'^[a-z0-9_./-]+$')
-FORBIDDEN_TEXT = re.compile(r'[\x00-\x09\x0b-\x1f]')
-SHA256_PATTERN = re.compile(r'^[0-9a-f]{64}$')
-PACKAGE_ID_PATTERN = re.compile(r'^[a-z0-9]+(?:[._-][a-z0-9]+)+$')
-VERSION_PATTERN = re.compile(r'^\d+(?:\.\d+)*$')
 DEPENDENCY_EXTENSION = '.mtmod'
-DEPENDENCY_FIELDS = (
-    'id', 'kind', 'packageId', 'version', 'file', 'title', 'description', 'author', 'licence', 'sourceUrl', 'sha256',
-    'size', 'requiredBy', 'optional', 'restartRequired',
-)
 
 
 class CatalogError(ValueError):
@@ -50,6 +43,20 @@ class CatalogError(ValueError):
     def __init__(self, problems):
         self.problems = list(problems)
         super(CatalogError, self).__init__('catalog.json:\n  ' + '\n  '.join(self.problems))
+
+
+def schema_problems(raw):
+    """`path: message` for every place catalog.json breaks catalog.schema.json; [] without jsonschema."""
+    if jsonschema is None:
+        return []
+    with io.open(SCHEMA_PATH, encoding='utf-8') as handle:
+        validator = jsonschema.Draft7Validator(json.load(handle))
+    errors = sorted(validator.iter_errors(raw), key=lambda error: list(map(str, error.absolute_path)))
+    return ['%s: %s' % ('/'.join(map(str, error.absolute_path)) or '(root)', error.message) for error in errors]
+
+
+def _localized(value):
+    return Localized(value['ru'], value['en'])
 
 
 class _Reader(object):
@@ -61,195 +68,74 @@ class _Reader(object):
     def fail(self, where, message):
         self.problems.append('%s: %s' % (where, message))
 
-    def ident(self, where, value):
-        if not isinstance(value, str) or not ID_PATTERN.match(value):
-            self.fail(where, 'id must match %s, got %r' % (ID_PATTERN.pattern, value))
-            return str(value)
-        return value
-
-    def localized(self, where, value, required=True):
-        if not isinstance(value, dict):
-            self.fail(where, 'expected {"ru": ..., "en": ...}')
-            return Localized('', '')
-        texts = []
-        for language in LANGUAGES:
-            text = value.get(language, '')
-            if not isinstance(text, str) or (required and not text.strip()):
-                self.fail(where, 'missing %s text' % language)
-                text = ''
-            if FORBIDDEN_TEXT.search(text):
-                self.fail(where, '%s text has control characters' % language)
-            texts.append(text)
-        extra = sorted(set(value) - set(LANGUAGES))
-        if extra:
-            self.fail(where, 'unknown languages %s' % ', '.join(extra))
-        return Localized(*texts)
-
     def preview(self, where, value):
         if value is None:
             return Preview()
-        if not isinstance(value, dict):
-            self.fail(where, 'preview must be an object')
-            return Preview()
         image = value.get('image')
-        video = value.get('video')
         audio = value.get('audio')
-        if image is not None:
-            if not image.lower().endswith(PREVIEW_EXTENSIONS):
-                self.fail(where, 'preview image must be %s' % ' or '.join(PREVIEW_EXTENSIONS))
-            elif not os.path.isfile(os.path.join(self.assets_dir, image)):
-                self.fail(where, 'preview image %s not found in catalog/' % image)
-        if video is not None and not str(video).startswith('https://'):
-            self.fail(where, 'preview video must be an https:// link')
-        if audio is not None:
-            if not str(audio).lower().endswith(AUDIO_EXTENSIONS) or '..' in str(audio):
-                self.fail(where, 'preview audio must be a %s file under assets/' % ' or '.join(AUDIO_EXTENSIONS))
-            elif not os.path.isfile(self.audio_path(audio)):
-                self.fail(where, 'preview audio %s not found in assets/' % audio)
-        return Preview(image, video, audio)
+        if image is not None and not os.path.isfile(os.path.join(self.assets_dir, image)):
+            self.fail(where, 'preview image %s not found in catalog/' % image)
+        if audio is not None and not os.path.isfile(self.audio_path(audio)):
+            self.fail(where, 'preview audio %s not found in assets/' % audio)
+        return Preview(image, value.get('video'), audio)
 
     def audio_path(self, audio):
         return os.path.join(os.path.dirname(os.path.abspath(self.assets_dir)), AUDIO_DIR, *str(audio).split('/'))
 
-    def perf(self, where, value):
-        if value not in PERF_LEVELS:
-            self.fail(where, 'perf must be one of %s, got %r' % (', '.join(PERF_LEVELS), value))
-            return None
-        return value
-
-    def context(self, where, value):
-        if value not in CONTEXTS:
-            self.fail(where, 'context must be one of %s, got %r' % (', '.join(CONTEXTS), value))
-            return None
-        return value
-
-    def conflict(self, index, raw):
-        where = 'conflicts[%d]' % index
-        patterns = raw.get('patterns')
-        if not isinstance(patterns, list) or not patterns:
-            self.fail(where + '.patterns', 'list the file name or package id masks')
-            patterns = []
-        for pattern in patterns:
-            if not isinstance(pattern, str) or not MASK_PATTERN.match(pattern) or pattern.strip('*?') == '':
-                self.fail(where + '.patterns', '%r must be a lowercase mask with some fixed text' % (pattern,))
-        components = raw.get('components')
-        if not isinstance(components, list) or not components:
-            self.fail(where + '.components', 'list the ids of our components it duplicates')
-            components = []
-        return ConflictRule(
-            self.ident(where, raw.get('id')),
-            self.localized(where + '.title', raw.get('title')),
-            tuple(patterns),
-            tuple(str(item) for item in components),
-            self.localized(where + '.note', raw.get('note')),
-        )
-
-    def category(self, index, raw):
-        where = 'categories[%d]' % index
-        return Category(
-            self.ident(where, raw.get('id')),
-            self.localized(where + '.title', raw.get('title')),
-            self.localized(where + '.description', raw.get('description')),
-        )
-
-    def preset(self, index, raw):
-        where = 'presets[%d]' % index
-        return Preset(
-            self.ident(where, raw.get('id')),
-            self.localized(where + '.title', raw.get('title')),
-            self.localized(where + '.description', raw.get('description')),
-            bool(raw.get('custom', False)),
-        )
-
-    def entry(self, index, raw):
-        where = 'components[%d]' % index
+    def entry(self, raw):
         return CatalogEntry(
-            id=self.ident(where, raw.get('id')),
-            category=raw.get('category', ''),
-            title=self.localized(where + '.title', raw.get('title')),
-            description=self.localized(where + '.description', raw.get('description')),
-            fair_play=self.localized(where + '.fairPlay', raw.get('fairPlay')),
+            id=raw['id'],
+            category=raw['category'],
+            title=_localized(raw['title']),
+            description=_localized(raw['description']),
+            fair_play=_localized(raw['fairPlay']),
             presets=tuple(raw.get('presets', ())),
-            required=bool(raw.get('required', False)),
-            preview=self.preview(where + '.preview', raw.get('preview')),
+            required=raw.get('required', False),
+            preview=self.preview('components.%s.preview' % raw['id'], raw.get('preview')),
             dependencies=tuple(raw.get('dependencies', ())),
-            perf=self.perf(where + '.perf', raw.get('perf')),
-            context=self.context(where + '.context', raw.get('context')),
+            perf=raw['perf'],
+            context=raw['context'],
         )
 
-    def https(self, where, value):
-        if not isinstance(value, str) or not value.startswith('https://') or len(value) <= len('https://'):
-            self.fail(where, 'must be an https:// link, got %r' % (value,))
-            return str(value)
-        return value
 
-    def text(self, where, value):
-        if not isinstance(value, str) or not value.strip() or FORBIDDEN_TEXT.search(value):
-            self.fail(where, 'must be a non-empty single-line text')
-            return str(value)
-        return value
+def _conflict(raw):
+    return ConflictRule(
+        raw['id'],
+        _localized(raw['title']),
+        tuple(raw['patterns']),
+        tuple(raw['components']),
+        _localized(raw['note']),
+    )
 
-    def sha256(self, where, value):
-        if not isinstance(value, str) or not SHA256_PATTERN.match(value):
-            self.fail(where, 'must be a lowercase 64-hex sha256')
-            return str(value)
-        return value
 
-    def size(self, where, value):
-        if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
-            self.fail(where, 'must be the byte size of the release file')
-            return 0
-        return value
+def _category(raw):
+    return Category(raw['id'], _localized(raw['title']), _localized(raw['description']))
 
-    def required_by(self, where, value):
-        if not isinstance(value, list) or not value:
-            self.fail(where, 'list the ids of our components that need it')
-            return ()
-        return tuple(str(item) for item in value)
 
-    def flag(self, where, value):
-        if not isinstance(value, bool):
-            self.fail(where, 'must be true or false')
-        return bool(value)
+def _preset(raw):
+    return Preset(raw['id'], _localized(raw['title']), _localized(raw['description']), raw.get('custom', False))
 
-    def author(self, where, value):
-        author = value if isinstance(value, dict) else {}
-        return Author(self.text(where + '.name', author.get('name')), self.https(where + '.url', author.get('url')))
 
-    def licence(self, where, value):
-        licence = value if isinstance(value, dict) else {}
-        return Licence(
-            self.text(where + '.name', licence.get('name')),
-            self.https(where + '.url', licence.get('url')),
-            self.sha256(where + '.sha256', licence.get('sha256')),
-        )
-
-    def dependency(self, index, raw):
-        where = 'components[%d]' % index
-        unknown = sorted(set(raw) - set(DEPENDENCY_FIELDS))
-        if unknown:
-            self.fail(where, 'a dependency has no %s (it is not our package)' % ', '.join(unknown))
-        size = self.size(where + '.size', raw.get('size'))
-        required_by = self.required_by(where + '.requiredBy', raw.get('requiredBy'))
-        optional = self.flag(where + '.optional', raw.get('optional'))
-        restart_required = self.flag(where + '.restartRequired', raw.get('restartRequired'))
-        return Dependency(
-            id=self.ident(where, raw.get('id')),
-            kind=DEPENDENCY_KIND,
-            package_id=str(raw.get('packageId', '')),
-            version=str(raw.get('version', '')),
-            file=str(raw.get('file', '')),
-            title=self.localized(where + '.title', raw.get('title')),
-            description=self.localized(where + '.description', raw.get('description')),
-            author=self.author(where + '.author', raw.get('author')),
-            licence=self.licence(where + '.licence', raw.get('licence')),
-            source_url=self.https(where + '.sourceUrl', raw.get('sourceUrl')),
-            sha256=self.sha256(where + '.sha256', raw.get('sha256')),
-            size=size,
-            required_by=required_by,
-            optional=optional,
-            restart_required=restart_required,
-        )
+def _dependency(raw):
+    author = raw['author']
+    licence = raw['licence']
+    return Dependency(
+        id=raw['id'],
+        kind=DEPENDENCY_KIND,
+        package_id=raw['packageId'],
+        version=raw['version'],
+        file=raw['file'],
+        title=_localized(raw['title']),
+        description=_localized(raw['description']),
+        author=Author(author['name'], author['url']),
+        licence=Licence(licence['name'], licence['url'], licence['sha256']),
+        source_url=raw['sourceUrl'],
+        sha256=raw['sha256'],
+        size=raw['size'],
+        required_by=tuple(raw['requiredBy']),
+        optional=raw['optional'],
+        restart_required=raw['restartRequired'],
+    )
 
 
 def _unique(reader, where, ids):
@@ -261,30 +147,21 @@ def _unique(reader, where, ids):
 
 
 def parse(raw, assets_dir):
+    problems = schema_problems(raw)
+    if problems:
+        raise CatalogError(problems)
     reader = _Reader(assets_dir)
-    categories = tuple(reader.category(index, item) for index, item in enumerate(raw.get('categories', ())))
-    presets = tuple(reader.preset(index, item) for index, item in enumerate(raw.get('presets', ())))
-    entries = []
-    dependencies = []
-    for index, item in enumerate(raw.get('components', ())):
-        kind = item.get('kind')
-        if kind == DEPENDENCY_KIND:
-            dependencies.append(reader.dependency(index, item))
-        elif kind is not None:
-            message = 'unknown kind %r (ours have none, third-party mods are "%s")' % (kind, DEPENDENCY_KIND)
-            reader.fail('components[%d]' % index, message)
-        else:
-            entries.append(reader.entry(index, item))
+    components = raw['components']
     catalog = Catalog(
-        categories=categories,
-        presets=presets,
-        components=tuple(entries),
-        owned_patterns=tuple(raw.get('ownedPatterns', ())),
-        fallback_category=raw.get('fallbackCategory', ''),
-        fallback_fair_play=reader.localized('fallbackFairPlay', raw.get('fallbackFairPlay')),
-        dependencies=tuple(dependencies),
+        categories=tuple(_category(item) for item in raw['categories']),
+        presets=tuple(_preset(item) for item in raw['presets']),
+        components=tuple(reader.entry(item) for item in components if 'kind' not in item),
+        owned_patterns=tuple(raw['ownedPatterns']),
+        fallback_category=raw['fallbackCategory'],
+        fallback_fair_play=_localized(raw['fallbackFairPlay']),
+        dependencies=tuple(_dependency(item) for item in components if 'kind' in item),
         owned_paths=tuple(raw.get('ownedPaths', ())),
-        conflicts=tuple(reader.conflict(index, item) for index, item in enumerate(raw.get('conflicts', ()))),
+        conflicts=tuple(_conflict(item) for item in raw.get('conflicts', ())),
     )
     _check(reader, catalog)
     if reader.problems:
@@ -301,12 +178,10 @@ def _check(reader, catalog):
     _check_presets(reader, catalog.presets)
     if catalog.fallback_category not in category_ids:
         reader.fail('fallbackCategory', 'unknown category %r' % catalog.fallback_category)
-    _check_owned_patterns(reader, catalog.owned_patterns)
     for entry in catalog.components:
         _check_entry(reader, catalog, entry)
     for dependency in catalog.dependencies:
         _check_dependency(reader, catalog, entry_ids, dependency)
-    _check_owned_paths(reader, catalog.owned_paths)
     _unique(reader, 'conflicts', [rule.id for rule in catalog.conflicts])
     for rule in catalog.conflicts:
         _check_conflict(reader, catalog, entry_ids, rule)
@@ -318,14 +193,6 @@ def _check_presets(reader, presets):
         reader.fail('presets', 'exactly one preset must be custom, and it must come last')
     elif presets[0].custom:
         reader.fail('presets', 'the first preset is the default one and cannot be custom')
-
-
-def _check_owned_patterns(reader, owned_patterns):
-    if not owned_patterns:
-        reader.fail('ownedPatterns', 'list the file masks of our packages (uninstall and clean-up rely on it)')
-    for pattern in owned_patterns:
-        if '\\' in pattern or '/' in pattern or not pattern.endswith(('.mtmod', '.wotmod')):
-            reader.fail('ownedPatterns', '%r must be a bare package file mask' % pattern)
 
 
 def _check_entry(reader, catalog, entry):
@@ -346,18 +213,6 @@ def _check_entry(reader, catalog, entry):
             reader.fail(where, 'unknown dependency %r' % dependency)
 
 
-def _is_owned_path(path):
-    if not isinstance(path, str) or not OWNED_PATH_PATTERN.match(path):
-        return False
-    return not path.startswith(('/', 'res/')) and '..' not in path
-
-
-def _check_owned_paths(reader, owned_paths):
-    for path in owned_paths:
-        if not _is_owned_path(path):
-            reader.fail('ownedPaths', '%r must be a lowercase in-game path prefix without res/' % (path,))
-
-
 def _check_conflict(reader, catalog, entry_ids, rule):
     where = 'conflicts.%s' % rule.id
     for component_id in rule.components:
@@ -375,20 +230,14 @@ def our_prefixes(owned_patterns):
 
 def _check_dependency(reader, catalog, entry_ids, dependency):
     where = 'components.%s' % dependency.id
-    if not PACKAGE_ID_PATTERN.match(dependency.package_id):
-        reader.fail(where, 'packageId %r is not a package id' % dependency.package_id)
     package_id = dependency.package_id.lower()
     if any(package_id.startswith(prefix.lower()) for prefix in our_prefixes(catalog.owned_patterns)):
         reader.fail(where, 'packageId %s is ours: a dependency is a third-party mod' % dependency.package_id)
     if any(fnmatch.fnmatch(dependency.file.lower(), pattern.lower()) for pattern in catalog.owned_patterns):
         reader.fail(where, 'file %s matches ownedPatterns: uninstall would take it for ours' % dependency.file)
-    if not VERSION_PATTERN.match(dependency.version):
-        reader.fail(where, 'version %r is not a release version' % dependency.version)
     expected = '%s_%s%s' % (dependency.package_id, dependency.version, DEPENDENCY_EXTENSION)
     if dependency.file != expected:
         reader.fail(where, 'file must be %s, got %s' % (expected, dependency.file))
-    if len(set(dependency.required_by)) != len(dependency.required_by):
-        reader.fail(where, 'requiredBy lists a component twice')
     for component_id in dependency.required_by:
         if component_id not in entry_ids:
             reader.fail(where, 'requiredBy: unknown component %r' % component_id)

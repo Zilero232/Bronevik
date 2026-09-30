@@ -1,23 +1,25 @@
 // @vitest-environment jsdom
+import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import type { TeamHpData } from '../../model/schemas';
 
-import { imageSources, mount as mountComponent } from '../../../../../shared/lib/testing/mount';
 import { readWidgetFixture } from '../../../../../shared/lib/testing/widget-fixture';
 import { teamHpSchema } from '../../model/schemas';
 import { TeamHpWidget } from '../TeamHpWidget';
 
+const sources = (html: HTMLElement) => [...html.querySelectorAll('img')].map((image) => image.getAttribute('src'));
+
 const fixture = teamHpSchema.parse(readWidgetFixture('team_hp'));
 
-const mount = (data: TeamHpData): HTMLElement => mountComponent({ Component: TeamHpWidget, props: { data } });
+const mount = (data: TeamHpData): HTMLElement => render(<TeamHpWidget data={data} />).container;
 
 describe(TeamHpWidget, () => {
   it('draws the icon strip from the Python fixture with class icons of both sides', () => {
     const html = mount(fixture);
 
-    expect(imageSources(html)).toContain('img://gui/maps/icons/vehicleTypes/green/mediumTank.png');
-    expect(imageSources(html)).toContain('img://gui/maps/icons/vehicleTypes/red/at-spg.png');
+    expect(sources(html)).toContain('img://gui/maps/icons/vehicleTypes/green/mediumTank.png');
+    expect(sources(html)).toContain('img://gui/maps/icons/vehicleTypes/red/at-spg.png');
   });
 
   it('shows the frag score', () => {

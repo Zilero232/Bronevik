@@ -5,6 +5,10 @@ export type ApplyMessageInput = {
   message: UiMessage;
 };
 
-export type SetFieldInput = { field: UiField; message: Pick<UiMessageOf<'set'>, 'key' | 'value'> };
+export type SettingValues = UiMessageOf<'set_many'>['values'];
 
-export type SetComponentInput = { component: UiComponent; message: UiMessageOf<'set'> };
+export type SetFieldInput = { field: UiField; values: SettingValues };
+
+export type SetComponentInput = { component: UiComponent; id: string; values: SettingValues };
+
+export type SetValuesInput = { state: UiState; id: string; values: SettingValues };

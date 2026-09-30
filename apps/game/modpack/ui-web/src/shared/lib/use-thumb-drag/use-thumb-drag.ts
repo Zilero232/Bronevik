@@ -1,6 +1,7 @@
-import { useEffect, useEffectEvent, useRef } from 'react';
+import { useEventListener, useWindowEvent } from '@siberiacancode/reactuse';
+import { useRef } from 'react';
 
-import type { DragOfInput, ThumbDrag, ThumbPress, UseThumbDragInput } from './use-thumb-drag.types';
+import type { DragOfInput, ThumbDrag, UseThumbDragInput } from './use-thumb-drag.types';
 
 import { SCROLL_AREA } from '../../config';
 import { scrollMetricsOf } from '../scroll-metrics';
@@ -15,59 +16,42 @@ const dragOf = ({ element, clientY }: DragOfInput): ThumbDrag => {
 };
 
 export const useThumbDrag = ({ viewportRef, visible, onDragged }: UseThumbDragInput) => {
-  const thumbRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<ThumbDrag | null>(null);
-  const dragged = useEffectEvent(onDragged);
 
-  const onThumbDown = useEffectEvent((event: ThumbPress): void => {
-    const element = viewportRef.current;
-
-    event.preventDefault();
-    event.stopPropagation();
-
-    if (element) {
-      dragRef.current = dragOf({ element, clientY: event.clientY });
-    }
-  });
-
-  useEffect(() => {
-    const element = thumbRef.current;
-    const listener = (event: MouseEvent): void => onThumbDown(event);
-
-    element?.addEventListener('mousedown', listener);
-
-    return () => element?.removeEventListener('mousedown', listener);
-  }, [visible]);
-
-  useEffect(() => {
-    const onMove = (event: MouseEvent): void => {
-      const drag = dragRef.current;
+  const thumbRef = useEventListener<HTMLDivElement, 'mousedown'>(
+    'mousedown',
+    (event) => {
       const element = viewportRef.current;
 
-      if (!drag || !element) {
-        return;
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (element) {
+        dragRef.current = dragOf({ element, clientY: event.clientY });
       }
+    },
+    { enabled: visible, passive: false }
+  );
 
-      const current = scrollMetricsOf(element);
-      const { size } = thumbOf({ ...current, minThumb: SCROLL_AREA.minThumb });
-      const offset = drag.startOffset + (event.clientY - drag.startY) / drag.factor;
+  useWindowEvent('mousemove', (event) => {
+    const drag = dragRef.current;
+    const element = viewportRef.current;
 
-      element.scrollTop = topFromThumb({ ...current, size, offset });
-      dragged();
-    };
+    if (!drag || !element) {
+      return;
+    }
 
-    const onUp = (): void => {
-      dragRef.current = null;
-    };
+    const current = scrollMetricsOf(element);
+    const { size } = thumbOf({ ...current, minThumb: SCROLL_AREA.minThumb });
+    const offset = drag.startOffset + (event.clientY - drag.startY) / drag.factor;
 
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseup', onUp);
+    element.scrollTop = topFromThumb({ ...current, size, offset });
+    onDragged();
+  });
 
-    return () => {
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('mouseup', onUp);
-    };
-  }, [viewportRef]);
+  useWindowEvent('mouseup', () => {
+    dragRef.current = null;
+  });
 
   return { thumbRef };
 };

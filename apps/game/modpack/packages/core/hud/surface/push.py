@@ -1,17 +1,19 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ...vendor import attr
 
+
+@attr.s(eq=False)
 class FramePush(object):
     """A page's state pushed at most once a frame, and only when it changed: the first change of a frame asks
     `schedule(flush)` for the next one, later changes of that frame only wait for it. The flush encodes the state as it
     is then (`encode()`, None while there is no page) and hands it to `send(text)` unless it is the text sent last."""
 
-    def __init__(self, schedule, encode, send):
-        self.schedule = schedule
-        self.encode = encode
-        self.send = send
-        self.pending = False
-        self.sent = None
+    schedule = attr.ib()
+    encode = attr.ib()
+    send = attr.ib()
+    pending = attr.ib(default=False, init=False)
+    sent = attr.ib(default=None, init=False)
 
     def request(self):
         if not self.pending:

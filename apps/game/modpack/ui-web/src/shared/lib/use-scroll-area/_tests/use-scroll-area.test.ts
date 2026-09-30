@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
+import { act, renderHook } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { SCROLL_AREA } from '../../../config';
-import { renderHook } from '../../testing/render-hook';
 import { useScrollArea } from '../use-scroll-area';
 
 const unmounts: (() => void)[] = [];
@@ -37,10 +37,10 @@ const measureBox = (element: HTMLDivElement) => {
   const hook = renderHook(useScrollArea);
 
   unmounts.push(hook.unmount);
-  hook.current().viewportRef.current = element;
-  hook.run(() => vi.advanceTimersByTime(SCROLL_AREA.measureMs));
+  hook.result.current.viewportRef.current = element;
+  act(() => vi.advanceTimersByTime(SCROLL_AREA.measureMs));
 
-  return hook.current().thumb;
+  return hook.result.current.thumb;
 };
 
 const measure = (box: Box) => measureBox(viewport(box));

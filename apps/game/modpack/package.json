@@ -1,6 +1,6 @@
 {
   "name": "@otmetki/modpack",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "private": true,
   "description": "Три отметки modpack for «Мир танков»: Python 2.7 game-client packages (core, companion, features) built into .mtmod/.wotmod, with Python 3 host tooling (uv workspace, pytest, ruff).",
   "homepage": "https://triotmetki.ru",
@@ -43,6 +43,7 @@
   "devDependencies": {
     "@otmetki/design-tokens": "workspace:*",
     "@resvg/resvg-js": "catalog:",
+    "@testing-library/react": "catalog:",
     "@types/postcss-pxtorem": "^6.1.0",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",

@@ -1,0 +1,177 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://triotmetki.ru/schemas/modpack/catalog.schema.json",
+  "title": "Modpack component catalogue (catalog/catalog.json)",
+  "description": "The shape of catalog.json. tools/build/setupkit/manifest/catalog.py validates it, then checks what a schema cannot: preview files on disk, cross-references between ids, presets, and the third-party masks.",
+  "type": "object",
+  "required": ["fallbackCategory", "fallbackFairPlay", "ownedPatterns", "presets", "categories", "components"],
+  "additionalProperties": false,
+  "properties": {
+    "$comment": { "type": "string" },
+    "fallbackCategory": { "$ref": "#/definitions/id" },
+    "fallbackFairPlay": { "$ref": "#/definitions/localized" },
+    "ownedPatterns": {
+      "description": "File masks of our packages; uninstall and clean-up rely on them.",
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "pattern": "^[^/\\\\]+\\.(mtmod|wotmod)$" }
+    },
+    "ownedPaths": {
+      "description": "Lowercase in-game path prefixes only our packages write, without res/.",
+      "type": "array",
+      "items": { "type": "string", "pattern": "^(?!/|res/)(?!.*\\.\\.)[a-z0-9_./-]+$" }
+    },
+    "conflicts": { "type": "array", "items": { "$ref": "#/definitions/conflict" } },
+    "presets": { "type": "array", "items": { "$ref": "#/definitions/preset" } },
+    "categories": { "type": "array", "items": { "$ref": "#/definitions/category" } },
+    "components": {
+      "description": "Our packages, then the third-party runtime mods (kind: dependency).",
+      "type": "array",
+      "items": {
+        "if": { "type": "object", "required": ["kind"] },
+        "then": { "$ref": "#/definitions/dependency" },
+        "else": { "$ref": "#/definitions/entry" }
+      }
+    }
+  },
+  "definitions": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+    "ids": { "type": "array", "items": { "$ref": "#/definitions/id" } },
+    "text": {
+      "description": "Non-empty text without control characters other than a newline.",
+      "type": "string",
+      "allOf": [{ "pattern": "\\S" }, { "pattern": "^[^\\u0000-\\u0009\\u000b-\\u001f]*$" }]
+    },
+    "localized": {
+      "type": "object",
+      "required": ["ru", "en"],
+      "additionalProperties": false,
+      "properties": { "ru": { "$ref": "#/definitions/text" }, "en": { "$ref": "#/definitions/text" } }
+    },
+    "https": { "type": "string", "pattern": "^https://.+" },
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "category": {
+      "type": "object",
+      "required": ["id", "title", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/definitions/id" },
+        "title": { "$ref": "#/definitions/localized" },
+        "description": { "$ref": "#/definitions/localized" }
+      }
+    },
+    "preset": {
+      "type": "object",
+      "required": ["id", "title", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/definitions/id" },
+        "title": { "$ref": "#/definitions/localized" },
+        "description": { "$ref": "#/definitions/localized" },
+        "custom": { "type": "boolean" }
+      }
+    },
+    "conflict": {
+      "type": "object",
+      "required": ["id", "title", "patterns", "components", "note"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/definitions/id" },
+        "title": { "$ref": "#/definitions/localized" },
+        "patterns": {
+          "description": "Lowercase masks with some fixed text, matched against a package's file name and meta.xml id.",
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "pattern": "^[a-z0-9*?._-]*[a-z0-9._-][a-z0-9*?._-]*$" }
+        },
+        "components": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/id" } },
+        "note": { "$ref": "#/definitions/localized" }
+      }
+    },
+    "preview": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "image": { "description": "Relative to catalog/.", "type": "string", "pattern": "\\.(svg|png)$" },
+        "video": { "$ref": "#/definitions/https" },
+        "audio": {
+          "description": "A sound the component ships, relative to assets/.",
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[^\\\\]+\\.(mp3|ogg|wav)$"
+        }
+      }
+    },
+    "entry": {
+      "description": "UI metadata of one of our package keys (packages/<key>, features/<key>).",
+      "type": "object",
+      "required": ["id", "category", "title", "description", "fairPlay", "perf", "context"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/definitions/id" },
+        "category": { "$ref": "#/definitions/id" },
+        "title": { "$ref": "#/definitions/localized" },
+        "description": { "$ref": "#/definitions/localized" },
+        "fairPlay": { "$ref": "#/definitions/localized" },
+        "presets": { "$ref": "#/definitions/ids" },
+        "required": { "type": "boolean" },
+        "preview": { "$ref": "#/definitions/preview" },
+        "dependencies": { "$ref": "#/definitions/ids" },
+        "perf": { "enum": ["low", "medium", "high"] },
+        "context": { "enum": ["hangar", "battle", "any"] }
+      }
+    },
+    "dependency": {
+      "description": "A third-party runtime mod the manager installs, pinned by sha256.",
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "packageId",
+        "version",
+        "file",
+        "title",
+        "description",
+        "author",
+        "licence",
+        "sourceUrl",
+        "sha256",
+        "size",
+        "requiredBy",
+        "optional",
+        "restartRequired"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/definitions/id" },
+        "kind": { "const": "dependency" },
+        "packageId": { "type": "string", "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)+$" },
+        "version": { "type": "string", "pattern": "^\\d+(?:\\.\\d+)*$" },
+        "file": { "description": "<packageId>_<version>.mtmod", "type": "string" },
+        "title": { "$ref": "#/definitions/localized" },
+        "description": { "$ref": "#/definitions/localized" },
+        "author": {
+          "type": "object",
+          "required": ["name", "url"],
+          "additionalProperties": false,
+          "properties": { "name": { "$ref": "#/definitions/text" }, "url": { "$ref": "#/definitions/https" } }
+        },
+        "licence": {
+          "type": "object",
+          "required": ["name", "url", "sha256"],
+          "additionalProperties": false,
+          "properties": {
+            "name": { "$ref": "#/definitions/text" },
+            "url": { "$ref": "#/definitions/https" },
+            "sha256": { "$ref": "#/definitions/sha256" }
+          }
+        },
+        "sourceUrl": { "$ref": "#/definitions/https" },
+        "sha256": { "$ref": "#/definitions/sha256" },
+        "size": { "description": "Byte size of the release file.", "type": "integer", "minimum": 1 },
+        "requiredBy": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/definitions/id" } },
+        "optional": { "type": "boolean" },
+        "restartRequired": { "type": "boolean" }
+      }
+    }
+  }
+}

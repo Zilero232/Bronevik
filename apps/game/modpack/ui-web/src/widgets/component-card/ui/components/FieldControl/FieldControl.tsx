@@ -24,5 +24,9 @@ export const FieldControl = ({ field, onSet }: FieldProps) => {
     return <Segmented items={field.choices} label={field.label} value={field.value} onSelect={(value) => onSet({ key: field.key, value })} />;
   }
 
-  return <TextField field={field} onSet={onSet} />;
+  if (field.type === 'text') {
+    return <TextField field={field} onSet={onSet} />;
+  }
+
+  return field satisfies never;
 };

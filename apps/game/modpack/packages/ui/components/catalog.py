@@ -14,13 +14,13 @@ from .constants import (
 from .sources import ConfigSource, SectionSource
 
 
+@attr.s(eq=False)
 class FeatureInfo(object):
 
-    def __init__(self, feature_id, settings_module=None, instance=None, title=None):
-        self.id = feature_id
-        self.settings_module = settings_module
-        self.instance = instance
-        self.title = title
+    id = attr.ib()
+    settings_module = attr.ib(default=None)
+    instance = attr.ib(default=None)
+    title = attr.ib(default=None)
 
     def config_keys(self):
         return tuple(getattr(self.settings_module, 'SETTINGS', ()) or ())

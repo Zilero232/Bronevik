@@ -6,6 +6,7 @@ The UI metadata of every modpack package: what the modpack manager ([apps/game/m
 catalog/
   catalog.json          titles, descriptions, fair-play notes (ru/en), categories, presets, previews, ownedPatterns,
                         and the third-party runtime mods (kind "dependency") the manager installs
+  catalog.schema.json   the JSON Schema (Draft 7) of catalog.json, which setupkit validates it against
   previews/<id>.svg     16:9 component previews (a .png screenshot works too); a HUD component's is <id>.png, rendered
                         by its own HUD panel (below)
   screenshots/<id>/     real client screenshots for МОСТ, at most 3 per component (optional)

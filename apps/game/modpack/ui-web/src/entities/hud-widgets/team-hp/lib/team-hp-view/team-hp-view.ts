@@ -1,4 +1,4 @@
-import { reverse } from 'remeda';
+import { reverse, sumBy } from 'remeda';
 
 import type { TeamHpData, TeamHpVehicle } from '../../model/schemas';
 import type {
@@ -20,7 +20,7 @@ import { TEAM_HP } from '../../config';
 const startsTierGroup = (vehicle: TeamHpVehicle, index: number): boolean => index > 0 && vehicle.tier !== null;
 
 const segmentsOf = ({ vehicles, width }: SegmentsInput): (TeamHpGap | TeamHpSegment)[] => {
-  const total = vehicles.reduce((sum, vehicle) => sum + vehicle.max, 0);
+  const total = sumBy(vehicles, (vehicle) => vehicle.max);
   const gaps = vehicles.filter(startsTierGroup).length;
   const room = width - TEAM_HP.segmentGap * Math.max(0, vehicles.length - 1) - TEAM_HP.tierGap * gaps;
 

@@ -1,11 +1,11 @@
 // @vitest-environment jsdom
+import { act, renderHook } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { GAMEFACE } from '../../../../../../shared/api/gameface';
 import { createGamefaceMock, installGamefaceMock } from '../../../../../../shared/api/gameface/mock';
 import { isRecord } from '../../../../../../shared/lib/is-record';
 import { forgetReports } from '../../../../../../shared/lib/page-diag';
-import { renderHook } from '../../../../../../shared/lib/testing/render-hook';
 import { useWindowFrame } from '../use-window-frame';
 
 const SCREEN_REM = { width: 1663, height: 962 };
@@ -61,7 +61,7 @@ const mountFrame = () => renderHook(() => useWindowFrame(SAVED));
 const mountWithTitle = () => {
   const hook = mountFrame();
 
-  hook.current().handles.move.current = handleAt({ left: 424, top: 162, width: 400, height: 120 });
+  hook.result.current.handles.move.current = handleAt({ left: 424, top: 162, width: 400, height: 120 });
 
   return hook;
 };
@@ -69,7 +69,7 @@ const mountWithTitle = () => {
 const mountWithGrip = () => {
   const hook = mountFrame();
 
-  hook.current().handles.corner.current = handleAt({ left: 2880, top: 1740, width: 36, height: 36 });
+  hook.result.current.handles.corner.current = handleAt({ left: 2880, top: 1740, width: 36, height: 36 });
 
   return hook;
 };
@@ -85,7 +85,7 @@ describe(useWindowFrame, () => {
 
     const hook = mountFrame();
 
-    expect(hook.current().frameStyle).toEqual({ left: '212rem', top: '81rem', width: '1240rem', height: '800rem' });
+    expect(hook.result.current.frameStyle).toEqual({ left: '212rem', top: '81rem', width: '1240rem', height: '800rem' });
     hook.unmount();
   });
 
@@ -94,7 +94,7 @@ describe(useWindowFrame, () => {
 
     const hook = mountFrame();
 
-    expect(hook.current().frameStyle).toEqual({ left: '106rem', top: '41rem', width: '1240rem', height: '800rem' });
+    expect(hook.result.current.frameStyle).toEqual({ left: '106rem', top: '41rem', width: '1240rem', height: '800rem' });
     hook.unmount();
   });
 
@@ -102,9 +102,9 @@ describe(useWindowFrame, () => {
     install(ORIGIN);
     const hook = mountWithTitle();
 
-    hook.run(() => drag({ x: 500, y: 200 }, { x: 400, y: 150 }));
+    act(() => drag({ x: 500, y: 200 }, { x: 400, y: 150 }));
 
-    expect(hook.current().frameStyle).toMatchObject({ left: '162rem', top: '56rem' });
+    expect(hook.result.current.frameStyle).toMatchObject({ left: '162rem', top: '56rem' });
     hook.unmount();
   });
 
@@ -112,7 +112,7 @@ describe(useWindowFrame, () => {
     const mock = install(ORIGIN);
     const hook = mountWithTitle();
 
-    hook.run(() => drag({ x: 500, y: 200 }, { x: 400, y: 150 }));
+    act(() => drag({ x: 500, y: 200 }, { x: 400, y: 150 }));
 
     expect(layouts(mock.sent())).toEqual([expect.objectContaining({ x: 162, y: 56, placed: true })]);
     hook.unmount();
@@ -122,9 +122,9 @@ describe(useWindowFrame, () => {
     install(ORIGIN);
     const hook = mountWithGrip();
 
-    hook.run(() => drag({ x: 1000, y: 800 }, { x: 900, y: 700 }));
+    act(() => drag({ x: 1000, y: 800 }, { x: 900, y: 700 }));
 
-    expect(hook.current().frameStyle).toMatchObject({ width: '1240rem', height: '800rem' });
+    expect(hook.result.current.frameStyle).toMatchObject({ width: '1240rem', height: '800rem' });
     hook.unmount();
   });
 
@@ -132,9 +132,9 @@ describe(useWindowFrame, () => {
     install(ORIGIN);
     const hook = mountWithGrip();
 
-    hook.run(() => drag({ x: 2890, y: 1750 }, { x: 2790, y: 1650 }));
+    act(() => drag({ x: 2890, y: 1750 }, { x: 2790, y: 1650 }));
 
-    expect(hook.current().frameStyle).toMatchObject({ width: '1190rem', height: '750rem' });
+    expect(hook.result.current.frameStyle).toMatchObject({ width: '1190rem', height: '750rem' });
     hook.unmount();
   });
 });

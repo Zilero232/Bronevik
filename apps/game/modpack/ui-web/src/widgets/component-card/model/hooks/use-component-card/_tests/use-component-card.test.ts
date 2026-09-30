@@ -1,10 +1,10 @@
 // @vitest-environment jsdom
+import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { UiAction, UiComponent } from '../../../../../../shared/api/protocol';
 
 import { send } from '../../../../../../shared/api/protocol/protocol';
-import { renderHook } from '../../../../../../shared/lib/testing/render-hook';
 import { useComponentCard } from '../use-component-card';
 
 vi.mock('../../../../../../shared/api/protocol/protocol', () => ({ send: vi.fn(() => true) }));
@@ -29,7 +29,7 @@ const component = (overrides: Partial<UiComponent> = {}): UiComponent => ({
 const mountCard = (input: Parameters<typeof useComponentCard>[0]) => renderHook(() => useComponentCard(input));
 
 const pressFirstAction = (card: ReturnType<typeof mountCard>) => {
-  card.run(() => card.current().actionItems[0]?.onClick());
+  act(() => card.result.current.actionItems[0]?.onClick());
 };
 
 const WITH_CONFIRMED_ACTION = component({ actions: [action({ confirm: 'Sure?' })] });
@@ -52,7 +52,7 @@ describe(useComponentCard, () => {
 
     pressFirstAction(card);
 
-    expect(card.current().confirmText).toBe('Sure?');
+    expect(card.result.current.confirmText).toBe('Sure?');
     expect(send).not.toHaveBeenCalled();
   });
 
@@ -60,19 +60,19 @@ describe(useComponentCard, () => {
     const card = mountCard({ component: WITH_CONFIRMED_ACTION });
 
     pressFirstAction(card);
-    card.run(() => card.current().confirm());
+    act(() => card.result.current.confirm());
 
     expect(send).toHaveBeenCalledOnce();
-    expect(card.current().confirmText).toBeNull();
+    expect(card.result.current.confirmText).toBeNull();
   });
 
   it('drops the pending action on cancel', () => {
     const card = mountCard({ component: WITH_CONFIRMED_ACTION });
 
     pressFirstAction(card);
-    card.run(() => card.current().cancel());
+    act(() => card.result.current.cancel());
 
-    expect(card.current().confirmText).toBeNull();
+    expect(card.result.current.confirmText).toBeNull();
     expect(send).not.toHaveBeenCalled();
   });
 
@@ -87,35 +87,35 @@ describe(useComponentCard, () => {
   it('flips the switch through a set message', () => {
     const card = mountCard({ component: component() });
 
-    card.run(() => card.current().toggle());
+    act(() => card.result.current.toggle());
 
     expect(send).toHaveBeenCalledWith({ type: 'set', component: 'replay_manager', key: 'hangar_replay_manager', value: false });
   });
 
   it('shows the empty note for a card without fields, actions and a page', () => {
-    expect(mountCard({ component: component({ panel: true }) }).current().showEmpty).toBe(true);
+    expect(mountCard({ component: component({ panel: true }) }).result.current.showEmpty).toBe(true);
   });
 
   it('hides the empty note for a card with a page', () => {
     const withPage = component({ page: { kind: 'list', empty: '', rows: [] } });
 
-    expect(mountCard({ component: withPage }).current().showEmpty).toBe(false);
+    expect(mountCard({ component: withPage }).result.current.showEmpty).toBe(false);
   });
 
   it('never opens a card with nothing inside', () => {
-    expect(mountCard({ component: component() }).current().expandable).toBe(false);
+    expect(mountCard({ component: component() }).result.current.expandable).toBe(false);
   });
 
   it('keeps a card with something inside closed at first', () => {
-    expect(mountCard({ component: component({ actions: [action()] }) }).current().open).toBe(false);
+    expect(mountCard({ component: component({ actions: [action()] }) }).result.current.open).toBe(false);
   });
 
   it('opens a search result at once', () => {
-    expect(mountCard({ component: component({ actions: [action()] }), forceOpen: true }).current().open).toBe(true);
+    expect(mountCard({ component: component({ actions: [action()] }), forceOpen: true }).result.current.open).toBe(true);
   });
 
   it('marks where the component works', () => {
-    const { badges } = mountCard({ component: component({ context: 'any' }) }).current();
+    const { badges } = mountCard({ component: component({ context: 'any' }) }).result.current;
 
     expect(badges.map(({ key }) => key)).toEqual(['contextHangar', 'contextBattle']);
   });

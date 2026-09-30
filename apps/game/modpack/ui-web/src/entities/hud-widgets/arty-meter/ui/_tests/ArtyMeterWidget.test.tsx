@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
+import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { mount } from '../../../../../shared/lib/testing/mount';
 import { readWidgetFixture } from '../../../../../shared/lib/testing/widget-fixture';
 import { artyView } from '../../lib/arty-view';
 import { artyMeterSchema } from '../../model/schemas';
@@ -27,7 +27,7 @@ describe(artyView, () => {
 
 describe(ArtyMeterWidget, () => {
   it('lists the damage of the battle and the day totals', () => {
-    const html = mount({ Component: ArtyMeterWidget, props: { data } });
+    const html = render(<ArtyMeterWidget data={data} />).container;
 
     expect(html.textContent).toContain('-740');
     expect(html.textContent).toContain('7 · 17 · -2 310');

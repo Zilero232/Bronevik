@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { renderHook } from '@testing-library/react';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
@@ -6,12 +7,11 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import type { UiSection } from '../../../../../../shared/api/protocol';
 
 import { $state, $view, CONTEXT_FILTER, receiveState, SECTION_NAV } from '../../../../../../entities/window-state';
-import { renderHook } from '../../../../../../shared/lib/testing/render-hook';
 import { useSectionCards } from '../use-section-cards';
 
 const sample = readFileSync(path.resolve(import.meta.dirname, '../../../../../../shared/api/protocol/_tests/fixtures/state.sample.json'), 'utf8');
 
-const cardsOf = (section: UiSection) => renderHook(() => useSectionCards({ section, columns: 1 })).current();
+const cardsOf = (section: UiSection) => renderHook(() => useSectionCards({ section, columns: 1 })).result.current;
 
 beforeEach(() => {
   $state.set(null);

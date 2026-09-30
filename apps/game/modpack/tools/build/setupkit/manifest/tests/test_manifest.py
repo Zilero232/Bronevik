@@ -77,29 +77,31 @@ def reverse_presets(raw):
     raw['presets'].reverse()
 
 
-BAD_CATALOGS = (
+SCHEMA_PROBLEMS = (
+    ("/title/en: '' does not match", update_title('marks_panel', en='')),
+    ("/title/ru: 'a\\tb' does not match", update_title('marks_panel', ru='a' + chr(9) + 'b')),
+    ("/preview/video: 'http://x' does not match", update_entry('marks_panel', preview={'video': 'http://x'})),
+    ("/id: 'Marks-Panel' does not match", update_entry('marks_panel', id='Marks-Panel')),
+    ("ownedPatterns/0: 'mods/*.mtmod' does not match", update_root(ownedPatterns=['mods/*.mtmod'])),
+    ("/perf: 'huge' is not one of", update_entry('marks_panel', perf='huge')),
+    ("'perf' is a required property", drop_entry_field('marks_panel', 'perf')),
+    ("/context: 'lobby' is not one of", update_entry('marks_panel', context='lobby')),
+    ("'context' is a required property", drop_entry_field('marks_panel', 'context')),
+    ("/preview/audio: '../x.mp3' does not match", update_preview('sixth_sense', audio='../x.mp3')),
+    ("conflicts/0/patterns/0: '*' does not match", update_first_conflict(patterns=['*'])),
+    ("ownedPaths/0: 'res/scripts/' does not match", update_root(ownedPaths=['res/scripts/'])),
+)
+CHECK_PROBLEMS = (
     ('unknown category', update_entry('marks_panel', category='nowhere')),
     ('unknown or custom preset', update_entry('marks_panel', presets=['custom'])),
-    ('missing en text', update_title('marks_panel', en='')),
-    ('control characters', update_title('marks_panel', ru='a' + chr(9) + 'b')),
     ('not found in catalog/', update_entry('marks_panel', preview={'image': 'previews/none.svg'})),
-    ('https://', update_entry('marks_panel', preview={'video': 'http://x'})),
     ('unknown dependency', update_entry('marks_panel', dependencies=['nothing'])),
     ('drop its presets', update_entry('core', presets=['minimal'])),
     ('duplicate id', duplicate_first_component),
-    ('id must match', update_entry('marks_panel', id='Marks-Panel')),
     ('must come last', reverse_presets),
-    ('bare package file mask', update_root(ownedPatterns=['mods/*.mtmod'])),
-    ('perf must be one of', update_entry('marks_panel', perf='huge')),
-    ('perf must be one of', drop_entry_field('marks_panel', 'perf')),
-    ('context must be one of', update_entry('marks_panel', context='lobby')),
-    ('context must be one of', drop_entry_field('marks_panel', 'context')),
     ('not found in assets/', update_preview('sixth_sense', audio='otmetki/none.mp3')),
-    ('preview audio must be', update_preview('sixth_sense', audio='../x.mp3')),
     ('unknown component', update_first_conflict(components=['nothing'])),
     ('names our own packages', update_first_conflict(patterns=['net.triotmetki.*'])),
-    ('some fixed text', update_first_conflict(patterns=['*'])),
-    ('without res/', update_root(ownedPaths=['res/scripts/'])),
 )
 
 
@@ -134,12 +136,19 @@ class CatalogTest(unittest.TestCase):
         missing = [package.key for package in packages if catalog.entry(package.key) is None]
         self.assertEqual(missing, [], 'add these packages to catalog/catalog.json')
 
-    def test_a_bad_catalog_is_rejected_with_the_problem_named(self):
-        for expected, mutate in BAD_CATALOGS:
+    def assert_problems(self, cases):
+        for expected, mutate in cases:
             with self.subTest(expected=expected):
                 problems = self.problems(mutate)
 
                 self.assertIn(expected, problems)
+
+    @unittest.skipUnless(catalog_module.HAVE_SCHEMA, 'jsonschema is not installed (uv sync)')
+    def test_a_badly_shaped_catalog_is_rejected_at_its_schema_path(self):
+        self.assert_problems(SCHEMA_PROBLEMS)
+
+    def test_a_bad_catalog_is_rejected_with_the_problem_named(self):
+        self.assert_problems(CHECK_PROBLEMS)
 
     def test_every_component_has_a_perf_and_a_context_mark(self):
         catalog = load_catalog()

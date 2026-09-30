@@ -1,4 +1,4 @@
-import { atom, computed } from 'nanostores';
+import { atom, computed, map } from 'nanostores';
 
 import type { UiState } from '../../../../shared/api/protocol';
 import type { ContextFilter, Section, UndoEntry, View } from './store.types';
@@ -11,7 +11,7 @@ import { seedScroll } from '../scroll';
 
 export const $state = atom<UiState | null>(null);
 export const $invalid = atom(false);
-export const $view = atom<View>({ section: SECTION_NAV.first, expanded: [], context: CONTEXT_FILTER.all });
+export const $view = map<View>({ section: SECTION_NAV.first, expanded: [], context: CONTEXT_FILTER.all });
 export const $query = atom('');
 export const $undo = atom<UndoEntry[]>([]);
 export const $focusSeq = atom(0);
@@ -59,14 +59,14 @@ export const receiveState = (raw: string | null): boolean => {
 };
 
 export const setContextFilter = (context: ContextFilter): void => {
-  $view.set({ ...$view.get(), context });
+  $view.setKey('context', context);
 };
 
 export const toggleExpanded = (componentId: string): void => {
   const view = $view.get();
   const open = view.expanded.includes(componentId);
 
-  $view.set({ ...view, expanded: open ? view.expanded.filter((id) => id !== componentId) : [...view.expanded, componentId] });
+  $view.setKey('expanded', open ? view.expanded.filter((id) => id !== componentId) : [...view.expanded, componentId]);
 };
 
 export const setQuery = (query: string): void => {

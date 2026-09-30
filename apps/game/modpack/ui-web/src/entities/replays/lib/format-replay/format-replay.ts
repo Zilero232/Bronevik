@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { lightFormat } from 'date-fns';
 
 import { REPLAY_FORMAT } from '../../config';
 
@@ -18,6 +18,6 @@ export const formatDuration = (seconds: number | null): string => {
 
 export const formatSize = (bytes: number): string => (bytes / REPLAY_FORMAT.bytesPerMegabyte).toFixed(1);
 
-export const formatMoment = (epoch: number): string => format(epoch * REPLAY_FORMAT.millisecondsPerSecond, REPLAY_FORMAT.dateTime);
+export const formatMoment = (epoch: number): string => lightFormat(epoch * REPLAY_FORMAT.millisecondsPerSecond, REPLAY_FORMAT.dateTime);
 
 export const romanTier = (tier: number | null): string | null => (tier === null ? null : (REPLAY_FORMAT.romanTiers[tier - 1] ?? null));

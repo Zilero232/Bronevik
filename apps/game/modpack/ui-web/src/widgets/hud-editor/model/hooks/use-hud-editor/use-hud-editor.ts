@@ -8,16 +8,14 @@ import { gameface } from '../../../../../shared/api/gameface';
 import { send } from '../../../../../shared/api/protocol';
 import { dragRect, moveMessage, panelRect, stageBox, stageScale } from '../../../../../shared/lib/hud-geometry';
 import { designScreen, rootScale } from '../../../../../shared/lib/hud-screen';
-import { createThrottle } from '../../../../../shared/lib/throttle';
 import { HUD_EDITOR } from '../../../config';
 import { useStageDrag } from '../use-stage-drag';
 
 export const useHudEditor = (panels: UiPanel[]) => {
   const stageRef = useRef<HTMLDivElement>(null);
   const screenRef = useRef<ClientSize>(HUD_EDITOR.defaultScreen);
-  const [throttle] = useState(() => createThrottle(HUD_EDITOR.moveThrottleMs));
   const [selected, setSelected] = useState<string | null>(null);
-  const { live, startDrag } = useStageDrag({ screenRef, throttle });
+  const { live, moveNow, startDrag } = useStageDrag({ screenRef });
 
   screenRef.current = designScreen({ client: gameface.clientSize(), scale: rootScale(), fallback: HUD_EDITOR.defaultScreen });
 
@@ -44,8 +42,7 @@ export const useHudEditor = (panels: UiPanel[]) => {
 
     event.preventDefault();
     setSelected(panel.id);
-    throttle(true);
-    send(moveMessage({ id: panel.id, rect: dragRect({ rect: panelRect({ panel, screen }), ...step, screen, grid: HUD_EDITOR.grid }), screen }));
+    moveNow(moveMessage({ id: panel.id, rect: dragRect({ rect: panelRect({ panel, screen }), ...step, screen, grid: HUD_EDITOR.grid }), screen }));
   };
 
   return {

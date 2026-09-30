@@ -4,6 +4,22 @@ The modpack's release notes. Every package has its own entry, `## <id> <version>
 
 Add the new entry on top of the component's previous ones when you bump a `VERSION`.
 
+## 0.1.8
+
+### ru
+
+Внутренняя чистка кода: самописные помощники заменены готовыми библиотеками; для игрока почти ничего не меняется.
+
+- Окно настроек стало легче (без английской локали date-fns), а редактор HUD теперь отправляет последнее положение панели и после паузы в перетаскивании.
+- Каталог компонентов проверяется по JSON Schema (`catalog/catalog.schema.json`).
+
+### en
+
+An internal clean-up: hand-written helpers give way to maintained libraries; next to nothing changes for the player.
+
+- The settings window is lighter (no date-fns English locale), and the HUD editor now also sends a panel's last position after a pause in a drag.
+- The component catalogue is checked against a JSON Schema (`catalog/catalog.schema.json`).
+
 ## 0.1.7
 
 ### ru
@@ -848,6 +864,16 @@ A new component: Event trackers (off by default).
 
 - Your gun's reload countdown with a bar and the shells in the magazine; your own gun only. It counts by game time and keeps pace with the reticle.
 
+## core 0.6.7
+
+### ru
+
+- Внутренние классы отметок и отправки кадров HUD переведены на attrs; поведение не меняется.
+
+### en
+
+- The internal marks and HUD frame push classes move to attrs; the behaviour does not change.
+
 ## core 0.6.6
 
 ### ru
@@ -1139,6 +1165,20 @@ A new component: Event trackers (off by default).
 - Binding to triotmetki.ru with a one-time code from the site; nothing is collected or sent before it.
 - After each own battle: the `personal` block of the battle results, MoE snapshots and distribution, queue times, the loadout and shots, sent in signed batches through an outbox that survives a restart and backs off on errors.
 - Per-feature data switches in `config.json`, the ModsSettingsAPI window as the fallback settings UI, and the streamer settings share (export, apply with a confirmation, restore).
+
+## ui 0.6.5
+
+### ru
+
+- Окно настроек стало легче: дата повтора форматируется без английской локали date-fns.
+- Редактор HUD при перетаскивании панели отправляет и её последнее положение после паузы, а не только первое за 150 мс.
+- Описание компонента в окне хранится как attrs-класс; поведение не меняется.
+
+### en
+
+- The settings window is lighter: a replay's date is formatted without the date-fns English locale.
+- While a panel is dragged, the HUD editor also sends its last position after a pause, not only the first one per 150 ms.
+- The window's component record is an attrs class; the behaviour does not change.
 
 ## ui 0.6.4
 
@@ -1853,6 +1893,16 @@ A new component: Event trackers (off by default).
 ### en
 
 - In battle: time stamps on chat lines and hiding of repeats, flood, quick-command spam and lines with blocked words. The player's own lines are never hidden.
+
+## replay_manager 0.3.3
+
+### ru
+
+- Контекст страницы повторов хранится как attrs-класс; поведение не меняется.
+
+### en
+
+- The replays page context is an attrs class; the behaviour does not change.
 
 ## replay_manager 0.3.2
 

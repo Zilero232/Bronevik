@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { act, renderHook } from '@testing-library/react';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -7,7 +8,6 @@ import { $invalid, $state } from '../../../../../../entities/window-state';
 import { GAMEFACE } from '../../../../../../shared/api/gameface';
 import { createGamefaceMock, installGamefaceMock } from '../../../../../../shared/api/gameface/mock';
 import { forgetReports } from '../../../../../../shared/lib/page-diag';
-import { renderHook } from '../../../../../../shared/lib/testing/render-hook';
 import { useApp } from '../use-app';
 
 const SAMPLE = readFileSync(path.resolve(import.meta.dirname, '../../../../../../shared/api/protocol/_tests/fixtures/state.sample.json'), 'utf8');
@@ -19,8 +19,8 @@ const startApp = async (state: string) => {
 
   const hook = renderHook(useApp);
 
-  await hook.settle();
-  await hook.settle();
+  await act(async () => {});
+  await act(async () => {});
 
   const sent = () => mock.sent().map((message): { type: string } => JSON.parse(message));
 
@@ -57,7 +57,7 @@ describe(useApp, () => {
   it('takes the state the mod pushes', async () => {
     const { hook } = await startApp(SAMPLE);
 
-    const { state } = hook.current();
+    const { state } = hook.result.current;
 
     expect(state?.revision).toBe(1);
   });
@@ -73,7 +73,7 @@ describe(useApp, () => {
   it('shows no state when the push does not parse', async () => {
     const { hook } = await startApp('{"v": 99}');
 
-    const { state } = hook.current();
+    const { state } = hook.result.current;
 
     expect(state).toBeNull();
   });
@@ -81,7 +81,7 @@ describe(useApp, () => {
   it('shows the invalid-state note when the push does not parse', async () => {
     const { hook } = await startApp('{"v": 99}');
 
-    const { placeholderKey } = hook.current();
+    const { placeholderKey } = hook.result.current;
 
     expect(placeholderKey).toBe('invalidState');
   });

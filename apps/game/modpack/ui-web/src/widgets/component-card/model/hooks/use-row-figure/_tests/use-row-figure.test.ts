@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
+import { renderHook } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { renderHook } from '../../../../../../shared/lib/testing/render-hook';
 import { useRowFigure } from '../use-row-figure';
 
 const FIGURE = {
@@ -16,13 +16,13 @@ describe(useRowFigure, () => {
   it('places the shapes in percent with stable keys', () => {
     const hook = renderHook(() => useRowFigure(FIGURE));
 
-    expect(hook.current().shapes).toEqual([{ key: 'shape-0', style: { left: '20%', top: '10%', width: '60%', height: '82%' } }]);
+    expect(hook.result.current.shapes).toEqual([{ key: 'shape-0', style: { left: '20%', top: '10%', width: '60%', height: '82%' } }]);
   });
 
   it('keeps the tone of every mark under a stable key', () => {
     const hook = renderHook(() => useRowFigure(FIGURE));
 
-    const marks = hook.current().marks.map(({ key, tone }) => ({ key, tone }));
+    const marks = hook.result.current.marks.map(({ key, tone }) => ({ key, tone }));
 
     expect(marks).toEqual([
       { key: 'mark-0', tone: 'pen' },
@@ -33,6 +33,6 @@ describe(useRowFigure, () => {
   it('places the marks in percent', () => {
     const hook = renderHook(() => useRowFigure(FIGURE));
 
-    expect(hook.current().marks[0]?.style).toEqual({ left: '50%', top: '12%' });
+    expect(hook.result.current.marks[0]?.style).toEqual({ left: '50%', top: '12%' });
   });
 });

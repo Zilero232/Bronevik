@@ -1,11 +1,11 @@
 // @vitest-environment jsdom
+import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { UiProfiles } from '../../../../../../shared/api/protocol';
 
 import { send } from '../../../../../../shared/api/protocol/protocol';
 import { KEYS } from '../../../../../../shared/config';
-import { renderHook } from '../../../../../../shared/lib/testing/render-hook';
 import { useProfiles } from '../use-profiles';
 
 vi.mock('../../../../../../shared/api/protocol/protocol', () => ({ send: vi.fn(() => true) }));
@@ -28,9 +28,9 @@ describe(useProfiles, () => {
   it('saves a new profile under the trimmed name on Enter', () => {
     const hook = mountProfiles();
 
-    hook.run(() => hook.current().setName('  Night  '));
+    act(() => hook.result.current.setName('  Night  '));
 
-    hook.run(() => hook.current().onNameKey(KEYS.enter));
+    act(() => hook.result.current.onNameKey(KEYS.enter));
 
     expect(send).toHaveBeenCalledWith({ type: 'profile_save', name: 'Night' });
   });
@@ -38,19 +38,19 @@ describe(useProfiles, () => {
   it('clears the name field after saving', () => {
     const hook = mountProfiles();
 
-    hook.run(() => hook.current().setName('  Night  '));
+    act(() => hook.result.current.setName('  Night  '));
 
-    hook.run(() => hook.current().onNameKey(KEYS.enter));
+    act(() => hook.result.current.onNameKey(KEYS.enter));
 
-    expect(hook.current().name).toBe('');
+    expect(hook.result.current.name).toBe('');
   });
 
   it('ignores a blank name', () => {
     const hook = mountProfiles();
 
-    hook.run(() => hook.current().setName('   '));
+    act(() => hook.result.current.setName('   '));
 
-    hook.run(() => hook.current().saveNew());
+    act(() => hook.result.current.saveNew());
 
     expect(send).not.toHaveBeenCalled();
   });
@@ -58,7 +58,7 @@ describe(useProfiles, () => {
   it('ignores a blank import code', () => {
     const hook = mountProfiles();
 
-    hook.run(() => hook.current().importProfile());
+    act(() => hook.result.current.importProfile());
 
     expect(send).not.toHaveBeenCalled();
   });
@@ -66,13 +66,13 @@ describe(useProfiles, () => {
   it('marks the active profile', () => {
     const hook = mountProfiles();
 
-    expect(hook.current().rows.map((row) => row.active)).toEqual([true, false]);
+    expect(hook.result.current.rows.map((row) => row.active)).toEqual([true, false]);
   });
 
   it('overwrites a profile under its own name', () => {
     const hook = mountProfiles();
 
-    hook.run(() => hook.current().rows[1]?.overwrite());
+    act(() => hook.result.current.rows[1]?.overwrite());
 
     expect(send).toHaveBeenCalledWith({ type: 'profile_save', name: 'Ranked', id: 'p2' });
   });
@@ -80,40 +80,40 @@ describe(useProfiles, () => {
   it('renames one row at a time', () => {
     const hook = mountProfiles();
 
-    hook.run(() => hook.current().rows[0]?.startRename());
+    act(() => hook.result.current.rows[0]?.startRename());
 
-    expect(hook.current().rows.map((row) => row.renameValue)).toEqual(['Streams', null]);
+    expect(hook.result.current.rows.map((row) => row.renameValue)).toEqual(['Streams', null]);
   });
 
   it('sends the trimmed new name and leaves the rename', () => {
     const hook = mountProfiles();
 
-    hook.run(() => hook.current().rows[0]?.startRename());
-    hook.run(() => hook.current().rows[0]?.editRename(' Stream nights '));
+    act(() => hook.result.current.rows[0]?.startRename());
+    act(() => hook.result.current.rows[0]?.editRename(' Stream nights '));
 
-    hook.run(() => hook.current().rows[0]?.commitRename());
+    act(() => hook.result.current.rows[0]?.commitRename());
 
     expect(send).toHaveBeenCalledWith({ type: 'profile_rename', id: 'p1', name: 'Stream nights' });
-    expect(hook.current().rows[0]?.renameValue).toBeNull();
+    expect(hook.result.current.rows[0]?.renameValue).toBeNull();
   });
 
   it('asks for a confirmation before deleting', () => {
     const hook = mountProfiles();
 
-    hook.run(() => hook.current().rows[1]?.askDelete());
+    act(() => hook.result.current.rows[1]?.askDelete());
 
-    expect(hook.current().deleting).toBe(true);
+    expect(hook.result.current.deleting).toBe(true);
     expect(send).not.toHaveBeenCalled();
   });
 
   it('deletes the profile once confirmed', () => {
     const hook = mountProfiles();
 
-    hook.run(() => hook.current().rows[1]?.askDelete());
+    act(() => hook.result.current.rows[1]?.askDelete());
 
-    hook.run(() => hook.current().confirmDelete());
+    act(() => hook.result.current.confirmDelete());
 
     expect(send).toHaveBeenCalledWith({ type: 'profile_delete', id: 'p2' });
-    expect(hook.current().deleting).toBe(false);
+    expect(hook.result.current.deleting).toBe(false);
   });
 });

@@ -1,4 +1,4 @@
-import { clamp } from 'remeda';
+import { clamp, round } from 'remeda';
 
 import type {
   Bounds,
@@ -99,4 +99,4 @@ export const layoutOf = ({ frame, zoom }: LayoutInput): FrameLayout => {
   };
 };
 
-export const toRem = (value: number): string => `${Math.round(value * 100) / 100}rem`;
+export const toRem = (value: number): string => `${round(value, 2)}rem`;

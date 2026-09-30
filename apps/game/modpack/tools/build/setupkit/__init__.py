@@ -13,3 +13,4 @@ MODPACK_DIR = os.path.dirname(os.path.dirname(BUILD_DIR))
 CATALOG_DIR = os.path.join(MODPACK_DIR, 'catalog')
 CATALOG_PATH = os.path.join(CATALOG_DIR, 'catalog.json')
 ASSETS_DIR = CATALOG_DIR
+SCHEMA_PATH = os.path.join(CATALOG_DIR, 'catalog.schema.json')

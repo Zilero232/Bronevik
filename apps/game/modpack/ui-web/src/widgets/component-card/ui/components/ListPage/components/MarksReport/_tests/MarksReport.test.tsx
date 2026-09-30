@@ -1,11 +1,13 @@
 // @vitest-environment jsdom
+import { render } from '@testing-library/react';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import { marksReportSchema } from '../../../../../../../../shared/api/protocol';
-import { imageSources, mount } from '../../../../../../../../shared/lib/testing/mount';
 import { MarksReport } from '../MarksReport';
+
+const sources = (html: HTMLElement) => [...html.querySelectorAll('img')].map((image) => image.getAttribute('src'));
 
 const REPORT = marksReportSchema.parse(
   JSON.parse(
@@ -13,11 +15,11 @@ const REPORT = marksReportSchema.parse(
   )
 );
 
-const render = () => mount({ Component: MarksReport, props: { report: REPORT } });
+const renderReport = () => render(<MarksReport report={REPORT} />).container;
 
 describe(MarksReport, () => {
   it('draws the tank header icons: nation, tier, class and the current mark', () => {
-    expect(imageSources(render())).toEqual([
+    expect(sources(renderReport())).toEqual([
       'img://gui/maps/icons/flags/25x17/germany.png',
       'img://gui/maps/icons/levels/tank_level_small_7.png',
       'img://gui/maps/icons/vehicleTypes/white/heavyTank.png',
@@ -26,22 +28,22 @@ describe(MarksReport, () => {
   });
 
   it('names the tank', () => {
-    expect(render().textContent).toContain('Tiger I');
+    expect(renderReport().textContent).toContain('Tiger I');
   });
 
   it('shows the current percent', () => {
-    expect(render().textContent).toContain('85,20 %');
+    expect(renderReport().textContent).toContain('85,20 %');
   });
 
   it('shows the damage of the battles in the cards and the table', () => {
-    expect(render().textContent).toContain('4 500');
+    expect(renderReport().textContent).toContain('4 500');
   });
 
   it('draws the chart with plain elements, no SVG', () => {
-    expect(render().querySelectorAll('svg')).toHaveLength(0);
+    expect(renderReport().querySelectorAll('svg')).toHaveLength(0);
   });
 
   it('writes plain minus signs and spaces, never the typographic ones', () => {
-    expect(render().textContent).not.toMatch(/[−\u202F]/);
+    expect(renderReport().textContent).not.toMatch(/[−\u202F]/);
   });
 });

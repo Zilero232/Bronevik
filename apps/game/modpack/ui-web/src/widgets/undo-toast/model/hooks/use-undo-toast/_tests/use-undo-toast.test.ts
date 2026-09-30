@@ -1,9 +1,8 @@
 // @vitest-environment jsdom
-import { act } from 'react';
+import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { $undo } from '../../../../../../entities/window-state';
-import { renderHook } from '../../../../../../shared/lib/testing/render-hook';
 import { UNDO_TOAST } from '../../../../config';
 import { useUndoToast } from '../use-undo-toast';
 
@@ -27,7 +26,7 @@ const flush = () => advance(1);
 const showUndo = async (entries: Parameters<typeof $undo.set>[0]) => {
   const hook = renderHook(useUndoToast);
 
-  hook.run(() => $undo.set(entries));
+  act(() => $undo.set(entries));
   await flush();
 
   return hook;
@@ -44,13 +43,13 @@ afterEach(() => {
 
 describe(useUndoToast, () => {
   it('stays hidden until something changes', () => {
-    expect(renderHook(useUndoToast).current().visible).toBe(false);
+    expect(renderHook(useUndoToast).result.current.visible).toBe(false);
   });
 
   it('names the last change and counts the undo steps', async () => {
     const hook = await showUndo([entry(1, 'Масштаб'), entry(2, '')]);
 
-    expect(hook.current()).toMatchObject({ visible: true, text: 'Миникарта: Сброшено к стандартным', undoLabel: 'Отменить (2)' });
+    expect(hook.result.current).toMatchObject({ visible: true, text: 'Миникарта: Сброшено к стандартным', undoLabel: 'Отменить (2)' });
   });
 
   it('hides after a while', async () => {
@@ -58,31 +57,31 @@ describe(useUndoToast, () => {
 
     await advance(UNDO_TOAST.hideMs);
 
-    expect(hook.current().visible).toBe(false);
+    expect(hook.result.current.visible).toBe(false);
   });
 
   it('hides on dismiss', async () => {
     const hook = await showUndo([entry(1, 'Масштаб')]);
 
-    hook.run(() => hook.current().dismiss());
+    act(() => hook.result.current.dismiss());
 
-    expect(hook.current().visible).toBe(false);
+    expect(hook.result.current.visible).toBe(false);
   });
 
   it('comes back for the next change after a dismiss', async () => {
     const hook = await showUndo([entry(1, 'Масштаб')]);
 
-    hook.run(() => hook.current().dismiss());
+    act(() => hook.result.current.dismiss());
 
-    hook.run(() => $undo.set([entry(1, 'Масштаб'), entry(2, 'Прозрачность')]));
+    act(() => $undo.set([entry(1, 'Масштаб'), entry(2, 'Прозрачность')]));
     await flush();
 
-    expect(hook.current()).toMatchObject({ visible: true, text: 'Миникарта: Прозрачность. Изменено' });
+    expect(hook.result.current).toMatchObject({ visible: true, text: 'Миникарта: Прозрачность. Изменено' });
   });
 
   it('says whether a switch went on or off', async () => {
     const hook = await showUndo([{ ...entry(1, 'Миникарта'), kind: 'switch', switchedOn: false }]);
 
-    expect(hook.current().text).toBe('Миникарта: Выкл');
+    expect(hook.result.current.text).toBe('Миникарта: Выкл');
   });
 });

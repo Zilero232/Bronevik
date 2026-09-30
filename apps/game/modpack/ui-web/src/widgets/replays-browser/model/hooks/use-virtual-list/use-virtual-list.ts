@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useWindowEvent } from '@siberiacancode/reactuse';
+import { useCallback, useRef, useState } from 'react';
 
 import type { UseVirtualListInput } from './use-virtual-list.types';
 
@@ -51,11 +52,7 @@ export const useVirtualList = ({ count, rowHeight, overscan }: UseVirtualListInp
     [measure, wheelRef]
   );
 
-  useEffect(() => {
-    window.addEventListener('resize', measure);
-
-    return () => window.removeEventListener('resize', measure);
-  }, [measure]);
+  useWindowEvent('resize', measure);
 
   const toTop = useCallback((): void => {
     if (viewportRef.current) {

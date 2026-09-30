@@ -1,3 +1,5 @@
+import { round } from 'remeda';
+
 import type { ReportOnceInput } from './page-diag.types';
 
 import { send } from '../../api/protocol';
@@ -17,4 +19,4 @@ export const reportOnce = ({ kind, text }: ReportOnceInput): boolean => {
 
 export const forgetReports = (): void => reported.clear();
 
-export const round2 = (value: number): number => Math.round(value * 100) / 100;
+export const round2 = (value: number): number => round(value, 2);

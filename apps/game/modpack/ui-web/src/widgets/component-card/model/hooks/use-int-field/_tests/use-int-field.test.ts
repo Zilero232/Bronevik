@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
+import { act, renderHook } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { KEYS } from '../../../../../../shared/config';
-import { renderHook } from '../../../../../../shared/lib/testing/render-hook';
 import { INT_FIELD } from '../../../../config';
 import { useIntField } from '../use-int-field';
 
@@ -18,22 +18,22 @@ describe(useIntField, () => {
   it('shows the value before the player types', () => {
     const { hook } = mount(30);
 
-    expect(hook.current().text).toBe('30');
+    expect(hook.result.current.text).toBe('30');
   });
 
   it('shows the draft while the player types', () => {
     const { hook } = mount(30);
 
-    hook.run(() => hook.current().edit('4'));
+    act(() => hook.result.current.edit('4'));
 
-    expect(hook.current().text).toBe('4');
+    expect(hook.result.current.text).toBe('4');
   });
 
   it('commits the draft clamped to the limits', () => {
     const { hook, onCommit } = mount(30);
 
-    hook.run(() => hook.current().edit('999'));
-    hook.run(() => hook.current().commit());
+    act(() => hook.result.current.edit('999'));
+    act(() => hook.result.current.commit());
 
     expect(onCommit).toHaveBeenCalledWith(LIMITS.max);
   });
@@ -41,29 +41,29 @@ describe(useIntField, () => {
   it('drops the draft once it is committed', () => {
     const { hook } = mount(30);
 
-    hook.run(() => hook.current().edit('999'));
-    hook.run(() => hook.current().commit());
+    act(() => hook.result.current.edit('999'));
+    act(() => hook.result.current.commit());
 
-    expect(hook.current().text).toBe('30');
+    expect(hook.result.current.text).toBe('30');
   });
 
   it('shows the range and enables both buttons inside the limits', () => {
-    expect(mount(30).hook.current()).toMatchObject({ range: '10-60', canDecrease: true, canIncrease: true });
+    expect(mount(30).hook.result.current).toMatchObject({ range: '10-60', canDecrease: true, canIncrease: true });
   });
 
   it('disables decreasing at the lower limit', () => {
-    expect(mount(10).hook.current()).toMatchObject({ canDecrease: false, canIncrease: true });
+    expect(mount(10).hook.result.current).toMatchObject({ canDecrease: false, canIncrease: true });
   });
 
   it('disables increasing at the upper limit', () => {
-    expect(mount(60).hook.current()).toMatchObject({ canDecrease: true, canIncrease: false });
+    expect(mount(60).hook.result.current).toMatchObject({ canDecrease: true, canIncrease: false });
   });
 
   it('commits on Enter', () => {
     const { hook, onCommit } = mount(30);
 
-    hook.run(() => hook.current().edit('42'));
-    hook.run(() => hook.current().onKey(KEYS.enter));
+    act(() => hook.result.current.edit('42'));
+    act(() => hook.result.current.onKey(KEYS.enter));
 
     expect(onCommit).toHaveBeenCalledWith(42);
   });
@@ -71,7 +71,7 @@ describe(useIntField, () => {
   it('commits nothing when nothing was typed', () => {
     const { hook, onCommit } = mount(30);
 
-    hook.run(() => hook.current().commit());
+    act(() => hook.result.current.commit());
 
     expect(onCommit).not.toHaveBeenCalled();
   });
@@ -79,8 +79,8 @@ describe(useIntField, () => {
   it('commits nothing for an unreadable draft', () => {
     const { hook, onCommit } = mount(30);
 
-    hook.run(() => hook.current().edit('abc'));
-    hook.run(() => hook.current().commit());
+    act(() => hook.result.current.edit('abc'));
+    act(() => hook.result.current.commit());
 
     expect(onCommit).not.toHaveBeenCalled();
   });
@@ -88,7 +88,7 @@ describe(useIntField, () => {
   it('steps up by one inside the limits', () => {
     const { hook, onCommit } = mount(30);
 
-    hook.run(() => hook.current().increase());
+    act(() => hook.result.current.increase());
 
     expect(onCommit).toHaveBeenCalledWith(30 + INT_FIELD.step);
   });
@@ -96,7 +96,7 @@ describe(useIntField, () => {
   it('does not step past the upper limit', () => {
     const { hook, onCommit } = mount(LIMITS.max);
 
-    hook.run(() => hook.current().increase());
+    act(() => hook.result.current.increase());
 
     expect(onCommit).not.toHaveBeenCalled();
   });

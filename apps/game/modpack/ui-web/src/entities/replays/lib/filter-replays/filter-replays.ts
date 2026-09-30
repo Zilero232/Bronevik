@@ -1,5 +1,7 @@
+import { sortBy } from 'remeda';
+
 import type { ReplayFilters, ReplayItem } from '../../model/schemas';
-import type { CompareInput, FilterReplaysInput, MatchChoiceInput, MatchReplayInput } from './filter-replays.types';
+import type { FilterReplaysInput, MatchChoiceInput, MatchReplayInput } from './filter-replays.types';
 
 import { REPLAY_FILTER } from '../../config';
 
@@ -51,25 +53,13 @@ export const matchesReplay = (input: MatchReplayInput): boolean => {
   return checks.every(Boolean);
 };
 
-const compare =
-  ({ sort, descending }: CompareInput) =>
-  (left: ReplayItem, right: ReplayItem): number => {
-    const a = left[sort];
-    const b = right[sort];
-
-    if (a === b) {
-      return right.time - left.time;
-    }
-
-    if (a === null || b === null) {
-      return a === null ? 1 : -1;
-    }
-
-    return descending ? b - a : a - b;
-  };
-
 export const filterReplays = ({ items, filters, now }: FilterReplaysInput): ReplayItem[] =>
-  items.filter((item) => matchesReplay({ item, filters, now })).sort(compare(filters));
+  sortBy(
+    items.filter((item) => matchesReplay({ item, filters, now })),
+    (item) => item[filters.sort] === null,
+    [(item) => item[filters.sort] ?? 0, filters.descending ? 'desc' : 'asc'],
+    [(item) => item.time, 'desc']
+  );
 
 export const activeFilterCount = (filters: ReplayFilters): number =>
   [

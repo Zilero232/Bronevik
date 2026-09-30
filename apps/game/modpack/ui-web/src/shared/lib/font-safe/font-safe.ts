@@ -1,3 +1,5 @@
+import { mapValues } from 'remeda';
+
 import type { RichLine } from '../rich-text';
 
 import { isRecord } from '../is-record';
@@ -16,17 +18,25 @@ const safeChar = (char: string): string => {
 
 export const fontSafe = (text: string): string => Array.from(text, safeChar).join('');
 
-export const fontSafeData = (value: unknown): unknown => {
-  if (typeof value === 'string') {
-    return fontSafe(value);
-  }
+export const fontSafeWalker = (keptKeys: readonly string[] = []) => {
+  const keptKey: ReadonlySet<string> = new Set(keptKeys);
 
-  if (Array.isArray(value)) {
-    return value.map(fontSafeData);
-  }
+  const walk = (value: unknown): unknown => {
+    if (typeof value === 'string') {
+      return fontSafe(value);
+    }
 
-  return isRecord(value) ? Object.fromEntries(Object.entries(value).map(([key, item]) => [key, fontSafeData(item)])) : value;
+    if (Array.isArray(value)) {
+      return value.map(walk);
+    }
+
+    return isRecord(value) ? mapValues(value, (item, key) => (keptKey.has(key) ? item : walk(item))) : value;
+  };
+
+  return walk;
 };
+
+export const fontSafeData = fontSafeWalker();
 
 export const fontSafeLines = (lines: RichLine[]): RichLine[] =>
   lines.map((line) => ({ ...line, runs: line.runs.map((run) => (run.kind === 'text' ? { ...run, text: fontSafe(run.text) } : run)) }));

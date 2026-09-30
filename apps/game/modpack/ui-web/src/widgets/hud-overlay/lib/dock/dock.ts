@@ -1,4 +1,4 @@
-import { groupBy, sortBy } from 'remeda';
+import { groupBy, sortBy, sumBy } from 'remeda';
 
 import type { Rect } from '../../../../shared/lib/hud-geometry';
 import type {
@@ -51,7 +51,7 @@ const liftedTop = ({ members, free, screen, gap, reserve, ceiling }: LiftInput):
     return null;
   }
 
-  const total = members.reduce((sum, item) => sum + item.rect.height, 0) + gap * (members.length - 1);
+  const total = sumBy(members, (item) => item.rect.height) + gap * (members.length - 1);
   const limit = bottomLimit({ item: first, screen, reserve });
 
   return first.rect.top + total > limit ? Math.max(roofOf({ first, free, gap, ceiling }), limit - total) : null;

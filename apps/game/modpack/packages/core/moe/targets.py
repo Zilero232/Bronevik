@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import math
 
 from ..compat import is_number
+from ..vendor import attr
 from .constants import MARK_LEVELS, MAX_PERCENT, TARGET_LEVELS
 from .curve import next_level
 from .ema import battles_to_reach, project_moving_avg, required_battle_damage
@@ -50,15 +51,20 @@ def _base_state(moving_avg, percent, combined, projected_avg, pace, step, marks)
     }
 
 
+@attr.s(eq=False)
 class _Battle(object):
 
-    def __init__(self, curve, moving_avg, combined, projected_avg, percent):
-        self.curve = curve
-        self.moving_avg = moving_avg
-        self.combined = combined
-        self.projected_avg = projected_avg
-        self.start_curve = curve.percent_for(moving_avg)
-        self.base = percent if is_number(percent) else self.start_curve
+    curve = attr.ib()
+    moving_avg = attr.ib()
+    combined = attr.ib()
+    projected_avg = attr.ib()
+    percent = attr.ib()
+    start_curve = attr.ib(init=False)
+    base = attr.ib(init=False)
+
+    def __attrs_post_init__(self):
+        self.start_curve = self.curve.percent_for(self.moving_avg)
+        self.base = self.percent if is_number(self.percent) else self.start_curve
 
     def need_for_gain(self, gain):
         return _need_for_gain(self.curve, self.start_curve, gain, self.moving_avg, self.combined)

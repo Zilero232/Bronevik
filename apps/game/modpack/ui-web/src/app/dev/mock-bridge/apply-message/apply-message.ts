@@ -1,15 +1,11 @@
 import type { UiComponent, UiField, UiState } from '../../../../shared/api/protocol';
-import type { ApplyMessageInput, SetComponentInput, SetFieldInput } from './apply-message.types';
+import type { ApplyMessageInput, SetComponentInput, SetFieldInput, SetValuesInput } from './apply-message.types';
 
 import { PROTOCOL } from '../../../../shared/api/protocol';
 import { DEV_MOCK } from '../../config';
 
-const setField = ({ field, message }: SetFieldInput): UiField => {
-  const { value } = message;
-
-  if (field.key !== message.key) {
-    return field;
-  }
+const setField = ({ field, values }: SetFieldInput): UiField => {
+  const value = values[field.key];
 
   if (field.type === 'bool') {
     return typeof value === 'boolean' ? { ...field, value } : field;
@@ -22,32 +18,29 @@ const setField = ({ field, message }: SetFieldInput): UiField => {
   return typeof value === 'string' ? { ...field, value } : field;
 };
 
-const setComponent = ({ component, message }: SetComponentInput): UiComponent => {
-  if (component.id !== message.component) {
+const setComponent = ({ component, id, values }: SetComponentInput): UiComponent => {
+  if (component.id !== id) {
     return component;
   }
 
-  const switched =
-    component.switch?.key === message.key && typeof message.value === 'boolean' ? { ...component.switch, value: message.value } : component.switch;
+  const value = component.switch && values[component.switch.key];
+  const switched = component.switch && typeof value === 'boolean' ? { ...component.switch, value } : component.switch;
 
-  return { ...component, switch: switched, fields: component.fields.map((field) => setField({ field, message })) };
+  return { ...component, switch: switched, fields: component.fields.map((field) => setField({ field, values })) };
 };
+
+const setValues = ({ state, id, values }: SetValuesInput): UiComponent[] =>
+  state.components.map((component) => setComponent({ component, id, values }));
 
 export const applyMessage = ({ state, message }: ApplyMessageInput): UiState => {
   const next = { ...state, revision: state.revision + 1, notice: null };
 
   if (message.type === 'set') {
-    return { ...next, components: state.components.map((component) => setComponent({ component, message })) };
+    return { ...next, components: setValues({ state, id: message.component, values: { [message.key]: message.value } }) };
   }
 
   if (message.type === 'set_many') {
-    const components = Object.entries(message.values).reduce(
-      (current, [key, value]) =>
-        current.map((component) => setComponent({ component, message: { type: 'set', component: message.component, key, value } })),
-      state.components
-    );
-
-    return { ...next, components };
+    return { ...next, components: setValues({ state, id: message.component, values: message.values }) };
   }
 
   if (message.type === 'window_layout') {

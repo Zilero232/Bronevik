@@ -17,9 +17,9 @@ from otmetki.features.replay_manager.i18n import STRINGS
 from otmetki.features.replay_manager.model import (AnalysisWatch, AutoNamer, PageContext, ReplayActionError, ReplayLibrary, UploadedIndex,
                                                    analysis_notice, battle_type, build_page, compatible, find_own, item_of, launch_request,
                                                    name_values, page_status, parse_statuses, pending_launch, play_refusal, rename_target,
-                                                   render_name, vehicle_label, vehicle_parts, version_key)
-from otmetki.features.replay_manager.model.constants import (ANALYSIS_IDS_PER_READ, ANALYSIS_WATCH_S, FAVOURITES_MAX, INDEX_MAX, LAUNCH_TTL_S,
-                                                             SCAN_MAX_FILES)
+                                                   render_name, stop_on_teardown, vehicle_label, vehicle_parts, version_key)
+from otmetki.features.replay_manager.model.constants import (ANALYSIS_IDS_PER_READ, ANALYSIS_WATCH_S, AUTO_NAME_INDEX_S, FAVOURITES_MAX, INDEX_MAX,
+                                                             LAUNCH_TTL_S, SCAN_MAX_FILES)
 from otmetki.features.replay_manager.settings import SCHEMA, SETTINGS
 
 ACCOUNT = 1234
@@ -156,6 +156,17 @@ class LibraryTest(unittest.TestCase):
         library.scan('x', listdir=lambda folder: names, stat=lambda path: Info(int(os.path.basename(path)[1:5])))
         assert library.progress() == (0, SCAN_MAX_FILES) and 'r0000.mtreplay' not in library.files
 
+    def test_a_new_replay_is_the_first_header_a_short_slice_reads(self):
+        library = self.library()
+        library.index(time.time, budget_s=60)
+        count = len(self.reads)
+        self.folder.write('fresh.mtreplay', replay_bytes(ACCOUNT, 777, results=own_results(777)), 700)
+        self.folder.write('own_old.wotreplay', replay_bytes(ACCOUNT, 555), 150)
+        library.scan(self.folder.path)
+        assert library.index(lambda: 0.0 if len(self.reads) == count else 10.0, AUTO_NAME_INDEX_S) == 1
+        assert self.reads[count:] == ['fresh.mtreplay']
+        assert [replay['name'] for replay in library.replays(ACCOUNT)] == ['fresh.mtreplay', 'own_new.mtreplay']
+
     def test_a_stored_cache_of_another_layout_is_ignored(self):
         assert ReplayLibrary(MemoryFile({'v': 1, 'files': {'a.mtreplay': {'stamp': [1, 1], 'header': {}}}})).entries == {}
         assert ReplayLibrary(MemoryFile(['junk'])).entries == {}
@@ -276,6 +287,11 @@ class PlayTest(unittest.TestCase):
         assert pending_launch(launch_request('C:/replays/notes.txt', 1000.0), 1010.0, lambda path: True) is None
         for junk in (None, [], {'path': 5, 'at': 1000.0}, {'path': 'a.mtreplay'}):
             assert pending_launch(junk, 1010.0, lambda path: True) is None
+
+    def test_a_stop_while_the_client_closes_is_told_apart(self):
+        assert stop_on_teardown((), {'isDestroyed': True}) and stop_on_teardown((None, False, True), {})
+        assert not stop_on_teardown((), {}) and not stop_on_teardown((12.5,), {}) and not stop_on_teardown((None, True), {})
+        assert not stop_on_teardown((None, False, True), {'isDestroyed': False})
 
 
 class RenameTest(unittest.TestCase):

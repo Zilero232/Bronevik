@@ -20,8 +20,8 @@ from ..model import (ACTION_DELETE, ACTION_FAVOURITE, ACTION_FOLDER, ACTION_PLAY
                      ERROR_MISSING, ERROR_NO_ARENA, INDEX_FILE, LIBRARY_FILE, AnalysisWatch, AutoNamer, PageContext, ReplayActionError,
                      ReplayLibrary, UploadedIndex, analysis_notice, build_page, find_own, name_values, page_status, parse_statuses,
                      play_refusal, rename_target)
-from ..model.constants import (ANALYSIS_PATH, ANALYSIS_POLL_S, AUTO_NAME_CHECK_S, INDEX_WANTED_S, NOT_SERVED_STATUS, SCAN_EVERY_S, UPLOAD_MISSING,
-                               UPLOAD_READY)
+from ..model.constants import (ANALYSIS_PATH, ANALYSIS_POLL_S, AUTO_NAME_CHECK_S, AUTO_NAME_INDEX_S, INDEX_WANTED_S, NOT_SERVED_STATUS,
+                               SCAN_EVERY_S, UPLOAD_MISSING, UPLOAD_READY)
 from ..settings import SCHEMA, SWITCH
 from .playback import can_play, product_version, replay_busy, request_play
 from .vehicles import VehicleNames
@@ -80,6 +80,7 @@ class ReplayManager(FeatureComponent):
             return
         self.checked_at = now
         self._scan(now, force=True)
+        self.library.index(time.time, AUTO_NAME_INDEX_S)
         for replay, name in self.namer.plan(self._replays(), self.settings.get('name_template'), now):
             try:
                 self._rename(replay, name)

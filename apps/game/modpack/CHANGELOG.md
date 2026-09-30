@@ -1222,6 +1222,18 @@ A new component: Event trackers (off by default).
 
 - In battle: time stamps on chat lines and hiding of repeats, flood, quick-command spam and lines with blocked words. The player's own lines are never hidden.
 
+## replay_manager 0.3.1
+
+### ru
+
+- Закрытие игры во время просмотра реплея, запущенного из ангара, снова закрывает клиент, а не перезапускает его.
+- Автоматическое имя реплея теперь даётся и при закрытом окне настроек: мод сам дочитывает заголовок только что записанного реплея.
+
+### en
+
+- Closing the game while a replay started from the hangar is playing quits the client again instead of restarting it.
+- Automatic replay names are given with the settings window closed too: the mod reads the header of the replay just written itself.
+
 ## replay_manager 0.3.0
 
 ### ru

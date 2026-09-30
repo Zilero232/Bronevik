@@ -9,6 +9,6 @@ from .auto_name import AutoNamer, name_values, render_name  # noqa: F401
 from .names import rename_target  # noqa: F401
 from .page import PageContext, battle_type, build_page, item_of, page_status, vehicle_label, vehicle_parts  # noqa: F401
 from .play import play_refusal  # noqa: F401
-from .launch import launch_request, pending_launch  # noqa: F401
+from .launch import launch_request, pending_launch, stop_on_teardown  # noqa: F401
 from .version import compatible, version_key  # noqa: F401
 from .analysis import AnalysisWatch, analysis_notice, parse_statuses  # noqa: F401

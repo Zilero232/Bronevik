@@ -63,6 +63,9 @@ AUTO_NAME_SETTLE_S = 10
 AUTO_NAME_GIVE_UP_S = 30 * 60
 AUTO_NAME_MATCH_S = 5 * 60
 AUTO_NAME_CHECK_S = 15
+# The library reads headers in the background only while the window shows the list; a battle waiting for its name reads
+# the newest unread headers itself, this long per check (at least one file: the replay just written comes first).
+AUTO_NAME_INDEX_S = 0.02
 
 RESULTS = ('win', 'loss', 'draw')
 
@@ -127,3 +130,8 @@ NOT_SERVED_STATUS = 404
 # this is dropped, so a crash or a manual restart never plays a replay the player no longer asked for.
 LAUNCH_FILE = 'replay_manager_play.json'
 LAUNCH_TTL_S = 180
+# BattleReplay.stop(self, rewindToTime=None, delete=False, isDestroyed=False) (RU 1.45 client source :403): game.fini and
+# BattleReplay.destroy stop a playing replay with isDestroyed=True while the client is closing; that stop still calls
+# BigWorld.quit(), which must stay a quit (turned into a restart it would relaunch a client the player just closed).
+STOP_DESTROYED_ARG = 'isDestroyed'
+STOP_DESTROYED_INDEX = 2

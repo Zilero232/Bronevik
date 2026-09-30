@@ -12,7 +12,7 @@ from ....core.client.game import client_attr
 from ....core.hooks import override
 from ....core.log import log, log_exception, safe
 from ....core.storage import JsonFile
-from ..model import LAUNCH_FILE, launch_request, pending_launch
+from ..model import LAUNCH_FILE, launch_request, pending_launch, stop_on_teardown
 from .constants import BOOT_CONFIG_DIR, RESTART_DELAY_S
 
 
@@ -96,6 +96,8 @@ def _start(path):
 
     @override(controller, 'stop')
     def stop(call, self, *args, **kwargs):
+        if stop_on_teardown(args, kwargs):
+            return call(self, *args, **kwargs)
         return _restart_instead_of_quit(call, self, *args, **kwargs)
 
     logic._GameplayLogic__machine = machine
@@ -103,7 +105,8 @@ def _start(path):
 
 
 def _restart_instead_of_quit(call, *args, **kwargs):
-    """The client quits after a replay it was started with; ours goes back to the login screen instead."""
+    """The client quits after a replay it was started with; ours goes back to the login screen instead (not while the
+    client is closing: `stop_on_teardown`)."""
     import BigWorld
     if _Session.path is None:
         return call(*args, **kwargs)

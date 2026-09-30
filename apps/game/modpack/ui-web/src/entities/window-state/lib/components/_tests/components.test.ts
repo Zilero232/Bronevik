@@ -49,7 +49,7 @@ describe(summarize, () => {
   it('counts every page in the navigation order, switched-off cards apart', () => {
     const summaries = summarize(components());
 
-    expect(summaries.map(({ section }) => section)).toEqual(['battle', 'hangar', 'marks', 'replays', 'streamer', 'data']);
+    expect(summaries.map(({ section }) => section)).toEqual(['battle', 'hangar', 'marks', 'replays', 'streamer', 'data', 'hud']);
     expect(summaries.find(({ section }) => section === 'battle')).toEqual({ section: 'battle', total: 2, enabled: 1 });
     expect(summaries.find(({ section }) => section === 'replays')).toEqual({ section: 'replays', total: 1, enabled: 1 });
   });

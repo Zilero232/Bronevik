@@ -39,7 +39,9 @@ SECTION_MARKS = 'marks'
 SECTION_REPLAYS = 'replays'
 SECTION_STREAMER = 'streamer'
 SECTION_DATA = 'data'
-SECTIONS = (SECTION_BATTLE, SECTION_HANGAR, SECTION_MARKS, SECTION_REPLAYS, SECTION_STREAMER, SECTION_DATA)
+# The HUD editor's page also lists the components that shape the whole battle HUD (the layout per battle type).
+SECTION_HUD = 'hud'
+SECTIONS = (SECTION_BATTLE, SECTION_HANGAR, SECTION_MARKS, SECTION_REPLAYS, SECTION_STREAMER, SECTION_DATA, SECTION_HUD)
 
 # Where a component shows anything: only in the hangar, only in battle, or in both. catalog/catalog.json carries the
 # same `context` for the manager and the MOST bundler (packages/ui/tests/test_placement.py keeps both in step).
@@ -92,4 +94,7 @@ PLACEMENT = {
     'notification_filter': (SECTION_HANGAR, CONTEXT_HANGAR),
     'replay_manager': (SECTION_REPLAYS, CONTEXT_HANGAR),
     'replay_upload': (SECTION_REPLAYS, CONTEXT_HANGAR),
+    'hud_layouts': (SECTION_HUD, CONTEXT_BATTLE),
+    'comp7_helper': (SECTION_HANGAR, CONTEXT_HANGAR),
+    'event_trackers': (SECTION_HANGAR, CONTEXT_HANGAR),
 }

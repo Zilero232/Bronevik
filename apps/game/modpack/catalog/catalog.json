@@ -668,6 +668,28 @@
       }
     },
     {
+      "id": "hud_layouts",
+      "category": "battle",
+      "context": "battle",
+      "presets": ["recommended", "streamer"],
+      "title": {
+        "ru": "Раскладка по типу боя",
+        "en": "Layout per battle type"
+      },
+      "description": {
+        "ru": "Свой набор боевых панелей для каждого типа боя: случайные бои, «Натиск», «Линия фронта», события вроде «Ваффентрагера» и «Стальной охотник». Тип боя определяется сам, места панелей запоминаются для каждого типа отдельно.",
+        "en": "A battle panel set of its own for each battle type: random battles, Onslaught, Frontline, events like Waffenträger and Steel Hunter. The battle type is detected by itself, and panel places are kept per type."
+      },
+      "fairPlay": {
+        "ru": "Читает только тип своего боя. Стандартные элементы заменяет лишь в случайных боях и «Натиске»; в остальных режимах ничего не скрывает.",
+        "en": "Reads only the type of your own battle. Replaces stock elements only in random battles and Onslaught; hides nothing in other modes."
+      },
+      "perf": "low",
+      "preview": {
+        "image": "previews/hud_layouts.svg"
+      }
+    },
+    {
       "id": "battle_loadout",
       "category": "battle",
       "context": "battle",
@@ -1086,6 +1108,50 @@
       }
     },
     {
+      "id": "comp7_helper",
+      "category": "hangar",
+      "context": "hangar",
+      "presets": ["recommended"],
+      "title": {
+        "ru": "Натиск: дивизионы",
+        "en": "Onslaught: divisions"
+      },
+      "description": {
+        "ru": "Карточка в ангаре «Натиска»: ваш рейтинг и дивизион, сколько очков до следующего, пороги «Чемпиона» и «Легенды» (C, B, A) и навык роли выбранной машины.",
+        "en": "A card in the Onslaught hangar: your rating and division, the points to the next one, the Champion and Legend thresholds (C, B, A) and the role skill of the selected vehicle."
+      },
+      "fairPlay": {
+        "ru": "Только ваш рейтинг и то, что игра уже показывает в подсказках рангов; о других игроках ничего.",
+        "en": "Only your own rating and what the game already shows in its rank tooltips; nothing about other players."
+      },
+      "perf": "low",
+      "preview": {
+        "image": "previews/comp7_helper.svg"
+      }
+    },
+    {
+      "id": "event_trackers",
+      "category": "hangar",
+      "context": "hangar",
+      "presets": [],
+      "title": {
+        "ru": "Трекеры событий",
+        "en": "Event trackers"
+      },
+      "description": {
+        "ru": "Карточки в ангаре, пока идёт событие: раунд «Триатлона» (три лучших боя по чистому опыту за 60 минут, сколько осталось, лучший раунд) и жетоны «Торгового каравана» с временем до конца.",
+        "en": "Hangar cards while an event runs: the Triathlon round (the three best battles by clean XP in 60 minutes, the time left, the best round) and the Trading Caravan tokens with the time to its end."
+      },
+      "fairPlay": {
+        "ru": "Только ваши бои и ваши жетоны; места соперников по «Триатлону» мод не читает.",
+        "en": "Only your own battles and tokens; the mod reads no places of your Triathlon rivals."
+      },
+      "perf": "low",
+      "preview": {
+        "image": "previews/event_trackers.svg"
+      }
+    },
+    {
       "id": "hangar_info",
       "category": "hangar",
       "context": "hangar",
@@ -1238,6 +1304,7 @@
         "death_card",
         "arty_meter",
         "platoon_points",
+        "hud_layouts",
         "battle_loadout",
         "crosshair",
         "streamer_mode",
@@ -1249,6 +1316,8 @@
         "session_goals",
         "personal_missions",
         "platoon_helper",
+        "comp7_helper",
+        "event_trackers",
         "hangar_info"
       ],
       "restartRequired": true
@@ -1296,6 +1365,7 @@
         "death_card",
         "arty_meter",
         "platoon_points",
+        "hud_layouts",
         "battle_loadout",
         "crosshair",
         "streamer_mode",
@@ -1307,6 +1377,8 @@
         "session_goals",
         "personal_missions",
         "platoon_helper",
+        "comp7_helper",
+        "event_trackers",
         "hangar_info"
       ],
       "restartRequired": false

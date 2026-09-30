@@ -49,6 +49,9 @@ FEATURES = (
     'battle_bush_circle',
     'battle_arty_meter',
     'battle_platoon_points',
+    'battle_hud_layouts',
+    'hangar_comp7_helper',
+    'hangar_event_trackers',
     'share_settings',
     'upload_replays',
     'publish_replays',
@@ -57,7 +60,8 @@ FEATURES = (
 # Off until the player turns them on: the uploads (privacy) and the secondary battle panels, so a default battle shows only
 # the essentials (team HP, damage and hit logs, marks, consumables and reload, the sixth sense lamp, the death card).
 OPT_IN_FEATURES = ('upload_replays', 'publish_replays', 'share_session_report', 'battle_main_gun', 'battle_efficiency', 'battle_personal_best',
-                   'battle_gun_arc', 'battle_arty_meter', 'battle_platoon_points', 'battle_received_hits', 'battle_loadout', 'battle_clock')
+                   'battle_gun_arc', 'battle_arty_meter', 'battle_platoon_points', 'battle_received_hits', 'battle_loadout', 'battle_clock',
+                   'hangar_event_trackers')
 SHARE_CHANNELS = ('telegram', 'discord', 'both')
 DEFAULTS = {
     'enabled': True,
@@ -111,6 +115,9 @@ DEFAULTS = {
     'battle_bush_circle': True,
     'battle_arty_meter': False,
     'battle_platoon_points': False,
+    'battle_hud_layouts': True,
+    'hangar_comp7_helper': True,
+    'hangar_event_trackers': False,
     'share_settings': True,
     'upload_replays': False,
     'publish_replays': False,

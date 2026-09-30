@@ -44,7 +44,7 @@ describe('store', () => {
     receiveState(sample);
     setQuery('minimap');
 
-    expect($summaries.get()).toHaveLength(6);
+    expect($summaries.get()).toHaveLength(7);
     expect($hits.get().map(({ component }) => component.id)).toEqual(['minimap']);
   });
 

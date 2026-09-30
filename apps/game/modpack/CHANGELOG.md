@@ -94,6 +94,58 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 - The Gameface settings window with profiles and an on-screen HUD editor; ModsSettingsAPI stays the fallback.
 - Settings survive a wiped `mods/configs`: the binding, config.json, components.json, profiles.json and the app state are mirrored into `%APPDATA%\TriOtmetki` and restored on the next start.
 
+## hud_layouts 0.1.0
+
+### ru
+
+Новый компонент «Раскладка по типу боя».
+
+- Свой набор боевых панелей для случайных боёв, «Натиска», «Линии фронта», событий (например, «Ваффентрагер») и «Стального охотника»: «Все панели», «Только основные» (отметка, часы и лог урона) или «Без панелей». Тип боя определяется сам по данным боя.
+- Панель, перенесённая в бою не случайного типа, остаётся на новом месте только в боях этого типа; «Сбросить места по типам боя» и «Сбросить расположение» в редакторе HUD возвращают общие места.
+- Настройка — в разделе «Редактор HUD» окна мода.
+
+### en
+
+A new component: Layout per battle type.
+
+- A battle panel set of its own for random battles, Onslaught, Frontline, events (Waffenträger, for one) and Steel Hunter: «All panels», «Essentials only» (marks, clock and damage log) or «No panels». The battle type is detected from the battle's own data.
+- A panel moved in a battle of a type other than random stays in its new place only in battles of that type; «Reset places per battle type» and «Reset layout» in the HUD editor bring back the shared places.
+- It is set on the «HUD editor» page of the mod window.
+
+## comp7_helper 0.1.0
+
+### ru
+
+Новый компонент «Натиск: дивизионы».
+
+- Карточка в ангаре «Натиска»: ваш рейтинг и дивизион, сколько очков до следующего дивизиона с полосой прогресса, пороги «Чемпиона» и «Легенды» (C, B, A) из подсказок рангов игры и навык роли выбранной машины.
+- Вне «Натиска» карточка скрыта, в квалификации показывает только рейтинг.
+
+### en
+
+A new component: Onslaught divisions.
+
+- A card in the Onslaught hangar: your rating and division, the points to the next division with a progress bar, the Champion and Legend thresholds (C, B, A) from the game's rank tooltips and the role skill of the selected vehicle.
+- Hidden outside Onslaught; during qualification it shows only the rating.
+
+## event_trackers 0.1.0
+
+### ru
+
+Новый компонент «Трекеры событий» (выключен по умолчанию).
+
+- «Триатлон»: ваш текущий раунд — сумма трёх лучших случайных боёв по чистому опыту за 60 минут на технике VI уровня и выше, лучшие бои, сколько осталось времени и лучший раунд за событие. Карточка видна, пока игра показывает соревнование по чистому опыту (или всегда, если так выбрано).
+- «Торговый караван»: ваши жетоны и время до конца события; вне события карточки нет.
+- Только ваши бои и данные: места соперников по «Триатлону» видны лишь на странице события в игре.
+
+### en
+
+A new component: Event trackers (off by default).
+
+- Triathlon: your current round — the sum of the three best random battles by clean XP in 60 minutes on tier VI and up, the best battles, the time left and the best round of the event. The card shows while the game lists a clean-XP competition (or always, if chosen).
+- Trading Caravan: your tokens and the time to the end of the event; no card outside it.
+- Only your own battles and data: the Triathlon rivals' places are only on the game's own event page.
+
 ## arty_meter 0.1.1
 
 ### ru
@@ -542,6 +594,22 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 
 - Your gun's reload countdown with a bar and the shells in the magazine; your own gun only. It counts by game time and keeps pace with the reticle.
 
+## core 0.6.0
+
+### ru
+
+- Раскладка по типу боя (`core.hud.modes`): тип боя (случайный, «Натиск», «Линия фронта», событие, «Стальной охотник») по `guiType` и `bonusType` арены, а если их нет — по странице боя; слой HUD берёт набор панелей и места этого типа, панель вне набора не запускается и ничего не заменяет.
+- Стандартные элементы боя заменяются только в случайных боях и «Натиске» и только если на странице боя такой элемент есть; страницы событий на основе обычной, «Линия фронта» и «Стальной охотник» сохраняют все свои элементы.
+- Места панелей по типам боя хранятся в `components.json` (`hud_layout_places`) и попадают в профили.
+- Формы слов «очко», «день», «час», «жетон».
+
+### en
+
+- Layout per battle type (`core.hud.modes`): the battle type (random, Onslaught, Frontline, event, Steel Hunter) from the arena's `guiType` and `bonusType`, else from the battle page; the HUD layer takes that type's panel set and places, and a panel outside the set does not start and replaces nothing.
+- Stock battle elements are replaced only in random battles and Onslaught and only when the battle page has that element; event pages built on the standard one, Frontline and Steel Hunter keep all of theirs.
+- Panel places per battle type are kept in `components.json` (`hud_layout_places`) and go into profiles.
+- Word forms for points, days, hours and tokens.
+
 ## core 0.5.0
 
 ### ru
@@ -634,6 +702,16 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 - Durable settings: the files a player cannot recreate are mirrored into `%APPDATA%\TriOtmetki`, and a missing or older copy in `mods/configs/otmetki` is restored on load.
 - Pinned Python 2.7 libraries: six, blinker, attrs, enum34.
 
+## companion 0.6.0
+
+### ru
+
+- Переключатели новых компонентов: «Раскладка по типу боя» и «Натиск: дивизионы» включены, «Трекеры событий» выключены по умолчанию.
+
+### en
+
+- Switches of the new components: Layout per battle type and Onslaught divisions are on, Event trackers is off by default.
+
 ## companion 0.5.0
 
 ### ru
@@ -701,6 +779,16 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 - Binding to triotmetki.ru with a one-time code from the site; nothing is collected or sent before it.
 - After each own battle: the `personal` block of the battle results, MoE snapshots and distribution, queue times, the loadout and shots, sent in signed batches through an outbox that survives a restart and backs off on errors.
 - Per-feature data switches in `config.json`, the ModsSettingsAPI window as the fallback settings UI, and the streamer settings share (export, apply with a confirmation, restore).
+
+## ui 0.4.0
+
+### ru
+
+- В «Редакторе HUD» под схемой панелей — карточка «Раскладка по типу боя»: набор панелей для каждого типа боя.
+
+### en
+
+- The «HUD editor» page has the Layout per battle type card under the panel map: the panel set for each battle type.
 
 ## ui 0.3.0
 

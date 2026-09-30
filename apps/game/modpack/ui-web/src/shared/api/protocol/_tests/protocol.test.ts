@@ -12,7 +12,16 @@ describe('parseState', () => {
   it('accepts the state the Python bridge builds (fixture written by packages/ui/tests)', () => {
     const state = parseState(sample);
 
-    expect(state?.components.map(({ id }) => id)).toEqual(['companion', 'marks_panel', 'session_stats', 'minimap', 'replay_manager', 'damage_log']);
+    expect(state?.components.map(({ id }) => id)).toEqual([
+      'companion',
+      'marks_panel',
+      'session_stats',
+      'minimap',
+      'replay_manager',
+      'damage_log',
+      'hud_layouts'
+    ]);
+
     expect(state?.hud.panels[0]).toMatchObject({ id: 'damage_log', preview: '1 200' });
     expect(state?.profiles.active).toBe('p1');
   });

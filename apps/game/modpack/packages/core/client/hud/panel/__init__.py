@@ -1,9 +1,11 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....hud import HudPreview
+from ....log import log
 from ...battle import BattleHooks
 from ...component import FeatureComponent
 from .. import hud_layer, stock_control
+from ..modes import current_mode
 
 
 class BattlePanel(FeatureComponent):
@@ -11,6 +13,9 @@ class BattlePanel(FeatureComponent):
     battle, never a replay) when the switch is on, `stop()` on `battle_leave` and before every start;
     subscriptions made through `self.hooks` are removed and the panel is hidden then. `preview_text()` is
     the sample the HUD editor and the hangar preview show: `preview(settings, translate)` unless overridden.
+
+    At the start the layer takes the layout of the battle type (`core.hud.modes`): a panel the type leaves out does not
+    start (so it replaces nothing), and the layout ends with the battle.
 
     `show(text, widget)` sends the GUIFlash text and the Gameface widget payload. A panel that replaces a stock element
     returns its aliases from `stock_aliases()`: they are hidden while the panel runs and the Gameface page draws widgets,
@@ -29,7 +34,7 @@ class BattlePanel(FeatureComponent):
         self.preview = HudPreview(self.hud, panel_id, self.preview_text, self.enabled, self._in_hangar, preview_size,
                                   self.preview_widget).attach(app.bus)
         app.bus.on(self.start_event, self._on_start)
-        app.bus.on('battle_leave', self._on_leave)
+        app.bus.on('battle_leave', self._leave_battle)
 
     def register(self, schema):
         return self.hud.register(self.component_id, schema)
@@ -39,7 +44,11 @@ class BattlePanel(FeatureComponent):
 
     def _on_start(self, *args):
         self._on_leave()
-        if self.enabled():
+        mode = current_mode(self.stock.page)
+        if mode != self.hud.mode:
+            log('HUD: battle type %s' % mode)
+        self.hud.enter_mode(mode)
+        if self.enabled() and self.hud.allows(self.component_id):
             self.running = True
             self.start(*args)
             self.sync_stock()
@@ -51,6 +60,10 @@ class BattlePanel(FeatureComponent):
         self.stop()
         self.hide()
         self.sync_stock()
+
+    def _leave_battle(self):
+        self._on_leave()
+        self.hud.leave_mode()
 
     def _on_component_settings(self, component_id, changed):
         if component_id != self.component_id:

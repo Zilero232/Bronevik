@@ -321,6 +321,45 @@
         "value": false
       },
       "title": "Лог урона"
+    },
+    {
+      "actions": [],
+      "context": "battle",
+      "fields": [
+        {
+          "choices": [
+            {
+              "label": "full",
+              "value": "full"
+            },
+            {
+              "label": "compact",
+              "value": "compact"
+            },
+            {
+              "label": "Выключено",
+              "value": "off"
+            }
+          ],
+          "default": "compact",
+          "hint": null,
+          "key": "event",
+          "label": "event",
+          "type": "choice",
+          "value": "compact"
+        }
+      ],
+      "group": "battle",
+      "hint": null,
+      "id": "hud_layouts",
+      "page": null,
+      "panel": false,
+      "section": "hud",
+      "switch": {
+        "key": "battle_hud_layouts",
+        "value": true
+      },
+      "title": "hud_layouts"
     }
   ],
   "focus": null,

@@ -84,4 +84,7 @@ DOCKS = {
     'otmetki.session_goals': ('hangar_right', 1),
     'otmetki.personal_missions': ('hangar_right', 2),
     'otmetki.platoon_helper': ('hangar_right', 3),
+    'otmetki.comp7_helper': ('hangar_right', 4),
+    'otmetki.event_trackers.triathlon': ('hangar_right', 5),
+    'otmetki.event_trackers.caravan': ('hangar_right', 6),
 }

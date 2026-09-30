@@ -21,6 +21,10 @@ FORMS = {
     'players': {'ru': u'игрок|игрока|игроков', 'en': u'player|players'},
     'minutes': {'ru': u'минута|минуты|минут', 'en': u'minute|minutes'},
     'times': {'ru': u'раз|раза|раз', 'en': u'time|times'},
+    'points': {'ru': u'очко|очка|очков', 'en': u'point|points'},
+    'days': {'ru': u'день|дня|дней', 'en': u'day|days'},
+    'hours': {'ru': u'час|часа|часов', 'en': u'hour|hours'},
+    'tokens': {'ru': u'жетон|жетона|жетонов', 'en': u'token|tokens'},
 }
 DATE_TIME_FORMAT = '%d.%m.%Y %H:%M'
 

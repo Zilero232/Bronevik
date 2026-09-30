@@ -101,6 +101,7 @@ class FakeContext(object):
         self.refreshed = []
         self.page = ReplayPage()
         self.component_config.section('minimap', Schema({'enabled': True, 'zoom': 'native'}, choices={'zoom': ('native', 'x2')}))
+        self.component_config.section('hud_layouts', Schema({'event': 'compact'}, choices={'event': ('full', 'compact', 'off')}))
         self.layer.register('damage_log', PANEL_SCHEMA)
         self.bus.on('component_settings', lambda component, changed: self.events.append((component, changed)))
         self.bus.on('hud_edit', lambda active: self.events.append(('hud_edit', active)))
@@ -132,6 +133,7 @@ class FakeContext(object):
             FeatureInfo('minimap', settings_module(SETTINGS=(), GROUP='battle')),
             FeatureInfo('replay_manager', settings_module(SETTINGS=()), instance=self.page),
             FeatureInfo('damage_log', settings_module(SETTINGS=('upload_replays',))),
+            FeatureInfo('hud_layouts', settings_module(SETTINGS=('battle_hud_layouts',), GROUP='battle')),
         ]
 
     def status(self):
@@ -177,7 +179,8 @@ class BridgeStateTest(unittest.TestCase):
     def test_cards_in_order_with_their_sources(self):
         state = self.bridge.state()
         ids = [item['id'] for item in state['components']]
-        assert ids == [COMPANION_ID, 'marks_panel', 'session_stats', 'minimap', 'replay_manager', 'damage_log']
+        assert ids == [COMPANION_ID, 'marks_panel', 'session_stats', 'minimap', 'replay_manager', 'damage_log', 'hud_layouts']
+        assert card(state, 'hud_layouts')['section'] == 'hud' and card(state, 'hud_layouts')['switch'] == {'key': 'battle_hud_layouts', 'value': True}
         assert state['language'] == 'ru' and state['languages'] == ['ru', 'en']
         assert state['site'] == 'https://triotmetki.ru'
 

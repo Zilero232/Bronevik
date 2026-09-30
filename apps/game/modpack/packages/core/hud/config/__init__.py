@@ -43,6 +43,15 @@ class ComponentConfig(object):
             self.save()
         return changed
 
+    def raw(self, key):
+        """A section kept as plain data (no schema), or None."""
+        return self.data.get(key)
+
+    def set_raw(self, key, value):
+        """Replace a plain-data section and save the file."""
+        self.data[key] = value
+        return self.save()
+
     def save(self):
         try:
             self.store.write(self.data)

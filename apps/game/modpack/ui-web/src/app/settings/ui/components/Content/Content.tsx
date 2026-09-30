@@ -3,7 +3,7 @@ import type { ContentProps } from './Content.types';
 import { SECTION } from '../../../../../entities/window-state';
 import { AccountCard } from '../../../../../widgets/account';
 import { ComponentCard } from '../../../../../widgets/component-card';
-import { SearchPage, SectionPage } from '../../../../../widgets/component-list';
+import { SearchPage, SectionCards, SectionPage } from '../../../../../widgets/component-list';
 import { HudEditor } from '../../../../../widgets/hud-editor';
 import { Profiles } from '../../../../../widgets/profiles';
 import { ReplaysIntro } from '../ReplaysIntro';
@@ -26,6 +26,7 @@ export const Content = ({ state, section, searching, columns }: ContentProps) =>
     return (
       <ToolPage section={section}>
         <HudEditor panels={state.hud.panels} />
+        <SectionCards card={ComponentCard} columns={columns} section={section} />
       </ToolPage>
     );
   }

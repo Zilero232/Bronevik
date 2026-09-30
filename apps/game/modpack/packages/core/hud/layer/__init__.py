@@ -8,6 +8,11 @@ An unchanged text is not sent again (a Flash or Gameface re-layout per call is t
 (the stock battle GUI hidden: V, full stats) take panels off the screen without the features knowing: their texts are
 held and come back when the panel is allowed again.
 
+`enter_mode(mode)` (a battle type, `core.hud.modes`) asks the layout policy a component set with `set_policy(policy)`
+which panels the type shows and whether it keeps places of its own: a panel the type leaves out is held like a muted one,
+and a drag in such a battle is saved for that type (`ModePlaces`), not in the panel's settings. `leave_mode()` goes back to
+every panel at its own place (the hangar, the HUD editor).
+
 `show(panel_id, text, widget)` also carries the panel's structured payload (`core.hud.widget`) for the Gameface page;
 `renders_widgets()` says whether the renderer draws it (a feature replaces a stock element only then).
 """
@@ -15,6 +20,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ...compat import is_number, string_types
 from ..backend import NullBackend
+from ..modes import MODE_RANDOM, ModePlaces
 from ..panel import LAYOUT_KEYS, alias_of, dock_of, layout_props, moved_values, panel_of
 
 
@@ -33,6 +39,11 @@ class HudLayer(object):
         self.gui_hidden = False
         self.blocked = frozenset()
         self.held = {}
+        self.mode = None
+        self.allowed = None
+        self.own_places = False
+        self.policy = None
+        self.mode_places = ModePlaces(config)
         self.backend.listen(self.on_moved)
 
     @property
@@ -56,14 +67,62 @@ class HudLayer(object):
     def is_registered(self, panel_id):
         return panel_id in self.panels
 
-    def props(self, panel_id, text, widget=None):
+    def place_values(self, panel_id):
+        """The layout keys of a panel in the current battle type: its settings with the type's own place over them."""
         settings = self.panels[panel_id]
-        props = layout_props(settings)
-        props.update({'text': text, 'visible': True, 'widget': widget, 'dock': dock_of(alias_of(panel_id), settings)})
+        values = dict((key, settings.get(key)) for key in LAYOUT_KEYS)
+        if self.own_places:
+            values.update(self.mode_places.get(self.mode, panel_id))
+        return values
+
+    def layout(self, panel_id):
+        values = self.place_values(panel_id)
+        props = layout_props(values)
+        props['dock'] = dock_of(alias_of(panel_id), values)
         return props
 
+    def props(self, panel_id, text, widget=None):
+        props = self.layout(panel_id)
+        props.update({'text': text, 'visible': True, 'widget': widget})
+        return props
+
+    def allows(self, panel_id):
+        """Whether the current battle type shows this panel (every panel outside a battle type)."""
+        return self.allowed is None or panel_id in self.allowed
+
     def suppressed(self, panel_id):
-        return self.muted or self.gui_hidden or panel_id in self.blocked
+        return self.muted or self.gui_hidden or panel_id in self.blocked or not self.allows(panel_id)
+
+    def set_policy(self, policy):
+        """`policy(mode)` -> (the panel ids the battle type shows or None for all, whether it keeps places of its own);
+        None drops it (every panel, the panels' own places)."""
+        self.policy = policy
+        self._apply_mode()
+
+    def enter_mode(self, mode):
+        """Switch the panels to the layout of a battle type (again for the same type is a no-op); returns the type."""
+        if mode != self.mode:
+            self.mode = mode
+            self._apply_mode()
+        return mode
+
+    def leave_mode(self):
+        if self.mode is not None:
+            self.mode = None
+            self._apply_mode()
+
+    def _apply_mode(self):
+        allowed, own_places = None, False
+        if self.mode is not None and self.policy is not None:
+            allowed, own_places = self.policy(self.mode)
+        self.allowed = frozenset(allowed) if allowed is not None else None
+        self.own_places = bool(own_places) and self.mode not in (None, MODE_RANDOM)
+        for alias in list(self.shown):
+            panel_id = panel_of(alias)
+            if panel_id in self.panels:
+                self.places.pop(alias, None)
+                self.backend.update(alias, self.layout(panel_id))
+        self._apply()
 
     def renders_widgets(self):
         """Whether the renderer in use draws the widget payloads (the Gameface page, once it answered)."""
@@ -156,9 +215,7 @@ class HudLayer(object):
         alias = alias_of(panel_id)
         if changed and alias in self.shown and set(changed) & set(LAYOUT_KEYS):
             self.places.pop(alias, None)
-            props = layout_props(self.panels[panel_id])
-            props['dock'] = dock_of(alias, self.panels[panel_id])
-            self.backend.update(alias, props)
+            self.backend.update(alias, self.layout(panel_id))
         return changed
 
     def on_moved(self, alias, props):
@@ -167,7 +224,10 @@ class HudLayer(object):
         panel_id = panel_of(alias)
         if panel_id not in self.panels:
             return False
-        changed = bool(self.config.update(panel_id, moved_values(props)))
+        if self.own_places:
+            changed = bool(self.mode_places.save(self.mode, panel_id, moved_values(props)))
+        else:
+            changed = bool(self.config.update(panel_id, moved_values(props)))
         if changed and alias in self.shown:
-            self.backend.update(alias, {'dock': dock_of(alias, self.panels[panel_id])})
+            self.backend.update(alias, {'dock': dock_of(alias, self.place_values(panel_id))})
         return changed

@@ -55,6 +55,9 @@ dependencies = [
   "otmetki-feature-bush-circle",
   "otmetki-feature-arty-meter",
   "otmetki-feature-platoon-points",
+  "otmetki-feature-hud-layouts",
+  "otmetki-feature-comp7-helper",
+  "otmetki-feature-event-trackers",
 ]
 
 [project.urls]
@@ -127,6 +130,9 @@ otmetki-feature-gun-arc = { workspace = true }
 otmetki-feature-bush-circle = { workspace = true }
 otmetki-feature-arty-meter = { workspace = true }
 otmetki-feature-platoon-points = { workspace = true }
+otmetki-feature-hud-layouts = { workspace = true }
+otmetki-feature-comp7-helper = { workspace = true }
+otmetki-feature-event-trackers = { workspace = true }
 
 [tool.pytest.ini_options]
 testpaths = ["packages", "features", "tools"]

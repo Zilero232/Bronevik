@@ -8,6 +8,7 @@ Pure (Python 2/3, no client imports); one concern per subpackage:
 - `layer`: `HudLayer`, what features call (`register`, `show`, `hide`, `update_settings`);
 - `label`: `HangarLabel`, one hangar label of a feature on `app.ui` (redrawn only when its text changed);
 - `edit`: `HudPreview`, a panel's side of the HUD edit protocol (`hud_edit`, `hud_describe`, `hud_reset_layout` on the bus);
+- `modes`: battle types (random, comp7, frontline, event, battle_royale), their panel sets and per-type places;
 - `modifier`: the key the player holds to move and resize panels (Alt by default);
 - `surface`: `HudSurface`, the labels as the Gameface HUD page's state and its messages back.
 

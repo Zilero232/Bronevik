@@ -496,8 +496,10 @@ class ClientSmokeTest(unittest.TestCase):
         module('WWISE', WW_prepareMP3=lambda name: test.mp3.append(name))
         return feedback_ids
 
-    def enter_battle(self, results_arena, tank_id=None):
+    def enter_battle(self, results_arena, tank_id=None, gui_type=None):
         session = BattleSession()
+        if gui_type is not None:
+            session.arena.guiType = gui_type
         self.player = Player(ACCOUNT, results_arena)
         if tank_id is not None:
             vehicle_type = type('VehicleType', (object,), {'compactDescr': tank_id})()
@@ -585,6 +587,23 @@ class ClientSmokeTest(unittest.TestCase):
         self.assertTrue(summary, self.messages)
         self.assertIn('+1.12%', summary[0])
         self.assertIn('2 150', summary[0])
+
+    def test_event_battles_get_the_compact_layout_and_keep_their_places(self):
+        self.install_hud_stubs()
+        app = self.load(list(ENTRY_MODULES))
+        self.player = Player(ACCOUNT)
+        self.events.onAccountShowGUI()
+        results = _support.battle_results()
+        self.enter_battle(results['arenaUniqueID'], gui_type=301)
+        self.assertEqual(sorted(self.hud_components()), ['battle_clock', 'damage_log'])
+        self.component_updated('otmetki.hud.damage_log', {'x': 333, 'y': 44})
+        saved = _support.load_json(os.path.join(app.config_dir, 'components.json'))
+        self.assertEqual(saved['hud_layout_places'], {'event': {'damage_log': {'x': 333, 'y': 44}}})
+        self.assertNotEqual(saved['damage_log']['x'], 333)
+        self.events.onAvatarBecomeNonPlayer()
+        self.enter_battle(results['arenaUniqueID'] + 1, gui_type=30)
+        self.assertIn('team_hp', self.hud_components())
+        self.assertNotEqual(self.hud_components()['damage_log']['x'], 333)
 
     def test_hud_edit_previews_in_hangar(self):
         self.install_hud_stubs()
@@ -1390,6 +1409,57 @@ class ClientSmokeTest(unittest.TestCase):
         self.assertIn(u'бои 5–7 ур.', text)
         self.assertIn(u'до навыка 8 400 опыта (Наводчик)', text)
         self.assertIn(u'ускоренное обучение', text)
+
+    def test_onslaught_and_event_cards_read_only_the_own_data(self):
+        self.install_hud_stubs()
+        self.load(list(ENTRY_MODULES))
+        self.player = Player(ACCOUNT)
+        self.events.onAccountShowGUI()
+        instances = sys.modules['gui.mods.otmetki.core.registry'].registry().instances
+        instances['event_trackers'].app.config.update({'hangar_event_trackers': True})
+
+        def division(rank, index, begin):
+            return type('Division', (object,), {'rank': rank, 'index': index, 'range': type('Range', (object,), {'begin': begin})(),
+                                                'elitePercent': 0})()
+
+        current = division(5, 2, 3000)
+        divisions = (division(5, 3, 2500), current, division(5, 1, 3500))
+        comp7, shop = type('IComp7Controller', (object,), {}), type('IShopSalesEventController', (object,), {})
+        lobby, items, boards = type('ILobbyContext', (object,), {}), type('IItemsCache', (object,), {}), type('IEventBoardController', (object,), {})
+        skill = type('Equipment', (object,), {'userString': u'Точка сбора'})()
+        self.services[comp7] = type('Comp7', (object,), {'rating': 3150, 'isComp7PrbActive': lambda ctrl: True,
+                                                         'isQualificationActive': lambda ctrl: False,
+                                                         'getVehicleSkillEquipment': lambda ctrl, vehicle: skill})()
+        self.services[lobby] = type('Lobby', (object,), {'getServerSettings': lambda ctx: type('Settings', (object,), {
+            'comp7RanksConfig': type('Ranks', (object,), {'divisions': divisions})()})()})()
+        self.services[shop] = type('Shop', (object,), {'isShopSalesEntryPointAvailable': lambda ctrl: True, 'activePhaseFinishTime': 0,
+                                                       'eventFinishTime': 4102444800})()
+        self.services[items] = type('Items', (object,), {'items': type('Cache', (object,), {'stats': type('Stats', (object,), {
+            'entitlements': {'caravan_guaranteed_reward_points': 12}})()})()})()
+        event = type('Event', (object,), {'getObjectiveParameter': lambda e: 'originalXP', 'isStarted': lambda e: True, 'isFinished': lambda e: False,
+                                          'getName': lambda e: u'Триатлон', 'getCardinality': lambda e: 3, 'getStartDateTs': lambda e: 0,
+                                          'getEndDateTs': lambda e: 4102444800, 'getLimits': lambda e: None})()
+        self.services[boards] = type('Boards', (object,), {'getEventsSettingsData': lambda ctrl: type('Data', (object,), {
+            'getEvents': lambda data: [event]})()})()
+        module('skeletons.gui.game_control', IComp7Controller=comp7, IShopSalesEventController=shop)
+        module('skeletons.gui.lobby_context', ILobbyContext=lobby)
+        module('skeletons.gui.shared', IItemsCache=items)
+        module('skeletons.gui.event_boards_controllers', IEventBoardController=boards)
+        for name in ('gui.impl', 'gui.impl.lobby', 'gui.impl.lobby.comp7'):
+            package(name, [])
+        module('gui.impl.lobby.comp7.comp7_shared', getPlayerDivision=lambda: current)
+        self.vehicle.item = type('Vehicle', (object,), {'intCD': 1})()
+        instances['comp7_helper'].refresh()
+        instances['event_trackers'].refresh()
+        comp7_text = self.components['otmetki.comp7_helper']['text']
+        self.assertIn(u'Чемпион B', comp7_text)
+        self.assertIn(u'До «Чемпион A»: 350 очков', comp7_text)
+        self.assertIn(u'Точка сбора', comp7_text)
+        self.assertIn(u'12 жетонов', self.components['otmetki.event_trackers.caravan']['text'])
+        self.assertIn(u'Триатлон', self.components['otmetki.event_trackers.triathlon']['text'])
+        self.services[comp7].isComp7PrbActive = lambda: False
+        instances['comp7_helper'].refresh()
+        self.assertNotIn('otmetki.comp7_helper', self.components)
 
     def leave_battle_early(self, app):
         app.credentials.save(Credentials('device-1', 's' * 40, ACCOUNT))

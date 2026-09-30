@@ -42,9 +42,9 @@ class StockSuppression(object):
         self.owners = {}
         return released
 
-    def filter(self, visible, hidden):
-        """The (visible, hidden) sets the page should apply."""
-        suppressed = self.aliases
+    def filter(self, visible, hidden, aliases=None):
+        """The (visible, hidden) sets the page should apply (`aliases`: the suppressed ones in force, all by default)."""
+        suppressed = self.aliases if aliases is None else frozenset(aliases)
         visible = set(visible or ())
         hidden = set(hidden or ())
         blocked = visible & suppressed

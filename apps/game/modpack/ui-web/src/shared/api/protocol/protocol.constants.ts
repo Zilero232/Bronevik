@@ -22,7 +22,7 @@ export const PROTOCOL = {
     'window_layout'
   ],
   groups: ['data', 'hangar', 'battle'],
-  sections: ['battle', 'hangar', 'marks', 'replays', 'streamer', 'data'],
+  sections: ['battle', 'hangar', 'marks', 'replays', 'streamer', 'data', 'hud'],
   contexts: ['hangar', 'battle', 'any'],
   pages: ['battle', 'hangar', 'marks', 'replays', 'streamer', 'data', 'profiles', 'hud'],
   alignX: ['left', 'center', 'right'],

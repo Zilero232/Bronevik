@@ -21,10 +21,12 @@ members = [
     "otmetki-feature-bush-circle",
     "otmetki-feature-camera",
     "otmetki-feature-chat-filter",
+    "otmetki-feature-comp7-helper",
     "otmetki-feature-consumables",
     "otmetki-feature-crosshair",
     "otmetki-feature-damage-log",
     "otmetki-feature-death-card",
+    "otmetki-feature-event-trackers",
     "otmetki-feature-gun-arc",
     "otmetki-feature-hangar-cleaner",
     "otmetki-feature-hangar-info",
@@ -32,6 +34,7 @@ members = [
     "otmetki-feature-hangar-ratings",
     "otmetki-feature-hangar-tweaks",
     "otmetki-feature-hit-log",
+    "otmetki-feature-hud-layouts",
     "otmetki-feature-main-gun",
     "otmetki-feature-marks-history",
     "otmetki-feature-marks-panel",
@@ -304,6 +307,21 @@ requires-dist = [
 ]
 
 [[package]]
+name = "otmetki-feature-comp7-helper"
+version = "0.1.0"
+source = { virtual = "features/comp7_helper" }
+dependencies = [
+    { name = "otmetki-companion" },
+    { name = "otmetki-core" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "otmetki-companion", virtual = "packages/companion" },
+    { name = "otmetki-core", virtual = "packages/core" },
+]
+
+[[package]]
 name = "otmetki-feature-consumables"
 version = "0.3.0"
 source = { virtual = "features/consumables" }
@@ -352,6 +370,21 @@ requires-dist = [
 name = "otmetki-feature-death-card"
 version = "0.2.0"
 source = { virtual = "features/death_card" }
+dependencies = [
+    { name = "otmetki-companion" },
+    { name = "otmetki-core" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "otmetki-companion", virtual = "packages/companion" },
+    { name = "otmetki-core", virtual = "packages/core" },
+]
+
+[[package]]
+name = "otmetki-feature-event-trackers"
+version = "0.1.0"
+source = { virtual = "features/event_trackers" }
 dependencies = [
     { name = "otmetki-companion" },
     { name = "otmetki-core" },
@@ -457,6 +490,21 @@ requires-dist = [
 name = "otmetki-feature-hit-log"
 version = "0.2.1"
 source = { virtual = "features/hit_log" }
+dependencies = [
+    { name = "otmetki-companion" },
+    { name = "otmetki-core" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "otmetki-companion", virtual = "packages/companion" },
+    { name = "otmetki-core", virtual = "packages/core" },
+]
+
+[[package]]
+name = "otmetki-feature-hud-layouts"
+version = "0.1.0"
+source = { virtual = "features/hud_layouts" }
 dependencies = [
     { name = "otmetki-companion" },
     { name = "otmetki-core" },
@@ -771,10 +819,12 @@ dependencies = [
     { name = "otmetki-feature-bush-circle" },
     { name = "otmetki-feature-camera" },
     { name = "otmetki-feature-chat-filter" },
+    { name = "otmetki-feature-comp7-helper" },
     { name = "otmetki-feature-consumables" },
     { name = "otmetki-feature-crosshair" },
     { name = "otmetki-feature-damage-log" },
     { name = "otmetki-feature-death-card" },
+    { name = "otmetki-feature-event-trackers" },
     { name = "otmetki-feature-gun-arc" },
     { name = "otmetki-feature-hangar-cleaner" },
     { name = "otmetki-feature-hangar-info" },
@@ -782,6 +832,7 @@ dependencies = [
     { name = "otmetki-feature-hangar-ratings" },
     { name = "otmetki-feature-hangar-tweaks" },
     { name = "otmetki-feature-hit-log" },
+    { name = "otmetki-feature-hud-layouts" },
     { name = "otmetki-feature-main-gun" },
     { name = "otmetki-feature-marks-history" },
     { name = "otmetki-feature-marks-panel" },
@@ -829,10 +880,12 @@ requires-dist = [
     { name = "otmetki-feature-bush-circle", virtual = "features/bush_circle" },
     { name = "otmetki-feature-camera", virtual = "features/camera" },
     { name = "otmetki-feature-chat-filter", virtual = "features/chat_filter" },
+    { name = "otmetki-feature-comp7-helper", virtual = "features/comp7_helper" },
     { name = "otmetki-feature-consumables", virtual = "features/consumables" },
     { name = "otmetki-feature-crosshair", virtual = "features/crosshair" },
     { name = "otmetki-feature-damage-log", virtual = "features/damage_log" },
     { name = "otmetki-feature-death-card", virtual = "features/death_card" },
+    { name = "otmetki-feature-event-trackers", virtual = "features/event_trackers" },
     { name = "otmetki-feature-gun-arc", virtual = "features/gun_arc" },
     { name = "otmetki-feature-hangar-cleaner", virtual = "features/hangar_cleaner" },
     { name = "otmetki-feature-hangar-info", virtual = "features/hangar_info" },
@@ -840,6 +893,7 @@ requires-dist = [
     { name = "otmetki-feature-hangar-ratings", virtual = "features/hangar_ratings" },
     { name = "otmetki-feature-hangar-tweaks", virtual = "features/hangar_tweaks" },
     { name = "otmetki-feature-hit-log", virtual = "features/hit_log" },
+    { name = "otmetki-feature-hud-layouts", virtual = "features/hud_layouts" },
     { name = "otmetki-feature-main-gun", virtual = "features/main_gun" },
     { name = "otmetki-feature-marks-history", virtual = "features/marks_history" },
     { name = "otmetki-feature-marks-panel", virtual = "features/marks_panel" },

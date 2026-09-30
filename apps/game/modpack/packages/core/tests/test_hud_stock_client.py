@@ -122,6 +122,27 @@ class StockControlTest(unittest.TestCase):
         self.control.want('sixth_sense', ())
         assert 'sixthSense' in page._fsToggling
 
+    def test_event_battle_types_keep_the_stock_element(self):
+        page = ClassicPage()
+        page._populate()
+        self.layer.enter_mode('event')
+        self.control.want('team_hp', ('fragCorrelationBar',))
+        page._setComponentsVisibility(visible={'fragCorrelationBar'})
+        assert page.applied == [({'fragCorrelationBar'}, set())]
+        self.layer.enter_mode('comp7')
+        self.control.sync()
+        assert page.applied[-1] == (set(), {'fragCorrelationBar'})
+
+    def test_an_alias_the_page_does_not_have_is_left_alone(self):
+        page = ClassicPage()
+        page.components = {'damagePanel': object()}
+        page._populate()
+        self.control.want('team_hp', ('fragCorrelationBar',))
+        assert page.applied == [] and self.control.hidden == frozenset()
+        page.components['fragCorrelationBar'] = object()
+        self.control.sync()
+        assert page.applied[-1] == (set(), {'fragCorrelationBar'})
+
     def test_panels_follow_the_stock_gui_toggles(self):
         page = ClassicPage()
         page._populate()

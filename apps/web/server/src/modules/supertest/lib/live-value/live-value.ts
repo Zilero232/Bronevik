@@ -1,5 +1,7 @@
 import type { ShellStats } from '@otmetki/schemas';
 
+import { match, P } from 'ts-pattern';
+
 import type { LiveValueInput, ShellForInput } from './live-value.types';
 
 import { SHELL_QUALIFIERS } from '../../config';
@@ -19,60 +21,41 @@ export const liveValue = ({ param, label, stats }: LiveValueInput): number | nul
     return null;
   }
 
-  switch (param) {
-    case 'reloadTime':
-    case 'aimingTime':
-    case 'dispersion':
-    case 'dispersionMovement':
-    case 'dispersionHullRotation':
-    case 'dispersionTurretRotation':
-    case 'rateOfFire':
-    case 'maxHealth':
-    case 'viewRange':
-    case 'radioRange':
-    case 'speedForward':
-    case 'speedBackward':
-    case 'hullTraverse':
-    case 'turretTraverse':
-    case 'enginePower':
-    case 'powerToWeight':
-    case 'weight': {
-      return stats[param];
-    }
+  const shell = (): ShellStats | null => shellFor({ stats, label });
 
-    case 'clipReloadTime': {
-      return stats.clip?.reloadTime ?? null;
-    }
-
-    case 'clipInterval': {
-      return stats.clip?.interval ?? null;
-    }
-
-    case 'depression':
-    case 'elevation': {
-      const angle = stats[param];
+  return match(param)
+    .with(
+      P.union(
+        'reloadTime',
+        'aimingTime',
+        'dispersion',
+        'dispersionMovement',
+        'dispersionHullRotation',
+        'dispersionTurretRotation',
+        'rateOfFire',
+        'maxHealth',
+        'viewRange',
+        'radioRange',
+        'speedForward',
+        'speedBackward',
+        'hullTraverse',
+        'turretTraverse',
+        'enginePower',
+        'powerToWeight',
+        'weight'
+      ),
+      (key) => stats[key]
+    )
+    .with('clipReloadTime', () => stats.clip?.reloadTime ?? null)
+    .with('clipInterval', () => stats.clip?.interval ?? null)
+    .with(P.union('depression', 'elevation'), (key) => {
+      const angle = stats[key];
 
       return angle === null ? null : Math.abs(angle);
-    }
-
-    case 'shellDamage': {
-      return shellFor({ stats, label })?.damage ?? null;
-    }
-
-    case 'shellPenetration': {
-      return shellFor({ stats, label })?.penetration100m ?? null;
-    }
-
-    case 'shellVelocity': {
-      return shellFor({ stats, label })?.speed ?? null;
-    }
-
-    case 'damagePerMinute': {
-      return shellFor({ stats, label })?.damagePerMinute ?? null;
-    }
-
-    default: {
-      return null;
-    }
-  }
+    })
+    .with('shellDamage', () => shell()?.damage ?? null)
+    .with('shellPenetration', () => shell()?.penetration100m ?? null)
+    .with('shellVelocity', () => shell()?.speed ?? null)
+    .with('damagePerMinute', () => shell()?.damagePerMinute ?? null)
+    .otherwise(() => null);
 };

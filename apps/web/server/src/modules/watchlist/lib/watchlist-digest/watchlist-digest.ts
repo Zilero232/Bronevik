@@ -1,5 +1,5 @@
 import { WATCHLIST } from '@otmetki/schemas';
-import { addHours, isBefore } from 'date-fns';
+import { addHours, isBefore, subMinutes } from 'date-fns';
 import { sortBy, sumBy } from 'remeda';
 
 import type { IsDigestDueInput, SummarizeDigestInput, WatchlistDigestSummary } from './watchlist-digest.types';
@@ -17,7 +17,7 @@ export const isDigestDue = ({ digest, lastDigestAt, now }: IsDigestDueInput): bo
 
   const dueAt = addHours(lastDigestAt, WATCHLIST.digestHours[digest]);
 
-  return !isBefore(now, new Date(dueAt.getTime() - DUE_SLACK_MINUTES * 60_000));
+  return !isBefore(now, subMinutes(dueAt, DUE_SLACK_MINUTES));
 };
 
 export const digestWindowStart = ({ digest, lastDigestAt, now }: IsDigestDueInput): Date =>

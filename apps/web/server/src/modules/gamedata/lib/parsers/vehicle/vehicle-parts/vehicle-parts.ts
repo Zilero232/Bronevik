@@ -1,5 +1,7 @@
 import type { Armor, ModuleBase, PitchLimits, PitchPoint, RateOfFire, Unlock } from '@otmetki/gamedata';
 
+import { chunk } from 'remeda';
+
 import type { XmlNode, XmlValue } from '../../../xml';
 import type { ArmorExtras, ArmorExtrasInput, ModuleBaseInput, ResolveModuleInput, ResolvePrimaryArmorInput } from '../vehicle.types';
 
@@ -89,13 +91,7 @@ const toPitchPoints = (value: XmlValue | undefined): PitchPoint[] => {
     ];
   }
 
-  const points: PitchPoint[] = [];
-
-  for (let index = 0; index + 1 < values.length; index += 2) {
-    points.push({ angle: values[index], pitch: values[index + 1] });
-  }
-
-  return points;
+  return chunk(values, 2).flatMap(([angle, pitch]) => (pitch === undefined ? [] : [{ angle, pitch }]));
 };
 
 export const parsePitchLimits = (value: XmlValue | undefined): PitchLimits | undefined => {

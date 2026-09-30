@@ -1,5 +1,5 @@
 import { STREAMER_SETTINGS_AGGREGATE_FIELDS, zoomMax } from '@otmetki/schemas';
-import { countBy, entries, sortBy } from 'remeda';
+import { countBy, entries, isNonNull, isNumber, sortBy } from 'remeda';
 import { median } from 'simple-statistics';
 import { z } from 'zod';
 
@@ -31,17 +31,13 @@ const bucketOf = ({ spec, value }: BucketOfInput): string | null => {
 export const aggregateCohort = ({ contributions, minCohort, fields = STREAMER_SETTINGS_AGGREGATE_FIELDS }: AggregateCohortInput): AggregateRow[] =>
   fields.flatMap((spec) => {
     const values = contributions.map((values) => valueOf({ values, field: spec.field }));
-    const buckets = values.flatMap((value) => {
-      const bucket = bucketOf({ spec, value });
-
-      return bucket === null ? [] : [bucket];
-    });
+    const buckets = values.map((value) => bucketOf({ spec, value })).filter(isNonNull);
 
     if (buckets.length < minCohort) {
       return [];
     }
 
-    const numbers = spec.kind === 'numeric' ? values.filter((value): value is number => typeof value === 'number') : [];
+    const numbers = spec.kind === 'numeric' ? values.filter(isNumber) : [];
 
     return {
       field: spec.field,

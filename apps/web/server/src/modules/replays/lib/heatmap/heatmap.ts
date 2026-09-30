@@ -1,4 +1,4 @@
-import { sum } from 'remeda';
+import { entries, groupBy, sum } from 'remeda';
 
 import type { VehicleType } from '../../../../../generated';
 import type { ReplayTrack } from '../replay-tracks';
@@ -93,16 +93,5 @@ export const vehicleClassesOf = ({ tracks, vehicles }: VehicleClassesInput): Map
   );
 };
 
-export const heatmapScopes = ({ tracks, classes }: HeatmapScopesInput): Map<string, ReplayTrack[]> => {
-  const scopes = new Map<string, ReplayTrack[]>([[HEATMAP.allScope, [...tracks]]]);
-
-  for (const track of tracks) {
-    const vehicleClass = classes.get(track.vehicleId);
-
-    if (vehicleClass) {
-      scopes.set(vehicleClass, [...(scopes.get(vehicleClass) ?? []), track]);
-    }
-  }
-
-  return scopes;
-};
+export const heatmapScopes = ({ tracks, classes }: HeatmapScopesInput): Map<string, ReplayTrack[]> =>
+  new Map<string, ReplayTrack[]>([[HEATMAP.allScope, [...tracks]], ...entries(groupBy(tracks, (track) => classes.get(track.vehicleId)))]);

@@ -1,4 +1,4 @@
-import { round } from 'remeda';
+import { round, sumBy } from 'remeda';
 
 import type { GlyphPathInput } from '../icon';
 
@@ -30,7 +30,7 @@ const glyphPath = ({ glyph, x }: GlyphPathInput) => {
 
 export const tierGlyphs = (tier: number) => {
   const glyphs = [...toRoman(tier)];
-  const total = glyphs.reduce((sum, glyph) => sum + glyphWidth(glyph), 0) + GLYPH.gap * (glyphs.length - 1);
+  const total = sumBy(glyphs, glyphWidth) + GLYPH.gap * (glyphs.length - 1);
   const start = GLYPH.center - total / 2;
 
   let cursor = start;

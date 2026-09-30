@@ -1,3 +1,5 @@
+import { sum } from 'remeda';
+
 export const WORKER_CONCURRENCY = {
   enrol: 2,
   poll: 3,
@@ -15,5 +17,5 @@ const { enrol, poll, sweep, accountsPerJob, ...others } = WORKER_CONCURRENCY;
 const poolHeadroom = 10;
 
 export const WORKER_DATABASE = {
-  poolMax: (enrol + poll + sweep) * accountsPerJob + Object.values(others).reduce((sum, value) => sum + value, 0) + poolHeadroom
+  poolMax: (enrol + poll + sweep) * accountsPerJob + sum(Object.values(others)) + poolHeadroom
 } as const;

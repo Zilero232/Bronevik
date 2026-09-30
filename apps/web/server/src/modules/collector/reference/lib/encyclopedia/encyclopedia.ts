@@ -1,5 +1,5 @@
 import { flatten } from 'flat';
-import { entries, isNumber, sortBy } from 'remeda';
+import { entries, groupBy, isNumber, sortBy } from 'remeda';
 
 import type { ModuleType, ProvisionType, VehicleType } from '../../../../../../generated';
 import type { Vehicle } from '../../../../../lib/lesta';
@@ -36,19 +36,9 @@ export const vehicleSlugs = ({ vehicles }: VehicleSlugsInput): Map<number, strin
 };
 
 export const previousTankIds = (vehicles: readonly Pick<Vehicle, 'next_tanks' | 'tank_id'>[]): Map<number, number[]> => {
-  const previous = new Map<number, number[]>();
+  const links = vehicles.flatMap((vehicle) => Object.keys(vehicle.next_tanks ?? {}).map((nextId) => ({ nextId, tankId: vehicle.tank_id })));
 
-  for (const vehicle of vehicles) {
-    for (const next of Object.keys(vehicle.next_tanks ?? {})) {
-      const nextId = Number(next);
-      const list = previous.get(nextId) ?? [];
-
-      list.push(vehicle.tank_id);
-      previous.set(nextId, list);
-    }
-  }
-
-  return previous;
+  return new Map(entries(groupBy(links, (link) => link.nextId)).map(([nextId, group]) => [Number(nextId), group.map((link) => link.tankId)]));
 };
 
 const numericLeaves = (value: unknown): Map<string, number> =>

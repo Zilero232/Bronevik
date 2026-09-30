@@ -1,6 +1,7 @@
 import { winRate } from '@otmetki/ratings';
 import { fromUnixTime } from 'date-fns';
-import { chunk, isIncludedIn, unique } from 'remeda';
+import pLimit from 'p-limit';
+import { isIncludedIn, unique } from 'remeda';
 
 import type { Prisma } from '../../../../../../generated';
 import type { AccountInfo } from '../../../../../lib/lesta';
@@ -180,9 +181,11 @@ export const runPollPipeline = async ({ ports, accountIds, tier, promote = false
     const tanksByAccount = await lesta.accountTanks(scanIds);
     const baselines = await store.loadBaselines(scanIds);
 
-    for (const part of chunk(toScan, POLL_PIPELINE.accountConcurrency)) {
-      await Promise.all(
-        part.map(async (info) => {
+    const limit = pLimit(POLL_PIPELINE.accountConcurrency);
+
+    await Promise.all(
+      toScan.map((info) =>
+        limit(async () => {
           const accountId = info.account_id;
 
           try {
@@ -204,8 +207,8 @@ export const runPollPipeline = async ({ ports, accountIds, tier, promote = false
             ports.onError?.({ accountId, error });
           }
         })
-      );
-    }
+      )
+    );
   }
 
   if (synced.length > 0) {

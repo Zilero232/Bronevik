@@ -34,7 +34,7 @@ export const topFromThumb = ({ offset, size, content, viewport }: TopFromThumbIn
   return track > 0 ? clamp((offset / track) * max, { min: 0, max }) : 0;
 };
 
-export const wheelDelta = (event: WheelDelta): number => {
+const rawDelta = (event: WheelDelta): number => {
   if (Number.isFinite(event.deltaY) && event.deltaY !== 0) {
     return event.deltaY;
   }
@@ -42,6 +42,14 @@ export const wheelDelta = (event: WheelDelta): number => {
   const legacy = event.wheelDeltaY ?? event.wheelDelta ?? 0;
 
   return legacy === 0 ? 0 : -legacy;
+};
+
+const isEngine = (): boolean => gameface.remScale() !== null;
+
+export const wheelDelta = (event: WheelDelta): number => {
+  const delta = rawDelta(event);
+
+  return isEngine() ? -delta : delta;
 };
 
 const stepPx = (): number => SCROLL_AREA.step * (gameface.remScale() ?? rootScale());

@@ -1,4 +1,4 @@
-import type { DescribeEngineInput, EngineScope, EngineShim } from './engine-shims.types';
+import type { DescribeEngineInput, EngineScope, EngineShim, InstallEngineShimsInput } from './engine-shims.types';
 
 import { ENGINE_PROBE } from './engine-shims.constants';
 
@@ -22,7 +22,26 @@ const hideNullEvent = (scope: EngineScope): boolean => {
   }
 };
 
-export const installEngineShims = (scope: EngineScope): EngineShim[] => {
+const FOCUS_PAIRS = [
+  ['focus', 'focusin'],
+  ['blur', 'focusout']
+] as const;
+
+const bubbleFocus = (document: EventTarget): void => {
+  for (const [native, bubbling] of FOCUS_PAIRS) {
+    document.addEventListener(
+      native,
+      (event) => {
+        event.target?.dispatchEvent(
+          new FocusEvent(bubbling, { bubbles: true, relatedTarget: event instanceof FocusEvent ? event.relatedTarget : null })
+        );
+      },
+      true
+    );
+  }
+};
+
+export const installEngineShims = ({ scope, document }: InstallEngineShimsInput): EngineShim[] => {
   const installed: EngineShim[] = [];
 
   if (typeof scope.queueMicrotask !== 'function') {
@@ -37,6 +56,11 @@ export const installEngineShims = (scope: EngineScope): EngineShim[] => {
 
   if (scope.event === null && hideNullEvent(scope)) {
     installed.push('event');
+  }
+
+  if (!('onfocusout' in document)) {
+    bubbleFocus(document);
+    installed.push('focusout');
   }
 
   return installed;

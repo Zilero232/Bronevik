@@ -4,6 +4,7 @@ import type { UseWheelResizeInput } from './use-wheel-resize.types';
 
 import { sendHud } from '../../../../../shared/api/hud-protocol';
 import { rootScale } from '../../../../../shared/lib/hud-screen';
+import { wheelDelta } from '../../../../../shared/lib/wheel-scroll';
 import { targetAt } from '../../../lib/hit-panel';
 import { wheelScale } from '../../../lib/panel-size';
 
@@ -18,7 +19,7 @@ export const useWheelResize = ({ edit, targets, onScaled, report }: UseWheelResi
     event.preventDefault();
     report('wheel');
 
-    const next = wheelScale({ current: found.scale, deltaY: event.deltaY });
+    const next = wheelScale({ current: found.scale, deltaY: wheelDelta(event) });
 
     if (next !== found.scale) {
       onScaled({ id: found.id, scale: next });

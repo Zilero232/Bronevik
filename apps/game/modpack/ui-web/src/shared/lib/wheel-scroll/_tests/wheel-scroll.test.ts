@@ -54,7 +54,7 @@ const install = (scale: number) => {
   return mock;
 };
 
-const notch = (deltaY: number) => new WheelEvent('wheel', { deltaY, bubbles: true, cancelable: true });
+const notch = (down: number) => new WheelEvent('wheel', { deltaY: -down, bubbles: true, cancelable: true });
 
 const scrollArea = () => {
   vi.useFakeTimers({ toFake: ['requestAnimationFrame'] });
@@ -156,6 +156,12 @@ describe(wheelDelta, () => {
 
   it('reads no movement from an event without any delta', () => {
     expect(wheelDelta({ deltaY: 0 })).toBe(0);
+  });
+
+  it('flips the sign Gameface sends, so a notch up scrolls up', () => {
+    install(2);
+
+    expect(wheelDelta({ deltaY: 3 })).toBe(-3);
   });
 });
 

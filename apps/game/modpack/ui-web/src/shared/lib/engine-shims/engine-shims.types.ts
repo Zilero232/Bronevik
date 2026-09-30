@@ -5,7 +5,12 @@ export type EngineScope = {
   event?: unknown;
 };
 
-export type EngineShim = 'event' | 'queueMicrotask' | 'setImmediate';
+export type EngineShim = 'event' | 'focusout' | 'queueMicrotask' | 'setImmediate';
+
+export type InstallEngineShimsInput = {
+  scope: EngineScope;
+  document: EventTarget;
+};
 
 export type DescribeEngineInput = {
   scope: EngineScope;

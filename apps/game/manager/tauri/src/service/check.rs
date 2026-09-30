@@ -218,7 +218,7 @@ impl Manager {
 
         ensure_closed(client_path)?;
 
-        let snapshot = if scope.client.mods_dir.is_dir() {
+        let snapshot = if scope.client.mods_dir.is_dir() || !patch::retired_files(scope.context()).is_empty() {
             let input = CreateInput { context: scope.context(), kind: SnapshotKind::Auto, removed: &[], now: chrono::Local::now() };
 
             Some(snapshots::create_and_prune(input)?.id)
@@ -232,6 +232,7 @@ impl Manager {
             packages: &packages,
             disabled: &disabled,
             replace_all: false,
+            drop_retired: true,
         })
         .map_err(|error| restore_after_failure(scope.context(), &durable_dir, snapshot.as_deref(), error))?;
 
@@ -317,6 +318,7 @@ impl Manager {
             packages: &packages,
             disabled: &BTreeSet::new(),
             replace_all: false,
+            drop_retired: false,
         })?;
 
         Ok(())

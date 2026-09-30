@@ -1,5 +1,5 @@
 import { ShellApcrIcon, ShellApIcon, ShellHeatIcon, ShellHeIcon } from '@otmetki/icons';
-import { Crosshair, FireExtinguisher, Gauge, HeartPulse, LayoutGrid, ScrollText, Settings2, Wrench } from 'lucide-react';
+import { BookMarked, ChevronsRight, Crosshair, Fan, Gauge, LayoutGrid, ScanEye, ScrollText, Settings2 } from 'lucide-react';
 
 export const PROMO_MOCK = {
   manager: {
@@ -95,17 +95,23 @@ export const PROMO_MOCK = {
     ]
   },
   gear: {
-    consumables: [
-      { key: 'repair', icon: Wrench, cooldown: 0 },
-      { key: 'medkit', icon: HeartPulse, cooldown: 0.45 },
-      { key: 'extinguisher', icon: FireExtinguisher, cooldown: 1 }
+    equipment: [
+      { key: 'turbocharger', icon: Gauge, mark: 'bonus' },
+      { key: 'ventilation', icon: Fan, mark: undefined },
+      { key: 'rammer', icon: ChevronsRight, mark: 'bonus' },
+      { key: 'optics', icon: ScanEye, mark: 'active' },
+      { key: 'directive', icon: BookMarked, mark: undefined }
     ],
-    shells: [
-      { key: 'ap', icon: ShellApIcon, count: 32 },
-      { key: 'apcr', icon: ShellApcrIcon, count: 14 },
-      { key: 'he', icon: ShellHeIcon, count: 6 }
-    ],
-    reload: { seconds: 7.4, progress: 62 }
+    reload: {
+      seconds: 7.4,
+      progress: 62,
+      clip: [
+        { id: 'c1', isLoaded: true },
+        { id: 'c2', isLoaded: true },
+        { id: 'c3', isLoaded: true },
+        { id: 'c4', isLoaded: false }
+      ]
+    }
   },
   hits: {
     entries: [

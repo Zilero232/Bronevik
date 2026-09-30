@@ -6,7 +6,7 @@ use crate::components::{is_owned, sync_manifest, ClientContext};
 use crate::error::AppResult;
 use crate::fsx::list_files;
 use crate::releases::{FetchLimits, Release, ReleasePackage, ReleasesClient, MAX_PACKAGE_BYTES};
-use crate::state::{disabled_dir, save_client_state, Manifest};
+use crate::state::{component_id, disabled_dir, save_client_state, Manifest};
 
 #[derive(Debug, Clone)]
 pub struct FetchedPackage {
@@ -58,6 +58,7 @@ pub struct ApplyInput<'a> {
     pub packages: &'a [FetchedPackage],
     pub disabled: &'a BTreeSet<String>,
     pub replace_all: bool,
+    pub drop_retired: bool,
 }
 
 fn stale_versions(dir: &Path, input: &ApplyInput, package: &ReleasePackage) -> Vec<PathBuf> {
@@ -67,6 +68,24 @@ fn stale_versions(dir: &Path, input: &ApplyInput, package: &ReleasePackage) -> V
             let name = path.file_name().map(|name| name.to_string_lossy().into_owned()).unwrap_or_default();
 
             name != package.file && input.context.catalog.component_for_file(&name).is_some_and(|component| component.id == package.id)
+        })
+        .collect()
+}
+
+pub fn retired_files(context: ClientContext) -> Vec<PathBuf> {
+    let catalog = context.catalog;
+
+    if catalog.components.is_empty() {
+        return Vec::new();
+    }
+
+    [context.client.mods_dir.clone(), disabled_dir(context.client_dir)]
+        .iter()
+        .flat_map(|dir| list_files(dir))
+        .filter(|path| {
+            let name = path.file_name().map(|name| name.to_string_lossy().into_owned()).unwrap_or_default();
+
+            catalog.is_owned_file(&name) && catalog.component_for_file(&name).is_none()
         })
         .collect()
 }
@@ -102,6 +121,7 @@ pub fn apply_packages(input: ApplyInput) -> AppResult<Vec<String>> {
         })
         .collect();
     let staging = stage(&files)?;
+    let retired = if input.drop_retired { retired_files(input.context) } else { Vec::new() };
     let retire: Vec<PathBuf> = if input.replace_all {
         our_files(input.context)?
     } else {
@@ -109,14 +129,17 @@ pub fn apply_packages(input: ApplyInput) -> AppResult<Vec<String>> {
             .packages
             .iter()
             .flat_map(|fetched| [&mods_dir, &parked_dir].into_iter().flat_map(|dir| stale_versions(dir, &input, &fetched.package)))
+            .chain(retired.iter().cloned())
             .collect()
     };
 
     staging.commit(&retire)?;
 
-    if input.replace_all {
+    if input.replace_all || !retired.is_empty() {
         if let Some(mut manifest) = Manifest::read(input.context.client_dir)? {
-            manifest.components.clear();
+            let catalog = input.context.catalog;
+
+            manifest.components.retain(|name| !input.replace_all && catalog.component(component_id(name)).is_some());
             manifest.write(input.context.client_dir)?;
         }
     }

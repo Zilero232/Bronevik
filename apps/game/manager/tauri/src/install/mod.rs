@@ -164,6 +164,7 @@ pub fn install(input: InstallInput) -> AppResult<Vec<String>> {
         packages: input.packages,
         disabled: &disabled,
         replace_all: true,
+        drop_retired: true,
     })
     .map_err(|error| restore_after_failure(context, input.durable_dir, snapshot.as_deref(), error))?;
 

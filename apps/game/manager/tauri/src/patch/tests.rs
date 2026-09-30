@@ -123,7 +123,15 @@ fn installs_a_release_keeping_parked_components_parked() {
         fetched("damage_log", "net.triotmetki.damage_log_0.2.0.mtmod"),
     ];
 
-    apply_packages(ApplyInput { context, modpack_version: "0.2.0", packages: &packages, disabled: &disabled, replace_all: false }).unwrap();
+    apply_packages(ApplyInput {
+        context,
+        modpack_version: "0.2.0",
+        packages: &packages,
+        disabled: &disabled,
+        replace_all: false,
+        drop_retired: false,
+    })
+    .unwrap();
 
     let installation = read_installation(context).unwrap();
 
@@ -137,6 +145,105 @@ fn installs_a_release_keeping_parked_components_parked() {
 }
 
 #[test]
+fn an_update_backs_up_and_drops_our_packages_the_catalogue_retired() {
+    let root = tempfile::tempdir().unwrap();
+    let client = lesta_client(root.path(), "1.46.0.0");
+    let client_dir = root.path().join("state");
+    let catalog = catalog();
+    let context = ClientContext { client_dir: &client_dir, client: &client, catalog: &catalog };
+    let retired = client.mods_dir.join("net.triotmetki.consumables_0.1.0.mtmod");
+    let parked = disabled_dir(&client_dir).join("otmetki.consumables_0.1.0.mtmod");
+    let foreign = client.mods_dir.join("izeberg.modssettingsapi_1.6.0.mtmod");
+
+    fs::write(client.mods_dir.join("net.triotmetki.core_0.1.0.mtmod"), "old").unwrap();
+    fs::write(&retired, "retired").unwrap();
+    fs::write(&foreign, "foreign").unwrap();
+    fs::create_dir_all(disabled_dir(&client_dir)).unwrap();
+    fs::write(&parked, "retired").unwrap();
+    sync_manifest(context).unwrap();
+
+    let mut manifest = Manifest::read(&client_dir).unwrap().unwrap();
+
+    manifest.components.push(crate::state::inno_name("battle", "consumables"));
+    manifest.write(&client_dir).unwrap();
+
+    let mut found = retired_files(context);
+
+    found.sort();
+
+    assert_eq!(found, vec![parked.clone(), retired.clone()]);
+
+    let snapshot = crate::snapshots::create(crate::snapshots::CreateInput {
+        context,
+        kind: crate::snapshots::SnapshotKind::Auto,
+        removed: &[],
+        now: chrono::Local::now(),
+    })
+    .unwrap();
+    let backup = crate::snapshots::backups_dir(&client_dir).join(&snapshot.id);
+
+    apply_packages(ApplyInput {
+        context,
+        modpack_version: "0.2.0",
+        packages: &[fetched("core", "net.triotmetki.core_0.2.0.mtmod")],
+        disabled: &BTreeSet::new(),
+        replace_all: false,
+        drop_retired: true,
+    })
+    .unwrap();
+
+    let manifest = Manifest::read(&client_dir).unwrap().unwrap();
+
+    assert!(!retired.exists());
+    assert!(!parked.exists());
+    assert!(foreign.exists());
+    assert!(client.mods_dir.join("net.triotmetki.core_0.2.0.mtmod").exists());
+    assert!(backup.join("modpack").join("net.triotmetki.consumables_0.1.0.mtmod").is_file());
+    assert!(backup.join("disabled").join("otmetki.consumables_0.1.0.mtmod").is_file());
+    assert!(!manifest.component_ids().contains(&"consumables".to_owned()));
+    assert!(manifest.component_ids().contains(&"core".to_owned()));
+}
+
+#[test]
+fn a_catalogue_without_components_retires_nothing() {
+    let root = tempfile::tempdir().unwrap();
+    let client = lesta_client(root.path(), "1.46.0.0");
+    let client_dir = root.path().join("state");
+    let catalog = crate::install::owned_patterns_catalog(None);
+    let context = ClientContext { client_dir: &client_dir, client: &client, catalog: &catalog };
+
+    fs::write(client.mods_dir.join("net.triotmetki.core_0.1.0.mtmod"), "core").unwrap();
+
+    assert!(retired_files(context).is_empty());
+}
+
+#[test]
+fn a_component_update_keeps_retired_packages_without_the_flag() {
+    let root = tempfile::tempdir().unwrap();
+    let client = lesta_client(root.path(), "1.46.0.0");
+    let client_dir = root.path().join("state");
+    let catalog = catalog();
+    let context = ClientContext { client_dir: &client_dir, client: &client, catalog: &catalog };
+    let retired = client.mods_dir.join("net.triotmetki.consumables_0.1.0.mtmod");
+
+    fs::write(&retired, "retired").unwrap();
+
+    let packages = [fetched("core", "net.triotmetki.core_0.2.0.mtmod")];
+
+    apply_packages(ApplyInput {
+        context,
+        modpack_version: "0.2.0",
+        packages: &packages,
+        disabled: &BTreeSet::new(),
+        replace_all: false,
+        drop_retired: false,
+    })
+    .unwrap();
+
+    assert!(retired.exists());
+}
+
+#[test]
 fn a_tampered_package_leaves_the_install_untouched() {
     let root = tempfile::tempdir().unwrap();
     let client = lesta_client(root.path(), "1.46.0.0");
@@ -147,8 +254,14 @@ fn a_tampered_package_leaves_the_install_untouched() {
 
     tampered.bytes = b"evil".to_vec();
 
-    let result =
-        apply_packages(ApplyInput { context, modpack_version: "0.2.0", packages: &[tampered], disabled: &BTreeSet::new(), replace_all: false });
+    let result = apply_packages(ApplyInput {
+        context,
+        modpack_version: "0.2.0",
+        packages: &[tampered],
+        disabled: &BTreeSet::new(),
+        replace_all: false,
+        drop_retired: false,
+    });
 
     assert!(result.is_err());
     assert!(!client.mods_dir.join("net.triotmetki.core_0.2.0.mtmod").exists());
@@ -235,8 +348,14 @@ fn a_locked_package_rolls_the_update_back() {
 
     let lock = fs::OpenOptions::new().read(true).share_mode(0).open(&old_companion).unwrap();
     let packages = [fetched("core", "net.triotmetki.core_0.2.0.mtmod"), fetched("companion", "otmetki.companion_0.2.0.mtmod")];
-    let result =
-        apply_packages(ApplyInput { context, modpack_version: "0.2.0", packages: &packages, disabled: &BTreeSet::new(), replace_all: false });
+    let result = apply_packages(ApplyInput {
+        context,
+        modpack_version: "0.2.0",
+        packages: &packages,
+        disabled: &BTreeSet::new(),
+        replace_all: false,
+        drop_retired: false,
+    });
 
     drop(lock);
 
@@ -265,8 +384,14 @@ fn a_failed_swap_restores_the_previous_files() {
 
     crate::fsx::faults::fail_after(4, std::io::ErrorKind::PermissionDenied);
 
-    let result =
-        apply_packages(ApplyInput { context, modpack_version: "0.2.0", packages: &packages, disabled: &BTreeSet::new(), replace_all: false });
+    let result = apply_packages(ApplyInput {
+        context,
+        modpack_version: "0.2.0",
+        packages: &packages,
+        disabled: &BTreeSet::new(),
+        replace_all: false,
+        drop_retired: false,
+    });
 
     crate::fsx::faults::clear();
 

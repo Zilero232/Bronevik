@@ -2,6 +2,7 @@ import type { INestApplication } from '@nestjs/common';
 
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
+import { MODPACK_RELEASES, modpackChangelogSchema } from '@otmetki/schemas';
 import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -78,5 +79,24 @@ describe('modpack releases API', () => {
 
     expect(response.status).toBe(204);
     expect(response.text).toBe('');
+  });
+
+  it('answers GET /modpack/releases/changelog newest first with the packages each release changed', async () => {
+    const response = await request(app.getHttpServer()).get('/modpack/releases/changelog');
+    const { releases } = modpackChangelogSchema.parse(response.body);
+
+    expect(response.status).toBe(200);
+    expect(releases.map((item) => item.version)).toEqual(['0.10.0', '0.2.0', '0.1.0']);
+    expect(releases[0]).toMatchObject({ notes: null, changes: [{ id: 'core', version: '0.10.0', notes: null }] });
+  });
+
+  it('honours the changelog limit and refuses one past the maximum', async () => {
+    const limited = await request(app.getHttpServer()).get('/modpack/releases/changelog').query({ limit: 1 });
+    const tooMany = await request(app.getHttpServer())
+      .get('/modpack/releases/changelog')
+      .query({ limit: MODPACK_RELEASES.changelogMaxLimit + 1 });
+
+    expect(limited.body.releases).toHaveLength(1);
+    expect(tooMany.status).toBe(400);
   });
 });

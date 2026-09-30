@@ -20,11 +20,18 @@ export const modpackReleasePackageSchema = z.object({
   size: z.number().int().nonnegative()
 });
 
+export const modpackReleaseChangeSchema = z.object({
+  id: z.string().regex(MODPACK_RELEASES.componentIdPattern),
+  version: semverSchema,
+  notes: modpackLocalizedSchema.nullable()
+});
+
 export const modpackReleaseSchema = z.object({
   version: semverSchema,
   publishedAt: z.iso.datetime(),
   games: z.array(z.string().regex(MODPACK_RELEASES.gamePattern)).min(1),
   notes: modpackLocalizedSchema.nullish(),
+  changes: z.array(modpackReleaseChangeSchema).nullish(),
   catalog: z.object({ url: httpsUrlSchema, sha256: sha256Schema }).nullish(),
   packages: z.array(modpackReleasePackageSchema).min(1),
   signature: z.string().min(1)
@@ -78,4 +85,26 @@ export const modpackDownloadSchema = z.object({
 export const modpackReleasesStatusSchema = z.object({
   modpack: modpackDownloadSchema.nullable(),
   manager: modpackDownloadSchema.nullable()
+});
+
+export const modpackChangelogQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(MODPACK_RELEASES.changelogMaxLimit).default(MODPACK_RELEASES.changelogDefaultLimit)
+});
+
+export const modpackChangelogChangeSchema = z.object({
+  id: z.string(),
+  version: z.string().nullable(),
+  notes: modpackLocalizedSchema.nullable()
+});
+
+export const modpackChangelogReleaseSchema = z.object({
+  version: semverSchema,
+  publishedAt: z.iso.datetime(),
+  games: z.array(z.string()),
+  notes: modpackLocalizedSchema.nullable(),
+  changes: z.array(modpackChangelogChangeSchema)
+});
+
+export const modpackChangelogSchema = z.object({
+  releases: z.array(modpackChangelogReleaseSchema)
 });

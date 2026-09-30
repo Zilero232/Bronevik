@@ -4627,6 +4627,177 @@
         "tags": ["mod"]
       }
     },
+    "/mod/me/sets": {
+      "post": {
+        "operationId": "ModSyncController_sets",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModSyncReadRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModSetsLibraryDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["mod"]
+      },
+      "put": {
+        "operationId": "ModSyncController_saveSets",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModSetsWriteRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModSetsLibraryDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["mod"]
+      }
+    },
+    "/mod/me/profiles": {
+      "post": {
+        "operationId": "ModSyncController_profiles",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModSyncReadRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModProfilesLibraryDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["mod"]
+      },
+      "put": {
+        "operationId": "ModSyncController_saveProfiles",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModProfilesWriteRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModProfilesLibraryDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["mod"]
+      }
+    },
+    "/mod/sync": {
+      "get": {
+        "operationId": "ModSyncAccountController_libraries",
+        "parameters": [],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModSyncLibrariesDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["mod"]
+      },
+      "delete": {
+        "operationId": "ModSyncAccountController_clear",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "tags": ["mod"]
+      }
+    },
+    "/mod/reports": {
+      "post": {
+        "operationId": "submitModProblemReport",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModProblemReportRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModProblemReportReceiptDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "summary": "A problem report from the modpack manager with its log files, kept 30 days",
+        "tags": ["mod"]
+      }
+    },
     "/mod/me/session-share": {
       "post": {
         "operationId": "SessionShareController_preference",
@@ -4732,6 +4903,38 @@
           }
         },
         "summary": "Whether the modpack and the manager installer are published, with their versions and file sizes",
+        "tags": ["modpack"]
+      }
+    },
+    "/modpack/releases/changelog": {
+      "get": {
+        "operationId": "getModpackChangelog",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 20,
+              "default": 10,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModpackChangelogDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "summary": "The newest modpack releases with their notes and the components each one changed, newest first",
         "tags": ["modpack"]
       }
     },
@@ -37457,6 +37660,197 @@
               "required": ["accountId", "tankId", "battles", "wins", "markOfMastery", "marksOnGun", "lastBattleAt"],
               "additionalProperties": false
             }
+          },
+          "modSync": {
+            "type": "object",
+            "properties": {
+              "sets": {
+                "type": "object",
+                "properties": {
+                  "sets": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "pattern": "^[\\w-]{1,64}$"
+                        },
+                        "name": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 40
+                        },
+                        "components": {
+                          "maxItems": 200,
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "maxLength": 64,
+                            "pattern": "^[a-z][a-z0-9_]*$"
+                          }
+                        },
+                        "created": {
+                          "type": "number",
+                          "minimum": 0
+                        },
+                        "updated": {
+                          "type": "number",
+                          "minimum": 0
+                        }
+                      },
+                      "required": ["id", "name", "components", "created", "updated"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "deleted": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "pattern": "^[\\w-]{1,64}$"
+                        },
+                        "deleted": {
+                          "type": "number",
+                          "minimum": 0
+                        }
+                      },
+                      "required": ["id", "deleted"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "updated_at": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "date-time",
+                        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": ["sets", "deleted", "revision", "updated_at"],
+                "additionalProperties": false,
+                "description": "The component sets the user keeps on the site, their tombstones and the revision of the stored state"
+              },
+              "profiles": {
+                "type": "object",
+                "properties": {
+                  "profiles": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "pattern": "^[\\w-]{1,64}$"
+                        },
+                        "name": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 40
+                        },
+                        "created": {
+                          "anyOf": [
+                            {
+                              "type": "number",
+                              "minimum": 0
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "updated": {
+                          "anyOf": [
+                            {
+                              "type": "number",
+                              "minimum": 0
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "config": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string"
+                              },
+                              "additionalProperties": {}
+                            },
+                            "components": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string"
+                              },
+                              "additionalProperties": {}
+                            }
+                          },
+                          "required": ["config", "components"],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": ["id", "name", "created", "updated", "data"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "deleted": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "pattern": "^[\\w-]{1,64}$"
+                        },
+                        "deleted": {
+                          "type": "number",
+                          "minimum": 0
+                        }
+                      },
+                      "required": ["id", "deleted"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "updated_at": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "date-time",
+                        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": ["profiles", "deleted", "revision", "updated_at"],
+                "additionalProperties": false,
+                "description": "The settings profiles the user keeps on the site, their tombstones and the revision of the stored state"
+              }
+            },
+            "required": ["sets", "profiles"],
+            "additionalProperties": false
           }
         },
         "required": ["generatedAt", "accounts", "tanks"],
@@ -37921,7 +38315,7 @@
             "const": "RU"
           }
         },
-        "required": ["code", "account_id", "mod_version", "client_version", "realm"],
+        "required": ["code", "mod_version", "client_version", "realm"],
         "additionalProperties": false
       },
       "BindResponseDto_Output": {
@@ -38553,6 +38947,655 @@
         "description": "Per-tank own ratings of the bound account",
         "additionalProperties": false
       },
+      "ModSyncReadRequestDto": {
+        "type": "object",
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[\\w-]+$"
+          },
+          "account_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": ["device_id", "account_id"],
+        "description": "Signed body of POST /mod/me/sets and /mod/me/profiles: the bound device and its account, nothing else",
+        "additionalProperties": false
+      },
+      "ModSetsLibraryDto_Output": {
+        "type": "object",
+        "properties": {
+          "sets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[\\w-]{1,64}$"
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 40
+                },
+                "components": {
+                  "maxItems": 200,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "pattern": "^[a-z][a-z0-9_]*$"
+                  }
+                },
+                "created": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "updated": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              },
+              "required": ["id", "name", "components", "created", "updated"],
+              "additionalProperties": false
+            }
+          },
+          "deleted": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[\\w-]{1,64}$"
+                },
+                "deleted": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              },
+              "required": ["id", "deleted"],
+              "additionalProperties": false
+            }
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": ["sets", "deleted", "revision", "updated_at"],
+        "description": "The component sets the user keeps on the site, their tombstones and the revision of the stored state",
+        "additionalProperties": false
+      },
+      "ModSetsWriteRequestDto": {
+        "type": "object",
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[\\w-]+$"
+          },
+          "account_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "sets": {
+            "maxItems": 12,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[\\w-]{1,64}$"
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 40
+                },
+                "components": {
+                  "maxItems": 200,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "pattern": "^[a-z][a-z0-9_]*$"
+                  }
+                },
+                "created": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "updated": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              },
+              "required": ["id", "name", "components", "created", "updated"]
+            }
+          },
+          "deleted": {
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[\\w-]{1,64}$"
+                },
+                "deleted": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              },
+              "required": ["id", "deleted"]
+            }
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["merge", "replace"]
+          }
+        },
+        "required": ["device_id", "account_id", "sets", "deleted", "mode"],
+        "description": "Signed body of PUT /mod/me/sets: the local component sets and tombstones, merged by id or replacing the stored ones",
+        "additionalProperties": false
+      },
+      "ModProfilesLibraryDto_Output": {
+        "type": "object",
+        "properties": {
+          "profiles": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[\\w-]{1,64}$"
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 40
+                },
+                "created": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "updated": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "config": {
+                      "type": "object",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "additionalProperties": {}
+                    },
+                    "components": {
+                      "type": "object",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "additionalProperties": {}
+                    }
+                  },
+                  "required": ["config", "components"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["id", "name", "created", "updated", "data"],
+              "additionalProperties": false
+            }
+          },
+          "deleted": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[\\w-]{1,64}$"
+                },
+                "deleted": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              },
+              "required": ["id", "deleted"],
+              "additionalProperties": false
+            }
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": ["profiles", "deleted", "revision", "updated_at"],
+        "description": "The settings profiles the user keeps on the site, their tombstones and the revision of the stored state",
+        "additionalProperties": false
+      },
+      "ModProfilesWriteRequestDto": {
+        "type": "object",
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[\\w-]+$"
+          },
+          "account_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "profiles": {
+            "maxItems": 12,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[\\w-]{1,64}$"
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 40
+                },
+                "created": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "updated": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "config": {
+                      "type": "object",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "additionalProperties": {}
+                    },
+                    "components": {
+                      "type": "object",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "additionalProperties": {}
+                    }
+                  },
+                  "required": ["config", "components"]
+                }
+              },
+              "required": ["id", "name", "created", "updated", "data"]
+            }
+          },
+          "deleted": {
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[\\w-]{1,64}$"
+                },
+                "deleted": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              },
+              "required": ["id", "deleted"]
+            }
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["merge", "replace"]
+          }
+        },
+        "required": ["device_id", "account_id", "profiles", "deleted", "mode"],
+        "description": "Signed body of PUT /mod/me/profiles: the local settings profiles and tombstones, merged by id or replacing the stored ones",
+        "additionalProperties": false
+      },
+      "ModSyncLibrariesDto_Output": {
+        "type": "object",
+        "properties": {
+          "sets": {
+            "type": "object",
+            "properties": {
+              "sets": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[\\w-]{1,64}$"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
+                    },
+                    "components": {
+                      "maxItems": 200,
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "maxLength": 64,
+                        "pattern": "^[a-z][a-z0-9_]*$"
+                      }
+                    },
+                    "created": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "updated": {
+                      "type": "number",
+                      "minimum": 0
+                    }
+                  },
+                  "required": ["id", "name", "components", "created", "updated"],
+                  "additionalProperties": false
+                }
+              },
+              "deleted": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[\\w-]{1,64}$"
+                    },
+                    "deleted": {
+                      "type": "number",
+                      "minimum": 0
+                    }
+                  },
+                  "required": ["id", "deleted"],
+                  "additionalProperties": false
+                }
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "updated_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": ["sets", "deleted", "revision", "updated_at"],
+            "additionalProperties": false,
+            "description": "The component sets the user keeps on the site, their tombstones and the revision of the stored state"
+          },
+          "profiles": {
+            "type": "object",
+            "properties": {
+              "profiles": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[\\w-]{1,64}$"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
+                    },
+                    "created": {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "minimum": 0
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "updated": {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "minimum": 0
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "config": {
+                          "type": "object",
+                          "propertyNames": {
+                            "type": "string"
+                          },
+                          "additionalProperties": {}
+                        },
+                        "components": {
+                          "type": "object",
+                          "propertyNames": {
+                            "type": "string"
+                          },
+                          "additionalProperties": {}
+                        }
+                      },
+                      "required": ["config", "components"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["id", "name", "created", "updated", "data"],
+                  "additionalProperties": false
+                }
+              },
+              "deleted": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[\\w-]{1,64}$"
+                    },
+                    "deleted": {
+                      "type": "number",
+                      "minimum": 0
+                    }
+                  },
+                  "required": ["id", "deleted"],
+                  "additionalProperties": false
+                }
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "updated_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": ["profiles", "deleted", "revision", "updated_at"],
+            "additionalProperties": false,
+            "description": "The settings profiles the user keeps on the site, their tombstones and the revision of the stored state"
+          }
+        },
+        "required": ["sets", "profiles"],
+        "additionalProperties": false
+      },
+      "ModProblemReportRequestDto": {
+        "type": "object",
+        "properties": {
+          "manager_version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 32
+          },
+          "modpack_version": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "game_version": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "files": {
+            "minItems": 1,
+            "maxItems": 6,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "pattern": "^[\\w./-]{1,80}$"
+                },
+                "text": {
+                  "type": "string",
+                  "maxLength": 262144
+                }
+              },
+              "required": ["name", "text"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": ["manager_version", "modpack_version", "game_version", "message", "files"],
+        "description": "A problem report from the modpack manager: its versions, what the user wrote and the log files it attached",
+        "additionalProperties": false
+      },
+      "ModProblemReportReceiptDto_Output": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+          }
+        },
+        "required": ["id", "expires_at"],
+        "additionalProperties": false
+      },
       "ModSessionSharePreferenceDto": {
         "type": "object",
         "properties": {
@@ -38715,6 +39758,51 @@
                       }
                     ]
                   },
+                  "changes": {
+                    "anyOf": [
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "pattern": "^[a-z][a-z0-9_]*$"
+                            },
+                            "version": {
+                              "type": "string",
+                              "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[\\w.]+)?$"
+                            },
+                            "notes": {
+                              "anyOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "ru": {
+                                      "type": "string"
+                                    },
+                                    "en": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": ["ru", "en"],
+                                  "additionalProperties": false
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            }
+                          },
+                          "required": ["id", "version", "notes"],
+                          "additionalProperties": false
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
                   "catalog": {
                     "anyOf": [
                       {
@@ -38847,6 +39935,94 @@
           }
         },
         "required": ["modpack", "manager"],
+        "additionalProperties": false
+      },
+      "ModpackChangelogDto_Output": {
+        "type": "object",
+        "properties": {
+          "releases": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "version": {
+                  "type": "string",
+                  "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[\\w.]+)?$"
+                },
+                "publishedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                },
+                "games": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "notes": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "ru": {
+                          "type": "string"
+                        },
+                        "en": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["ru", "en"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "changes": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "version": {
+                        "type": ["string", "null"]
+                      },
+                      "notes": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "ru": {
+                                "type": "string"
+                              },
+                              "en": {
+                                "type": "string"
+                              }
+                            },
+                            "required": ["ru", "en"],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": ["id", "version", "notes"],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": ["version", "publishedAt", "games", "notes", "changes"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": ["releases"],
         "additionalProperties": false
       },
       "ModpackManagerUpdateDto": {

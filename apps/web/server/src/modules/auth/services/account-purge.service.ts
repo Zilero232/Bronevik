@@ -33,6 +33,7 @@ export class AccountPurgeService implements AccountPurgeStore {
       await tx.pushSubscription.deleteMany({ where: { userId } });
       await tx.notificationSettings.deleteMany({ where: { userId } });
       await tx.telegramAccount.deleteMany({ where: { userId } });
+      await tx.modSyncLibrary.deleteMany({ where: { userId } });
       await tx.modDevice.deleteMany({ where: { userId } });
       await tx.userLestaAccount.deleteMany({ where: { userId } });
     });

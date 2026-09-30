@@ -781,6 +781,36 @@ export type {
   ModTankRatingsRequest,
   ModTankRecords
 } from './mod';
+export { MOD_REPORTS } from './mod-reports';
+export { modProblemReportFileSchema, modProblemReportReceiptSchema, modProblemReportRequestSchema } from './mod-reports';
+export type { ModProblemReportFile, ModProblemReportReceipt, ModProblemReportRequest } from './mod-reports';
+export { MOD_SYNC } from './mod-sync';
+export {
+  modComponentSetSchema,
+  modProfileDataSchema,
+  modProfilesLibrarySchema,
+  modProfilesWriteRequestSchema,
+  modSetsLibrarySchema,
+  modSetsWriteRequestSchema,
+  modSyncLibrariesSchema,
+  modSyncModeSchema,
+  modSyncProfileSchema,
+  modSyncReadRequestSchema,
+  modSyncTombstoneSchema
+} from './mod-sync';
+export type {
+  ModComponentSet,
+  ModProfileData,
+  ModProfilesLibrary,
+  ModProfilesWriteRequest,
+  ModSetsLibrary,
+  ModSetsWriteRequest,
+  ModSyncLibraries,
+  ModSyncMode,
+  ModSyncProfile,
+  ModSyncReadRequest,
+  ModSyncTombstone
+} from './mod-sync';
 export { CAREER_MODE_SOURCES, CAREER_MODES, MODE_META, MODE_RANKS, PLAY_MODES } from './modes';
 export {
   careerModeLineSchema,
@@ -821,6 +851,10 @@ export type {
 } from './modes';
 export { MODPACK_RELEASE_STATUSES, MODPACK_RELEASES } from './modpack-releases';
 export {
+  modpackChangelogChangeSchema,
+  modpackChangelogQuerySchema,
+  modpackChangelogReleaseSchema,
+  modpackChangelogSchema,
   modpackDownloadSchema,
   modpackGameVersionSchema,
   modpackLatestQuerySchema,
@@ -829,6 +863,7 @@ export {
   modpackManagerReleaseSchema,
   modpackManagerUpdateQuerySchema,
   modpackManagerUpdateSchema,
+  modpackReleaseChangeSchema,
   modpackReleaseIndexSchema,
   modpackReleasePackageSchema,
   modpackReleaseSchema,
@@ -836,6 +871,10 @@ export {
   modpackReleaseStatusSchema
 } from './modpack-releases';
 export type {
+  ModpackChangelog,
+  ModpackChangelogChange,
+  ModpackChangelogQuery,
+  ModpackChangelogRelease,
   ModpackDownload,
   ModpackLatestQuery,
   ModpackLatestRelease,
@@ -843,6 +882,7 @@ export type {
   ModpackManagerUpdate,
   ModpackManagerUpdateQuery,
   ModpackRelease,
+  ModpackReleaseChange,
   ModpackReleaseIndex,
   ModpackReleaseIndexInput,
   ModpackReleasePackage,

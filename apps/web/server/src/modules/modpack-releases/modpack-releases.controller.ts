@@ -6,6 +6,8 @@ import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
 import {
+  ModpackChangelogDto,
+  ModpackChangelogQueryDto,
   ModpackLatestQueryDto,
   ModpackLatestReleaseDto,
   ModpackManagerUpdateDto,
@@ -35,6 +37,16 @@ export class ModpackReleasesController {
   @ZodResponse({ type: ModpackReleasesStatusDto, status: HttpStatus.OK })
   status() {
     return this.releases.status();
+  }
+
+  @Get('releases/changelog')
+  @ApiOperation({
+    operationId: 'getModpackChangelog',
+    summary: 'The newest modpack releases with their notes and the components each one changed, newest first'
+  })
+  @ZodResponse({ type: ModpackChangelogDto, status: HttpStatus.OK })
+  changelog(@Query() { limit }: ModpackChangelogQueryDto) {
+    return this.releases.changelog(limit);
   }
 
   @Get('manager/update')

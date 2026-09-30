@@ -1,4 +1,6 @@
 import {
+  modpackChangelogQuerySchema,
+  modpackChangelogSchema,
   modpackLatestQuerySchema,
   modpackLatestReleaseSchema,
   modpackManagerUpdateQuerySchema,
@@ -7,6 +9,8 @@ import {
 } from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
 
+export class ModpackChangelogQueryDto extends createZodDto(modpackChangelogQuerySchema) {}
+export class ModpackChangelogDto extends createZodDto(modpackChangelogSchema) {}
 export class ModpackLatestQueryDto extends createZodDto(modpackLatestQuerySchema) {}
 export class ModpackLatestReleaseDto extends createZodDto(modpackLatestReleaseSchema) {}
 export class ModpackManagerUpdateQueryDto extends createZodDto(modpackManagerUpdateQuerySchema) {}

@@ -8,5 +8,7 @@ export const MODPACK_RELEASES = {
   semverPattern: /^\d+\.\d+\.\d+(?:-[\w.]+)?$/,
   componentIdPattern: /^[a-z][a-z0-9_]*$/,
   packageFilePattern: /^[\w.-]+\.(?:mtmod|wotmod)$/,
-  sha256Pattern: /^[0-9a-f]{64}$/i
+  sha256Pattern: /^[0-9a-f]{64}$/i,
+  changelogDefaultLimit: 10,
+  changelogMaxLimit: 20
 } as const;

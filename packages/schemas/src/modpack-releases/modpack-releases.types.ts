@@ -1,12 +1,17 @@
 import type { z } from 'zod';
 
 import type {
+  modpackChangelogChangeSchema,
+  modpackChangelogQuerySchema,
+  modpackChangelogReleaseSchema,
+  modpackChangelogSchema,
   modpackDownloadSchema,
   modpackLatestQuerySchema,
   modpackLatestReleaseSchema,
   modpackManagerReleaseSchema,
   modpackManagerUpdateQuerySchema,
   modpackManagerUpdateSchema,
+  modpackReleaseChangeSchema,
   modpackReleaseIndexSchema,
   modpackReleasePackageSchema,
   modpackReleaseSchema,
@@ -26,3 +31,8 @@ export type ModpackManagerUpdateQuery = z.infer<typeof modpackManagerUpdateQuery
 export type ModpackManagerUpdate = z.infer<typeof modpackManagerUpdateSchema>;
 export type ModpackDownload = z.infer<typeof modpackDownloadSchema>;
 export type ModpackReleasesStatus = z.infer<typeof modpackReleasesStatusSchema>;
+export type ModpackReleaseChange = z.infer<typeof modpackReleaseChangeSchema>;
+export type ModpackChangelogQuery = z.infer<typeof modpackChangelogQuerySchema>;
+export type ModpackChangelogChange = z.infer<typeof modpackChangelogChangeSchema>;
+export type ModpackChangelogRelease = z.infer<typeof modpackChangelogReleaseSchema>;
+export type ModpackChangelog = z.infer<typeof modpackChangelogSchema>;

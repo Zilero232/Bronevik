@@ -6,6 +6,7 @@ import type { AccountSnapshot, Player, PlayerTank, UserLestaAccount } from '../.
 import type { PrismaService } from '../../../../core';
 
 import { UserLestaAccountsService } from '../../../../core';
+import { ModSyncService } from '../../../mod-sync';
 import { DATA_EXPORT } from '../../config';
 import { DataExportService } from '../data-export.service';
 
@@ -23,7 +24,7 @@ const createService = (linked: bigint[]) => {
   prisma.playSession.findMany.mockResolvedValue([]);
   prisma.battle.findMany.mockResolvedValue([]);
 
-  return { service: new DataExportService(prisma, new UserLestaAccountsService(prisma)), prisma };
+  return { service: new DataExportService(prisma, new UserLestaAccountsService(prisma), new ModSyncService(prisma)), prisma };
 };
 
 const accountFilter = { accountId: { in: [7n, 8n] } };
@@ -47,6 +48,24 @@ describe('DataExportService.raw', () => {
     expect(prisma.player.findMany.mock.calls[0]?.[0]?.where).toEqual(accountFilter);
     expect(prisma.playerTank.findMany.mock.calls[0]?.[0]?.where).toEqual(accountFilter);
     expect(prisma.accountSnapshot.findMany.mock.calls[0]?.[0]?.where).toMatchObject(accountFilter);
+  });
+
+  it('includes the component sets and profiles the user synced from the modpack', async () => {
+    const { service, prisma } = createService([7n]);
+
+    prisma.modSyncLibrary.findUnique.mockResolvedValue(null);
+
+    const result = await service.raw('user');
+
+    expect(prisma.modSyncLibrary.findUnique.mock.calls.map(([query]) => query.where)).toEqual([
+      { userId_kind: { userId: 'user', kind: 'sets' } },
+      { userId_kind: { userId: 'user', kind: 'profiles' } }
+    ]);
+
+    expect(result.modSync).toEqual({
+      sets: { sets: [], deleted: [], revision: 0, updated_at: null },
+      profiles: { profiles: [], deleted: [], revision: 0, updated_at: null }
+    });
   });
 
   it('exports an account without a snapshot with empty overall stats', async () => {

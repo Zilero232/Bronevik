@@ -43,6 +43,7 @@ model User {
 
   modDevices             ModDevice[]
   sessionSharePreference SessionSharePreference?
+  modSyncLibraries       ModSyncLibrary[]
 
   apiKeys          ApiKey[]
   webhookEndpoints WebhookEndpoint[]

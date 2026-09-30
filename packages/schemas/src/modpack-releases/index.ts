@@ -1,5 +1,9 @@
 export { MODPACK_RELEASE_STATUSES, MODPACK_RELEASES } from './modpack-releases.constants';
 export {
+  modpackChangelogChangeSchema,
+  modpackChangelogQuerySchema,
+  modpackChangelogReleaseSchema,
+  modpackChangelogSchema,
   modpackDownloadSchema,
   modpackGameVersionSchema,
   modpackLatestQuerySchema,
@@ -8,6 +12,7 @@ export {
   modpackManagerReleaseSchema,
   modpackManagerUpdateQuerySchema,
   modpackManagerUpdateSchema,
+  modpackReleaseChangeSchema,
   modpackReleaseIndexSchema,
   modpackReleasePackageSchema,
   modpackReleaseSchema,
@@ -15,6 +20,10 @@ export {
   modpackReleaseStatusSchema
 } from './modpack-releases.schemas';
 export type {
+  ModpackChangelog,
+  ModpackChangelogChange,
+  ModpackChangelogQuery,
+  ModpackChangelogRelease,
   ModpackDownload,
   ModpackLatestQuery,
   ModpackLatestRelease,
@@ -22,6 +31,7 @@ export type {
   ModpackManagerUpdate,
   ModpackManagerUpdateQuery,
   ModpackRelease,
+  ModpackReleaseChange,
   ModpackReleaseIndex,
   ModpackReleaseIndexInput,
   ModpackReleasePackage,

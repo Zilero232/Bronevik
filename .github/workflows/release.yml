@@ -219,13 +219,16 @@ jobs:
         with:
           path: dist
 
+      # notes come from the `## <version>` entry of CHANGELOG.md, changes list every package whose file differs
+      # from the newest release in the current index (a missing current.json, before the first release, lists them all).
       - name: Build the modpack release entry and its payload
         if: env.MODPACK_NEEDED == 'true'
         run: |
           bun apps/web/server/scripts/modpack-release.ts prepare \
             --version "$VERSION" --games "$GAMES" \
             --catalog dist/modpack/catalog/components.json --packages dist/modpack/modpack \
-            --base-url "${SITE_URL%/}/downloads/modpack/$VERSION" --out dist/release
+            --base-url "${SITE_URL%/}/downloads/modpack/$VERSION" --out dist/release \
+            --changelog apps/game/modpack/CHANGELOG.md --current dist/index/current.json
 
       - name: Sign the payload
         if: env.MODPACK_NEEDED == 'true'

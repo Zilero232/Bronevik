@@ -1,5 +1,5 @@
 export { BATTLE_CORROBORATION, MOD_DEVICE } from './config';
-export { readStoredLoadout, sessionUuid } from './lib';
+export { deviceSecret, hashSecret, readStoredLoadout, sessionUuid, signedMessage } from './lib';
 export type { BattleResultEvent, StoredLoadout } from './lib';
 export { ModModule } from './mod.module';
 export type { AuthenticatedDevice, SignedModRequest } from './mod.types';

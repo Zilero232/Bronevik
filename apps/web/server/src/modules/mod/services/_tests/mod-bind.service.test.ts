@@ -1,6 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
 import { addMinutes } from 'date-fns';
 import RedisMock from 'ioredis-mock';
+import { omit } from 'remeda';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
@@ -9,6 +10,7 @@ import type { AppConfigService } from '../../../../config';
 import type { PrismaService } from '../../../../core';
 
 import { AppForbiddenException } from '../../../../common/exceptions';
+import { USER_LESTA_ACCOUNT_ORDER } from '../../../../core';
 import { BIND_CODE, MOD_DEVICE } from '../../config';
 import { bindCodePattern, deviceSecret, hashSecret } from '../../lib';
 import { ModBindService } from '../mod-bind.service';
@@ -321,6 +323,63 @@ describe('ModBindService.bind', () => {
     await expect(service.bind({ body: bindBody({ account_id: ACCOUNT_ID + 1 }), requester: REQUESTER })).rejects.toMatchObject({
       status: HttpStatus.BAD_REQUEST,
       response: { error: 'invalid_code' }
+    });
+  });
+
+  it('binds the account the code was pinned to when the request names none', async () => {
+    const { service, prisma } = readyToBind(storedCode({ accountId: BigInt(ACCOUNT_ID) }));
+    const body = omit(bindBody(), ['account_id']);
+
+    const response = await service.bind({ body, requester: REQUESTER });
+
+    expect(response.account_id).toBe(ACCOUNT_ID);
+    expect(prisma.userLestaAccount.findFirst.mock.calls[0]?.[0]?.where).toEqual({ userId: 'user', accountId: BigInt(ACCOUNT_ID) });
+
+    expect(prisma.modDevice.create).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ accountId: BigInt(ACCOUNT_ID) }) })
+    );
+  });
+
+  it('binds the primary linked account of the code owner when neither the request nor the code names one', async () => {
+    const { service, prisma } = readyToBind();
+    const body = omit(bindBody(), ['account_id']);
+
+    const response = await service.bind({ body, requester: REQUESTER });
+
+    expect(response.account_id).toBe(ACCOUNT_ID);
+
+    expect(prisma.userLestaAccount.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { userId: 'user' }, orderBy: USER_LESTA_ACCOUNT_ORDER })
+    );
+  });
+
+  it('refuses a code without an account when its owner has no linked account left', async () => {
+    const { service, prisma } = readyToBind();
+    const body = omit(bindBody(), ['account_id']);
+
+    prisma.userLestaAccount.findFirst.mockResolvedValue(null);
+
+    await expect(service.bind({ body, requester: REQUESTER })).rejects.toMatchObject({
+      status: HttpStatus.BAD_REQUEST,
+      response: { error: 'invalid_code' }
+    });
+
+    expect(prisma.modDevice.create).not.toHaveBeenCalled();
+  });
+
+  it('still stops a requester guessing codes without naming an account', async () => {
+    const { service, prisma } = createService();
+    const body = omit(bindBody(), ['account_id']);
+
+    prisma.oneTimeCode.findUnique.mockResolvedValue(null);
+
+    for (let attempt = 0; attempt < BIND_CODE.maxFailuresPerRequester; attempt += 1) {
+      await service.bind({ body, requester: REQUESTER }).catch(() => undefined);
+    }
+
+    await expect(service.bind({ body, requester: REQUESTER })).rejects.toMatchObject({
+      status: HttpStatus.TOO_MANY_REQUESTS,
+      response: { error: 'rate_limited' }
     });
   });
 

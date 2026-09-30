@@ -20,7 +20,7 @@ export const bindCodePattern = new RegExp(`^[${BIND_CODE.alphabet}]{${BIND_CODE.
 
 export const bindRequestSchema = z.strictObject({
   code: z.string().regex(bindCodePattern),
-  account_id: accountId,
+  account_id: accountId.optional(),
   mod_version: z.string().max(32),
   client_version: z.string().max(64),
   realm: z.literal('RU')

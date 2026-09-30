@@ -41,3 +41,42 @@ model SessionSharePreference {
 
   @@map("session_share_preference")
 }
+
+enum ModSyncKind {
+  sets
+  profiles
+
+  @@map("mod_sync_kind")
+}
+
+model ModSyncLibrary {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  userId   String      @map("user_id")
+  kind     ModSyncKind
+  data     Json
+  revision Int         @default(0)
+
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, kind])
+  @@map("mod_sync_library")
+}
+
+model ModProblemReport {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  managerVersion String  @map("manager_version")
+  modpackVersion String? @map("modpack_version")
+  gameVersion    String? @map("game_version")
+  message        String
+  files          Json
+  ipHash         String  @map("ip_hash")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@index([createdAt])
+  @@map("mod_problem_report")
+}

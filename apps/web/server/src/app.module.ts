@@ -43,6 +43,8 @@ import { MarksModule } from './modules/marks';
 import { MeModule } from './modules/me';
 import { MissionsModule } from './modules/missions';
 import { ModModule } from './modules/mod';
+import { ModReportsModule } from './modules/mod-reports';
+import { ModSyncModule } from './modules/mod-sync';
 import { ModerationModule } from './modules/moderation';
 import { ModesModule } from './modules/modes';
 import { ModpackReleasesModule } from './modules/modpack-releases';
@@ -126,6 +128,8 @@ import { WatchlistModule } from './modules/watchlist';
     AnalyticsModule,
     MeModule,
     ModModule,
+    ModSyncModule,
+    ModReportsModule,
     SessionShareModule,
     ModpackReleasesModule,
     DeveloperModule,

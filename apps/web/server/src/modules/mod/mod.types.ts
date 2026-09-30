@@ -42,6 +42,11 @@ export type BindInput = {
   requester: string;
 };
 
+export type BindLinkInput = {
+  userId: string;
+  accountId: bigint | null;
+};
+
 export type BindCodeInput = BindCodeBody & {
   userId: string;
 };

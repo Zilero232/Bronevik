@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { accountIdSchema, countSchema, isoDateSchema, isoDateTimeSchema, tankIdSchema } from '../common/primitives/primitives.schemas';
+import { modSyncLibrariesSchema } from '../mod-sync/mod-sync.schemas';
 
 export const exportedOverallSchema = z.object({
   capturedAt: isoDateTimeSchema,
@@ -42,7 +43,8 @@ export const exportedAccountSchema = z.object({
 export const rawStatsExportSchema = z.object({
   generatedAt: isoDateTimeSchema,
   accounts: z.array(exportedAccountSchema),
-  tanks: z.array(exportedTankSchema)
+  tanks: z.array(exportedTankSchema),
+  modSync: modSyncLibrariesSchema.optional()
 });
 
 export const exportedSessionSchema = z.object({

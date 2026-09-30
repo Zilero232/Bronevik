@@ -43,7 +43,7 @@ describe('AccountPurgeService.purgeAccount', () => {
     expect(prisma.payment.deleteMany).not.toHaveBeenCalled();
   });
 
-  it('revokes developer access and removes streamer, notification and device data of the user', async () => {
+  it('revokes developer access and removes streamer, notification, device and synced modpack data of the user', async () => {
     const { service, prisma } = createService();
 
     await service.purgeAccount({ userId: USER_ID });
@@ -59,7 +59,8 @@ describe('AccountPurgeService.purgeAccount', () => {
       prisma.pushSubscription,
       prisma.notificationSettings,
       prisma.telegramAccount,
-      prisma.modDevice
+      prisma.modDevice,
+      prisma.modSyncLibrary
     ]) {
       expect(model.deleteMany).toHaveBeenCalledWith({ where: { userId: USER_ID } });
     }

@@ -1,4 +1,6 @@
 export {
+  ModpackChangelogDto,
+  ModpackChangelogQueryDto,
   ModpackLatestQueryDto,
   ModpackLatestReleaseDto,
   ModpackManagerUpdateDto,

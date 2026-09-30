@@ -4,7 +4,7 @@ import { Redis } from 'ioredis';
 import { isObjectType, isString } from 'remeda';
 
 import type { BindResponse } from '../lib';
-import type { BindCode, BindCodeInput, BindInput } from '../mod.types';
+import type { BindCode, BindCodeInput, BindInput, BindLinkInput } from '../mod.types';
 
 import { AppForbiddenException, ModException } from '../../../common/exceptions';
 import { randomCode } from '../../../common/lib';
@@ -59,8 +59,7 @@ export class ModBindService {
     }
 
     const request = parsed.data;
-    const accountId = BigInt(request.account_id);
-    const failureKey = `${BIND_CODE.failurePrefix}${request.account_id}:${requester}`;
+    const failureKey = `${BIND_CODE.failurePrefix}${request.account_id ?? BIND_CODE.anyAccount}:${requester}`;
     const failures = Number((await this.redis.get(failureKey)) ?? 0);
 
     if (failures >= BIND_CODE.maxFailuresPerRequester) {
@@ -68,12 +67,14 @@ export class ModBindService {
     }
 
     const stored = await this.prisma.oneTimeCode.findUnique({ where: { code: request.code, purpose: 'modBind' } });
-    const link = stored
-      ? await this.prisma.userLestaAccount.findFirst({ where: { userId: stored.userId, accountId }, include: { player: true } })
-      : null;
+    const requested = request.account_id === undefined ? null : BigInt(request.account_id);
+    const link = stored ? await this.bindLink({ userId: stored.userId, accountId: requested ?? stored.accountId }) : null;
 
     const usable =
-      stored !== null && stored.usedAt === null && stored.expiresAt > new Date() && (stored.accountId === null || stored.accountId === accountId);
+      stored !== null &&
+      stored.usedAt === null &&
+      stored.expiresAt > new Date() &&
+      (stored.accountId === null || stored.accountId === link?.accountId);
 
     if (!stored || !usable || !link) {
       return this.refuse(failureKey);
@@ -98,7 +99,7 @@ export class ModBindService {
         data: {
           id: deviceId,
           userId: stored.userId,
-          accountId,
+          accountId: link.accountId,
           secretHash: hashSecret(secret),
           modVersion: request.mod_version,
           gameVersion: request.client_version
@@ -107,7 +108,15 @@ export class ModBindService {
       this.prisma.oneTimeCode.update({ where: { code: request.code }, data: { deviceId } })
     ]);
 
-    return { device_id: deviceId, secret, account_id: request.account_id, nickname: link.player.nickname };
+    return { device_id: deviceId, secret, account_id: Number(link.accountId), nickname: link.player.nickname };
+  }
+
+  private bindLink({ userId, accountId }: BindLinkInput) {
+    return this.prisma.userLestaAccount.findFirst({
+      where: accountId === null ? { userId } : { userId, accountId },
+      orderBy: USER_LESTA_ACCOUNT_ORDER,
+      include: { player: true }
+    });
   }
 
   private async refuse(failureKey: string): Promise<never> {

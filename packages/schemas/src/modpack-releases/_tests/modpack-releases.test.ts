@@ -23,6 +23,20 @@ describe('modpackReleaseSchema', () => {
     expect(modpackReleaseSchema.safeParse(release).success).toBe(true);
   });
 
+  it('accepts a release with the components it changed, or without the list at all', () => {
+    const changes = [
+      { id: 'core', version: '0.2.0', notes: { ru: 'Ядро.', en: 'Core.' } },
+      { id: 'ui', version: '0.1.1', notes: null }
+    ];
+
+    expect(modpackReleaseSchema.safeParse({ ...release, changes }).success).toBe(true);
+    expect(modpackReleaseSchema.safeParse({ ...release, changes: null }).success).toBe(true);
+  });
+
+  it('refuses a change without a semver version', () => {
+    expect(modpackReleaseSchema.safeParse({ ...release, changes: [{ id: 'core', version: 'latest', notes: null }] }).success).toBe(false);
+  });
+
   it('refuses an unsigned release', () => {
     expect(modpackReleaseSchema.safeParse({ ...release, signature: '' }).success).toBe(false);
   });

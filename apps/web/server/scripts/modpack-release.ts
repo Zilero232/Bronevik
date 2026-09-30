@@ -12,10 +12,14 @@ import {
   mergeReleaseIndex,
   modpackCatalogSchema,
   modpackReleaseManifestSchema,
+  newestFirst,
+  parseChangelog,
   parseReleaseIndex,
   RELEASE_BUILD,
   RELEASE_SOURCE,
+  releaseChanges,
   releaseNeeds,
+  releaseNotes,
   releasePayload
 } from '../src/modules/modpack-releases/lib';
 
@@ -29,6 +33,7 @@ const { positionals, values } = parseArgs({
     'base-url': { type: 'string' },
     out: { type: 'string' },
     current: { type: 'string' },
+    changelog: { type: 'string' },
     release: { type: 'string' },
     signature: { type: 'string' },
     'manager-version': { type: 'string' },
@@ -85,6 +90,18 @@ const source = async () => {
   console.log(`manager_needed=${needs.manager}`);
 };
 
+const readChangelog = async () => parseChangelog(values.changelog ? await readFile(values.changelog, 'utf8') : '');
+
+const previousPackages = async (version: string) => {
+  if (!values.current) {
+    return null;
+  }
+
+  const [newest] = newestFirst((await readIndex(values.current)).releases.filter((release) => release.version !== version));
+
+  return newest?.packages ?? null;
+};
+
 const prepare = async () => {
   const version = required('version');
   const out = required('out');
@@ -99,26 +116,34 @@ const prepare = async () => {
     })
   );
 
-  const release = unsignedReleaseSchema.parse(
-    buildRelease({
-      version,
-      games: required('games')
-        .split(',')
-        .map((pattern) => pattern.trim())
-        .filter((pattern) => pattern.length > 0),
-      publishedAt: new Date().toISOString(),
-      baseUrl: required('base-url').replace(/\/+$/u, ''),
-      catalog,
-      catalogSha256: sha256(catalogBytes),
-      packages
-    })
-  );
+  const [entries, previous] = await Promise.all([readChangelog(), previousPackages(version)]);
+
+  const built = buildRelease({
+    version,
+    games: required('games')
+      .split(',')
+      .map((pattern) => pattern.trim())
+      .filter((pattern) => pattern.length > 0),
+    publishedAt: new Date().toISOString(),
+    baseUrl: required('base-url').replace(/\/+$/u, ''),
+    catalog,
+    catalogSha256: sha256(catalogBytes),
+    packages
+  });
+
+  const release = unsignedReleaseSchema.parse({
+    ...built,
+    notes: releaseNotes({ entries, version }),
+    changes: releaseChanges({ packages, previous, entries })
+  });
 
   await mkdir(out, { recursive: true });
   await writeFile(join(out, 'release.json'), `${JSON.stringify(release, null, 2)}\n`);
   await writeFile(join(out, 'release.txt'), releasePayload(release));
 
-  console.log(`✓ modpack ${release.version}: ${release.packages.length} packages, payload in ${join(out, 'release.txt')}`);
+  console.log(
+    `✓ modpack ${release.version}: ${release.packages.length} packages, ${release.changes?.length ?? 0} changed, payload in ${join(out, 'release.txt')}`
+  );
 };
 
 const signedRelease = async (path: string) => ({

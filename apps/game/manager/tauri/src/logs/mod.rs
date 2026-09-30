@@ -7,7 +7,7 @@ use zip::write::SimpleFileOptions;
 use zip::{CompressionMethod, ZipWriter};
 
 use crate::detect::GameClient;
-use crate::error::{AppError, AppResult, ErrorCode};
+use crate::error::AppResult;
 use crate::fsx::list_files;
 use crate::paths::{configs_dir, Layout};
 use crate::state::{client_key, disabled_dir, CLIENT_INI, MANIFEST_INI};
@@ -51,7 +51,7 @@ struct Bundle {
 
 impl Bundle {
     fn add_bytes(&mut self, name: &str, bytes: &[u8]) -> AppResult<()> {
-        self.writer.start_file(name, self.options).map_err(|error| AppError::coded(ErrorCode::Io, error.to_string()))?;
+        self.writer.start_file(name, self.options)?;
         self.writer.write_all(bytes)?;
 
         Ok(())
@@ -130,7 +130,7 @@ pub fn collect(input: CollectInput) -> AppResult<PathBuf> {
         }
     }
 
-    bundle.writer.finish().map_err(|error| AppError::coded(ErrorCode::Io, error.to_string()))?;
+    bundle.writer.finish()?;
 
     Ok(zip_path)
 }

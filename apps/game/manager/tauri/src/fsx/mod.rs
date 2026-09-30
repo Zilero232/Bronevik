@@ -1,7 +1,7 @@
 pub mod faults;
 
 use std::fs;
-use std::io::{Read, Write};
+use std::io::Write;
 use std::path::{Path, PathBuf};
 
 use sha2::{Digest, Sha256};
@@ -15,7 +15,6 @@ pub const RETIRED_SUFFIX: &str = ".otm-old";
 pub const PART_SUFFIX: &str = ".part";
 pub const TEMP_SUFFIX: &str = ".otm-tmp";
 pub const MIN_SAFE_PATH_LENGTH: usize = 4;
-pub const HASH_BUFFER_BYTES: usize = 64 * 1024;
 
 pub fn write_file(path: &Path, bytes: &[u8]) -> AppResult<()> {
     faults::check(path)?;
@@ -53,19 +52,9 @@ pub fn write_atomic(path: &Path, bytes: &[u8]) -> AppResult<()> {
 }
 
 pub fn file_sha256(path: &Path) -> AppResult<String> {
-    let mut file = fs::File::open(path)?;
     let mut hasher = Sha256::new();
-    let mut buffer = vec![0; HASH_BUFFER_BYTES];
 
-    loop {
-        let read = file.read(&mut buffer)?;
-
-        if read == 0 {
-            break;
-        }
-
-        hasher.update(&buffer[..read]);
-    }
+    std::io::copy(&mut fs::File::open(path)?, &mut hasher)?;
 
     Ok(hex::encode(hasher.finalize()))
 }
@@ -158,7 +147,7 @@ pub fn copy_dir(from: &Path, to: &Path) -> AppResult<u64> {
     fs::create_dir_all(to)?;
 
     for entry in WalkDir::new(from).min_depth(1).follow_links(false) {
-        let entry = entry.map_err(|error| AppError::coded(ErrorCode::Io, error.to_string()))?;
+        let entry = entry?;
         let relative = entry.path().strip_prefix(from).map_err(|error| AppError::coded(ErrorCode::Io, error.to_string()))?;
         let target = to.join(relative);
 

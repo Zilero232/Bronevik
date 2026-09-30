@@ -57,6 +57,10 @@ pub enum AppError {
     Json(#[from] serde_json::Error),
     #[error("{0}")]
     Http(#[from] reqwest::Error),
+    #[error("{0}")]
+    Zip(#[from] zip::result::ZipError),
+    #[error("{0}")]
+    Walk(#[from] walkdir::Error),
     #[error("{message}")]
     Coded { code: ErrorCode, message: String },
 }
@@ -71,6 +75,7 @@ impl AppError {
             Self::Io(error) => io_code(error),
             Self::Json(_) => ErrorCode::Json,
             Self::Http(_) => ErrorCode::Http,
+            Self::Zip(_) | Self::Walk(_) => ErrorCode::Io,
             Self::Coded { code, .. } => *code,
         }
     }

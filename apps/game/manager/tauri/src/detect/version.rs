@@ -1,11 +1,10 @@
-use std::cmp::Ordering;
 use std::fmt;
 
 use serde::{Serialize, Serializer};
 
 pub const MIN_SUPPORTED: GameVersion = GameVersion([1, 35, 0, 0]);
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct GameVersion(pub [u32; 4]);
 
 impl GameVersion {
@@ -28,18 +27,6 @@ impl GameVersion {
 
     pub fn is_supported(&self) -> bool {
         self.0[0] == MIN_SUPPORTED.0[0] && *self >= MIN_SUPPORTED
-    }
-}
-
-impl Ord for GameVersion {
-    fn cmp(&self, other: &Self) -> Ordering {
-        self.0.cmp(&other.0)
-    }
-}
-
-impl PartialOrd for GameVersion {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
     }
 }
 

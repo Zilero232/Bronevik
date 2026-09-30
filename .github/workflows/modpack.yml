@@ -50,7 +50,7 @@ jobs:
 
       - run: uv run --locked ruff check .
 
-      - run: uv run --locked vermin --no-tips --violations -t=2.7- -t=3.0- --exclude-regex "tests|tools|vendor" packages features
+      - run: uv run --locked vermin --no-tips --violations '-t=2.7-' '-t=3.0-' --exclude-regex "tests|tools|vendor" packages features
 
   release-build:
     if: github.event_name == 'workflow_dispatch'

@@ -135,6 +135,16 @@ export default eslint(
     }
   },
 
+  // The modpack's pages run Preact 10, which has neither `use` nor a context rendered as its own provider.
+  {
+    name: 'otmetki/modpack-preact',
+    files: ['apps/game/modpack/ui-web/src/**/*.{ts,tsx}'],
+    rules: {
+      'react/no-context-provider': 'off',
+      'react/no-use-context': 'off'
+    }
+  },
+
   // A scrollable region (role='region' with an accessible name) must take focus so
   // keyboard users can scroll it (WCAG 2.1.1, axe `scrollable-region-focusable`).
   // The first entry repeats the rule's default list, which options replace.

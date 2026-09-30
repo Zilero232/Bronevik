@@ -54,6 +54,21 @@ describe(TeamHpWidget, () => {
     expect(html.querySelectorAll('img')).toHaveLength(0);
   });
 
+  it('puts the difference under the score, in the row of the bars', () => {
+    const html = mount({ ...fixture, style: 'full' });
+
+    const diff = [...html.querySelectorAll('span')].find((span) => span.textContent?.startsWith('Δ'));
+
+    expect(diff?.parentElement?.textContent).toContain('2 : 1');
+    expect(diff?.parentElement?.parentElement).toBe(html.firstElementChild?.firstElementChild);
+  });
+
+  it('draws one row for a style without the icon strip', () => {
+    const html = mount({ ...fixture, style: 'full' });
+
+    expect(html.firstElementChild?.children).toHaveLength(1);
+  });
+
   it('leaves the numbers out of the minimal style', () => {
     const html = mount({ ...fixture, style: 'minimal' });
 

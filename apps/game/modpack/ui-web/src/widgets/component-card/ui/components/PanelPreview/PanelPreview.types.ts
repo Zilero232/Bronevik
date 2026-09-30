@@ -1,4 +1,6 @@
+import type { PreviewPanel } from '../../../lib/card-layout';
+
 export type PanelPreviewProps = {
-  preview: string | null;
+  panel: PreviewPanel | null;
   onMove: () => void;
 };

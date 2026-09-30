@@ -7,7 +7,9 @@ import { useScrollArea } from '../use-scroll-area';
 
 const unmounts: (() => void)[] = [];
 
-const viewport = ({ content, height }: { content: number; height: number }): HTMLDivElement => {
+type Box = { content: number; height: number };
+
+const viewport = ({ content, height }: Box): HTMLDivElement => {
   const element = document.createElement('div');
 
   Object.defineProperty(element, 'scrollHeight', { value: content });
@@ -16,17 +18,32 @@ const viewport = ({ content, height }: { content: number; height: number }): HTM
   return element;
 };
 
-const measure = ({ content, height }: { content: number; height: number }) => {
+const gamefaceViewport = ({ content, height }: Box): HTMLDivElement => {
+  const element = document.createElement('div');
+  const inner = document.createElement('div');
+
+  Object.defineProperty(element, 'scrollHeight', { value: undefined });
+  Object.defineProperty(element, 'clientHeight', { value: undefined });
+  Object.defineProperty(element, 'offsetHeight', { value: height });
+  Object.defineProperty(inner, 'offsetHeight', { value: content });
+  element.append(inner);
+
+  return element;
+};
+
+const measureBox = (element: HTMLDivElement) => {
   vi.useFakeTimers();
 
   const hook = renderHook(useScrollArea);
 
   unmounts.push(hook.unmount);
-  hook.current().viewportRef.current = viewport({ content, height });
+  hook.current().viewportRef.current = element;
   hook.run(() => vi.advanceTimersByTime(SCROLL_AREA.measureMs));
 
   return hook.current().thumb;
 };
+
+const measure = (box: Box) => measureBox(viewport(box));
 
 afterEach(() => {
   unmounts.splice(0).forEach((unmount) => unmount());
@@ -36,6 +53,12 @@ afterEach(() => {
 describe(useScrollArea, () => {
   it('shows a thumb sized by the visible share once the content is measured', () => {
     const thumb = measure({ content: 1000, height: 500 });
+
+    expect(thumb).toEqual({ visible: true, size: 250, offset: 0 });
+  });
+
+  it('measures a viewport Gameface leaves without scrollHeight and clientHeight', () => {
+    const thumb = measureBox(gamefaceViewport({ content: 1000, height: 500 }));
 
     expect(thumb).toEqual({ visible: true, size: 250, offset: 0 });
   });

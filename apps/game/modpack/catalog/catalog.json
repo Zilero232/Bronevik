@@ -310,7 +310,7 @@
       },
       "perf": "low",
       "preview": {
-        "image": "previews/marks_panel.svg"
+        "image": "previews/marks_panel.png"
       }
     },
     {
@@ -332,7 +332,7 @@
       },
       "perf": "low",
       "preview": {
-        "image": "previews/damage_log.svg"
+        "image": "previews/damage_log.png"
       }
     },
     {
@@ -354,7 +354,7 @@
       },
       "perf": "low",
       "preview": {
-        "image": "previews/hit_log.svg"
+        "image": "previews/hit_log.png"
       }
     },
     {
@@ -376,7 +376,7 @@
       },
       "perf": "medium",
       "preview": {
-        "image": "previews/team_hp.svg"
+        "image": "previews/team_hp.png"
       }
     },
     {
@@ -398,7 +398,7 @@
       },
       "perf": "low",
       "preview": {
-        "image": "previews/sixth_sense.svg",
+        "image": "previews/sixth_sense.png",
         "audio": "otmetki/sounds/sixthSense.mp3"
       }
     },
@@ -421,7 +421,7 @@
       },
       "perf": "low",
       "preview": {
-        "image": "previews/battle_clock.svg"
+        "image": "previews/battle_clock.png"
       }
     },
     {
@@ -443,7 +443,7 @@
       },
       "perf": "low",
       "preview": {
-        "image": "previews/personal_best.svg",
+        "image": "previews/personal_best.png",
         "audio": "otmetki/sounds/otmetki_record.mp3"
       }
     },
@@ -466,7 +466,7 @@
       },
       "perf": "low",
       "preview": {
-        "image": "previews/main_gun.svg"
+        "image": "previews/main_gun.png"
       }
     },
     {
@@ -488,7 +488,7 @@
       },
       "perf": "low",
       "preview": {
-        "image": "previews/battle_efficiency.svg"
+        "image": "previews/battle_efficiency.png"
       }
     },
     {
@@ -510,7 +510,7 @@
       },
       "perf": "low",
       "preview": {
-        "image": "previews/consumables.svg"
+        "image": "previews/consumables.png"
       }
     },
     {
@@ -532,7 +532,7 @@
       },
       "perf": "medium",
       "preview": {
-        "image": "previews/reload_timer.svg"
+        "image": "previews/reload_timer.png"
       }
     },
     {
@@ -554,7 +554,7 @@
       },
       "perf": "medium",
       "preview": {
-        "image": "previews/gun_arc.svg"
+        "image": "previews/gun_arc.png"
       }
     },
     {
@@ -576,7 +576,7 @@
       },
       "perf": "low",
       "preview": {
-        "image": "previews/received_hits.svg"
+        "image": "previews/received_hits.png"
       }
     },
     {
@@ -598,7 +598,7 @@
       },
       "perf": "low",
       "preview": {
-        "image": "previews/death_card.svg"
+        "image": "previews/death_card.png"
       }
     },
     {
@@ -642,7 +642,7 @@
       },
       "perf": "low",
       "preview": {
-        "image": "previews/arty_meter.svg"
+        "image": "previews/arty_meter.png"
       }
     },
     {
@@ -664,7 +664,7 @@
       },
       "perf": "low",
       "preview": {
-        "image": "previews/platoon_points.svg"
+        "image": "previews/platoon_points.png"
       }
     },
     {
@@ -708,7 +708,7 @@
       },
       "perf": "low",
       "preview": {
-        "image": "previews/battle_loadout.svg"
+        "image": "previews/battle_loadout.png"
       }
     },
     {
@@ -752,7 +752,7 @@
       },
       "perf": "medium",
       "preview": {
-        "image": "previews/crosshair.svg"
+        "image": "previews/crosshair.png"
       }
     },
     {
@@ -1015,7 +1015,7 @@
       },
       "perf": "low",
       "preview": {
-        "image": "previews/hangar_marks.svg"
+        "image": "previews/hangar_marks.png"
       }
     },
     {
@@ -1037,7 +1037,7 @@
       },
       "perf": "low",
       "preview": {
-        "image": "previews/session_goals.svg",
+        "image": "previews/session_goals.png",
         "audio": "otmetki/sounds/otmetki_goal.mp3"
       }
     },
@@ -1060,7 +1060,7 @@
       },
       "perf": "low",
       "preview": {
-        "image": "previews/personal_missions.svg"
+        "image": "previews/personal_missions.png"
       }
     },
     {

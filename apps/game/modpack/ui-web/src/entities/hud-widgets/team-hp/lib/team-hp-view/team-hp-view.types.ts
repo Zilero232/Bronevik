@@ -15,17 +15,19 @@ export type TeamHpSideView = {
   strip: (TeamHpStripVehicle | TeamHpTierLabel)[];
 };
 
+export type TeamHpNumbers = 'inside' | 'none' | 'outside';
+
 export type TeamHpView = {
-  showNumbers: boolean;
+  numbers: TeamHpNumbers;
   showBars: boolean;
   showStrip: boolean;
   segmented: boolean;
-  compact: boolean;
   barWidth: number;
   barHeight: number;
   score: string | null;
   diff: string | null;
   diffAhead: boolean;
+  hasCenter: boolean;
   allies: TeamHpSideView;
   enemies: TeamHpSideView;
   colors: TeamHpData['colors'];

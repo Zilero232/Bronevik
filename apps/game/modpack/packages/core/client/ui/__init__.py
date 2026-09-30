@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ...hud.panel import dock_of
+from ...hud.panel import dock_of, panel_hint
 from ...hud.surface import KIND_BUTTON
 from ...log import log, safe
 from ..hud import create_backend
@@ -17,11 +17,13 @@ class Ui(object):
     (x, y, alignX, alignY or scale) after the player moved or resized it. A label may carry a structured `widget`
     (`core.hud.widget`) the Gameface page draws instead of its text; a label at its column's anchor is docked
     (`core.hud.panel.dock_of`). `button()` puts a clickable button on the Gameface HUD page (only that renderer draws
-    buttons)."""
+    buttons). With the app's `translate` every label and the button carry their component's short description, the
+    tooltip the Gameface page shows over them (`core.hud.panel.panel_hint`)."""
 
-    def __init__(self, backend=None, watch=None):
+    def __init__(self, backend=None, watch=None, translate=None):
         self.backend = backend or create_backend()
         self.watch = watch
+        self.translate = translate
         self.watching = False
         self.components = set()
         self.moved = {}
@@ -66,7 +68,13 @@ class Ui(object):
         return self._draw(alias, layout, text, widget)
 
     def _draw(self, alias, layout, text, widget):
-        content = {'text': text, 'widget': widget, 'visible': self.in_view, 'dock': dock_of(alias, layout)}
+        content = {
+            'text': text,
+            'widget': widget,
+            'visible': self.in_view,
+            'dock': dock_of(alias, layout),
+            'hint': panel_hint(self.translate, alias),
+        }
         if alias in self.components:
             self.backend.update(alias, content)
             return True
@@ -92,6 +100,7 @@ class Ui(object):
             return False
         props = dict(layout)
         props.update({'text': '', 'kind': KIND_BUTTON, 'drag': True, 'border': False, 'visible': self.in_view})
+        props['hint'] = panel_hint(self.translate, alias)
         if not self.backend.create(alias, props):
             return False
         self.components.add(alias)

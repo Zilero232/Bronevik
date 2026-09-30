@@ -2,6 +2,8 @@ export { ClientIcon } from './ClientIcon';
 export type { ClientIconProps } from './ClientIcon';
 export { Glyph } from './Glyph';
 export type { GlyphProps } from './Glyph';
+export { HudLines } from './HudLines';
+export type { HudLinesProps } from './HudLines';
 export { HudPlate } from './HudPlate';
 export type { HudPlateProps, HudRail } from './HudPlate';
 export { HudText } from './HudText';

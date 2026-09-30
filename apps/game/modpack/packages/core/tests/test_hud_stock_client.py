@@ -222,7 +222,7 @@ class StockControlTest(unittest.TestCase):
 
         assert self.layer.gui_hidden
 
-    def test_panels_hide_while_full_stats_is_open(self):
+    def test_panels_stay_dimmed_while_full_stats_is_open(self):
         self.populated_page()
         self.layer.show('panel', 'text')
         self.control._on_gui_visibility(Event({'visible': False}))
@@ -230,16 +230,17 @@ class StockControlTest(unittest.TestCase):
 
         self.control._on_full_stats(Event({'isDown': True}))
 
-        assert self.layer.gui_hidden
+        assert not self.layer.gui_hidden
+        assert self.layer.full_stats
 
-    def test_panels_come_back_when_full_stats_closes(self):
+    def test_the_dim_mark_goes_when_full_stats_closes(self):
         self.populated_page()
         self.layer.show('panel', 'text')
         self.control._on_full_stats(Event({'isDown': True}))
 
         self.control._on_full_stats(Event({'isDown': False}))
 
-        assert not self.layer.gui_hidden
+        assert not self.layer.full_stats
 
     def test_the_page_end_shows_the_panels_and_forgets_the_page(self):
         page = self.populated_page()
@@ -248,7 +249,7 @@ class StockControlTest(unittest.TestCase):
 
         page._dispose()
 
-        assert not self.layer.gui_hidden
+        assert not self.layer.full_stats
         assert self.control.page is None
 
     def test_alt_down_goes_out_on_the_bus_once(self):

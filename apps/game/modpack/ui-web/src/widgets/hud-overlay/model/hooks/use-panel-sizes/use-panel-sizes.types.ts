@@ -1,6 +1,6 @@
+import type { ResolvedWidget } from '../../../../../entities/hud-widgets/registry';
 import type { RichLine } from '../../../../../shared/lib/rich-text';
 import type { Measured } from '../../../lib/panel-size';
-import type { ResolvedWidget } from '../../../lib/widget-registry';
 
 export type Sizes = Partial<Record<string, Measured>>;
 

@@ -150,23 +150,51 @@ class WidgetPayloadTest(unittest.TestCase):
 
         assert layer.renders_widgets()
 
-    def test_hidden_gui_removes_the_panel(self):
+    def test_hidden_gui_makes_the_panel_invisible_in_place(self):
         backend = Recorder()
         layer = layer_with_a_panel(backend)
         layer.show('panel', 'text', widget('x', {}))
 
         layer.set_gui_hidden(True)
 
-        assert backend.calls[-1] == ('delete', 'otmetki.hud.panel')
+        assert backend.calls[-1] == ('update', {'visible': False})
 
-    def test_shown_gui_brings_back_the_widget_held_while_hidden(self):
+    def test_a_panel_updated_while_the_gui_is_hidden_stays_invisible(self):
+        backend = Recorder()
+
+        hidden_layer_with_a_held_widget(backend)
+
+        assert backend.calls[-1][1]['visible'] is False
+        assert backend.calls[-1][1]['widget']['data'] == {'n': 3}
+
+    def test_shown_gui_makes_the_same_panel_visible_without_creating_it_again(self):
         backend = Recorder()
         layer = hidden_layer_with_a_held_widget(backend)
 
         layer.set_gui_hidden(False)
 
-        assert backend.calls[-1][0] == 'create'
-        assert backend.calls[-1][1]['widget']['data'] == {'n': 3}
+        assert backend.calls[-1] == ('update', {'visible': True})
+        assert [call[0] for call in backend.calls].count('create') == 1
+
+    def test_full_stats_keeps_the_panel_and_marks_it_dim(self):
+        backend = Recorder()
+        layer = layer_with_a_panel(backend)
+        layer.show('panel', 'text', widget('x', {}))
+
+        layer.set_full_stats(True)
+
+        assert backend.calls[-1] == ('update', {'dim': True})
+        assert 'delete' not in [call[0] for call in backend.calls]
+
+    def test_closed_full_stats_takes_the_dim_mark_off(self):
+        backend = Recorder()
+        layer = layer_with_a_panel(backend)
+        layer.show('panel', 'text', widget('x', {}))
+        layer.set_full_stats(True)
+
+        layer.set_full_stats(False)
+
+        assert backend.calls[-1] == ('update', {'dim': False})
 
     def test_surface_keeps_a_dict_widget(self):
         surface = HudSurface()

@@ -6,11 +6,22 @@ The UI metadata of every modpack package: what the modpack manager ([apps/game/m
 catalog/
   catalog.json          titles, descriptions, fair-play notes (ru/en), categories, presets, previews, ownedPatterns,
                         and the third-party runtime mods (kind "dependency") the manager installs
-  previews/<id>.svg     16:9 component previews (a .png screenshot works too)
+  previews/<id>.svg     16:9 component previews (a .png screenshot works too); a HUD component's is <id>.png, rendered
+                        by its own HUD panel (below)
   screenshots/<id>/     real client screenshots for МОСТ, at most 3 per component (optional)
 ```
 
 [tools/build/setupkit](../tools/build/setupkit/__init__.py) turns it into the files the manager reads: `manifest/` merges the catalog with the package layout into `components.json`, `artwork/` renders the previews with resvg-py and Pillow.
+
+## HUD component previews
+
+The preview of every HUD component (`HUD_PREVIEWS` in [tools/build/previews/states.py](../tools/build/previews/states.py)) is its own panel as the in-game HUD page draws it from the feature's `model/preview.py`, centred and scaled to fit a 16:9 frame, 1280×720, 256 colours. Client art is replaced by our glyphs, so the images carry no game files. After a change to a panel or its preview:
+
+```bash
+cd apps/game/modpack
+bun run ui:build                                   # the HUD page the previews are drawn with
+uv run python tools/build/previews                 # -> catalog/previews/<id>.png (Playwright's Chromium)
+```
 
 ## Build
 

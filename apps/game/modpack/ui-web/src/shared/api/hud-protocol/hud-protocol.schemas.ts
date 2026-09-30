@@ -1,12 +1,12 @@
 import * as z from 'zod/mini';
 
-import { PROTOCOL } from '../protocol';
+import { PROTOCOL, widgetSchema } from '../protocol';
 import { HUD_PROTOCOL } from './hud-protocol.constants';
 
 const alignX = z.enum(PROTOCOL.alignX);
 const alignY = z.enum(PROTOCOL.alignY);
 
-export const hudWidgetSchema = z.object({ kind: z.string(), v: z.number(), data: z.unknown() });
+export const hudWidgetSchema = widgetSchema;
 
 export const hudToneSchema = z.enum(HUD_PROTOCOL.tones);
 
@@ -33,7 +33,9 @@ export const hudPanelSchema = z.object({
   scale: z.number(),
   kind: z.enum(HUD_PROTOCOL.kinds),
   widget: z.nullable(hudWidgetSchema),
-  dock: z.optional(z.nullable(hudDockSchema))
+  dock: z.optional(z.nullable(hudDockSchema)),
+  hint: z.optional(z.string()),
+  dim: z.optional(z.boolean())
 });
 
 export const hudStateSchema = z.object({

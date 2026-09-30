@@ -42,7 +42,25 @@ describe(teamHpView, () => {
   it('shows the numbers, the bars, the frag score and the signed difference in the full style', () => {
     const view = teamHpView(data('full'));
 
-    expect(view).toMatchObject({ showNumbers: true, showBars: true, showStrip: false, score: '2 : 1', diff: '+2 300', diffAhead: true });
+    expect(view).toMatchObject({ numbers: 'inside', showBars: true, showStrip: false, score: '2 : 1', diff: '+2 300', diffAhead: true });
+  });
+
+  it('writes the HP inside bars tall enough for it in the full style', () => {
+    const view = teamHpView(data('full'));
+
+    expect(view.barHeight).toBe(TEAM_HP.barHeight.labelled);
+  });
+
+  it('keeps the plain bar styles thin and without numbers', () => {
+    const view = teamHpView(data('bars'));
+
+    expect(view).toMatchObject({ numbers: 'none', barHeight: TEAM_HP.barHeight.plain });
+  });
+
+  it('leaves no centre block without a score or a difference', () => {
+    const view = teamHpView({ ...data('bars'), show_score: false, diff: null });
+
+    expect(view.hasCenter).toBe(false);
   });
 
   it('fills the bar by the share of HP left and writes the HP', () => {
@@ -101,12 +119,12 @@ describe(teamHpView, () => {
   it('keeps the compact style to one line without bars or the difference', () => {
     const view = teamHpView(data('compact'));
 
-    expect(view).toMatchObject({ showBars: false, diff: null, compact: true });
+    expect(view).toMatchObject({ showBars: false, diff: null, numbers: 'outside' });
   });
 
   it('keeps the minimal style to thin bars without numbers', () => {
     const view = teamHpView(data('minimal'));
 
-    expect(view).toMatchObject({ showNumbers: false, barHeight: TEAM_HP.barHeight.thin });
+    expect(view).toMatchObject({ numbers: 'none', barHeight: TEAM_HP.barHeight.thin });
   });
 });

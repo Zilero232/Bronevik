@@ -100,6 +100,8 @@ export const componentSchema = z.object({
   page: z.nullable(z.discriminatedUnion('kind', [pageSchema, replaysPageSchema]))
 });
 
+export const widgetSchema = z.object({ kind: z.string(), v: z.number(), data: z.unknown() });
+
 export const panelSchema = z.object({
   id: text,
   title: text,
@@ -109,6 +111,8 @@ export const panelSchema = z.object({
   align_x: z.enum(PROTOCOL.alignX),
   align_y: z.enum(PROTOCOL.alignY),
   preview: z.nullable(z.string()),
+  text: z.optional(z.nullable(z.string())),
+  widget: z.optional(z.nullable(widgetSchema)),
   width: z.number(),
   height: z.number()
 });

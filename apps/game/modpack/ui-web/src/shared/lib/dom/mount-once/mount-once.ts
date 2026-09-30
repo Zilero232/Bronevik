@@ -4,6 +4,8 @@ import type { MountOnceInput, Unmount } from './mount-once.types';
 
 import { DOM } from '../../../config';
 
+const mountedHosts = new WeakSet<HTMLElement>();
+
 const createHost = (id: string): HTMLElement => {
   const host = document.createElement(DOM.hostTag);
 
@@ -16,18 +18,18 @@ const createHost = (id: string): HTMLElement => {
 export const mountOnce = ({ id, node }: MountOnceInput): Unmount => {
   const existing = document.getElementById(id);
 
-  if (existing?.hasAttribute(DOM.mountedAttribute)) {
+  if (existing && mountedHosts.has(existing)) {
     return () => undefined;
   }
 
   const host = existing ?? createHost(id);
 
-  host.setAttribute(DOM.mountedAttribute, '');
+  mountedHosts.add(host);
   render(node, host);
 
   return () => {
     render(null, host);
-    host.removeAttribute(DOM.mountedAttribute);
+    mountedHosts.delete(host);
 
     if (!existing) {
       host.parentNode?.removeChild(host);

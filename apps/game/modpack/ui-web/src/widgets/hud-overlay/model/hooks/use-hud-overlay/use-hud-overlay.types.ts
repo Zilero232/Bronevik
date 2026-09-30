@@ -1,7 +1,7 @@
+import type { ResolvedWidget } from '../../../../../entities/hud-widgets/registry';
 import type { HudPanel } from '../../../../../shared/api/hud-protocol';
 import type { RichLine } from '../../../../../shared/lib/rich-text';
 import type { LabelStyle } from '../../../lib/label-layout';
-import type { ResolvedWidget } from '../../../lib/widget-registry';
 import type { MeasureRef } from '../use-panel-sizes';
 
 export type HudLabelModel = {

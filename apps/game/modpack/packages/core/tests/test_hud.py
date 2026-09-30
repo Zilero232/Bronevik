@@ -7,7 +7,7 @@ import unittest
 import _support  # noqa: F401
 from otmetki.core.events import EventBus
 from otmetki.core.hud.modifier import is_held, modifier_keys
-from otmetki.core.hud.panel import moved_values
+from otmetki.core.hud.panel import component_of, moved_values
 from otmetki.core.hud import (
     EVENT_DESCRIBE,
     EVENT_EDIT,
@@ -32,6 +32,21 @@ from otmetki.core.storage import MemoryFile
 PREVIEW_TEXT = u'<font color="#FFFFFF">390</font>'
 DAMAGE_LOG = alias_of('damage_log')
 SESSION = alias_of('session')
+
+
+class ComponentOfTest(unittest.TestCase):
+
+    def test_a_battle_panel_belongs_to_the_component_of_its_id(self):
+        assert component_of('otmetki.hud.last_hit') == 'last_hit'
+
+    def test_a_hangar_label_belongs_to_the_component_before_its_part(self):
+        assert component_of('otmetki.event_trackers.caravan') == 'event_trackers'
+
+    def test_the_session_label_belongs_to_the_session_stats(self):
+        assert component_of('otmetki.session') == 'session_stats'
+
+    def test_the_settings_button_has_a_name_of_its_own(self):
+        assert component_of('otmetki.ui.button') == 'settings_button'
 
 
 class FakeBackend(HudBackend):
@@ -533,12 +548,12 @@ class HudPreviewTest(unittest.TestCase):
 
         assert self.backend.calls.count(('delete', DAMAGE_LOG)) == 1
 
-    def test_describe_reports_the_preview_and_its_size(self):
+    def test_describe_reports_the_preview_its_size_and_its_widget(self):
         found = []
 
         self.bus.emit(EVENT_DESCRIBE, lambda *args: found.append(args))
 
-        assert found == [('damage_log', u'<font color="#FFFFFF">390</font>', 260, 120, True)]
+        assert found == [('damage_log', u'<font color="#FFFFFF">390</font>', 260, 120, True, None)]
 
     def test_without_renderer_nothing_is_previewing(self):
         layer = HudLayer(FakeBackend(available=False), ComponentConfig(MemoryFile()))

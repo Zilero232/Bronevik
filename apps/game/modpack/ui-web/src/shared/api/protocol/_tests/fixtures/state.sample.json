@@ -373,7 +373,9 @@
         "height": 40,
         "id": "damage_log",
         "preview": "1 200",
+        "text": "<font color=\"#fff\">1 200</font>",
         "title": "Лог урона",
+        "widget": null,
         "width": 300,
         "x": 10,
         "y": 0

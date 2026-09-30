@@ -27,6 +27,19 @@ const box = ({ content, height, top = 0 }: { content: number; height: number; to
   return element;
 };
 
+const gamefaceBox = (): HTMLDivElement => {
+  const element = document.createElement('div');
+  const content = document.createElement('div');
+
+  Object.defineProperty(element, 'scrollHeight', { value: undefined });
+  Object.defineProperty(element, 'clientHeight', { value: undefined });
+  Object.defineProperty(element, 'offsetHeight', { value: 500 });
+  Object.defineProperty(content, 'offsetHeight', { value: 2000 });
+  element.append(content);
+
+  return element;
+};
+
 const install = (scale: number) => {
   const mock = createGamefaceMock({ state: '', clientSize: () => ({ width: 1920, height: 1080 }), onSend: () => null });
   const viewEnv = mock.scope[GAMEFACE.globals.viewEnv];
@@ -234,6 +247,20 @@ describe(bindWheelScroll, () => {
     wheel(100);
 
     expect(area.scrollTop).toBe(0);
+  });
+
+  it('glides a box Gameface measures without scrollHeight and clientHeight', () => {
+    vi.useFakeTimers({ toFake: ['requestAnimationFrame'] });
+    install(1);
+
+    const area = gamefaceBox();
+
+    document.body.append(area);
+    unbinders.push(bindWheelScroll({ element: area }));
+    area.firstElementChild?.dispatchEvent(notch(100));
+    glideOut();
+
+    expect(area.scrollTop).toBe(SCROLL_AREA.step);
   });
 
   it('keeps the wheel for the inner box while it can scroll', () => {

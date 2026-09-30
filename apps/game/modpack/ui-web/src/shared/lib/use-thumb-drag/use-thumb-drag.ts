@@ -3,17 +3,12 @@ import { useEffect, useRef } from 'preact/hooks';
 import type { DragOfInput, ThumbDrag, ThumbPress, UseThumbDragInput } from './use-thumb-drag.types';
 
 import { SCROLL_AREA } from '../../config';
+import { scrollMetricsOf } from '../scroll-metrics';
 import { thumbOf, topFromThumb } from '../wheel-scroll';
-
-const metricsOf = (element: HTMLElement) => ({
-  top: element.scrollTop,
-  content: element.scrollHeight,
-  viewport: element.clientHeight
-});
 
 const dragOf = ({ element, clientY }: DragOfInput): ThumbDrag => {
   const { height } = element.getBoundingClientRect();
-  const { offset } = thumbOf({ ...metricsOf(element), minThumb: SCROLL_AREA.minThumb });
+  const { offset } = thumbOf({ ...scrollMetricsOf(element), minThumb: SCROLL_AREA.minThumb });
   const factor = element.offsetHeight > 0 ? height / element.offsetHeight : 1;
 
   return { startY: clientY, startOffset: offset, factor };
@@ -59,7 +54,7 @@ export const useThumbDrag = ({ viewportRef, visible, onDragged }: UseThumbDragIn
         return;
       }
 
-      const current = metricsOf(element);
+      const current = scrollMetricsOf(element);
       const { size } = thumbOf({ ...current, minThumb: SCROLL_AREA.minThumb });
       const offset = drag.startOffset + (event.clientY - drag.startY) / drag.factor;
 

@@ -4,6 +4,30 @@ The modpack's release notes. Every package has its own entry, `## <id> <version>
 
 Add the new entry on top of the component's previous ones when you bump a `VERSION`.
 
+## 0.1.5
+
+### ru
+
+Оборудование в бою снова на месте, панели не мигают на Tab, у каждого блока есть подсказка.
+
+- Ряд оборудования над стандартной панелью снарядов показывается всегда: если клиент не собрал данные о директивах, значки оборудования всё равно видны. Повторная панель расходников выключена у всех один раз, её можно включить обратно.
+- Колесо мыши прокручивает список реплеев, их подробности и выпадающие списки.
+- ХП команд: плашка по размеру содержимого, числа внутри полос, счёт и разница по центру.
+- Наведение на любой наш блок (в бою с Ctrl, в ангаре мышью) показывает короткое описание.
+- С зажатым Tab панели остаются на месте (под таблицей — приглушены) и не прыгают, когда Tab отпущен.
+- Предпросмотры в настройках, в редакторе HUD и в менеджере рисуются теми же панелями, что в бою, по центру и в размер рамки; у прицела виден сам прицел с меткой.
+
+### en
+
+Equipment is back in battle, panels no longer blink on Tab, and every block has a tooltip.
+
+- The equipment row above the stock ammo panel always shows: when the client cannot build the directive data, the equipment icons still show. The duplicate consumables bar is switched off for everyone once and can be switched back on.
+- The mouse wheel scrolls the replays list, its details and the drop-down lists.
+- Team HP: the plate hugs its content, the numbers sit inside the bars, the score and the difference in the centre.
+- Hovering any of our blocks (in battle with Ctrl, in the hangar with the mouse) shows a short description.
+- With Tab held the panels stay in place (dimmed under the table) and do not jump when Tab is released.
+- The previews in the settings, the HUD editor and the manager are drawn by the same panels as in battle, centred and fitted to their frame; the crosshair preview shows the reticle with its mark.
+
 ## 0.1.4
 
 ### ru
@@ -412,6 +436,16 @@ A new component: Event trackers (off by default).
 
 - A card after your tank is destroyed: who fired the last shot (or whom the kill feed named), the shell or the cause (fire, ram), the damage, the damaged modules and crew and the side of the hull as the game's hit indicator showed it. Nothing is drawn while the tank is alive; no positions, no trajectories.
 
+## battle_loadout 0.4.1
+
+### ru
+
+- Оборудование снова видно в бою: машина для директив и наборов собирается так же, как её собирает клиент (слот специализации и модификаторы боя), а если клиент её не собрал, ряд всё равно показывает значки оборудования.
+
+### en
+
+- The equipment shows in battle again: the vehicle for the directives and sets is built the way the client builds it (the specialisation slot and the battle modifiers), and when the client cannot build it the row still shows the equipment icons.
+
 ## battle_loadout 0.4.0
 
 ### ru
@@ -561,6 +595,16 @@ A new component: Event trackers (off by default).
 ### en
 
 - A gentle hangar reminder to take a break: after a losing streak, after a long session and on a clear drop in the damage of the last battles; the thresholds are yours, each reminder comes once.
+
+## crosshair 0.3.1
+
+### ru
+
+- Предпросмотр в настройках рисует прицел с выбранной меткой в её размере.
+
+### en
+
+- The settings preview draws the reticle with the chosen mark at its size.
 
 ## crosshair 0.3.0
 
@@ -798,6 +842,20 @@ A new component: Event trackers (off by default).
 
 - Your gun's reload countdown with a bar and the shells in the magazine; your own gun only. It counts by game time and keeps pace with the reticle.
 
+## core 0.6.5
+
+### ru
+
+- Каждая панель передаёт странице короткое описание своего компонента для подсказки.
+- С зажатым Tab панели остаются на экране (страница приглушает те, что под таблицей), клавиша V прячет их, не убирая: после неё ничего не прыгает.
+- Предпросмотр панели в настройках получает её образец для той же отрисовки, что в бою.
+
+### en
+
+- Every panel hands the page its component's short description for the tooltip.
+- With Tab held the panels stay on the screen (the page dims the ones under the table), and V hides them without removing them, so nothing jumps afterwards.
+- A panel's settings preview gets its sample widget, drawn the same way as in battle.
+
 ## core 0.6.4
 
 ### ru
@@ -956,6 +1014,18 @@ A new component: Event trackers (off by default).
 - Durable settings: the files a player cannot recreate are mirrored into `%APPDATA%\TriOtmetki`, and a missing or older copy in `mods/configs/otmetki` is restored on load.
 - Pinned Python 2.7 libraries: six, blinker, attrs, enum34.
 
+## companion 0.6.2
+
+### ru
+
+- Один раз для всех: повторная панель расходников выключается, ряд оборудования включается. Если включить расходники обратно, они останутся включёнными.
+- Подсказки у меток ангара и кнопки настроек.
+
+### en
+
+- Once for everyone: the duplicate consumables bar is switched off and the equipment row on. Switched back on, the consumables bar stays on.
+- Tooltips on the hangar labels and the settings button.
+
 ## companion 0.6.1
 
 ### ru
@@ -1043,6 +1113,24 @@ A new component: Event trackers (off by default).
 - Binding to triotmetki.ru with a one-time code from the site; nothing is collected or sent before it.
 - After each own battle: the `personal` block of the battle results, MoE snapshots and distribution, queue times, the loadout and shots, sent in signed batches through an outbox that survives a restart and backs off on errors.
 - Per-feature data switches in `config.json`, the ModsSettingsAPI window as the fallback settings UI, and the streamer settings share (export, apply with a confirmation, restore).
+
+## ui 0.6.2
+
+### ru
+
+- Колесо мыши прокручивает список реплеев, подробности и выпадающие списки: высота списка считается без `scrollHeight`, которого нет в Gameface.
+- ХП команд: плашка по размеру содержимого, числа внутри полос, счёт и разница под ним по центру; все семь стилей выровнены по одной линии.
+- Подсказка с описанием при наведении на любой блок (подсказка самого клиента, клики проходят насквозь, пропадает вместе с курсором).
+- Предпросмотры в карточках и в редакторе HUD рисуются панелями боя, по центру и в размер рамки.
+- Окно и HUD не зависят от атрибутов элементов, которых нет у Gameface.
+
+### en
+
+- The mouse wheel scrolls the replays list, its details and the drop-down lists: the list height is measured without `scrollHeight`, which Gameface lacks.
+- Team HP: the plate hugs its content, the numbers sit inside the bars, the score and the difference under it in the centre; all seven styles line up on one line.
+- A tooltip with a description over any block (the client's own tooltip, clicks pass through, gone with the cursor).
+- The previews in the cards and the HUD editor are drawn by the battle panels, centred and fitted to their frame.
+- The window and the HUD no longer rely on element attributes Gameface does not have.
 
 ## ui 0.6.1
 

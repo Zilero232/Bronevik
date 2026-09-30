@@ -1,0 +1,101 @@
+// Draws each HUD component's preview with the built HUD page in Chromium and saves it as a 16:9 catalog preview.
+// usage: node render.mjs <hud.html> <job.json> <out dir>   (job.json: tools/build/previews/states.py `job()`)
+import { chromium } from '@playwright/test';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+
+const FRAME = { width: 640, height: 360, pixelRatio: 2 };
+const FIT = { width: 0.84, height: 0.78, maxScale: 2 };
+const SETTLE_MS = 1200;
+const IMAGE_HOST = 'http://img.local/';
+const PANEL = '#hud button[aria-label]';
+const BACKDROPS = {
+  battle: '#20241d',
+  hangar: '#22252a'
+};
+
+const bridge = ({ state, scale }) => `<script>
+window.model = { state: ${JSON.stringify(state)}, send: function () {} };
+window.engine = { whenReady: Promise.resolve(), on: function () {} };
+window.viewEnv = {
+  getClientSizePx: function () { return { width: ${FRAME.width}, height: ${FRAME.height} }; },
+  addDataChangedCallback: function () { return 1; },
+  setInputArea: function () {},
+  resizeViewPx: function () {}
+};
+new MutationObserver(function (changes) {
+  changes.forEach(function (change) {
+    change.addedNodes.forEach(function (node) {
+      (node.querySelectorAll ? Array.from(node.querySelectorAll('img')) : []).concat(node.tagName === 'IMG' ? [node] : []).forEach(function (image) {
+        var source = image.getAttribute('src') || '';
+        if (source.indexOf('img://') === 0) { image.setAttribute('src', '${IMAGE_HOST}' + source.slice(6)); }
+      });
+    });
+  });
+}).observe(document, { subtree: true, childList: true });
+</script><style>html { font-size: ${scale}px; }</style>`;
+
+const backdrop = (name) => `<div style="position:fixed;inset:0;z-index:-1;background:${BACKDROPS[name]}"></div>`;
+
+const pageFile = ({ html, preview, scale, directory }) => {
+  const page = html.replace('<head>', `<head>${bridge({ state: preview.state, scale })}`).replace('<body>', `<body>${backdrop(preview.backdrop)}`);
+  const file = path.join(directory, `${preview.id}.html`);
+
+  writeFileSync(file, page);
+
+  return pathToFileURL(file).href;
+};
+
+const panelSize = async (tab) => {
+  await tab.waitForTimeout(SETTLE_MS);
+
+  return tab.$eval(PANEL, (element) => ({ width: element.offsetWidth, height: element.offsetHeight }));
+};
+
+const fitScale = ({ width, height }) =>
+  Math.min(FIT.maxScale, (FRAME.width * FIT.width) / Math.max(width, 1), (FRAME.height * FIT.height) / Math.max(height, 1));
+
+const serveImages = async (tab, images) => {
+  await tab.route(`${IMAGE_HOST}**`, (route) => {
+    const file = images[decodeURIComponent(route.request().url().slice(IMAGE_HOST.length))];
+
+    return file ? route.fulfill({ path: file, contentType: 'image/png' }) : route.fulfill({ status: 404 });
+  });
+};
+
+const render = async ({ tab, html, preview, out, directory }) => {
+  await tab.goto(pageFile({ html, preview, scale: 1, directory }));
+  const scale = fitScale(await panelSize(tab));
+
+  await tab.goto(pageFile({ html, preview, scale, directory }));
+  await panelSize(tab);
+  await tab.screenshot({ path: path.join(out, `${preview.id}.png`) });
+};
+
+const main = async ([htmlPath, jobPath, out]) => {
+  const html = readFileSync(htmlPath, 'utf8');
+  const job = JSON.parse(readFileSync(jobPath, 'utf8'));
+  const directory = path.join(tmpdir(), 'otmetki-preview-pages');
+
+  mkdirSync(out, { recursive: true });
+  mkdirSync(directory, { recursive: true });
+
+  const browser = await chromium.launch();
+  const tab = await browser.newPage({ viewport: { width: FRAME.width, height: FRAME.height }, deviceScaleFactor: FRAME.pixelRatio });
+
+  await serveImages(tab, job.images);
+
+  for (const preview of job.previews) {
+    await render({ tab, html, preview, out, directory });
+    process.stdout.write(`Rendered ${preview.id}\n`);
+  }
+
+  await browser.close();
+};
+
+main(process.argv.slice(2)).catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

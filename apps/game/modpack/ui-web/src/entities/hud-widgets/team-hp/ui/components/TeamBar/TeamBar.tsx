@@ -22,5 +22,6 @@ export const TeamBar = ({ view, side, color, height, mirrored = false }: TeamBar
   ) : (
     <div className={clsx(s.bar, mirrored && s.mirrored)} style={{ width: `${view.barWidth}rem`, height: `${height}rem` }}>
       <div className={s.fill} style={{ width: `${side.fill}rem`, backgroundColor: color }} />
+      {view.numbers === 'inside' && <span className={s.value}>{side.hp}</span>}
     </div>
   );

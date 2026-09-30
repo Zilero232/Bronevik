@@ -2,6 +2,7 @@ import clsx from 'clsx';
 
 import type { HudPanelProps } from './HudPanel.types';
 
+import { HudSample } from '../../../../../entities/hud-widgets/registry';
 import { useT } from '../../../../../entities/window-state';
 
 import s from './HudPanel.module.scss';
@@ -21,7 +22,11 @@ export const HudPanel = ({ item }: HudPanelProps) => {
       onMouseDown={item.onMouseDown}
     >
       <span className={s.panelTitle}>{panel.title}</span>
-      <span className={s.panelPreview}>{panel.enabled ? (panel.preview ?? '') : t('hudDisabled')}</span>
+      {panel.enabled ? (
+        <HudSample className={s.panelSample} text={panel.text ?? panel.preview} widget={panel.widget} />
+      ) : (
+        <span className={s.panelOffNote}>{t('hudDisabled')}</span>
+      )}
     </button>
   );
 };

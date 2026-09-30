@@ -1,13 +1,13 @@
 import { useMemo, useRef } from 'preact/hooks';
 
+import type { ResolvedWidget } from '../../../../../entities/hud-widgets/registry';
 import type { HudPanel, HudState } from '../../../../../shared/api/hud-protocol';
 import type { RichLine } from '../../../../../shared/lib/rich-text';
-import type { ResolvedWidget } from '../../../lib/widget-registry';
 
+import { resolveWidget } from '../../../../../entities/hud-widgets/registry';
 import { fontSafeLines } from '../../../../../shared/lib/font-safe';
 import { parseRichText } from '../../../../../shared/lib/rich-text';
 import { remember } from '../../../lib/share-panels';
-import { resolveWidget } from '../../../lib/widget-registry';
 
 export const usePanelContent = (state: HudState | null) => {
   const linesCacheRef = useRef(new WeakMap<HudPanel, RichLine[]>());

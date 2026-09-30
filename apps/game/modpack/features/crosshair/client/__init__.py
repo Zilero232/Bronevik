@@ -6,7 +6,7 @@ from ....core.client.native import apply_changed
 from ..i18n import STRINGS
 from ..model import mark_html, mark_offset, shows_in, to_native
 from ..model.constants import PREVIEW_SIZE
-from ..model.preview import preview_text
+from ..model.preview import preview_text, preview_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
 from .constants import VIEW_ARCADE, VIEW_SNIPER
 
@@ -18,6 +18,7 @@ PANEL_SPEC = PanelSpec(
     strings=STRINGS,
     preview_size=PREVIEW_SIZE,
     preview_text=preview_text,
+    preview_widget=preview_widget,
 )
 
 

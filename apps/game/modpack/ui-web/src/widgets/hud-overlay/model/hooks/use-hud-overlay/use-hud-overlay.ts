@@ -8,11 +8,13 @@ import { sendHud } from '../../../../../shared/api/hud-protocol';
 import { HUD_OVERLAY } from '../../../config';
 import { layoutLabels } from '../../../lib/label-layout';
 import { createMouseReport } from '../../../lib/mouse-report';
+import { useHoveredPanel } from '../use-hovered-panel';
 import { useHudScreen } from '../use-hud-screen';
 import { useHudState } from '../use-hud-state';
 import { useInputArea } from '../use-input-area';
 import { usePanelContent } from '../use-panel-content';
 import { usePanelDrag } from '../use-panel-drag';
+import { usePanelHint } from '../use-panel-hint';
 import { usePanelSizes } from '../use-panel-sizes';
 import { useWheelResize } from '../use-wheel-resize';
 
@@ -51,11 +53,15 @@ export const useHudOverlay = () => {
   targetsRef.current = layouts.map(({ id, rect, button, movable, pointer, scale }) => ({ id, rect, button, movable, pointer, scale }));
 
   const clickable = layouts.filter(({ button }) => button).map(({ rect }) => rect);
+  const hovered = useHoveredPanel({ active: Boolean(state?.cursor), targets: targetsRef.current });
 
-  useInputArea({ edit, hover: Boolean(state?.hover), dragging: live !== null, screen, clickable, targets: targetsRef.current, report });
+  useInputArea({ edit, hover: Boolean(state?.hover), dragging: live !== null, screen, clickable, targets: targetsRef.current, hovered, report });
+
+  const hint = usePanelHint(live === null ? layouts.find(({ id }) => id === hovered) : undefined);
 
   return {
     labels: layouts.map(labelOf),
+    hint,
     edit,
     screen,
     style: { width: `${screen.width}${HUD_OVERLAY.unit}`, height: `${screen.height}${HUD_OVERLAY.unit}` }

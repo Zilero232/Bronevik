@@ -1,14 +1,10 @@
+import type { ScrollMetrics } from '../scroll-metrics';
+
 export type WheelScrollInput = {
   top: number;
   deltaY: number;
   max: number;
   step: number;
-};
-
-export type ScrollMetrics = {
-  top: number;
-  content: number;
-  viewport: number;
 };
 
 export type ThumbInput = ScrollMetrics & {

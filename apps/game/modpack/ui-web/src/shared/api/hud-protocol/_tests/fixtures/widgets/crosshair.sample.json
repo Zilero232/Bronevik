@@ -1,0 +1,9 @@
+{
+  "data": {
+    "hides_centre": true,
+    "mark": "img://gui/maps/icons/otmetki/crosshair/otmetki/ring_64.png",
+    "size": 48
+  },
+  "kind": "crosshair",
+  "v": 1
+}

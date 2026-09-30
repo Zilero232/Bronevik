@@ -11,6 +11,7 @@ export type GamefaceMockInput = {
   feed?: string;
   clientSize: () => ClientSize;
   mouse?: () => { x: number; y: number };
+  tooltips?: boolean;
   onSend: (message: string) => string | GamefaceMockPush | null;
 };
 
@@ -19,4 +20,5 @@ export type GamefaceMock = {
   push: (values: GamefaceMockPush) => void;
   sent: () => string[];
   inputAreas: () => number[][];
+  viewEvents: () => unknown[];
 };

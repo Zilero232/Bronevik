@@ -1,4 +1,4 @@
-import type { CardLayout, CardLayoutInput, PanelPreviewInput } from './card-layout.types';
+import type { CardLayout, CardLayoutInput, PanelPreviewInput, PreviewPanel } from './card-layout.types';
 
 export const cardLayout = ({ component, fields, isExpanded, forceOpen }: CardLayoutInput): CardLayout => {
   const shown = fields ?? component.fields;
@@ -14,10 +14,10 @@ export const cardLayout = ({ component, fields, isExpanded, forceOpen }: CardLay
   };
 };
 
-export const panelPreview = ({ component, panels }: PanelPreviewInput): string | null => {
+export const panelPreview = ({ component, panels }: PanelPreviewInput): PreviewPanel | null => {
   if (!component.panel) {
     return null;
   }
 
-  return panels.find(({ id }) => id === component.id)?.preview ?? null;
+  return panels.find(({ id }) => id === component.id) ?? null;
 };

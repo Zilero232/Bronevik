@@ -5,7 +5,14 @@ DEFAULT_HEIGHT = 40
 MAX_SIZE = 2000
 PREVIEW_MAX_CHARS = 400
 # A panel that did not describe itself (its feature is off or not loaded).
-NO_DESCRIPTION = {'preview': None, 'width': DEFAULT_WIDTH, 'height': DEFAULT_HEIGHT, 'enabled': False}
+NO_DESCRIPTION = {
+    'preview': None,
+    'text': None,
+    'widget': None,
+    'width': DEFAULT_WIDTH,
+    'height': DEFAULT_HEIGHT,
+    'enabled': False,
+}
 
 POSITION_NUMBERS = ('x', 'y')
 POSITION_ALIGNS = ('align_x', 'align_y')

@@ -14,6 +14,8 @@ export type CardLayout = {
   showEmpty: boolean;
 };
 
+export type PreviewPanel = UiState['hud']['panels'][number];
+
 export type PanelPreviewInput = {
   component: UiComponent;
   panels: UiState['hud']['panels'];

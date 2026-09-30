@@ -17,7 +17,7 @@ export const CardBody = ({ component, card }: CardBodyProps) => {
 
   return (
     <div className={s.body}>
-      {component.panel && <PanelPreview preview={card.preview} onMove={card.moveOnScreen} />}
+      {component.panel && <PanelPreview panel={card.preview} onMove={card.moveOnScreen} />}
       {card.showEmpty && <Empty>{t('noFields')}</Empty>}
       {card.fields.length > 0 && (
         <div className={s.fields}>

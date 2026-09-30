@@ -11,7 +11,7 @@ from otmetki.core.settings import Settings
 from otmetki.features.crosshair.i18n import STRINGS
 from otmetki.features.crosshair.model import mark_html, mark_image, mark_offset, shows_in, to_native
 from otmetki.features.crosshair.model.constants import MARK_COLORS, MARK_FILES, MARK_RENDITIONS, PRESET_PARTS
-from otmetki.features.crosshair.model.preview import preview_text
+from otmetki.features.crosshair.model.preview import preview_text, preview_widget
 from otmetki.features.crosshair.settings import SCHEMA, SETTINGS
 from otmetki.features.crosshair.settings.constants import MARKS
 
@@ -205,6 +205,26 @@ class CentreMarkSettingsTest(unittest.TestCase):
         settings = Settings({'mark': 'tint_brackets', 'mark_size': 100, 'mark_color': 'red'}, SCHEMA)
 
         assert 'tint_brackets_red_128.png' in preview_text(settings, None)
+
+
+class PreviewWidgetTest(unittest.TestCase):
+
+    def test_the_preview_without_a_mark_shows_the_game_reticle_alone(self):
+        data = preview_widget(Settings({}, SCHEMA), None)['data']
+
+        assert data == {'mark': None, 'size': 48, 'hides_centre': False}
+
+    def test_the_preview_puts_the_chosen_mark_over_the_reticle_at_its_size(self):
+        data = preview_widget(Settings({'mark': 'dot', 'mark_size': 32}, SCHEMA), None)['data']
+
+        assert data['mark'] == 'img://gui/maps/icons/otmetki/crosshair/otmetki/dot_64.png'
+        assert data['size'] == 32
+        assert data['hides_centre'] is True
+
+    def test_the_preview_widget_matches_the_page_fixture(self):
+        widget = preview_widget(Settings({'mark': 'ring', 'mark_size': 48}, SCHEMA), None)
+
+        assert _support.widget_fixture('crosshair', widget)
 
 
 if __name__ == '__main__':

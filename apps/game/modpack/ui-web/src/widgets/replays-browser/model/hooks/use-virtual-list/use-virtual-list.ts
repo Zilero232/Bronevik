@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import type { UseVirtualListInput } from './use-virtual-list.types';
 
+import { scrollMetricsOf } from '../../../../../shared/lib/scroll-metrics';
 import { useWheelScroll } from '../../../../../shared/lib/use-wheel-scroll';
 import { REPLAYS_BROWSER } from '../../../config';
 import { visibleRange } from '../../../lib/visible-range';
@@ -22,9 +23,10 @@ export const useVirtualList = ({ count, rowHeight, overscan }: UseVirtualListInp
   }, []);
 
   const measure = useCallback((): void => {
-    const height = viewportRef.current?.clientHeight;
+    const node = viewportRef.current;
+    const height = node ? scrollMetricsOf(node).viewport : 0;
 
-    if (height) {
+    if (height > 0) {
       setViewport(height / pixelsPerUnit());
     }
   }, [pixelsPerUnit]);

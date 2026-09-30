@@ -74,10 +74,12 @@ def _device(device, slot, boosted):
     }
 
 
-# The own vehicle as the battle builds it for its own ammunition panels (gui/battle_control/gui_vehicle_builder.py
-# VehicleBuilder, as comp7_prebattle_setup_ctrl and the respawn panel use it) from the own Vehicle entity's MY_VEHICLE
-# properties (entity_defs/Vehicle.def: setups, setupsIndexes, vehPostProgression, disabledSwitches,
-# crewCompactDescrs; Vehicle.set_setups and the rest hand the same values to PrebattleSetupsController).
+# The own vehicle the way the battle builds it for its own ammunition panel (RU 1.45
+# gui/impl/battle/battle_page/ammunition_panel/respawn_ammunition_panel_inject.py _updateGuiVehicle with
+# gui/battle_control/gui_vehicle_builder.py VehicleBuilder) from the own Vehicle entity's MY_VEHICLE properties
+# (entity_defs/Vehicle.def: setups, setupsIndexes, crewCompactDescrs, customRoleSlotTypeId, vehPostProgression,
+# disabledSwitches). Vehicle.__init__ reads the role slot from the extra data (veh_post_progression_controller
+# processVehExtData), so the builder needs it, and the arena's modifiers the way PrebattleSetupsController passes them.
 def _gui_vehicle():
     from gui.battle_control.gui_vehicle_builder import VehicleBuilder
 
@@ -85,11 +87,15 @@ def _gui_vehicle():
     if entity is None or getattr(entity, 'setups', None) is None:
         return None
 
+    compact_descr = entity.typeDescriptor.makeCompactDescr()
     builder = VehicleBuilder()
-    builder.setStrCD(entity.typeDescriptor.makeCompactDescr())
+    builder.setStrCD(compact_descr)
+    builder.setShells(compact_descr, entity.setups)
     builder.setCrew(list(entity.crewCompactDescrs))
     builder.setAmmunitionSetups(entity.setups, dict(entity.setupsIndexes or {}))
+    builder.setRoleSlot(entity.customRoleSlotTypeId)
     builder.setPostProgressionState(list(entity.vehPostProgression), list(entity.disabledSwitches))
+    builder.setModifiers(session_provider().arenaVisitor.getArenaModifiers())
     return builder.getResult()
 
 
@@ -160,15 +166,27 @@ def _setups():
     return boosted, directives, _sets(vehicle)
 
 
+# The descriptor's own device alone (its name and icon), for when the stock texts or the battle state cannot be read:
+# the row still shows every installed device.
+def _plain_device(device):
+    return {'name': device.userString, 'effect': u'', 'icon': getattr(device, 'icon', None)}
+
+
+def _read_device(device, slot, boosted):
+    try:
+        return _device(device, slot, boosted)
+    except Exception:
+        log_exception('battle loadout: device details')
+        return _plain_device(device)
+
+
 def _devices(boosted):
-    descriptor = player().getVehicleDescriptor()
-    devices = []
-    for device, slot in descriptor.iterOptDevsWithSlots():
-        if device is not None:
-            devices.append(_device(device, slot, boosted))
-    return devices
+    installed = player().getVehicleDescriptor().iterOptDevsWithSlots()
+    return [_read_device(device, slot, boosted) for device, slot in installed if device is not None]
 
 
+# The GUI vehicle only adds the directives, the boosted marks and the set badges: when the client cannot build it,
+# the row still shows the devices from the descriptor.
 def own_loadout():
     try:
         boosted, directives, sets = _setups()

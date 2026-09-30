@@ -4,9 +4,9 @@ import { isDeepEqual } from 'remeda';
 import type { Measured } from '../../../lib/panel-size';
 import type { MeasureRef, Sizes, UsePanelSizesInput } from './use-panel-sizes.types';
 
+import { widgetLines } from '../../../../../entities/hud-widgets/registry';
 import { rootScale } from '../../../../../shared/lib/hud-screen';
 import { stickySize } from '../../../lib/panel-size';
-import { widgetLines } from '../../../lib/widget-registry';
 
 export const usePanelSizes = ({ lines, widgets }: UsePanelSizesInput) => {
   const [sizes, setSizes] = useState<Sizes>({});

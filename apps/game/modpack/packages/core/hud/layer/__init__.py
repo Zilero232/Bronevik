@@ -4,9 +4,11 @@ When the backend reports a drag or a resize (`on_moved`), the new x/y (and the a
 scale are saved into the panel's section of components.json, so the panel comes back where the player left it. An
 unchanged text is not sent again (a Flash or Gameface re-layout per call is the cost).
 
-`set_muted(True)` (the streamer hotkey), `set_blocked(panel_ids)` (the streamer's private panels) and
-`set_gui_hidden(True)` (the stock battle GUI hidden: V, full stats) take panels off the screen without the features
-knowing: their texts are held and come back when the panel is allowed again.
+`set_muted(True)` (the streamer hotkey) and `set_blocked(panel_ids)` (the streamer's private panels) take panels off
+the screen without the features knowing: their texts are held and come back when the panel is allowed again.
+`set_gui_hidden(True)` (the stock battle GUI hidden with V) only makes the shown panels invisible, and
+`set_full_stats(True)` (Tab held) marks them `dim`: the page keeps every panel where it was, so nothing moves when they
+come back.
 
 `enter_mode(mode)` (a battle type, `core.hud.modes`) asks the layout policy a component set with `set_policy(policy)`
 which panels the type shows and whether it keeps places of its own: a panel the type leaves out is held like a muted
@@ -28,6 +30,7 @@ from ..panel import (
     is_pinned,
     layout_props,
     moved_values,
+    panel_hint,
     panel_of,
     pinned_values,
     retired_reset,
@@ -36,9 +39,10 @@ from ..panel import (
 
 class HudLayer(object):
 
-    def __init__(self, backend, config):
+    def __init__(self, backend, config, translate=None):
         self.backend = backend or NullBackend()
         self.config = config
+        self.translate = translate
         self.panels = {}
         self.schemas = {}
         self.shown = set()
@@ -47,6 +51,7 @@ class HudLayer(object):
         self.places = {}
         self.muted = False
         self.gui_hidden = False
+        self.full_stats = False
         self.blocked = frozenset()
         self.held = {}
         self.mode = None
@@ -98,7 +103,8 @@ class HudLayer(object):
 
     def props(self, panel_id, text, widget=None):
         props = self.layout(panel_id)
-        props.update({'text': text, 'visible': True, 'widget': widget})
+        props.update({'text': text, 'visible': not self.gui_hidden, 'widget': widget, 'dim': self.full_stats})
+        props['hint'] = panel_hint(self.translate, alias_of(panel_id))
         return props
 
     def allows(self, panel_id):
@@ -106,7 +112,7 @@ class HudLayer(object):
         return self.allowed is None or panel_id in self.allowed
 
     def suppressed(self, panel_id):
-        return self.muted or self.gui_hidden or panel_id in self.blocked or not self.allows(panel_id)
+        return self.muted or panel_id in self.blocked or not self.allows(panel_id)
 
     def set_policy(self, policy):
         """`policy(mode)` -> (the panel ids the battle type shows or None for all, whether it keeps places of its own);
@@ -172,7 +178,7 @@ class HudLayer(object):
     def _redraw(self, alias, text, widget):
         if self.texts.get(alias) == text and self.widgets.get(alias) == widget:
             return
-        self.backend.update(alias, {'text': text, 'visible': True, 'widget': widget})
+        self.backend.update(alias, {'text': text, 'visible': not self.gui_hidden, 'widget': widget})
         self.texts[alias] = text
         self.widgets[alias] = widget
 
@@ -211,11 +217,22 @@ class HudLayer(object):
         self._apply()
 
     def set_gui_hidden(self, hidden):
-        """Follow the stock battle GUI: hidden with V or behind the full stats (True), shown again (False)."""
+        """Follow the stock battle GUI hidden with V (True) and shown again (False); the panels stay in place."""
         hidden = bool(hidden)
         if hidden != self.gui_hidden:
             self.gui_hidden = hidden
-            self._apply()
+            self._update_shown({'visible': not hidden})
+
+    def set_full_stats(self, shown):
+        """Follow the full stats held open with Tab: the panels stay, marked `dim` for the page (True), or not."""
+        shown = bool(shown)
+        if shown != self.full_stats:
+            self.full_stats = shown
+            self._update_shown({'dim': shown})
+
+    def _update_shown(self, props):
+        for alias in sorted(self.shown):
+            self.backend.update(alias, dict(props))
 
     def _apply(self):
         for alias in list(self.shown):

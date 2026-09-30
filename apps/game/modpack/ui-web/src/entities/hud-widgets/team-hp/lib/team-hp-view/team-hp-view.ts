@@ -5,6 +5,7 @@ import type {
   SegmentsInput,
   SideViewInput,
   TeamHpGap,
+  TeamHpNumbers,
   TeamHpSegment,
   TeamHpSideView,
   TeamHpStripVehicle,
@@ -68,6 +69,25 @@ const widthOf = (style: TeamHpData['style']): number => {
   return widths[style] ?? 0;
 };
 
+const numbersOf = (style: TeamHpData['style']): TeamHpNumbers => {
+  const labelled: readonly string[] = TEAM_HP.labelledStyles;
+  const outside: readonly string[] = TEAM_HP.outsideNumberStyles;
+
+  if (labelled.includes(style)) {
+    return 'inside';
+  }
+
+  return outside.includes(style) ? 'outside' : 'none';
+};
+
+const barHeightOf = (style: TeamHpData['style'], numbers: TeamHpNumbers): number => {
+  if (style === 'minimal') {
+    return TEAM_HP.barHeight.thin;
+  }
+
+  return numbers === 'inside' ? TEAM_HP.barHeight.labelled : TEAM_HP.barHeight.plain;
+};
+
 const scoreOf = (data: TeamHpData): string => {
   const key = data.score_alive ? 'alive' : 'frags';
 
@@ -78,18 +98,21 @@ export const teamHpView = (data: TeamHpData): TeamHpView => {
   const { style } = data;
   const barWidth = widthOf(style);
   const compact = style === 'compact' || style === 'minimal';
+  const numbers = numbersOf(style);
+  const score = data.show_score || compact ? scoreOf(data) : null;
+  const diff = data.diff === null || compact ? null : formatSigned(data.diff);
 
   return {
-    showNumbers: style !== 'bars' && style !== 'minimal' && style !== 'segments',
+    numbers,
     showBars: barWidth > 0,
     showStrip: style === 'icons',
     segmented: style === 'segments',
-    compact,
     barWidth,
-    barHeight: style === 'minimal' ? TEAM_HP.barHeight.thin : TEAM_HP.barHeight.regular,
-    score: data.show_score || compact ? scoreOf(data) : null,
-    diff: data.diff === null || compact ? null : formatSigned(data.diff),
+    barHeight: barHeightOf(style, numbers),
+    score,
+    diff,
     diffAhead: (data.diff ?? 0) >= 0,
+    hasCenter: score !== null || diff !== null,
     allies: sideView({ side: data.allies, vehicles: data.vehicles.allies, width: barWidth, mirrored: true }),
     enemies: sideView({ side: data.enemies, vehicles: data.vehicles.enemies, width: barWidth, mirrored: false }),
     colors: data.colors

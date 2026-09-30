@@ -10,5 +10,6 @@ export type UseInputAreaInput = {
   screen: ClientSize;
   clickable: Rect[];
   targets: DragTarget[];
+  hovered: string | null;
   report: MouseReport;
 };

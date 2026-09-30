@@ -1,20 +1,13 @@
 import { clamp } from 'remeda';
 
-import type {
-  BindWheelScrollInput,
-  ScrollMetrics,
-  Thumb,
-  ThumbInput,
-  TopFromThumbInput,
-  WheelDelta,
-  WheelRoot,
-  WheelScrollInput
-} from './wheel-scroll.types';
+import type { ScrollMetrics } from '../scroll-metrics';
+import type { BindWheelScrollInput, Thumb, ThumbInput, TopFromThumbInput, WheelDelta, WheelRoot, WheelScrollInput } from './wheel-scroll.types';
 
 import { gameface } from '../../api/gameface';
 import { SCROLL_AREA } from '../../config';
 import { rootScale } from '../hud-screen';
 import { reportOnce } from '../page-diag';
+import { scrollMaxOf, scrollMetricsOf } from '../scroll-metrics';
 import { createSmoothScroll } from '../smooth-scroll';
 
 const maxTop = ({ content, viewport }: Pick<ScrollMetrics, 'content' | 'viewport'>): number => Math.max(content - viewport, 0);
@@ -58,7 +51,7 @@ export const bindWheelScroll = ({ element, onScrolled }: BindWheelScrollInput): 
 
   const listener = (event: WheelEvent): void => {
     const deltaY = wheelDelta(event);
-    const next = wheelScroll({ top: glide.target(), deltaY, max: element.scrollHeight - element.clientHeight, step: stepPx() });
+    const next = wheelScroll({ top: glide.target(), deltaY, max: scrollMaxOf(element), step: stepPx() });
 
     event.preventDefault();
 
@@ -68,9 +61,11 @@ export const bindWheelScroll = ({ element, onScrolled }: BindWheelScrollInput): 
       event.stopPropagation();
     }
 
+    const { content, viewport } = scrollMetricsOf(element);
+
     reportOnce({
       kind: 'wheel',
-      text: `delta ${deltaY} (deltaY ${event.deltaY}), box ${element.scrollHeight}/${element.clientHeight} px, ${moved ? `gliding to ${next}` : 'at its end'}`
+      text: `delta ${deltaY} (deltaY ${event.deltaY}), box ${content}/${viewport} px, ${moved ? `gliding to ${next}` : 'at its end'}`
     });
   };
 

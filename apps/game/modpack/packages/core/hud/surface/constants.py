@@ -41,6 +41,8 @@ PANEL_KEYS = (
     ('kind', 'kind', KIND_LABEL),
     ('widget', 'widget', None),
     ('dock', 'dock', None),
+    ('hint', 'hint', ''),
+    ('dim', 'dim', False),
 )
 # The optional int keys of a panel's `dock` (core.hud.panel.dock_of).
 DOCK_NUMBERS = ('reserve', 'ceiling')

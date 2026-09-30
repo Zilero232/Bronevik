@@ -1,11 +1,11 @@
 """A panel's side of the HUD edit protocol (the ui package's editor drives it on `app.bus`).
 
-`HudPreview(layer, panel_id, render_preview, ...).attach(bus)` answers `hud_describe(collect)` with the
-panel's preview text and size (`collect(panel_id, preview, width, height, enabled)`), and on `hud_edit(True)` shows
-the panel with that preview text and its preview widget (`render_widget`, for the Gameface page) (only when its switch
-is on and the player is in the hangar) so it can be dragged into place; `hud_edit(False)` or `end()` (the panel's own
-battle start) hides the preview again. `hud_reset_layout()` asks every hangar
-label that keeps its own place (outside the layer) to go back to its default.
+`HudPreview(layer, panel_id, render_preview, ...).attach(bus)` answers `hud_describe(collect)` with the panel's preview
+text, size and preview widget (`collect(panel_id, preview, width, height, enabled, widget)`), and on `hud_edit(True)`
+shows the panel with that preview text and its preview widget (`render_widget`, for the Gameface page) (only when its
+switch is on and the player is in the hangar) so it can be dragged into place; `hud_edit(False)` or `end()` (the panel's
+own battle start) hides the preview again. `hud_reset_layout()` asks every hangar label that keeps its own place
+(outside the layer) to go back to its default.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -49,7 +49,7 @@ class HudPreview(object):
             self.end()
             return
 
-        widget = self.render_widget() if self.render_widget is not None else None
+        widget = self.preview_widget()
         self.previewing = bool(self.layer.show(self.panel_id, self.render_preview(), widget))
 
     def end(self):
@@ -58,6 +58,9 @@ class HudPreview(object):
             self.previewing = False
             self.layer.hide(self.panel_id)
 
+    def preview_widget(self):
+        return self.render_widget() if self.render_widget is not None else None
+
     def on_describe(self, collect):
         width, height = self.size
-        collect(self.panel_id, self.render_preview(), width, height, self.is_enabled())
+        collect(self.panel_id, self.render_preview(), width, height, self.is_enabled(), self.preview_widget())

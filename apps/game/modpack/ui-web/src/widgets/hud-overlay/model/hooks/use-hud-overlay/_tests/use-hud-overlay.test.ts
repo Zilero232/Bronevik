@@ -29,6 +29,8 @@ const ON_LABEL = { x: 20, y: 940 };
 
 const OFF_EVERY_PANEL = { x: 900, y: 300 };
 
+const PANEL_HINT = 'Нанесённый и полученный урон за бой.';
+
 const sampleSchema = z.looseObject({ panels: z.array(z.record(z.string(), z.unknown())) });
 
 const withState = ({ patch = {}, panel = {} }: { patch?: Record<string, unknown>; panel?: Record<string, unknown> }): string => {
@@ -41,8 +43,8 @@ const OUTSIDE_EDIT = withState({ patch: { edit: false } });
 
 const mounted: { unmount: () => void }[] = [];
 
-const start = async ({ state, mouse }: { state: string; mouse?: () => Point }) => {
-  const mock = createGamefaceMock({ state, clientSize: () => CLIENT, mouse, onSend: () => null });
+const start = async ({ state, mouse, tooltips }: { state: string; mouse?: () => Point; tooltips?: boolean }) => {
+  const mock = createGamefaceMock({ state, clientSize: () => CLIENT, mouse, tooltips, onSend: () => null });
 
   installGamefaceMock(mock);
 
@@ -81,11 +83,11 @@ const drag = ({ hook, to }: { hook: Overlay; to: Point }) => {
 
 const wheelUp = () => new WheelEvent('wheel', { clientX: ON_LABEL.x, clientY: ON_LABEL.y, deltaY: -100, cancelable: true });
 
-const startInBattle = async () => {
+const startInBattle = async ({ state = SAMPLE, tooltips = false }: { state?: string; tooltips?: boolean } = {}) => {
   vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] });
 
   const pointer = { ...OFF_EVERY_PANEL };
-  const overlay = await start({ state: SAMPLE, mouse: () => pointer });
+  const overlay = await start({ state, mouse: () => pointer, tooltips });
 
   const hover = (at: Point) => {
     Object.assign(pointer, at);
@@ -115,6 +117,27 @@ describe(useHudOverlay, () => {
     const { hook } = await mount(SAMPLE);
 
     expect(hook.current().labels[0]?.style).toEqual({ left: '20rem', top: '940rem', opacity: 0 });
+  });
+
+  it('brings a label hidden with the stock GUI back at the same place', async () => {
+    const { hook, mock } = await mount(SAMPLE);
+
+    await hook.settle();
+    const before = hook.current().labels[0]?.style;
+
+    hook.run(() => mock.push({ state: withState({ panel: { visible: false } }) }));
+    hook.run(() => mock.push({ state: SAMPLE }));
+    await hook.settle();
+
+    expect(hook.current().labels[0]?.style).toEqual(before);
+  });
+
+  it('keeps a label on the screen while Tab is held', async () => {
+    const { hook, mock } = await mount(SAMPLE);
+
+    hook.run(() => mock.push({ state: withState({ panel: { dim: true } }) }));
+
+    expect(hook.current().labels.map((label) => label.panel.id)).toEqual([LABEL_ID]);
   });
 
   it('turns the label text into styled runs', async () => {
@@ -290,6 +313,62 @@ describe(useHudOverlay, () => {
     fire({ hook, event: mouseEvent({ type: 'mousedown', at: ON_LABEL }) });
 
     expect(mock.inputAreas().at(-1)).toEqual([0, 0, 1920, 1080]);
+  });
+
+  it('describes the panel under the cursor with its hint', async () => {
+    const { hook, hover } = await startInBattle();
+
+    hover(ON_LABEL);
+
+    expect(hook.current().hint?.text).toBe(PANEL_HINT);
+  });
+
+  it('drops the hint once the cursor leaves the panel', async () => {
+    const { hook, hover } = await startInBattle();
+
+    hover(ON_LABEL);
+
+    hover(OFF_EVERY_PANEL);
+
+    expect(hook.current().hint).toBeNull();
+  });
+
+  it('drops the hint when the battle cursor hides', async () => {
+    const { hook, hover, mock } = await startInBattle();
+
+    hover(ON_LABEL);
+
+    hook.run(() => mock.push({ state: withState({ patch: { cursor: false, edit: false } }) }));
+
+    expect(hook.current().hint).toBeNull();
+  });
+
+  it('describes a pinned panel without taking the mouse over it', async () => {
+    const { hook, hover, mock } = await startInBattle({ state: withState({ panel: { drag: false } }) });
+
+    hover(ON_LABEL);
+
+    expect(hook.current().hint?.text).toBe(PANEL_HINT);
+    expect(mock.inputAreas().at(-1)).toEqual([0, 0, 0, 0]);
+  });
+
+  it('asks the client for its own tooltip instead of drawing one when it offers it', async () => {
+    const { hook, hover, mock } = await startInBattle({ tooltips: true });
+
+    hover(ON_LABEL);
+
+    expect(hook.current().hint).toBeNull();
+    expect(mock.viewEvents()).toMatchObject([{ on: true, arguments: [{ name: 'header' }, { name: 'body', string: PANEL_HINT }] }]);
+  });
+
+  it('takes the client tooltip away when the cursor leaves the panel', async () => {
+    const { hover, mock } = await startInBattle({ tooltips: true });
+
+    hover(ON_LABEL);
+
+    hover(OFF_EVERY_PANEL);
+
+    expect(mock.viewEvents().at(-1)).toMatchObject({ on: false });
   });
 
   it('draws a known widget instead of the text', async () => {

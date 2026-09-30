@@ -1,10 +1,10 @@
+import type { ResolvedWidget } from '../../../../entities/hud-widgets/registry';
 import type { ClientSize } from '../../../../shared/api/gameface';
 import type { HudPanel } from '../../../../shared/api/hud-protocol';
 import type { LiveRect, Placement, Rect } from '../../../../shared/lib/hud-geometry';
 import type { AnchorStyle } from '../anchor';
 import type { DragTarget } from '../hit-panel';
 import type { Measured } from '../panel-size';
-import type { ResolvedWidget } from '../widget-registry';
 
 export type Overrides = Partial<Record<string, Placement>>;
 
@@ -30,5 +30,7 @@ export type LayoutLabelsInput = {
 export type ScaleOfInput = { panel: HudPanel; scales: Scales };
 
 export type DockItemInput = Pick<LayoutLabelsInput, 'overrides' | 'screen' | 'sizes'> & { panel: HudPanel; scale: number };
+
+export type OpacityOfInput = { panel: HudPanel; rect: Rect; screen: ClientSize; settled: boolean };
 
 export type LabelStyleInput = { rect: Rect; scale: number; opacity: number };

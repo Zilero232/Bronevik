@@ -1,6 +1,7 @@
 import type { HudPanel } from '../../../../shared/api/hud-protocol';
+import type { Rect } from '../../../../shared/lib/hud-geometry';
 import type { DockItem } from '../dock';
-import type { DockItemInput, LabelLayout, LabelStyle, LabelStyleInput, LayoutLabelsInput, ScaleOfInput } from './label-layout.types';
+import type { DockItemInput, LabelLayout, LabelStyle, LabelStyleInput, LayoutLabelsInput, OpacityOfInput, ScaleOfInput } from './label-layout.types';
 
 import { HUD_OVERLAY } from '../../config';
 import { placeRect, rectStyle } from '../anchor';
@@ -20,6 +21,28 @@ const dockItem = ({ panel, scale, sizes, overrides, screen }: DockItemInput): Do
     align: panel.align_x,
     rect: placeRect({ anchor: override ?? panel, size, screen })
   };
+};
+
+const fullStatsArea = (screen: LayoutLabelsInput['screen']): Rect => {
+  const { width, top, bottom } = HUD_OVERLAY.fullStats;
+
+  return { left: (screen.width - width) / 2, top, width, height: screen.height - top - bottom };
+};
+
+const overlaps = (rect: Rect, other: Rect): boolean =>
+  rect.left < other.left + other.width &&
+  other.left < rect.left + rect.width &&
+  rect.top < other.top + other.height &&
+  other.top < rect.top + rect.height;
+
+const opacityOf = ({ panel, rect, screen, settled }: OpacityOfInput): number => {
+  if (!settled) {
+    return HUD_OVERLAY.hidden;
+  }
+
+  const isUnderFullStats = Boolean(panel.dim) && overlaps(rect, fullStatsArea(screen));
+
+  return isUnderFullStats ? panel.alpha * HUD_OVERLAY.fullStats.alpha : panel.alpha;
 };
 
 export const labelStyle = ({ rect, scale, opacity }: LabelStyleInput): LabelStyle => {
@@ -42,7 +65,7 @@ export const layoutLabels = (input: LayoutLabelsInput): LabelLayout[] => {
     const scale = scaleOf({ panel, scales });
     const placed = stacked.get(panel.id) ?? HUD_OVERLAY.emptyRect;
     const rect = live?.id === panel.id ? live.rect : placed;
-    const opacity = settled.has(panel.id) ? panel.alpha : HUD_OVERLAY.hidden;
+    const opacity = opacityOf({ panel, rect, screen, settled: settled.has(panel.id) });
 
     return {
       panel,

@@ -10,11 +10,9 @@
 .screen {
   display: flex;
   min-width: 0;
-  min-height: 64px;
   flex: 1 1 auto;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
+  align-items: stretch;
   padding: 8px 12px;
   border: 1px solid token(color-border-strong);
   border-radius: token(radius-md);
@@ -23,6 +21,7 @@
 }
 
 .caption {
+  align-self: flex-start;
   margin-bottom: 6px;
   color: token(color-text-dim);
   font-size: 10px;
@@ -30,16 +29,8 @@
   @include caps(0.5px);
 }
 
-.plate {
-  max-width: 100%;
-  padding: 4px 8px;
-  border-radius: token(radius-sm);
-  background-color: rgb(0 0 0 / 55%);
-  color: token(color-text);
-  font-size: 14px;
-  white-space: pre-wrap;
-
-  @include hud-text;
+.sample {
+  height: 110px;
 }
 
 .move {

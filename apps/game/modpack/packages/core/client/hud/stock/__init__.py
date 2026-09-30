@@ -10,9 +10,10 @@ is never hidden (`page.components`, the DAAPI components the page registered). A
 once (`as_setComponentsVisibilityS`), or handed to the page's full-stats set while Tab is open so it comes back with the
 rest.
 
-`GameEvent.GUI_VISIBILITY` (V) and `GameEvent.FULL_STATS` (Tab) take our battle panels off the screen with the stock
-GUI. `GameEvent.SHOW_EXTENDED_INFO` (Alt held, the key the stock markers, players panel and damage log expand on) goes
-out as `battle_extended_info(held)` on the app bus for the panels with an alternate mode.
+`GameEvent.GUI_VISIBILITY` (V) hides our battle panels with the stock GUI; `GameEvent.FULL_STATS` (Tab) keeps them and
+has the page dim the ones under the full stats (`HudLayer.set_full_stats`). `GameEvent.SHOW_EXTENDED_INFO` (Alt held,
+the key the stock markers, players panel and damage log expand on) goes out as `battle_extended_info(held)` on the app
+bus for the panels with an alternate mode.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -81,7 +82,7 @@ class StockControl(object):
         self.hidden = frozenset()
         self.gui_visible = True
         self.full_stats = False
-        self.layer.set_gui_hidden(False)
+        self._follow()
         self._set_extended(False)
         self.sync()
 
@@ -89,7 +90,7 @@ class StockControl(object):
         if page is self.page:
             self.page = None
             self.hidden = frozenset()
-            self.layer.set_gui_hidden(False)
+            self._follow()
             self._set_extended(False)
 
     def present(self, alias):
@@ -177,8 +178,9 @@ class StockControl(object):
             self.bus.emit(EXTENDED_INFO_EVENT, held)
 
     def _follow(self):
-        is_gui_off = not self.gui_visible or self.full_stats
-        self.layer.set_gui_hidden(self.page is not None and is_gui_off)
+        on_page = self.page is not None
+        self.layer.set_gui_hidden(on_page and not self.gui_visible)
+        self.layer.set_full_stats(on_page and self.full_stats)
 
 
 def _event_flag(event, key, default):

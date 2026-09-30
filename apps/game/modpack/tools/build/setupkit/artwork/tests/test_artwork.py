@@ -57,7 +57,7 @@ class RenderTest(unittest.TestCase):
         self.addCleanup(shutil.rmtree, self.tmp)
 
     def test_an_svg_preview_renders_at_16_by_9(self):
-        source = os.path.join(ASSETS_DIR, 'previews', 'marks_panel.svg')
+        source = os.path.join(ASSETS_DIR, 'previews', 'camera.svg')
 
         preview = render.render_preview(source, os.path.join(self.tmp, 'p.png'))
 

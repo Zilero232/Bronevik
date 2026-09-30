@@ -19,12 +19,14 @@ from otmetki.core.settings import Schema
 from otmetki.core.storage import MemoryFile
 from otmetki.ui.bridge import SettingsBridge, site_link, site_url
 from otmetki.ui.components import COMPANION_ID, COMPANION_KEYS, FeatureInfo, load_features, root_package
+from otmetki.ui.hud_edit import HudEditor
 from otmetki.ui.i18n import STRINGS
 from otmetki.ui.profiles import ProfileStore
 from otmetki.ui.protocol import COMMANDS, PROTOCOL_VERSION, encode_state
 
 UI_WEB = os.path.join(_support.MODPACK_DIR, 'ui-web', 'src', 'shared', 'api', 'protocol')
 STATE_FIXTURE = os.path.join(UI_WEB, '_tests', 'fixtures', 'state.sample.json')
+CLOCK_WIDGET = {'kind': 'battle_clock', 'v': 1, 'data': {'time': u'21:47'}}
 
 PANEL_SCHEMA = Schema(
     {
@@ -375,6 +377,33 @@ class BridgeStateTest(BridgeTestCase):
         assert panel['width'] == 300
         assert panel['height'] == 40
         assert panel['x'] == 10
+
+
+class Titles(object):
+
+    @staticmethod
+    def title(panel_id):
+        return panel_id
+
+
+class HudEditorPreviewTest(unittest.TestCase):
+
+    def setUp(self):
+        bus = EventBus()
+        layer = HudLayer(NullBackend(), ComponentConfig(MemoryFile()))
+        layer.register('battle_clock', Schema({'x': 0, 'y': 0, 'align_x': 'center', 'align_y': 'top'}))
+        bus.on('hud_describe', lambda collect: collect('battle_clock', u'<b>21:47</b>', 120, 30, True, CLOCK_WIDGET))
+        self.editor = HudEditor(bus, layer)
+
+    def test_a_panel_carries_its_preview_widget_for_the_page_renderer(self):
+        panel = self.editor.panels(Titles())[0]
+
+        assert panel['widget'] == CLOCK_WIDGET
+
+    def test_a_panel_carries_its_rich_preview_text(self):
+        panel = self.editor.panels(Titles())[0]
+
+        assert panel['text'] == u'<b>21:47</b>'
 
 
 class FocusPageTest(BridgeTestCase):

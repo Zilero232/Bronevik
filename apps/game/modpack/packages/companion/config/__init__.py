@@ -10,6 +10,7 @@ from .constants import (  # noqa: F401
     FEATURES,
     LIMITS,
     LOCAL_HOSTS,
+    ONE_TIME_SWITCHES,
     OPT_IN_FEATURES,
     RETIRED_DEFAULTS,
 )
@@ -35,17 +36,24 @@ def normalize_server_url(url):
 SCHEMA = Schema(DEFAULTS, choices=CHOICES, limits=LIMITS, normalizers={'server_url': normalize_server_url})
 
 
+def _stored_revision(values):
+    revision = values.get('defaults_revision')
+    return revision if is_int(revision) else 0
+
+
 # A fresh config (None) stays None: it takes today's defaults, so only a stored one is upgraded.
 def upgraded(values):
     if not isinstance(values, dict):
         return values
-    revision = values.get('defaults_revision')
-    if not is_int(revision):
-        revision = 0
+
+    revision = _stored_revision(values)
     upgraded_values = dict(values, defaults_revision=DEFAULTS_REVISION)
     for since, key, old, new in RETIRED_DEFAULTS:
         if revision < since and values.get(key) == old:
             upgraded_values[key] = new
+    for since, key, value in ONE_TIME_SWITCHES:
+        if revision < since:
+            upgraded_values[key] = value
     return upgraded_values
 
 

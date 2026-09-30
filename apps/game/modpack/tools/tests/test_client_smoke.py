@@ -101,6 +101,8 @@ MOE_SNAPSHOT = {
 }
 MOE_CURVE = {'tank_id': 1, 'thresholds': {'65': 2000, '85': 2600, '95': 3100}}
 HANGAR_MOE = {'tank_id': 1, 'damage_rating': 8600, 'moving_avg_damage': 2550, 'marks_on_gun': 2}
+ARENA_MODIFIERS = 'arena-modifiers'
+ROLE_SLOT = 3
 REPLAY_ID = '0f8e2d4c-6b1a-4f3e-9d2c-7a5b3c1d9e8f'
 BUSH_CIRCLE_KEY = 48
 STREAMER_KEY = 35
@@ -477,6 +479,7 @@ class BattleSession(object):
         self.arena = instance('Arena', {'period': 3, 'periodEndTime': SERVER_TIME + 300})
         self.arena.onVehicleKilled = Event()
         self.arena.onVehicleAdded = Event()
+        self.arenaVisitor = instance('ArenaVisitor', {'getArenaModifiers': lambda visitor: ARENA_MODIFIERS})
 
     def getArenaDP(self):
         return self.dp
@@ -977,6 +980,32 @@ class Game(object):
             (None, device_slot('firepower')),
         ]
         return PlayerAvatar
+
+    def install_failing_vehicle_builder(self):
+        # RU 1.45 gui/battle_control/gui_vehicle_builder.VehicleBuilder: getResult builds the GUI Vehicle, which a
+        # client can refuse (Vehicle.__init__ raised KeyError 'customRoleSlotTypeId' before the role slot was set).
+        calls = []
+
+        class VehicleBuilder(object):
+
+            def __getattr__(self, name):
+                return lambda *args: calls.append((name,) + args)
+
+            def getResult(self):
+                raise KeyError('customRoleSlotTypeId')
+
+        module('gui.battle_control.gui_vehicle_builder', VehicleBuilder=VehicleBuilder)
+        own_vehicle = instance('OwnVehicle', {
+            'typeDescriptor': instance('Descriptor', {'makeCompactDescr': lambda descriptor: 'own-compact-descr'}),
+            'setups': {'shellsSetups': [], 'eqsSetups': [], 'boostersSetups': [], 'devicesSetups': []},
+            'setupsIndexes': {},
+            'crewCompactDescrs': [],
+            'customRoleSlotTypeId': ROLE_SLOT,
+            'vehPostProgression': [],
+            'disabledSwitches': [],
+        })
+        sys.modules['BigWorld'].entity = lambda vehicle_id: own_vehicle if vehicle_id == OWN_VEHICLE else None
+        return calls
 
     def install_shot_and_bush_circle_stubs(self):
         test = self
@@ -1605,8 +1634,8 @@ class HudEditTest(StoryTest):
         game.events.onAccountShowGUI()
         cls.described = {}
 
-        def collect(panel_id, preview=None, width=None, height=None, enabled=False):
-            cls.described.update({panel_id: (preview, width, enabled)})
+        def collect(panel_id, preview=None, width=None, height=None, enabled=False, widget=None):
+            cls.described.update({panel_id: (preview, width, enabled, widget)})
 
         app.bus.emit('hud_describe', collect)
         app.bus.emit('hud_edit', True)
@@ -1622,6 +1651,12 @@ class HudEditTest(StoryTest):
         self.assertFalse(self.described['team_hp'][2])
         self.assertTrue(self.described['damage_log'][2])
         self.assertIn('390', self.described['damage_log'][0])
+
+    def test_hud_describe_hands_every_panel_s_preview_widget_to_the_settings_window(self):
+        kinds = dict((panel_id, (described[3] or {}).get('kind')) for panel_id, described in self.described.items())
+
+        self.assertEqual(kinds['crosshair'], 'crosshair')
+        self.assertEqual(kinds['team_hp'], 'team_hp')
 
     def test_hud_edit_shows_lobby_previews_of_the_enabled_panels(self):
         self.assertEqual(sorted(self.previews), HUD_EDIT_PREVIEWS)
@@ -2026,6 +2061,26 @@ class LoadoutAndStreamerTest(StoryTest):
 
     def test_leaving_the_battle_clears_the_loadout_panels(self):
         self.assertEqual(self.panels_after_battle, {})
+
+
+class LoadoutWithoutGuiVehicleTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        game.install_avatar_and_device_stubs()
+        cls.builder_calls = game.install_failing_vehicle_builder()
+        game.open_hangar()
+        game.enter_battle(1, tank_id=1)
+        cls.loadout = copy.deepcopy(game.hud_components().get('battle_loadout'))
+
+    def test_the_builder_gets_the_role_slot_and_the_arena_modifiers_like_the_client(self):
+        self.assertIn(('setRoleSlot', ROLE_SLOT), self.builder_calls)
+        self.assertIn(('setModifiers', ARENA_MODIFIERS), self.builder_calls)
+
+    def test_the_devices_still_show_when_the_gui_vehicle_cannot_be_built(self):
+        self.assertIn('img://gui/maps/icons/artefact/rammer.png', self.loadout['text'])
+        self.assertIn('img://gui/maps/icons/artefact/vents.png', self.loadout['text'])
 
 
 class HangarHelpersTest(StoryTest):

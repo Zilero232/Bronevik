@@ -1,5 +1,5 @@
 import { useHudOverlay } from '../model/hooks';
-import { HudLabel } from './components';
+import { HudHint, HudLabel } from './components';
 
 import s from './HudOverlay.module.scss';
 
@@ -11,6 +11,7 @@ export const HudOverlay = () => {
       {overlay.labels.map((label) => (
         <HudLabel key={label.panel.id} label={label} />
       ))}
+      {overlay.hint && <HudHint hint={overlay.hint} screen={overlay.screen} />}
     </div>
   );
 };

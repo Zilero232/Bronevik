@@ -81,4 +81,16 @@ describe(mountOnce, () => {
 
     expect(hostText()).toBe('');
   });
+
+  it('mounts on an engine element without the attribute API', () => {
+    givePageHost();
+    const host = document.getElementById(ID);
+
+    Object.defineProperty(host, 'hasAttribute', { value: undefined });
+    Object.defineProperty(host, 'setAttribute', { value: undefined });
+
+    mountText('engine');
+
+    expect(hostText()).toBe('engine');
+  });
 });

@@ -1,12 +1,6 @@
-@use '../../../../shared/styles/gameface' as *;
-
 .plate {
   align-items: center;
-  padding: 3px 10px 4px;
-}
-
-.compact {
-  padding: 2px 8px;
+  padding: 4px 8px;
 }
 
 .row {
@@ -16,51 +10,27 @@
   justify-content: center;
 }
 
+.strips {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+}
+
 .hp {
-  width: 58px;
   flex-shrink: 0;
   font-size: 15px;
   font-weight: 700;
+  line-height: 1;
   white-space: nowrap;
 }
 
 .left {
-  margin-right: 6px;
+  margin-right: 8px;
   text-align: right;
 }
 
 .right {
-  margin-left: 6px;
+  margin-left: 8px;
   text-align: left;
-}
-
-.score {
-  width: 64px;
-  flex-shrink: 0;
-  padding: 1px 0;
-  border-radius: token(radius-sm);
-  margin: 0 8px;
-  background-color: rgb(0 0 0 / 30%);
-  color: token(color-text);
-  font-size: 22px;
-  font-weight: 700;
-  text-align: center;
-  white-space: nowrap;
-}
-
-.gap {
-  width: 40px;
-}
-
-.diff {
-  margin-top: 1px;
-  font-size: 11px;
-}
-
-.ahead {
-  color: token(color-ally);
-}
-
-.behind {
-  color: token(color-enemy);
 }

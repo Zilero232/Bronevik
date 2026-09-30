@@ -81,7 +81,7 @@ describe(panelPreview, () => {
 
     const preview = panelPreview({ component: component({ panel: true }), panels });
 
-    expect(preview).toBe('12:34');
+    expect(preview?.preview).toBe('12:34');
   });
 
   it('has no preview for a card that is not a panel', () => {

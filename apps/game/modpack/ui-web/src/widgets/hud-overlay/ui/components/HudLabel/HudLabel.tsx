@@ -3,8 +3,8 @@ import clsx from 'clsx';
 import type { HudLabelProps } from './HudLabel.types';
 
 import { HudPointerContext } from '../../../../../shared/lib/hud-pointer';
+import { HudLines } from '../../../../../shared/ui/hud';
 import { HUD_OVERLAY } from '../../../config';
-import { HudRun } from '../HudRun';
 
 import s from './HudLabel.module.scss';
 
@@ -32,13 +32,7 @@ export const HudLabel = ({ label }: HudLabelProps) => (
     ) : label.widget ? (
       <HudPointerContext.Provider value={label.interactive}>{label.widget.node}</HudPointerContext.Provider>
     ) : (
-      label.lines.map((line) => (
-        <span key={line.key} className={s.line}>
-          {line.runs.map((run) => (
-            <HudRun key={run.key} run={run} />
-          ))}
-        </span>
-      ))
+      <HudLines lines={label.lines} />
     )}
   </button>
 );

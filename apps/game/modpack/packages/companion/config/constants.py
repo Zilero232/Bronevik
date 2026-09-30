@@ -80,10 +80,17 @@ SHARE_CHANNELS = ('telegram', 'discord', 'both')
 # config.json keeps every default it was written with: a switch whose default changed is moved to the new
 # one when it still holds the old default and the file predates the change (`defaults_revision`).
 # (revision, key, old default, new default).
-DEFAULTS_REVISION = 1
+DEFAULTS_REVISION = 2
 RETIRED_DEFAULTS = (
     (1, 'battle_consumables', True, False),
     (1, 'battle_loadout', False, True),
+)
+# Switches set once for every file older than the revision, whatever they hold: revision 1 missed the files already
+# stamped with it, so the consumables bar under the equipment row stayed on. The stamp records it, and a switch the
+# player turns back on afterwards is kept. (revision, key, value).
+ONE_TIME_SWITCHES = (
+    (2, 'battle_consumables', False),
+    (2, 'battle_loadout', True),
 )
 DEFAULTS = {
     'enabled': True,

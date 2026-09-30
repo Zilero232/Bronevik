@@ -41,7 +41,14 @@ MAX_SOUND_EVENT = 64
 MOVED_ALIGNS = (('alignX', 'align_x'), ('alignY', 'align_y'))
 
 # Renderer props only the Gameface HUD page draws; GUIFlash's Flash labels are never sent them.
-GAMEFACE_PROPS = ('scale', 'kind', 'widget', 'dock')
+GAMEFACE_PROPS = ('scale', 'kind', 'widget', 'dock', 'hint', 'dim')
+
+# A panel's tooltip on the Gameface page is the short description of the component that draws it, its
+# `component_<id>_hint` string: the id follows the alias prefix (`otmetki.hud.<id>`, `otmetki.<id>[.<part>]`) unless the
+# table names it.
+HINT_KEY = 'component_%s_hint'
+HINT_PREFIXES = (ALIAS_PREFIX, 'otmetki.')
+HINT_COMPONENTS = {'otmetki.session': 'session_stats', 'otmetki.ui.button': 'settings_button'}
 
 # Docked columns: panels at their group's anchor stack one under (or, for a bottom anchor, above) the other with the
 # page's gap between them (ui-web widgets/hud-overlay/lib/dock), in `order`, so default places never overlap whatever

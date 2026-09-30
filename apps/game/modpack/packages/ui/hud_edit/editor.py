@@ -53,9 +53,11 @@ class HudEditor(object):
     def descriptions(self):
         found = {}
 
-        def collect(panel_id, preview=None, width=None, height=None, enabled=False):
+        def collect(panel_id, preview=None, width=None, height=None, enabled=False, widget=None):
             found[panel_id] = {
                 'preview': plain_preview(preview),
+                'text': preview if isinstance(preview, string_types) else None,
+                'widget': widget if isinstance(widget, dict) else None,
                 'width': _size(width, DEFAULT_WIDTH),
                 'height': _size(height, DEFAULT_HEIGHT),
                 'enabled': bool(enabled),

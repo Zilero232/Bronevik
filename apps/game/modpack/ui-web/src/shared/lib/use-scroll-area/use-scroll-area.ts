@@ -1,18 +1,13 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { funnel, isDeepEqual } from 'remeda';
 
-import type { ScrollMetrics } from '../wheel-scroll';
+import type { ScrollMetrics } from '../scroll-metrics';
 import type { UseScrollAreaInput } from './use-scroll-area.types';
 
 import { SCROLL_AREA } from '../../config';
+import { scrollMetricsOf } from '../scroll-metrics';
 import { useThumbDrag } from '../use-thumb-drag';
 import { bindWheelScroll, thumbOf } from '../wheel-scroll';
-
-const metricsOf = (element: HTMLElement): ScrollMetrics => ({
-  top: element.scrollTop,
-  content: element.scrollHeight,
-  viewport: element.clientHeight
-});
 
 export const useScrollArea = ({ initialTop = 0, onScrollEnd }: UseScrollAreaInput = {}) => {
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -25,7 +20,7 @@ export const useScrollArea = ({ initialTop = 0, onScrollEnd }: UseScrollAreaInpu
     const element = viewportRef.current;
 
     if (element) {
-      const next = metricsOf(element);
+      const next = scrollMetricsOf(element);
 
       setMetrics((current) => (isDeepEqual(current, next) ? current : next));
     }

@@ -5,10 +5,24 @@ import type { GamefaceMock, GamefaceMockInput, GamefaceMockPush } from './mock.t
 import { GAMEFACE } from '../gameface.constants';
 import { GAMEFACE_MOCK } from './mock.constants';
 
-export const createGamefaceMock = ({ state, feed = '', clientSize, mouse, onSend }: GamefaceMockInput): GamefaceMock => {
+const tooltipResources = () => ({
+  views: {
+    common: {
+      tooltip_window: {
+        simple_tooltip_content: { SimpleTooltipContent: () => GAMEFACE_MOCK.tooltipContentId },
+        tooltip_window: { TooltipWindow: () => GAMEFACE_MOCK.tooltipDecoratorId }
+      }
+    }
+  }
+});
+
+export const createGamefaceMock = ({ state, feed = '', clientSize, mouse, tooltips = false, onSend }: GamefaceMockInput): GamefaceMock => {
   const listeners: ((data: unknown, indexes: unknown, callbackIds: number[]) => void)[] = [];
   const sent: string[] = [];
   const inputAreas: number[][] = [];
+  const viewEvents: unknown[] = [];
+  const tooltipScope = tooltips ? { [GAMEFACE.globals.resources]: tooltipResources() } : {};
+  const tooltipEnv = tooltips ? { [GAMEFACE.viewEvent.handle]: (event: unknown) => viewEvents.push(event) } : {};
 
   const model: Record<string, unknown> = {
     [GAMEFACE.model.state]: state,
@@ -53,12 +67,15 @@ export const createGamefaceMock = ({ state, feed = '', clientSize, mouse, onSend
         [GAMEFACE.viewEnv.clientSize]: clientSize,
         [GAMEFACE.dataChanged.register]: () => GAMEFACE_MOCK.callbackId,
         [GAMEFACE.viewEnv.inputArea]: (...area: number[]) => inputAreas.push(area),
-        [GAMEFACE.viewEnv.mousePosition]: mouse
-      }
+        [GAMEFACE.viewEnv.mousePosition]: mouse,
+        ...tooltipEnv
+      },
+      ...tooltipScope
     },
     push,
     sent: () => [...sent],
-    inputAreas: () => [...inputAreas]
+    inputAreas: () => [...inputAreas],
+    viewEvents: () => [...viewEvents]
   };
 };
 

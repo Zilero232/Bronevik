@@ -34,7 +34,7 @@ class PreviewsTest(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, self.tmp)
-        self.source = os.path.join(ASSETS_DIR, 'previews', 'marks_panel.svg')
+        self.source = os.path.join(ASSETS_DIR, 'previews', 'camera.svg')
 
     @unittest.skipUnless(HAVE_LIBRARIES, 'resvg-py and pillow are not installed (uv sync)')
     def test_renders_every_size(self):

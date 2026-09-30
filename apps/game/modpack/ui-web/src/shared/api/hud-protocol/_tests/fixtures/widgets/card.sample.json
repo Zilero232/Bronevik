@@ -77,7 +77,12 @@
         "value": "WN8 2 310"
       }
     ],
-    "strip": ["good", "bad", "muted", "good"],
+    "strip": [
+      "good",
+      "bad",
+      "muted",
+      "good"
+    ],
     "subtitle": "EBR 105",
     "title": "ЛБЗ",
     "value": "79.53%",

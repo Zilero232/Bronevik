@@ -85,6 +85,19 @@ class ConfigTest(unittest.TestCase):
         self.assertEqual(chosen.get('battle_consumables'), True)
         self.assertEqual(chosen.get('battle_loadout'), False)
 
+    def test_a_config_stamped_before_the_one_time_switches_drops_the_consumables_bar_for_the_equipment_row(self):
+        upgraded = Config({'defaults_revision': 1, 'battle_consumables': True, 'battle_loadout': False})
+
+        self.assertEqual(upgraded.get('battle_consumables'), False)
+        self.assertEqual(upgraded.get('battle_loadout'), True)
+
+    def test_the_consumables_bar_turned_back_on_after_the_one_time_switches_stays_on(self):
+        upgraded = Config({'defaults_revision': 1, 'battle_consumables': True})
+
+        chosen = Config(dict(upgraded.to_dict(), battle_consumables=True))
+
+        self.assertEqual(chosen.get('battle_consumables'), True)
+
     def test_a_fresh_config_is_stamped_with_the_current_revision(self):
         self.assertEqual(Config().get('defaults_revision'), DEFAULTS_REVISION)
 

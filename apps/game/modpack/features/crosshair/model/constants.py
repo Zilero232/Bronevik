@@ -102,3 +102,5 @@ MARK_FILES = {
 }
 CENTRE_PART = 'centralTag'
 PREVIEW_SIZE = (128, 128)
+# The preview widget: a sketch of the game's own reticle with the chosen centre mark over it (ui-web crosshair).
+KIND = 'crosshair'

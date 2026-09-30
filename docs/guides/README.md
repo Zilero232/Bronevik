@@ -42,6 +42,7 @@ command — `bun run verify` (typecheck + ESLint + the client's import-cycle che
 - [Types](shared/types.md) — §8, §8.1, §8.2
 - [Arrow functions and braces](shared/functions.md) — §9, §9.1
 - [Blank lines](shared/blank-lines.md) — §13
+- [Readability](shared/readability.md) — one idea per line, small functions, names, readable tests
 - [Shared schemas](shared/schemas.md) — §14
 - [Forbidden](shared/forbidden.md) — §19
 - [Checklist before a commit](shared/checklist.md) — §20

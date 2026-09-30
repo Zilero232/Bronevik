@@ -29,11 +29,11 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-}
 
-.health {
-  padding-left: var(--space-3);
-  border-left: 1px solid var(--color-border);
+  > * + * {
+    padding-left: var(--space-3);
+    border-left: 1px solid var(--color-border);
+  }
 }
 
 .settings {

@@ -13,6 +13,10 @@ import s from './GameStatusSlot.module.scss';
 export const GameStatusSlot = ({ isServiceShown = true, className }: GameStatusSlotProps) => {
   const { version, status } = useGameStatus();
 
+  if (!version && !isServiceShown) {
+    return null;
+  }
+
   return (
     <div className={clsx(s.root, className)}>
       <GameVersionBadge version={version} />

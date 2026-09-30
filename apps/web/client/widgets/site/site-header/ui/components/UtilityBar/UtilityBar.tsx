@@ -23,7 +23,7 @@ export const UtilityBar = () => {
       <div className={s.inner}>
         <section aria-label={t('utility.label')} className={s.status}>
           <GameStatusSlot isServiceShown={false} />
-          <DataStatusBadge className={s.health} />
+          <DataStatusBadge />
         </section>
         <div className={s.settings}>
           <OwnPlayerMenu />

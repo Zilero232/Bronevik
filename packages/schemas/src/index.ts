@@ -182,6 +182,7 @@ export type { DiscordStatus, VkStatus } from './bots';
 export {
   BUILD_OPTIONS,
   BUILD_USAGE,
+  buildAdviceSchema,
   buildCohortSchema,
   buildHistoryEntrySchema,
   buildHistorySchema,
@@ -218,6 +219,7 @@ export {
   vehicleStatsSchema
 } from './builds';
 export type {
+  BuildAdvice,
   BuildCohort,
   BuildHistory,
   BuildHistoryEntry,

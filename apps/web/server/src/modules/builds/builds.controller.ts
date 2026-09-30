@@ -11,6 +11,7 @@ import { RequiresPlus } from '../billing';
 import { TankDetailService } from '../tanks';
 import { RECOMMENDED_BUILD } from './config';
 import {
+  BuildAdviceDto,
   BuildHistoryDto,
   BuildOptionsDto,
   BuildTankParamsDto,
@@ -21,7 +22,14 @@ import {
   PopularBuildsQueryDto,
   RecommendedBuildDto
 } from './dto';
-import { BuildOptionsService, BuildUsageService, LoadoutService, PopularBuildsService, RecommendedBuildService } from './services';
+import {
+  BuildAdviceService,
+  BuildOptionsService,
+  BuildUsageService,
+  LoadoutService,
+  PopularBuildsService,
+  RecommendedBuildService
+} from './services';
 
 @ApiTags('builds')
 @AllowAnonymous()
@@ -33,7 +41,8 @@ export class BuildsController {
     private readonly loadouts: LoadoutService,
     private readonly popularBuilds: PopularBuildsService,
     private readonly recommendedBuilds: RecommendedBuildService,
-    private readonly usage: BuildUsageService
+    private readonly usage: BuildUsageService,
+    private readonly buildAdvice: BuildAdviceService
   ) {}
 
   @Get(':id/build-options')
@@ -61,6 +70,16 @@ export class BuildsController {
     const tankId = await this.tanks.resolve(String(id));
 
     return this.recommendedBuilds.recommended({ tankId, query, viewerUserId });
+  }
+
+  @Get(':id/build-advice')
+  @UseInterceptors(ViewerCacheInterceptor)
+  @CacheTTL(CACHE_TTL.server)
+  @ZodResponse({ type: BuildAdviceDto })
+  async advice(@Param() { id }: BuildTankParamsDto) {
+    const tankId = await this.tanks.resolve(String(id));
+
+    return this.buildAdvice.advice(tankId);
   }
 
   @Get(':id/recommended-build/history')

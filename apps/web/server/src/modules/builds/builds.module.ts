@@ -5,6 +5,7 @@ import { TanksModule } from '../tanks';
 import { BuildsCatalogController } from './builds-catalog.controller';
 import { BuildsController } from './builds.controller';
 import {
+  BuildAdviceService,
   BuildDataService,
   BuildOptionsService,
   BuildsCatalogService,
@@ -18,6 +19,7 @@ import {
   imports: [TanksModule, BillingCoreModule],
   controllers: [BuildsController, BuildsCatalogController],
   providers: [
+    BuildAdviceService,
     BuildDataService,
     BuildOptionsService,
     LoadoutService,

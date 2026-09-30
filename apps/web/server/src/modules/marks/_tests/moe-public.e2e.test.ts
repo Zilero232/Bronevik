@@ -14,6 +14,7 @@ import { MoeTableService } from '../services';
 
 const KNOWN_TANK = 17_953;
 const thresholds = { '65': 2_000, '85': 2_600, '95': 3_100 };
+const mastery = { class3: 540, class2: 710, class1: 960, ace: 1_320 };
 
 const table = {
   forMod: async (tankId: number) => {
@@ -21,7 +22,7 @@ const table = {
       throw new AppNotFoundException('NOT_FOUND', 'no thresholds');
     }
 
-    return { tank_id: tankId, thresholds, updated_at: '2026-09-24T00:00:00.000Z', source: 'poliroid' };
+    return { tank_id: tankId, thresholds, mastery, updated_at: '2026-09-24T00:00:00.000Z', source: 'poliroid' };
   }
 };
 
@@ -54,6 +55,12 @@ describe('GET /v1/moe/:tankId', () => {
     expect(response.status).toBe(200);
     expect(response.body.tank_id).toBe(KNOWN_TANK);
     expect(response.body.thresholds).toEqual(thresholds);
+  });
+
+  it('adds the base XP per battle of each mastery badge', async () => {
+    const response = await request(app.getHttpServer()).get(`/v1/moe/${KNOWN_TANK}`);
+
+    expect(response.body.mastery).toEqual(mastery);
   });
 
   it('answers 404 with the shared error shape when there is no data', async () => {

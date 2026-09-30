@@ -111,7 +111,7 @@ export class MoeTableService {
   }
 
   async forMod(tankId: number): Promise<ModMoeThresholds> {
-    const moe = await this.thresholds.moe(tankId);
+    const [moe, mastery] = await Promise.all([this.thresholds.moe(tankId), this.thresholds.mastery(tankId)]);
 
     if (!moe) {
       throw new AppNotFoundException('NOT_FOUND', `No MoE thresholds for tank ${tankId}`);
@@ -125,6 +125,7 @@ export class MoeTableService {
         '95': moe.p95,
         ...(moe.p100 === null ? {} : { '100': moe.p100 })
       },
+      ...(mastery ? { mastery: { class3: mastery.class3, class2: mastery.class2, class1: mastery.class1, ace: mastery.master } } : {}),
       updated_at: moe.capturedAt.toISOString(),
       source: moe.source
     };

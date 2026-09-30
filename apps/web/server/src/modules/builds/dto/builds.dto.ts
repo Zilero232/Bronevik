@@ -1,4 +1,5 @@
 import {
+  buildAdviceSchema,
   buildHistorySchema,
   buildOptionsSchema,
   buildsCatalogQuerySchema,
@@ -22,6 +23,7 @@ export class PopularBuildsQueryDto extends createZodDto(popularBuildsQuerySchema
 export class PopularBuildsDto extends createZodDto(popularBuildsSchema) {}
 export class BuildUsageQueryDto extends createZodDto(buildUsageQuerySchema) {}
 export class RecommendedBuildDto extends createZodDto(recommendedBuildSchema) {}
+export class BuildAdviceDto extends createZodDto(buildAdviceSchema) {}
 export class BuildHistoryDto extends createZodDto(buildHistorySchema) {}
 export class BuildsCatalogQueryDto extends createZodDto(buildsCatalogQuerySchema) {}
 export class BuildsCatalogDto extends createZodDto(buildsCatalogSchema) {}

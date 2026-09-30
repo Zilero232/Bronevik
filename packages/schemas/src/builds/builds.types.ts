@@ -1,6 +1,7 @@
 import type { z } from 'zod';
 
 import type {
+  buildAdviceSchema,
   buildCohortSchema,
   buildHistoryEntrySchema,
   buildHistorySchema,
@@ -63,6 +64,7 @@ export type ShellUsage = z.infer<typeof shellUsageSchema>;
 export type BuildUsage = z.infer<typeof buildUsageSchema>;
 export type BuildUsageQuery = z.infer<typeof buildUsageQuerySchema>;
 export type RecommendedBuild = z.infer<typeof recommendedBuildSchema>;
+export type BuildAdvice = z.infer<typeof buildAdviceSchema>;
 export type BuildHistoryEntry = z.infer<typeof buildHistoryEntrySchema>;
 export type BuildHistory = z.infer<typeof buildHistorySchema>;
 export type BuildsCatalogQuery = z.infer<typeof buildsCatalogQuerySchema>;

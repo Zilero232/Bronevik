@@ -1,5 +1,6 @@
 export { BUILD_OPTIONS, BUILD_USAGE, POPULAR_BUILDS } from './builds.constants';
 export {
+  buildAdviceSchema,
   buildCohortSchema,
   buildHistoryEntrySchema,
   buildHistorySchema,
@@ -35,6 +36,7 @@ export {
   vehicleStatsSchema
 } from './builds.schemas';
 export type {
+  BuildAdvice,
   BuildCohort,
   BuildHistory,
   BuildHistoryEntry,

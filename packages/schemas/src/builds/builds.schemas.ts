@@ -253,6 +253,17 @@ export const recommendedBuildSchema = z.object({
   result: loadoutResultSchema.nullable()
 });
 
+const compactDescrSchema = z.number().int().positive();
+
+export const buildAdviceSchema = z.object({
+  tankId: tankIdSchema,
+  isEnough: z.boolean().describe('False while the sample is below minSample; the lists are empty then'),
+  battles: countSchema,
+  equipment: z.array(compactDescrSchema).describe('Compact descriptors (the client intCD) of the recommended equipment'),
+  directives: z.array(compactDescrSchema).describe('Compact descriptors of the recommended directives (battle boosters)'),
+  consumables: z.array(compactDescrSchema).describe('Compact descriptors of the recommended consumables')
+});
+
 export const buildHistoryEntrySchema = z.object({
   gameVersion: z.string(),
   computedAt: isoDateTimeSchema,

@@ -1,4 +1,5 @@
 export {
+  BuildAdviceDto,
   BuildHistoryDto,
   BuildOptionsDto,
   BuildsCatalogDto,

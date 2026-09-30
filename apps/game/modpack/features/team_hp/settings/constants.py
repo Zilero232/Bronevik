@@ -23,6 +23,7 @@ DEFAULTS = {
     'bar_width': 30,
     'icon_width': 3,
     'show_score': True,
+    'show_alive': False,
     'show_diff': True,
     'ally_color': COLOR_UP,
     'enemy_color': COLOR_DOWN,

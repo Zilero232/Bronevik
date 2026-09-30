@@ -186,7 +186,7 @@
         }
       ],
       "group": "hangar",
-      "hint": "Бои, победы, средний урон и WN8 за текущую сессию.",
+      "hint": "Бои, победы, средний урон и WN8 за текущую сессию, полоска последних 10 боёв, «Ждут итогов» и кнопка «Новая сессия».",
       "id": "session_stats",
       "page": null,
       "panel": false,
@@ -402,6 +402,7 @@
     ]
   },
   "revision": 1,
+  "scroll": {},
   "site": "https://triotmetki.ru",
   "status": {
     "account_id": null,

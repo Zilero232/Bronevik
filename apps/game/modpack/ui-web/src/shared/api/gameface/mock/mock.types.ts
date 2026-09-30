@@ -3,6 +3,7 @@ import type { ClientSize } from '../gameface.types';
 export type GamefaceMockPush = {
   state?: string;
   feed?: string;
+  escape?: number;
 };
 
 export type GamefaceMockInput = {
@@ -15,6 +16,7 @@ export type GamefaceMockInput = {
 
 export type GamefaceMock = {
   scope: Record<string, unknown>;
+  push: (values: GamefaceMockPush) => void;
   sent: () => string[];
   inputAreas: () => number[][];
 };

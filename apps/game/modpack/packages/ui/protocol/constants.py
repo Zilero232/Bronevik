@@ -6,6 +6,7 @@ MAX_MESSAGE_CHARS = 64 * 1024
 
 STATE_PROPERTY = 'state'
 FEED_PROPERTY = 'feed'
+ESCAPE_PROPERTY = 'escape'
 SEND_COMMAND = 'send'
 MESSAGE_ARG = 'message'
 
@@ -31,6 +32,8 @@ COMMANDS = (
     'window_layout',
     'feed',
     'diag',
+    'escape',
+    'scroll',
 )
 
 REQUIRED = {
@@ -52,10 +55,11 @@ REQUIRED = {
     'window_layout': ('x', 'y', 'width', 'height', 'zoom'),
     'feed': ('component', 'active'),
     'diag': ('text',),
+    'scroll': ('page', 'top'),
 }
 
 # Commands that change nothing in the settings state: the window gets no new state for them.
-QUIET_COMMANDS = ('feed', 'diag')
+QUIET_COMMANDS = ('feed', 'diag', 'escape', 'scroll')
 
 # A diag line from the page goes to otmetki.log cut to this many characters.
 MAX_DIAG_CHARS = 400

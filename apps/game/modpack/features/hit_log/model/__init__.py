@@ -1,10 +1,11 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.compat import is_int, is_number, to_text
-from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, font
+from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, font, format_number
 from ....core.shells import SHELL_CODES
 from ....core.templates import render
-from .constants import DAMAGE_OUTCOMES, MAX_ENTRIES, MERGE_WINDOW_S, OUTCOME_COLORS, OUTCOMES
+from .constants import (DAMAGE_OUTCOMES, DETAIL_EXTENDED, DETAIL_FULL, DETAIL_SHORT, LINE_TEMPLATES, MAX_ENTRIES,
+                        MERGE_WINDOW_S, OUTCOME_COLORS, OUTCOMES)
 
 
 def _awaits_damage(entry):
@@ -158,6 +159,20 @@ def outcome_color(outcome, palette):
     return colors[OUTCOMES.index(outcome)] if outcome in OUTCOMES else COLOR_MUTED
 
 
+def crits_text(count, translate):
+    if not count:
+        return ''
+
+    return translate('hlog_crits', count=count)
+
+
+def hp_left_text(hp, translate):
+    if hp is None:
+        return ''
+
+    return translate('hlog_hp_left', hp=format_number(hp))
+
+
 def line_values(entry, translate, index, palette=None):
     return {
         'c_outcome': outcome_color(entry.get('outcome'), palette),
@@ -169,10 +184,33 @@ def line_values(entry, translate, index, palette=None):
         'hp': entry.get('hp'),
         'hits': entry.get('hits', 1),
         'shell': translate('hlog_shell_' + entry['shell']) if entry.get('shell') else '',
+        'crits_text': crits_text(entry.get('crits'), translate),
+        'hp_left': hp_left_text(entry.get('hp'), translate),
     }
 
 
-def format_hit_log(log, settings, translate):
+def detail_mode(settings, extended):
+    if not settings.get('alt_mode'):
+        return DETAIL_FULL
+    return DETAIL_EXTENDED if extended else DETAIL_SHORT
+
+
+def line_template(settings, translate, detail):
+    custom_key, per_shot_key, grouped_key = LINE_TEMPLATES[detail]
+    built_in_key = grouped_key if settings.get('group_by_target') else per_shot_key
+    return settings.get(custom_key) or translate(built_in_key)
+
+
+def line_note(entry, translate, detail):
+    if detail != DETAIL_EXTENDED:
+        return ''
+
+    item = line_values(entry, translate, 1)
+    words = (item['shell'], item['crits_text'])
+    return ' '.join(word for word in words if word)
+
+
+def format_hit_log(log, settings, translate, extended=False):
     size = settings.get('font_size')
     lines = []
     header = settings.get('header_template') or translate('hlog_header_template')
@@ -180,7 +218,7 @@ def format_hit_log(log, settings, translate):
         lines.append(font(render(header, log.values()), COLOR_NEUTRAL, size))
     grouped = settings.get('group_by_target')
     rows = log.by_target(settings.get('lines')) if grouped else log.recent(settings.get('lines'))
-    template = settings.get('line_template') or translate('hlog_target_template' if grouped else 'hlog_line_template')
+    template = line_template(settings, translate, detail_mode(settings, extended))
     for index, entry in enumerate(rows):
         text = render(template, line_values(entry, translate, index + 1, settings.get('palette'))).strip()
         lines.append(font(text, COLOR_MUTED, max(8, size - 2)))

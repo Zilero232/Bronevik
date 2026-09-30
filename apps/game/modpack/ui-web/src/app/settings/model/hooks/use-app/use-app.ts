@@ -7,9 +7,10 @@ import { $invalid, $query, $state, $view, receiveFeed, receiveState, WINDOW_VIEW
 import { gameface } from '../../../../../shared/api/gameface';
 import { send } from '../../../../../shared/api/protocol';
 import { onDistinct } from '../../../../../shared/lib/on-distinct';
+import { bindUiSounds } from '../../../../../shared/lib/ui-sounds';
 import { blockPageWheel } from '../../../../../shared/lib/wheel-scroll';
 import { useWindowFrame } from '../../../../../widgets/window-frame';
-import { bindEscapeClose } from '../../../lib/escape-close';
+import { watchEscape } from '../../../lib/escape-answer';
 
 export const useApp = () => {
   const state = useStore($state);
@@ -20,17 +21,19 @@ export const useApp = () => {
 
   useEffect(() => blockPageWheel(document), []);
 
-  useEffect(() => bindEscapeClose(document), []);
+  useEffect(() => bindUiSounds(document), []);
 
   useEffect(() => {
     gameface.fitView();
 
     const takeState = onDistinct(receiveState);
     const takeFeed = onDistinct(receiveFeed);
+    const takeEscape = watchEscape();
 
     gameface.onDataChanged(() => {
       takeState(gameface.state());
       takeFeed(gameface.feed());
+      takeEscape(gameface.escape());
     });
 
     send({ type: 'ready' });

@@ -147,7 +147,8 @@ export const stateSchema = z.object({
   hud: z.object({ editing: z.boolean(), panels: z.array(panelSchema) }),
   notice: z.nullable(noticeSchema),
   window: windowSchema,
-  focus: z.nullable(z.object({ section: z.enum(PROTOCOL.pages), seq: z.number() }))
+  focus: z.nullable(z.object({ section: z.enum(PROTOCOL.pages), seq: z.number() })),
+  scroll: z.partialRecord(z.enum(PROTOCOL.pages), z.number())
 });
 
 const feedItemSchema = z.looseObject({ id: text });
@@ -201,5 +202,7 @@ export const messageSchema = z.discriminatedUnion('type', [
     placed: z.optional(z.boolean())
   }),
   z.object({ type: z.literal('feed'), component: text, active: z.boolean() }),
-  z.object({ type: z.literal('diag'), text })
+  z.object({ type: z.literal('diag'), text }),
+  z.object({ type: z.literal('escape') }),
+  z.object({ type: z.literal('scroll'), page: z.enum(PROTOCOL.pages), top: z.number() })
 ]);

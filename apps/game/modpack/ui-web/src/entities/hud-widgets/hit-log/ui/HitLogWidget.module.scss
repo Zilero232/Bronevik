@@ -54,3 +54,12 @@
   font-size: 12px;
   text-align: right;
 }
+
+.note {
+  @include ellipsis;
+
+  max-width: 120px;
+  margin-left: 6px;
+  color: token(color-text-muted);
+  font-size: 12px;
+}

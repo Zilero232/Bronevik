@@ -29,7 +29,7 @@ def preview_hit():
 
 
 def preview_widget(settings, translate):
-    return damage_log_widget(preview_log(), settings)
+    return damage_log_widget(preview_log(), settings, translate)
 
 
 def preview_last_hit_widget(settings, translate):

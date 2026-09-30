@@ -7,6 +7,20 @@ MERGE_WINDOW_S = 2.0
 DAMAGE_OUTCOMES = ('pen', 'crit', 'no_pen')
 MAX_ENTRIES = 60
 
+# How much a line tells: always the same (`alt_mode` off), or with `alt_mode` on the short line (outcome, damage, name)
+# until Alt is held, then the full line with the class, HP left, shell and crits; Alt is the stock client's
+# extended-info key (GameEvent.SHOW_EXTENDED_INFO, RU 1.45 client source).
+DETAIL_FULL = 'full'
+DETAIL_SHORT = 'short'
+DETAIL_EXTENDED = 'extended'
+# The line template per detail: (the setting with the player's own, the built-in one per shot, the built-in one
+# grouped by target).
+LINE_TEMPLATES = {
+    DETAIL_FULL: ('line_template', 'hlog_line_template', 'hlog_target_template'),
+    DETAIL_SHORT: ('line_template', 'hlog_line_template_short', 'hlog_target_template_short'),
+    DETAIL_EXTENDED: ('alt_line_template', 'hlog_line_template_alt', 'hlog_target_template_alt'),
+}
+
 PREVIEW_HITS = (
     (1, 'Pz. IV', 'pen', 390, 'ap', 510),
     (2, 'T-34', 'ricochet', None, None, None),

@@ -6,6 +6,7 @@ import types
 import unittest
 
 import _support  # noqa: F401
+from otmetki.core.events import EventBus
 from otmetki.core.hud import ComponentConfig, HudBackend, HudLayer, panel_schema
 from otmetki.core.storage import MemoryFile
 
@@ -87,7 +88,8 @@ class StockControlTest(unittest.TestCase):
         from otmetki.core.client.hud.stock import StockControl
         self.layer = HudLayer(Backend(), ComponentConfig(MemoryFile()))
         self.layer.register('panel', panel_schema({}))
-        self.control = StockControl(self.layer)
+        self.bus = EventBus()
+        self.control = StockControl(self.layer, self.bus)
         assert self.control.install()
 
     def tearDown(self):
@@ -158,6 +160,26 @@ class StockControlTest(unittest.TestCase):
         page._dispose()
         assert not self.layer.gui_hidden and self.control.page is None
 
+    def test_alt_down_goes_out_on_the_bus_once(self):
+        held = []
+        self.bus.on('battle_extended_info', held.append)
+        ClassicPage()._populate()
+
+        self.control._on_extended_info(Event({'isDown': True}))
+        self.control._on_extended_info(Event({'isDown': True}))
+
+        assert held == [True]
+
+    def test_alt_ends_with_the_battle_page(self):
+        held = []
+        self.bus.on('battle_extended_info', held.append)
+        page = ClassicPage()
+        page._populate()
+        self.control._on_extended_info(Event({'isDown': True}))
+
+        page._dispose()
+
+        assert held == [True, False]
 
 if __name__ == '__main__':
     unittest.main()

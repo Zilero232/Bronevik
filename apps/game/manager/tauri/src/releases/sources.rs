@@ -5,11 +5,13 @@ pub struct SourceRule {
     pub path: &'static str,
 }
 
-pub const DEPENDENCY_SOURCES: [SourceRule; 4] = [
+pub const DEPENDENCY_SOURCES: [SourceRule; 6] = [
     SourceRule { host: "github.com", path: "/CH4MPi/GUIFlash/releases/download/" },
     SourceRule { host: "raw.githubusercontent.com", path: "/CH4MPi/GUIFlash/" },
     SourceRule { host: "gitlab.com", path: "/-/project/68695173/uploads/" },
     SourceRule { host: "gitlab.com", path: "/openwg/wot.gameface/-/raw/" },
+    SourceRule { host: "gitlab.com", path: "/-/project/26509092/uploads/" },
+    SourceRule { host: "gitlab.com", path: "/wot-public-mods/mods-list/-/raw/" },
 ];
 
 pub const DEPENDENCY_REDIRECTS: [SourceRule; 2] = [

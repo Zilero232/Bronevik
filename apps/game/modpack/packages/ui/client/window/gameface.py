@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.client.game import main_window
 from ....core.log import safe
-from ...protocol import FEED_PROPERTY, MESSAGE_ARG, RES_MAP_WINDOW, SEND_COMMAND, STATE_PROPERTY
+from ...protocol import ESCAPE_PROPERTY, FEED_PROPERTY, MESSAGE_ARG, RES_MAP_WINDOW, SEND_COMMAND, STATE_PROPERTY
 from .constants import WINDOW_LAYER
 
 # OpenWG Gameface (openwg_gameface) is a runtime dependency we do not bundle; Lesta needs its Lesta-compatible
@@ -30,13 +30,14 @@ if AVAILABLE:
 
     class SettingsViewModel(ViewModel):
 
-        def __init__(self, properties=2, commands=1):
+        def __init__(self, properties=3, commands=1):
             super(SettingsViewModel, self).__init__(properties=properties, commands=commands)
 
         def _initialize(self):
             super(SettingsViewModel, self)._initialize()
             self._addStringProperty(STATE_PROPERTY, '')
             self._addStringProperty(FEED_PROPERTY, '')
+            self._addNumberProperty(ESCAPE_PROPERTY, 0)
             self.send = self._addCommand(SEND_COMMAND)
 
         def set_state(self, text):
@@ -44,6 +45,9 @@ if AVAILABLE:
 
         def set_feed(self, text):
             self._setString(1, text)
+
+        def set_escape(self, asked):
+            self._setNumber(2, asked)
 
     class SettingsGameView(ViewImpl):
 

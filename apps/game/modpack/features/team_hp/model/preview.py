@@ -2,20 +2,21 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from . import TeamHp, format_panel
 from .constants import PREVIEW_TEAM, PREVIEW_VEHICLES
+from .strip import strip_options
 from .widget import team_hp_widget
 
 
 def preview_teams():
     teams = TeamHp(PREVIEW_TEAM)
-    for vehicle_id, team, max_hp, hp, alive, kind in PREVIEW_VEHICLES:
-        teams.add(vehicle_id, team, max_hp, alive, kind)
+    for vehicle_id, team, max_hp, hp, alive, kind, level in PREVIEW_VEHICLES:
+        teams.add(vehicle_id, team, max_hp, alive, kind, level)
         teams.set_health(vehicle_id, hp)
     return teams
 
 
 def preview_text(settings, translate):
-    return format_panel(preview_teams(), settings, translate)
+    return format_panel(preview_teams(), settings, translate, strip_options(None))
 
 
 def preview_widget(settings, translate):
-    return team_hp_widget(preview_teams(), settings)
+    return team_hp_widget(preview_teams(), settings, strip_options(None))

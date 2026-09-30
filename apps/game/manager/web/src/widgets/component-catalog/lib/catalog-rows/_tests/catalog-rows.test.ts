@@ -35,6 +35,13 @@ describe('buildCatalogRows', () => {
     expect(libraries.get('core')).toEqual([]);
   });
 
+  it('leaves out the optional libraries switching a component on never installs', () => {
+    const dependencies = catalog.dependencies.map((dependency) => ({ ...dependency, optional: dependency.id === 'guiflash' }));
+    const optionalRows = buildCatalogRows({ catalog: { ...catalog, dependencies }, installation, locale: 'en' });
+
+    expect(optionalRows.find((row) => row.id === 'damage_log')?.libraries).toEqual(['OpenWG Gameface']);
+  });
+
   it('carries the FPS cost and the sound preview of each component', () => {
     expect(rows.find((row) => row.id === 'damage_log')?.perf).toBe('medium');
     expect(rows.every((row) => row.audio === null)).toBe(true);

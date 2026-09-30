@@ -1,5 +1,6 @@
 {
   "data": {
+    "detail": "full",
     "rows": [
       {
         "ammo_rack": "otmetki:ammo_rack",
@@ -9,6 +10,7 @@
         "icon": "img://gui/maps/icons/shell/small/HIGH_EXPLOSIVE_MODERN.png|otmetki:damage",
         "kind": "received",
         "name": "KV-1",
+        "note": "",
         "received": true,
         "source": null,
         "tone": "received"
@@ -21,6 +23,7 @@
         "icon": "img://gui/maps/icons/shell/small/HOLLOW_CHARGE.png|otmetki:damage",
         "kind": "blocked",
         "name": "IS",
+        "note": "",
         "received": false,
         "source": null,
         "tone": "blocked"
@@ -33,6 +36,7 @@
         "icon": "img://gui/maps/icons/shell/small/ARMOR_PIERCING_CR_PREMIUM.png|otmetki:damage",
         "kind": "damage",
         "name": "T-34",
+        "note": "",
         "received": false,
         "source": null,
         "tone": "accent"
@@ -45,6 +49,7 @@
         "icon": "otmetki:radio",
         "kind": "radio",
         "name": "",
+        "note": "",
         "received": false,
         "source": null,
         "tone": "radio"
@@ -57,6 +62,7 @@
         "icon": "img://gui/maps/icons/shell/small/ARMOR_PIERCING.png|otmetki:damage",
         "kind": "damage",
         "name": "Pz. IV",
+        "note": "",
         "received": false,
         "source": null,
         "tone": "accent"

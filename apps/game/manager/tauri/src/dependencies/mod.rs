@@ -80,7 +80,11 @@ pub fn resolve(input: ResolveInput) -> AppResult<BTreeSet<String>> {
 }
 
 pub fn needed_to_enable(catalog: &Catalog, component_id: &str) -> AppResult<BTreeSet<String>> {
-    resolve(ResolveInput { catalog, components: &catalog.with_dependencies([component_id]), excluded: &[] })
+    let mut needed = resolve(ResolveInput { catalog, components: &catalog.with_dependencies([component_id]), excluded: &[] })?;
+
+    needed.retain(|id| catalog.dependency(id).is_some_and(|dependency| !dependency.optional));
+
+    Ok(needed)
 }
 
 pub fn is_copy_of(dependency: &DependencyComponent, file_name: &str) -> bool {

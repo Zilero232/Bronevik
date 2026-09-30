@@ -5,7 +5,7 @@ export type { ComponentValues, SearchHit, SectionSummary } from './lib/component
 export { changeSetting, resetComponent, toggleSwitch, undoLast } from './model/actions';
 export type { ChangeSettingInput, SetSettingInput, SettingInput } from './model/actions';
 export { $feed, receiveFeed, unwatchFeed, watchFeed } from './model/feed';
-export { useT } from './model/hooks';
+export { useScrollMemory, useT } from './model/hooks';
 
 export {
   $components,

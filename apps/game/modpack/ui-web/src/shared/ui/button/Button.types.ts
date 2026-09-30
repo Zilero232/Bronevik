@@ -8,4 +8,5 @@ export type ButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'classNa
   variant?: ButtonVariant;
   size?: ButtonSize;
   className?: string;
+  tooltip?: string;
 };

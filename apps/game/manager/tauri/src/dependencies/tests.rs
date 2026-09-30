@@ -278,6 +278,18 @@ fn enabling_a_component_needs_the_dependencies_of_everything_it_pulls_in() {
 }
 
 #[test]
+fn enabling_a_component_never_pulls_in_an_optional_dependency_the_wizard_still_offers() {
+    let mut catalog = test_catalog();
+
+    catalog.dependencies.iter_mut().filter(|dependency| dependency.id == GUIFLASH).for_each(|dependency| dependency.optional = true);
+
+    let components = selection(&catalog, &["hit_log".to_owned()]).unwrap();
+
+    assert_eq!(needed_to_enable(&catalog, "hit_log").unwrap(), ids(&[GAMEFACE]));
+    assert_eq!(resolve(ResolveInput { catalog: &catalog, components: &components, excluded: &[] }).unwrap(), ids(&[GAMEFACE, GUIFLASH]));
+}
+
+#[test]
 fn an_update_picks_the_owned_dependencies_the_catalog_pins_newer() {
     let setup = Setup::new();
     let theirs = setup.client.mods_dir.join("gambiter.guiflash_0.6.5.mtmod");

@@ -1,20 +1,12 @@
 import { clamp } from 'remeda';
 
-import type {
-  BindWheelScrollInput,
-  ScrollByWheelInput,
-  Thumb,
-  ThumbInput,
-  TopFromThumbInput,
-  WheelDelta,
-  WheelRoot,
-  WheelScrollInput
-} from './wheel-scroll.types';
+import type { BindWheelScrollInput, Thumb, ThumbInput, TopFromThumbInput, WheelDelta, WheelRoot, WheelScrollInput } from './wheel-scroll.types';
 
 import { gameface } from '../../api/gameface';
 import { SCROLL_AREA } from '../../config';
 import { rootScale } from '../hud-screen';
 import { reportOnce } from '../page-diag';
+import { createSmoothScroll } from '../smooth-scroll';
 
 const maxTop = (content: number, viewport: number): number => Math.max(content - viewport, 0);
 
@@ -52,34 +44,25 @@ export const wheelDelta = (event: WheelDelta): number => {
 
 const stepPx = (): number => SCROLL_AREA.step * (gameface.remScale() ?? rootScale());
 
-export const scrollByWheel = ({ element, event, step = stepPx() }: ScrollByWheelInput): boolean => {
-  const top = element.scrollTop;
-  const next = wheelScroll({ top, deltaY: wheelDelta(event), max: element.scrollHeight - element.clientHeight, step });
-
-  event.preventDefault();
-
-  if (next === top) {
-    return false;
-  }
-
-  event.stopPropagation();
-  element.scrollTop = next;
-
-  return true;
-};
-
 export const bindWheelScroll = ({ element, onScrolled }: BindWheelScrollInput): (() => void) => {
+  const glide = createSmoothScroll({ element, onFrame: onScrolled });
+
   const listener = (event: WheelEvent): void => {
-    const moved = scrollByWheel({ element, event });
+    const deltaY = wheelDelta(event);
+    const next = wheelScroll({ top: glide.target(), deltaY, max: element.scrollHeight - element.clientHeight, step: stepPx() });
+
+    event.preventDefault();
+
+    const moved = glide.scrollTo(next);
+
+    if (moved) {
+      event.stopPropagation();
+    }
 
     reportOnce({
       kind: 'wheel',
-      text: `delta ${wheelDelta(event)} (deltaY ${event.deltaY}), box ${element.scrollHeight}/${element.clientHeight} px, ${moved ? `scrolled to ${element.scrollTop}` : 'at its end'}`
+      text: `delta ${deltaY} (deltaY ${event.deltaY}), box ${element.scrollHeight}/${element.clientHeight} px, ${moved ? `gliding to ${next}` : 'at its end'}`
     });
-
-    if (moved) {
-      onScrolled?.();
-    }
   };
 
   element.addEventListener('wheel', listener, { passive: false });

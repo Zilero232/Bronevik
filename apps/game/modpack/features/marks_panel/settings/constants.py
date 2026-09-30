@@ -19,6 +19,8 @@ DEFAULTS = {
     'show_battle': True,
     'show_step': True,
     'show_battles': True,
+    'show_up': True,
+    'alt_detail': False,
     'step': '0.5',
     'color_mode': 'delta',
 }

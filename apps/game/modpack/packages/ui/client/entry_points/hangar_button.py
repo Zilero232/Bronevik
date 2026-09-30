@@ -18,7 +18,8 @@ def _hud_config(app):
 # The settings button is a panel of the Gameface HUD page (the same full-screen page as the hangar labels), docked
 # under the hangar's top bar and moved like every panel with the edit modifier. A child view injected into a
 # client widget (the 1.45 crew widget) drew it in the widget's box, mid-screen, and its click could not reach
-# the model; without the Gameface HUD page ModsList and Ctrl+Shift+T open the window.
+# the model. It is the fallback entry: with ModsList installed the entry sits in the stock bottom-right row and this
+# button is not drawn; without the Gameface HUD page Ctrl+Shift+T opens the window.
 class HangarButton(object):
 
     def __init__(self, app, on_open):
@@ -51,7 +52,8 @@ class HangarButton(object):
         shown = bool(self.app.ui.button(BUTTON_ALIAS, self.layout(), self.on_open, self.save))
         if shown != self.shown:
             self.shown = shown
-            log('ui: hangar button %s' % ('on the Gameface HUD page' if shown else 'not drawn (no Gameface HUD page), use ModsList or Ctrl+Shift+T'))
+            where = 'on the Gameface HUD page' if shown else 'not drawn (no Gameface HUD page), use Ctrl+Shift+T'
+            log('ui: hangar button %s' % where)
         return shown
 
     def save(self, props):

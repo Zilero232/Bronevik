@@ -91,7 +91,8 @@ class Dependency:
     """A third-party runtime mod (`kind: "dependency"`): not our package, passed through to components.json as is.
 
     The manager downloads `source_url` only when the player has no copy, checks `sha256` and `size`, keeps the
-    licence text from `licence.url` (checked by `licence.sha256`) and ticks it when a `required_by` id is selected.
+    licence text from `licence.url` (checked by `licence.sha256`) and ticks it when a `required_by` id is selected. An
+    `optional` one only improves them (ModsList): switching a component on never installs it.
     """
     id: str
     kind: str
@@ -106,6 +107,7 @@ class Dependency:
     sha256: str
     size: int
     required_by: Tuple[str, ...]
+    optional: bool
     restart_required: bool
 
 

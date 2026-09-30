@@ -1,6 +1,19 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ....core.format import COLOR_DOWN, COLOR_MUTED, COLOR_UP
+
 REGULAR_BONUS_TYPE = 1
+ACTION_RESET = 'new_session'
+
+# The strip of the last own battles of the session, oldest first: `result` of a battle event (companion/payload), its
+# colour on the card (core/hud/widget TONES) and in the GUIFlash text.
+RESULTS = ('win', 'loss', 'draw')
+RECENT_LIMIT = 10
+RESULT_TONES = {'win': 'good', 'loss': 'bad', 'draw': 'muted'}
+RESULT_COLORS = {'win': COLOR_UP, 'loss': COLOR_DOWN, 'draw': COLOR_MUTED}
+# An own battle waits for its results from the start until they arrive or this long has passed: a random battle lasts at
+# most 15 minutes, and after a game restart the companion no longer looks for the results of earlier arenas.
+PENDING_RESULTS_TTL_S = 30 * 60
 
 # contract/session-share.schema.json.
 SHARE_PATH = '/mod/me/session-share'

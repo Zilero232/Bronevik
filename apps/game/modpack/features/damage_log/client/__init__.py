@@ -136,7 +136,16 @@ class DamageLogPanel(BattlePanel):
         if self.log is not None and self.log.apply_summary(picked.get('dealt'), picked.get('assist'), picked.get('blocked'), picked.get('stun')):
             self.render()
 
+    def extended_changed(self, held):
+        if self.settings.get('alt_mode'):
+            self.render()
+
     @safe
     def render(self):
         if self.log is not None:
-            self.show(format_damage_log(self.log, self.settings, self.app.translate), damage_log_widget(self.log, self.settings))
+            translate = self.app.translate
+            extended = self.extended()
+
+            text = format_damage_log(self.log, self.settings, translate, extended)
+            payload = damage_log_widget(self.log, self.settings, translate, extended)
+            self.show(text, payload)

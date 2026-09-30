@@ -1,4 +1,7 @@
 import { installGamefaceMock } from '../../shared/api/gameface/mock';
-import { createDevGameface } from './mock-bridge';
+import { createDevGameface, relayEscape } from './mock-bridge';
 
-installGamefaceMock(createDevGameface());
+const mock = createDevGameface();
+
+installGamefaceMock(mock);
+relayEscape(mock);

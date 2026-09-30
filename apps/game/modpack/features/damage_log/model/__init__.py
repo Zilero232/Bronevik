@@ -4,8 +4,9 @@ from ....core.compat import is_number, string_types, to_text
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, font
 from ....core.shells import SHELL_CODES
 from ....core.templates import render
-from .constants import (AMMO_RACK_WINDOW_S, CLASS_GLYPHS, COLOR_MACROS, ICON_RENDITION, ICON_ROOT, KIND_COLOR, KINDS, LOG_KIND_FILTER, MAX_ENTRIES,
-                        PALETTES, SOURCES)
+from .constants import (AMMO_RACK_WINDOW_S, CLASS_GLYPHS, COLOR_MACROS, DETAIL_EXTENDED, DETAIL_FULL, DETAIL_SHORT,
+                        ENTRY_TEMPLATES, ICON_RENDITION, ICON_ROOT, KIND_COLOR, KINDS, LOG_KIND_FILTER, MAX_ENTRIES, PALETTES,
+                        SOURCES)
 
 
 class DamageLog(object):
@@ -149,14 +150,41 @@ def entry_values(entry, translate, index, icon_size=None, settings=None):
     }
 
 
-def format_damage_log(log, settings, translate):
+def detail_mode(settings, extended):
+    if not settings.get('alt_mode'):
+        return DETAIL_FULL
+    return DETAIL_EXTENDED if extended else DETAIL_SHORT
+
+
+# Holding Alt shows the log even where the style or `show_log` leaves it out, as the stock log does in its
+# "show by Alt" mode (damage_log_panel _VIEW_MODE.SHOW_BY_ALT_PRESS, RU 1.45 client source).
+def shows_log(settings, detail):
+    return bool(settings.get('show_log')) or detail == DETAIL_EXTENDED
+
+
+def entry_template(settings, translate, detail):
+    custom_key, built_in_key = ENTRY_TEMPLATES[detail]
+    return settings.get(custom_key) or translate(built_in_key)
+
+
+def entry_note(entry, translate, detail):
+    if detail != DETAIL_EXTENDED:
+        return ''
+
+    item = entry_values(entry, translate, 1)
+    words = (item['kind'], item['shell'], item['source'])
+    return ' '.join(word for word in words if word)
+
+
+def format_damage_log(log, settings, translate, extended=False):
+    detail = detail_mode(settings, extended)
     size = settings.get('font_size')
     values = log.values()
     values.update(palette_values(settings))
     lines = [font(render(totals_template(settings, translate), values), COLOR_NEUTRAL, size)]
-    if settings.get('show_log'):
+    if shows_log(settings, detail):
         kinds = LOG_KIND_FILTER.get(settings.get('log_kinds'), KINDS)
-        template = settings.get('entry_template') or translate('dlog_entry_template')
+        template = entry_template(settings, translate, detail)
         entry_size = max(8, size - 2)
         icon_size = entry_size + 2 if settings.get('kind_icons') else None
         for index, entry in enumerate(log.recent(settings.get('log_lines'), kinds)):

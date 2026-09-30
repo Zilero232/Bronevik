@@ -1,6 +1,6 @@
 """Synthesises our original sounds (CC0, Три отметки) and encodes them to the MP3 files the client plays: the
-sixth-sense chime from its custom detection-sound slot, the goal and record chimes through the same custom-MP3
-event (core/client/sound.play_mp3).
+sixth-sense chime from its custom detection-sound slot, the goal and record chimes and the countdown tick through the
+same custom-MP3 event (core/client/sound.play_mp3).
 
 Client pipeline (RU 1.45 source): the battle sounds are Wwise banks; a new Wwise event needs a bank built
 with the Wwise authoring tool (proprietary, licensed per project) plus a bank loader such as openwg/wot.wwise.
@@ -32,6 +32,8 @@ CHIMES = {
     # A new personal best on the tank (personal_best): a short fanfare that lands on a held chord.
     'otmetki_record': ((0.0, 392.0, 0.25, 0.7), (0.14, 523.25, 0.25, 0.75), (0.28, 659.26, 1.0, 0.9), (0.28, 783.99, 1.0, 0.8),
                        (0.28, 1046.5, 0.9, 0.35)),
+    # A second of the sixth-sense countdown (sixth_sense tick_sound): one short high click.
+    'otmetki_tick': ((0.0, 1760.0, 0.12, 1.0),),
 }
 # Partials of a small bell (ratio, relative gain, decay factor).
 PARTIALS = ((1.0, 1.0, 1.0), (2.01, 0.35, 1.6), (3.02, 0.12, 2.4), (4.17, 0.05, 3.2))

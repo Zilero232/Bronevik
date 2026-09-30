@@ -80,7 +80,16 @@ class HitLogPanel(BattlePanel):
         if changed:
             self.render()
 
+    def extended_changed(self, held):
+        if self.settings.get('alt_mode'):
+            self.render()
+
     @safe
     def render(self):
         if self.log is not None:
-            self.show(format_hit_log(self.log, self.settings, self.app.translate), hit_log_widget(self.log, self.settings))
+            translate = self.app.translate
+            extended = self.extended()
+
+            text = format_hit_log(self.log, self.settings, translate, extended)
+            payload = hit_log_widget(self.log, self.settings, translate, extended)
+            self.show(text, payload)

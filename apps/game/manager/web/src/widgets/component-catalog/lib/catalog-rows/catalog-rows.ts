@@ -30,7 +30,7 @@ export const buildCatalogRows = ({ catalog, installation, locale, fresh = [] }: 
     const pulled = withDependencies({ components: catalog.components, id });
 
     return catalog.dependencies
-      .filter((dependency) => dependency.requiredBy.some((component) => pulled.has(component)))
+      .filter((dependency) => !dependency.optional && dependency.requiredBy.some((component) => pulled.has(component)))
       .map((dependency) => pickLocalized({ text: dependency.title, locale }));
   };
 

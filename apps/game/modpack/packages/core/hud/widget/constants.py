@@ -15,5 +15,14 @@ CARD_KIND = 'card'
 # damage you take, progress (marks, records, goals, missions), information.
 RAILS = ('damage', 'incoming', 'progress', 'info')
 STATUSES = ('active', 'done', 'honors', 'failed', 'idle')
-CARD_LIMITS = {'title': 48, 'text': 64, 'value': 24, 'detail': 120, 'rows': 12, 'chips': 6, 'width': (120, 420)}
+CARD_LIMITS = {
+    'title': 48,
+    'text': 64,
+    'value': 24,
+    'detail': 120,
+    'rows': 12,
+    'chips': 6,
+    'strip': 12,
+    'width': (120, 420),
+}
 HEX_COLOR = re.compile(r'^#[0-9A-Fa-f]{6}$')

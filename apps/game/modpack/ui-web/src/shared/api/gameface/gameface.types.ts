@@ -18,6 +18,7 @@ export type GamefaceBridge = {
   fitView: () => boolean;
   state: () => string | null;
   feed: () => string | null;
+  escape: () => number | null;
   send: (message: string) => boolean;
   onDataChanged: (callback: () => void) => void;
   openWindow: () => boolean;
@@ -25,9 +26,3 @@ export type GamefaceBridge = {
 };
 
 export type InputArea = { left: number; top: number; width: number; height: number };
-
-export type InvokeInput = {
-  target: Record<string, unknown> | null;
-  method: string;
-  args: unknown[];
-};

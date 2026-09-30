@@ -3,6 +3,19 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 KINDS = ('damage', 'radio', 'track', 'stun', 'blocked', 'received')
 MAX_ENTRIES = 50
 
+# How much a log line tells: always everything (`alt_mode` off), or with `alt_mode` on the short line of the stock log's
+# SHORT record style (the amount and its icon) until Alt is held, then the full line with the kind, shell and source
+# (damage_log_panel _RECORD_STYLE and _handleShowExtendedInfo, RU 1.45 client source).
+DETAIL_FULL = 'full'
+DETAIL_SHORT = 'short'
+DETAIL_EXTENDED = 'extended'
+# The line template per detail: (the setting with the player's own, the built-in one).
+ENTRY_TEMPLATES = {
+    DETAIL_FULL: ('entry_template', 'dlog_entry_template'),
+    DETAIL_SHORT: ('entry_template', 'dlog_entry_template_short'),
+    DETAIL_EXTENDED: ('alt_entry_template', 'dlog_entry_template'),
+}
+
 LOG_KIND_FILTER = {
     'all': KINDS,
     'dealt': ('damage', 'radio', 'track', 'stun', 'blocked'),

@@ -29,6 +29,7 @@ export const DamageLogWidget = ({ data }: DamageLogWidgetProps) => {
           <span className={s.name}>{row.name}</span>
           <ClientIcon className={s.icon} icon={row.source} size={DAMAGE_LOG.iconSize} />
           <ClientIcon className={s.icon} icon={row.ammo_rack} size={DAMAGE_LOG.iconSize} />
+          {row.note && <span className={s.note}>{row.note}</span>}
         </div>
       ))}
     </HudPlate>

@@ -93,6 +93,9 @@ class UiContext(object):
     def close(self):
         self.host.close()
 
+    def escape_answered(self):
+        self.host.window.answer_escape()
+
     def hud_editing(self, active):
         self.host.on_hud_editing(active)
 

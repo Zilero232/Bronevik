@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
-"""Feeds `core.teams.TeamHp` from the battle session: the arena data behind the player panels, the health updates
-the client receives for markers and panels, the own vehicle's HP and the arena's kills. Shared by the team HP panel
-and the «Основной калибр» counter; each panel owns one tracker and calls `on_change()` to redraw."""
+"""Feeds `core.teams.TeamHp` from the battle session: the arena data behind the player panels, the numbers of the
+client's own BattleFieldCtrl (the stock score strip's source, `feed`), the health updates the client receives for
+markers and panels, the own vehicle's HP and the arena's kills. Shared by the team HP panel and the «Основной калибр»
+counter; each panel owns one tracker and calls `on_change()` to redraw."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....teams import TeamHp
 from ..session import arena, arena_dp, call, feedback, vehicle_state
+from .feed import battle_field_feed
 
 try:
     from gui.battle_control.battle_constants import FEEDBACK_EVENT_ID, VEHICLE_VIEW_STATE
@@ -28,6 +30,7 @@ class TeamTracker(object):
         self.health_event = getattr(FEEDBACK_EVENT_ID, 'VEHICLE_HEALTH', None)
         self.dead_event = getattr(FEEDBACK_EVENT_ID, 'VEHICLE_DEAD', None)
         self.health_state = getattr(VEHICLE_VIEW_STATE, 'HEALTH', None)
+        self.feed = battle_field_feed()
         self.teams = None
         self.unknown = set()
 
@@ -39,9 +42,11 @@ class TeamTracker(object):
         hooks.add(vehicle_state, 'onVehicleStateUpdated', self._on_vehicle_state)
         hooks.add(arena, 'onVehicleKilled', self._on_vehicle_killed)
         hooks.add(arena, 'onVehicleAdded', self._on_vehicle_added)
+        self.feed.listen(self._on_battle_field)
         self.sync()
 
     def stop(self):
+        self.feed.forget(self._on_battle_field)
         self.teams = None
 
     def sync(self):
@@ -50,9 +55,26 @@ class TeamTracker(object):
             return
         for info in provider.getVehiclesInfoIterator():
             vehicle_type = getattr(info, 'vehicleType', None)
-            self.teams.add(info.vehicleID, info.team, getattr(vehicle_type, 'maxHealth', None), bool(call(info, 'isAlive', True)),
-                           getattr(vehicle_type, 'classTag', None))
+            self.teams.add(info.vehicleID, info.team, getattr(vehicle_type, 'maxHealth', None),
+                           alive=bool(call(info, 'isAlive', True)),
+                           kind=getattr(vehicle_type, 'classTag', None),
+                           level=getattr(vehicle_type, 'level', None))
+        self._apply_feed()
         self.on_change()
+
+    def _apply_feed(self):
+        changed = False
+        for vehicle_id, hp in self.feed.health.items():
+            changed = self.teams.set_health(vehicle_id, hp) or changed
+        for vehicle_id in self.feed.dead:
+            changed = self.teams.kill(vehicle_id) or changed
+        if self.feed.team_health is not None:
+            changed = self.teams.set_team_health(*self.feed.team_health) or changed
+        return changed
+
+    def _on_battle_field(self):
+        if self.teams is not None and self._apply_feed():
+            self.on_change()
 
     def _on_vehicle_added(self, vehicle_id, *args):
         self.sync()

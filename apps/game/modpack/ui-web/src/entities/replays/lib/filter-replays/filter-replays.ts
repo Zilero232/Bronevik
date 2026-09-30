@@ -1,5 +1,5 @@
 import type { ReplayFilters, ReplayItem, ReplaySort } from '../../model';
-import type { FilterReplaysInput, MatchReplayInput } from './filter-replays.types';
+import type { FilterReplaysInput, MatchChoiceInput, MatchReplayInput } from './filter-replays.types';
 
 import { REPLAY_FILTER } from '../../config';
 
@@ -8,6 +8,7 @@ export const DEFAULT_REPLAY_FILTERS: ReplayFilters = {
   result: null,
   map: null,
   vehicle: null,
+  nation: null,
   tier: null,
   type: null,
   period: REPLAY_FILTER.all,
@@ -22,20 +23,32 @@ const haystack = (item: ReplayItem): string =>
 const withinPeriod = ({ item, filters, now }: MatchReplayInput): boolean =>
   filters.period === REPLAY_FILTER.all || now - item.time <= REPLAY_FILTER.periodSeconds[filters.period];
 
-export const matchesReplay = (input: MatchReplayInput): boolean => {
-  const { item, filters } = input;
+const matchesQuery = ({ item, filters }: MatchReplayInput): boolean => {
   const query = filters.query.trim().toLowerCase();
 
-  return (
-    (query === '' || haystack(item).includes(query)) &&
-    (filters.result === null || item.result === filters.result) &&
-    (filters.map === null || item.map === filters.map) &&
-    (filters.vehicle === null || item.vehicle === filters.vehicle) &&
-    (filters.tier === null || item.tier === filters.tier) &&
-    (filters.type === null || item.type === filters.type) &&
-    (!filters.favourites || item.favourite) &&
+  return query === '' || haystack(item).includes(query);
+};
+
+const matchesChoice = <Value>({ chosen, actual }: MatchChoiceInput<Value>): boolean => chosen === null || actual === chosen;
+
+const matchesFavourite = ({ item, filters }: MatchReplayInput): boolean => !filters.favourites || item.favourite;
+
+export const matchesReplay = (input: MatchReplayInput): boolean => {
+  const { item, filters } = input;
+
+  const checks = [
+    matchesQuery(input),
+    matchesChoice({ chosen: filters.result, actual: item.result }),
+    matchesChoice({ chosen: filters.map, actual: item.map }),
+    matchesChoice({ chosen: filters.vehicle, actual: item.vehicle }),
+    matchesChoice({ chosen: filters.nation, actual: item.nation }),
+    matchesChoice({ chosen: filters.tier, actual: item.tier }),
+    matchesChoice({ chosen: filters.type, actual: item.type }),
+    matchesFavourite(input),
     withinPeriod(input)
-  );
+  ];
+
+  return checks.every(Boolean);
 };
 
 const sortValue = (item: ReplayItem, sort: ReplaySort): number | null => item[sort];
@@ -64,6 +77,7 @@ export const activeFilterCount = (filters: ReplayFilters): number =>
     filters.result !== null,
     filters.map !== null,
     filters.vehicle !== null,
+    filters.nation !== null,
     filters.tier !== null,
     filters.type !== null,
     filters.period !== REPLAY_FILTER.all,

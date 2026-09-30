@@ -123,6 +123,7 @@ def gameface_stubs(test):
 
         def __init__(self, properties=0, commands=0):
             self.strings = []
+            self.numbers = []
             self._initialize()
 
         def _initialize(self):
@@ -132,6 +133,13 @@ def gameface_stubs(test):
             self.strings.append([name, value])
 
         def _setString(self, index, value):
+            self.strings[index][1] = value
+
+        def _addNumberProperty(self, name, value):
+            self.strings.append([name, value])
+            self.numbers.append(name)
+
+        def _setNumber(self, index, value):
             self.strings[index][1] = value
 
         def _addCommand(self, name):
@@ -331,6 +339,41 @@ class UiSmokeTest(unittest.TestCase):
             self.send(type='set', component='companion', key='send_shots', value=False)
             assert app.config.get('send_shots') is False
             assert self.state()['revision'] == 4
+
+    def model_value(self, name):
+        model = self.windows[-1].content.getViewModel()
+        return dict(model.strings)[name]
+
+    def ui_host(self):
+        return sys.modules['gui.mods.otmetki.core.registry'].registry().instances['ui']
+
+    def test_modslist_takes_the_place_of_the_hangar_button(self):
+        self.open_hangar(0)
+
+        button = self.ui_host().button
+
+        assert len(self.mods_list) == 1
+        assert button.settings is None
+
+    def test_esc_asks_the_page_to_step_back(self):
+        self.open_hangar(0)
+        self.mods_list[0]['callback']()
+
+        self.ui_host().window.step_back()
+
+        assert self.model_value('escape') == 1
+        assert len(self.windows) == 1
+
+    def test_the_page_answers_esc_and_the_window_stays(self):
+        self.open_hangar(0)
+        self.mods_list[0]['callback']()
+        window = self.ui_host().window
+        window.step_back()
+
+        self.send(type='escape')
+
+        assert not window.watchdog.is_waiting
+        assert len(self.windows) == 1
 
     def test_hotkey_and_battle_close_the_window(self):
         self.open_hangar(0)

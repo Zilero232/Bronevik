@@ -5,9 +5,11 @@ from ....core.compat import is_number
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, counted, font
 from ....core.moe import combined_damage, moe_color, moe_macros, moe_state, rating_to_percent
 from ....core.templates import render
-from .constants import KINDS, LINE_SEPARATOR, TARGET_SEPARATOR, TITLE_SIZE_STEP
+from .constants import (APPROX, KINDS, LINE_SEPARATOR, SOURCE_ESTIMATED, SOURCE_VERIFIED, TARGET_SEPARATOR,
+                        TITLE_SIZE_STEP)
+from .view import PanelView
 
-__all__ = ('BattleTotals', 'format_panel', 'panel_state')
+__all__ = ('BattleTotals', 'PanelView', 'format_panel', 'panel_state', 'percent_source')
 
 
 class BattleTotals(object):
@@ -38,9 +40,34 @@ class BattleTotals(object):
         return combined_damage(self.get('damage'), self.get('radio'), self.get('track'), self.get('stun'))
 
 
+def percent_source(snapshot, curve):
+    """`verified` when the starting percent is the client's own damageRating (the dossier read when the tank was
+    selected, updated from the own battle results since): the server's value, not ours. `estimated` when the dossier
+    has none (missing or 0) and the percent is the site curve at the dossier's EMA."""
+    rating = snapshot.get('damage_rating')
+    if is_number(rating) and rating > 0:
+        return SOURCE_VERIFIED
+    return SOURCE_ESTIMATED if curve is not None else None
+
+
 def panel_state(snapshot, combined, curve, pace, settings):
-    return moe_state(snapshot['moving_avg_damage'], rating_to_percent(snapshot.get('damage_rating')), combined, curve, pace,
-                     float(settings.get('step')), snapshot.get('marks_on_gun'))
+    moving_avg = snapshot['moving_avg_damage']
+    source = percent_source(snapshot, curve)
+    is_verified = source == SOURCE_VERIFIED
+    percent = rating_to_percent(snapshot.get('damage_rating')) if is_verified else None
+    step = float(settings.get('step'))
+
+    state = moe_state(moving_avg, percent, combined, curve, pace, step, snapshot.get('marks_on_gun'))
+    state['source'] = source
+    if source == SOURCE_ESTIMATED:
+        state['percent'] = round(curve.percent_for(moving_avg), 2)
+    return state
+
+
+def _shows_up(state, settings):
+    if not settings.get('show_up'):
+        return False
+    return state['up_level'] is not None
 
 
 def _targets(state, values, translate):
@@ -59,20 +86,42 @@ def _extended(state, values, settings, translate, color, size):
     if settings.get('show_targets') and state['need']:
         lines.append(font(_targets(state, values, translate), COLOR_NEUTRAL, size))
     extra = []
+    if _shows_up(state, settings):
+        extra.append(render(translate('marks_panel_line_up'), values))
     if settings.get('show_step') and state['step_need'] is not None:
         extra.append(render(translate('marks_panel_line_step'), values))
     if settings.get('show_battles') and state['next_level'] is not None:
         extra.append(render(translate('marks_panel_line_battles'), values))
     if extra:
         lines.append(font(TARGET_SEPARATOR.join(extra), COLOR_MUTED, size))
+    if settings.get('detail'):
+        lines.append(font(_detail(state, values, translate), COLOR_MUTED, size))
     return lines
 
 
-def format_panel(state, settings, translate):
-    """The panel text in the chosen style; `custom` renders the player's template with every macro."""
+def _detail(state, values, translate):
+    items = [values['source']] if values['source'] else []
+    if state['next_level'] in state['target_avg']:
+        items.append(render(translate('marks_panel_line_target_avg'), values))
+    return TARGET_SEPARATOR.join(items)
+
+
+def _values(state, translate):
     values = moe_macros(state)
     values['title'] = translate('marks_panel_title')
-    values['battles_count'] = counted(state['battles'], 'battles', translate) if state['battles'] is not None else values['battles']
+    if state['battles'] is not None:
+        values['battles_count'] = counted(state['battles'], 'battles', translate)
+    else:
+        values['battles_count'] = values['battles']
+    values['source'] = translate('marks_panel_source_%s' % state['source']) if state['source'] else u''
+    values['approx'] = APPROX if state['source'] == SOURCE_ESTIMATED else u''
+    return values
+
+
+def format_panel(state, settings, translate):
+    """The panel text in the style of `settings` (a PanelView); `custom` renders the player's template with every
+    macro."""
+    values = _values(state, translate)
     color = moe_color(state, settings.get('color_mode'))
     size = settings.get('font_size')
     style = settings.get('style')
@@ -83,5 +132,6 @@ def format_panel(state, settings, translate):
     if style == 'minimal':
         return font(render(translate('marks_panel_line_minimal'), values), color, size)
     if style == 'compact':
-        return font(render(translate('marks_panel_line_compact'), values), color, size)
+        key = 'marks_panel_line_compact_up' if _shows_up(state, settings) else 'marks_panel_line_compact'
+        return font(render(translate(key), values), color, size)
     return LINE_SEPARATOR.join(_extended(state, values, settings, translate, color, size))

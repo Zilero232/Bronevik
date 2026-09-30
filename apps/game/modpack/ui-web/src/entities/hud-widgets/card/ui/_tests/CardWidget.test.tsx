@@ -37,6 +37,21 @@ describe(CardWidget, () => {
     expect(html.innerHTML).not.toContain('currentColor');
   });
 
+  it('draws one coloured mark per strip tone, in order', () => {
+    const html = mount({ Component: CardWidget, props: { data } });
+    const marks = [...html.querySelectorAll('span[style*="background-color"]')].map((span) => span.getAttribute('style'));
+
+    expect(marks).toHaveLength(4);
+    expect(marks[0]).toContain('rgb(76, 195, 107)');
+    expect(marks[1]).toContain('rgb(235, 114, 118)');
+  });
+
+  it('draws no strip for a card without marks', () => {
+    const html = mount({ Component: CardWidget, props: { data: { ...data, strip: [] } } });
+
+    expect(html.querySelectorAll('span[style*="background-color"]')).toHaveLength(0);
+  });
+
   it('keeps a card without a title to its body', () => {
     const html = mount({ Component: CardWidget, props: { data: { ...data, title: null, value: null, chips: [] } } });
 

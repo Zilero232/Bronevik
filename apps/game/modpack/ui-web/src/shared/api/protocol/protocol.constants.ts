@@ -21,7 +21,9 @@ export const PROTOCOL = {
     'hud_reset_all',
     'window_layout',
     'feed',
-    'diag'
+    'diag',
+    'escape',
+    'scroll'
   ],
   groups: ['data', 'hangar', 'battle'],
   sections: ['battle', 'hangar', 'marks', 'replays', 'streamer', 'data', 'hud'],

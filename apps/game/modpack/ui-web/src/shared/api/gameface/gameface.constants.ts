@@ -3,11 +3,13 @@ export const GAMEFACE = {
     model: 'model',
     engine: 'engine',
     viewEnv: 'viewEnv',
-    subViews: 'subViews'
+    subViews: 'subViews',
+    resources: 'R'
   },
   engine: {
     whenReady: 'whenReady',
     on: 'on',
+    call: 'call',
     dataChangedEvent: 'viewEnv.onDataChanged'
   },
   // RU 1.45 client bundles and OpenWG's libs/model.js register the model with addDataChangedCallback('model', 0, true)
@@ -39,8 +41,29 @@ export const GAMEFACE = {
   model: {
     state: 'state',
     feed: 'feed',
+    escape: 'escape',
     send: 'send',
     nested: 'model'
+  },
+  // OpenWG Gameface mods/libs/views.js and the client's own bundles: a tooltip is a view event the client answers with
+  // its SimpleTooltipContent window, arguments wrapped as GFValueProxy.
+  viewEvent: {
+    handle: 'handleViewEvent',
+    eventType: 'GFViewEventProxy',
+    valueType: 'GFValueProxy',
+    tooltip: 1,
+    targetId: 0
+  },
+  tooltip: {
+    content: ['views', 'common', 'tooltip_window', 'simple_tooltip_content', 'SimpleTooltipContent'],
+    decorator: ['views', 'common', 'tooltip_window', 'tooltip_window', 'TooltipWindow'],
+    resourceArg: 'resId'
+  },
+  // OpenWG Gameface mods/libs/sound.js and the client's own bundles: engine.call('PlaySound', name) with the client's
+  // UI sounds, `highlight` on hover and `play` on a click.
+  sound: {
+    event: 'PlaySound',
+    names: { hover: 'highlight', click: 'play' }
   },
   button: {
     marker: 'otmetkiButton',

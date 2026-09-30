@@ -6,7 +6,8 @@ import unittest
 import _support  # noqa: F401
 from otmetki.core.format import COLOR_DOWN, COLOR_NEUTRAL, COLOR_UP, MARK_COLORS
 from otmetki.core.moe import (EMA_K, PaceBook, ThresholdCache, ThresholdCurve, battle_combined, battles_to_reach, combined_damage,
-                              moe_color, moe_macros, moe_state, next_level, project_moving_avg, rating_to_percent, required_battle_damage)
+                              moe_color, moe_macros, moe_state, next_level, next_whole_percent, project_moving_avg, rating_to_percent,
+                              required_battle_damage)
 from otmetki.core.moe.constants import MAX_FORECAST_BATTLES, PACE_BATTLES, THRESHOLD_ERROR_TTL_S, THRESHOLD_TTL_S
 
 API = {'tank_id': 1, 'thresholds': {'65': 2000, '85': 2600, '95': 3100, '100': 4200}}
@@ -104,7 +105,77 @@ class StateTest(unittest.TestCase):
         assert moe_state(2300, None, 0, curve(), None)['next_level'] == 85
 
 
+class WholePercentTest(unittest.TestCase):
+
+    def test_next_whole_percent_after_a_fraction(self):
+        assert next_whole_percent(86.3) == 87
+
+    def test_next_whole_percent_after_a_whole_percent(self):
+        assert next_whole_percent(86.0) == 87
+
+    def test_next_whole_percent_can_be_100(self):
+        assert next_whole_percent(99.5) == 100
+
+    def test_no_whole_percent_after_100(self):
+        assert next_whole_percent(100.0) is None
+
+    def test_damage_for_the_next_whole_percent_before_the_battle(self):
+        state = moe_state(2500, 81.5, None, curve(), None)
+
+        assert state['up_level'] == 82
+        assert state['up_need'] == 3258
+
+    def test_damage_for_the_next_whole_percent_shrinks_with_the_battle_damage(self):
+        state = moe_state(2500, 81.5, 1000, curve(), None)
+
+        assert state['up_need'] == 2258
+
+    def test_that_damage_lifts_the_projection_to_the_whole_percent(self):
+        state = moe_state(2500, 81.5, 3258, curve(), None)
+
+        assert state['projected'] == 82.0
+        assert state['up_need'] == 0
+
+    def test_less_damage_stays_below_the_whole_percent(self):
+        state = moe_state(2500, 81.5, 3208, curve(), None)
+
+        assert state['projected'] == 81.97
+        assert state['up_need'] == 50
+
+    def test_no_whole_percent_at_100(self):
+        state = moe_state(4300, 100.0, 0, curve(), None)
+
+        assert state['up_level'] is None
+        assert state['up_need'] is None
+
+    def test_no_whole_percent_beyond_the_curve(self):
+        short = ThresholdCurve.from_api({'thresholds': {'65': 2000, '85': 2600, '95': 3100}})
+
+        state = moe_state(3200, 95.5, 0, short, None)
+
+        assert state['up_level'] is None
+        assert state['up_need'] is None
+
+    def test_no_whole_percent_without_a_curve(self):
+        state = moe_state(2000, 70.0, 0, None, None)
+
+        assert state['up_need'] is None
+
+
 class MacrosTest(unittest.TestCase):
+
+    def test_whole_percent_macros(self):
+        values = moe_macros(moe_state(2500, 81.5, 1000, curve(), None))
+
+        assert values['up'] == '82'
+        assert values['need_up'] == '2 258'
+
+    def test_whole_percent_macros_without_a_curve(self):
+        values = moe_macros(moe_state(2000, 70.0, 0, None, None))
+
+        assert values['up'] == '-'
+        assert values['need_up'] == '-'
+
 
     def test_text_values(self):
         values = moe_macros(moe_state(2500, 81.5, 2100, curve(), 1000, 0.5, 2))

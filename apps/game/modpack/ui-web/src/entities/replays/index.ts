@@ -5,4 +5,4 @@ export { parseReplaysPage } from './lib/parse-replays-page';
 export { replayFacets } from './lib/replay-facets';
 export { summarizeReplays } from './lib/replay-summary';
 
-export type { BattleType, ReplayFilters, ReplayItem, ReplaySort, ReplaysPage } from './model';
+export type { BattleType, ReplayFilters, ReplayItem, ReplayNation, ReplaySort, ReplaysPage } from './model';

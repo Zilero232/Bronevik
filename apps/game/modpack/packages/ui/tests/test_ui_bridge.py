@@ -104,6 +104,7 @@ class FakeContext(object):
         self.opened = []
         self.bound = []
         self.closed = 0
+        self.escapes_answered = 0
         self.editing = []
         self.actions = []
         self.refreshed = []
@@ -165,6 +166,9 @@ class FakeContext(object):
 
     def close(self):
         self.closed += 1
+
+    def escape_answered(self):
+        self.escapes_answered += 1
 
     def hud_editing(self, active):
         self.editing.append(active)
@@ -288,6 +292,31 @@ class BridgeMessageTest(unittest.TestCase):
             send(self.bridge, type='set_many', component=COMPANION_ID, values=values)
             assert self.bridge.notice['kind'] == 'error', values
         assert self.context.config.get('send_shots') is True
+
+    def test_an_escape_answer_reaches_the_window_without_a_new_state(self):
+        changed = send(self.bridge, type='escape')
+
+        assert changed is False
+        assert self.context.escapes_answered == 1
+        assert self.context.closed == 0
+
+    def test_the_scroll_position_of_a_page_is_kept_for_the_session(self):
+        changed = send(self.bridge, type='scroll', page='hangar', top=412.6)
+
+        assert changed is False
+        assert self.bridge.state()['scroll'] == {'hangar': 412}
+
+    def test_a_scroll_position_of_an_unknown_page_is_refused(self):
+        send(self.bridge, type='scroll', page='search', top=100)
+
+        assert self.bridge.notice['kind'] == 'error'
+        assert self.bridge.state()['scroll'] == {}
+
+    def test_a_scroll_position_that_is_not_a_number_is_refused(self):
+        send(self.bridge, type='scroll', page='battle', top='far')
+
+        assert self.bridge.notice['kind'] == 'error'
+        assert self.bridge.state()['scroll'] == {}
 
     def test_window_layout_is_kept_and_clamped(self):
         send(self.bridge, type='window_layout', x=120.4, y=-40, width=99999, height=640, zoom=110)

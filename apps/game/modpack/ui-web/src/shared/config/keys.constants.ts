@@ -1,5 +1,5 @@
 export const KEYS = {
   enter: 'Enter',
-  escape: 'Escape',
-  escapeCode: 27
+  find: 'f',
+  findCode: 70
 } as const;

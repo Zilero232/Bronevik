@@ -28,6 +28,26 @@ describe(TeamHpWidget, () => {
     expect(html.textContent).toContain('2 : 1');
   });
 
+  it('labels the tier groups of the icon strip', () => {
+    const html = mount(fixture);
+
+    expect(html.textContent).toContain('VIII');
+  });
+
+  it('draws no class icons when the stock vehicle icons are off', () => {
+    const vehicles = { allies: fixture.vehicles.allies.map((vehicle) => ({ ...vehicle, icon: null })), enemies: [] };
+
+    const html = mount({ ...fixture, vehicles });
+
+    expect(html.querySelectorAll('img')).toHaveLength(0);
+  });
+
+  it('shows the alive vehicles in the score with the alive toggle', () => {
+    const html = mount({ ...fixture, score_alive: true, enemies: { ...fixture.enemies, alive: 0 } });
+
+    expect(html.textContent).toContain('2 : 0');
+  });
+
   it('shows the numbers and the difference in the bar pair style', () => {
     const html = mount({ ...fixture, style: 'full', vehicles: { allies: [], enemies: [] } });
 

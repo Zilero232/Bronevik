@@ -25,7 +25,7 @@ PACKAGE_ID_PATTERN = re.compile(r'^[a-z0-9]+(?:[._-][a-z0-9]+)+$')
 VERSION_PATTERN = re.compile(r'^\d+(?:\.\d+)*$')
 DEPENDENCY_EXTENSION = '.mtmod'
 DEPENDENCY_FIELDS = ('id', 'kind', 'packageId', 'version', 'file', 'title', 'description', 'author', 'licence', 'sourceUrl', 'sha256', 'size',
-                     'requiredBy', 'restartRequired')
+                     'requiredBy', 'optional', 'restartRequired')
 
 
 class CatalogError(ValueError):
@@ -181,6 +181,9 @@ class _Reader(object):
         if not isinstance(required_by, list) or not required_by:
             self.fail(where + '.requiredBy', 'list the ids of our components that need it')
             required_by = []
+        optional = raw.get('optional')
+        if not isinstance(optional, bool):
+            self.fail(where + '.optional', 'must be true or false')
         restart = raw.get('restartRequired')
         if not isinstance(restart, bool):
             self.fail(where + '.restartRequired', 'must be true or false')
@@ -199,6 +202,7 @@ class _Reader(object):
             sha256=self.sha256(where + '.sha256', raw.get('sha256')),
             size=size,
             required_by=tuple(str(item) for item in required_by),
+            optional=bool(optional),
             restart_required=bool(restart),
         )
 

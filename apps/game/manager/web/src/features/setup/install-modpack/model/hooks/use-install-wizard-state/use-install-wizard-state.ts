@@ -85,6 +85,7 @@ export const useInstallWizardState = ({ initialPreset, initialComponents, startA
     licenceUrl: dependency.licence.url,
     author: dependency.author.name,
     authorUrl: dependency.author.url,
+    optional: dependency.optional,
     state,
     file,
     checked,

@@ -9,6 +9,8 @@ import sample from '../../../shared/api/protocol/_tests/fixtures/state.sample.js
 import { DEV_MOCK } from '../config';
 import { applyMessage } from './apply-message';
 
+const QUIET_MESSAGES = new Set<string>(DEV_MOCK.quietMessages);
+
 const sampleState = (): UiState => {
   const state = parseState(JSON.stringify(sample));
 
@@ -42,7 +44,7 @@ export const createDevGameface = (): GamefaceMock => {
 
       console.warn(DEV_MOCK.logPrefix, raw);
 
-      if (!parsed.success) {
+      if (!parsed.success || QUIET_MESSAGES.has(parsed.data.type)) {
         return null;
       }
 
@@ -55,6 +57,17 @@ export const createDevGameface = (): GamefaceMock => {
       state = applyMessage({ state, message: parsed.data });
 
       return JSON.stringify(state);
+    }
+  });
+};
+
+export const relayEscape = (mock: GamefaceMock): void => {
+  let asked = 0;
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === DEV_MOCK.escapeKey) {
+      asked += 1;
+      mock.push({ escape: asked });
     }
   });
 };

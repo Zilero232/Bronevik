@@ -1,5 +1,6 @@
 {
   "data": {
+    "detail": "full",
     "grouped": false,
     "header": {
       "damage": 670,
@@ -16,6 +17,7 @@
         "icon": "otmetki:damage",
         "max": 1500,
         "name": "KV-1",
+        "note": "",
         "outcome": "pen",
         "tone": "success"
       },
@@ -28,6 +30,7 @@
         "icon": "img://gui/maps/icons/library/critical_damage/hit_ricochet.png|otmetki:blocked",
         "max": 1100,
         "name": "T-34",
+        "note": "",
         "outcome": "ricochet",
         "tone": "blocked"
       },
@@ -40,6 +43,7 @@
         "icon": "otmetki:damage",
         "max": 900,
         "name": "Pz. IV",
+        "note": "",
         "outcome": "pen",
         "tone": "success"
       }

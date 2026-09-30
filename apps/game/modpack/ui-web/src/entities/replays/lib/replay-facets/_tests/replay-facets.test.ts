@@ -4,10 +4,18 @@ import { replayItem } from '../../../_tests/fixtures';
 import { replayFacets } from '../replay-facets';
 
 const ITEMS = [
-  replayItem({ map: '05_prohorovka', map_title: 'Прохоровка', vehicle: 'ussr-R04_T-34', tank: 'Т-34', tier: 5, type: 'random' }),
-  replayItem({ map: '02_malinovka', map_title: 'Малиновка', vehicle: 'ussr-R04_T-34', tank: 'Т-34', tier: 5, type: 'random' }),
-  replayItem({ map: '02_malinovka', map_title: 'Малиновка', vehicle: 'germany-G04_PzVI_Tiger_I', tank: 'Tiger I', tier: 7, type: 'ranked' }),
-  replayItem({ map: null, map_title: null, vehicle: null, tank: null, tier: null, type: 'other' })
+  replayItem({ map: '05_prohorovka', map_title: 'Прохоровка', vehicle: 'ussr-R04_T-34', nation: 'ussr', tank: 'Т-34', tier: 5, type: 'random' }),
+  replayItem({ map: '02_malinovka', map_title: 'Малиновка', vehicle: 'ussr-R04_T-34', nation: 'ussr', tank: 'Т-34', tier: 5, type: 'random' }),
+  replayItem({
+    map: '02_malinovka',
+    map_title: 'Малиновка',
+    vehicle: 'germany-G04_PzVI_Tiger_I',
+    nation: 'germany',
+    tank: 'Tiger I',
+    tier: 7,
+    type: 'ranked'
+  }),
+  replayItem({ map: null, map_title: null, vehicle: null, nation: null, tank: null, tier: null, type: 'other' })
 ];
 
 describe(replayFacets, () => {
@@ -32,7 +40,16 @@ describe(replayFacets, () => {
     expect(facets.types.map((option) => option.value)).toEqual(['random', 'ranked', 'other']);
   });
 
+  it('offers the nations in the client order with their counts', () => {
+    const facets = replayFacets(ITEMS);
+
+    expect(facets.nations).toEqual([
+      { value: 'ussr', label: 'ussr', count: 2 },
+      { value: 'germany', label: 'germany', count: 1 }
+    ]);
+  });
+
   it('is empty without replays', () => {
-    expect(replayFacets([])).toEqual({ maps: [], vehicles: [], tiers: [], types: [] });
+    expect(replayFacets([])).toEqual({ maps: [], vehicles: [], tiers: [], types: [], nations: [] });
   });
 });

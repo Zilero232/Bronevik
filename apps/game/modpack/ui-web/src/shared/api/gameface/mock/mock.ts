@@ -1,4 +1,6 @@
-import type { GamefaceMock, GamefaceMockInput } from './mock.types';
+import { entries } from 'remeda';
+
+import type { GamefaceMock, GamefaceMockInput, GamefaceMockPush } from './mock.types';
 
 import { GAMEFACE } from '../gameface.constants';
 import { GAMEFACE_MOCK } from './mock.constants';
@@ -11,26 +13,26 @@ export const createGamefaceMock = ({ state, feed = '', clientSize, mouse, onSend
   const model: Record<string, unknown> = {
     [GAMEFACE.model.state]: state,
     [GAMEFACE.model.feed]: feed,
-    [GAMEFACE.model.send]: ({ message }: { message: string }) => {
-      sent.push(message);
+    [GAMEFACE.model.escape]: 0
+  };
 
-      const next = onSend(message);
-
-      if (next === null) {
-        return;
+  const push = (values: GamefaceMockPush): void => {
+    entries(values).forEach(([key, value]) => {
+      if (value !== undefined) {
+        model[GAMEFACE_MOCK.properties[key]] = value;
       }
+    });
 
-      const push = typeof next === 'string' ? { state: next } : next;
+    listeners.forEach((listener) => listener(model, [], [GAMEFACE_MOCK.callbackId]));
+  };
 
-      if (push.state !== undefined) {
-        model[GAMEFACE.model.state] = push.state;
-      }
+  model[GAMEFACE.model.send] = ({ message }: { message: string }) => {
+    sent.push(message);
 
-      if (push.feed !== undefined) {
-        model[GAMEFACE.model.feed] = push.feed;
-      }
+    const next = onSend(message);
 
-      listeners.forEach((listener) => listener(model, [], [GAMEFACE_MOCK.callbackId]));
+    if (next !== null) {
+      push(typeof next === 'string' ? { state: next } : next);
     }
   };
 
@@ -54,6 +56,7 @@ export const createGamefaceMock = ({ state, feed = '', clientSize, mouse, onSend
         [GAMEFACE.viewEnv.mousePosition]: mouse
       }
     },
+    push,
     sent: () => [...sent],
     inputAreas: () => [...inputAreas]
   };

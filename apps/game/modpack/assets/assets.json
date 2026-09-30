@@ -98,11 +98,11 @@
       "license_file": "otmetki/sounds/LICENSE.txt",
       "url": "https://triotmetki.ru",
       "files": "otmetki/sounds",
-      "include": ["sixthSense.mp3", "sixthSense_off.mp3"],
+      "include": ["sixthSense.mp3", "sixthSense_off.mp3", "otmetki_tick.mp3"],
       "target": "res/audioww",
       "license_target": "res/gui/maps/icons/otmetki/sixth_sense/sound/LICENSE.txt",
-      "contents": "sixthSense.mp3 (lamp on) and sixthSense_off.mp3 (lamp off): synthesised by tools/assets/sound.py, MP3 44.1 kHz mono",
-      "fair_play": "The client's own custom detection sound slot (Settings > Sound > detection alert: user sound)."
+      "contents": "sixthSense.mp3 (lamp on), sixthSense_off.mp3 (lamp off) and otmetki_tick.mp3 (a second of the lamp countdown): synthesised by tools/assets/sound.py, MP3 44.1 kHz mono",
+      "fair_play": "The client's own custom detection sound slot (Settings > Sound > detection alert: user sound); the tick counts down the player's own lamp."
     },
     {
       "id": "otmetki_damage_log_icons",

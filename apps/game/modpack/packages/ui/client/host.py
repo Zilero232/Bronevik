@@ -71,8 +71,9 @@ class UiHost(object):
     def install_entry_points(self):
         translate = self.app.translate
         self.apply_modifier()
-        self.button.install()
-        self.mods_list.install(translate('mod_name'), translate('component_companion_hint'))
+        in_mods_list = self.mods_list.install(translate('mod_name'), translate('component_companion_hint'))
+        if not in_mods_list:
+            self.button.install()
         if self.hotkey is not None:
             self.hotkey.install()
         return True

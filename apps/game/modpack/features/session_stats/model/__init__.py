@@ -5,7 +5,7 @@ import uuid
 
 from ....core.compat import is_int, is_number
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, font, format_number, format_percent
-from .constants import COUNTERS, REGULAR_BONUS_TYPE
+from .constants import COUNTERS, PENDING_RESULTS_TTL_S, RECENT_LIMIT, REGULAR_BONUS_TYPE, RESULT_COLORS, RESULTS
 from .widget import session_widget  # noqa: F401
 
 
@@ -32,6 +32,9 @@ class SessionAggregator(object):
         self.totals = dict((name, 0) for name in COUNTERS)
         self.vehicles = {}
         self.server = {}
+        self.recent = []
+        self.pending = {}
+        self.discarded = set()
 
     def _reset(self, now):
         self.session_id = uuid.uuid4().hex
@@ -40,6 +43,15 @@ class SessionAggregator(object):
         self.totals = dict((name, 0) for name in COUNTERS)
         self.vehicles = {}
         self.server = {}
+        self.recent = []
+
+    def reset(self, now):
+        self.discarded.update(self.pending)
+        self.pending = {}
+
+        self._reset(now)
+
+        return self.session_id
 
     def is_expired(self, now):
         return self.session_id is None or now - self.last_activity_at > self.idle_seconds
@@ -54,7 +66,47 @@ class SessionAggregator(object):
     def counts(self, battle):
         return battle.get('bonus_type') in self.counted_bonus_types
 
+    def started(self, arena_id, bonus_type, now):
+        self.touch(now)
+
+        if not arena_id:
+            return
+        if bonus_type not in self.counted_bonus_types:
+            return
+
+        self.pending[str(arena_id)] = int(now)
+
+    def results_arrived(self, arena_id):
+        self.pending.pop(str(arena_id), None)
+
+    def pending_count(self, now):
+        oldest_start = now - PENDING_RESULTS_TTL_S
+        self.pending = dict((arena_id, started_at) for arena_id, started_at in self.pending.items()
+                            if started_at >= oldest_start)
+
+        return len(self.pending)
+
+    def _is_discarded(self, arena_id):
+        if arena_id not in self.discarded:
+            return False
+
+        self.discarded.discard(arena_id)
+
+        return True
+
+    def _remember_result(self, result):
+        if result not in RESULTS:
+            return
+
+        self.recent.append(result)
+        self.recent = self.recent[-RECENT_LIMIT:]
+
     def add(self, battle, now):
+        arena_id = battle.get('arena_unique_id')
+        self.results_arrived(arena_id)
+        if self._is_discarded(arena_id):
+            return None
+
         session_id = self.touch(now)
         if not self.counts(battle):
             return session_id
@@ -67,7 +119,9 @@ class SessionAggregator(object):
             'draws': 1 if result == 'draw' else 0,
             'survived': 1 if stats.get('is_alive') else 0,
             'damage_dealt': stats.get('damage_dealt', 0),
-            'damage_assisted': stats.get('damage_assisted_radio', 0) + stats.get('damage_assisted_track', 0) + stats.get('damage_assisted_stun', 0),
+            'damage_assisted': (stats.get('damage_assisted_radio', 0)
+                                + stats.get('damage_assisted_track', 0)
+                                + stats.get('damage_assisted_stun', 0)),
             'damage_blocked': stats.get('damage_blocked', 0),
             'frags': stats.get('frags', 0),
             'spotted': stats.get('spotted', 0),
@@ -87,6 +141,7 @@ class SessionAggregator(object):
             entry['battles'] += 1
             entry['wins'] += increments['wins']
             entry['damage_dealt'] += increments['damage_dealt']
+        self._remember_result(result)
         return session_id
 
     def set_server_summary(self, session_id, data):
@@ -96,7 +151,7 @@ class SessionAggregator(object):
         self.server = {'wn8': round(float(wn8), 0) if is_number(wn8) else None}
         return True
 
-    def summary(self):
+    def summary(self, now):
         t = self.totals
         battles = t['battles']
         return {
@@ -120,6 +175,8 @@ class SessionAggregator(object):
             'pen_rate': _percent(t['piercing_enemy_hits'], t['direct_enemy_hits']),
             'wn8': self.server.get('wn8'),
             'vehicles': dict((k, dict(v)) for k, v in self.vehicles.items()),
+            'recent': list(self.recent),
+            'pending': self.pending_count(now),
         }
 
     def to_dict(self):
@@ -130,6 +187,7 @@ class SessionAggregator(object):
             'totals': dict(self.totals),
             'vehicles': dict((k, dict(v)) for k, v in self.vehicles.items()),
             'server': dict(self.server),
+            'recent': list(self.recent),
         }
 
     def load(self, data):
@@ -144,7 +202,23 @@ class SessionAggregator(object):
         self.totals = dict((name, totals.get(name, 0) if is_number(totals.get(name, 0)) else 0) for name in COUNTERS)
         self.vehicles = dict(data.get('vehicles') or {})
         self.server = dict(data.get('server') or {})
+        self.recent = _known_results(data.get('recent'))
         return True
+
+
+def _known_results(values):
+    if not isinstance(values, list):
+        return []
+
+    known = [result for result in values if result in RESULTS]
+
+    return known[-RECENT_LIMIT:]
+
+
+def _recent_line(recent, translate):
+    marks = [font(translate('session_result_' + result), RESULT_COLORS[result]) for result in recent]
+
+    return u'%s: %s' % (font(translate('session_recent'), COLOR_MUTED), u' '.join(marks))
 
 
 def format_session_panel(summary, translate):
@@ -157,6 +231,14 @@ def format_session_panel(summary, translate):
     lines = [font(translate('session_title'), COLOR_NEUTRAL, 15)]
     for label, value in rows:
         lines.append(u'%s: %s' % (font(label, COLOR_MUTED), font(value, COLOR_NEUTRAL)))
+    recent = summary.get('recent')
+    if recent:
+        lines.append(_recent_line(recent, translate))
+
+    pending = summary.get('pending')
+    if pending:
+        lines.append(font(translate('session_pending', count=pending), COLOR_MUTED))
+
     return u'\n'.join(lines)
 
 

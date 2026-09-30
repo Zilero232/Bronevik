@@ -17,9 +17,23 @@ describe(MarksPanelWidget, () => {
     expect(html.textContent).toContain('95 %');
   });
 
+  it('shows the average line in the Alt view', () => {
+    const html = mount({ Component: MarksPanelWidget, props: { data } });
+
+    expect(html.textContent).toContain('2 540 › 2 551');
+  });
+
   it('keeps the compact style to one line', () => {
     const html = mount({ Component: MarksPanelWidget, props: { data: { ...data, style: 'compact' as const } } });
 
     expect(html.textContent).not.toContain('25 195');
+    expect(html.textContent).not.toContain('среднее');
+  });
+
+  it('keeps the next whole percent and the badge in the compact style', () => {
+    const html = mount({ Component: MarksPanelWidget, props: { data: { ...data, style: 'compact' as const } } });
+
+    expect(html.textContent).toContain('87 %2 107');
+    expect(html.textContent).toContain('проверено');
   });
 });

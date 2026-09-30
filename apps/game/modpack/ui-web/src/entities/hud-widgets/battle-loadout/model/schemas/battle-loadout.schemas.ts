@@ -7,7 +7,13 @@ export const equipmentItemSchema = z.object({
   overlay: hudIconSchema,
   name: z.string(),
   effect: z.string(),
-  bonus: z.boolean()
+  bonus: z.boolean(),
+  boosted: z.boolean(),
+  attention: z.boolean(),
+  active: z.boolean(),
+  used: z.boolean()
 });
 
-export const battleLoadoutSchema = z.object({ size: z.number(), items: z.array(equipmentItemSchema) });
+export const setBadgeSchema = z.object({ group: z.string(), text: z.string() });
+
+export const battleLoadoutSchema = z.object({ size: z.number(), items: z.array(equipmentItemSchema), sets: z.array(setBadgeSchema) });

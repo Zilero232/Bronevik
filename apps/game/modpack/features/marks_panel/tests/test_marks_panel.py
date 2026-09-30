@@ -8,12 +8,13 @@ from otmetki.core.format import COLOR_UP, strip_tags
 from otmetki.core.moe import ThresholdCurve
 from otmetki.core.settings import Settings
 from otmetki.features.marks_panel.i18n import STRINGS
-from otmetki.features.marks_panel.model import BattleTotals, format_panel, panel_state
+from otmetki.features.marks_panel.model import BattleTotals, PanelView, format_panel, panel_state, percent_source
 from otmetki.features.marks_panel.model.preview import preview_text
 from otmetki.features.marks_panel.settings import SCHEMA, SETTINGS, SWITCH
 
 API = {'tank_id': 1, 'thresholds': {'65': 2000, '85': 2600, '95': 3100, '100': 4200}}
 SNAPSHOT = {'tank_id': 1, 'moving_avg_damage': 2500, 'damage_rating': 8150, 'marks_on_gun': 1}
+UNRATED_SNAPSHOT = {'tank_id': 1, 'moving_avg_damage': 2500, 'damage_rating': 0, 'marks_on_gun': 1}
 
 
 def translator(language='en'):
@@ -24,8 +25,18 @@ def settings(**values):
     return Settings(values, SCHEMA)
 
 
-def state(combined=2100, curve=True, pace=3000, **values):
-    return panel_state(SNAPSHOT, combined, ThresholdCurve.from_api(API) if curve else None, pace, settings(**values))
+def curve():
+    return ThresholdCurve.from_api(API)
+
+
+def state(combined=2100, has_curve=True, snapshot=SNAPSHOT, **values):
+    return panel_state(snapshot, combined, curve() if has_curve else None, 3000, settings(**values))
+
+
+def panel_text(combined=2100, snapshot=SNAPSHOT, held=False, language='en', **values):
+    chosen = settings(**values)
+    panel = panel_state(snapshot, combined, curve(), 3000, chosen)
+    return strip_tags(format_panel(panel, PanelView(chosen, held), translator(language)))
 
 
 class TotalsTest(unittest.TestCase):
@@ -43,44 +54,158 @@ class TotalsTest(unittest.TestCase):
 
 class PanelTest(unittest.TestCase):
 
-    def test_extended(self):
-        text = strip_tags(format_panel(state(combined=5000), settings(), translator()))
-        lines = text.split('\n')
-        assert lines[0].startswith('MoE 81.50% ') and '(+' in lines[0]
-        assert lines[1].startswith('damage 5 000')
-        assert '(-' in strip_tags(format_panel(state(combined=0), settings(), translator()))
-        assert u'65%: ✓' in lines[2] and '85%: ' in lines[2] and '100%' not in lines[2]
-        assert lines[3].startswith('+0.5%: ') and 'to 85%: ~' in lines[3]
+    def test_extended_view(self):
+        text = panel_text(combined=5000)
 
-    def test_switches(self):
-        text = strip_tags(format_panel(state(), settings(show_battle=False, show_targets=False, show_step=False, show_battles=False),
-                                       translator()))
-        assert text.count('\n') == 0
+        assert text.split('\n') == [
+            u'MoE 81.50% → 83.15% (+1.65)',
+            u'damage 5 000 · average 2 500 → 2 550',
+            u'65%: ✓   85%: 2 550   95%: 27 800',
+            u'for 82%: ✓   +0.5%: ✓   to 85%: ~6 battles',
+        ]
 
-    def test_styles(self):
-        compact = strip_tags(format_panel(state(), settings(style='compact'), translator()))
-        assert '85%: ' in compact and '\n' not in compact
-        minimal = strip_tags(format_panel(state(), settings(style='minimal'), translator()))
-        assert minimal.endswith(')') and '85%' not in minimal
-        custom = format_panel(state(), settings(style='custom', template='{percent}>{projected} {need95} [{battles}]'), translator())
-        assert '81.50>' in strip_tags(custom) and '[' in custom
-        assert settings(style='custom').get('template') == ''
-        assert '81.50%' in strip_tags(format_panel(state(), settings(style='custom'), translator()))
+    def test_extended_view_of_a_weak_battle(self):
+        lines = panel_text(combined=0).split('\n')
 
-    def test_colour_and_step(self):
-        assert COLOR_UP in format_panel(state(combined=6000), settings(), translator())
-        assert '+1%' in strip_tags(format_panel(state(step='1'), settings(step='1'), translator()))
-        assert settings(step='2', color_mode='rainbow').get('step') == '0.5'
+        assert lines[0] == u'MoE 81.50% → 79.85% (-1.65)'
+        assert lines[3] == u'for 82%: 3 258   +0.5%: 3 258   to 85%: ~16 battles'
+
+    def test_switches_leave_the_head_only(self):
+        text = panel_text(show_battle=False, show_targets=False, show_step=False, show_battles=False, show_up=False)
+
+        assert text == u'MoE 81.50% → 81.24% (-0.26)'
+
+    def test_compact_shows_the_damage_for_the_next_whole_percent(self):
+        text = panel_text(style='compact')
+
+        assert text == u'81.24% (-0.26) · for 82%: 1 158'
+
+    def test_compact_without_the_whole_percent_shows_the_next_mark(self):
+        text = panel_text(style='compact', show_up=False)
+
+        assert text == u'81.24% (-0.26) · 85%: 5 450'
+
+    def test_minimal(self):
+        text = panel_text(style='minimal')
+
+        assert text == u'81.24% (-0.26)'
+
+    def test_custom_template(self):
+        text = panel_text(style='custom', template='{percent}>{projected} {need95} [{battles}] {up}:{need_up}')
+
+        assert text == u'81.50>81.24 30 700 [12] 82:1 158'
+
+    def test_empty_custom_template_shows_the_extended_view(self):
+        text = panel_text(style='custom')
+
+        assert text.split('\n')[0] == u'MoE 81.50% → 81.24% (-0.26)'
+
+    def test_colour_follows_a_rise(self):
+        text = format_panel(state(combined=6000), PanelView(settings()), translator())
+
+        assert COLOR_UP in text
+
+    def test_step_setting(self):
+        text = panel_text(step='1')
+
+        assert u'+1%: ' in text
+
+    def test_unknown_values_fall_back_to_the_defaults(self):
+        chosen = settings(step='2', color_mode='rainbow')
+
+        assert chosen.get('step') == '0.5'
+        assert chosen.get('color_mode') == 'delta'
 
     def test_without_curve(self):
-        text = strip_tags(format_panel(state(curve=False), settings(), translator('ru')))
-        assert u'нет порогов' in text and '81.50%' in text
+        text = strip_tags(format_panel(state(has_curve=False), PanelView(settings()), translator('ru')))
 
-    def test_preview_and_strings(self):
-        assert 'MoE 86.12%' in strip_tags(preview_text(settings(), translator()))
-        assert u'Отметка' in strip_tags(preview_text(settings(), translator('ru')))
+        assert text == u'Отметка 81.50%: нет порогов'
+
+    def test_preview(self):
+        text = strip_tags(preview_text(settings(), translator()))
+
+        assert text.split('\n')[0] == u'MoE 86.12% → 86.30% (+0.18)'
+
+    def test_strings_in_both_languages(self):
         assert sorted(STRINGS['ru']) == sorted(STRINGS['en'])
+
+    def test_settings_switch(self):
         assert SETTINGS == (SWITCH,)
+
+
+class AltTest(unittest.TestCase):
+
+    def test_alt_mode_rests_in_the_compact_line(self):
+        text = panel_text(alt_detail=True)
+
+        assert text == u'81.24% (-0.26) · for 82%: 1 158'
+
+    def test_alt_held_shows_every_line_whatever_the_switches(self):
+        text = panel_text(held=True, alt_detail=True, show_targets=False, show_battle=False)
+
+        assert text.split('\n') == [
+            u'MoE 81.50% → 81.24% (-0.26)',
+            u'damage 2 100 · average 2 500 → 2 492',
+            u'65%: ✓   85%: 5 450   95%: 30 700',
+            u'for 82%: 1 158   +0.5%: 1 158   to 85%: ~12 battles',
+            u'verified   average for 85%: 2 600',
+        ]
+
+    def test_alt_held_changes_nothing_with_alt_mode_off(self):
+        text = panel_text(held=True, style='compact')
+
+        assert text == u'81.24% (-0.26) · for 82%: 1 158'
+
+    def test_alt_mode_keeps_the_minimal_style_at_rest(self):
+        text = panel_text(alt_detail=True, style='minimal')
+
+        assert text == u'81.24% (-0.26)'
+
+    def test_alt_mode_keeps_the_custom_template_at_rest(self):
+        text = panel_text(alt_detail=True, style='custom', template='[{source}]')
+
+        assert text == u'[verified]'
+
+    def test_alt_held_replaces_the_custom_template_with_the_full_view(self):
+        text = panel_text(held=True, alt_detail=True, style='custom', template='[{source}]')
+
+        assert text.split('\n')[4] == u'verified   average for 85%: 2 600'
+
+
+class SourceTest(unittest.TestCase):
+
+    def test_dossier_rating_is_verified(self):
+        assert percent_source(SNAPSHOT, curve()) == 'verified'
+
+    def test_dossier_rating_is_verified_without_a_curve(self):
+        assert percent_source(SNAPSHOT, None) == 'verified'
+
+    def test_curve_percent_without_a_dossier_rating_is_estimated(self):
+        assert percent_source(UNRATED_SNAPSHOT, curve()) == 'estimated'
+
+    def test_nothing_to_show_without_both(self):
+        assert percent_source(UNRATED_SNAPSHOT, None) is None
+
+    def test_estimated_percent_comes_from_the_curve(self):
+        estimated = state(snapshot=UNRATED_SNAPSHOT)
+
+        assert estimated['source'] == 'estimated'
+        assert estimated['percent'] == 81.67
+
+    def test_estimated_percent_is_marked_approximate(self):
+        text = panel_text(snapshot=UNRATED_SNAPSHOT)
+
+        assert text.split('\n')[0] == u'MoE ~81.67% → 81.40% (-0.27)'
+
+    def test_estimated_minimal_line_is_marked_approximate(self):
+        text = panel_text(snapshot=UNRATED_SNAPSHOT, style='minimal')
+
+        assert text == u'~81.40% (-0.27)'
+
+    def test_source_macro(self):
+        text = panel_text(snapshot=UNRATED_SNAPSHOT, style='custom', template='{source}', language='ru')
+
+        assert text == u'оценка'
 
 
 if __name__ == '__main__':

@@ -59,6 +59,6 @@ def hud_layer(app):
 def stock_control(app):
     """The process-wide stock-element suppression of the battle page (created on first use)."""
     if _state['stock'] is None:
-        _state['stock'] = StockControl(hud_layer(app))
+        _state['stock'] = StockControl(hud_layer(app), app.bus)
         _state['stock'].install()
     return _state['stock']

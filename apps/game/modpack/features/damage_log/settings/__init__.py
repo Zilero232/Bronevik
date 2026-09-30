@@ -2,11 +2,11 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.hud import hex_color, max_length, panel_schema
 from .constants import (DEFAULTS, KIND_COLOR_KEYS, LAST_HIT_DEFAULTS, LAST_HIT_LIMITS, LAST_HIT_PANEL_ID, LAST_HIT_RETIRED_PLACES,
-                        LOG_KINDS, MAX_TEMPLATE, PALETTES, PANEL_ID, RETIRED_PLACES, STYLES, SWITCH)
+                        LOG_KINDS, MAX_TEMPLATE, PALETTES, PANEL_ID, RETIRED_PLACES, STYLES, SWITCH, TEMPLATE_KEYS)
 
 SETTINGS = (SWITCH,)
 
-NORMALIZERS = {'template': max_length(MAX_TEMPLATE), 'entry_template': max_length(MAX_TEMPLATE)}
+NORMALIZERS = dict((key, max_length(MAX_TEMPLATE)) for key in TEMPLATE_KEYS)
 NORMALIZERS.update((key, hex_color) for key in KIND_COLOR_KEYS)
 
 SCHEMA = panel_schema(

@@ -6,10 +6,16 @@ import { createGamefaceMock, installGamefaceMock } from '../../../api/gameface/m
 import { SCROLL_AREA } from '../../../config';
 import { isRecord } from '../../is-record';
 import { forgetReports } from '../../page-diag';
-import { bindWheelScroll, blockPageWheel, scrollByWheel, thumbOf, topFromThumb, wheelDelta, wheelScroll } from '../wheel-scroll';
+import { SMOOTH_SCROLL } from '../../smooth-scroll';
+import { bindWheelScroll, blockPageWheel, thumbOf, topFromThumb, wheelDelta, wheelScroll } from '../wheel-scroll';
+
+const glideOut = (): void => {
+  vi.advanceTimersByTime(SMOOTH_SCROLL.durationMs * 2);
+};
 
 afterEach(() => {
   forgetReports();
+  vi.useRealTimers();
 });
 
 describe(wheelScroll, () => {
@@ -60,29 +66,6 @@ describe(topFromThumb, () => {
   });
 });
 
-describe(scrollByWheel, () => {
-  const wheel = (deltaY: number) => ({ deltaY, preventDefault: vi.fn(), stopPropagation: vi.fn() });
-
-  it('scrolls a native scroll box itself, down for a wheel-down notch, and keeps the event from the engine', () => {
-    const element = { scrollTop: 0, scrollHeight: 1000, clientHeight: 400 };
-    const down = wheel(120);
-
-    expect(scrollByWheel({ element, event: down })).toBe(true);
-    expect(element.scrollTop).toBe(SCROLL_AREA.step);
-    expect(down.preventDefault).toHaveBeenCalled();
-    expect(down.stopPropagation).toHaveBeenCalled();
-  });
-
-  it('passes the wheel on at the end of the content', () => {
-    const element = { scrollTop: 600, scrollHeight: 1000, clientHeight: 400 };
-    const down = wheel(120);
-
-    expect(scrollByWheel({ element, event: down })).toBe(false);
-    expect(element.scrollTop).toBe(600);
-    expect(down.stopPropagation).not.toHaveBeenCalled();
-  });
-});
-
 const box = ({ content, height, top = 0 }: { content: number; height: number; top?: number }): HTMLDivElement => {
   const element = document.createElement('div');
 
@@ -112,7 +95,9 @@ const install = (scale: number) => {
 const notch = (deltaY: number) => new WheelEvent('wheel', { deltaY, bubbles: true, cancelable: true });
 
 describe(bindWheelScroll, () => {
-  it('scrolls its box on the wheel Gameface sends to a row inside it, by a step at the interface scale', () => {
+  it('glides its box on the wheel Gameface sends to a row inside it, by a step at the interface scale', () => {
+    vi.useFakeTimers({ toFake: ['requestAnimationFrame'] });
+
     const mock = install(2);
     const area = box({ content: 2000, height: 500 });
     const row = document.createElement('div');
@@ -125,10 +110,11 @@ describe(bindWheelScroll, () => {
     const down = notch(100);
 
     row.dispatchEvent(down);
+    glideOut();
 
     expect(area.scrollTop).toBe(SCROLL_AREA.step * 2);
     expect(down.defaultPrevented).toBe(true);
-    expect(onScrolled).toHaveBeenCalledTimes(1);
+    expect(onScrolled).toHaveBeenCalled();
 
     expect(
       mock
@@ -138,17 +124,20 @@ describe(bindWheelScroll, () => {
     ).toEqual(['diag']);
 
     row.dispatchEvent(notch(-100));
+    glideOut();
 
     expect(area.scrollTop).toBe(0);
 
     unbind();
     row.dispatchEvent(notch(100));
+    glideOut();
 
     expect(area.scrollTop).toBe(0);
     area.remove();
   });
 
   it('keeps the wheel for the inner box and hands it to the outer one at the inner end', () => {
+    vi.useFakeTimers({ toFake: ['requestAnimationFrame'] });
     install(1);
 
     const outer = box({ content: 2000, height: 500 });
@@ -162,11 +151,13 @@ describe(bindWheelScroll, () => {
     const unbind = [bindWheelScroll({ element: outer }), bindWheelScroll({ element: inner })];
 
     leaf.dispatchEvent(notch(100));
+    glideOut();
 
     expect([inner.scrollTop, outer.scrollTop]).toEqual([SCROLL_AREA.step, 0]);
 
     inner.scrollTop = 600;
     leaf.dispatchEvent(notch(100));
+    glideOut();
 
     expect([inner.scrollTop, outer.scrollTop]).toEqual([600, SCROLL_AREA.step]);
 

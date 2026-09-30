@@ -31,6 +31,7 @@ DEFAULTS = {
     'lamp_sound': NATIVE,
     'sound_event': '',
     'show_timer': True,
+    'tick_sound': False,
     'hide_after_s': 0,
     'replace_stock': True,
 }

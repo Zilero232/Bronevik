@@ -394,6 +394,22 @@ A new component: Event trackers (off by default).
 
 - A card after your tank is destroyed: who fired the last shot (or whom the kill feed named), the shell or the cause (fire, ram), the damage, the damaged modules and crew and the side of the hull as the game's hit indicator showed it. Nothing is drawn while the tank is alive; no positions, no trajectories.
 
+## battle_loadout 0.4.0
+
+### ru
+
+- Директива снова в ряду: в стандартной рамке, с «!», если она не действует на ваш танк (как в ангаре), а оборудование, которое она усиливает, подсвечено.
+- Бейджи «набор 1/2» и «снаряды 1/2»: какой набор полевой модернизации выбран, если у танка открыто переключение.
+- Маскировочная сеть и стереотруба светятся, пока работают; израсходованная улучшенная конфигурация тускнеет — как на стандартной панели.
+- Значки размером 45×45, как стандартные значки оборудования в бою.
+
+### en
+
+- The directive is back in the row: in the stock frame, with «!» when it does not affect your tank (as in the garage), and the equipment it boosts is highlighted.
+- «set 1/2» and «shells 1/2» badges: which field modification set is selected when the tank has setup switching.
+- The camouflage net and the binoculars glow while they work; a spent improved configuration fades, as on the stock panel.
+- 45×45 icons, the size of the stock equipment icons in battle.
+
 ## battle_loadout 0.3.0
 
 ### ru
@@ -626,6 +642,22 @@ A new component: Event trackers (off by default).
 - Goals from your site dashboard: progress in the hangar, a battle line (for an average-damage goal, the damage this battle needs) and a sound when the site marks a goal met.
 - Reads `/mod/me/goals` once bound, in the hangar; the server does not serve it yet (contract `contract/goals.schema.json`).
 
+## main_gun 0.3.0
+
+### ru
+
+- «Недостижим»: когда у противников осталось меньше ХП, чем вам не хватает до порога, счётчик говорит, что медаль уже не взять.
+- «Провален»: после попадания вашего выстрела в союзника (то же «Попадание в союзника», что пишет клиент) медаль не выдаётся, и счётчик это показывает.
+- ХП противников — те же числа, что у стандартной панели счёта.
+- По умолчанию панель стоит в правой верхней колонке, у списка команды, и больше не закрывает полосы захвата базы и прогресс задач под панелью счёта. Панель, которую вы не двигали, переезжает сама.
+
+### en
+
+- «Out of reach»: when the enemies have less HP left than you still need for the threshold, the counter says the medal can no longer be earned.
+- «Failed»: after your shot hits an ally (the same «Ally hit» the client reports) the medal is not awarded, and the counter shows it.
+- The enemy HP is the same number the stock score strip shows.
+- By default the panel sits in the right top column by the team list and no longer covers the base capture bars and the mission progress under the score strip. A panel you never moved moves by itself.
+
 ## main_gun 0.2.1
 
 ### ru
@@ -735,6 +767,16 @@ A new component: Event trackers (off by default).
 ### en
 
 - Your gun's reload countdown with a bar and the shells in the magazine; your own gun only. It counts by game time and keeps pace with the reticle.
+
+## core 0.6.3
+
+### ru
+
+- Боевые панели с альтернативным видом разворачиваются, пока зажат Alt, — по той же клавише, по которой игра показывает подробные маркеры и расширенный лог урона.
+
+### en
+
+- Battle panels with an alternate view expand while Alt is held, on the same key the game shows its detailed markers and extended damage log with.
 
 ## core 0.6.2
 
@@ -962,6 +1004,24 @@ A new component: Event trackers (off by default).
 - After each own battle: the `personal` block of the battle results, MoE snapshots and distribution, queue times, the loadout and shots, sent in signed batches through an outbox that survives a restart and backs off on errors.
 - Per-feature data switches in `config.json`, the ModsSettingsAPI window as the fallback settings UI, and the streamer settings share (export, apply with a confirmation, restore).
 
+## ui 0.6.0
+
+### ru
+
+- С установленным ModsList (poliroid, 1.6.01 — последняя версия, которая работает в «Мире танков») «Три отметки» открываются из его кнопки в правом нижнем ряду кнопок ангара; своя кнопка «///» остаётся только без ModsList. Менеджер ставит ModsList как необязательную библиотеку.
+- Esc делает шаг назад: закрывает подтверждение, затем открытый список, затем очищает или отпускает поле ввода и только потом закрывает окно.
+- Ангар за окном размыт тем же размытием, что и у окон самого клиента, вместо тёмной подложки.
+- Подсказки и звуки кнопок — клиентские.
+- Ctrl+F ставит курсор в поиск; колесо мыши прокручивает плавно; окно помнит, где вы остановились на каждой странице, до выхода из игры.
+
+### en
+
+- With ModsList installed (poliroid, 1.6.01, the last release that runs in «Мир танков») «Три отметки» opens from its button in the hangar's bottom-right button row; our own «///» button stays only without ModsList. The manager installs ModsList as an optional library.
+- Esc steps back: it closes a confirmation, then an open list, then clears or leaves a text field, and only then closes the window.
+- The hangar behind the window is blurred with the client's own window blur instead of a dark backdrop.
+- Tooltips and button sounds are the client's own.
+- Ctrl+F puts the cursor in the search; the mouse wheel scrolls smoothly; the window remembers where you left each page until you quit the game.
+
 ## ui 0.5.2
 
 ### ru
@@ -1106,6 +1166,20 @@ A new component: Event trackers (off by default).
 - The Gameface settings window (OpenWG Gameface): a card per installed component built from its own schema, list pages, profiles (save, load, rename, export and import as a code) and the on-screen HUD editor.
 - Entry points: the «///» button in the hangar, a ModsList entry and the hotkey Ctrl+Shift+T.
 
+## marks_panel 0.4.0
+
+### ru
+
+- Урон для +1 %: сколько ещё нанести в этом бою, чтобы процент отметки дорос до следующего целого (в подробном и компактном виде, макросы `{up}` и `{need_up}`).
+- Отметка «проверено» или «оценка»: проверено, когда процент на начало боя взят из досье танка (значение сервера), оценка, когда в досье его нет и он посчитан по порогам сайта; оценка помечена `~`, макрос `{source}`.
+- Подробности по Alt (выключено по умолчанию): панель показывает короткую строку, а пока зажат Alt - всё: урон до отметок и на +1 %, среднее и нужное для следующей отметки, боёв до неё и отметку проверки.
+
+### en
+
+- Damage for +1%: how much more to deal in this battle for the MoE percent to reach the next whole percent (in the extended and compact styles, macros `{up}` and `{need_up}`).
+- A «verified» or «estimated» badge: verified when the percent at the battle start is the tank's dossier value (the server's), estimated when the dossier has none and it comes from the site thresholds; an estimate is marked `~`, macro `{source}`.
+- Details on Alt (off by default): the panel shows one short line and everything while Alt is held: damage to the marks and for +1%, the average and the one the next mark needs, battles to it and the verification badge.
+
 ## marks_panel 0.3.2
 
 ### ru
@@ -1190,6 +1264,20 @@ A new component: Event trackers (off by default).
 
 - In battle: the current MoE percentage, the projection after the battle and the damage still needed for the next mark; team damage is not counted.
 
+## session_stats 0.4.0
+
+### ru
+
+- Кнопка «Новая сессия» в карточке компонента: счётчики обнуляются по вашему запросу, итоги боёв, сыгранных до этого, в новую сессию не попадают.
+- Полоска последних 10 боёв сессии: победа, поражение, ничья цветом, в тексте без Gameface буквами В, П, Н.
+- «Ждут итогов: N»: сколько ваших боёв уже сыграно, а итоги ещё не пришли.
+
+### en
+
+- A «New session» button in the component's card: the counters reset on your request, and the results of battles played before stay out of the new session.
+- A strip of the session's last 10 battles: win, loss and draw in colour, and as the letters W, L, D in the text without Gameface.
+- «Awaiting results: N»: how many of your battles are played and still wait for their results.
+
 ## session_stats 0.3.0
 
 ### ru
@@ -1260,6 +1348,18 @@ A new component: Event trackers (off by default).
 
 - Opt-in, off by default: uploads the replays the game itself recorded of the player's own battles, matched by the replay header, private unless `publish_replays` is on. Never turns replay recording on; files above 50 MiB are refused.
 
+## damage_log 0.4.0
+
+### ru
+
+- «Подробности по Alt» (выключено по умолчанию): строки лога короткие — урон и значок, как короткий стиль стандартного лога; пока зажат Alt, они полные: вид урона, класс и танк, снаряд, источник. С Alt лог виден и там, где стиль или настройка его скрывают.
+- Свой шаблон строки для Alt (`alt_entry_template`); в режиме правки панелей видна короткая версия.
+
+### en
+
+- «Details on Alt» (off by default): the log lines are short, the amount and its icon, like the stock log's short style; while Alt is held they are full: the kind, class and tank, shell and source. With Alt the log shows even where the style or the setting hides it.
+- A custom line template for Alt (`alt_entry_template`); the HUD edit mode shows the short version.
+
 ## damage_log 0.3.2
 
 ### ru
@@ -1323,6 +1423,18 @@ A new component: Event trackers (off by default).
 - In battle: totals of damage dealt, blocked, assisted (radio, track, stun) and received, with the latest entries (kind, amount, vehicle, shell). Styles `full`, `compact`, `minimal` and a custom template.
 - Palettes `classic`, `graphite`, `contrast`, `colorblind` (macros `{c_dealt}`, `{c_blocked}`, `{c_assisted}`, `{c_received}`) and our own damage-kind icons (`{icon}`).
 - Assist earned after death, while the camera follows an ally, still counts.
+
+## hit_log 0.3.0
+
+### ru
+
+- «Подробности по Alt» (выключено по умолчанию): строки короткие — исход, урон и танк; пока зажат Alt, они полные: класс, остаток прочности, снаряд и число критов.
+- Свой шаблон строки для Alt (`alt_line_template`, макросы `{crits_text}` и `{hp_left}`); в режиме правки панелей видна короткая версия.
+
+### en
+
+- «Details on Alt» (off by default): the lines are short, the outcome, damage and tank; while Alt is held they are full: class, HP left, shell and the crit count.
+- A custom line template for Alt (`alt_line_template`, macros `{crits_text}` and `{hp_left}`); the HUD edit mode shows the short version.
 
 ## hit_log 0.2.2
 
@@ -1414,6 +1526,20 @@ A new component: Event trackers (off by default).
 
 - In battle: the local time, optionally the date, and the time left in the current arena period.
 
+## team_hp 0.5.0
+
+### ru
+
+- ХП команд — те же числа, что у стандартной панели счёта: полоса слушает тот же контроллер клиента.
+- Новая настройка «Живые вместо фрагов»: в счёте — сколько машин каждой команды ещё живо (по умолчанию выключена).
+- Стили «Полоска на каждый танк» и «Сегменты по танкам» следуют настройкам игры для панели счёта: без значков техники значки классов скрыты, с группировкой по уровням машины идут от старшего уровня к центру, с метками уровней, как в стандартной панели.
+
+### en
+
+- The team HP are the same numbers the stock score strip shows: the strip listens to the same client controller.
+- A new setting, «Alive instead of frags»: the score shows how many vehicles of each team are still alive (off by default).
+- The «A bar per tank» and «A segment per tank» styles follow the game's score strip options: without vehicle icons the class icons are hidden, with tier grouping the vehicles run from the highest tier at the centre with tier labels, as on the stock strip.
+
 ## team_hp 0.4.0
 
 ### ru
@@ -1457,6 +1583,20 @@ A new component: Event trackers (off by default).
 ### en
 
 - In battle: each team's HP against its maximum as bars and/or numbers, the frag score and the HP difference, from the values the client already shows on markers and team panels.
+
+## sixth_sense 0.3.0
+
+### ru
+
+- Круговой таймер отсчитывает время видимости вашей машины с учётом её оборудования: 10 с, 8,5 с с «Улучшенным радиооборудованием» и 8 с, если оно стоит в слоте специализации. Значение клиент считает сам для вашей машины.
+- Необязательное тиканье каждую секунду отсчёта (по умолчанию выключено), свой звук (CC0).
+- Лампа гаснет, когда бой закончился, при смене машины и возрождении, а также когда ваша машина уничтожена.
+
+### en
+
+- The radial timer counts down your vehicle's visibility time with its equipment taken into account: 10 s, 8.5 s with Improved Radio Equipment and 8 s in its specialisation slot. The client computes the value for your vehicle itself.
+- An optional tick every second of the countdown (off by default), our own sound (CC0).
+- The lamp goes out when the battle ends, when the vehicle switches or respawns, and when your vehicle is destroyed.
 
 ## sixth_sense 0.2.1
 

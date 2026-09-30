@@ -4,9 +4,11 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import unittest
 
 import _support
+from otmetki.core.moe import ThresholdCurve
 from otmetki.core.settings import Settings
 from otmetki.features.marks_panel.i18n import STRINGS
-from otmetki.features.marks_panel.model import panel_state
+from otmetki.features.marks_panel.model import PanelView, panel_state
+from otmetki.features.marks_panel.model.constants import PREVIEW_THRESHOLDS
 from otmetki.features.marks_panel.model.preview import preview_state, preview_widget
 from otmetki.features.marks_panel.model.widget import marks_widget
 from otmetki.features.marks_panel.settings import SCHEMA
@@ -14,6 +16,21 @@ from otmetki.features.marks_panel.settings import SCHEMA
 
 def translator():
     return _support.translator(STRINGS, 'ru')
+
+
+def preview_curve():
+    return ThresholdCurve.from_api(PREVIEW_THRESHOLDS)
+
+
+def unrated_widget(curve):
+    settings = Settings({}, SCHEMA)
+    state = panel_state({'moving_avg_damage': 2540, 'damage_rating': 0}, 100, curve, None, settings)
+    return marks_widget(state, PanelView(settings), translator())['data']
+
+
+def alt_widget(held):
+    view = PanelView(Settings({'alt_detail': True, 'show_targets': False}, SCHEMA), held)
+    return marks_widget(preview_state(view), view, translator())['data']
 
 
 class MarksWidgetTest(unittest.TestCase):
@@ -41,8 +58,57 @@ class MarksWidgetTest(unittest.TestCase):
                             translator())['data']
         assert data['has_curve'] is False and data['percent'] == 50.0 and data['mark'] is None
 
+    def test_next_whole_percent(self):
+        data = preview_widget(Settings({}, SCHEMA), translator())['data']
+
+        assert data['up'] == {'level': 87, 'need': 2107}
+
+    def test_next_whole_percent_switched_off(self):
+        data = preview_widget(Settings({'show_up': False}, SCHEMA), translator())['data']
+
+        assert data['up'] is None
+
+    def test_verified_badge(self):
+        data = preview_widget(Settings({}, SCHEMA), translator())['data']
+
+        assert data['source'] == {'kind': 'verified', 'label': u'проверено'}
+
+    def test_estimated_badge_without_the_dossier_rating(self):
+        data = unrated_widget(preview_curve())
+
+        assert data['source'] == {'kind': 'estimated', 'label': u'оценка'}
+
+    def test_no_badge_without_a_rating_and_a_curve(self):
+        data = unrated_widget(None)
+
+        assert data['source'] is None
+
+    def test_alt_mode_rests_compact_without_the_detail(self):
+        data = alt_widget(held=False)
+
+        assert data['style'] == 'compact'
+        assert data['thresholds'] == []
+        assert data['detail'] is None
+
+    def test_alt_held_shows_the_thresholds_and_the_detail(self):
+        data = alt_widget(held=True)
+
+        assert data['style'] == 'extended'
+        assert [item['level'] for item in data['thresholds']] == [65, 85, 95]
+        assert data['detail'] == {
+            'label': u'среднее',
+            'ema': 2540,
+            'ema_projected': 2551,
+            'level': 95,
+            'target': 3050,
+        }
+
     def test_fixture_for_the_page(self):
-        assert _support.widget_fixture('marks_panel', preview_widget(Settings({'style': 'extended'}, SCHEMA), translator()))
+        view = PanelView(Settings({'alt_detail': True}, SCHEMA), held=True)
+
+        payload = marks_widget(preview_state(view), view, translator())
+
+        assert _support.widget_fixture('marks_panel', payload)
 
 
 if __name__ == '__main__':

@@ -5,6 +5,7 @@ export const TEAM_HP = {
   iconSize: 16,
   iconBar: { width: 16, height: 3 },
   segmentGap: 1,
+  tierGap: 4,
   numberWidth: 52,
   deadAlpha: 0.35
 } as const;

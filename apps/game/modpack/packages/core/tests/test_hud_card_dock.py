@@ -21,7 +21,7 @@ def sample_card():
         card_row(u'Сессия', u'WN8 2 310', color='#4fc3b0', text_tone='muted'),
     ], value=u'79.53%', value_tone='gold', subtitle=u'EBR 105', rail='progress',
         chips=[card_chip(u'5', glyph('dot'), 'accent', u'в работе'), card_chip(u'1 850', None, 'text', u'WN8', '#5B9BF2')],
-        footer=u'ср. урон 2 781', width=260)
+        footer=u'ср. урон 2 781', width=260, strip=['good', 'bad', 'muted', 'good'])
 
 
 class Recorder(HudBackend):
@@ -66,6 +66,20 @@ class CardTest(unittest.TestCase):
         assert row['status'] is None and row['color'] is None and row['tone'] == 'text'
         assert card_row(u'a', color='#4fc3b0')['color'] == '#4FC3B0'
         assert card(rows=[None, card_row(u'a')])['data']['rows'][0]['text'] == u'a'
+
+    def test_card_strip_keeps_the_newest_marks(self):
+        marks = ['good'] + ['bad'] * 12
+
+        strip = card(strip=marks)['data']['strip']
+
+        assert strip == ['bad'] * 12
+
+    def test_card_strip_mutes_an_unknown_tone(self):
+        marks = ['good', 'nope']
+
+        strip = card(strip=marks)['data']['strip']
+
+        assert strip == ['good', 'muted']
 
 
 class DockTest(unittest.TestCase):

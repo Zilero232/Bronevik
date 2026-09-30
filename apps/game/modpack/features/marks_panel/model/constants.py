@@ -7,6 +7,15 @@ TITLE_SIZE_STEP = 2
 
 KINDS = ('damage', 'radio', 'track', 'stun')
 
+# Where the starting percent comes from (see panel_state); an estimate is marked `~` in the built-in lines.
+SOURCE_VERIFIED = 'verified'
+SOURCE_ESTIMATED = 'estimated'
+APPROX = u'~'
+
+# The Alt view: every detail line on, whatever the switches say.
+DETAIL_SWITCHES = ('show_targets', 'show_battle', 'show_step', 'show_battles', 'show_up')
+REST_STYLE = 'compact'
+
 PREVIEW_SIZE = (300, 96)
 PREVIEW_SNAPSHOT = {'moving_avg_damage': 2540, 'damage_rating': 8612, 'marks_on_gun': 2}
 PREVIEW_THRESHOLDS = {'thresholds': {'65': 1900, '85': 2450, '95': 3050, '100': 3900}}

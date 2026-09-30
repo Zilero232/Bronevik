@@ -7,6 +7,7 @@ import { parseState } from '../../../../shared/api/protocol';
 import { CONTEXT_FILTER, SECTION_NAV } from '../../config';
 import { searchComponents, summarize } from '../../lib/components';
 import { fontSafeState } from '../../lib/font-safe-state';
+import { seedScroll } from '../scroll';
 
 export const $state = atom<UiState | null>(null);
 export const $invalid = atom(false);
@@ -40,6 +41,10 @@ export const receiveState = (raw: string | null): boolean => {
   const state = fontSafeState(parsed);
 
   const previous = $state.get();
+
+  if (!previous) {
+    seedScroll(state.scroll);
+  }
 
   if (!previous || state.revision >= previous.revision) {
     $state.set(state);

@@ -1,0 +1,15 @@
+import type { RefObject } from 'preact';
+
+export type ThumbPress = Pick<MouseEvent, 'clientY' | 'preventDefault' | 'stopPropagation'>;
+
+export type ThumbDrag = {
+  startY: number;
+  startOffset: number;
+  factor: number;
+};
+
+export type UseThumbDragInput = {
+  viewportRef: RefObject<HTMLElement>;
+  visible: boolean;
+  onDragged: () => void;
+};

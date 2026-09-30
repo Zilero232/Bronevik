@@ -1,3 +1,4 @@
+export { useDropdown } from './use-dropdown';
 export { useReplaysBrowser } from './use-replays-browser';
 export type { BrowserView, PendingKind, ReplaysBrowserModel } from './use-replays-browser';
 export { useReplaysT } from './use-replays-t';

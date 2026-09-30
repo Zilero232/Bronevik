@@ -849,7 +849,7 @@ class ClientSmokeTest(unittest.TestCase):
         self.assertIn(u'ББ 32', panels['consumables']['text'])
         self.assertIn(u'Кассета 3/4', panels['reload_timer']['text'])
         self.assertNotIn(u'Перезарядка', panels['reload_timer']['text'])
-        self.assertIn(u'0 / 1 000', panels['main_gun']['text'])
+        self.assertIn(u'недостижим: нужно ещё 1 000, у противника осталось 900', panels['main_gun']['text'])
 
         ammo = session.shared.ammo
         ammo.onGunReloadTimeSet(11, ReloadSnapshot(5.5, 7.8), False)
@@ -863,7 +863,7 @@ class ClientSmokeTest(unittest.TestCase):
 
         session.feedback.onPlayerFeedbackReceived([Feedback(kinds.DAMAGE, ENEMY_VEHICLE, Extra(390))])
         session.feedback.onVehicleFeedbackReceived(ids['VEHICLE_HEALTH'], ENEMY_VEHICLE, (510, None, 0))
-        self.assertIn(u'390 / 1 000', self.hud_components()['main_gun']['text'])
+        self.assertIn(u'нужно ещё 610, у противника осталось 510', self.hud_components()['main_gun']['text'])
         self.assertIn(u'урон команды 390', self.hud_components()['main_gun']['text'])
 
         self.clock[0] = 200.0
@@ -901,6 +901,7 @@ class ClientSmokeTest(unittest.TestCase):
 
             def __init__(self, name, categories=(), deluxe=False):
                 self.tierlessName = self.groupName = self.userString = name
+                self.compactDescr = name
                 self.icon = (name, 0, 0)
                 self.categories = set(categories)
                 self.isDeluxe = deluxe
@@ -1345,7 +1346,7 @@ class ClientSmokeTest(unittest.TestCase):
 
         instances = sys.modules['gui.mods.otmetki.core.registry'].registry().instances
         stats = instances['session_stats']
-        self.assertEqual(stats.ui_actions(), [])
+        self.assertEqual([action['id'] for action in stats.ui_actions()], ['new_session'])
         self.assertFalse([fetch for fetch in self.fetches if '/mod/me/session-share' in fetch[1]])
         app.config.update({'share_session_report': True, 'share_session_channel': 'both'})
         app.bus.emit('component_settings', 'session_stats', ['share_session_report'])
@@ -1358,6 +1359,11 @@ class ClientSmokeTest(unittest.TestCase):
         self.assertEqual(stats.ui_action('share_now')['kind'], 'info')
         sent = [fetch for fetch in self.fetches if fetch[1].endswith('/mod/me/session-share/send')]
         self.assertEqual(json.loads(sent[0][3])['session_id'], stats.session.session_id)
+        self.assertEqual([action['id'] for action in stats.ui_actions()], ['new_session', 'share_now'])
+        shared_id = stats.session.session_id
+        self.assertEqual(stats.ui_action('new_session')['kind'], 'info')
+        self.assertNotEqual(stats.session.session_id, shared_id)
+        self.assertEqual(stats.session.summary(time.time())['battles'], 0)
 
         app.config.update({'share_session_channel': 'discord'})
         app.bus.emit('component_settings', 'session_stats', ['share_session_channel'])

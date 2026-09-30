@@ -2,28 +2,72 @@
   "data": {
     "items": [
       {
+        "active": false,
+        "attention": false,
         "bonus": true,
+        "boosted": false,
         "effect": "+10 % к максимальной скорости и мощности двигателя.",
         "icon": "img://gui/maps/icons/artefact/turbocharger.png|otmetki:module",
         "name": "Турбонагнетатель",
-        "overlay": null
+        "overlay": null,
+        "used": false
       },
       {
+        "active": false,
+        "attention": false,
         "bonus": false,
+        "boosted": false,
         "effect": "+5 % к основным навыкам экипажа.",
         "icon": "img://gui/maps/icons/artefact/improvedVentilation.png|otmetki:module",
         "name": "Улучшенная вентиляция",
-        "overlay": "img://gui/maps/icons/quests/bonuses/small/equipmentPlus_overlay.png"
+        "overlay": "img://gui/maps/icons/quests/bonuses/small/equipmentPlus_overlay.png",
+        "used": false
       },
       {
+        "active": false,
+        "attention": false,
         "bonus": true,
+        "boosted": true,
         "effect": "−10 % к времени перезарядки.",
         "icon": "img://gui/maps/icons/artefact/rammer.png|otmetki:module",
         "name": "Досылатель",
-        "overlay": null
+        "overlay": null,
+        "used": false
+      },
+      {
+        "active": true,
+        "attention": false,
+        "bonus": false,
+        "boosted": false,
+        "effect": "+ к маскировке неподвижной машины.",
+        "icon": "img://gui/maps/icons/artefact/camouflageNet.png|otmetki:module",
+        "name": "Маскировочная сеть",
+        "overlay": null,
+        "used": false
+      },
+      {
+        "active": false,
+        "attention": false,
+        "bonus": false,
+        "boosted": false,
+        "effect": "Усиливает досылатель: −2,5 % к времени перезарядки.",
+        "icon": "img://gui/maps/icons/artefact/rammer.png|otmetki:module",
+        "name": "Досылатель: директива",
+        "overlay": "img://gui/maps/icons/artefact/battleBooster_overlay.png",
+        "used": false
       }
     ],
-    "size": 32
+    "sets": [
+      {
+        "group": "devices",
+        "text": "набор 2/2"
+      },
+      {
+        "group": "consumables",
+        "text": "снаряды 1/2"
+      }
+    ],
+    "size": 45
   },
   "kind": "battle_loadout",
   "v": 1

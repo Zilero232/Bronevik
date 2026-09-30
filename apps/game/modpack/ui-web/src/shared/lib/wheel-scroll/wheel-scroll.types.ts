@@ -31,16 +31,6 @@ export type WheelDelta = Pick<WheelEvent, 'deltaY'> & {
   wheelDeltaY?: number;
 };
 
-export type WheelLike = WheelDelta & Pick<WheelEvent, 'preventDefault' | 'stopPropagation'>;
-
-export type ScrollBox = Pick<HTMLElement, 'clientHeight' | 'scrollHeight' | 'scrollTop'>;
-
-export type ScrollByWheelInput = {
-  element: ScrollBox;
-  event: WheelLike;
-  step?: number;
-};
-
 export type WheelRoot = Pick<Document, 'addEventListener' | 'removeEventListener'>;
 
 export type BindWheelScrollInput = {

@@ -28,6 +28,19 @@
   border-color: rgb(255 214 102 / 45%);
 }
 
+.boosted {
+  border-color: token(color-steel-blue);
+}
+
+.active {
+  border-color: token(color-success);
+  background-color: rgb(111 181 68 / 22%);
+}
+
+.used {
+  opacity: 0.45;
+}
+
 .overlay {
   position: absolute;
   top: 1px;
@@ -38,4 +51,15 @@
   position: absolute;
   top: -3px;
   right: -3px;
+}
+
+.attention {
+  @include hud-text;
+
+  position: absolute;
+  top: -2px;
+  left: 2px;
+  color: token(color-warning);
+  font-size: 14px;
+  font-weight: 700;
 }

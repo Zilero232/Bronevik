@@ -6,7 +6,8 @@ the data fails its schema (`ui-web/src/entities/hud-widgets/<kind>`). Icon field
 
 `card(...)` is the shared plate of the hangar labels and the smaller battle panels (kind `card`,
 `ui-web/src/entities/hud-widgets/card`): a caps header with an icon, an optional big value, rows of icon + text + value
-with an optional one-line detail and a progress bar, a strip of icon + number chips and a dimmed footer.
+with an optional one-line detail and a progress bar, a strip of icon + number chips, a strip of colour marks and a
+dimmed footer.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -77,9 +78,17 @@ def card_chip(value, icon=None, tone_name='text', label=None, color=None):
             'label': _text(label, CARD_LIMITS['value']), 'color': _color(color)}
 
 
-def card(title=None, icon=None, rows=(), value=None, value_tone='text', subtitle=None, rail='info', chips=(), footer=None, width=None):
-    """The `card` widget: `title` in caps with `icon` and `subtitle`, `value` big on the right, then `chips`, `rows` and
-    `footer`. `rail` is the plate's category (RAILS), the colour of its left edge; `width` (design px) fixes the plate's width."""
+def _strip(marks):
+    tones = [tone(mark, 'muted') for mark in marks]
+
+    return tones[-CARD_LIMITS['strip']:]
+
+
+def card(title=None, icon=None, rows=(), value=None, value_tone='text', subtitle=None, rail='info', chips=(),
+         footer=None, width=None, strip=()):
+    """The `card` widget: `title` in caps with `icon` and `subtitle`, `value` big on the right, then `chips`, `strip` (a
+    row of small marks, one tone each, e.g. the last battles' results; the newest kept), `rows` and `footer`. `rail` is
+    the plate's category (RAILS), the colour of its left edge; `width` (design px) fixes the plate's width."""
     rows = [row for row in rows if row][:CARD_LIMITS['rows']]
     chips = [chip for chip in chips if chip][:CARD_LIMITS['chips']]
     low, high = CARD_LIMITS['width']
@@ -91,6 +100,7 @@ def card(title=None, icon=None, rows=(), value=None, value_tone='text', subtitle
         'value_tone': tone(value_tone),
         'rail': rail if rail in RAILS else 'info',
         'chips': chips,
+        'strip': _strip(strip),
         'rows': rows,
         'footer': _text(footer, CARD_LIMITS['detail']),
         'width': int(max(low, min(high, width))) if is_number(width) and not isinstance(width, bool) else None,

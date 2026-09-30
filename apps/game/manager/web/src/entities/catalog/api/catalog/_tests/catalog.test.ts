@@ -18,4 +18,13 @@ describe('catalogSchema', () => {
     expect(parsed.dependencies.every((dependency) => dependency.licence.name === 'MIT' && dependency.sha256.length === 64)).toBe(true);
     expect(parsed.components.some((component) => component.id === 'guiflash')).toBe(false);
   });
+
+  it('treats a dependency without the optional flag as required', () => {
+    const [gameface] = catalog.dependencies;
+    const { optional, ...legacy } = gameface;
+    const parsed = catalogSchema.parse({ ...catalog, dependencies: [legacy, { ...gameface, id: 'modslist', optional: true }] });
+
+    expect(optional).toBe(false);
+    expect(parsed.dependencies.map((dependency) => dependency.optional)).toEqual([false, true]);
+  });
 });

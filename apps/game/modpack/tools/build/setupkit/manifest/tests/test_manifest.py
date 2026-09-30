@@ -186,7 +186,8 @@ class CliTest(unittest.TestCase):
             data = json.load(handle)
         keys = [package.key for package in layout.split_packages('root_init.py')]
         self.assertEqual(sorted(component['id'] for component in data['components'] if 'kind' not in component), sorted(keys))
-        self.assertEqual([component['id'] for component in data['components'] if component.get('kind') == 'dependency'], ['openwg_gameface', 'guiflash'])
+        dependencies = [component['id'] for component in data['components'] if component.get('kind') == 'dependency']
+        self.assertEqual(dependencies, ['openwg_gameface', 'guiflash', 'modslist'])
         self.assertTrue(cli.DEFAULT_OUT.endswith(os.path.join('dist', 'catalog')))
         sixth_sense = next(component for component in data['components'] if component['id'] == 'sixth_sense')
         self.assertTrue(os.path.isfile(os.path.join(folder, *sixth_sense['preview']['audio'].split('/'))))

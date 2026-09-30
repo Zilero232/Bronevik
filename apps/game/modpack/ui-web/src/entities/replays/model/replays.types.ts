@@ -11,6 +11,8 @@ type ReplayResult = (typeof REPLAYS.results)[number];
 
 export type BattleType = (typeof REPLAYS.battleTypes)[number];
 
+export type ReplayNation = (typeof REPLAYS.nations)[number];
+
 type ReplayPeriod = (typeof REPLAY_FILTER.periods)[number];
 
 export type ReplaySort = (typeof REPLAY_FILTER.sorts)[number];
@@ -20,6 +22,7 @@ export type ReplayFilters = {
   result: ReplayResult | null;
   map: string | null;
   vehicle: string | null;
+  nation: ReplayNation | null;
   tier: number | null;
   type: BattleType | null;
   period: ReplayPeriod;

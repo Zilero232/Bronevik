@@ -10,6 +10,7 @@ import _support
 from otmetki.core.settings import Settings
 from otmetki.features.sixth_sense.i18n import STRINGS
 from otmetki.features.sixth_sense.model import SixthSense, format_sixth_sense, icon_path, to_native
+from otmetki.features.sixth_sense.model.constants import TICK_SOUND
 from otmetki.features.sixth_sense.settings.constants import ICON_SETS
 from otmetki.features.sixth_sense.model.preview import preview_text
 from otmetki.features.sixth_sense.settings import SCHEMA
@@ -100,7 +101,18 @@ class FormatTest(unittest.TestCase):
                 for dimmed in (False, True):
                     path = icon_path(Settings({'icon_set': icon_set, 'icon_size': size}, SCHEMA), dimmed)
                     assert path in shipped, path
-        assert 'audioww/sixthSense.mp3' in shipped and 'audioww/sixthSense_off.mp3' in shipped
+        assert 'audioww/sixthSense.mp3' in shipped
+        assert 'audioww/sixthSense_off.mp3' in shipped
+
+    def test_the_countdown_tick_ships(self):
+        shipped = shipped_files()
+
+        assert 'audioww/' + TICK_SOUND + '.mp3' in shipped
+
+    def test_the_tick_sound_is_off_by_default(self):
+        settings = Settings({}, SCHEMA)
+
+        assert settings.get('tick_sound') is False
 
     def test_lamp_sound_is_the_game_setting(self):
         assert to_native(Settings({}, SCHEMA).to_dict()) == {}

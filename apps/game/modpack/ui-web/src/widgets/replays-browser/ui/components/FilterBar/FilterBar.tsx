@@ -1,4 +1,4 @@
-import type { BattleType } from '../../../../../entities/replays';
+import type { BattleType, ReplayNation } from '../../../../../entities/replays';
 import type { FilterBarProps } from './FilterBar.types';
 
 import { REPLAY_FILTER, romanTier } from '../../../../../entities/replays';
@@ -33,6 +33,16 @@ export const FilterBar = ({ browser }: FilterBarProps) => {
         label={t('filterVehicle')}
         value={filters.vehicle}
         onSelect={(vehicle) => browser.patch({ vehicle })}
+      />
+      <Dropdown<ReplayNation | null>
+        options={[
+          { value: null, label: t('anyNation') },
+          ...facets.nations.map((nation) => ({ value: nation.value, label: t(`nation_${nation.value}`), hint: String(nation.count) }))
+        ]}
+        active={filters.nation !== null}
+        label={t('filterNation')}
+        value={filters.nation}
+        onSelect={(nation) => browser.patch({ nation })}
       />
       <Dropdown
         options={[

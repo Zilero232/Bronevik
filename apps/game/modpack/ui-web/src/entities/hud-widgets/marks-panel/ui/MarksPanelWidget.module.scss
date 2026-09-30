@@ -63,3 +63,16 @@
 .delta {
   font-size: 13px;
 }
+
+.up {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-left: 8px;
+  font-size: 11px;
+}
+
+.badge {
+  margin-left: 8px;
+  font-size: 10px;
+}

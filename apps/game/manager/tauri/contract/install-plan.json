@@ -262,6 +262,7 @@
           "sha256": "ae7fdf07fd99a0c2c616ace3d07b50d7063a33a3bc6a9173098aa75bc93833a9",
           "url": "https://gitlab.com/openwg/wot.gameface/-/raw/v1.2.2/LICENSE"
         },
+        "optional": false,
         "packageId": "net.openwg.gameface",
         "requiredBy": [
           "marks_panel",
@@ -294,6 +295,7 @@
           "sha256": "516fddc54dc15c2589d40017fc985adc59565ff7fbe8e7bc16851205126dd7fc",
           "url": "https://raw.githubusercontent.com/CH4MPi/GUIFlash/v0.6.6/LICENSE"
         },
+        "optional": false,
         "packageId": "gambiter.guiflash",
         "requiredBy": [
           "damage_log"

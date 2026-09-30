@@ -152,6 +152,48 @@ class FormatTest(unittest.TestCase):
         grouped = format_hit_log(self.log(), Settings({'group_by_target': True}, SCHEMA), translator('en'))
         assert 'Tiger: x1 damage 390' in grouped
 
+    def crit_log(self):
+        log = self.log()
+        log.add_crits(TIGER, 2, 1.2)
+        log.set_health(TIGER, 1110, 1.3)
+        return log
+
+    def test_alt_mode_line_is_short_while_alt_is_up(self):
+        settings = Settings({'alt_mode': True, 'show_header': False}, SCHEMA)
+
+        lines = format_hit_log(self.crit_log(), settings, translator()).splitlines()
+
+        assert '<font color="#FF7A1A">пробитие</font> 390 Tiger' in lines[1]
+        assert 'БП' not in lines[1]
+
+    def test_alt_mode_line_is_full_while_alt_is_held(self):
+        settings = Settings({'alt_mode': True, 'show_header': False}, SCHEMA)
+
+        lines = format_hit_log(self.crit_log(), settings, translator(), extended=True).splitlines()
+
+        assert '2. Tiger: <font color="#FF7A1A">пробитие</font> 390 БП криты x2 осталось 1 110' in lines[1]
+
+    def test_alt_mode_grouped_line_is_full_while_alt_is_held(self):
+        settings = Settings({'alt_mode': True, 'group_by_target': True}, SCHEMA)
+
+        text = format_hit_log(self.crit_log(), settings, translator('en'), extended=True)
+
+        assert 'Tiger: x1 damage 390 crits x2 1 110 HP left' in text
+
+    def test_alt_line_template_is_the_line_while_alt_is_held(self):
+        settings = Settings({'alt_mode': True, 'show_header': False, 'alt_line_template': '{vehicle}!'}, SCHEMA)
+
+        lines = format_hit_log(self.log(), settings, translator(), extended=True).splitlines()
+
+        assert lines[0].endswith('IS!</font>')
+
+    def test_alt_keeps_the_regular_line_without_the_alt_mode(self):
+        settings = Settings({'show_header': False, 'alt_line_template': '{vehicle}!'}, SCHEMA)
+
+        lines = format_hit_log(self.log(), settings, translator(), extended=True).splitlines()
+
+        assert '1. IS: <font color="#A3A3AD">рикошет</font>' in lines[0]
+
     def test_strings_in_sync(self):
         assert sorted(STRINGS['ru']) == sorted(STRINGS['en'])
 

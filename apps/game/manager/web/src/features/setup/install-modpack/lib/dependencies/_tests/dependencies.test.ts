@@ -28,6 +28,14 @@ describe('dependencyRows', () => {
     expect(unticked).toMatchObject({ checked: false, locked: false });
   });
 
+  it('offers an optional dependency ticked like the others', () => {
+    const optional = dependencies.map((dependency) => (dependency.id === 'guiflash' ? { ...dependency, optional: true } : dependency));
+    const rows = dependencyRows({ dependencies: optional, statuses: [], selection: new Set(['damage_log']), excluded: none });
+
+    expect(rows.find((row) => row.dependency.id === 'guiflash')).toMatchObject({ dependency: { optional: true }, checked: true, locked: false });
+    expect(installedDependencies(rows).map((row) => row.dependency.id)).toEqual(['openwg_gameface', 'guiflash']);
+  });
+
   it('locks what is already there: ours stays, the players copy is never replaced', () => {
     const rows = dependencyRows({ dependencies, statuses, selection: new Set(['damage_log']), excluded: none });
 

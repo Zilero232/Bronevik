@@ -7,6 +7,7 @@ LOG_KINDS = ('all', 'dealt', 'received')
 # Colour sets of the totals line (model PALETTES): the classic one, our graphite and gold, high contrast, colour-blind safe.
 PALETTES = ('classic', 'graphite', 'contrast', 'colorblind')
 MAX_TEMPLATE = 600
+TEMPLATE_KEYS = ('template', 'entry_template', 'alt_entry_template')
 
 DEFAULTS = {
     'x': 232,
@@ -22,6 +23,8 @@ DEFAULTS = {
     'log_lines': 5,
     'log_kinds': 'all',
     'entry_template': '',
+    'alt_mode': False,
+    'alt_entry_template': '',
     'kind_colors': True,
     'color_damage': '',
     'color_assist': '',

@@ -1,2 +1,2 @@
 export { applyMessage } from './apply-message';
-export { createDevGameface } from './mock-bridge';
+export { createDevGameface, relayEscape } from './mock-bridge';

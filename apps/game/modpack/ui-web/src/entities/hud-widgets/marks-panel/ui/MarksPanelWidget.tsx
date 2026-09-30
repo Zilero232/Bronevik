@@ -13,6 +13,13 @@ export const MarksPanelWidget = ({ data }: MarksPanelWidgetProps) => {
 
   return (
     <HudPlate className={s.plate} rail='progress'>
+      {view.detail !== null && (
+        <div className={s.line}>
+          <span className={s.level}>{view.detail.label}</span>
+          <span className={s.secondary}>{view.detail.average}</span>
+          {view.detail.target !== null && <span className={s.secondary}>{view.detail.target}</span>}
+        </div>
+      )}
       {view.extended && view.thresholds.length > 0 && (
         <div className={s.line}>
           {view.thresholds.map((item) => (
@@ -45,6 +52,18 @@ export const MarksPanelWidget = ({ data }: MarksPanelWidgetProps) => {
           {view.percent}
         </span>
         {view.delta !== null && <span className={clsx(s.delta, toneClass(view.deltaTone))}>{view.delta}</span>}
+        {view.up !== null && (
+          <span className={s.up}>
+            <Glyph name={MARKS_PANEL.upGlyph} size={MARKS_PANEL.upSize} tone='muted' />
+            <span className={s.level}>{view.up.label}</span>
+            {view.up.reached ? (
+              <Glyph name={MARKS_PANEL.checkGlyph} size={MARKS_PANEL.checkSize} tone='success' />
+            ) : (
+              <span className={s.need}>{view.up.value}</span>
+            )}
+          </span>
+        )}
+        {view.source !== null && <span className={clsx(s.badge, toneClass(view.source.tone))}>{view.source.label}</span>}
       </div>
     </HudPlate>
   );

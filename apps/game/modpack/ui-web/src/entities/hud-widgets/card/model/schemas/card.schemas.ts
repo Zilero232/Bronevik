@@ -32,6 +32,7 @@ export const cardSchema = z.object({
   value_tone: hudToneSchema,
   rail: z.nullable(z.enum(HUD_RAILS)),
   chips: z.array(cardChipSchema),
+  strip: z.array(hudToneSchema),
   rows: z.array(cardRowSchema),
   footer: text,
   width: z.nullable(z.number())

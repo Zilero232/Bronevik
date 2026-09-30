@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ...core.compat import string_types, to_text
+from ...core.compat import is_number, string_types, to_text
 from ...core.hud import EVENT_RESET_LAYOUT
 from ...core.log import log
 from ..components import COMPANION_ACTIONS, COMPANION_ID, SECTIONS, build_catalog, find
@@ -26,6 +26,7 @@ class SettingsBridge(object):
         self.focus = None
         self.feeds = {}
         self.watched = None
+        self.scroll = {}
         self.handlers = {
             'ready': self._on_ready,
             'close': self._on_close,
@@ -48,6 +49,8 @@ class SettingsBridge(object):
             'window_layout': self._on_window_layout,
             'feed': self._on_feed,
             'diag': self._on_diag,
+            'escape': self._on_escape,
+            'scroll': self._on_scroll,
         }
 
     def labels(self):
@@ -75,6 +78,7 @@ class SettingsBridge(object):
             'notice': self.notice,
             'window': self.window_layout().describe(),
             'focus': self.focus,
+            'scroll': dict(self.scroll),
         }
 
     def focus_page(self, page):
@@ -266,6 +270,18 @@ class SettingsBridge(object):
         text = message['text']
         if isinstance(text, string_types):
             log('ui: page %s' % to_text(text)[:MAX_DIAG_CHARS])
+
+    def _on_escape(self, message):
+        self.context.escape_answered()
+
+    def _on_scroll(self, message):
+        page = message['page']
+        top = message['top']
+        if page not in SECTIONS + TOOL_PAGES:
+            raise ProtocolError('unknown_page')
+        if not is_number(top):
+            raise ProtocolError('bad_scroll')
+        self.scroll[page] = max(int(top), 0)
 
     def _on_window_layout(self, message):
         self.window_layout().update(message)

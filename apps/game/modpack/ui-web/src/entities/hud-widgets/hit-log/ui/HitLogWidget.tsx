@@ -29,6 +29,7 @@ export const HitLogWidget = ({ data }: HitLogWidgetProps) => {
           <span className={s.name}>{row.name}</span>
           {row.hasBar && <MiniBar height={HIT_LOG.bar.height} max={row.max ?? 0} tone='enemy' value={row.hp ?? 0} width={HIT_LOG.bar.width} />}
           <span className={s.hp}>{row.hpText}</span>
+          {row.note && <span className={s.note}>{row.note}</span>}
         </div>
       ))}
     </HudPlate>

@@ -45,6 +45,8 @@ def moe_macros(state):
         'target_next': format_number(state['target_avg'][state['next_level']]) if state['next_level'] in state['target_avg'] else MACRO_MISSING,
         'step': u'%g' % state['step'] if is_number(state['step']) else MACRO_MISSING,
         'step_need': _need(state['step_need']),
+        'up': u'%d' % state['up_level'] if state['up_level'] is not None else MACRO_MISSING,
+        'need_up': _need(state['up_need']),
         'battles': _battles(state),
         'pace': format_number(state['pace']) if state['pace'] is not None else MACRO_MISSING,
     }

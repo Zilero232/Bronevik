@@ -6,6 +6,7 @@ from ...battle import BattleHooks
 from ...component import FeatureComponent
 from .. import hud_layer, stock_control
 from ..modes import current_mode
+from ..stock.constants import EXTENDED_INFO_EVENT
 
 
 class BattlePanel(FeatureComponent):
@@ -19,7 +20,10 @@ class BattlePanel(FeatureComponent):
 
     `show(text, widget)` sends the GUIFlash text and the Gameface widget payload. A panel that replaces a stock element
     returns its aliases from `stock_aliases()`: they are hidden while the panel runs and the Gameface page draws widgets,
-    and come back when the panel stops, is switched off or the renderer is GUIFlash."""
+    and come back when the panel stops, is switched off or the renderer is GUIFlash.
+
+    A panel with an alternate mode reads `extended()` (Alt held, the stock extended-info key) while it builds its
+    payload and re-renders from `extended_changed(held)`, called while it runs."""
 
     start_event = 'battle_ready'
 
@@ -35,6 +39,7 @@ class BattlePanel(FeatureComponent):
                                   self.preview_widget).attach(app.bus)
         app.bus.on(self.start_event, self._on_start)
         app.bus.on('battle_leave', self._leave_battle)
+        app.bus.on(EXTENDED_INFO_EVENT, self._on_extended_info)
 
     def register(self, schema):
         return self.hud.register(self.component_id, schema)
@@ -64,6 +69,17 @@ class BattlePanel(FeatureComponent):
     def _leave_battle(self):
         self._on_leave()
         self.hud.leave_mode()
+
+    def _on_extended_info(self, held):
+        if self.running:
+            self.extended_changed(held)
+
+    def extended(self):
+        """True while Alt is held in battle."""
+        return self.stock.extended
+
+    def extended_changed(self, held):
+        pass
 
     def _on_component_settings(self, component_id, changed):
         if component_id != self.component_id:

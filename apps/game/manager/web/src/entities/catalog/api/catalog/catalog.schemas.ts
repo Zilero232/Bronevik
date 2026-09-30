@@ -59,6 +59,7 @@ export const catalogDependencySchema = z.object({
   sha256: z.string(),
   size: z.number(),
   requiredBy: z.array(z.string()),
+  optional: z.boolean().default(false),
   restartRequired: z.boolean()
 });
 

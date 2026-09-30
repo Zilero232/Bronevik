@@ -6,6 +6,7 @@ export const REPLAYS = {
   battleTypes: ['random', 'ranked', 'comp7', 'frontline', 'royale', 'training', 'tournament', 'clan', 'team', 'event', 'other'],
   siteStates: ['queued', 'uploaded', 'analysed'],
   uploadStates: ['ready', 'off', 'unbound', 'missing'],
+  nations: ['ussr', 'germany', 'usa', 'china', 'france', 'uk', 'japan', 'czech', 'sweden', 'poland', 'italy', 'intunion'],
   classes: ['lightTank', 'mediumTank', 'heavyTank', 'AT-SPG', 'SPG'],
   actions: {
     refresh: 'refresh',

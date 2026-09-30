@@ -44,13 +44,14 @@
   "clientUnsupported": "The modpack cannot be installed into this client — choose Lesta's Mir Tankov at a supported version",
   "dependencies": {
     "title": "Required libraries",
-    "description": "Free third-party mods the selected components need. They are downloaded from their authors' official releases and checked against a pinned checksum; the licence is kept with the install. A copy you installed yourself stays yours and is never replaced or removed.",
+    "description": "Free third-party mods the selected components need. They are downloaded from their authors' official releases and checked against a pinned checksum; the licence is kept with the install. A copy you installed yourself stays yours and is never replaced or removed. An optional library can be unticked: the components work without it and lose only the convenience it adds.",
     "state": {
       "missing": "Will be installed",
       "outdated": "Will be updated",
       "ours": "Installed by the manager",
       "user": "Yours"
     },
+    "optional": "Optional",
     "userCopy": "Your copy is used: {file}",
     "version": "Version {version}",
     "licence": "Licence:",

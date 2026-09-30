@@ -24,6 +24,7 @@ export const DependencyList = () => {
               <span className={s.label}>
                 {dependency.title}
                 <Badge tone={dependency.locked ? 'neutral' : 'accent'}>{t(`state.${dependency.state}`)}</Badge>
+                {dependency.optional && <Badge>{t('optional')}</Badge>}
               </span>
             }
             checked={dependency.checked}

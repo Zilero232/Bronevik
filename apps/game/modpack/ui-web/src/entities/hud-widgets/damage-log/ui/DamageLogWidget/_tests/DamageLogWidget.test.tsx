@@ -25,4 +25,21 @@ describe(DamageLogWidget, () => {
     expect(html.textContent).not.toContain('KV-1');
     expect(html.textContent).toContain('710');
   });
+
+  it('keeps a short row to the amount and its icon while Alt is up', () => {
+    const html = mount({ Component: DamageLogWidget, props: { data: { ...fixture, detail: 'short' as const } } });
+
+    expect(html.textContent).toContain('-310');
+    expect(html.textContent).not.toContain('KV-1');
+    expect(imageSources(html)).not.toContain('img://gui/maps/icons/vehicleTypes/white/heavyTank.png');
+  });
+
+  it('keeps the full row and adds its note while Alt is held', () => {
+    const rows = fixture.rows.map((row) => ({ ...row, note: 'Получено ОФ боеукладка' }));
+
+    const html = mount({ Component: DamageLogWidget, props: { data: { ...fixture, detail: 'extended' as const, rows } } });
+
+    expect(html.textContent).toContain('KV-1');
+    expect(html.textContent).toContain('Получено ОФ боеукладка');
+  });
 });

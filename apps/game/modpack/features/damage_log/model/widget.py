@@ -2,7 +2,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.hud.icons import class_icon, efficiency_icon, glyph, shell_icon, shell_icon_of
 from ....core.hud.widget import widget
-from .constants import COMPACT_STYLES, KIND, KIND_GLYPHS, KIND_TONES, KINDS, LAST_HIT_KIND, LOG_KIND_FILTER, SOURCE_ICONS, TOTALS
+from . import detail_mode, entry_note
+from .constants import (COMPACT_STYLES, DETAIL_EXTENDED, KIND, KIND_GLYPHS, KIND_TONES, KINDS, LAST_HIT_KIND, LOG_KIND_FILTER,
+                        SOURCE_ICONS, TOTALS)
 
 # Fair play: the player's own damage, assist, blocked and received damage, what the stock damage log shows; for
 # received damage the attacker's name and class, as the stock log names it.
@@ -35,7 +37,7 @@ def source_icon(source):
     return efficiency_icon(name) if kind == 'efficiency' else glyph(name)
 
 
-def row(entry):
+def row(entry, note=''):
     kind = entry['kind']
     shell = entry_shell(entry) if kind in ('damage', 'blocked', 'received') else None
     return {
@@ -49,15 +51,42 @@ def row(entry):
         'name': entry.get('vehicle') or '',
         'source': source_icon(entry.get('source')),
         'ammo_rack': glyph('ammo_rack') if entry.get('ammo_rack') else None,
+        'note': note,
     }
 
 
-def damage_log_widget(log, settings):
-    compact = settings.get('style') in COMPACT_STYLES
-    rows = []
-    if settings.get('show_log') and not compact:
-        rows = [row(entry) for entry in log.recent(settings.get('log_lines'), LOG_KIND_FILTER.get(settings.get('log_kinds'), KINDS))]
-    return widget(KIND, {'style': 'compact' if compact else 'full', 'totals': totals(log), 'rows': rows})
+def is_compact(settings):
+    return settings.get('style') in COMPACT_STYLES
+
+
+# Holding Alt shows the rows the compact styles leave out (model shows_log).
+def shows_rows(settings, detail):
+    if detail == DETAIL_EXTENDED:
+        return True
+
+    return bool(settings.get('show_log')) and not is_compact(settings)
+
+
+def log_rows(log, settings, translate, detail):
+    if not shows_rows(settings, detail):
+        return []
+
+    kinds = LOG_KIND_FILTER.get(settings.get('log_kinds'), KINDS)
+    entries = log.recent(settings.get('log_lines'), kinds)
+    return [row(entry, entry_note(entry, translate, detail)) for entry in entries]
+
+
+# `detail` is the row detail (model detail_mode): the page leaves the class, name and source out of a short row and
+# adds the `note` (kind, shell, source in words) to an extended one.
+def damage_log_widget(log, settings, translate, extended=False):
+    detail = detail_mode(settings, extended)
+
+    return widget(KIND, {
+        'style': 'compact' if is_compact(settings) else 'full',
+        'detail': detail,
+        'totals': totals(log),
+        'rows': log_rows(log, settings, translate, detail),
+    })
 
 
 def last_hit_widget(entry, settings):

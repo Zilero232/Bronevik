@@ -30,9 +30,9 @@ export const TeamHpWidget = ({ data }: TeamHpWidgetProps) => {
       </div>
       {view.showStrip && (
         <div className={s.row}>
-          <TeamStrip mirrored color={view.colors.ally} vehicles={view.allies.vehicles} />
+          <TeamStrip mirrored color={view.colors.ally} items={view.allies.strip} />
           <span className={s.gap} />
-          <TeamStrip color={view.colors.enemy} vehicles={view.enemies.vehicles} />
+          <TeamStrip color={view.colors.enemy} items={view.enemies.strip} />
         </div>
       )}
       {view.diff !== null && <span className={clsx(s.diff, view.diffAhead ? s.ahead : s.behind)}>{`Δ ${view.diff}`}</span>}

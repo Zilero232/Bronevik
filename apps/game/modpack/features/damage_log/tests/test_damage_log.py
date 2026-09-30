@@ -145,6 +145,42 @@ class FormatTest(unittest.TestCase):
         assert 'D=800 R=1' in text
         assert '#1 240 Tiger' in text
 
+    def test_alt_mode_line_is_short_while_alt_is_up(self):
+        settings = Settings({'alt_mode': True, 'log_lines': 1, 'kind_icons': False}, SCHEMA)
+
+        lines = format_damage_log(filled_log(), settings, translator()).splitlines()
+
+        assert lines[1].endswith('>310</font>')
+        assert 'Tiger' not in lines[1]
+
+    def test_alt_mode_line_is_full_while_alt_is_held(self):
+        settings = Settings({'alt_mode': True, 'log_lines': 1, 'kind_icons': False}, SCHEMA)
+
+        lines = format_damage_log(filled_log(), settings, translator(), extended=True).splitlines()
+
+        assert 'Получено 310 Tiger ОФ' in lines[1]
+
+    def test_alt_keeps_the_regular_line_without_the_alt_mode(self):
+        settings = Settings({'log_lines': 1, 'kind_icons': False, 'alt_entry_template': '#{index}'}, SCHEMA)
+
+        lines = format_damage_log(filled_log(), settings, translator(), extended=True).splitlines()
+
+        assert 'Получено 310 Tiger ОФ' in lines[1]
+
+    def test_alt_shows_the_log_that_show_log_hides(self):
+        settings = Settings({'alt_mode': True, 'show_log': False, 'log_lines': 1}, SCHEMA)
+
+        lines = format_damage_log(filled_log(), settings, translator(), extended=True).splitlines()
+
+        assert len(lines) == 2
+
+    def test_alt_entry_template_is_the_line_while_alt_is_held(self):
+        settings = Settings({'alt_mode': True, 'log_lines': 1, 'alt_entry_template': '#{index} {vehicle}'}, SCHEMA)
+
+        text = format_damage_log(filled_log(), settings, translator(), extended=True)
+
+        assert '#1 Tiger' in text
+
 
 class SourcesTest(unittest.TestCase):
 

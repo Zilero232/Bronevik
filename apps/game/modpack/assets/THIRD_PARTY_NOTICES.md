@@ -69,9 +69,9 @@ visual reference only (layout, sizes, readability, colour conventions); nothing 
 - Copyright: Три отметки, dedicated to the public domain
 - Licence: CC0-1.0 (`assets/otmetki/sounds/LICENSE.txt`)
 - Source: https://triotmetki.ru
-- Contents: sixthSense.mp3 (lamp on) and sixthSense_off.mp3 (lamp off): synthesised by tools/assets/sound.py, MP3 44.1 kHz mono
+- Contents: sixthSense.mp3 (lamp on), sixthSense_off.mp3 (lamp off) and otmetki_tick.mp3 (a second of the lamp countdown): synthesised by tools/assets/sound.py, MP3 44.1 kHz mono
 - Ships in: `res/audioww` (component `sixth_sense`)
-- Fair play: The client's own custom detection sound slot (Settings > Sound > detection alert: user sound).
+- Fair play: The client's own custom detection sound slot (Settings > Sound > detection alert: user sound); the tick counts down the player's own lamp.
 
 ### Damage-log kind glyphs
 

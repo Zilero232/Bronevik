@@ -20,6 +20,31 @@ def thresholds(state):
     return items
 
 
+def _up(state, settings):
+    if not settings.get('show_up') or state['up_level'] is None:
+        return None
+    return {'level': state['up_level'], 'need': state['up_need']}
+
+
+def _source(state, translate):
+    if state['source'] is None:
+        return None
+    return {'kind': state['source'], 'label': translate('marks_panel_source_%s' % state['source'])}
+
+
+def _detail(state, settings, translate):
+    if not settings.get('detail'):
+        return None
+    level = state['next_level']
+    return {
+        'label': translate('marks_panel_average'),
+        'ema': state['ema'],
+        'ema_projected': state['ema_projected'],
+        'level': level,
+        'target': state['target_avg'].get(level) if level is not None else None,
+    }
+
+
 def marks_widget(state, settings, translate):
     style = settings.get('style')
     custom = style == 'custom' and settings.get('template')
@@ -37,5 +62,8 @@ def marks_widget(state, settings, translate):
         'step': {'step': state['step'], 'need': state['step_need']} if settings.get('show_step') and state['step_need'] is not None else None,
         'battles': ({'level': state['next_level'], 'count': state['battles']}
                     if settings.get('show_battles') and state['next_level'] is not None and state['battles'] is not None else None),
+        'up': _up(state, settings),
+        'source': _source(state, translate),
+        'detail': _detail(state, settings, translate),
         'text': render(settings.get('template'), moe_macros(state)) if custom else None,
     })

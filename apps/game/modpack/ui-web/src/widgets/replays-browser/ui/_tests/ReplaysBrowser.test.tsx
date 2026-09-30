@@ -52,6 +52,17 @@ describe(ReplaysBrowser, () => {
     expect(buttonNamed(html, REPLAYS_RU.watch).disabled).toBe(true);
   });
 
+  it('narrows the list to the nation picked in the filter bar', () => {
+    const html = mount({ Component: ReplaysBrowser, props: { page: PAGE, enabled: true, onTurnOn: vi.fn() } });
+    const trigger = [...html.querySelectorAll('button')].find((button) => button.textContent?.startsWith(REPLAYS_RU.filterNation));
+
+    void act(() => trigger?.click());
+    void act(() => buttonNamed(html, `${REPLAYS_RU.nation_germany}1`).click());
+
+    expect(html.textContent).toContain('Tiger I');
+    expect(html.textContent).not.toContain('Т-34');
+  });
+
   it('offers to turn the component on when it is off', () => {
     const onTurnOn = vi.fn();
     const html = mount({ Component: ReplaysBrowser, props: { page: null, enabled: false, onTurnOn } });

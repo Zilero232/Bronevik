@@ -14,10 +14,16 @@ const row = z.object({
   cls: hudIconSchema,
   name: z.string(),
   source: hudIconSchema,
-  ammo_rack: hudIconSchema
+  ammo_rack: hudIconSchema,
+  note: z.string()
 });
 
-export const damageLogSchema = z.object({ style: z.enum(['full', 'compact']), totals: z.array(total), rows: z.array(row) });
+export const damageLogSchema = z.object({
+  style: z.enum(['full', 'compact']),
+  detail: z.enum(['full', 'short', 'extended']),
+  totals: z.array(total),
+  rows: z.array(row)
+});
 
 export const lastHitSchema = z.object({
   amount: z.number(),

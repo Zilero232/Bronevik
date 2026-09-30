@@ -17,6 +17,7 @@ const ITEMS = [
     map_title: 'Прохоровка',
     tank: 'Т-34',
     vehicle: 'ussr-R04_T-34',
+    nation: 'ussr',
     tier: 5,
     result: 'win',
     damage: 2150,
@@ -29,6 +30,7 @@ const ITEMS = [
     map_title: 'Химмельсдорф',
     tank: 'Tiger I',
     vehicle: 'germany-G04_PzVI_Tiger_I',
+    nation: 'germany',
     tier: 7,
     result: 'loss',
     damage: 3400,
@@ -42,6 +44,7 @@ const ITEMS = [
     map_title: 'Малиновка',
     tank: 'Т-34',
     vehicle: 'ussr-R04_T-34',
+    nation: 'ussr',
     tier: 5,
     result: null,
     damage: null,
@@ -70,6 +73,42 @@ describe(filterReplays, () => {
     expect(ids({ type: 'ranked' })).toEqual(['b']);
     expect(ids({ favourites: true })).toEqual(['a']);
     expect(ids({ vehicle: 'ussr-R04_T-34', result: 'loss' })).toEqual([]);
+  });
+
+  it.each([
+    { nation: 'ussr', expected: ['a', 'c'] },
+    { nation: 'germany', expected: ['b'] },
+    { nation: 'france', expected: [] }
+  ] as const)('keeps only the replays of the $nation nation', ({ nation, expected }) => {
+    const filters = { nation };
+
+    const visible = ids(filters);
+
+    expect(visible).toEqual(expected);
+  });
+
+  it.each([
+    { result: 'win', expected: ['a'] },
+    { result: 'loss', expected: ['b'] },
+    { result: 'draw', expected: [] }
+  ] as const)('keeps only the replays with the $result result', ({ result, expected }) => {
+    const filters = { result };
+
+    const visible = ids(filters);
+
+    expect(visible).toEqual(expected);
+  });
+
+  it.each([
+    { filters: { nation: 'ussr', result: 'win' }, expected: ['a'] },
+    { filters: { nation: 'ussr', result: 'loss' }, expected: [] },
+    { filters: { nation: 'germany', result: 'loss', type: 'ranked', period: 'week' }, expected: ['b'] },
+    { filters: { nation: 'ussr', period: 'week', query: 'т-34' }, expected: ['a'] },
+    { filters: { nation: 'ussr', tier: 5, descending: false }, expected: ['c', 'a'] }
+  ] as const)('combines the nation and the result with the other filters: $filters', ({ filters, expected }) => {
+    const visible = ids(filters);
+
+    expect(visible).toEqual(expected);
   });
 
   it('keeps a period by the age of the battle', () => {
@@ -101,11 +140,19 @@ describe(activeFilterCount, () => {
     expect(activeFilterCount({ ...DEFAULT_REPLAY_FILTERS, sort: 'xp', descending: false, query: '   ' })).toBe(0);
     expect(activeFilterCount({ ...DEFAULT_REPLAY_FILTERS, tier: 5, favourites: true, period: 'week' })).toBe(3);
   });
+
+  it('counts the nation and the result as two filters', () => {
+    const filters = { ...DEFAULT_REPLAY_FILTERS, nation: 'ussr' as const, result: 'win' as const };
+
+    const count = activeFilterCount(filters);
+
+    expect(count).toBe(2);
+  });
 });
 
 describe(clearFilters, () => {
   it('drops every filter and keeps the order', () => {
-    const cleared = clearFilters({ ...DEFAULT_REPLAY_FILTERS, map: 'x', result: 'win', sort: 'xp', descending: false });
+    const cleared = clearFilters({ ...DEFAULT_REPLAY_FILTERS, map: 'x', nation: 'ussr', result: 'win', sort: 'xp', descending: false });
 
     expect(cleared).toEqual({ ...DEFAULT_REPLAY_FILTERS, sort: 'xp', descending: false });
   });

@@ -59,7 +59,9 @@ DOCK_GAP = 6
 # the team lists (PlayersPanel: x 0 / W, 25 px rows from about y 45, at most 368 px wide with badges in the full mode),
 # the score strip (fragCorrelationBar, centred at the top), the timer (battleTimer, 184 px at the top right), the damage
 # panel (230 x about 240 at the bottom left) with the chat above it, the consumables (57 px slots, centred, 58 px from the
-# bottom), the minimap (bottom right) and the sixth sense lamp (W/2 - 109, H/2 - 225).
+# bottom), the minimap (bottom right) and the sixth sense lamp (W/2 - 109, H/2 - 225). Under the score strip the page keeps
+# the team bases panel (capture bars, 34 px each, from about y 62 as EpicBattlePage.as places it) and the quest progress
+# under it (BattlePage.updatePositionForQuestProgress: bases y + 45 + their height); hiding the score strip moves neither.
 DOCK_ANCHORS = {
     # Right of the stock damage panel, in the stock damage log's place (BattlePage.as: x 229, the damage panel's top + 3).
     'battle_left_bottom': {'x': 232, 'y': -6, 'align_x': 'left', 'align_y': 'bottom', 'reserve': 560},
@@ -87,9 +89,9 @@ DOCKS = {
     'otmetki.hud.arty_meter': ('battle_right_top', 1),
     'otmetki.hud.session_goals': ('battle_right_top', 2),
     'otmetki.hud.personal_missions': ('battle_right_top', 3),
+    'otmetki.hud.main_gun': ('battle_right_top', 4),
     'otmetki.hud.battle_loadout': ('battle_bottom_center', 0),
     'otmetki.hud.consumables': ('battle_bottom_center', 1),
-    'otmetki.hud.main_gun': ('battle_top_center', 0),
     'otmetki.hud.battle_efficiency': ('battle_top_center', 1),
     'otmetki.hud.hangar_marks': ('hangar_left', 0),
     'otmetki.marks_history': ('hangar_left', 1),

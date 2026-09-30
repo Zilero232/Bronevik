@@ -1,0 +1,14 @@
+.strip {
+  display: flex;
+  height: 12px;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.mark {
+  width: 10px;
+  height: 6px;
+  flex-shrink: 0;
+  margin-right: 2px;
+}

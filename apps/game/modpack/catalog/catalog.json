@@ -301,8 +301,8 @@
         "en": "MoE panel in battle"
       },
       "description": {
-        "ru": "Процент отметки в бою: на начало боя и прогноз после него, урон до 65/85/95 %, урон на +0,5 %, среднее и боёв до следующей отметки. Четыре вида и свой шаблон с макросами, цвет по изменению или по отметке, перетаскивается в редакторе HUD.",
-        "en": "Your MoE percent in battle: at the start and projected after it, damage to 65/85/95%, damage for +0.5%, the average and battles to the next mark. Four styles and your own macro template, colour by change or by mark, movable in the HUD editor."
+        "ru": "Процент отметки в бою: на начало боя и прогноз после него, урон до 65/85/95 %, на +0,5 % и до следующего целого процента, среднее и боёв до следующей отметки, проверено ли значение по досье; подробности по Alt. Четыре вида и свой шаблон с макросами, цвет по изменению или по отметке, перетаскивается в редакторе HUD.",
+        "en": "Your MoE percent in battle: at the start and projected after it, damage to 65/85/95%, for +0.5% and for the next whole percent, the average and battles to the next mark, whether the value is verified by the dossier; details on Alt. Four styles and your own macro template, colour by change or by mark, movable in the HUD editor."
       },
       "fairPlay": {
         "ru": "Считается по вашему урону и помощи, как в итогах боя.",
@@ -457,12 +457,12 @@
         "en": "High Caliber counter"
       },
       "description": {
-        "ru": "Сколько вашего урона не хватает до порога медали «Основной калибр» и ваша доля урона команды.",
-        "en": "How much of your damage the High Caliber medal threshold still needs and your share of the team damage."
+        "ru": "Сколько вашего урона не хватает до порога медали «Основной калибр», ваша доля урона команды и когда медаль уже недостижима или провалена попаданием в союзника.",
+        "en": "How much of your damage the High Caliber medal threshold still needs, your share of the team damage, and when the medal is out of reach or failed by hitting an ally."
       },
       "fairPlay": {
-        "ru": "Ваш урон и ХП противников, которые клиент уже показывает на маркерах и в панелях команд.",
-        "en": "Your damage and the enemy HP the client already shows on markers and team panels."
+        "ru": "Ваш урон, ХП противников, которые клиент уже показывает на маркерах и в панели счёта, и его же сообщение о попадании вашего выстрела в союзника.",
+        "en": "Your damage, the enemy HP the client already shows on markers and the score strip, and its own message about your shot hitting an ally."
       },
       "perf": "low",
       "preview": {
@@ -699,8 +699,8 @@
         "en": "Equipment in battle"
       },
       "description": {
-        "ru": "Значки оборудования вашего танка прямо над стандартной панелью снарядов (★ — в слоте своей специализации); наведите курсор (Ctrl) на значок, и подсказка расскажет, что даёт предмет.",
-        "en": "Your tank's equipment icons right above the stock shells panel (★: in a slot of its own specialisation); point the cursor (Ctrl) at an icon for a tooltip on what the item does."
+        "ru": "Значки оборудования и директивы вашего танка прямо над стандартной панелью снарядов (★ — в слоте своей специализации), выбранный набор полевой модернизации и работающее оборудование; наведите курсор (Ctrl) на значок, и подсказка расскажет, что даёт предмет.",
+        "en": "Your tank's equipment and directive icons right above the stock shells panel (★: in a slot of its own specialisation), the selected field modification set and the equipment at work; point the cursor (Ctrl) at an icon for a tooltip on what the item does."
       },
       "fairPlay": {
         "ru": "Только свой танк: чужое оборудование клиент не показывает, и мод его не угадывает.",
@@ -852,8 +852,8 @@
         "en": "Hangar session stats"
       },
       "description": {
-        "ru": "Бои, процент побед, средний урон и WN8 за текущую сессию. По желанию отчёт о сессии в свой Telegram или Discord через сайт (выключено по умолчанию).",
-        "en": "Battles, win rate, average damage and WN8 for the current session. Optionally the session report to your own Telegram or Discord through the site (off by default)."
+        "ru": "Бои, процент побед, средний урон и WN8 за текущую сессию, полоска последних 10 боёв, счётчик боёв, которые ждут итогов, и кнопка «Новая сессия». По желанию отчёт о сессии в свой Telegram или Discord через сайт (выключено по умолчанию).",
+        "en": "Battles, win rate, average damage and WN8 for the current session, a strip of the last 10 battles, a count of battles awaiting results and a «New session» button. Optionally the session report to your own Telegram or Discord through the site (off by default)."
       },
       "fairPlay": {
         "ru": "Только ваши итоги боёв.",
@@ -1320,6 +1320,7 @@
         "event_trackers",
         "hangar_info"
       ],
+      "optional": false,
       "restartRequired": true
     },
     {
@@ -1381,6 +1382,37 @@
         "event_trackers",
         "hangar_info"
       ],
+      "optional": false,
+      "restartRequired": false
+    },
+    {
+      "id": "modslist",
+      "kind": "dependency",
+      "packageId": "me.poliroid.modslistapi",
+      "version": "1.6.01",
+      "file": "me.poliroid.modslistapi_1.6.01.mtmod",
+      "title": {
+        "ru": "ModsList",
+        "en": "ModsList"
+      },
+      "description": {
+        "ru": "Кнопка модов в ряду кнопок внизу справа ангара: из неё открывается окно «Три отметки»",
+        "en": "The mods button in the hangar's bottom-right button row: it opens the «Три отметки» window"
+      },
+      "author": {
+        "name": "poliroid (Andrii Andruschyshyn)",
+        "url": "https://gitlab.com/wot-public-mods/mods-list"
+      },
+      "licence": {
+        "name": "MIT",
+        "url": "https://gitlab.com/wot-public-mods/mods-list/-/raw/v1.6.01/LICENSE.md",
+        "sha256": "c67ed29b3f80fa7b99e6fc16490fa1710353fb7ead042c276e8dccd2dbeedb5f"
+      },
+      "sourceUrl": "https://gitlab.com/-/project/26509092/uploads/9705f0b2627e9a074ecac2e84f38c9ca/me.poliroid.modslistapi_1.6.01.wotmod",
+      "sha256": "b312adfcd005405d49b711e79b4032be7d624b6e38d4156364d1c04bc5dba71f",
+      "size": 79776,
+      "requiredBy": ["ui"],
+      "optional": true,
       "restartRequired": false
     }
   ]

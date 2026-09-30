@@ -10,6 +10,8 @@ story mode), Frontline and Steel Hunter keep every stock element. An alias the p
 (`as_setComponentsVisibilityS`), or handed to the page's full-stats set while Tab is open so it comes back with the rest.
 
 `GameEvent.GUI_VISIBILITY` (V) and `GameEvent.FULL_STATS` (Tab) take our battle panels off the screen with the stock GUI.
+`GameEvent.SHOW_EXTENDED_INFO` (Alt held, the key the stock markers, players panel and damage log expand on) goes out as
+`battle_extended_info(held)` on the app bus for the panels with an alternate mode.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -17,7 +19,7 @@ from ....hooks import override
 from ....hud.modes import suppresses
 from ....hud.stock import StockSuppression
 from ....log import log, log_exception, safe
-from .constants import FULL_STATS_DOWN, GUI_VISIBLE
+from .constants import EXTENDED_INFO_DOWN, EXTENDED_INFO_EVENT, FULL_STATS_DOWN, GUI_VISIBLE
 
 try:
     from gui.Scaleform.daapi.view.battle.classic.page import ClassicPage
@@ -30,13 +32,15 @@ except Exception as error:  # the battle page moved: every stock element stays
 
 class StockControl(object):
 
-    def __init__(self, layer):
+    def __init__(self, layer, bus):
         self.layer = layer
+        self.bus = bus
         self.suppression = StockSuppression()
         self.page = None
         self.installed = False
         self.gui_visible = True
         self.full_stats = False
+        self.extended = False
         self.hidden = frozenset()
 
     @safe
@@ -76,6 +80,7 @@ class StockControl(object):
         self.hidden = frozenset()
         self.gui_visible, self.full_stats = True, False
         self.layer.set_gui_hidden(False)
+        self._set_extended(False)
         self.sync()
 
     def detach(self, page):
@@ -83,6 +88,7 @@ class StockControl(object):
             self.page = None
             self.hidden = frozenset()
             self.layer.set_gui_hidden(False)
+            self._set_extended(False)
 
     def present(self, alias):
         """Whether the attached page has a stock component `alias` (True while the page has registered none yet)."""
@@ -141,7 +147,8 @@ class StockControl(object):
         except ImportError:
             return
         game_event = getattr(events, 'GameEvent', None)
-        for name, handler in (('GUI_VISIBILITY', self._on_gui_visibility), ('FULL_STATS', self._on_full_stats)):
+        for name, handler in (('GUI_VISIBILITY', self._on_gui_visibility), ('FULL_STATS', self._on_full_stats),
+                              ('SHOW_EXTENDED_INFO', self._on_extended_info)):
             event = getattr(game_event, name, None)
             if event is not None:
                 g_eventBus.addListener(event, handler, EVENT_BUS_SCOPE.BATTLE)
@@ -155,6 +162,15 @@ class StockControl(object):
     def _on_full_stats(self, event):
         self.full_stats = bool((getattr(event, 'ctx', None) or {}).get(FULL_STATS_DOWN, False))
         self._follow()
+
+    @safe
+    def _on_extended_info(self, event):
+        self._set_extended(bool((getattr(event, 'ctx', None) or {}).get(EXTENDED_INFO_DOWN, False)))
+
+    def _set_extended(self, held):
+        if held != self.extended:
+            self.extended = held
+            self.bus.emit(EXTENDED_INFO_EVENT, held)
 
     def _follow(self):
         self.layer.set_gui_hidden(self.page is not None and (not self.gui_visible or self.full_stats))

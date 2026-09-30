@@ -17,6 +17,7 @@ export const replayFacets = (items: readonly ReplayItem[]): ReplayFacets => {
   const vehicleCounts = countBy(withVehicle, (item) => item.vehicle);
   const tierCounts = countBy(withTier, (item) => String(item.tier));
   const typeCounts = countBy(items, (item) => item.type);
+  const nationCounts = countBy(items, (item) => item.nation ?? '');
 
   return {
     maps: sortBy(
@@ -43,6 +44,9 @@ export const replayFacets = (items: readonly ReplayItem[]): ReplayFacets => {
     ),
     types: REPLAYS.battleTypes
       .filter((type) => (typeCounts[type] ?? 0) > 0)
-      .map((type) => ({ value: type, label: type, count: typeCounts[type] ?? 0 }))
+      .map((type) => ({ value: type, label: type, count: typeCounts[type] ?? 0 })),
+    nations: REPLAYS.nations
+      .filter((nation) => (nationCounts[nation] ?? 0) > 0)
+      .map((nation) => ({ value: nation, label: nation, count: nationCounts[nation] ?? 0 }))
   };
 };

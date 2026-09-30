@@ -3,6 +3,8 @@ import clsx from 'clsx';
 import type { ToolbarProps } from './Toolbar.types';
 
 import { REPLAY_FILTER, REPLAYS } from '../../../../../entities/replays';
+import { useFieldEscape } from '../../../../../shared/lib/use-field-escape';
+import { useTooltip } from '../../../../../shared/lib/use-tooltip';
 import { Button } from '../../../../../shared/ui/button';
 import { Segmented } from '../../../../../shared/ui/segmented';
 import { REPLAYS_BROWSER } from '../../../config';
@@ -15,6 +17,10 @@ import s from './Toolbar.module.scss';
 export const Toolbar = ({ browser }: ToolbarProps) => {
   const t = useReplaysT();
   const { filters } = browser;
+  const clearQuery = () => browser.patch({ query: '' });
+  const searchFocus = useFieldEscape({ onEscape: filters.query === '' ? undefined : clearQuery });
+  const directionLabel = filters.descending ? t('descending') : t('ascending');
+  const directionTip = useTooltip(directionLabel);
   const results = [
     { value: REPLAY_FILTER.all, label: t('resultAll') },
     ...REPLAYS.results.map((result) => ({ value: result, label: t(`result_${result}`) }))
@@ -32,9 +38,10 @@ export const Toolbar = ({ browser }: ToolbarProps) => {
           type='text'
           value={filters.query}
           onInput={(event) => browser.patch({ query: event.currentTarget.value })}
+          {...searchFocus}
         />
         {filters.query !== '' && (
-          <button aria-label={t('clearSearch')} className={s.clear} type='button' onClick={() => browser.patch({ query: '' })}>
+          <button aria-label={t('clearSearch')} className={s.clear} type='button' onClick={clearQuery}>
             <ReplayIcon name='close' size={12} />
           </button>
         )}
@@ -62,18 +69,12 @@ export const Toolbar = ({ browser }: ToolbarProps) => {
           value={filters.sort}
           onSelect={browser.sortBy}
         />
-        <button
-          aria-label={filters.descending ? t('descending') : t('ascending')}
-          className={s.direction}
-          title={filters.descending ? t('descending') : t('ascending')}
-          type='button'
-          onClick={() => browser.sortBy(filters.sort)}
-        >
+        <button aria-label={directionLabel} className={s.direction} type='button' onClick={() => browser.sortBy(filters.sort)} {...directionTip}>
           <ReplayIcon name={filters.descending ? 'arrowDown' : 'arrowUp'} size={14} />
         </button>
       </div>
       <div className={s.tools}>
-        <Button aria-label={t('refresh')} className={s.tool} size='small' title={t('refresh')} variant='ghost' onClick={browser.refresh}>
+        <Button aria-label={t('refresh')} className={s.tool} size='small' tooltip={t('refresh')} variant='ghost' onClick={browser.refresh}>
           <ReplayIcon name='refresh' size={16} />
         </Button>
         <Button className={s.tool} size='small' variant='ghost' onClick={browser.openFolder}>

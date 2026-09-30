@@ -11,8 +11,8 @@ from ....core.me import OK_STATUS
 from .. import FEATURE_ID
 from ..i18n import STRINGS
 from ..model import SessionAggregator, format_session_panel, format_session_plain, session_widget
-from ..model.constants import (ACTION_SHARE, SHARE_PATH, SHARE_REFUSED, SHARE_REFUSED_NOTICE, SHARE_RETRY_S, SHARE_SEND_PATH, SHARE_STATE_KEY,
-                               SHARE_SYNCED)
+from ..model.constants import (ACTION_RESET, ACTION_SHARE, SHARE_PATH, SHARE_REFUSED, SHARE_REFUSED_NOTICE,
+                               SHARE_RETRY_S, SHARE_SEND_PATH, SHARE_STATE_KEY, SHARE_SYNCED)
 from ..model.share import preference_body, preference_of, preference_outcome, send_body, send_failure_key
 from ..settings import IDLE_MINUTES, SHARE, SHARE_CHANNEL, SWITCH
 from .constants import HANGAR_PANEL, LAYOUT, STATE_KEY
@@ -38,6 +38,8 @@ class SessionStats(object):
         bus = app.bus
         bus.on('hangar', self._on_hangar)
         bus.on('battle_enter', self._on_battle_enter)
+        bus.on('battle_ready', self._on_battle_ready)
+        bus.on('battle_results', self._on_battle_results)
         bus.on('battle_event', self._on_battle_event)
         bus.on('battle_recorded', self._on_battle_recorded)
         bus.on('ingest_response', self._on_ingest_response)
@@ -51,6 +53,16 @@ class SessionStats(object):
 
     def _on_battle_enter(self):
         self.label.hide()
+
+    # RU 1.45 client source: Avatar.py builds ClientArena from the avatar's own arenaUniqueID and arenaBonusType.
+    def _on_battle_ready(self, player):
+        arena_id = getattr(player, 'arenaUniqueID', None)
+        bonus_type = getattr(player, 'arenaBonusType', None)
+
+        self.session.started(arena_id, bonus_type, time.time())
+
+    def _on_battle_results(self, arena_id, results):
+        self.session.results_arrived(arena_id)
 
     def _on_battle_event(self, event, now):
         event['session_id'] = self.session.add(event, now)
@@ -79,18 +91,39 @@ class SessionStats(object):
 
     def show(self, after_battle):
         app = self.app
-        if app.in_battle or not app.config.is_enabled(SWITCH):
+        if app.in_battle:
             return
-        if self.session.is_expired(time.time()):
+        if not app.config.is_enabled(SWITCH):
+            return
+
+        summary = self.current_summary()
+        if summary is None:
             self.label.clear()
             return
-        summary = self.session.summary()
-        if not summary['battles']:
-            return
+
+        translate = app.translate
         if app.ui.has_panels:
-            self.label.show(format_session_panel(summary, app.translate), LAYOUT, widget=session_widget(summary, app.translate))
+            self.label.show(format_session_panel(summary, translate), LAYOUT, widget=session_widget(summary, translate))
         elif after_battle:
-            app.ui.notify(format_session_plain(summary, app.translate))
+            app.ui.notify(format_session_plain(summary, translate))
+
+    def current_summary(self):
+        now = time.time()
+        if self.session.is_expired(now):
+            return None
+
+        summary = self.session.summary(now)
+        if summary['battles'] or summary['pending']:
+            return summary
+
+        return None
+
+    def reset(self):
+        self.session.reset(time.time())
+        self.app.save_state()
+        self.show(False)
+
+        return {'kind': 'info', 'text': self.app.translate('session_reset_done')}
 
     # A never-synced "off" is the server's default: nothing is posted before the player turned sharing on once.
     def sync_share(self, now):
@@ -121,12 +154,26 @@ class SessionStats(object):
         post_signed(self.app, SHARE_PATH, payload, done)
 
     def ui_actions(self):
-        if not self.app.config.get(SHARE):
-            return []
         translate = self.app.translate
-        return [{'id': ACTION_SHARE, 'label': translate('session_share_now'), 'confirm': translate('session_share_confirm')}]
+        reset = {
+            'id': ACTION_RESET,
+            'label': translate('session_reset'),
+            'confirm': translate('session_reset_confirm'),
+        }
+        if not self.app.config.get(SHARE):
+            return [reset]
+
+        share = {
+            'id': ACTION_SHARE,
+            'label': translate('session_share_now'),
+            'confirm': translate('session_share_confirm'),
+        }
+
+        return [reset, share]
 
     def ui_action(self, action, row=None, value=None):
+        if action == ACTION_RESET:
+            return self.reset()
         if action != ACTION_SHARE:
             return None
         app = self.app
@@ -135,7 +182,8 @@ class SessionStats(object):
             return {'kind': 'error', 'text': translate('session_share_off')}
         if not app.is_bound():
             return {'kind': 'error', 'text': translate('session_share_unbound')}
-        if self.session.is_expired(time.time()) or not self.session.summary()['battles']:
+        now = time.time()
+        if self.session.is_expired(now) or not self.session.summary(now)['battles']:
             return {'kind': 'error', 'text': translate('session_share_empty')}
         payload = send_body(app.current_credentials(), self.session.session_id, app.config.get(SHARE_CHANNEL))
 

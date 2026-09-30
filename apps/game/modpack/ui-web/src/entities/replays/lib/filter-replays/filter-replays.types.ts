@@ -11,3 +11,8 @@ export type MatchReplayInput = {
   filters: ReplayFilters;
   now: number;
 };
+
+export type MatchChoiceInput<Value> = {
+  chosen: Value | null;
+  actual: Value | null;
+};

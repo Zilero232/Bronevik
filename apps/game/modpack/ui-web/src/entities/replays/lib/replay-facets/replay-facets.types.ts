@@ -1,4 +1,4 @@
-import type { BattleType } from '../../model';
+import type { BattleType, ReplayNation } from '../../model';
 
 type FacetOption<Value> = {
   value: Value;
@@ -11,4 +11,5 @@ export type ReplayFacets = {
   vehicles: (FacetOption<string> & { tier: number | null })[];
   tiers: FacetOption<number>[];
   types: FacetOption<BattleType>[];
+  nations: FacetOption<ReplayNation>[];
 };

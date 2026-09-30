@@ -4,12 +4,12 @@ import type { CardWidgetProps } from './CardWidget.types';
 
 import { ClientIcon, HudPlate, toneClass } from '../../../../shared/ui/hud';
 import { CARD } from '../config';
-import { CardChips, CardRow } from './components';
+import { CardChips, CardRow, CardStrip } from './components';
 
 import s from './CardWidget.module.scss';
 
 export const CardWidget = ({ data }: CardWidgetProps) => {
-  const hasBody = data.rows.length > 0 || data.chips.length > 0 || data.footer !== null;
+  const hasBody = data.rows.length > 0 || data.chips.length > 0 || data.strip.length > 0 || data.footer !== null;
 
   return (
     <HudPlate className={s.plate} rail={data.rail}>
@@ -23,6 +23,7 @@ export const CardWidget = ({ data }: CardWidgetProps) => {
           </div>
         )}
         {data.chips.length > 0 && <CardChips chips={data.chips} />}
+        {data.strip.length > 0 && <CardStrip marks={data.strip} />}
         {data.rows.map((row, index) => (
           <CardRow key={`${String(index)}-${row.text ?? row.label ?? ''}`} row={row} />
         ))}

@@ -43,6 +43,20 @@ describe(useApp, () => {
     expect(hook.current().state?.revision).toBe(JSON.parse(sample).revision);
   });
 
+  it('asks the mod to close the window when Esc comes with nothing open', async () => {
+    const mock = install(sample);
+    const hook = renderHook(useApp);
+
+    await hook.settle();
+    await hook.settle();
+
+    mock.push({ escape: 1 });
+
+    const types = mock.sent().map((message): { type: string } => JSON.parse(message));
+
+    expect(types.at(-1)).toEqual({ type: 'close' });
+  });
+
   it('shows the invalid-state note when the push does not parse', async () => {
     install('{"v": 99}');
 

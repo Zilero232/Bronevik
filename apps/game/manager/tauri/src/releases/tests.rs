@@ -108,6 +108,10 @@ fn downloads_dependencies_only_from_their_pinned_release_paths() {
     assert!(is_dependency_source("https://raw.githubusercontent.com/CH4MPi/GUIFlash/v0.6.6/LICENSE"));
     assert!(is_dependency_source("https://gitlab.com/-/project/68695173/uploads/43577d5bab856523c1b7a6dcada27f23/net.openwg.gameface_1.2.2.mtmod"));
     assert!(is_dependency_source("https://gitlab.com/openwg/wot.gameface/-/raw/v1.2.2/LICENSE"));
+    assert!(is_dependency_source(
+        "https://gitlab.com/-/project/26509092/uploads/9705f0b2627e9a074ecac2e84f38c9ca/me.poliroid.modslistapi_1.6.01.wotmod"
+    ));
+    assert!(is_dependency_source("https://gitlab.com/wot-public-mods/mods-list/-/raw/v1.6.01/LICENSE.md"));
 
     assert!(!is_dependency_source("http://github.com/CH4MPi/GUIFlash/releases/download/v0.6.6/gambiter.guiflash_0.6.6.mtmod"));
     assert!(!is_dependency_source("https://github.com/evil/GUIFlash/releases/download/v0.6.6/gambiter.guiflash_0.6.6.mtmod"));
@@ -117,6 +121,7 @@ fn downloads_dependencies_only_from_their_pinned_release_paths() {
     assert!(!is_dependency_source("https://user@github.com/CH4MPi/GUIFlash/releases/download/v0.6.6/a.mtmod"));
     assert!(!is_dependency_source("https://github.com.evil.com/CH4MPi/GUIFlash/releases/download/v0.6.6/a.mtmod"));
     assert!(!is_dependency_source("https://gitlab.com/-/project/1/uploads/a/b.mtmod"));
+    assert!(!is_dependency_source("https://gitlab.com/wot-public-mods/other/-/raw/v1/LICENSE.md"));
     assert!(!is_dependency_source("https://triotmetki.ru/downloads/modpack/0.2.0/a.mtmod"));
     assert!(!is_dependency_source("https://release-assets.githubusercontent.com/github-production-release-asset/278886795/a"));
 }

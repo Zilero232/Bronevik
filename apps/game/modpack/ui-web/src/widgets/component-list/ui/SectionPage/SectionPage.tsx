@@ -22,7 +22,12 @@ export const SectionPage = ({ section, columns, card, intro }: SectionPageProps)
         icon={SECTION_ICONS[section]}
         title={t(SECTION_TEXT[section].title)}
       />
-      <ScrollArea contentClassName={s.content} label={t(SECTION_TEXT[section].title)}>
+      <ScrollArea
+        contentClassName={s.content}
+        initialTop={page.scroll.initialTop}
+        label={t(SECTION_TEXT[section].title)}
+        onScrollEnd={page.scroll.onScrollEnd}
+      >
         {intro}
         {page.empty && <Empty>{t('sectionEmpty')}</Empty>}
         {page.filteredEmpty && <Empty>{t('filterEmpty')}</Empty>}

@@ -12,7 +12,7 @@ DEFAULTS = {
     'align_x': 'center',
     'align_y': 'bottom',
     'pinned': True,
-    'icon_size': 32,
+    'icon_size': 45,
 }
 LIMITS = {'icon_size': (20, 48)}
 # The default places of older versions (x, y, align_x, align_y): a panel still at one moves to today's default.

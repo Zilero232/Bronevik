@@ -6,8 +6,8 @@ import { useScrollArea } from '../../lib/use-scroll-area';
 
 import s from './ScrollArea.module.scss';
 
-export const ScrollArea = ({ className, contentClassName, label, children }: ScrollAreaProps) => {
-  const area = useScrollArea();
+export const ScrollArea = ({ className, contentClassName, label, initialTop, onScrollEnd, children }: ScrollAreaProps) => {
+  const area = useScrollArea({ initialTop, onScrollEnd });
 
   return (
     <div className={clsx(s.area, className)}>

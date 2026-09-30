@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes } from 'preact';
+import type { InputHTMLAttributes, Ref } from 'preact';
 
 import type { UiIconName } from '../../lib/icon-sprite';
 
@@ -10,4 +10,6 @@ export type InputProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'className'
   placeholder?: string;
   icon?: UiIconName;
   value: string;
+  inputRef?: Ref<HTMLInputElement>;
+  onEscape?: () => void;
 };

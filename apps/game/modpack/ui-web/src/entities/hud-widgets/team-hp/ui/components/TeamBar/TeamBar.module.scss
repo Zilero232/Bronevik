@@ -31,3 +31,8 @@
 .fill {
   height: 100%;
 }
+
+.gap {
+  height: 100%;
+  flex-shrink: 0;
+}

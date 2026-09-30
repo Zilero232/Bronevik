@@ -18,6 +18,7 @@ STRINGS = {
         'sixth_sense_lamp_sound_lightbulb': 'Лампа игры 1',
         'sixth_sense_lamp_sound_lightbulb_02': 'Лампа игры 2',
         'sixth_sense_lamp_sound_otmetki': 'Сигнал «Три отметки»',
+        'sixth_sense_tick_sound': 'Тиканье каждую секунду отсчёта',
     },
     'en': {
         'sixth_sense_replace_stock': u'Replace the stock lamp',
@@ -35,5 +36,6 @@ STRINGS = {
         'sixth_sense_lamp_sound_lightbulb': 'Game lamp 1',
         'sixth_sense_lamp_sound_lightbulb_02': 'Game lamp 2',
         'sixth_sense_lamp_sound_otmetki': 'Three Marks chime',
+        'sixth_sense_tick_sound': 'Tick every second of the countdown',
     },
 }

@@ -23,4 +23,4 @@ def preview_text(settings, translate):
 
 
 def preview_widget(settings, translate):
-    return hit_log_widget(preview_log(), settings)
+    return hit_log_widget(preview_log(), settings, translate)

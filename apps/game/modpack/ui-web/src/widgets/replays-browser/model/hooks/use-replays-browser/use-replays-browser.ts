@@ -13,6 +13,7 @@ import {
   REPLAYS,
   summarizeReplays
 } from '../../../../../entities/replays';
+import { useEscapeLayer } from '../../../../../shared/lib/use-escape-layer';
 import { openSitePath, runReplayAction } from '../../actions';
 
 const viewOf = ({ page, raw, enabled, shown }: ViewOfInput): BrowserView => {
@@ -45,6 +46,9 @@ export const useReplaysBrowser = ({ page: raw, enabled, now }: UseReplaysBrowser
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [pending, setPending] = useState<PendingAction | null>(null);
   const [draft, setDraft] = useState<RenameDraft | null>(null);
+
+  useEscapeLayer({ kind: 'confirm', active: pending !== null, onEscape: () => setPending(null) });
+  useEscapeLayer({ kind: 'field', active: draft !== null, onEscape: () => setDraft(null) });
 
   const items = useMemo(() => page?.items ?? [], [page]);
   const visible = useMemo(() => filterReplays({ items, filters, now }), [items, filters, now]);

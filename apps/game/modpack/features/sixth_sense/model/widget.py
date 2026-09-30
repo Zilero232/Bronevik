@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.hud.icons import glyph, image
 from ....core.hud.widget import widget
 from . import icon_path
-from .constants import KIND, LAMP_DURATION_S
+from .constants import KIND
 
 # Fair play: follows the client's own sixth-sense lamp (the player's vehicle is spotted); nothing about the spotter.
 
@@ -14,14 +14,14 @@ def lamp_icon(settings):
 
 
 def sixth_sense_widget(state, settings, translate, now):
-    duration = settings.get('hide_after_s') or LAMP_DURATION_S
+    seconds_left = state.seconds_left(now) or 0.0
     return widget(KIND, {
         'icon': lamp_icon(settings),
         'size': settings.get('icon_size'),
         'text': settings.get('text'),
         'color': settings.get('color'),
-        'elapsed': state.elapsed(now) or 0,
-        'duration': duration,
+        'elapsed': round(state.duration - seconds_left, 1),
+        'duration': state.duration,
         'timer': bool(settings.get('show_timer')),
         'dim': bool(state.dimmed(now)),
     })

@@ -144,6 +144,8 @@ pub struct DependencyComponent {
     #[serde(default)]
     pub required_by: Vec<String>,
     #[serde(default)]
+    pub optional: bool,
+    #[serde(default)]
     pub restart_required: bool,
 }
 

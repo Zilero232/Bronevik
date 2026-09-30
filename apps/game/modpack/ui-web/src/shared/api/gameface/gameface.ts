@@ -1,13 +1,8 @@
-import type { ClientSize, GamefaceBridge, InputArea, InvokeInput, ViewRect } from './gameface.types';
+import type { ClientSize, GamefaceBridge, InputArea, ViewRect } from './gameface.types';
 
 import { isRecord } from '../../lib/is-record';
 import { GAMEFACE } from './gameface.constants';
-
-const invoke = ({ target, method, args }: InvokeInput): unknown => {
-  const func = target?.[method];
-
-  return typeof func === 'function' ? Reflect.apply(func, target, args) : undefined;
-};
+import { invoke, readGlobal } from './scope';
 
 const toClientSize = (value: unknown): ClientSize | null => {
   if (!isRecord(value) || typeof value.width !== 'number' || typeof value.height !== 'number') {
@@ -29,11 +24,7 @@ const isButtonModel = (value: unknown): value is Record<string, unknown> =>
   isRecord(value) && value[GAMEFACE.button.marker] === GAMEFACE.button.markerValue && typeof value[GAMEFACE.button.open] === 'function';
 
 export const createGamefaceBridge = (scope: object): GamefaceBridge => {
-  const read = (name: string): Record<string, unknown> | null => {
-    const value: unknown = Reflect.get(scope, name);
-
-    return isRecord(value) ? value : null;
-  };
+  const read = (name: string): Record<string, unknown> | null => readGlobal(scope, name);
 
   const whenReady = (callback: () => void): void => {
     const ready = read(GAMEFACE.globals.engine)?.[GAMEFACE.engine.whenReady];
@@ -127,6 +118,11 @@ export const createGamefaceBridge = (scope: object): GamefaceBridge => {
       const feed = read(GAMEFACE.globals.model)?.[GAMEFACE.model.feed];
 
       return typeof feed === 'string' ? feed : null;
+    },
+    escape: () => {
+      const asked = read(GAMEFACE.globals.model)?.[GAMEFACE.model.escape];
+
+      return typeof asked === 'number' ? asked : null;
     },
     send: (message) => {
       const model = read(GAMEFACE.globals.model);

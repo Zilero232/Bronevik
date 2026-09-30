@@ -16,7 +16,7 @@ export const Content = ({ state, section, searching, columns }: ContentProps) =>
 
   if (section === SECTION.profiles) {
     return (
-      <ToolPage section={section}>
+      <ToolPage key={section} section={section}>
         <Profiles profiles={state.profiles} />
       </ToolPage>
     );
@@ -24,7 +24,7 @@ export const Content = ({ state, section, searching, columns }: ContentProps) =>
 
   if (section === SECTION.hud) {
     return (
-      <ToolPage section={section}>
+      <ToolPage key={section} section={section}>
         <HudEditor panels={state.hud.panels} />
         <SectionCards card={ComponentCard} columns={columns} section={section} />
       </ToolPage>

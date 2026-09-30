@@ -2,7 +2,6 @@ import { useEffect } from 'preact/hooks';
 
 import type { ReplayListProps } from './ReplayList.types';
 
-import { WHEEL_SCROLL_PROPS } from '../../../../../shared/config';
 import { REPLAYS_BROWSER } from '../../../config';
 import { useVirtualList } from '../../../model/hooks';
 import { ReplayRow } from '../ReplayRow';
@@ -18,7 +17,7 @@ export const ReplayList = ({ items, selectedId, label, resetKey, onSelect }: Rep
   }, [resetKey, toTop]);
 
   return (
-    <div ref={list.ref} aria-label={label} className={s.list} role='region' onScroll={list.onScroll} {...WHEEL_SCROLL_PROPS}>
+    <div ref={list.ref} aria-label={label} className={s.list} role='region' onScroll={list.onScroll}>
       <div ref={list.canvasRef} className={s.canvas} style={{ height: `${list.total}rem` }}>
         {items.slice(list.start, list.end).map((item, offset) => (
           <ReplayRow

@@ -1,9 +1,20 @@
 import { clamp } from 'remeda';
 
-import type { ScrollByWheelInput, Thumb, ThumbInput, TopFromThumbInput, WheelScrollInput, WheelTargetInput } from './wheel-scroll.types';
+import type {
+  BindWheelScrollInput,
+  ScrollByWheelInput,
+  Thumb,
+  ThumbInput,
+  TopFromThumbInput,
+  WheelDelta,
+  WheelRoot,
+  WheelScrollInput
+} from './wheel-scroll.types';
 
+import { gameface } from '../../api/gameface';
 import { SCROLL_AREA } from '../../config';
 import { rootScale } from '../hud-screen';
+import { reportOnce } from '../page-diag';
 
 const maxTop = (content: number, viewport: number): number => Math.max(content - viewport, 0);
 
@@ -29,9 +40,21 @@ export const topFromThumb = ({ offset, size, content, viewport }: TopFromThumbIn
   return track > 0 ? clamp((offset / track) * max, { min: 0, max }) : 0;
 };
 
-export const scrollByWheel = ({ element, event }: ScrollByWheelInput): boolean => {
+export const wheelDelta = (event: WheelDelta): number => {
+  if (Number.isFinite(event.deltaY) && event.deltaY !== 0) {
+    return event.deltaY;
+  }
+
+  const legacy = event.wheelDeltaY ?? event.wheelDelta ?? 0;
+
+  return legacy === 0 ? 0 : -legacy;
+};
+
+const stepPx = (): number => SCROLL_AREA.step * (gameface.remScale() ?? rootScale());
+
+export const scrollByWheel = ({ element, event, step = stepPx() }: ScrollByWheelInput): boolean => {
   const top = element.scrollTop;
-  const next = wheelScroll({ top, deltaY: event.deltaY, max: element.scrollHeight - element.clientHeight, step: SCROLL_AREA.step * rootScale() });
+  const next = wheelScroll({ top, deltaY: wheelDelta(event), max: element.scrollHeight - element.clientHeight, step });
 
   event.preventDefault();
 
@@ -45,40 +68,31 @@ export const scrollByWheel = ({ element, event }: ScrollByWheelInput): boolean =
   return true;
 };
 
-const scrollsItself = (element: HTMLElement): boolean => {
-  const overflow: readonly string[] = SCROLL_AREA.scrollable;
-
-  return element.hasAttribute(SCROLL_AREA.attribute) || overflow.includes(getComputedStyle(element).overflowY);
-};
-
-const canMove = (element: HTMLElement, deltaY: number): boolean =>
-  deltaY < 0 ? element.scrollTop > 0 : element.scrollTop < element.scrollHeight - element.clientHeight;
-
-export const wheelTarget = ({ start, deltaY }: WheelTargetInput): HTMLElement | null => {
-  for (let element = start instanceof HTMLElement ? start : (start?.parentElement ?? null); element; element = element.parentElement) {
-    if (deltaY !== 0 && scrollsItself(element) && canMove(element, deltaY)) {
-      return element;
-    }
-  }
-
-  return null;
-};
-
-export const bindWheelScroll = (root: Pick<Document, 'addEventListener' | 'removeEventListener'>): (() => void) => {
+export const bindWheelScroll = ({ element, onScrolled }: BindWheelScrollInput): (() => void) => {
   const listener = (event: WheelEvent): void => {
-    const target = event.target instanceof Element ? event.target : null;
-    const element = wheelTarget({ start: target, deltaY: event.deltaY });
+    const moved = scrollByWheel({ element, event });
 
-    if (element) {
-      scrollByWheel({ element, event });
+    reportOnce({
+      kind: 'wheel',
+      text: `delta ${wheelDelta(event)} (deltaY ${event.deltaY}), box ${element.scrollHeight}/${element.clientHeight} px, ${moved ? `scrolled to ${element.scrollTop}` : 'at its end'}`
+    });
 
-      return;
+    if (moved) {
+      onScrolled?.();
     }
+  };
 
+  element.addEventListener('wheel', listener, { passive: false });
+
+  return () => element.removeEventListener('wheel', listener);
+};
+
+export const blockPageWheel = (root: WheelRoot): (() => void) => {
+  const listener = (event: WheelEvent): void => {
     event.preventDefault();
   };
 
-  root.addEventListener('wheel', listener, { passive: false, capture: true });
+  root.addEventListener('wheel', listener, { passive: false });
 
-  return () => root.removeEventListener('wheel', listener, { capture: true });
+  return () => root.removeEventListener('wheel', listener);
 };

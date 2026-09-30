@@ -3,7 +3,16 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, font, format_number
 from ....core.templates import render
 from ....core.teams import TeamHp  # noqa: F401
+from ..settings.constants import OVERLAY_STYLES, UNDER_STOCK_Y
 from .constants import BAR_CHAR, COMPACT_STYLES, STRIP_STYLES
+
+
+def replaces_stock(settings):
+    return bool(settings.get('replace_stock')) and settings.get('style') not in OVERLAY_STYLES
+
+
+def pinned_y(settings):
+    return settings.get('y') if replaces_stock(settings) else UNDER_STOCK_Y
 
 
 def bar(value, maximum, width, color):

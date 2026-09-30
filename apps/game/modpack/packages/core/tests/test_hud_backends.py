@@ -10,6 +10,7 @@ import unittest
 import _support
 from otmetki.core.hud import BackendChain, ComponentConfig, HudBackend, HudLayer, HudSurface, NullBackend, alias_of, panel_schema
 from otmetki.core.hud.surface import HUD_COMMANDS, HUD_PROTOCOL_VERSION, SPACE_BATTLE, SPACE_LOBBY, FramePush, decode_hud_message
+from otmetki.core.hud.surface.constants import MOUSE_EVENTS
 from otmetki.core.storage import MemoryFile
 
 HUD_PROTOCOL_DIR = os.path.join(_support.MODPACK_DIR, 'ui-web', 'src', 'shared', 'api', 'hud-protocol')
@@ -189,6 +190,7 @@ class SurfaceTest(unittest.TestCase):
                          'drag': False, 'border': False, 'visible': True, 'scale': 1.0, 'kind': 'label', 'widget': None, 'dock': None}
         assert self.surface.state(SPACE_LOBBY, False, True)['edit'] is False
         assert self.surface.state(SPACE_LOBBY, True, True)['edit'] is True
+        assert self.surface.state(SPACE_BATTLE, True, True)['hover'] is True and self.surface.state(SPACE_LOBBY, True)['hover'] is False
         assert json.loads(self.surface.encode(SPACE_BATTLE, True))['panels'][0]['text'].endswith(u'урон 1 200</font>')
 
     def test_update_and_delete(self):
@@ -201,6 +203,8 @@ class SurfaceTest(unittest.TestCase):
 
     def test_messages(self):
         assert decode_hud_message('{"type": "ready"}') == ('ready', {})
+        assert decode_hud_message('{"type": "mouse", "event": "hover"}') == ('mouse', {'event': 'hover'})
+        assert decode_hud_message('{"type": "mouse", "event": "click"}') is None
         moved = self.surface.handle(json.dumps({'type': 'moved', 'id': 'otmetki.hud.damage_log', 'x': 30.6, 'y': 99999, 'align_x': 'center',
                                                 'align_y': 'middle'}))
         assert moved == ('moved', {'id': 'otmetki.hud.damage_log', 'x': 31, 'y': 4000, 'alignX': 'center'})
@@ -230,6 +234,8 @@ class SurfaceTest(unittest.TestCase):
         block = re.search(r'commands: \[([^\]]*)\]', source).group(1)
         assert tuple(re.findall(r"'([a-z_]+)'", block)) == HUD_COMMANDS
         assert re.search(r'version: (\d+)', source).group(1) == str(HUD_PROTOCOL_VERSION)
+        events = re.search(r'mouseEvents: \[([^\]]*)\]', source).group(1)
+        assert tuple(re.findall(r"'([a-z_]+)'", events)) == MOUSE_EVENTS
 
 
 if __name__ == '__main__':

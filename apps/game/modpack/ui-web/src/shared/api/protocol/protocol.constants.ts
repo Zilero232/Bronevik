@@ -20,7 +20,8 @@ export const PROTOCOL = {
     'hud_reset',
     'hud_reset_all',
     'window_layout',
-    'feed'
+    'feed',
+    'diag'
   ],
   groups: ['data', 'hangar', 'battle'],
   sections: ['battle', 'hangar', 'marks', 'replays', 'streamer', 'data', 'hud'],

@@ -7,11 +7,13 @@ export type DefineHudWidgetInput<Data> = {
   kind: string;
   schema: z.ZodMiniType<Data>;
   Component: FunctionComponent<HudWidgetProps<Data>>;
+  pointer?: boolean;
 };
 
 export type ParsedHudWidget = {
   kind: string;
   data: unknown;
+  pointer: boolean;
   node: VNode;
 };
 

@@ -36,7 +36,10 @@ describe(useApp, () => {
     await hook.settle();
     await hook.settle();
 
-    expect(mock.sent().map((message) => JSON.parse(message))).toEqual([{ type: 'ready' }]);
+    const sent = mock.sent().map((message): { type: string } => JSON.parse(message));
+
+    expect(sent.filter((message) => message.type !== 'diag')).toEqual([{ type: 'ready' }]);
+    expect(sent.map((message) => message.type)).toContain('diag');
     expect(hook.current().state?.revision).toBe(JSON.parse(sample).revision);
   });
 

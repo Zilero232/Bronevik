@@ -6,8 +6,8 @@ GROUP = 'battle'
 MAX_TEMPLATE = 300
 
 DEFAULTS = {
-    'x': 208,
-    'y': 8,
+    'x': 372,
+    'y': 60,
     'align_x': 'left',
     'align_y': 'top',
     'show_header': True,
@@ -16,4 +16,9 @@ DEFAULTS = {
     'lines': 5,
     'line_template': '',
 }
+# The default places of older versions (x, y, align_x, align_y): a panel still at one moves to today's default.
+RETIRED_PLACES = (
+    (208, 8, 'left', 'top'),
+    (250, -120, 'left', 'bottom'),
+)
 LIMITS = {'lines': (0, 15)}

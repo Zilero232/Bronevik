@@ -5,8 +5,8 @@ PANEL_ID = 'platoon_points'
 GROUP = 'battle'
 
 DEFAULTS = {
-    'x': 208,
-    'y': 8,
+    'x': 372,
+    'y': 60,
     'align_x': 'left',
     'align_y': 'top',
     'damage_step': 100,
@@ -16,4 +16,9 @@ DEFAULTS = {
     'show_platoon': True,
     'show_solo': False,
 }
+# The default places of older versions (x, y, align_x, align_y): a panel still at one moves to today's default.
+RETIRED_PLACES = (
+    (208, 8, 'left', 'top'),
+    (260, 8, 'left', 'top'),
+)
 LIMITS = {'damage_step': (10, 1000), 'assist_step': (10, 2000), 'frag_points': (0, 20), 'alive_points': (0, 20)}

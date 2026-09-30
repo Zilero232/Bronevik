@@ -3,8 +3,17 @@ export type ClientSize = {
   height: number;
 };
 
+export type ViewRect = ClientSize & {
+  x: number;
+  y: number;
+};
+
 export type GamefaceBridge = {
   clientSize: () => ClientSize | null;
+  clientSizeRem: () => ClientSize | null;
+  viewRect: () => ViewRect | null;
+  remScale: () => number | null;
+  mousePosition: () => { x: number; y: number } | null;
   resizeView: (size: ClientSize) => boolean;
   fitView: () => boolean;
   state: () => string | null;

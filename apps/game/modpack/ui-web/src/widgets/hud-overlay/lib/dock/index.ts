@@ -1,3 +1,3 @@
-export { stackDocks } from './dock';
+export { settledPanels, stackDocks } from './dock';
 
-export type { DockItem, StackDocksInput } from './dock.types';
+export type { DockItem, SettledPanelsInput, StackDocksInput } from './dock.types';

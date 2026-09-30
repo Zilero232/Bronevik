@@ -5,24 +5,22 @@ import unittest
 
 import _support
 from otmetki.core.settings import Settings
-from otmetki.features.battle_loadout.model import clean_loadout
-from otmetki.features.battle_loadout.model.constants import PREVIEW_LOADOUT
+from otmetki.features.battle_loadout.model import clean_devices
+from otmetki.features.battle_loadout.model.constants import PREVIEW_DEVICES
 from otmetki.features.battle_loadout.model.preview import preview_widget
-from otmetki.features.battle_loadout.model.widget import loadout_widget
+from otmetki.features.battle_loadout.model.widget import equipment_widget
 from otmetki.features.battle_loadout.settings import SCHEMA
 
 
-class LoadoutWidgetTest(unittest.TestCase):
+class EquipmentWidgetTest(unittest.TestCase):
 
-    def test_groups_with_client_icons_and_bonus(self):
-        data = loadout_widget(clean_loadout(PREVIEW_LOADOUT), Settings({}, SCHEMA))['data']
-        assert [group['kind'] for group in data['groups']] == ['devices', 'directives']
-        assert data['groups'][0]['items'][0] == {'icon': 'img://gui/maps/icons/artefact/turbocharger.png', 'name': u'Турбонагнетатель', 'bonus': True}
-        assert data['groups'][1]['items'][0]['icon'] is None and data['compact'] and data['size'] == 24
-
-    def test_modifications_when_asked(self):
-        data = loadout_widget(clean_loadout(PREVIEW_LOADOUT), Settings({'show_modifications': True, 'style': 'detailed'}, SCHEMA))['data']
-        assert [group['kind'] for group in data['groups']] == ['devices', 'modifications', 'directives'] and not data['compact']
+    def test_icons_with_tooltip_texts(self):
+        data = equipment_widget(clean_devices(PREVIEW_DEVICES), Settings({}, SCHEMA))['data']
+        assert data['size'] == 32 and len(data['items']) == 3
+        first = data['items'][0]
+        assert first['icon'] == 'img://gui/maps/icons/artefact/turbocharger.png|otmetki:module' and first['bonus']
+        assert first['effect'] and first['name'] == u'Турбонагнетатель'
+        assert data['items'][1]['overlay'].endswith('equipmentPlus_overlay.png')
 
     def test_fixture_for_the_page(self):
         assert _support.widget_fixture('battle_loadout', preview_widget(Settings({}, SCHEMA), None))

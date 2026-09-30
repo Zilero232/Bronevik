@@ -10,7 +10,7 @@ export const Header = ({ language, compact, frame }: HeaderProps) => {
 
   return (
     <header className={s.header}>
-      <Brand compact={compact} onMoveStart={frame.onMoveStart} onRecentre={frame.onRecentre} />
+      <Brand compact={compact} dragRef={frame.handles.move} onRecentre={frame.onRecentre} />
       <SearchBox query={header.query} onChange={header.setQuery} onClear={header.clearQuery} />
       {header.account && <AccountChip account={header.account} compact={compact} onOpen={header.openAccount} />}
       <ZoomControl frame={frame} />

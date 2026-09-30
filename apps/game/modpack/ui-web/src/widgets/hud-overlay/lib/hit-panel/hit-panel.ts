@@ -5,9 +5,10 @@ const contains = ({ rect }: HitTarget, { x, y }: Point): boolean =>
   x >= rect.left && x <= rect.left + rect.width && y >= rect.top && y <= rect.top + rect.height;
 
 // The page hit-tests panels itself in edit mode: an element under the pointer (an icon, a plate of a widget) must never
-// decide whether a drag or a wheel resize starts. The last drawn panel is on top.
-export const hitPanel = ({ targets, point }: HitPanelInput): HitTarget | null =>
-  [...targets].reverse().find((target) => target.movable && contains(target, point)) ?? null;
+// decide whether a drag or a wheel resize starts. The last drawn panel is on top; `pointer` also counts a panel that only
+// reacts to the pointer (its tooltips).
+export const hitPanel = ({ targets, point, pointer = false }: HitPanelInput): HitTarget | null =>
+  [...targets].reverse().find((target) => (target.movable || (pointer && target.pointer)) && contains(target, point)) ?? null;
 
 export const pointerPoint = ({ clientX, clientY, scale }: PointerPointInput): Point => ({
   x: clientX / (scale > 0 ? scale : 1),

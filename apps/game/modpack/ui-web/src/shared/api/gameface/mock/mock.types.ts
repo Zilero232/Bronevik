@@ -9,6 +9,7 @@ export type GamefaceMockInput = {
   state: string;
   feed?: string;
   clientSize: () => ClientSize;
+  mouse?: () => { x: number; y: number };
   onSend: (message: string) => string | GamefaceMockPush | null;
 };
 

@@ -28,20 +28,30 @@ DEFAULTS = {
     'color_blocked': '',
     'color_received': '',
 }
+# The default places of older versions (x, y, align_x, align_y): a panel still at one moves to today's default.
+RETIRED_PLACES = (
+    (250, -260, 'left', 'bottom'),
+)
 KIND_COLOR_KEYS = ('color_damage', 'color_assist', 'color_blocked', 'color_received')
 
 LAST_HIT_PANEL_ID = 'last_hit'
 LAST_HIT_DEFAULTS = {
-    'x': 0,
-    'y': 250,
-    'align_x': 'center',
-    'align_y': 'center',
+    'x': 232,
+    'y': -6,
+    'align_x': 'left',
+    'align_y': 'bottom',
     'font_size': 16,
     'enabled': True,
     'timeout_s': 5,
     'show_class': True,
     'template': '',
 }
+# The default places of older versions (x, y, align_x, align_y): a panel still at one moves to today's default.
+LAST_HIT_RETIRED_PLACES = (
+    (0, -120, 'center', 'center'),
+    (0, -180, 'center', 'center'),
+    (0, 250, 'center', 'center'),
+)
 LAST_HIT_LIMITS = {
     'timeout_s': (1, 15),
 }

@@ -9,4 +9,6 @@ export type LiftInput = { members: DockItem[]; free: Rect[]; screen: Size; gap: 
 
 export type LimitInput = { item: DockItem; screen: Size; reserve: number };
 
+export type SettledPanelsInput = { items: DockItem[]; measured: (id: string) => boolean };
+
 export type RoofInput = { first: DockItem; free: Rect[]; gap: number; ceiling: number };

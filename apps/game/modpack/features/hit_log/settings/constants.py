@@ -7,8 +7,8 @@ MAX_TEMPLATE = 600
 PALETTES = ('classic', 'graphite', 'contrast', 'colorblind')
 
 DEFAULTS = {
-    'x': -8,
-    'y': 40,
+    'x': -372,
+    'y': 60,
     'align_x': 'right',
     'align_y': 'top',
     'show_header': True,
@@ -18,3 +18,9 @@ DEFAULTS = {
     'group_by_target': False,
     'palette': 'graphite',
 }
+# The default places of older versions (x, y, align_x, align_y): a panel still at one moves to today's default.
+RETIRED_PLACES = (
+    (-250, -260, 'right', 'bottom'),
+    (-8, -320, 'right', 'bottom'),
+    (-8, 40, 'right', 'top'),
+)

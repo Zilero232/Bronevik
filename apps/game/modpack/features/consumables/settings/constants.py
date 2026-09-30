@@ -6,7 +6,7 @@ GROUP = 'battle'
 
 DEFAULTS = {
     'x': 0,
-    'y': -66,
+    'y': -64,
     'align_x': 'center',
     'align_y': 'bottom',
     'show_consumables': False,
@@ -14,4 +14,9 @@ DEFAULTS = {
     'show_shell_stats': False,
     'shell_stats': 'current',
 }
+# The default places of older versions (x, y, align_x, align_y): a panel still at one moves to today's default.
+RETIRED_PLACES = (
+    (0, -150, 'center', 'bottom'),
+    (0, -66, 'center', 'bottom'),
+)
 CHOICES = {'shell_stats': ('current', 'all')}

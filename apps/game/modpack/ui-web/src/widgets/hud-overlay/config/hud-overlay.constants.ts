@@ -3,6 +3,7 @@ export const HUD_OVERLAY = {
   unit: 'rem',
   defaultScreen: { width: 1920, height: 1080 },
   screenCheckMs: 1000,
+  hoverPollMs: 50,
   clickSlop: 3,
   buttonSize: 36,
   buttonIcon: 'icon.png',

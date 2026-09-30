@@ -16,7 +16,7 @@ from otmetki.core.vendor.enum34 import IntEnum
 
 ACCOUNT = 12345678
 BATTLE_OPT_INS = ('battle_main_gun', 'battle_efficiency', 'battle_personal_best', 'battle_gun_arc', 'battle_arty_meter', 'battle_platoon_points',
-                  'battle_received_hits', 'battle_loadout', 'battle_clock')
+                  'battle_received_hits', 'battle_consumables', 'battle_clock')
 REGISTERED = tuple(_support.feature_ids()) + ('ui',)
 ENTRY_MODULES = ('mod_otmetki',) + tuple('mod_otmetki_' + key for key in REGISTERED)
 STUBBED = ('gui', 'BigWorld', 'BattleReplay', 'CurrentVehicle', 'PlayerEvents', 'BattleFeedbackCommon', 'dossiers2', 'constants', 'SoundGroups',
@@ -65,6 +65,9 @@ class Player(object):
 
     def delModel(self, model):
         self.models.remove(model)
+
+    def getVehicleDescriptor(self):
+        return getattr(self, 'vehicleTypeDescriptor', None)
 
 
 class BattleResultsCache(object):
@@ -503,7 +506,9 @@ class ClientSmokeTest(unittest.TestCase):
         self.player = Player(ACCOUNT, results_arena)
         if tank_id is not None:
             vehicle_type = type('VehicleType', (object,), {'compactDescr': tank_id})()
-            self.player.vehicleTypeDescriptor = type('Descriptor', (object,), {'type': vehicle_type})()
+            devices = getattr(self, 'own_devices', ())
+            self.player.vehicleTypeDescriptor = type('Descriptor', (object,), {'type': vehicle_type,
+                                                                               'iterOptDevsWithSlots': lambda descriptor: iter(devices)})()
         self.player.guiSessionProvider = session
         self.player.playerVehicleID = OWN_VEHICLE
         self.player.team = 1
@@ -550,7 +555,7 @@ class ClientSmokeTest(unittest.TestCase):
         panels = self.hud_components()
         self.assertEqual(sorted(panels), ['battle_clock', 'consumables', 'damage_log', 'hit_log', 'last_hit', 'main_gun', 'received_hits', 'reload_timer',
                                           'sixth_sense', 'team_hp'])
-        self.assertTrue(all(props['kind'] == 'Label' and props['drag'] for props in panels.values()))
+        self.assertTrue(all(props['kind'] == 'Label' and props['drag'] != (name == 'team_hp') for name, props in panels.items()))
         damage_log = panels['damage_log']['text']
         self.assertIn('390', damage_log)
         self.assertIn('310', damage_log)
@@ -891,20 +896,35 @@ class ClientSmokeTest(unittest.TestCase):
 
         module('Avatar', PlayerAvatar=PlayerAvatar)
 
-        class Item(object):
+        class Device(object):
+            # RU 1.45 common/items/artefacts.py OptionalDevice: what the stock battle tooltip of a device reads.
 
-            def __init__(self, name, categories=()):
-                self.userName = name
-                self.icon = '../maps/icons/artefact/%s.png' % name
-                self.descriptor = type('Descriptor', (object,), {'categories': set(categories)})()
+            def __init__(self, name, categories=(), deluxe=False):
+                self.tierlessName = self.groupName = self.userString = name
+                self.icon = (name, 0, 0)
+                self.categories = set(categories)
+                self.isDeluxe = deluxe
+                self.shortDescriptionSpecial = u'{colorTagOpen}+10 %{colorTagClose} ' + name
 
         def slot(*categories):
             return type('Slot', (object,), {'categories': set(categories)})()
 
-        devices = type('Layout', (object,), {'installed': [Item('rammer', ['firepower']), Item('vents', ['survivability']), None],
-                                             'slots': [slot('firepower'), slot('mobility'), slot('firepower')]})()
-        boosters = type('Layout', (object,), {'installed': [Item('brotherhood')]})()
-        self.vehicle.item = type('Vehicle', (object,), {'intCD': 1, 'optDevices': devices, 'battleBoosters': boosters, 'descriptor': None})()
+        class Resource(object):
+
+            def __call__(self):
+                return self
+
+            def dyn(self, name):
+                return self
+
+            def exists(self):
+                return False
+
+        impl = sys.modules.get('gui.impl') or package('gui.impl', [])
+        impl.backport = module('gui.impl.backport', text=lambda resource: None)
+        module('gui.impl.gen', R=type('R', (object,), {'strings': type('Strings', (object,), {'artefacts': Resource()})()}))
+        self.own_devices = [(Device('rammer', ['firepower']), slot('firepower')), (Device('vents', ['survivability'], True), slot('mobility')),
+                            (None, slot('firepower'))]
         return PlayerAvatar
 
     def test_round_four_battle_panels_and_streamer_hotkey(self):
@@ -915,10 +935,10 @@ class ClientSmokeTest(unittest.TestCase):
         self.player = Player(ACCOUNT)
         self.events.onAccountShowGUI()
         session = self.enter_battle(1, tank_id=1)
-        loadout = self.hud_components()['battle_loadout']['text']
-        self.assertIn('img://gui/maps/icons/artefact/rammer.png', loadout)
-        self.assertIn('brotherhood.png', loadout)
-        self.assertEqual(loadout.count(u'★'), 1)
+        loadout = self.hud_components()['battle_loadout']
+        self.assertIn('img://gui/maps/icons/artefact/rammer.png', loadout['text'])
+        self.assertEqual(loadout['text'].count(u'★'), 1)
+        self.assertFalse(loadout['drag'])
 
         session.feedback.onPlayerFeedbackReceived([Feedback(kinds.RECEIVED_DAMAGE, ENEMY_VEHICLE, Extra(310)),
                                                    Feedback(kinds.TANKING, ALLY_VEHICLE, Extra(200, SHELL_TYPES.HE_MODERN))])

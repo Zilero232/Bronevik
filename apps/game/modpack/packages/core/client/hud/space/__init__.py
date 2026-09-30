@@ -25,6 +25,16 @@ def cursor_events():
     return g_eventBus, EVENT_BUS_SCOPE.GLOBAL, show, hide
 
 
+def cursor_visible():
+    """Whether the client shows the mouse cursor (RU 1.45 client source: CursorManager.show/hide set `GUI.mcursor().visible`
+    and fire SHOW_CURSOR/HIDE_CURSOR; Ctrl in battle, Tab, the chat), or None when it cannot be read."""
+    try:
+        import GUI
+        return bool(GUI.mcursor().visible)
+    except Exception:
+        return None
+
+
 def gui_spaces():
     """(app loader, its GuiGlobalSpaceID) or (None, None) when the client has neither."""
     try:

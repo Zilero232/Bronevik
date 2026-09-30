@@ -1,13 +1,15 @@
-export { bindWheelScroll, scrollByWheel, thumbOf, topFromThumb, wheelScroll, wheelTarget } from './wheel-scroll';
+export { bindWheelScroll, blockPageWheel, scrollByWheel, thumbOf, topFromThumb, wheelScroll } from './wheel-scroll';
 
 export type {
+  BindWheelScrollInput,
+  ScrollBox,
   ScrollByWheelInput,
   ScrollMetrics,
   Thumb,
   ThumbInput,
   TopFromThumbInput,
+  WheelDelta,
   WheelLike,
-  WheelScrollInput,
-  WheelTarget,
-  WheelTargetInput
+  WheelRoot,
+  WheelScrollInput
 } from './wheel-scroll.types';

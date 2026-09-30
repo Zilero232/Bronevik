@@ -3,18 +3,21 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 SWITCH = 'battle_loadout'
 PANEL_ID = 'battle_loadout'
 GROUP = 'battle'
-STYLES = ('compact', 'detailed')
 
+# Right on top of the stock consumables panel, centred with it (core/hud/panel DOCK_ANCHORS battle_bottom_center), and
+# pinned there: the row belongs to the stock panel under it.
 DEFAULTS = {
-    'x': -200,
-    'y': -66,
+    'x': 0,
+    'y': -64,
     'align_x': 'center',
     'align_y': 'bottom',
-    'style': 'compact',
-    'show_devices': True,
-    'show_modifications': False,
-    'show_directives': True,
-    'show_icons': True,
-    'icon_size': 24,
+    'pinned': True,
+    'icon_size': 32,
 }
-LIMITS = {'icon_size': (12, 48)}
+LIMITS = {'icon_size': (20, 48)}
+# The default places of older versions (x, y, align_x, align_y): a panel still at one moves to today's default.
+RETIRED_PLACES = (
+    (-200, -66, 'center', 'bottom'),
+    (-480, -14, 'center', 'bottom'),
+    (0, -200, 'center', 'bottom'),
+)

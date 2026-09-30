@@ -9,8 +9,8 @@ COLOR_MODES = ('delta', 'mark', 'off')
 MAX_TEMPLATE = 400
 
 DEFAULTS = {
-    'x': 208,
-    'y': 8,
+    'x': 372,
+    'y': 60,
     'align_x': 'left',
     'align_y': 'top',
     'style': 'extended',
@@ -22,3 +22,9 @@ DEFAULTS = {
     'step': '0.5',
     'color_mode': 'delta',
 }
+# The default places of older versions (x, y, align_x, align_y): a panel still at one moves to today's default.
+RETIRED_PLACES = (
+    (0, 120, 'center', 'top'),
+    (208, 8, 'left', 'top'),
+    (490, -6, 'left', 'bottom'),
+)

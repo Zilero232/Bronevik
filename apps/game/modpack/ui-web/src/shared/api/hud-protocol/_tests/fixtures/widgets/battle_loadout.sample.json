@@ -1,39 +1,29 @@
 {
   "data": {
-    "compact": true,
-    "groups": [
+    "items": [
       {
-        "items": [
-          {
-            "bonus": true,
-            "icon": "img://gui/maps/icons/artefact/turbocharger.png",
-            "name": "Турбонагнетатель"
-          },
-          {
-            "bonus": false,
-            "icon": "img://gui/maps/icons/artefact/improvedVentilation.png",
-            "name": "Вентиляция"
-          },
-          {
-            "bonus": true,
-            "icon": "img://gui/maps/icons/artefact/rammer.png",
-            "name": "Досылатель"
-          }
-        ],
-        "kind": "devices"
+        "bonus": true,
+        "effect": "+10 % к максимальной скорости и мощности двигателя.",
+        "icon": "img://gui/maps/icons/artefact/turbocharger.png|otmetki:module",
+        "name": "Турбонагнетатель",
+        "overlay": null
       },
       {
-        "items": [
-          {
-            "bonus": false,
-            "icon": null,
-            "name": "Боевое братство"
-          }
-        ],
-        "kind": "directives"
+        "bonus": false,
+        "effect": "+5 % к основным навыкам экипажа.",
+        "icon": "img://gui/maps/icons/artefact/improvedVentilation.png|otmetki:module",
+        "name": "Улучшенная вентиляция",
+        "overlay": "img://gui/maps/icons/quests/bonuses/small/equipmentPlus_overlay.png"
+      },
+      {
+        "bonus": true,
+        "effect": "−10 % к времени перезарядки.",
+        "icon": "img://gui/maps/icons/artefact/rammer.png|otmetki:module",
+        "name": "Досылатель",
+        "overlay": null
       }
     ],
-    "size": 24
+    "size": 32
   },
   "kind": "battle_loadout",
   "v": 1

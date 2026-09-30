@@ -14,7 +14,7 @@ export const usePanelSizes = ({ lines, widgets }: UsePanelSizesInput) => {
 
   useLayoutEffect(() => {
     const scale = rootScale();
-    const measured: Sizes = {};
+    const measured: Sizes = { ...sizes };
     let changed = false;
 
     elementsRef.current.forEach((element, id) => {
@@ -27,7 +27,7 @@ export const usePanelSizes = ({ lines, widgets }: UsePanelSizesInput) => {
       changed = changed || !sameSize(sizes[id], size);
     });
 
-    if (changed || Object.keys(sizes).length !== Object.keys(measured).length) {
+    if (changed) {
       // eslint-disable-next-line react/set-state-in-effect -- the labels' sizes are only known after layout; it settles once nothing grows
       setSizes(measured);
     }

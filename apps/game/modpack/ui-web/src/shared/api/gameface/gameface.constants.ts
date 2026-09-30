@@ -28,8 +28,13 @@ export const GAMEFACE = {
   // page, which did not, loaded and stayed invisible.
   viewEnv: {
     clientSize: 'getClientSizePx',
+    clientSizeRem: 'getClientSizeRem',
+    viewPosition: 'getViewGlobalPositionRem',
+    viewSize: 'getViewSizeRem',
+    remToPx: 'remToPx',
     resizeView: 'resizeViewPx',
-    inputArea: 'setInputArea'
+    inputArea: 'setInputArea',
+    mousePosition: 'getMouseGlobalPositionPx'
   },
   model: {
     state: 'state',

@@ -1,6 +1,6 @@
-import type { Language } from '../../../shared/i18n';
+import type { RefObject } from 'preact';
 
-export type FramePress = Pick<MouseEvent, 'clientX' | 'clientY' | 'preventDefault'>;
+import type { Language } from '../../../shared/i18n';
 
 export type HeaderFrame = {
   zoom: number;
@@ -8,7 +8,7 @@ export type HeaderFrame = {
   canZoomOut: boolean;
   zoomIn: () => void;
   zoomOut: () => void;
-  onMoveStart: (event: FramePress) => void;
+  handles: { move: RefObject<HTMLDivElement> };
   onRecentre: () => void;
 };
 

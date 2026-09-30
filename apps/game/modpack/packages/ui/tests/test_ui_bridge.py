@@ -332,6 +332,13 @@ class BridgeMessageTest(unittest.TestCase):
         send(self.bridge, type='close')
         assert self.context.closed == 1
 
+    def test_a_page_diag_line_goes_to_the_log_and_changes_nothing(self):
+        revision = self.bridge.revision
+        assert send(self.bridge, type='diag', text='wheel: deltaY 100') is False
+        assert self.bridge.revision == revision and self.bridge.notice is None
+        send(self.bridge, type='diag')
+        assert self.bridge.notice['kind'] == 'error'
+
     def test_only_site_relative_links_open(self):
         send(self.bridge, type='open', path='/replays/7b0c')
         assert self.context.opened == ['https://triotmetki.ru/replays/7b0c']

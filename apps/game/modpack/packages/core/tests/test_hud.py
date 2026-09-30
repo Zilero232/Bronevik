@@ -154,6 +154,26 @@ class HudLayerTest(unittest.TestCase):
         assert not self.backend.on_moved('someone.else', {'x': 1})
         assert not self.backend.on_moved(alias_of('damage_log'), None)
 
+    def test_a_panel_still_at_an_old_default_place_moves_to_the_new_one(self):
+        schema = panel_schema({'x': 372, 'y': 60, 'align_x': 'left'}, retired=((208, 8, 'left', 'top'),))
+        store = MemoryFile({'old': {'x': 208, 'y': 8, 'align_x': 'left', 'align_y': 'top'},
+                            'moved': {'x': 500, 'y': 8, 'align_x': 'left', 'align_y': 'top'}})
+        layer = HudLayer(FakeBackend(), ComponentConfig(store))
+        assert layer.register('old', schema).get('x') == 372 and store.read()['old']['y'] == 60
+        assert layer.register('moved', schema).get('x') == 500
+
+    def test_a_pinned_panel_keeps_its_default_place_and_takes_no_drag(self):
+        alias = alias_of('strip')
+        schema = panel_schema({'y': 0, 'pinned': True}, retired=((0, 58, 'center', 'top'),))
+        self.store.write({'strip': {'y': 58, 'x': 40, 'pinned': True}})
+        layer = HudLayer(self.backend, ComponentConfig(self.store))
+        layer.register('strip', schema)
+        layer.show('strip', 'hp')
+        assert (self.backend.labels[alias]['x'], self.backend.labels[alias]['y'], self.backend.labels[alias]['drag']) == (0, 0, False)
+        assert not self.backend.on_moved(alias, {'x': 300, 'y': 90})
+        layer.update_settings('strip', {'pinned': False})
+        assert (self.backend.labels[alias]['x'], self.backend.labels[alias]['drag']) == (40, True)
+
     def test_update_settings_moves_a_shown_panel(self):
         alias = alias_of('damage_log')
         self.layer.show('damage_log', 'text')

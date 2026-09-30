@@ -1,8 +1,16 @@
 // @vitest-environment jsdom
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { GAMEFACE } from '../../../api/gameface';
+import { createGamefaceMock, installGamefaceMock } from '../../../api/gameface/mock';
 import { SCROLL_AREA } from '../../../config';
-import { bindWheelScroll, scrollByWheel, thumbOf, topFromThumb, wheelScroll, wheelTarget } from '../wheel-scroll';
+import { isRecord } from '../../is-record';
+import { forgetReports } from '../../page-diag';
+import { bindWheelScroll, blockPageWheel, scrollByWheel, thumbOf, topFromThumb, wheelDelta, wheelScroll } from '../wheel-scroll';
+
+afterEach(() => {
+  forgetReports();
+});
 
 describe(wheelScroll, () => {
   it('scrolls down on a positive delta and up on a negative one, as the client scroll areas read it', () => {
@@ -20,6 +28,15 @@ describe(wheelScroll, () => {
     expect(wheelScroll({ top: 20, deltaY: -100, max: 1000, step: 60 })).toBe(0);
     expect(wheelScroll({ top: 0, deltaY: 100, max: -50, step: 60 })).toBe(0);
     expect(wheelScroll({ top: 40, deltaY: 0, max: 1000, step: 60 })).toBe(40);
+  });
+});
+
+describe(wheelDelta, () => {
+  it('reads deltaY, or the legacy wheelDelta an engine without deltaY sends, down as positive', () => {
+    expect(wheelDelta({ deltaY: 100 })).toBe(100);
+    expect(wheelDelta({ deltaY: 0, wheelDeltaY: -120 })).toBe(120);
+    expect(wheelDelta({ deltaY: Number.NaN, wheelDelta: 120 })).toBe(-120);
+    expect(wheelDelta({ deltaY: 0 })).toBe(0);
   });
 });
 
@@ -66,70 +83,106 @@ describe(scrollByWheel, () => {
   });
 });
 
-const box = ({ content, height, top = 0, marked = false }: { content: number; height: number; top?: number; marked?: boolean }): HTMLDivElement => {
+const box = ({ content, height, top = 0 }: { content: number; height: number; top?: number }): HTMLDivElement => {
   const element = document.createElement('div');
 
   Object.defineProperty(element, 'scrollHeight', { value: content });
   Object.defineProperty(element, 'clientHeight', { value: height });
+  Object.defineProperty(element, 'hasAttribute', { value: undefined });
   element.scrollTop = top;
-
-  if (marked) {
-    element.setAttribute(SCROLL_AREA.attribute, '');
-  }
 
   return element;
 };
 
-describe(wheelTarget, () => {
-  it('finds the nearest box that scrolls, a native overflow box or a marked scroll area', () => {
-    const outer = box({ content: 2000, height: 500, marked: true });
-    const inner = box({ content: 900, height: 300 });
-    const leaf = document.createElement('span');
+const install = (scale: number) => {
+  const mock = createGamefaceMock({ state: '', clientSize: () => ({ width: 1920, height: 1080 }), onSend: () => null });
 
-    inner.style.overflowY = 'auto';
-    inner.append(leaf);
-    outer.append(inner);
+  const viewEnv = mock.scope[GAMEFACE.globals.viewEnv];
 
-    expect(wheelTarget({ start: leaf, deltaY: 100 })).toBe(inner);
-  });
+  if (!isRecord(viewEnv)) {
+    throw new Error('the Gameface mock has no viewEnv');
+  }
 
-  it('hands the wheel to the outer box once the inner one is at its end', () => {
-    const outer = box({ content: 2000, height: 500, marked: true });
-    const inner = box({ content: 900, height: 300, top: 600 });
-    const leaf = document.createElement('span');
+  viewEnv[GAMEFACE.viewEnv.remToPx] = (value: number) => value * scale;
+  installGamefaceMock(mock);
 
-    inner.style.overflowY = 'auto';
-    inner.append(leaf);
-    outer.append(inner);
+  return mock;
+};
 
-    expect(wheelTarget({ start: leaf, deltaY: 100 })).toBe(outer);
-    expect(wheelTarget({ start: leaf, deltaY: -100 })).toBe(inner);
-  });
-});
+const notch = (deltaY: number) => new WheelEvent('wheel', { deltaY, bubbles: true, cancelable: true });
 
 describe(bindWheelScroll, () => {
-  it('scrolls the box under the pointer down on a wheel-down notch and never lets the engine scroll natively', () => {
-    const area = box({ content: 2000, height: 500, marked: true });
+  it('scrolls its box on the wheel Gameface sends to a row inside it, by a step at the interface scale', () => {
+    const mock = install(2);
+    const area = box({ content: 2000, height: 500 });
     const row = document.createElement('div');
+    const onScrolled = vi.fn();
 
     area.append(row);
     document.body.append(area);
 
-    const unbind = bindWheelScroll(document);
-    const down = new WheelEvent('wheel', { deltaY: 100, bubbles: true, cancelable: true });
+    const unbind = bindWheelScroll({ element: area, onScrolled });
+    const down = notch(100);
 
     row.dispatchEvent(down);
 
-    expect(area.scrollTop).toBe(SCROLL_AREA.step);
+    expect(area.scrollTop).toBe(SCROLL_AREA.step * 2);
     expect(down.defaultPrevented).toBe(true);
+    expect(onScrolled).toHaveBeenCalledTimes(1);
 
-    const outside = new WheelEvent('wheel', { deltaY: 100, bubbles: true, cancelable: true });
+    expect(
+      mock
+        .sent()
+        .map((raw): { type: string } => JSON.parse(raw))
+        .map((message) => message.type)
+    ).toEqual(['diag']);
+
+    row.dispatchEvent(notch(-100));
+
+    expect(area.scrollTop).toBe(0);
+
+    unbind();
+    row.dispatchEvent(notch(100));
+
+    expect(area.scrollTop).toBe(0);
+    area.remove();
+  });
+
+  it('keeps the wheel for the inner box and hands it to the outer one at the inner end', () => {
+    install(1);
+
+    const outer = box({ content: 2000, height: 500 });
+    const inner = box({ content: 900, height: 300 });
+    const leaf = document.createElement('span');
+
+    inner.append(leaf);
+    outer.append(inner);
+    document.body.append(outer);
+
+    const unbind = [bindWheelScroll({ element: outer }), bindWheelScroll({ element: inner })];
+
+    leaf.dispatchEvent(notch(100));
+
+    expect([inner.scrollTop, outer.scrollTop]).toEqual([SCROLL_AREA.step, 0]);
+
+    inner.scrollTop = 600;
+    leaf.dispatchEvent(notch(100));
+
+    expect([inner.scrollTop, outer.scrollTop]).toEqual([600, SCROLL_AREA.step]);
+
+    unbind.forEach((off) => off());
+    outer.remove();
+  });
+});
+
+describe(blockPageWheel, () => {
+  it('never lets the engine scroll the page natively', () => {
+    const unbind = blockPageWheel(document);
+    const outside = notch(100);
 
     document.body.dispatchEvent(outside);
 
     expect(outside.defaultPrevented).toBe(true);
-
     unbind();
-    area.remove();
   });
 });

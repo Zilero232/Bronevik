@@ -11,7 +11,7 @@ export const ScrollArea = ({ className, contentClassName, label, children }: Scr
 
   return (
     <div className={clsx(s.area, className)}>
-      <div ref={area.viewportRef} aria-label={label} className={s.viewport} role={label ? 'region' : undefined} {...area.viewportProps}>
+      <div ref={area.viewportRef} aria-label={label} className={s.viewport} role={label ? 'region' : undefined}>
         <div className={clsx(s.content, contentClassName)}>{children}</div>
       </div>
       {area.thumb.visible && (

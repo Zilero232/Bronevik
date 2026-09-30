@@ -1,9 +1,8 @@
-import type { TargetedUIEvent } from 'preact';
-
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import type { UseVirtualListInput } from './use-virtual-list.types';
 
+import { useWheelScroll } from '../../../../../shared/lib/use-wheel-scroll';
 import { REPLAYS_BROWSER } from '../../../config';
 import { visibleRange } from '../../../lib/visible-range';
 
@@ -30,12 +29,24 @@ export const useVirtualList = ({ count, rowHeight, overscan }: UseVirtualListInp
     }
   }, [pixelsPerUnit]);
 
+  const sync = useCallback((): void => {
+    const node = viewportRef.current;
+
+    if (node) {
+      setScrollTop(node.scrollTop / pixelsPerUnit());
+      measure();
+    }
+  }, [measure, pixelsPerUnit]);
+
+  const wheelRef = useWheelScroll({ onScrolled: sync });
+
   const attach = useCallback(
     (node: HTMLDivElement | null): void => {
       viewportRef.current = node;
+      wheelRef(node);
       measure();
     },
-    [measure]
+    [measure, wheelRef]
   );
 
   useEffect(() => {
@@ -56,10 +67,7 @@ export const useVirtualList = ({ count, rowHeight, overscan }: UseVirtualListInp
     ref: attach,
     canvasRef,
     ...visibleRange({ scrollTop, viewport, rowHeight, count, overscan }),
-    onScroll: (event: TargetedUIEvent<HTMLDivElement>) => {
-      setScrollTop(event.currentTarget.scrollTop / pixelsPerUnit());
-      measure();
-    },
+    onScroll: sync,
     toTop
   };
 };

@@ -4,17 +4,22 @@ components.json stores (and a settings window edits) `x`, `y`, `align_x`, `align
 `drag`, `border` and `scale` (percent, set with the edit modifier + wheel on the Gameface page) for every panel.
 `layout_props` maps them to the renderer props (GUIFlash label names; `scale` and `kind` reach only the Gameface
 page). The panel's on/off switch stays in the companion config.
+
+components.json keeps every default it was written with, so a panel whose default place changed would keep the old one:
+`panel_schema(..., retired=places)` names the places older versions gave the panel, and `retired_reset` moves a panel
+still at one of them (never moved by the player) to its current default. A panel with a `pinned` key (team HP) stays at
+its default place and takes no drag while the key is on.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ...compat import is_number, string_types, to_text
 from ...settings import Schema
 from .constants import (ALIAS_PREFIX, DOCK_ANCHORS, DOCKS, GAMEFACE_PROPS, HEX_COLOR, LAYOUT_KEYS, MAX_SOUND_EVENT, MOVED_ALIGNS, PANEL_CHOICES,
-                        PANEL_DEFAULTS, PANEL_LIMITS, SOUND_EVENT)
+                        PANEL_DEFAULTS, PANEL_LIMITS, PLACE_KEYS, SOUND_EVENT)
 
-__all__ = ('ALIAS_PREFIX', 'DOCK_ANCHORS', 'DOCKS', 'GAMEFACE_PROPS', 'LAYOUT_KEYS', 'MOVED_ALIGNS', 'PANEL_DEFAULTS', 'alias_of', 'anchor_of',
-           'component_schema', 'dock_layout', 'dock_of', 'hex_color', 'layout_props', 'matching', 'max_length', 'moved_values', 'panel_of', 'panel_schema',
-           'sound_event')
+__all__ = ('ALIAS_PREFIX', 'DOCK_ANCHORS', 'DOCKS', 'GAMEFACE_PROPS', 'LAYOUT_KEYS', 'MOVED_ALIGNS', 'PANEL_DEFAULTS', 'PanelSchema', 'alias_of',
+           'anchor_of', 'component_schema', 'dock_layout', 'dock_of', 'hex_color', 'is_pinned', 'layout_props', 'matching', 'max_length', 'moved_values',
+           'panel_of', 'panel_schema', 'pinned_values', 'place_of', 'retired_reset', 'sound_event')
 
 
 def component_schema(defaults, choices=None, limits=None, normalizers=None):
@@ -23,7 +28,15 @@ def component_schema(defaults, choices=None, limits=None, normalizers=None):
     return Schema(dict(defaults or {}), choices=choices, limits=limits, normalizers=normalizers)
 
 
-def panel_schema(defaults=None, choices=None, limits=None, normalizers=None):
+class PanelSchema(Schema):
+    """A panel's schema; `retired` holds the (x, y, align_x, align_y) places its defaults had in older versions."""
+
+    def __init__(self, defaults, choices=None, limits=None, normalizers=None, retired=()):
+        Schema.__init__(self, defaults, choices=choices, limits=limits, normalizers=normalizers)
+        self.retired = tuple(tuple(place) for place in retired)
+
+
+def panel_schema(defaults=None, choices=None, limits=None, normalizers=None, retired=()):
     """The common panel keys plus the panel's own; the panel's defaults win (its own x/y, alignment)."""
     merged = dict(PANEL_DEFAULTS)
     merged.update(defaults or {})
@@ -31,7 +44,37 @@ def panel_schema(defaults=None, choices=None, limits=None, normalizers=None):
     all_choices.update(choices or {})
     all_limits = dict(PANEL_LIMITS)
     all_limits.update(limits or {})
-    return Schema(merged, choices=all_choices, limits=all_limits, normalizers=normalizers)
+    return PanelSchema(merged, choices=all_choices, limits=all_limits, normalizers=normalizers, retired=retired)
+
+
+def place_of(values):
+    """(x, y, align_x, align_y) of a settings object or dict."""
+    return tuple(values.get(key) for key in PLACE_KEYS)
+
+
+def retired_reset(settings):
+    """The values that move a panel still at a place an older version gave it by default to today's default place
+    (empty when the player moved it, or the schema names no retired place)."""
+    schema = settings.schema
+    defaults = schema.defaults
+    if place_of(settings) not in getattr(schema, 'retired', ()) or place_of(settings) == place_of(defaults):
+        return {}
+    return dict((key, defaults[key]) for key in PLACE_KEYS)
+
+
+def is_pinned(settings):
+    """Whether the panel stays at its default place (a `pinned` key that is on)."""
+    return 'pinned' in settings.schema.defaults and bool(settings.get('pinned'))
+
+
+def pinned_values(settings, values):
+    """`values` (layout keys) with a pinned panel's default place and no drag."""
+    if not is_pinned(settings):
+        return values
+    pinned = dict(values)
+    pinned.update((key, settings.schema.defaults[key]) for key in PLACE_KEYS)
+    pinned['drag'] = False
+    return pinned
 
 
 def max_length(limit):

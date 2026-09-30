@@ -7,8 +7,9 @@ import { $invalid, $query, $state, $view, receiveFeed, receiveState, WINDOW_VIEW
 import { gameface } from '../../../../../shared/api/gameface';
 import { send } from '../../../../../shared/api/protocol';
 import { onDistinct } from '../../../../../shared/lib/on-distinct';
-import { bindWheelScroll } from '../../../../../shared/lib/wheel-scroll';
+import { blockPageWheel } from '../../../../../shared/lib/wheel-scroll';
 import { useWindowFrame } from '../../../../../widgets/window-frame';
+import { bindEscapeClose } from '../../../lib/escape-close';
 
 export const useApp = () => {
   const state = useStore($state);
@@ -17,7 +18,9 @@ export const useApp = () => {
   const invalid = useStore($invalid);
   const frame = useWindowFrame(state?.window ?? null);
 
-  useEffect(() => bindWheelScroll(document), []);
+  useEffect(() => blockPageWheel(document), []);
+
+  useEffect(() => bindEscapeClose(document), []);
 
   useEffect(() => {
     gameface.fitView();

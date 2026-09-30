@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 FEATURE_ID = 'reload_timer'
 PACKAGE_ID = 'net.triotmetki.reload_timer'
 PACKAGE_NAME = 'Three Marks: reload timer'
-VERSION = '0.2.0'
+VERSION = '0.2.1'
 
 
 def create(app):

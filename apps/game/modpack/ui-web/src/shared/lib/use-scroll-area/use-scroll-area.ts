@@ -3,8 +3,8 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import type { ScrollMetrics } from '../wheel-scroll';
 import type { ThumbDrag, ThumbPress } from './use-scroll-area.types';
 
-import { SCROLL_AREA, WHEEL_SCROLL_PROPS } from '../../config';
-import { thumbOf, topFromThumb } from '../wheel-scroll';
+import { SCROLL_AREA } from '../../config';
+import { bindWheelScroll, thumbOf, topFromThumb } from '../wheel-scroll';
 
 const EMPTY: ScrollMetrics = { top: 0, content: 0, viewport: 0 };
 
@@ -56,11 +56,20 @@ export const useScrollArea = () => {
 
   useEffect(() => {
     const element = viewportRef.current;
+
+    if (!element) {
+      return undefined;
+    }
+
     const listener = (): void => measureRef.current();
+    const unbindWheel = bindWheelScroll({ element, onScrolled: listener });
 
-    element?.addEventListener('scroll', listener);
+    element.addEventListener('scroll', listener);
 
-    return () => element?.removeEventListener('scroll', listener);
+    return () => {
+      unbindWheel();
+      element.removeEventListener('scroll', listener);
+    };
   }, []);
 
   const thumb = thumbOf({ ...metrics, minThumb: SCROLL_AREA.minThumb });
@@ -111,7 +120,6 @@ export const useScrollArea = () => {
     thumb,
     thumbStyle: { height: `${thumb.size}px`, top: `${thumb.offset}px` },
     thumbRef,
-    viewportProps: WHEEL_SCROLL_PROPS,
     onThumbDown
   };
 };

@@ -58,11 +58,19 @@ FEATURES = (
     'share_session_report',
 )
 # Off until the player turns them on: the uploads (privacy) and the secondary battle panels, so a default battle shows only
-# the essentials (team HP, damage and hit logs, marks, consumables and reload, the sixth sense lamp, the death card).
+# the essentials (team HP, damage and hit logs, marks, the reload timer, the equipment over the stock consumables panel, the
+# sixth sense lamp, the death card). The consumables bar repeats the stock panel and is opt-in too.
 OPT_IN_FEATURES = ('upload_replays', 'publish_replays', 'share_session_report', 'battle_main_gun', 'battle_efficiency', 'battle_personal_best',
-                   'battle_gun_arc', 'battle_arty_meter', 'battle_platoon_points', 'battle_received_hits', 'battle_loadout', 'battle_clock',
+                   'battle_gun_arc', 'battle_arty_meter', 'battle_platoon_points', 'battle_received_hits', 'battle_consumables', 'battle_clock',
                    'hangar_event_trackers')
 SHARE_CHANNELS = ('telegram', 'discord', 'both')
+# config.json keeps every default it was written with: a switch whose default changed is moved to the new one when it still
+# holds the old default and the file predates the change (`defaults_revision`). (revision, key, old default, new default).
+DEFAULTS_REVISION = 1
+RETIRED_DEFAULTS = (
+    (1, 'battle_consumables', True, False),
+    (1, 'battle_loadout', False, True),
+)
 DEFAULTS = {
     'enabled': True,
     'server_url': DEFAULT_SERVER_URL,
@@ -101,11 +109,11 @@ DEFAULTS = {
     'hangar_session_goals': True,
     'battle_main_gun': False,
     'battle_efficiency': False,
-    'battle_consumables': True,
+    'battle_consumables': False,
     'battle_reload_timer': True,
     'battle_received_hits': False,
     'battle_death_card': True,
-    'battle_loadout': False,
+    'battle_loadout': True,
     'hangar_personal_missions': True,
     'streamer_mode': True,
     'hangar_platoon_helper': True,
@@ -129,6 +137,7 @@ DEFAULTS = {
     'settings_include_resolution': False,
     'settings_include_sensitivity': False,
     'hud_modifier': DEFAULT_MODIFIER,
+    'defaults_revision': DEFAULTS_REVISION,
 }
 CHOICES = {
     'settings_action': ('', 'export', 'restore'),

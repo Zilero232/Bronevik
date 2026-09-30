@@ -23,12 +23,12 @@ import BigWorld
 
 from ....hud import HudBackend
 from ....hud.icons import resolve
-from ....hud.surface import HUD_MESSAGE_ARG, HUD_RES_MAP_ID, HUD_SEND_COMMAND, HUD_STATE_PROPERTY, SPACE_LOBBY, FramePush, HudSurface
+from ....hud.surface import HUD_MESSAGE_ARG, HUD_RES_MAP_ID, HUD_SEND_COMMAND, HUD_STATE_PROPERTY, SPACE_BATTLE, SPACE_LOBBY, FramePush, HudSurface
 from ....log import log, log_exception, safe
 from ...game import main_window
 from ..icons import client_file_exists
 from ..modifier import ModifierWatch
-from ..space import current_space, cursor_events, gui_spaces
+from ..space import current_space, cursor_events, cursor_visible, gui_spaces
 from .constants import INVALID_RES_ID, READY_SPACES, RESTART_FLAG_FILE, WINDOW_LAYER
 
 try:
@@ -132,7 +132,9 @@ class GamefaceBackend(HudBackend):
         self.listeners = []
         self.press_listeners = []
         self.cursor = False
-        self.modifier = ModifierWatch(self._on_modifier)
+        self.seen_edit = False
+        self.seen_mouse = set()
+        self.modifier = ModifierWatch(self._on_modifier, self._on_key)
         self.loader, self.ready_spaces = None, ()
         self.waiting = False
         self.settling = False
@@ -190,8 +192,11 @@ class GamefaceBackend(HudBackend):
         self.modifier.set_mode(mode)
 
     def state_text(self):
+        """Panels move while the edit modifier is held in the hangar, where the cursor is always shown, and whenever the
+        battle cursor is shown (Ctrl): in battle the cursor key alone is the edit key."""
         space = current_space()
-        return self.surface.encode(space, space == SPACE_LOBBY or self.cursor, self.modifier.held)
+        lobby = space == SPACE_LOBBY
+        return self.surface.encode(space, lobby or self.cursor, self.modifier.held if lobby else self.cursor)
 
     def push_state(self):
         """Every label change of a frame (a 10 Hz reload timer next to the clock and the logs) becomes one push of the
@@ -249,7 +254,9 @@ class GamefaceBackend(HudBackend):
             self.window = None
             return False
         self.waiting = False
+        self.seen_edit, self.seen_mouse = False, set()
         log('HUD: Gameface window %s opened in the %s (layout %s)' % (self.window.uniqueID, current_space(), layout))
+        self._check_cursor()
         return True
 
     @safe
@@ -294,6 +301,8 @@ class GamefaceBackend(HudBackend):
         elif command == 'pressed':
             for listener in list(self.press_listeners):
                 listener(fields['id'])
+        elif command == 'mouse':
+            self._on_page_mouse(fields['event'])
         elif command in ('moved', 'resized'):
             props = dict((key, value) for key, value in fields.items() if key != 'id')
             for listener in list(self.listeners):
@@ -324,6 +333,8 @@ class GamefaceBackend(HudBackend):
     @safe
     def _on_space_left(self, space_id):
         log('HUD: GUI space %s left' % space_id)
+        if self.seen_edit and not self.seen_mouse:
+            log('HUD: the battle cursor was shown, but the page saw no mouse over a panel')
         self.close()
 
     def _listen_cursor(self):
@@ -336,14 +347,37 @@ class GamefaceBackend(HudBackend):
 
     @safe
     def _on_show_cursor(self, *args):
-        self.cursor = True
-        self.push_state()
+        self._set_cursor(True)
 
     @safe
     def _on_hide_cursor(self, *args):
-        self.cursor = False
-        self.push_state()
+        self._set_cursor(False)
 
     @safe
     def _on_modifier(self, held):
         self.push_state()
+
+    def _on_key(self):
+        """The client shows or hides the battle cursor after the key event (Ctrl), and no event is fired when another view
+        already holds the cursor: read it on the next frame."""
+        if current_space() == SPACE_BATTLE:
+            _next_frame(self._check_cursor)
+
+    def _check_cursor(self):
+        visible = cursor_visible()
+        if visible is not None:
+            self._set_cursor(visible)
+
+    def _set_cursor(self, visible):
+        if visible == self.cursor:
+            return
+        self.cursor = visible
+        if visible and not self.seen_edit and current_space() == SPACE_BATTLE and self.window is not None:
+            self.seen_edit = True
+            log('HUD: battle cursor shown, panels can be dragged')
+        self.push_state()
+
+    def _on_page_mouse(self, event):
+        if event not in self.seen_mouse:
+            self.seen_mouse.add(event)
+            log('HUD: the page saw the mouse in edit mode (%s, %s)' % (event, current_space()))

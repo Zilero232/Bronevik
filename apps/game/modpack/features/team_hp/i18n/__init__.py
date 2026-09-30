@@ -13,6 +13,8 @@ STRINGS = {
         'team_hp_style_numbers': u'Только числа (под стандартной)',
         'team_hp_style_bars': u'Только полосы',
         'team_hp_replace_stock': u'Заменять стандартную панель счёта',
+        'team_hp_pinned': u'Закрепить на месте панели счёта',
+        'team_hp_pinned_hint': u'Полоса стоит ровно на месте стандартной панели счёта вверху экрана (или сразу под ней) и не перетаскивается. Снимите, чтобы двигать её самому.',
     },
     'en': {
         'team_hp_diff': u'difference {diff}',
@@ -25,5 +27,7 @@ STRINGS = {
         'team_hp_style_numbers': u'Numbers only (under the stock strip)',
         'team_hp_style_bars': u'Bars only',
         'team_hp_replace_stock': u'Replace the stock score strip',
+        'team_hp_pinned': u'Pin to the score strip’s place',
+        'team_hp_pinned_hint': u'The strip sits exactly in the stock score strip’s place at the top of the screen (or right under it) and cannot be dragged. Turn it off to move it yourself.',
     },
 }

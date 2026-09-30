@@ -1,29 +1,25 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import re
-
-# The tanks whose hangar loadout is kept for the next battle (the selected one and the last few).
-MAX_TANKS = 8
-MAX_ITEMS = 8
-MAX_NAME = 40
-# The client's item icons are relative Scaleform paths (RU 1.45 gui items: `../maps/icons/artefact/<name>.png`);
-# the HUD labels read them as img://gui/maps/...
-ICON_PREFIX = '../maps/'
-IMG_ROOT = 'gui/maps/'
-ICON_PATH = re.compile(r'^[A-Za-z0-9_./-]{1,160}\.png$')
+MAX_ITEMS = 5
+MAX_NAME = 60
+MAX_EFFECT = 240
+# The stock marks of a special device over its icon (RU 1.45 gui/shared/gui_items/artefacts.py getOverlayType): deluxe
+# (the «+» devices), modernized by level, trophy and upgraded trophy.
+OVERLAY_PATH = 'gui/maps/icons/quests/bonuses/small/%s_overlay.png'
+OVERLAY_DELUXE = 'equipmentPlus'
+OVERLAY_MODERNIZED = 'equipmentModernized_%d'
+OVERLAY_TROPHIES = {'basic': 'equipmentTrophyBasic', 'upgraded': 'equipmentTrophyUpgraded'}
+MAX_MODERNIZED_LEVEL = 3
+ICON_FALLBACK = 'module'
 BONUS_MARK = u'★'
-SEPARATOR = u' · '
 
-PREVIEW_SIZE = (360, 70)
+PREVIEW_SIZE = (180, 44)
 
 KIND = 'battle_loadout'
-PREVIEW_LOADOUT = {
-    'devices': [
-        {'name': u'Турбонагнетатель', 'icon': '../maps/icons/artefact/turbocharger.png', 'bonus': True},
-        {'name': u'Вентиляция', 'icon': '../maps/icons/artefact/improvedVentilation.png', 'bonus': False},
-        {'name': u'Досылатель', 'icon': '../maps/icons/artefact/rammer.png', 'bonus': True},
-    ],
-    'modifications': [u'Скорость сведения', u'Обзор'],
-    'directives': [{'name': u'Боевое братство', 'icon': None}],
-}
+PREVIEW_DEVICES = [
+    {'name': u'Турбонагнетатель', 'effect': u'+10 % к максимальной скорости и мощности двигателя.', 'icon': 'turbocharger', 'bonus': True},
+    {'name': u'Улучшенная вентиляция', 'effect': u'+5 % к основным навыкам экипажа.', 'icon': 'improvedVentilation', 'bonus': False,
+     'deluxe': True},
+    {'name': u'Досылатель', 'effect': u'−10 % к времени перезарядки.', 'icon': 'rammer', 'bonus': True},
+]

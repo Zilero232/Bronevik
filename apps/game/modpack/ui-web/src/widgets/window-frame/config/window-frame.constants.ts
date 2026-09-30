@@ -16,3 +16,8 @@ export const RESIZE_EDGE = {
   bottom: 'bottom',
   corner: 'corner'
 } as const;
+
+export const FRAME_GESTURE = {
+  handleOrder: [RESIZE_EDGE.corner, RESIZE_EDGE.right, RESIZE_EDGE.bottom, 'move'],
+  capture: { capture: true }
+} as const;

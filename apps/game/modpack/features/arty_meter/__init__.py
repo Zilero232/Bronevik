@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 FEATURE_ID = 'arty_meter'
 PACKAGE_ID = 'net.triotmetki.arty_meter'
 PACKAGE_NAME = 'Three Marks: artillery meter'
-VERSION = '0.1.1'
+VERSION = '0.1.2'
 
 
 def create(app):

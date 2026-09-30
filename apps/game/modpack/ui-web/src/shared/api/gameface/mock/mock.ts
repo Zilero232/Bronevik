@@ -3,7 +3,7 @@ import type { GamefaceMock, GamefaceMockInput } from './mock.types';
 import { GAMEFACE } from '../gameface.constants';
 import { GAMEFACE_MOCK } from './mock.constants';
 
-export const createGamefaceMock = ({ state, feed = '', clientSize, onSend }: GamefaceMockInput): GamefaceMock => {
+export const createGamefaceMock = ({ state, feed = '', clientSize, mouse, onSend }: GamefaceMockInput): GamefaceMock => {
   const listeners: ((data: unknown, indexes: unknown, callbackIds: number[]) => void)[] = [];
   const sent: string[] = [];
   const inputAreas: number[][] = [];
@@ -50,7 +50,8 @@ export const createGamefaceMock = ({ state, feed = '', clientSize, onSend }: Gam
       [GAMEFACE.globals.viewEnv]: {
         [GAMEFACE.viewEnv.clientSize]: clientSize,
         [GAMEFACE.dataChanged.register]: () => GAMEFACE_MOCK.callbackId,
-        [GAMEFACE.viewEnv.inputArea]: (...area: number[]) => inputAreas.push(area)
+        [GAMEFACE.viewEnv.inputArea]: (...area: number[]) => inputAreas.push(area),
+        [GAMEFACE.viewEnv.mousePosition]: mouse
       }
     },
     sent: () => [...sent],

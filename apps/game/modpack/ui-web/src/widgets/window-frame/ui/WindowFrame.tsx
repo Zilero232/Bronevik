@@ -9,9 +9,9 @@ export const WindowFrame = ({ frame, label, children }: WindowFrameProps) => (
     <div className={s.inner} style={frame.innerStyle}>
       {children}
     </div>
-    <div aria-hidden='true' className={s.edgeRight} onMouseDown={frame.onResizeStart('right')} />
-    <div aria-hidden='true' className={s.edgeBottom} onMouseDown={frame.onResizeStart('bottom')} />
-    <div aria-hidden='true' className={s.grip} onMouseDown={frame.onResizeStart('corner')}>
+    <div ref={frame.handles.right} aria-hidden='true' className={s.edgeRight} />
+    <div ref={frame.handles.bottom} aria-hidden='true' className={s.edgeBottom} />
+    <div ref={frame.handles.corner} aria-hidden='true' className={s.grip}>
       <Icon name='move-diagonal-2' size={12} />
     </div>
   </div>

@@ -30,6 +30,7 @@ COMMANDS = (
     'hud_reset_all',
     'window_layout',
     'feed',
+    'diag',
 )
 
 REQUIRED = {
@@ -50,9 +51,13 @@ REQUIRED = {
     'hud_reset': ('panel',),
     'window_layout': ('x', 'y', 'width', 'height', 'zoom'),
     'feed': ('component', 'active'),
+    'diag': ('text',),
 }
 
 # Commands that change nothing in the settings state: the window gets no new state for them.
-QUIET_COMMANDS = ('feed',)
+QUIET_COMMANDS = ('feed', 'diag')
+
+# A diag line from the page goes to otmetki.log cut to this many characters.
+MAX_DIAG_CHARS = 400
 
 RES_MAP_WINDOW = 'otmetki/ui/settings'

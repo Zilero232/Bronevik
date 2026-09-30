@@ -1,6 +1,7 @@
 {
   "cursor": true,
   "edit": true,
+  "hover": true,
   "panels": [
     {
       "align_x": "left",
@@ -19,5 +20,5 @@
       "y": -140
     }
   ],
-  "v": 3
+  "v": 4
 }

@@ -1,45 +1,71 @@
 import { clamp } from 'remeda';
 
-import type { ClampFrameInput, FitFrameInput, Frame, FrameLayout, LayoutInput, MoveFrameInput, ResizeFrameInput, ZoomStepInput } from './frame.types';
+import type {
+  Bounds,
+  BoundsInput,
+  CentredFrameInput,
+  ClampFrameInput,
+  FitFrameInput,
+  Frame,
+  FrameLayout,
+  LayoutInput,
+  MoveFrameInput,
+  ResizeFrameInput,
+  ZoomStepInput
+} from './frame.types';
 
 import { WINDOW_FRAME } from '../../config';
 
-export const clampFrame = ({ frame, screen }: ClampFrameInput): Frame => {
-  const width = clamp(frame.width, { min: Math.min(WINDOW_FRAME.minSize.width, screen.width), max: screen.width });
-  const height = clamp(frame.height, { min: Math.min(WINDOW_FRAME.minSize.height, screen.height), max: screen.height });
+const spanOf = (bounds: Bounds) => ({ width: Math.max(bounds.right - bounds.left, 0), height: Math.max(bounds.bottom - bounds.top, 0) });
+
+export const boundsOf = ({ screen, view }: BoundsInput): Bounds => {
+  const width = view.width > 0 ? view.width : screen.width;
+  const height = view.height > 0 ? view.height : screen.height;
+  const bounds = {
+    left: Math.max(0, -view.x),
+    top: Math.max(0, -view.y),
+    right: Math.min(width, screen.width - view.x),
+    bottom: Math.min(height, screen.height - view.y)
+  };
+
+  const span = spanOf(bounds);
+
+  return span.width > 0 && span.height > 0 ? bounds : { left: 0, top: 0, right: screen.width, bottom: screen.height };
+};
+
+export const clampFrame = ({ frame, bounds }: ClampFrameInput): Frame => {
+  const span = spanOf(bounds);
+  const width = clamp(frame.width, { min: Math.min(WINDOW_FRAME.minSize.width, span.width), max: span.width });
+  const height = clamp(frame.height, { min: Math.min(WINDOW_FRAME.minSize.height, span.height), max: span.height });
 
   return {
-    x: clamp(frame.x, { min: 0, max: Math.max(screen.width - width, 0) }),
-    y: clamp(frame.y, { min: 0, max: Math.max(screen.height - height, 0) }),
+    x: clamp(frame.x, { min: bounds.left, max: Math.max(bounds.right - width, bounds.left) }),
+    y: clamp(frame.y, { min: bounds.top, max: Math.max(bounds.bottom - height, bounds.top) }),
     width,
     height
   };
 };
 
-export const centredFrame = (screen: FitFrameInput['screen']): Frame => {
-  const width = Math.min(WINDOW_FRAME.defaultSize.width, screen.width - WINDOW_FRAME.margin * 2);
-  const height = Math.min(WINDOW_FRAME.defaultSize.height, screen.height - WINDOW_FRAME.margin * 2);
-  const frame = clampFrame({ frame: { x: 0, y: 0, width, height }, screen });
+export const centredFrame = ({ bounds, size = WINDOW_FRAME.defaultSize }: CentredFrameInput): Frame => {
+  const span = spanOf(bounds);
+  const width = Math.min(size.width, span.width - WINDOW_FRAME.margin * 2);
+  const height = Math.min(size.height, span.height - WINDOW_FRAME.margin * 2);
+  const frame = clampFrame({ frame: { x: bounds.left, y: bounds.top, width, height }, bounds });
 
-  return { ...frame, x: Math.round((screen.width - frame.width) / 2), y: Math.round((screen.height - frame.height) / 2) };
+  return { ...frame, x: bounds.left + Math.round((span.width - frame.width) / 2), y: bounds.top + Math.round((span.height - frame.height) / 2) };
 };
 
-export const fitFrame = ({ saved, screen }: FitFrameInput): Frame => {
-  if (!saved.placed || saved.width <= 0 || saved.height <= 0) {
-    return centredFrame(screen);
-  }
+export const fitFrame = ({ saved, bounds }: FitFrameInput): Frame =>
+  saved.width > 0 && saved.height > 0 ? centredFrame({ bounds, size: { width: saved.width, height: saved.height } }) : centredFrame({ bounds });
 
-  return clampFrame({ frame: { x: saved.x, y: saved.y, width: saved.width, height: saved.height }, screen });
-};
+export const moveFrame = ({ frame, dx, dy, bounds }: MoveFrameInput): Frame =>
+  clampFrame({ frame: { ...frame, x: frame.x + dx, y: frame.y + dy }, bounds });
 
-export const moveFrame = ({ frame, dx, dy, screen }: MoveFrameInput): Frame =>
-  clampFrame({ frame: { ...frame, x: frame.x + dx, y: frame.y + dy }, screen });
+export const resizeFrame = ({ frame, dx, dy, edge, bounds }: ResizeFrameInput): Frame => {
+  const width = edge === 'bottom' ? frame.width : Math.min(frame.width + dx, bounds.right - frame.x);
+  const height = edge === 'right' ? frame.height : Math.min(frame.height + dy, bounds.bottom - frame.y);
 
-export const resizeFrame = ({ frame, dx, dy, edge, screen }: ResizeFrameInput): Frame => {
-  const width = edge === 'bottom' ? frame.width : Math.min(frame.width + dx, screen.width - frame.x);
-  const height = edge === 'right' ? frame.height : Math.min(frame.height + dy, screen.height - frame.y);
-
-  return clampFrame({ frame: { ...frame, width, height }, screen });
+  return clampFrame({ frame: { ...frame, width, height }, bounds });
 };
 
 export const zoomStep = ({ zoom, direction }: ZoomStepInput): number => {

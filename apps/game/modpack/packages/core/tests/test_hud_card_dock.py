@@ -71,14 +71,20 @@ class CardTest(unittest.TestCase):
 class DockTest(unittest.TestCase):
 
     def test_every_member_defaults_to_its_group_anchor(self):
+        from otmetki.features.battle_loadout.settings import SCHEMA as BATTLE_LOADOUT
+        from otmetki.features.consumables.settings import SCHEMA as CONSUMABLES
+        from otmetki.features.damage_log.settings import LAST_HIT_SCHEMA
         from otmetki.features.hangar_marks.settings import SCHEMA as HANGAR_MARKS
+        from otmetki.features.hit_log.settings import SCHEMA as HIT_LOG
         from otmetki.features.hangar_ratings.settings import SCHEMA as HANGAR_RATINGS
         from otmetki.features.marks_panel.settings import SCHEMA as MARKS_PANEL
         from otmetki.features.personal_best.settings import SCHEMA as PERSONAL_BEST
         from otmetki.features.received_hits.settings import SCHEMA as RECEIVED_HITS
         for alias, schema in (('otmetki.hud.hangar_marks', HANGAR_MARKS), ('otmetki.hangar_ratings', HANGAR_RATINGS),
                               ('otmetki.hud.marks_panel', MARKS_PANEL), ('otmetki.hud.personal_best', PERSONAL_BEST),
-                              ('otmetki.hud.received_hits', RECEIVED_HITS)):
+                              ('otmetki.hud.received_hits', RECEIVED_HITS), ('otmetki.hud.hit_log', HIT_LOG),
+                              ('otmetki.hud.last_hit', LAST_HIT_SCHEMA), ('otmetki.hud.battle_loadout', BATTLE_LOADOUT),
+                              ('otmetki.hud.consumables', CONSUMABLES)):
             group, order = DOCKS[alias]
             dock = dock_of(alias, schema.defaults)
             assert (dock['group'], dock['order'], dock['reserve']) == (group, order, DOCK_ANCHORS[group]['reserve']), alias
@@ -87,7 +93,8 @@ class DockTest(unittest.TestCase):
 
     def test_the_team_hp_strip_sits_on_the_stock_score_strip(self):
         from otmetki.features.team_hp.settings import SCHEMA as TEAM_HP
-        assert (TEAM_HP.defaults['x'], TEAM_HP.defaults['align_x'], TEAM_HP.defaults['align_y']) == (0, 'center', 'top')
+        defaults = TEAM_HP.defaults
+        assert (defaults['x'], defaults['y'], defaults['align_x'], defaults['align_y'], defaults['pinned']) == (0, 0, 'center', 'top', True)
         assert dock_of('otmetki.hud.team_hp', TEAM_HP.defaults) is None
 
     def test_a_moved_panel_leaves_its_column(self):
@@ -101,7 +108,8 @@ class DockTest(unittest.TestCase):
         layer = HudLayer(backend, ComponentConfig(MemoryFile()))
         layer.register('marks_panel', panel_schema(anchor_of('battle_left_top')))
         layer.show('marks_panel', u'text')
-        assert backend.calls[0][2]['dock'] == {'group': 'battle_left_top', 'order': 0, 'reserve': 360, 'ceiling': 8}
+        anchor = DOCK_ANCHORS['battle_left_top']
+        assert backend.calls[0][2]['dock'] == {'group': 'battle_left_top', 'order': 0, 'reserve': anchor['reserve'], 'ceiling': anchor['ceiling']}
         layer.on_moved('otmetki.hud.marks_panel', {'x': 300, 'y': -40})
         assert backend.calls[-1] == ('update', 'otmetki.hud.marks_panel', {'dock': None})
 
@@ -123,6 +131,13 @@ class LobbyViewTest(unittest.TestCase):
         assert not plain_hangar([hangar, {'blocking': True, 'alive': True}])
         assert plain_hangar([hangar, {'blocking': True, 'alive': False}])
         assert not plain_hangar([dict(hangar, alive=False), {'blocking': True, 'alive': True}])
+
+    def test_our_own_windows_never_hide_the_labels(self):
+        hangar = {'hangar': True, 'blocking': True, 'alive': True}
+        settings_window = {'blocking': True, 'alive': True, 'own': True}
+        assert plain_hangar([hangar, settings_window])
+        assert not plain_hangar([hangar, settings_window, {'blocking': True, 'alive': True}])
+        assert not plain_hangar([settings_window])
 
 
 if __name__ == '__main__':

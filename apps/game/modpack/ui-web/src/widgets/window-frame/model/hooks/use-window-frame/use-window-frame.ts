@@ -1,88 +1,42 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 
-import type { ClientSize } from '../../../../../shared/api/gameface';
 import type { UiWindow } from '../../../../../shared/api/protocol';
-import type { Frame, ResizeEdge } from '../../../lib/frame';
-import type { FramePress, Gesture, PersistInput, Pointer } from './use-window-frame.types';
+import type { Frame } from '../../../lib/frame';
+import type { PersistInput } from './use-window-frame.types';
 
 import { send } from '../../../../../shared/api/protocol';
-import { rootScale } from '../../../../../shared/lib/hud-screen';
+import { reportOnce } from '../../../../../shared/lib/page-diag';
 import { WINDOW_FRAME } from '../../../config';
-import { centredFrame, clampFrame, fitFrame, layoutOf, moveFrame, resizeFrame, toRem, zoomStep } from '../../../lib/frame';
-import { readScreen } from '../../../lib/screen';
+import { describeFrame, describeViewport } from '../../../lib/describe';
+import { boundsOf, centredFrame, clampFrame, fitFrame, layoutOf, toRem, zoomStep } from '../../../lib/frame';
+import { useFrameGesture } from '../use-frame-gesture';
+import { useViewport } from '../use-viewport';
+
+const persist = (next: PersistInput): void => {
+  send({ type: 'window_layout', ...next.frame, zoom: next.zoom, placed: next.placed ?? true });
+};
 
 export const useWindowFrame = (saved: UiWindow | null) => {
-  const [screen, setScreen] = useState<ClientSize>(readScreen);
+  const viewport = useViewport();
   const [placed, setPlaced] = useState<Frame | null>(null);
   const [chosenZoom, setChosenZoom] = useState<number | null>(null);
-  const gestureRef = useRef<Gesture | null>(null);
+  const bounds = boundsOf(viewport);
   const zoom = chosenZoom ?? saved?.zoom ?? WINDOW_FRAME.defaultZoom;
-  const frame = placed ? clampFrame({ frame: placed, screen }) : saved ? fitFrame({ saved, screen }) : centredFrame(screen);
-  const latestRef = useRef({ frame, zoom, screen });
+  const frame = placed ? clampFrame({ frame: placed, bounds }) : saved ? fitFrame({ saved, bounds }) : centredFrame({ bounds });
+  const latestRef = useRef({ frame, zoom, viewport });
+  const opened = saved !== null;
 
-  latestRef.current = { frame, zoom, screen };
+  latestRef.current = { frame, zoom, viewport };
 
-  const persist = (next: PersistInput): void => {
-    send({ type: 'window_layout', ...next.frame, zoom: next.zoom, placed: next.placed ?? true });
-  };
-
-  const persistRef = useRef(persist);
-
-  persistRef.current = persist;
+  const handles = useFrameGesture({ frame, viewport, onChange: setPlaced, onDone: (last) => persist({ frame: last, zoom: latestRef.current.zoom }) });
 
   useEffect(() => {
-    const check = (): void => {
-      const next = readScreen();
+    if (opened) {
+      const current = latestRef.current;
 
-      setScreen((current) => (current.width === next.width && current.height === next.height ? current : next));
-    };
-
-    const follow = ({ clientX, clientY }: Pointer): void => {
-      const gesture = gestureRef.current;
-
-      if (!gesture) {
-        return;
-      }
-
-      const scale = rootScale();
-      const dx = (clientX - gesture.startX) / scale;
-      const dy = (clientY - gesture.startY) / scale;
-      const current = latestRef.current.screen;
-
-      setPlaced(
-        gesture.kind === 'move'
-          ? moveFrame({ frame: gesture.frame, dx, dy, screen: current })
-          : resizeFrame({ frame: gesture.frame, dx, dy, edge: gesture.kind, screen: current })
-      );
-    };
-
-    const finish = (): void => {
-      if (gestureRef.current) {
-        gestureRef.current = null;
-        persistRef.current(latestRef.current);
-      }
-    };
-
-    const timer = setInterval(check, WINDOW_FRAME.screenCheckMs);
-
-    window.addEventListener('resize', check);
-    window.addEventListener('mousemove', follow);
-    window.addEventListener('mouseup', finish);
-
-    return () => {
-      clearInterval(timer);
-      window.removeEventListener('resize', check);
-      window.removeEventListener('mousemove', follow);
-      window.removeEventListener('mouseup', finish);
-    };
-  }, []);
-
-  const start =
-    (kind: Gesture['kind']) =>
-    (event: FramePress): void => {
-      event.preventDefault();
-      gestureRef.current = { kind, startX: event.clientX, startY: event.clientY, frame };
-    };
+      reportOnce({ kind: 'window opened', text: `${describeViewport(current.viewport)}; frame ${describeFrame(current.frame)}` });
+    }
+  }, [opened]);
 
   const changeZoom = (direction: -1 | 1): void => {
     const next = zoomStep({ zoom, direction });
@@ -98,6 +52,7 @@ export const useWindowFrame = (saved: UiWindow | null) => {
   return {
     zoom,
     layout,
+    handles,
     frameStyle: { left: toRem(frame.x), top: toRem(frame.y), width: toRem(frame.width), height: toRem(frame.height) },
     innerStyle: {
       width: toRem(layout.inner.width),
@@ -108,10 +63,8 @@ export const useWindowFrame = (saved: UiWindow | null) => {
     canZoomOut: zoom > Math.min(...WINDOW_FRAME.zoomSteps),
     zoomIn: () => changeZoom(1),
     zoomOut: () => changeZoom(-1),
-    onMoveStart: start('move'),
-    onResizeStart: (edge: ResizeEdge) => start(edge),
     onRecentre: () => {
-      const centred = centredFrame(screen);
+      const centred = centredFrame({ bounds, size: { width: frame.width, height: frame.height } });
 
       setPlaced(centred);
       persist({ frame: centred, zoom, placed: false });

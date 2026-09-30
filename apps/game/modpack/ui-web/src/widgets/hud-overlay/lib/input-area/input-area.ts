@@ -2,8 +2,8 @@ import type { InputArea, InputAreaOfInput } from './input-area.types';
 
 const NONE: InputArea = { left: 0, top: 0, width: 0, height: 0 };
 
-export const inputAreaOf = ({ edit, screen, rects }: InputAreaOfInput): InputArea => {
-  if (edit) {
+export const inputAreaOf = ({ whole, screen, rects }: InputAreaOfInput): InputArea => {
+  if (whole) {
     return { left: 0, top: 0, width: Math.round(screen.width), height: Math.round(screen.height) };
   }
 

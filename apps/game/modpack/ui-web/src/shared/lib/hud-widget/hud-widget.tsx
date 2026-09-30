@@ -1,10 +1,10 @@
 import type { DefineHudWidgetInput, HudWidgetEntry } from './hud-widget.types';
 
-export const defineHudWidget = <Data,>({ kind, schema, Component }: DefineHudWidgetInput<Data>): HudWidgetEntry => ({
+export const defineHudWidget = <Data,>({ kind, schema, Component, pointer = false }: DefineHudWidgetInput<Data>): HudWidgetEntry => ({
   kind,
   parse: (data) => {
     const parsed = schema.safeParse(data);
 
-    return parsed.success ? { kind, data: parsed.data, node: <Component data={parsed.data} /> } : undefined;
+    return parsed.success ? { kind, data: parsed.data, pointer, node: <Component data={parsed.data} /> } : undefined;
   }
 });

@@ -7,6 +7,7 @@ import * as z from 'zod/mini';
 import { GAMEFACE } from '../../../../../../shared/api/gameface';
 import { createGamefaceMock, installGamefaceMock } from '../../../../../../shared/api/gameface/mock';
 import { renderHook } from '../../../../../../shared/lib/testing/render-hook';
+import { HUD_OVERLAY } from '../../../../config';
 import { useHudOverlay } from '../use-hud-overlay';
 
 const sample = readFileSync(
@@ -99,7 +100,11 @@ describe(useHudOverlay, () => {
 
     hook.run(() => window.dispatchEvent(new MouseEvent('mouseup', { clientX: 1620, clientY: 140 })));
 
-    expect(sent(mock)[1]).toEqual({ type: 'moved', id: 'otmetki.hud.damage_log', x: -300, y: 140, align_x: 'right', align_y: 'top' });
+    expect(sent(mock).slice(1)).toEqual([
+      { type: 'mouse', event: 'down' },
+      { type: 'moved', id: 'otmetki.hud.damage_log', x: -300, y: 140, align_x: 'right', align_y: 'top' }
+    ]);
+
     expect(hook.current().labels[0]?.dragging).toBe(false);
     icon.remove();
   });
@@ -130,7 +135,12 @@ describe(useHudOverlay, () => {
     hook.run(() => window.dispatchEvent(wheel));
 
     expect(wheel.defaultPrevented).toBe(true);
-    expect(sent(mock)[1]).toEqual({ type: 'resized', id: 'otmetki.hud.damage_log', scale: 1.1 });
+
+    expect(sent(mock).slice(1)).toEqual([
+      { type: 'mouse', event: 'wheel' },
+      { type: 'resized', id: 'otmetki.hud.damage_log', scale: 1.1 }
+    ]);
+
     expect(hook.current().labels[0]?.style).toMatchObject({ transform: 'scale(1.1)', transformOrigin: '0 0' });
   });
 
@@ -145,14 +155,41 @@ describe(useHudOverlay, () => {
     expect(sent(mock)[1]).toEqual({ type: 'pressed', id: 'otmetki.hud.damage_log' });
   });
 
-  it('limits the mouse to the clickable panels, and to the whole screen only in edit mode', async () => {
+  it('limits the mouse to the clickable panels, and to the whole screen only in a hangar edit', async () => {
     const { mock } = await mount(withState({ edit: false }));
 
     expect(mock.inputAreas().at(-1)).toEqual([0, 0, 0, 0]);
 
-    const edited = await mount(sample);
+    const edited = await mount(withState({ hover: false }));
 
     expect(edited.mock.inputAreas().at(-1)).toEqual([0, 0, 1920, 1080]);
+  });
+
+  it('takes the mouse in battle only over the panel under the cursor, and the whole screen while it is dragged', async () => {
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] });
+
+    const pointer = { x: 900, y: 300 };
+    const mock = createGamefaceMock({ state: sample, clientSize: () => ({ width: 1920, height: 1080 }), mouse: () => pointer, onSend: () => null });
+
+    installGamefaceMock(mock);
+
+    const hook = renderHook(useHudOverlay);
+
+    mounted.push(hook);
+    await hook.settle();
+    hook.run(() => vi.advanceTimersByTime(HUD_OVERLAY.hoverPollMs));
+
+    expect(mock.inputAreas().at(-1)).toEqual([0, 0, 0, 0]);
+
+    Object.assign(pointer, { x: 20, y: 940 });
+    hook.run(() => vi.advanceTimersByTime(HUD_OVERLAY.hoverPollMs));
+
+    expect(mock.inputAreas().at(-1)?.slice(0, 2)).toEqual([20, 940]);
+    expect(sent(mock).slice(1)).toEqual([{ type: 'mouse', event: 'hover' }]);
+
+    hook.run(() => window.dispatchEvent(new MouseEvent('mousedown', { clientX: 20, clientY: 940, button: 0 })));
+
+    expect(mock.inputAreas().at(-1)).toEqual([0, 0, 1920, 1080]);
   });
 
   it('draws a known widget instead of the text and falls back to the text for an unknown one', async () => {

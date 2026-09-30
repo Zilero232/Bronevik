@@ -3,5 +3,5 @@ export { HUD_GLYPHS } from './hud-glyphs.constants';
 export { HUD_RAILS } from './hud-rails.constants';
 export { HUD_TONE_COLORS } from './hud-tones.constants';
 export { KEYS } from './keys.constants';
-export { SCROLL_AREA, WHEEL_SCROLL_PROPS } from './scroll-area.constants';
+export { SCROLL_AREA } from './scroll-area.constants';
 export { UI_ICON_NAMES, UI_ICON_TONES, UI_ICONS } from './ui-icons.constants';

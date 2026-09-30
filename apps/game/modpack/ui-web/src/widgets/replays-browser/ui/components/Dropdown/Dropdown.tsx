@@ -3,7 +3,7 @@ import { useState } from 'preact/hooks';
 
 import type { DropdownProps } from './Dropdown.types';
 
-import { WHEEL_SCROLL_PROPS } from '../../../../../shared/config';
+import { useWheelScroll } from '../../../../../shared/lib/use-wheel-scroll';
 import { ReplayIcon } from '../ReplayIcon';
 
 import s from './Dropdown.module.scss';
@@ -11,6 +11,7 @@ import s from './Dropdown.module.scss';
 export const Dropdown = <Value,>({ label, value, options, active = false, onSelect }: DropdownProps<Value>) => {
   const [open, setOpen] = useState(false);
   const current = options.find((option) => option.value === value);
+  const menuRef = useWheelScroll();
 
   return (
     <div className={s.dropdown}>
@@ -22,7 +23,7 @@ export const Dropdown = <Value,>({ label, value, options, active = false, onSele
       {open && (
         <>
           <button aria-label={label} className={s.backdrop} tabIndex={-1} type='button' onClick={() => setOpen(false)} />
-          <div className={s.menu} role='listbox' {...WHEEL_SCROLL_PROPS}>
+          <div ref={menuRef} className={s.menu} role='listbox'>
             {options.map((option) => (
               <button
                 key={String(option.value)}

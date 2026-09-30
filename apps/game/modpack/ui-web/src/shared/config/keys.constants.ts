@@ -1,3 +1,5 @@
 export const KEYS = {
-  enter: 'Enter'
+  enter: 'Enter',
+  escape: 'Escape',
+  escapeCode: 27
 } as const;

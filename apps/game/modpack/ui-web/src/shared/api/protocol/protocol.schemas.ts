@@ -200,5 +200,6 @@ export const messageSchema = z.discriminatedUnion('type', [
     zoom: z.number(),
     placed: z.optional(z.boolean())
   }),
-  z.object({ type: z.literal('feed'), component: text, active: z.boolean() })
+  z.object({ type: z.literal('feed'), component: text, active: z.boolean() }),
+  z.object({ type: z.literal('diag'), text })
 ]);

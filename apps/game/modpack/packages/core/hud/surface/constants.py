@@ -2,11 +2,13 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 # The Gameface HUD page (ui-web `hud` entry, packages/ui/gameface/hud.html) and its view model: one string
 # property with the whole HUD as JSON, one command the page sends its messages through.
-HUD_PROTOCOL_VERSION = 3
+HUD_PROTOCOL_VERSION = 4
 HUD_STATE_PROPERTY = 'state'
 HUD_SEND_COMMAND = 'send'
 HUD_MESSAGE_ARG = 'message'
-HUD_COMMANDS = ('ready', 'moved', 'resized', 'pressed')
+HUD_COMMANDS = ('ready', 'moved', 'resized', 'pressed', 'mouse')
+# What the page reports once per page the first time it sees it in edit mode: a panel under the pointer, a press, a wheel turn.
+MOUSE_EVENTS = ('hover', 'down', 'wheel')
 HUD_MAX_MESSAGE_CHARS = 4 * 1024
 HUD_RES_MAP_ID = 'otmetki/ui/hud'
 

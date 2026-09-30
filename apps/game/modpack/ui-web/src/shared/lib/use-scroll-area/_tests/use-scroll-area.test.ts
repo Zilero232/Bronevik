@@ -19,10 +19,6 @@ afterEach(() => {
 });
 
 describe(useScrollArea, () => {
-  it('marks its viewport for the page wheel handler', () => {
-    expect(renderHook(useScrollArea).current().viewportProps).toEqual({ [SCROLL_AREA.attribute]: '' });
-  });
-
   it('shows a thumb sized by the visible share once the content is measured', () => {
     vi.useFakeTimers();
 

@@ -1,4 +1,4 @@
-import type { ClientSize, GamefaceBridge, InputArea, InvokeInput } from './gameface.types';
+import type { ClientSize, GamefaceBridge, InputArea, InvokeInput, ViewRect } from './gameface.types';
 
 import { isRecord } from '../../lib/is-record';
 import { GAMEFACE } from './gameface.constants';
@@ -15,6 +15,14 @@ const toClientSize = (value: unknown): ClientSize | null => {
   }
 
   return { width: value.width, height: value.height };
+};
+
+const toPoint = (value: unknown): { x: number; y: number } | null => {
+  if (!isRecord(value) || typeof value.x !== 'number' || typeof value.y !== 'number') {
+    return null;
+  }
+
+  return { x: value.x, y: value.y };
 };
 
 const isButtonModel = (value: unknown): value is Record<string, unknown> =>
@@ -71,6 +79,21 @@ export const createGamefaceBridge = (scope: object): GamefaceBridge => {
   const clientSize = (): ClientSize | null =>
     toClientSize(invoke({ target: read(GAMEFACE.globals.viewEnv), method: GAMEFACE.viewEnv.clientSize, args: [] }));
 
+  const viewCall = (method: string, args: unknown[] = []): unknown => invoke({ target: read(GAMEFACE.globals.viewEnv), method, args });
+
+  const viewRect = (): ViewRect | null => {
+    const position = toPoint(viewCall(GAMEFACE.viewEnv.viewPosition));
+    const size = toClientSize(viewCall(GAMEFACE.viewEnv.viewSize));
+
+    return position && size ? { ...position, ...size } : null;
+  };
+
+  const remScale = (): number | null => {
+    const scale = viewCall(GAMEFACE.viewEnv.remToPx, [1]);
+
+    return typeof scale === 'number' && Number.isFinite(scale) && scale > 0 ? scale : null;
+  };
+
   const resizeView = ({ width, height }: ClientSize): boolean => {
     const viewEnv = read(GAMEFACE.globals.viewEnv);
 
@@ -85,6 +108,10 @@ export const createGamefaceBridge = (scope: object): GamefaceBridge => {
 
   return {
     clientSize,
+    clientSizeRem: () => toClientSize(viewCall(GAMEFACE.viewEnv.clientSizeRem)),
+    viewRect,
+    remScale,
+    mousePosition: () => toPoint(viewCall(GAMEFACE.viewEnv.mousePosition)),
     resizeView,
     fitView: () => {
       const client = clientSize();

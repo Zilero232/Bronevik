@@ -14,11 +14,12 @@ import { onDistinct } from '../../../../../shared/lib/on-distinct';
 import { parseRichText } from '../../../../../shared/lib/rich-text';
 import { HUD_OVERLAY } from '../../../config';
 import { placeRect, rectStyle } from '../../../lib/anchor';
-import { stackDocks } from '../../../lib/dock';
-import { inputAreaKey, inputAreaOf } from '../../../lib/input-area';
+import { settledPanels, stackDocks } from '../../../lib/dock';
+import { createMouseReport } from '../../../lib/mouse-report';
 import { clearedRecord, remember, sharePanels } from '../../../lib/share-panels';
 import { resolveWidget } from '../../../lib/widget-registry';
 import { useHudScreen } from '../use-hud-screen';
+import { useInputArea } from '../use-input-area';
 import { usePanelDrag } from '../use-panel-drag';
 import { usePanelSizes } from '../use-panel-sizes';
 
@@ -29,14 +30,14 @@ export const useHudOverlay = () => {
   const screen = useHudScreen();
   const edit = Boolean(state?.edit);
   const targetsRef = useRef<DragTarget[]>([]);
+  const [report] = useState(createMouseReport);
   const { live } = usePanelDrag({
     edit,
+    report,
     targets: () => targetsRef.current,
     onMoved: ({ id, placement }) => setOverrides((current) => ({ ...current, [id]: placement })),
     onScaled: ({ id, scale }) => setScales((current) => ({ ...current, [id]: scale }))
   });
-
-  const areaRef = useRef(inputAreaOf({ edit: false, screen, rects: [] }));
 
   useEffect(() => {
     gameface.fitView();
@@ -94,20 +95,21 @@ export const useHudOverlay = () => {
   });
 
   const stacked = stackDocks({ items: base, screen, ...HUD_OVERLAY.dock });
+  const settled = settledPanels({ items: base, measured: (id) => sizes[id] !== undefined });
 
   const labels = panels.map((panel): HudLabelModel => {
     const scale = scaleOf(panel.id, panel.scale);
-    const measured = sizes[panel.id];
     const placed = stacked.get(panel.id) ?? { left: 0, top: 0, width: 0, height: 0 };
     const rect = live?.id === panel.id ? live.rect : placed;
     const button = panel.kind === 'button';
     const movable = edit && panel.drag;
+    const pointer = edit && Boolean(widgets.get(panel.id)?.pointer);
 
     if (button) {
       clickable.push(rect);
     }
 
-    targets.push({ id: panel.id, rect, button, movable, scale });
+    targets.push({ id: panel.id, rect, button, movable, pointer, scale });
 
     return {
       panel,
@@ -115,12 +117,12 @@ export const useHudOverlay = () => {
       widget: widgets.get(panel.id) ?? null,
       style: {
         ...rectStyle({ rect }),
-        opacity: measured ? panel.alpha : HUD_OVERLAY.hidden,
+        opacity: settled.has(panel.id) ? panel.alpha : HUD_OVERLAY.hidden,
         ...(scale === 1 ? {} : { transform: `scale(${scale})`, transformOrigin: HUD_OVERLAY.scaleOrigin })
       },
       button,
-      interactive: button || movable,
-      framed: edit,
+      interactive: button || movable || pointer,
+      framed: movable,
       dragging: live?.id === panel.id,
       measureRef: measureRef(panel.id),
       onClick: () => {
@@ -132,13 +134,7 @@ export const useHudOverlay = () => {
   });
 
   targetsRef.current = targets;
-  areaRef.current = inputAreaOf({ edit, screen, rects: clickable });
-
-  const areaKey = inputAreaKey(areaRef.current);
-
-  useEffect(() => {
-    gameface.setInputArea(areaRef.current);
-  }, [areaKey]);
+  useInputArea({ edit, hover: Boolean(state?.hover), dragging: live !== null, screen, clickable, targets, report });
 
   return {
     labels,

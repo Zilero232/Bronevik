@@ -3,7 +3,8 @@ import clsx from 'clsx';
 import type { ReplayDetailsProps } from './ReplayDetails.types';
 
 import { formatCount, formatDuration, formatMoment, formatSize, romanTier } from '../../../../../entities/replays';
-import { KEYS, WHEEL_SCROLL_PROPS } from '../../../../../shared/config';
+import { KEYS } from '../../../../../shared/config';
+import { useWheelScroll } from '../../../../../shared/lib/use-wheel-scroll';
 import { Button } from '../../../../../shared/ui/button';
 import { ClientIcon } from '../../../../../shared/ui/hud/ClientIcon';
 import { REPLAYS_BROWSER } from '../../../config';
@@ -15,6 +16,7 @@ import s from './ReplayDetails.module.scss';
 
 export const ReplayDetails = ({ item, browser }: ReplayDetailsProps) => {
   const t = useReplaysT();
+  const scrollRef = useWheelScroll();
   const upload = browser.page?.upload ?? 'missing';
   const client = browser.page?.client ?? '';
   const tier = romanTier(item.tier);
@@ -39,7 +41,7 @@ export const ReplayDetails = ({ item, browser }: ReplayDetailsProps) => {
   return (
     <aside aria-label={item.title} className={s.details}>
       <div className={s.hero}>
-        {item.map_image ? <img alt='' className={s.heroImage} src={item.map_image} /> : <span className={s.heroEmpty} />}
+        {item.map_image ? <img alt='' className={s.heroImage} draggable={false} src={item.map_image} /> : <span className={s.heroEmpty} />}
         <span className={s.heroShade} />
         <span className={s.heroText}>
           <span className={clsx(s.outcome, s[outcome])}>{t(`outcome_${outcome}`)}</span>
@@ -47,9 +49,9 @@ export const ReplayDetails = ({ item, browser }: ReplayDetailsProps) => {
           <span className={s.heroMeta}>{`${t(`type_${item.type}`)} · ${formatMoment(item.time)}`}</span>
         </span>
       </div>
-      <div className={s.scroll} {...WHEEL_SCROLL_PROPS}>
+      <div ref={scrollRef} className={s.scroll}>
         <div className={s.vehicle}>
-          {item.tank_image && <img alt='' className={s.vehicleImage} src={item.tank_image} />}
+          {item.tank_image && <img alt='' className={s.vehicleImage} draggable={false} src={item.tank_image} />}
           <span className={s.vehicleText}>
             <span className={s.vehicleName}>
               {tier && <span className={s.tier}>{tier}</span>}

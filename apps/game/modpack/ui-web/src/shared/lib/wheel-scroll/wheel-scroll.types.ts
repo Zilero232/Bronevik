@@ -26,16 +26,24 @@ export type TopFromThumbInput = ScrollMetrics & {
   size: number;
 };
 
-export type WheelLike = Pick<WheelEvent, 'deltaY' | 'preventDefault' | 'stopPropagation'>;
-
-export type ScrollByWheelInput = {
-  element: Pick<HTMLElement, 'clientHeight' | 'scrollHeight' | 'scrollTop'>;
-  event: WheelLike;
+export type WheelDelta = Pick<WheelEvent, 'deltaY'> & {
+  wheelDelta?: number;
+  wheelDeltaY?: number;
 };
 
-export type WheelTarget = Pick<HTMLElement, 'clientHeight' | 'hasAttribute' | 'parentElement' | 'scrollHeight' | 'scrollTop'>;
+export type WheelLike = WheelDelta & Pick<WheelEvent, 'preventDefault' | 'stopPropagation'>;
 
-export type WheelTargetInput = {
-  start: Element | null;
-  deltaY: number;
+export type ScrollBox = Pick<HTMLElement, 'clientHeight' | 'scrollHeight' | 'scrollTop'>;
+
+export type ScrollByWheelInput = {
+  element: ScrollBox;
+  event: WheelLike;
+  step?: number;
+};
+
+export type WheelRoot = Pick<Document, 'addEventListener' | 'removeEventListener'>;
+
+export type BindWheelScrollInput = {
+  element: HTMLElement;
+  onScrolled?: () => void;
 };

@@ -1,14 +1,17 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.log import log, safe
+from ...escape import EscapeGuard
 from .gameface import AVAILABLE, SettingsWindow, WindowStatus
+from .input import game_input_manager
 
 
 class WindowController(object):
 
-    def __init__(self, on_message, current_state):
+    def __init__(self, on_message, current_state, on_escape):
         self.on_message_cb = on_message
         self.current_state = current_state
+        self.escape = EscapeGuard(game_input_manager, on_escape)
         self.window = None
         self.view = None
         self.pushed = None
@@ -24,6 +27,7 @@ class WindowController(object):
             return False
         if WindowStatus is not None and window.windowStatus in (WindowStatus.DESTROYING, WindowStatus.DESTROYED):
             self.window, self.view = None, None
+            self.escape.release()
             return False
         return True
 
@@ -38,13 +42,14 @@ class WindowController(object):
         self.window = SettingsWindow(self)
         self.window.onStatusChanged += self._on_status
         self.window.load()
-        log('ui: settings window %s created' % self.window.uniqueID)
+        log('ui: settings window %s created, Esc %s' % (self.window.uniqueID, 'held' if self.escape.hold() else 'not held'))
         return True
 
     @safe
     def close(self):
         window, self.window = self.window, None
         self.view, self.pushed = None, None
+        self.escape.release()
         if window is not None:
             log('ui: settings window %s closed' % window.uniqueID)
             window.destroy()
@@ -69,6 +74,7 @@ class WindowController(object):
         if self.view is view or self.view is None:
             self.view, self.pushed = None, None
             self.window = None
+            self.escape.release()
 
     @safe
     def _on_status(self, status):

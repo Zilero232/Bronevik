@@ -1,7 +1,7 @@
-import type { FramePress } from '../../Header.types';
+import type { RefObject } from 'preact';
 
 export type BrandProps = {
   compact: boolean;
-  onMoveStart: (event: FramePress) => void;
+  dragRef: RefObject<HTMLDivElement>;
   onRecentre: () => void;
 };

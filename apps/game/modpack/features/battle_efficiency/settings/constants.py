@@ -15,3 +15,7 @@ DEFAULTS = {
     'colored': True,
     'template': '',
 }
+# The default places of older versions (x, y, align_x, align_y): a panel still at one moves to today's default.
+RETIRED_PLACES = (
+    (-20, 110, 'right', 'top'),
+)

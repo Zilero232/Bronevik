@@ -50,7 +50,7 @@ class UiHost(object):
         app.translate.catalog.add(STRINGS)
         self.profiles = ProfileStore(open_config(app.config_dir, FILE_NAME, pretty=True), time.time)
         self.bridge = SettingsBridge(UiContext(app, self))
-        self.window = WindowController(self.on_message, self.state_text)
+        self.window = WindowController(self.on_message, self.state_text, self.on_escape)
         self.button = HangarButton(app, self.open)
         self.mods_list = ModsListButton(self.open)
         self.hotkey = _hotkey(self.on_hotkey)
@@ -133,6 +133,12 @@ class UiHost(object):
         else:
             log('ui: hotkey closes the open settings window')
             self.close()
+
+    @safe
+    def on_escape(self):
+        log('ui: Esc closes the settings window')
+        self.bridge.editor.set_editing(False)
+        self.close()
 
     @safe
     def on_message(self, raw):

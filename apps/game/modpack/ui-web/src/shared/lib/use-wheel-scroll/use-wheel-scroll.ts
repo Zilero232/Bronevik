@@ -1,0 +1,17 @@
+import { useCallback, useRef } from 'preact/hooks';
+
+import type { UseWheelScrollInput, WheelScrollRef } from './use-wheel-scroll.types';
+
+import { bindWheelScroll } from '../wheel-scroll';
+
+export const useWheelScroll = ({ onScrolled }: UseWheelScrollInput = {}): WheelScrollRef => {
+  const unbindRef = useRef<(() => void) | null>(null);
+  const scrolledRef = useRef(onScrolled);
+
+  scrolledRef.current = onScrolled;
+
+  return useCallback((node: HTMLElement | null): void => {
+    unbindRef.current?.();
+    unbindRef.current = node ? bindWheelScroll({ element: node, onScrolled: () => scrolledRef.current?.() }) : null;
+  }, []);
+};

@@ -8,7 +8,7 @@ from ..feeds import Feed
 from ..fields import Labels
 from ..hud_edit import HudEditor, move_values
 from ..profiles import ProfileError, apply_snapshot, decode_profile, encode_profile, take_snapshot
-from ..protocol import QUIET_COMMANDS, ProtocolError, decode_message, encode_feed
+from ..protocol import MAX_DIAG_CHARS, QUIET_COMMANDS, ProtocolError, decode_message, encode_feed
 from ..window_layout import WindowLayout
 from .companion import CompanionActions
 from .constants import CONFIG_COMPONENT, EVENT_COMPONENT_SETTINGS, LANGUAGE_CHOICES, LANGUAGES, NOTICE_CODE, NOTICE_ERROR, NOTICE_INFO, TOOL_PAGES
@@ -47,6 +47,7 @@ class SettingsBridge(object):
             'hud_reset_all': self._on_hud_reset_all,
             'window_layout': self._on_window_layout,
             'feed': self._on_feed,
+            'diag': self._on_diag,
         }
 
     def labels(self):
@@ -260,6 +261,11 @@ class SettingsBridge(object):
         self.stop_feed()
         self.feeds.setdefault(component_id, Feed(component_id)).reset()
         self.watched = (component_id, instance)
+
+    def _on_diag(self, message):
+        text = message['text']
+        if isinstance(text, string_types):
+            log('ui: page %s' % to_text(text)[:MAX_DIAG_CHARS])
 
     def _on_window_layout(self, message):
         self.window_layout().update(message)

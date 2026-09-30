@@ -74,10 +74,10 @@ def shell_icon_of(code, premium=False, kind='small'):
     return shell_icon(stem, premium, kind) if stem else None
 
 
-def artefact_icon(name):
+def artefact_icon(name, fallback=None):
     """A consumable, equipment or directive icon (artefact/<name>.png) from its descriptor icon."""
     stem = item_name(name)
-    return image('%s/artefact/%s.png' % (ICONS_ROOT, stem)) if stem else None
+    return image('%s/artefact/%s.png' % (ICONS_ROOT, stem), fallback) if stem else None
 
 
 def efficiency_icon(kind):

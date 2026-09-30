@@ -21,7 +21,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ...compat import is_number, string_types
 from ..backend import NullBackend
 from ..modes import MODE_RANDOM, ModePlaces
-from ..panel import LAYOUT_KEYS, alias_of, dock_of, layout_props, moved_values, panel_of
+from ..panel import LAYOUT_KEYS, alias_of, dock_of, is_pinned, layout_props, moved_values, panel_of, pinned_values, retired_reset
 
 
 class HudLayer(object):
@@ -55,8 +55,12 @@ class HudLayer(object):
         return self.backend.name
 
     def register(self, panel_id, schema):
-        """Declare a panel; returns its settings (a `Settings` over `schema`, stored in components.json)."""
+        """Declare a panel; returns its settings (a `Settings` over `schema`, stored in components.json). A panel still at a
+        default place of an older version moves to today's default (`panel.retired_reset`)."""
         settings = self.config.section(panel_id, schema)
+        reset = retired_reset(settings)
+        if reset:
+            self.config.update(panel_id, reset)
         self.panels[panel_id] = settings
         self.schemas[panel_id] = schema
         return settings
@@ -68,12 +72,13 @@ class HudLayer(object):
         return panel_id in self.panels
 
     def place_values(self, panel_id):
-        """The layout keys of a panel in the current battle type: its settings with the type's own place over them."""
+        """The layout keys of a panel in the current battle type: its settings with the type's own place over them; a
+        pinned panel always sits at its default place."""
         settings = self.panels[panel_id]
         values = dict((key, settings.get(key)) for key in LAYOUT_KEYS)
         if self.own_places:
             values.update(self.mode_places.get(self.mode, panel_id))
-        return values
+        return pinned_values(settings, values)
 
     def layout(self, panel_id):
         values = self.place_values(panel_id)
@@ -213,7 +218,7 @@ class HudLayer(object):
         """Apply new settings (a settings window, a preset); a shown panel is moved or restyled at once."""
         changed = self.config.update(panel_id, values)
         alias = alias_of(panel_id)
-        if changed and alias in self.shown and set(changed) & set(LAYOUT_KEYS):
+        if changed and alias in self.shown and set(changed) & (set(LAYOUT_KEYS) | {'pinned'}):
             self.places.pop(alias, None)
             self.backend.update(alias, self.layout(panel_id))
         return changed
@@ -222,7 +227,7 @@ class HudLayer(object):
         if not isinstance(alias, string_types) or not isinstance(props, dict):
             return False
         panel_id = panel_of(alias)
-        if panel_id not in self.panels:
+        if panel_id not in self.panels or is_pinned(self.panels[panel_id]):
             return False
         if self.own_places:
             changed = bool(self.mode_places.save(self.mode, panel_id, moved_values(props)))

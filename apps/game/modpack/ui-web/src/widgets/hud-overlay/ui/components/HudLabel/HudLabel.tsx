@@ -2,6 +2,7 @@ import clsx from 'clsx';
 
 import type { HudLabelProps } from './HudLabel.types';
 
+import { HudPointerContext } from '../../../../../shared/lib/hud-pointer';
 import { HUD_OVERLAY } from '../../../config';
 import { HudRun } from '../HudRun';
 
@@ -29,7 +30,7 @@ export const HudLabel = ({ label }: HudLabelProps) => (
     {label.button ? (
       <img alt='' className={s.buttonIcon} draggable={false} src={HUD_OVERLAY.buttonIcon} />
     ) : label.widget ? (
-      label.widget.node
+      <HudPointerContext.Provider value={label.interactive}>{label.widget.node}</HudPointerContext.Provider>
     ) : (
       label.lines.map((line) => (
         <span key={line.key} className={s.line}>

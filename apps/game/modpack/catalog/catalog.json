@@ -367,8 +367,8 @@
         "en": "Team HP and score"
       },
       "description": {
-        "ru": "Суммарная прочность команд и счёт уничтоженных машин; вид «Полоска на каждый танк» показывает прочность каждой машины обеих команд. Заменяет стандартную панель счёта (стиль «Только числа» — под ней).",
-        "en": "Total team hit points and the frag score; the “A bar per tank” style shows the hit points of every vehicle of both teams. Replaces the stock score strip (the «Numbers only» style sits under it)."
+        "ru": "Суммарная прочность команд и счёт уничтоженных машин; вид «Полоска на каждый танк» показывает прочность каждой машины обеих команд. Встаёт ровно на место стандартной панели счёта вверху экрана и заменяет её (стиль «Только числа» — под ней).",
+        "en": "Total team hit points and the frag score; the “A bar per tank” style shows the hit points of every vehicle of both teams. Takes the stock score strip's exact place at the top of the screen and replaces it (the «Numbers only» style sits under it)."
       },
       "fairPlay": {
         "ru": "Те же данные, что в списках команд («ушах») стандартного интерфейса.",
@@ -495,7 +495,7 @@
       "id": "consumables",
       "category": "battle",
       "context": "battle",
-      "presets": ["recommended", "streamer"],
+      "presets": ["streamer"],
       "title": {
         "ru": "Снаряжение и снаряды",
         "en": "Consumables and shells"
@@ -693,14 +693,14 @@
       "id": "battle_loadout",
       "category": "battle",
       "context": "battle",
-      "presets": ["streamer"],
+      "presets": ["recommended", "streamer"],
       "title": {
         "ru": "Оборудование в бою",
-        "en": "Loadout in battle"
+        "en": "Equipment in battle"
       },
       "description": {
-        "ru": "Оборудование вашего танка со значками (★ — в слоте со своим бонусом), полевая модернизация и инструкции в перетаскиваемой панели; компактный или подробный вид.",
-        "en": "Your tank's equipment with icons (★: in a slot with its own bonus), field modifications and directives on a movable panel; compact or detailed."
+        "ru": "Значки оборудования вашего танка прямо над стандартной панелью снарядов (★ — в слоте своей специализации); наведите курсор (Ctrl) на значок, и подсказка расскажет, что даёт предмет.",
+        "en": "Your tank's equipment icons right above the stock shells panel (★: in a slot of its own specialisation); point the cursor (Ctrl) at an icon for a tooltip on what the item does."
       },
       "fairPlay": {
         "ru": "Только свой танк: чужое оборудование клиент не показывает, и мод его не угадывает.",

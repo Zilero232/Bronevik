@@ -6,6 +6,7 @@ import type { ContextFilter, Section, UndoEntry, View } from './store.types';
 import { parseState } from '../../../../shared/api/protocol';
 import { CONTEXT_FILTER, SECTION_NAV } from '../../config';
 import { searchComponents, summarize } from '../../lib/components';
+import { fontSafeState } from '../../lib/font-safe-state';
 
 export const $state = atom<UiState | null>(null);
 export const $invalid = atom(false);
@@ -28,13 +29,15 @@ export const receiveState = (raw: string | null): boolean => {
     return false;
   }
 
-  const state = parseState(raw);
+  const parsed = parseState(raw);
 
-  $invalid.set(state === null);
+  $invalid.set(parsed === null);
 
-  if (state === null) {
+  if (parsed === null) {
     return false;
   }
+
+  const state = fontSafeState(parsed);
 
   const previous = $state.get();
 

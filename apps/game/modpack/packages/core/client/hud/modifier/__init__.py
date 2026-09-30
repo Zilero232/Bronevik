@@ -1,5 +1,5 @@
 """The client side of the panel edit modifier: watches the game's own InputHandler key events (hangar and
-battle) and calls `on_change(held)` when the configured modifier goes down or up."""
+battle), calls `on_change(held)` when the configured modifier goes down or up and `on_key()` after every key event."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....hooks import subscribe
@@ -18,8 +18,9 @@ def _is_down(name):
 
 class ModifierWatch(object):
 
-    def __init__(self, on_change):
+    def __init__(self, on_change, on_key):
         self.on_change = on_change
+        self.on_key = on_key
         self.mode = DEFAULT_MODIFIER
         self.held = False
         self.installed = False
@@ -42,6 +43,7 @@ class ModifierWatch(object):
 
     def _on_key(self, *args):
         self.check()
+        self.on_key()
 
     def _on_poll(self):
         self.check()

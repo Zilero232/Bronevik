@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import unittest
 
 import _support  # noqa: F401
-from otmetki.companion.config import DEFAULT_SERVER_URL, FEATURES, OPT_IN_FEATURES, Config, is_valid_server_url
+from otmetki.companion.config import DEFAULT_SERVER_URL, DEFAULTS_REVISION, FEATURES, OPT_IN_FEATURES, RETIRED_DEFAULTS, Config, is_valid_server_url
 from otmetki.companion.i18n import STRINGS, Translator, resolve_language
 from otmetki.companion.settings_ui import BIND_CODE_VAR, build_template, settings_to_config
 
@@ -33,6 +33,20 @@ class ConfigTest(unittest.TestCase):
         self.assertEqual(config.get('session_idle_minutes'), 30)
         self.assertEqual(config.server_url, DEFAULT_SERVER_URL)
         self.assertFalse(config.is_enabled('send_queue_times'))
+
+    def test_a_switch_left_at_a_retired_default_takes_the_new_one_once(self):
+        old = dict((key, value) for _, key, value, _ in RETIRED_DEFAULTS)
+        upgraded = Config(dict(old, send_queue_times=False))
+        for _, key, _, new in RETIRED_DEFAULTS:
+            self.assertEqual(upgraded.get(key), new)
+        self.assertFalse(upgraded.get('send_queue_times'))
+        self.assertEqual(upgraded.get('defaults_revision'), DEFAULTS_REVISION)
+        chosen = Config(dict(upgraded.to_dict(), **old))
+        for key, value in old.items():
+            self.assertEqual(chosen.get(key), value)
+
+    def test_a_fresh_config_is_stamped_with_the_current_revision(self):
+        self.assertEqual(Config().get('defaults_revision'), DEFAULTS_REVISION)
 
     def test_master_switch(self):
         config = Config({'enabled': False})

@@ -43,6 +43,11 @@ def equipments():
     return shared('equipments')
 
 
+def optional_devices():
+    """The own vehicle's equipment controller (OptionalDevicesController, RU 1.45 client source)."""
+    return shared('optionalDevices')
+
+
 def crosshair():
     return shared('crosshair')
 

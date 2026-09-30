@@ -2,15 +2,17 @@
 
 `HudSurface` keeps every label the layer created (GUIFlash props) with the GUI space it was created in, so
 a hangar label never shows in battle and the other way round, as GUIFlash does. `encode(space, cursor, edit)`
-is the view model's `state` property: `{v, cursor, edit, panels: [{id, text, x, y, align_x, align_y, alpha,
+is the view model's `state` property: `{v, cursor, edit, hover, panels: [{id, text, x, y, align_x, align_y, alpha,
 drag, border, visible, scale, kind, widget, dock}]}`; `widget` is a panel's structured payload (`core.hud.widget`)
 or None, drawn instead of `text` when the page knows its kind; `dock` (`{group, order}` or None, `core.hud.panel.dock_of`)
-stacks the panels of one column at its anchor. `edit` is true while the player holds the edit modifier (Alt by
-default) and a cursor is shown: only then does a panel take the mouse, show its frame and move. The page
+stacks the panels of one column at its anchor. `edit` is true while panels can be moved (the backend decides: the edit
+modifier held in the hangar, the cursor shown in battle) and a cursor is shown: only then does a panel take the mouse,
+show its frame and move. `hover` (battle) makes the page take the mouse only over the panel under the pointer, so the
+cursor still reaches the minimap and the team lists; in the hangar the whole screen is taken while editing. The page
 sends `{type: 'ready'}` once it can draw, `{type: 'moved', id, x, y, align_x, align_y}` after a drag,
-`{type: 'resized', id, scale}` after the modifier + wheel, and `{type: 'pressed', id}` when the player
-clicks a button panel. `handle(raw)` decodes one message; the ui-web side is `src/shared/api/hud-protocol`
-(a test checks both command lists).
+`{type: 'resized', id, scale}` after a wheel turn, `{type: 'pressed', id}` when the player clicks a button panel, and
+`{type: 'mouse', event}` the first time it sees the pointer over a panel, a press or a wheel turn in edit mode.
+`handle(raw)` decodes one message; the ui-web side is `src/shared/api/hud-protocol` (a test checks both command lists).
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -19,8 +21,8 @@ import json
 from ...codec import canonical_json
 from ...compat import is_number, string_types, to_text
 from .constants import (ALIGN_X, ALIGN_Y, HUD_COMMANDS, HUD_MAX_MESSAGE_CHARS, HUD_MESSAGE_ARG, HUD_PROTOCOL_VERSION, HUD_RES_MAP_ID,
-                        HUD_SEND_COMMAND, HUD_STATE_PROPERTY, KIND_BUTTON, KIND_LABEL, KINDS, PANEL_KEYS, POSITION_LIMIT, SCALE_LIMITS,
-                        SPACE_BATTLE, SPACE_LOBBY)
+                        HUD_SEND_COMMAND, HUD_STATE_PROPERTY, KIND_BUTTON, KIND_LABEL, KINDS, MOUSE_EVENTS, PANEL_KEYS, POSITION_LIMIT,
+                        SCALE_LIMITS, SPACE_BATTLE, SPACE_LOBBY)
 from .push import FramePush
 
 __all__ = ('HUD_COMMANDS', 'HUD_MESSAGE_ARG', 'HUD_PROTOCOL_VERSION', 'HUD_RES_MAP_ID', 'HUD_SEND_COMMAND', 'HUD_STATE_PROPERTY',
@@ -67,7 +69,12 @@ def _dock(value):
     return dock
 
 
-_FIELDS = {'moved': _moved, 'resized': _resized, 'pressed': lambda message: {}}
+def _mouse(message):
+    return {'event': message['event']} if message.get('event') in MOUSE_EVENTS else None
+
+
+_PANEL_FIELDS = {'moved': _moved, 'resized': _resized, 'pressed': lambda message: {}}
+_PAGE_FIELDS = {'ready': lambda message: {}, 'mouse': _mouse}
 
 
 def decode_hud_message(raw):
@@ -81,11 +88,11 @@ def decode_hud_message(raw):
     if not isinstance(message, dict) or message.get('type') not in HUD_COMMANDS:
         return None
     command = message['type']
-    reader = _FIELDS.get(command)
-    if reader is None:
-        return command, {}
+    if command in _PAGE_FIELDS:
+        fields = _PAGE_FIELDS[command](message)
+        return (command, fields) if fields is not None else None
     alias = message.get('id')
-    fields = reader(message) if isinstance(alias, string_types) else None
+    fields = _PANEL_FIELDS[command](message) if isinstance(alias, string_types) else None
     if fields is None:
         return None
     fields['id'] = to_text(alias)
@@ -139,7 +146,7 @@ class HudSurface(object):
 
     def state(self, space, cursor, edit=False):
         cursor = bool(cursor)
-        return {'v': HUD_PROTOCOL_VERSION, 'cursor': cursor, 'edit': cursor and bool(edit),
+        return {'v': HUD_PROTOCOL_VERSION, 'cursor': cursor, 'edit': cursor and bool(edit), 'hover': space == SPACE_BATTLE,
                 'panels': [self.panel(alias) for alias in self.aliases(space)]}
 
     def encode(self, space, cursor, edit=False):

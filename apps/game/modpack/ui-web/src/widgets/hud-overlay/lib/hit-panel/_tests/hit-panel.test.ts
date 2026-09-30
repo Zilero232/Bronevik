@@ -2,7 +2,13 @@ import { describe, expect, it } from 'vitest';
 
 import { hitPanel, pointerPoint } from '../hit-panel';
 
-const target = (id: string, left: number, movable = true) => ({ id, rect: { left, top: 10, width: 100, height: 40 }, button: false, movable });
+const target = (id: string, left: number, movable = true, pointer = false) => ({
+  id,
+  rect: { left, top: 10, width: 100, height: 40 },
+  button: false,
+  movable,
+  pointer
+});
 
 describe(hitPanel, () => {
   it('finds the topmost movable panel under the pointer', () => {
@@ -15,6 +21,13 @@ describe(hitPanel, () => {
   it('misses outside every panel and skips panels that may not move', () => {
     expect(hitPanel({ targets: [target('a', 0)], point: { x: 300, y: 20 } })).toBeNull();
     expect(hitPanel({ targets: [target('fixed', 0, false)], point: { x: 20, y: 20 } })).toBeNull();
+  });
+
+  it('counts a fixed panel with tooltips only when the pointer is asked for', () => {
+    const targets = [target('tips', 0, false, true)];
+
+    expect(hitPanel({ targets, point: { x: 20, y: 20 } })).toBeNull();
+    expect(hitPanel({ targets, point: { x: 20, y: 20 }, pointer: true })?.id).toBe('tips');
   });
 });
 

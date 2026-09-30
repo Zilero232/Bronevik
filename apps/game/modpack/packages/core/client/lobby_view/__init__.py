@@ -3,12 +3,15 @@ hangar view is on the screen (`listen(callback)` gets `callback(visible)` now an
 
 RU 1.45 client source: `IGuiLoader.windowsManager.onWindowStatusChanged(uniqueID, status)` fires for every window
 (Scaleform views sit in an `SFWindow` whose `loadParams.viewKey.alias` names them, Gameface ones carry their `layer`);
-`findWindows(predicate)` lists them. Without the windows manager the labels stay visible (the rule fails open).
+`findWindows(predicate)` lists them. A window whose class comes from our own packages (`gui.mods.otmetki.*`) is ours.
+Without the windows manager the labels stay visible (the rule fails open).
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ...log import log, safe
 from ...lobby_view import BLOCKING_LAYERS, GONE_STATUSES, HANGAR_ALIAS, plain_hangar
+
+OWN_MODULES = __name__.rsplit('.core.', 1)[0] + '.'
 
 
 def _names(holder, names):
@@ -73,6 +76,7 @@ class LobbyViewWatch(object):
             'blocking': getattr(window, 'layer', None) in self.blocking and not popover,
             'hangar': _alias(window) == HANGAR_ALIAS,
             'alive': getattr(window, 'windowStatus', None) not in self.gone,
+            'own': type(window).__module__.startswith(OWN_MODULES),
         }
 
     @safe

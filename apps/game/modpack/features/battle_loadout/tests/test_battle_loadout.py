@@ -3,68 +3,59 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import unittest
 
-import _support
+import _support  # noqa: F401
 from otmetki.core.settings import Settings
-from otmetki.features.battle_loadout.i18n import STRINGS
-from otmetki.features.battle_loadout.model import LoadoutBook, clean_loadout, format_panel, icon_path
-from otmetki.features.battle_loadout.model.constants import MAX_TANKS
+from otmetki.features.battle_loadout.model import clean_device, clean_devices, format_panel, overlay_of
+from otmetki.features.battle_loadout.model.constants import MAX_ITEMS
 from otmetki.features.battle_loadout.model.preview import preview_text
 from otmetki.features.battle_loadout.settings import SCHEMA, SETTINGS
 
-LOADOUT = {
-    'devices': [{'name': u'Турбонагнетатель', 'icon': '../maps/icons/artefact/turbocharger.png', 'bonus': True},
-                {'name': u'Вентиляция', 'icon': '../maps/icons/artefact/ventilation.png', 'bonus': False}, None],
-    'modifications': [u'Обзор', None, 7],
-    'directives': [{'name': u'Боевое братство', 'icon': 'gui/maps/icons/artefact/brotherhood.png'}],
-}
+DEVICES = [
+    {'name': u'Турбонагнетатель', 'effect': u'+10 % к скорости', 'icon': ('turbocharger', 0, 0), 'bonus': True},
+    {'name': u'Вентиляция', 'effect': None, 'icon': '../maps/icons/artefact/improvedVentilation.png', 'deluxe': True},
+    {'name': u'  ', 'icon': 'rammer'},
+    None,
+]
 
 
-def translator(language='ru'):
-    return _support.translator(STRINGS, language)
+class DeviceTest(unittest.TestCase):
 
+    def test_a_device_gets_its_client_icon_and_effect(self):
+        device = clean_device(DEVICES[0])
+        assert device == {'name': u'Турбонагнетатель', 'effect': u'+10 % к скорости', 'icon': 'img://gui/maps/icons/artefact/turbocharger.png|otmetki:module',
+                          'overlay': None, 'bonus': True}
+        assert clean_device(DEVICES[1])['icon'] == 'img://gui/maps/icons/artefact/improvedVentilation.png|otmetki:module'
+        assert clean_device(DEVICES[1])['effect'] == u''
 
-class LoadoutTest(unittest.TestCase):
+    def test_nameless_and_broken_entries_are_dropped(self):
+        assert [device['name'] for device in clean_devices(DEVICES)] == [u'Турбонагнетатель', u'Вентиляция']
+        assert len(clean_devices([DEVICES[0]] * (MAX_ITEMS + 3))) == MAX_ITEMS
+        assert clean_devices(None) == []
 
-    def test_icon_paths_stay_under_the_client_maps(self):
-        assert icon_path('../maps/icons/artefact/turbocharger.png') == 'gui/maps/icons/artefact/turbocharger.png'
-        assert icon_path('gui/maps/icons/artefact/x.png') == 'gui/maps/icons/artefact/x.png'
-        assert icon_path('../../../evil.png') is None and icon_path('gui/maps/x.swf') is None and icon_path(None) is None
-        assert icon_path('gui/maps/<b>.png') is None
-
-    def test_clean_drops_what_is_not_a_named_item(self):
-        loadout = clean_loadout(LOADOUT)
-        assert [item['name'] for item in loadout['devices']] == [u'Турбонагнетатель', u'Вентиляция']
-        assert loadout['devices'][0]['bonus'] and not loadout['devices'][1]['bonus']
-        assert loadout['modifications'] == [u'Обзор']
-        assert clean_loadout(None) == {'devices': [], 'modifications': [], 'directives': []}
-
-    def test_book_keeps_the_last_tanks(self):
-        book = LoadoutBook()
-        assert book.put(1, LOADOUT) and not book.put(1, LOADOUT)
-        for tank_id in range(2, MAX_TANKS + 3):
-            book.put(tank_id, LOADOUT)
-        assert book.get(1) is None and book.get(MAX_TANKS + 2) is not None and not book.put(0, LOADOUT)
+    def test_overlays_of_special_devices(self):
+        assert overlay_of({'deluxe': True}) == 'img://gui/maps/icons/quests/bonuses/small/equipmentPlus_overlay.png'
+        assert overlay_of({'modernized': True, 'level': 2}) == 'img://gui/maps/icons/quests/bonuses/small/equipmentModernized_2_overlay.png'
+        assert overlay_of({'modernized': True, 'level': 9}) is None
+        assert overlay_of({'trophy': 'upgraded'}) == 'img://gui/maps/icons/quests/bonuses/small/equipmentTrophyUpgraded_overlay.png'
+        assert overlay_of({}) is None
 
 
 class FormatTest(unittest.TestCase):
 
-    def test_detailed_and_compact(self):
-        loadout = clean_loadout(LOADOUT)
-        detailed = format_panel(loadout, Settings({'style': 'detailed', 'show_icons': False, 'show_modifications': True}, SCHEMA), translator())
-        assert u'Оборудование: ' in detailed and u'Турбонагнетатель ★' in detailed and u'Модернизация: ' in detailed
-        assert u'Инструкции: ' in detailed and 'img://' not in detailed
-        compact = format_panel(loadout, Settings({}, SCHEMA), translator())
-        assert 'img://gui/maps/icons/artefact/turbocharger.png' in compact and u'Турбонагнетатель' not in compact
-        assert u'Обзор' not in compact
-        only_directives = format_panel(loadout, Settings({'show_devices': False}, SCHEMA), translator())
-        assert 'brotherhood.png' in only_directives and 'turbocharger' not in only_directives
-        assert format_panel(clean_loadout({}), Settings({}, SCHEMA), translator()) is None
-        assert format_panel(None, Settings({}, SCHEMA), translator()) is None
+    def test_icons_in_a_row_with_the_bonus_star(self):
+        text = format_panel(clean_devices(DEVICES), Settings({}, SCHEMA))
+        assert text.startswith(u'<img src="img://gui/maps/icons/artefact/turbocharger.png" width="32" height="32"/>')
+        assert u'★' in text and u'Турбонагнетатель' not in text
+        assert preview_text(Settings({'icon_size': 24}, SCHEMA), None).count('width="24"') == 3
 
-    def test_preview_settings_and_strings(self):
-        assert u'★' in preview_text(Settings({'style': 'detailed'}, SCHEMA), translator())
+
+class SettingsTest(unittest.TestCase):
+
+    def test_pinned_over_the_stock_consumables(self):
         assert SETTINGS == ('battle_loadout',)
-        assert sorted(STRINGS['ru']) == sorted(STRINGS['en'])
+        defaults = SCHEMA.defaults
+        assert (defaults['x'], defaults['y'], defaults['align_x'], defaults['align_y'], defaults['pinned']) == (0, -64, 'center', 'bottom', True)
+        assert (-200, -66, 'center', 'bottom') in SCHEMA.retired
 
 
 if __name__ == '__main__':

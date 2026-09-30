@@ -1,7 +1,7 @@
 import { groupBy, sortBy } from 'remeda';
 
 import type { Rect } from '../../../../shared/lib/hud-geometry';
-import type { DockItem, LiftInput, LimitInput, RoofInput, StackDocksInput } from './dock.types';
+import type { DockItem, LiftInput, LimitInput, RoofInput, SettledPanelsInput, StackDocksInput } from './dock.types';
 
 import { clampRect } from '../../../../shared/lib/hud-geometry';
 
@@ -95,4 +95,10 @@ export const stackDocks = ({ items, screen, gap, reserve, ceiling }: StackDocksI
   });
 
   return placed;
+};
+
+export const settledPanels = ({ items, measured }: SettledPanelsInput): Set<string> => {
+  const waiting = new Set(items.filter((item) => item.dock !== null && !measured(item.id)).map((item) => item.dock?.group));
+
+  return new Set(items.filter((item) => measured(item.id) && !(item.dock && waiting.has(item.dock.group))).map((item) => item.id));
 };

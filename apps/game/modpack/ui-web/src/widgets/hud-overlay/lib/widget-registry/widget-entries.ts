@@ -19,7 +19,7 @@ export const WIDGET_ENTRIES = [
   defineHudWidget({ kind: 'marks_panel', schema: marksPanelSchema, Component: MarksPanelWidget }),
   defineHudWidget({ kind: 'consumables', schema: consumablesSchema, Component: ConsumablesWidget }),
   defineHudWidget({ kind: 'reload_timer', schema: reloadTimerSchema, Component: ReloadTimerWidget }),
-  defineHudWidget({ kind: 'battle_loadout', schema: battleLoadoutSchema, Component: BattleLoadoutWidget }),
+  defineHudWidget({ kind: 'battle_loadout', schema: battleLoadoutSchema, Component: BattleLoadoutWidget, pointer: true }),
   defineHudWidget({ kind: 'sixth_sense', schema: sixthSenseSchema, Component: SixthSenseWidget }),
   defineHudWidget({ kind: 'battle_clock', schema: battleClockSchema, Component: BattleClockWidget }),
   defineHudWidget({ kind: 'arty_meter', schema: artyMeterSchema, Component: ArtyMeterWidget }),

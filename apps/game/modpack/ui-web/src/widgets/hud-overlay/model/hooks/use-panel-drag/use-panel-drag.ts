@@ -20,17 +20,17 @@ const beyondSlop = (drag: OverlayDrag, event: PanelPress): boolean =>
 // Presses and wheel turns are read on the window and hit-tested against the panels' rects, never through the panel
 // elements: in edit mode the input area is the whole screen, and a widget's icons, plates or SVG under the pointer
 // then cannot swallow the press (or start the engine's own image drag).
-export const usePanelDrag = ({ edit, targets, onMoved, onScaled }: UsePanelDragInput) => {
+export const usePanelDrag = ({ edit, targets, onMoved, onScaled, report }: UsePanelDragInput) => {
   const [live, setLive] = useState<LiveRect | null>(null);
   const dragRef = useRef<OverlayDrag | null>(null);
   const lastRef = useRef<PanelPress | null>(null);
   const editRef = useRef(edit);
   const targetsRef = useRef(targets);
-  const callbacksRef = useRef({ onMoved, onScaled });
+  const callbacksRef = useRef({ onMoved, onScaled, report });
 
   editRef.current = edit;
   targetsRef.current = targets;
-  callbacksRef.current = { onMoved, onScaled };
+  callbacksRef.current = { onMoved, onScaled, report };
 
   const finish = (event: PanelPress): void => {
     const drag = dragRef.current;
@@ -86,6 +86,7 @@ export const usePanelDrag = ({ edit, targets, onMoved, onScaled }: UsePanelDragI
       }
 
       event.preventDefault();
+      callbacksRef.current.report('down');
       startRef.current({ id: target.id, press: event, rect: target.rect, button: target.button });
     };
 
@@ -112,6 +113,7 @@ export const usePanelDrag = ({ edit, targets, onMoved, onScaled }: UsePanelDragI
       }
 
       event.preventDefault();
+      callbacksRef.current.report('wheel');
 
       const next = wheelScale({ current: found.scale, deltaY: event.deltaY });
 

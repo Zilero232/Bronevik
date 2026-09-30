@@ -146,6 +146,18 @@ A new component: Event trackers (off by default).
 - Trading Caravan: your tokens and the time to the end of the event; no card outside it.
 - Only your own battles and data: the Triathlon rivals' places are only on the game's own event page.
 
+## arty_meter 0.1.2
+
+### ru
+
+- Новое место по умолчанию: в колонке слева от правого списка команд.
+- Панель, которую вы не двигали, переезжает с места по умолчанию прошлых версий на новое: оно больше не наезжает на списки команд, чат и миникарту на любом разрешении и масштабе интерфейса.
+
+### en
+
+- New default place: in the column left of the right team list.
+- A panel you never moved leaves the default place of earlier versions for the new one, which no longer covers the team lists, the chat or the minimap at any resolution and interface scale.
+
 ## arty_meter 0.1.1
 
 ### ru
@@ -167,6 +179,18 @@ A new component: Event trackers (off by default).
 ### en
 
 - Artillery meter: direct hits, splash, damaged modules, stuns and damage from artillery on your vehicle in battle (a 0-10 thermometer) and over the day; in the hangar, a list of recent battles. Only fire on your own vehicle, no positions or tracers.
+
+## platoon_points 0.1.2
+
+### ru
+
+- Новое место по умолчанию: в колонке справа от левого списка команд.
+- Панель, которую вы не двигали, переезжает с места по умолчанию прошлых версий на новое: оно больше не наезжает на списки команд, чат и миникарту на любом разрешении и масштабе интерфейса.
+
+### en
+
+- New default place: in the column right of the left team list.
+- A panel you never moved leaves the default place of earlier versions for the new one, which no longer covers the team lists, the chat or the minimap at any resolution and interface scale.
 
 ## platoon_points 0.1.1
 
@@ -214,6 +238,16 @@ A new component: Event trackers (off by default).
 
 - «Battle wounds»: the hits on your tank are recorded in battle (your own vehicle only) and shown in the hangar after it: the last battle's summary and, in the modpack window, a schematic from above (hull, turret, gun, running gear) with the hit points, the side, the outcome, the damage and who fired. The last battles are kept (up to 30), each can be deleted.
 
+## gun_arc 0.2.1
+
+### ru
+
+- Панель, которую вы не двигали, переезжает с места по умолчанию прошлых версий на новое: оно больше не наезжает на списки команд, чат и миникарту на любом разрешении и масштабе интерфейса.
+
+### en
+
+- A panel you never moved leaves the default place of earlier versions for the new one, which no longer covers the team lists, the chat or the minimap at any resolution and interface scale.
+
 ## gun_arc 0.2.0
 
 ### ru
@@ -247,6 +281,16 @@ A new component: Event trackers (off by default).
 ### en
 
 - A 15 m circle on the ground around your tank: always on or by a hotkey (Ctrl+Shift+B, Ctrl+Shift+C, F7, F8), four colours; gone when the tank is destroyed.
+
+## consumables 0.3.1
+
+### ru
+
+- Выключено по умолчанию: стандартная панель показывает то же. Если включить, стоит над рядом оборудования.
+
+### en
+
+- Off by default: the stock panel shows the same. When on, it sits above the equipment row.
 
 ## consumables 0.3.0
 
@@ -291,6 +335,18 @@ A new component: Event trackers (off by default).
 ### en
 
 - An «Armour on the site» button in the modpack window: opens the selected tank's 3D armour on triotmetki.ru.
+
+## received_hits 0.2.1
+
+### ru
+
+- Новое место по умолчанию: под отметкой справа от левого списка команд.
+- Панель, которую вы не двигали, переезжает с места по умолчанию прошлых версий на новое: оно больше не наезжает на списки команд, чат и миникарту на любом разрешении и масштабе интерфейса.
+
+### en
+
+- New default place: under the marks panel, right of the left team list.
+- A panel you never moved leaves the default place of earlier versions for the new one, which no longer covers the team lists, the chat or the minimap at any resolution and interface scale.
 
 ## received_hits 0.2.0
 
@@ -338,6 +394,22 @@ A new component: Event trackers (off by default).
 
 - A card after your tank is destroyed: who fired the last shot (or whom the kill feed named), the shell or the cause (fire, ram), the damage, the damaged modules and crew and the side of the hull as the game's hit indicator showed it. Nothing is drawn while the tank is alive; no positions, no trajectories.
 
+## battle_loadout 0.3.0
+
+### ru
+
+- Вместо строки названий — значки оборудования прямо над стандартной панелью снарядов и расходников, по центру с ней, на любом масштабе интерфейса.
+- Наведите курсор (Ctrl) на значок — подсказка скажет название предмета и что он даёт.
+- Отметки «+», модернизации и трофейного оборудования, ★ и рамка у предмета в слоте своей специализации.
+- Читается в бою прямо с вашей машины, заходить на танк в ангаре заранее не нужно. Включено по умолчанию; полевая модернизация и инструкции больше не показываются.
+
+### en
+
+- Equipment icons instead of a line of names, right above the stock shells and consumables panel and centred with it, at any interface scale.
+- Point the cursor (Ctrl) at an icon for a tooltip with the item's name and what it does.
+- The «+», modernized and trophy marks, a ★ and a frame on an item in a slot of its own specialisation.
+- Read in battle from your own vehicle, no need to select the tank in the hangar first. On by default; field modifications and directives are no longer shown.
+
 ## battle_loadout 0.2.1
 
 ### ru
@@ -371,6 +443,18 @@ A new component: Event trackers (off by default).
 ### en
 
 - Your tank's equipment in battle with the game's item icons (★: in a slot with its own bonus), field modifications and directives; a compact icon row or a detailed list by group, placed in the HUD editor.
+
+## personal_missions 0.2.1
+
+### ru
+
+- Новое место по умолчанию в бою: в колонке слева от правого списка команд, а не на левом списке.
+- Панель, которую вы не двигали, переезжает с места по умолчанию прошлых версий на новое: оно больше не наезжает на списки команд, чат и миникарту на любом разрешении и масштабе интерфейса.
+
+### en
+
+- New default place in battle: in the column left of the right team list, not on the left one.
+- A panel you never moved leaves the default place of earlier versions for the new one, which no longer covers the team lists, the chat or the minimap at any resolution and interface scale.
 
 ## personal_missions 0.2.0
 
@@ -464,6 +548,18 @@ A new component: Event trackers (off by default).
 
 - Five new one-colour centre marks of our own (dot, cross, dashed ring, brackets, diamond) and a choice of their colour: white, green, yellow, cyan, magenta, red.
 
+## personal_best 0.2.1
+
+### ru
+
+- Новое место по умолчанию: в колонке справа от левого списка команд, а не на нём.
+- Панель, которую вы не двигали, переезжает с места по умолчанию прошлых версий на новое: оно больше не наезжает на списки команд, чат и миникарту на любом разрешении и масштабе интерфейса.
+
+### en
+
+- New default place: in the column right of the left team list, not on it.
+- A panel you never moved leaves the default place of earlier versions for the new one, which no longer covers the team lists, the chat or the minimap at any resolution and interface scale.
+
 ## personal_best 0.2.0
 
 ### ru
@@ -492,6 +588,18 @@ A new component: Event trackers (off by default).
 - After a battle that beat a record, a card notification in the hangar and our sound.
 - Records come from the own tank dossier, the own battle results and the site's copy of them (`/mod/me/tanks`); when full, the tank not seen for the longest is forgotten.
 
+## session_goals 0.2.1
+
+### ru
+
+- Новое место по умолчанию в бою: в колонке слева от правого списка команд.
+- Панель, которую вы не двигали, переезжает с места по умолчанию прошлых версий на новое: оно больше не наезжает на списки команд, чат и миникарту на любом разрешении и масштабе интерфейса.
+
+### en
+
+- New default place in battle: in the column left of the right team list.
+- A panel you never moved leaves the default place of earlier versions for the new one, which no longer covers the team lists, the chat or the minimap at any resolution and interface scale.
+
 ## session_goals 0.2.0
 
 ### ru
@@ -518,6 +626,18 @@ A new component: Event trackers (off by default).
 - Goals from your site dashboard: progress in the hangar, a battle line (for an average-damage goal, the damage this battle needs) and a sound when the site marks a goal met.
 - Reads `/mod/me/goals` once bound, in the hangar; the server does not serve it yet (contract `contract/goals.schema.json`).
 
+## main_gun 0.2.1
+
+### ru
+
+- «Основной калибр» по умолчанию под полосой ХП команд, а не на правом списке команд.
+- Панель, которую вы не двигали, переезжает с места по умолчанию прошлых версий на новое: оно больше не наезжает на списки команд, чат и миникарту на любом разрешении и масштабе интерфейса.
+
+### en
+
+- «High Caliber» sits under the team HP strip by default, not on the right team list.
+- A panel you never moved leaves the default place of earlier versions for the new one, which no longer covers the team lists, the chat or the minimap at any resolution and interface scale.
+
 ## main_gun 0.2.0
 
 ### ru
@@ -539,6 +659,18 @@ A new component: Event trackers (off by default).
 ### en
 
 - The High Caliber counter: your damage against the medal threshold (20% of the enemy HP, at least 1,000), the team damage and your share.
+
+## battle_efficiency 0.2.1
+
+### ru
+
+- По умолчанию под полосой ХП команд, а не на правом списке команд.
+- Панель, которую вы не двигали, переезжает с места по умолчанию прошлых версий на новое: оно больше не наезжает на списки команд, чат и миникарту на любом разрешении и масштабе интерфейса.
+
+### en
+
+- Sits under the team HP strip by default, not on the right team list.
+- A panel you never moved leaves the default place of earlier versions for the new one, which no longer covers the team lists, the chat or the minimap at any resolution and interface scale.
 
 ## battle_efficiency 0.2.0
 
@@ -574,6 +706,16 @@ A new component: Event trackers (off by default).
 
 - Your consumables with their cooldowns and the shells left of each type on one movable line; cooldowns count by game time.
 
+## reload_timer 0.2.1
+
+### ru
+
+- Панель, которую вы не двигали, переезжает с места по умолчанию прошлых версий на новое: оно больше не наезжает на списки команд, чат и миникарту на любом разрешении и масштабе интерфейса.
+
+### en
+
+- A panel you never moved leaves the default place of earlier versions for the new one, which no longer covers the team lists, the chat or the minimap at any resolution and interface scale.
+
 ## reload_timer 0.2.0
 
 ### ru
@@ -593,6 +735,26 @@ A new component: Event trackers (off by default).
 ### en
 
 - Your gun's reload countdown with a bar and the shells in the magazine; your own gun only. It counts by game time and keeps pace with the reticle.
+
+## core 0.6.2
+
+### ru
+
+- В бою панели перетаскиваются прямо курсором: зажмите Ctrl, как обычно, и тяните панель, колесо меняет размер. Вторая клавиша больше не нужна; в ангаре по-прежнему с Alt.
+- С курсором в бою мод забирает мышь только над панелью под курсором: миникарта, списки команд и чат нажимаются как обычно.
+- Места панелей по умолчанию заново выверены по раскладке боевого интерфейса клиента в его собственных единицах, поэтому совпадают при любом масштабе интерфейса.
+- Панель, которую вы не двигали, переезжает с места по умолчанию прошлых версий на новое.
+- Окно настроек мода больше не прячет панели ангара, а панели при появлении не прыгают.
+- В otmetki.log пишется, видит ли страница курсор и мышь в бою.
+
+### en
+
+- In battle panels drag with the cursor itself: hold Ctrl as usual and drag a panel, the wheel resizes it. No second key any more; the hangar still uses Alt.
+- With the battle cursor shown the mod takes the mouse only over the panel under it: the minimap, the team lists and the chat click as usual.
+- The default panel places are measured again against the client's battle layout in its own units, so they hold at every interface scale.
+- A panel you never moved leaves the default place of earlier versions for the new one.
+- The mod settings window no longer hides the hangar panels, and panels no longer jump when they come back.
+- otmetki.log records whether the page sees the cursor and the mouse in battle.
 
 ## core 0.6.1
 
@@ -712,6 +874,16 @@ A new component: Event trackers (off by default).
 - Durable settings: the files a player cannot recreate are mirrored into `%APPDATA%\TriOtmetki`, and a missing or older copy in `mods/configs/otmetki` is restored on load.
 - Pinned Python 2.7 libraries: six, blinker, attrs, enum34.
 
+## companion 0.6.1
+
+### ru
+
+- «Оборудование в бою» включено по умолчанию, панель снарядов и расходников выключена (стандартная показывает то же); настройки, которые вы не меняли, переходят на новые значения один раз.
+
+### en
+
+- «Equipment in battle» is on by default and the consumables bar off (the stock panel shows the same); switches you never changed take the new defaults once.
+
 ## companion 0.6.0
 
 ### ru
@@ -789,6 +961,38 @@ A new component: Event trackers (off by default).
 - Binding to triotmetki.ru with a one-time code from the site; nothing is collected or sent before it.
 - After each own battle: the `personal` block of the battle results, MoE snapshots and distribution, queue times, the loadout and shots, sent in signed batches through an outbox that survives a restart and backs off on errors.
 - Per-feature data switches in `config.json`, the ModsSettingsAPI window as the fallback settings UI, and the streamer settings share (export, apply with a confirmation, restore).
+
+## ui 0.5.2
+
+### ru
+
+- Подсказка «Клавиша перемещения панелей в ангаре»: в бою достаточно Ctrl.
+- Страница боевых панелей: перетаскивание курсором в бою, подсказки над значками оборудования, панели не прыгают при появлении.
+
+### en
+
+- The «Key to move panels in the hangar» hint: in battle Ctrl is enough.
+- The battle panels page: dragging with the battle cursor, tooltips over equipment icons, panels no longer jump when they come back.
+
+## ui 0.5.1
+
+### ru
+
+- Окно настроек открывается по центру экрана в сохранённом размере и не уезжает за край, даже когда игра ставит окно не в угол экрана.
+- Окно снова перетаскивается за «///» и заголовок, меняет размер за край и уголок.
+- Колесо мыши прокручивает списки компонентов и страницу реплеев.
+- Esc закрывает окно, а меню игры по Esc не открывается.
+- Значки, которых нет в шрифте игры (★, →, ✓), в подсказках заменяются похожими, а не пропадают.
+- В otmetki.log пишется, какой размер экрана и окна видит страница и доходят ли до неё мышь, колесо и Esc.
+
+### en
+
+- The settings window opens centred on the screen at its saved size and no longer runs off the edge, even when the game places the window away from the screen corner.
+- The window can be dragged by «///» and the title again, and resized by its edge and corner.
+- The mouse wheel scrolls the component lists and the replays page.
+- Esc closes the window, and the game's Esc menu no longer opens.
+- Glyphs the game font lacks (★, →, ✓) are drawn with look-alikes in hints instead of going blank.
+- otmetki.log records the screen and window size the page sees and whether the mouse, the wheel and Esc reach it.
 
 ## ui 0.5.0
 
@@ -901,6 +1105,18 @@ A new component: Event trackers (off by default).
 
 - The Gameface settings window (OpenWG Gameface): a card per installed component built from its own schema, list pages, profiles (save, load, rename, export and import as a code) and the on-screen HUD editor.
 - Entry points: the «///» button in the hangar, a ModsList entry and the hotkey Ctrl+Shift+T.
+
+## marks_panel 0.3.2
+
+### ru
+
+- Новое место по умолчанию: справа от левого списка команд в любом его режиме.
+- Панель, которую вы не двигали, переезжает с места по умолчанию прошлых версий на новое: оно больше не наезжает на списки команд, чат и миникарту на любом разрешении и масштабе интерфейса.
+
+### en
+
+- New default place: right of the left team list in any of its modes.
+- A panel you never moved leaves the default place of earlier versions for the new one, which no longer covers the team lists, the chat or the minimap at any resolution and interface scale.
 
 ## marks_panel 0.3.1
 
@@ -1044,6 +1260,18 @@ A new component: Event trackers (off by default).
 
 - Opt-in, off by default: uploads the replays the game itself recorded of the player's own battles, matched by the replay header, private unless `publish_replays` is on. Never turns replay recording on; files above 50 MiB are refused.
 
+## damage_log 0.3.2
+
+### ru
+
+- «Последнее попадание» стоит над логом урона, а не у прицела, где его закрывали ленты событий.
+- Панель, которую вы не двигали, переезжает с места по умолчанию прошлых версий на новое: оно больше не наезжает на списки команд, чат и миникарту на любом разрешении и масштабе интерфейса.
+
+### en
+
+- «Last hit» sits above the damage log, not by the reticle where the ribbons covered it.
+- A panel you never moved leaves the default place of earlier versions for the new one, which no longer covers the team lists, the chat or the minimap at any resolution and interface scale.
+
 ## damage_log 0.3.1
 
 ### ru
@@ -1096,6 +1324,18 @@ A new component: Event trackers (off by default).
 - Palettes `classic`, `graphite`, `contrast`, `colorblind` (macros `{c_dealt}`, `{c_blocked}`, `{c_assisted}`, `{c_received}`) and our own damage-kind icons (`{icon}`).
 - Assist earned after death, while the camera follows an ally, still counts.
 
+## hit_log 0.2.2
+
+### ru
+
+- Новое место по умолчанию: слева от правого списка команд, а не поверх него.
+- Панель, которую вы не двигали, переезжает с места по умолчанию прошлых версий на новое: оно больше не наезжает на списки команд, чат и миникарту на любом разрешении и масштабе интерфейса.
+
+### en
+
+- New default place: left of the right team list, not over it.
+- A panel you never moved leaves the default place of earlier versions for the new one, which no longer covers the team lists, the chat or the minimap at any resolution and interface scale.
+
 ## hit_log 0.2.1
 
 ### ru
@@ -1127,6 +1367,18 @@ A new component: Event trackers (off by default).
 
 - In battle: each own hit on an enemy (penetration, critical, no penetration, ricochet and the rest) with damage, shell, crits and the target's HP after the hit, exactly as the enemy marker shows it; optionally grouped by target.
 - Outcome colour by palette (`{c_outcome}`: `classic`, `graphite`, `contrast`, `colorblind`); the target's HP is taken only from the player's own hit.
+
+## battle_clock 0.2.2
+
+### ru
+
+- Новое место по умолчанию: левее стандартного таймера боя во всю его ширину.
+- Панель, которую вы не двигали, переезжает с места по умолчанию прошлых версий на новое: оно больше не наезжает на списки команд, чат и миникарту на любом разрешении и масштабе интерфейса.
+
+### en
+
+- New default place: left of the stock battle timer across its full width.
+- A panel you never moved leaves the default place of earlier versions for the new one, which no longer covers the team lists, the chat or the minimap at any resolution and interface scale.
 
 ## battle_clock 0.2.1
 
@@ -1162,6 +1414,18 @@ A new component: Event trackers (off by default).
 
 - In battle: the local time, optionally the date, and the time left in the current arena period.
 
+## team_hp 0.4.0
+
+### ru
+
+- Полоса стоит ровно на месте стандартной панели счёта, у самого верхнего края экрана, и закреплена: её не сдвинуть случайно. Закрепление снимается в настройках.
+- Сдвиг, сохранённый прошлыми версиями, сбрасывается.
+
+### en
+
+- The strip sits exactly in the stock score strip's place at the very top edge and is pinned, so it cannot be moved by accident. Unpin it in the settings.
+- The offset saved by earlier versions is reset.
+
 ## team_hp 0.3.0
 
 ### ru
@@ -1193,6 +1457,16 @@ A new component: Event trackers (off by default).
 ### en
 
 - In battle: each team's HP against its maximum as bars and/or numbers, the frag score and the HP difference, from the values the client already shows on markers and team panels.
+
+## sixth_sense 0.2.1
+
+### ru
+
+- Панель, которую вы не двигали, переезжает с места по умолчанию прошлых версий на новое: оно больше не наезжает на списки команд, чат и миникарту на любом разрешении и масштабе интерфейса.
+
+### en
+
+- A panel you never moved leaves the default place of earlier versions for the new one, which no longer covers the team lists, the chat or the minimap at any resolution and interface scale.
 
 ## sixth_sense 0.2.0
 

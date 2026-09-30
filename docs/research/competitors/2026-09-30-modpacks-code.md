@@ -155,7 +155,42 @@ Findings:
 
 ## 9. Frameworks and libraries to adopt
 
-FRAMEWORKS_PLACEHOLDER
+Goal: write less custom code in the modpack. The deciding factors were licence (can a closed product redistribute it or depend on it), Lesta 1.45 evidence (present in the 1.45 packs), and maintenance.
+
+### Adopt (ranked)
+
+1. **Client-native tooltips and sounds from Gameface.** Use the calls OpenWG's `views.js` and `sound.js` make: `viewEnv.handleViewEvent` through `GFViewEventProxy` with `R.views.common.tooltip_window.simple_tooltip_content` for tooltips, and `engine.call('PlaySound')` for sounds. This gives the stock look and needs no tooltip code of our own. Already implemented in `ui` 0.6.0.
+2. **OpenWG Gameface, pinned at 1.2.2 (MIT).** Near_You still ships 1.1.6, so two versions can end up installed side by side. The manager should remove every other `net.openwg.gameface_*`. Note that OpenWG overwrites the client's `gui/gameface/js/index.js`.
+3. **Client resources by reference at runtime, never copied.** For example `img://` and `R.images…` URLs in CSS, the Warhelios font, and optionally `coui://gui/gameface/styles/default.css`. The files come from the player's own client, so no Lesta asset ships with us.
+4. **owg_python_compiler (MIT).** Reproducible `.pyc`; keep it in CI.
+5. **GUIFlash (MIT), ModsList 1.6.01 (MIT) and izeberg MSA.**
+   - GUIFlash stays as the HUD fallback.
+   - ModsList 1.6.01 becomes an optional dependency (§6).
+   - MSA has no licence file: optional only, never bundled.
+
+### Consider
+
+- **`openwg_sysinfo` and `openwg_loader.get_mod_ids()`** for problem reports (the list of installed mods and system info).
+  - `net.openwg.common` has no licence file, so we need the authors' written permission first.
+  - Its `openwg_feedback` Sentry reporting is on by default, which conflicts with our privacy and retention rules. Disable it or do not ship it.
+- **`openwg_network`** instead of [core/net/transport/runner.py](../../../apps/game/modpack/packages/core/net/transport/runner.py). Small gain.
+- **Client helpers in `client/` glue:** `CallbackDelayer` and `func_utils.CooldownCaller` instead of hand-written timers and throttles. `wg_async` does not exist in RU 1.45; use `th_async`, `BWUtil` or `adisp`.
+- **`@tanstack/virtual-core`** only if replay-list rows become variable height.
+- **Aslain Mod Menu** only if a Lesta `.mtmod` build appears.
+- **wotstat data-provider protocol** as an optional output for streamers.
+
+### Avoid
+
+| What | Why |
+| --- | --- |
+| XVM / XFW libs (`xfw.libs`, `xfw_loader`, `xfw_actionscript`) | GPL-3.0; they duplicate our `core/hooks` |
+| Battle Observer | GPL-3.0, and its EULA bans inclusion in modpacks |
+| `crosshairs_api` | obfuscated, no licence, reads reload data |
+| Aslain's MSA fork | no licence, WG only |
+| The client's React/MobX Gameface bundles and hashed CSS class names | break on every client patch |
+| `openwg.build`, `openwg.utils`, `wot.exports` | do not fit our build or the Tauri installer |
+| JS drag/resize libraries | conflict with Gameface hit-testing |
+| `@preact/signals` | duplicates nanostores |
 
 ## 10. Backlog from this study
 

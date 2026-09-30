@@ -1,57 +1,70 @@
 'use client';
 
-import { Download, ExternalLink, PackageOpen } from 'lucide-react';
+import { Download, ExternalLink, LayoutGrid } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { ROUTE_ANCHORS } from '@/shared/constants';
 import { Badge, buttonVariants } from '@/ui-kit';
 
 import { MOD_PAGE } from '../../../config';
-import { useModPage } from '../../../model/hooks';
-import { DownloadLink } from './components';
+import { useModDownloads } from '../../../model/hooks';
+import { DownloadLink } from '../DownloadLink';
 
 import s from './ModActions.module.scss';
 
 export const ModActions = () => {
   const t = useTranslations('mod.hero');
-  const { distribution, downloads } = useModPage();
+  const { distribution, isPreparing, manager, modpack, game } = useModDownloads();
 
   return (
     <div className={s.root}>
       <div className={s.buttons}>
         <DownloadLink
           hasShine
-          file={downloads.manager}
+          file={manager}
           fileName={distribution.managerFileName}
           href={distribution.managerUrl}
           icon={Download}
           label={t('download')}
           variant='primary'
         />
-        <DownloadLink
-          file={downloads.modpack}
-          fileName={distribution.packagesFileName}
-          href={distribution.packagesUrl}
-          icon={PackageOpen}
-          label={t('manual')}
-          variant='secondary'
-        />
-        {distribution.mostUrl ? (
-          <a className={buttonVariants({ variant: 'ghost', size: 'lg' })} href={distribution.mostUrl} rel='noreferrer' target='_blank'>
-            <ExternalLink aria-hidden size={MOD_PAGE.iconSize} />
-            {t('most')}
-          </a>
-        ) : (
-          <Badge tone='steel'>{t('mostPending')}</Badge>
-        )}
+        <a className={buttonVariants({ variant: 'secondary', size: 'lg' })} href={`#${ROUTE_ANCHORS.modFeatures}`}>
+          <LayoutGrid aria-hidden size={MOD_PAGE.iconSize} />
+          {t('inside')}
+        </a>
       </div>
       <div className={s.status}>
-        {downloads.isPreparing && (
+        {isPreparing && (
           <p className={s.note} role='status'>
             {t('preparing')}
           </p>
         )}
-        {downloads.manager && <p className={s.file}>{t('file', { file: distribution.managerFileName, ...downloads.manager })}</p>}
-        {downloads.modpack && <p className={s.file}>{t('manualFile', { file: distribution.packagesFileName, ...downloads.modpack })}</p>}
+        {manager && (
+          <p className={s.meta}>
+            <span className={s.part}>{t('file', manager)}</span>
+            {game && <span className={s.part}>{t('game', { game })}</span>}
+          </p>
+        )}
+        <p className={s.meta}>
+          {modpack && (
+            <span className={s.part}>
+              <a className={s.link} download={distribution.packagesFileName} href={distribution.packagesUrl} rel='noreferrer' target='_blank'>
+                {t('manual')}
+              </a>{' '}
+              {t('manualFile', { file: distribution.packagesFileName, ...modpack })}
+            </span>
+          )}
+          <span className={s.most}>
+            {distribution.mostUrl ? (
+              <a className={s.link} href={distribution.mostUrl} rel='noreferrer' target='_blank'>
+                {t('most')}
+                <ExternalLink aria-hidden size={MOD_PAGE.smallIconSize} />
+              </a>
+            ) : (
+              <Badge tone='steel'>{t('mostPending')}</Badge>
+            )}
+          </span>
+        </p>
       </div>
     </div>
   );

@@ -1,0 +1,1 @@
+export { ModTrust } from './ModTrust';

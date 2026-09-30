@@ -4,7 +4,7 @@ import type { SwitchRowProps } from './SwitchRow.types';
 
 import s from './SwitchRow.module.scss';
 
-export const SwitchRow = ({ title, setting, text, value }: SwitchRowProps) => (
+export const SwitchRow = ({ title, setting, text, value, tone }: SwitchRowProps) => (
   <div className={s.row}>
     <dt className={s.term}>
       <span className={s.name}>{title}</span>
@@ -12,7 +12,7 @@ export const SwitchRow = ({ title, setting, text, value }: SwitchRowProps) => (
     </dt>
     <dd className={s.description}>{text}</dd>
     <dd className={s.value}>
-      <Badge tone='neutral'>{value}</Badge>
+      <Badge tone={tone}>{value}</Badge>
     </dd>
   </div>
 );

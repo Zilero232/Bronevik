@@ -1,1 +1,1 @@
-export { getModpackStatus } from './modpack-release';
+export { getModpackReleaseNotes, getModpackStatus } from './modpack-release';

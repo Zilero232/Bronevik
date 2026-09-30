@@ -1,12 +1,19 @@
+@use '@/shared/styles/mixins' as *;
+
 .root {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-4);
+  @include stack(var(--space-4));
 }
 
-.note {
-  max-width: 44ch;
-  color: var(--color-text-dim);
-  font-size: var(--text-xs);
+.actions {
+  display: grid;
+  gap: var(--space-3);
+
+  @include from(xl) {
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+  }
+}
+
+.skeleton {
+  height: var(--control-h-lg);
 }

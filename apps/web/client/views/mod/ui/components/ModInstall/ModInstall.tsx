@@ -1,44 +1,47 @@
-'use client';
-
-import { KeySquare, LogIn } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Link } from '@/shared/i18n/navigation';
-import { buttonVariants, SectionHeader } from '@/ui-kit';
+import { Badge, SectionHeader } from '@/ui-kit';
 
-import { MOD_INSTALL_STEPS, MOD_PAGE } from '../../../config';
-import { useModPage } from '../../../model/hooks';
+import { MOD_INSTALL_PRESETS, MOD_INSTALL_STEPS, MOD_PAGE } from '../../../config';
+import { ModBind } from './components';
 
 import s from './ModInstall.module.scss';
 
 export const ModInstall = () => {
-  const t = useTranslations('mod');
-  const { isSignedIn, bindHref } = useModPage();
+  const t = useTranslations('mod.install');
 
   return (
     <section className={s.root}>
-      <SectionHeader title={t('install.title')} variant='display' />
+      <SectionHeader description={t('lead')} title={t('title')} variant='display' />
       <ol className={s.steps}>
-        {MOD_INSTALL_STEPS.map((step, index) => (
-          <li key={step} className={s.step}>
-            <span className={s.number}>{index + 1}</span>
-            <span className={s.body}>
-              <span className={s.title}>{t(`install.steps.${step}.title`)}</span>
-              <span className={s.text}>{t(`install.steps.${step}.text`)}</span>
+        {MOD_INSTALL_STEPS.map(({ id, icon: Icon }, index) => (
+          <li key={id} className={s.step}>
+            <span className={s.head}>
+              <span aria-hidden className={s.number}>
+                {index + 1}
+              </span>
+              <Icon aria-hidden className={s.icon} size={MOD_PAGE.featureIconSize} />
             </span>
+            <h3 className={s.title}>{t(`steps.${id}.title`)}</h3>
+            <p className={s.text}>{t(`steps.${id}.text`)}</p>
+            {id === 'pick' && (
+              <ul className={s.presets}>
+                {MOD_INSTALL_PRESETS.map((preset) => (
+                  <li key={preset}>
+                    <Badge tone='neutral'>{t(`presets.${preset}`)}</Badge>
+                  </li>
+                ))}
+              </ul>
+            )}
           </li>
         ))}
       </ol>
-      <div className={s.bind}>
-        <div className={s.bindCopy}>
-          <h3 className={s.bindTitle}>{t('bind.title')}</h3>
-          <p className={s.text}>{t('bind.text')}</p>
-        </div>
-        <Link className={buttonVariants({ variant: 'primary' })} href={bindHref}>
-          {isSignedIn ? <KeySquare aria-hidden size={MOD_PAGE.iconSize} /> : <LogIn aria-hidden size={MOD_PAGE.iconSize} />}
-          {isSignedIn ? t('bind.signedIn') : t('bind.signIn')}
-        </Link>
-      </div>
+      <p className={s.restart}>
+        <RotateCcw aria-hidden className={s.restartIcon} size={MOD_PAGE.iconSize} />
+        {t('restart')}
+      </p>
+      <ModBind />
     </section>
   );
 };

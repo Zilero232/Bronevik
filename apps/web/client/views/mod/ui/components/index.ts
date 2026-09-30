@@ -1,6 +1,10 @@
 export { ModActions } from './ModActions';
+export { ModChangelog } from './ModChangelog';
+export { ModCta } from './ModCta';
 export { ModFairPlay } from './ModFairPlay';
 export { ModFaq } from './ModFaq';
-export { ModFeatures } from './ModFeatures';
 export { ModInstall } from './ModInstall';
+export { ModManager } from './ModManager';
+export { ModShowcase } from './ModShowcase';
 export { ModSwitches } from './ModSwitches';
+export { ModTrust } from './ModTrust';

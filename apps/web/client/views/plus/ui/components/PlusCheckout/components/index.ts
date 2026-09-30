@@ -1,3 +1,4 @@
 export { CheckoutAction } from './CheckoutAction';
-export { PlanTable } from './PlanTable';
+export { PlanPicker } from './PlanPicker';
+export { PlusIncludes } from './PlusIncludes';
 export { PromoField } from './PromoField';

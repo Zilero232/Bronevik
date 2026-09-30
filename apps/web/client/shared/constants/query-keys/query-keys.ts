@@ -70,7 +70,8 @@ export const QUERY_KEYS = {
   tree: (nation: string) => ['tree', nation] as const,
   pulse: ['pulse'] as const,
   modpack: {
-    status: ['modpack', 'status'] as const
+    status: ['modpack', 'status'] as const,
+    changelog: (limit: number) => ['modpack', 'changelog', limit] as const
   },
   reference: {
     version: ['reference', 'version'] as const,

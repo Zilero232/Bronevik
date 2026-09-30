@@ -1,0 +1,13 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-4));
+
+  scroll-margin-top: calc(var(--header-offset) + var(--space-5));
+}
+
+.legend {
+  margin: 0;
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+}

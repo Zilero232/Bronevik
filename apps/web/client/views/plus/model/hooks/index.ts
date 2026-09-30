@@ -1,4 +1,5 @@
 export { useCheckoutAction } from './use-checkout-action';
+export { usePlanCard } from './use-plan-card';
 export { usePlusCheckoutForm } from './use-plus-checkout-form';
 export { usePlusOffers } from './use-plus-offers';
 export { usePlusPage } from './use-plus-page';

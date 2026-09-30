@@ -5,8 +5,8 @@
     "tile": "Services, block {index}"
   },
   "showcase": {
-    "title": "Mods inside",
-    "lead": "Modpack panels that work only with your own data and what the client already shows."
+    "title": "How it looks",
+    "lead": "Illustrations of the modpack panels, not screenshots: the numbers on them are made up."
   },
   "carousel": {
     "role": "carousel",
@@ -49,13 +49,13 @@
     "crosshair": {
       "kicker": "Mod",
       "title": "“Crosshairs”",
-      "lead": "Presets for the game's own reticle in arcade and sniper modes and <hl>17 centre marks</hl> to pick from.",
+      "lead": "Presets for the game's own reticle in arcade and sniper modes and <hl>20 centre marks</hl> to pick from.",
       "cta": "About the mod"
     },
     "gear": {
       "kicker": "Mod",
-      "title": "“Consumables and reload”",
-      "lead": "Your consumables with cooldowns, shells left and <hl>your own gun's reload timer</hl> in one place.",
+      "title": "“Equipment and reload”",
+      "lead": "Your equipment icons above the game's panel and <hl>your own gun's reload timer</hl> with the magazine.",
       "cta": "About the mod"
     },
     "hits": {

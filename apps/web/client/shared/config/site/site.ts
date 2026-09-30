@@ -24,7 +24,9 @@ export const SITE = {
 
 export const EXTERNAL_LINKS = {
   game: 'https://tanki.su',
-  lestaSupport: 'https://lesta.ru/support/ru/'
+  lestaSupport: 'https://lesta.ru/support/ru/',
+  lestaForbiddenMods: 'https://lesta.ru/support/ru/products/mt/article/15152/',
+  lestaFairPlayReport: 'https://tanki.su/ru/news/notifications/chestnaya-igra-leto-2026/'
 } as const;
 
 export const TELEGRAM_BOT = {

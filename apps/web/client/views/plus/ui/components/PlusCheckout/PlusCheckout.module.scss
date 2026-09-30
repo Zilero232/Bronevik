@@ -1,15 +1,59 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include stack(var(--space-3));
+  @include stack(var(--space-6));
+
+  scroll-margin-top: calc(var(--header-offset) + var(--space-4));
+
+  @include below(md) {
+    gap: var(--space-5);
+  }
 }
 
-.panel {
+.header {
+  @include stack(var(--space-2));
+
+  max-width: 60ch;
+}
+
+.eyebrow {
+  @include marked-label;
+
+  margin: 0;
+  color: var(--color-gold);
+}
+
+.title {
+  @include display(var(--display-md));
+
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.lead {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-md);
+  line-height: var(--leading-body);
+}
+
+.layout {
+  display: grid;
+  align-items: start;
+  gap: var(--space-5);
+  grid-template-columns: minmax(0, 1fr);
+
+  @include from(3xl) {
+    gap: var(--space-6);
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 20rem);
+  }
+}
+
+.main {
   @include panel;
   @include stack(var(--space-5));
 
-  max-width: 880px;
-  padding: var(--space-5);
+  padding: var(--space-5) var(--space-6) var(--space-6);
 
   @include below(md) {
     padding: var(--space-4);

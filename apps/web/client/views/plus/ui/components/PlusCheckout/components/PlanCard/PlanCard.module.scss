@@ -1,0 +1,180 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include media-card;
+  @include lift-hover;
+
+  display: grid;
+  overflow: visible;
+  min-height: var(--plan-height);
+  align-content: start;
+  padding: var(--space-5);
+  border: 1px solid var(--color-border-strong);
+  cursor: pointer;
+  gap: var(--space-2);
+  grid-template-areas:
+    'head'
+    'price'
+    'total'
+    'saving';
+
+  &[data-recommended='true'] {
+    border-color: color-mix(in srgb, var(--color-gold) 45%, var(--color-border-strong));
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--color-gold) 10%, transparent), transparent 55%), var(--surface-sheen), var(--color-surface);
+  }
+
+  &[data-selected='true'] {
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--color-gold) 16%, transparent), transparent 70%), var(--surface-sheen),
+      var(--color-surface-hover);
+  }
+
+  &:has(.radio:focus-visible) {
+    @include focus-ring;
+  }
+
+  @include below(xl) {
+    min-height: var(--plan-height);
+    align-content: center;
+    padding: var(--space-4);
+    gap: var(--space-3) var(--space-4);
+    grid-template-areas:
+      'head price'
+      'saving total';
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+}
+
+.frame {
+  position: absolute;
+  z-index: 1;
+  border: 2px solid var(--color-gold);
+  border-radius: inherit;
+  box-shadow: 0 0 0 4px var(--color-gold-soft);
+  inset: -1px;
+  pointer-events: none;
+}
+
+.flag {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: var(--space-4);
+  box-shadow: var(--elev-1);
+  transform: translateY(-50%);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  grid-area: head;
+}
+
+.radio {
+  @include sr-only;
+}
+
+.indicator {
+  display: inline-grid;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  border: 2px solid var(--color-border-control);
+  border-radius: var(--radius-full);
+  color: transparent;
+  place-items: center;
+
+  .root[data-selected='true'] & {
+    border-color: var(--color-gold);
+    background: var(--color-gold);
+    color: var(--color-gold-contrast);
+  }
+}
+
+.name {
+  @include heading(var(--text-lg));
+}
+
+.price {
+  display: flex;
+  align-items: baseline;
+  margin-top: var(--space-3);
+  gap: var(--space-2);
+  grid-area: price;
+
+  @include below(xl) {
+    flex-direction: column;
+    align-items: flex-end;
+    margin-top: 0;
+    gap: 0;
+  }
+}
+
+.amount {
+  @include numeric(var(--num-xl));
+
+  font-weight: 700;
+
+  .root[data-selected='true'] & {
+    color: var(--color-gold);
+  }
+
+  @include below(xl) {
+    font-size: var(--num-lg);
+  }
+}
+
+.unit {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+
+  @include below(xl) {
+    font-size: var(--text-xs);
+  }
+}
+
+.total {
+  @include numeric;
+
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  grid-area: total;
+
+  @include below(xl) {
+    align-self: center;
+    text-align: right;
+  }
+}
+
+.saving {
+  display: flex;
+  min-height: 22px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: var(--space-3);
+  gap: var(--space-2);
+  grid-area: saving;
+
+  @include below(xl) {
+    margin-top: 0;
+  }
+}
+
+.percent {
+  @include numeric;
+}
+
+.amountSaved {
+  @include numeric;
+
+  color: var(--color-gold);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.base {
+  color: var(--color-text-dim);
+  font-size: var(--text-sm);
+}

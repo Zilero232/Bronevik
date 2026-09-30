@@ -1,0 +1,49 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include well;
+
+  display: grid;
+  align-items: start;
+  padding: var(--space-4);
+  gap: var(--space-3);
+  grid-template-columns: auto minmax(0, 1fr);
+
+  &[data-closed='true'] {
+    border-color: color-mix(in srgb, var(--color-gold) 35%, var(--color-border));
+    background: color-mix(in srgb, var(--color-gold) 6%, var(--color-surface-sunken));
+  }
+}
+
+.icon {
+  color: var(--color-text-muted);
+
+  .root[data-closed='true'] & {
+    color: var(--color-gold);
+  }
+}
+
+.iconSkeleton {
+  width: 20px;
+  height: 20px;
+}
+
+.body {
+  @include stack(var(--space-2));
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  font-weight: 700;
+  letter-spacing: var(--tracking-display);
+  text-transform: uppercase;
+}
+
+.text {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  line-height: var(--leading-body);
+}

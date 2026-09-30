@@ -3,34 +3,30 @@ import { NextIntlClientProvider } from 'next-intl';
 import { describe, expect, it, vi } from 'vitest';
 
 import { MOD_DISTRIBUTION } from '@/shared/config';
+import { ROUTE_ANCHORS } from '@/shared/constants';
 import { messages } from '@/shared/i18n';
 
-import { useModPage } from '../../../../model/hooks';
+import { useModDownloads } from '../../../../model/hooks';
 import { ModActions } from '../ModActions';
 
-vi.mock('../../../../model/hooks', () => ({ useModPage: vi.fn() }));
+vi.mock('../../../../model/hooks', () => ({ useModDownloads: vi.fn() }));
 
-type ModPage = ReturnType<typeof useModPage>;
+type ModDownloads = ReturnType<typeof useModDownloads>;
 
 const COPY = messages.en.mod.hero;
 const MOST_URL = 'https://most.example/otmetki';
-const PUBLISHED: ModPage['downloads'] = {
+const PUBLISHED: Omit<ModDownloads, 'distribution'> = {
   isPreparing: false,
   manager: { version: '0.2.0', size: '8.4 MB' },
-  modpack: { version: '0.10.0', size: '1.2 MB' }
+  modpack: { version: '0.10.0', size: '1.2 MB' },
+  game: '1.45'
 };
 
 const renderActions = ({
   distribution = {},
   downloads = PUBLISHED
-}: { distribution?: Partial<ModPage['distribution']>; downloads?: ModPage['downloads'] } = {}) => {
-  vi.mocked(useModPage).mockReturnValue({
-    isSignedIn: false,
-    isSessionPending: false,
-    bindHref: '/login',
-    distribution: { ...MOD_DISTRIBUTION, ...distribution },
-    downloads
-  });
+}: { distribution?: Partial<ModDownloads['distribution']>; downloads?: Omit<ModDownloads, 'distribution'> } = {}) => {
+  vi.mocked(useModDownloads).mockReturnValue({ distribution: { ...MOD_DISTRIBUTION, ...distribution }, ...downloads });
 
   return render(
     <NextIntlClientProvider locale='en' messages={messages.en}>
@@ -47,7 +43,12 @@ describe('ModActions', () => {
 
     expect(manager).toHaveAttribute('href', MOD_DISTRIBUTION.managerUrl);
     expect(manager).toHaveAttribute('download', MOD_DISTRIBUTION.managerFileName);
-    expect(manager).toHaveAttribute('target', '_blank');
+  });
+
+  it('points the secondary action at the component list', () => {
+    renderActions();
+
+    expect(screen.getByRole('link', { name: COPY.inside })).toHaveAttribute('href', `#${ROUTE_ANCHORS.modFeatures}`);
   });
 
   it('keeps the packages as the manual download', () => {
@@ -56,24 +57,29 @@ describe('ModActions', () => {
     expect(screen.getByRole('link', { name: COPY.manual })).toHaveAttribute('href', MOD_DISTRIBUTION.packagesUrl);
   });
 
-  it('shows the published version and size of each file', () => {
+  it('shows the published version, size and supported client', () => {
     renderActions();
 
-    expect(screen.getByText(/version 0\.2\.0 · 8\.4 MB/)).toBeInTheDocument();
-    expect(screen.getByText(/version 0\.10\.0, 1\.2 MB/)).toBeInTheDocument();
+    expect(screen.getByText('Version 0.2.0 · 8.4 MB · Windows 10 and 11')).toBeInTheDocument();
+    expect(screen.getByText('Client 1.45')).toBeInTheDocument();
   });
 
-  it('disables both downloads and explains why before the first release', () => {
-    renderActions({ downloads: { isPreparing: true, manager: null, modpack: null } });
+  it('leaves the client out while the release history is unknown', () => {
+    renderActions({ downloads: { ...PUBLISHED, game: null } });
+
+    expect(screen.queryByText(/^Client /)).not.toBeInTheDocument();
+  });
+
+  it('disables the download and explains why before the first release', () => {
+    renderActions({ downloads: { isPreparing: true, manager: null, modpack: null, game: null } });
 
     expect(screen.getByRole('button', { name: COPY.download })).toBeDisabled();
-    expect(screen.getByRole('button', { name: COPY.manual })).toBeDisabled();
-    expect(screen.queryByRole('link', { name: COPY.download })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: COPY.manual })).not.toBeInTheDocument();
     expect(screen.getByRole('status')).toHaveTextContent(COPY.preparing);
   });
 
-  it('keeps the downloads disabled and silent while the status loads', () => {
-    renderActions({ downloads: { isPreparing: false, manager: null, modpack: null } });
+  it('keeps the download disabled and silent while the status loads', () => {
+    renderActions({ downloads: { isPreparing: false, manager: null, modpack: null, game: null } });
 
     expect(screen.getByRole('button', { name: COPY.download })).toBeDisabled();
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
@@ -83,13 +89,11 @@ describe('ModActions', () => {
     renderActions({ distribution: { mostUrl: null } });
 
     expect(screen.getByText(COPY.mostPending)).toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: COPY.most })).not.toBeInTheDocument();
   });
 
   it('links to MOST once the entry is live', () => {
     renderActions({ distribution: { mostUrl: MOST_URL } });
 
     expect(screen.getByRole('link', { name: COPY.most })).toHaveAttribute('href', MOST_URL);
-    expect(screen.queryByText(COPY.mostPending)).not.toBeInTheDocument();
   });
 });

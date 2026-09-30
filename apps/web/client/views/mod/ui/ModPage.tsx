@@ -4,45 +4,70 @@ import { OtmetkiLogoIcon } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
-import { Band, PageHero } from '@/ui-kit';
+import { Band, KeyFigure, PageHero, Reveal } from '@/ui-kit';
 import { PromoShowcase } from '@/widgets/promo/promo-banners';
 
 import { MOD_PAGE } from '../config';
-import { ModActions, ModFairPlay, ModFaq, ModFeatures, ModInstall, ModSwitches } from './components';
+import { useModFigures } from '../model/hooks';
+import { ModActions, ModChangelog, ModCta, ModFairPlay, ModFaq, ModInstall, ModManager, ModShowcase, ModSwitches, ModTrust } from './components';
 
 import s from './ModPage.module.scss';
 
 export const ModPage = () => {
   const t = useTranslations('mod.hero');
+  const figures = useModFigures();
 
   return (
     <div className={s.root}>
       <PageHero
+        figures={
+          <>
+            <KeyFigure label={t('figures.components')} value={figures.components} variant='compact' />
+            <KeyFigure label={t('figures.presets')} value={figures.presets} variant='compact' />
+            <KeyFigure label={t('figures.price')} value={figures.price} variant='compact' />
+          </>
+        }
         actions={<ModActions />}
         art={{ kind: 'emblem', glyph: <OtmetkiLogoIcon size={MOD_PAGE.heroGlyph} /> }}
         breadcrumbs={[{ label: t('home'), href: ROUTES.home }, { label: t('crumb') }]}
         eyebrow={t('eyebrow')}
-        lead={t('lead')}
+        lead={t('lead', { count: figures.components })}
         title={t('title')}
       />
       <div className={s.section}>
-        <PromoShowcase />
+        <ModTrust />
       </div>
+      <Reveal className={s.section}>
+        <PromoShowcase />
+      </Reveal>
       <div className={s.section}>
-        <ModFeatures />
+        <ModShowcase />
       </div>
       <Band tone='raised'>
-        <ModFairPlay />
+        <Reveal>
+          <ModFairPlay />
+        </Reveal>
       </Band>
-      <div className={s.section}>
+      <Reveal className={s.section}>
         <ModInstall />
-      </div>
+      </Reveal>
       <Band tone='deep'>
-        <ModSwitches />
+        <Reveal>
+          <ModManager />
+        </Reveal>
       </Band>
-      <div className={s.section}>
+      <Reveal className={s.section}>
+        <ModSwitches />
+      </Reveal>
+      <Reveal className={s.section}>
+        <ModChangelog />
+      </Reveal>
+      <Reveal className={s.section}>
         <ModFaq />
-      </div>
+      </Reveal>
+      <Reveal className={s.section}>
+        <ModCta />
+      </Reveal>
     </div>
   );
 };

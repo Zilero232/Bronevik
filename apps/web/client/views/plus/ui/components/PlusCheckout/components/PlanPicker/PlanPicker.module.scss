@@ -1,0 +1,33 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  padding: 0;
+  border: 0;
+  margin: 0;
+  min-inline-size: 0;
+}
+
+.legend {
+  @include sr-only;
+}
+
+.grid {
+  --plan-height: 10.25rem;
+
+  display: grid;
+  padding-top: var(--space-3);
+  gap: var(--space-4);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  @include below(xl) {
+    --plan-height: 6.625rem;
+
+    gap: var(--space-5);
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.skeleton {
+  height: var(--plan-height);
+  border-radius: var(--radius-lg);
+}

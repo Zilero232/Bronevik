@@ -1,1 +1,1 @@
-export { type ModpackAvailability, useModpackAvailability } from './model/hooks';
+export { type ModpackAvailability, useModpackAvailability, useModpackChangelog } from './model/hooks';

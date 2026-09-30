@@ -5,17 +5,24 @@
 }
 
 .steps {
-  @include grid-columns(4, $below-3xl: 2, $below-md: 1);
+  @include grid-columns(3, $below-2xl: 1);
   @include list-reset;
+
+  counter-reset: none;
 }
 
 .step {
   @include panel;
+  @include stack(var(--space-2));
 
-  display: flex;
-  align-items: baseline;
   padding: var(--space-4);
-  gap: var(--space-3);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-1);
 }
 
 .number {
@@ -24,7 +31,6 @@
   display: inline-flex;
   width: 32px;
   height: 32px;
-  flex-shrink: 0;
   align-items: center;
   justify-content: center;
   border: 1px solid var(--color-accent);
@@ -32,12 +38,14 @@
   color: var(--color-accent);
 }
 
-.body {
-  @include stack(var(--space-1));
+.icon {
+  color: var(--color-text-dim);
 }
 
 .title {
-  font-weight: 600;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
 }
 
 .text {
@@ -47,26 +55,27 @@
   line-height: var(--leading-body);
 }
 
-.bind {
-  @include panel;
-
+.presets {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-4);
-  border-left: 3px solid var(--color-accent);
-  gap: var(--space-4);
+  margin-top: var(--space-1);
+  gap: var(--space-2);
+
+  @include list-reset;
 }
 
-.bindCopy {
-  @include stack(var(--space-1));
-
-  max-width: 70ch;
-}
-
-.bindTitle {
+.restart {
+  display: flex;
+  align-items: flex-start;
   margin: 0;
-  font-family: var(--font-display);
-  font-size: var(--text-lg);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  gap: var(--space-2);
+  line-height: var(--leading-body);
+}
+
+.restartIcon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--color-gold);
 }

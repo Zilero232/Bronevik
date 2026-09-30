@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl';
 
 import { SectionHeader } from '@/ui-kit';
 
-import { MOD_SWITCHES, MOD_TUNABLES } from '../../../config';
+import { MOD_SWITCH_TONE, MOD_SWITCHES, MOD_TUNABLES } from '../../../config';
 import { SwitchRow } from './components';
 
 import s from './ModSwitches.module.scss';
@@ -14,8 +14,15 @@ export const ModSwitches = () => {
     <section className={s.root}>
       <SectionHeader description={t('lead')} title={t('title')} variant='display' />
       <dl className={s.list}>
-        {MOD_SWITCHES.map(({ id, setting }) => (
-          <SwitchRow key={id} setting={setting} text={t(`items.${id}.text`)} title={t(`items.${id}.title`)} value={t('on')} />
+        {MOD_SWITCHES.map(({ id, setting, value }) => (
+          <SwitchRow
+            key={id}
+            setting={setting}
+            text={t(`items.${id}.text`)}
+            title={t(`items.${id}.title`)}
+            tone={MOD_SWITCH_TONE[value]}
+            value={t(`values.${value}`)}
+          />
         ))}
         {MOD_TUNABLES.map(({ id, setting, value }) => (
           <SwitchRow
@@ -23,6 +30,7 @@ export const ModSwitches = () => {
             setting={setting}
             text={t(`tunables.${id}.text`)}
             title={t(`tunables.${id}.title`)}
+            tone='neutral'
             value={t(`tunables.${id}.value`, { value })}
           />
         ))}

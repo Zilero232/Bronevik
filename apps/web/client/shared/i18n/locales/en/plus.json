@@ -84,20 +84,22 @@
     "meters": "Monthly allowances renew on the 1st at 00:00 Moscow time. Without signing in, 3D armor covers {armor, plural, one {# vehicle} other {# vehicles}} a month."
   },
   "checkout": {
-    "title": "Plan",
-    "description": "Savings are counted against the monthly price.",
+    "title": "Choose your term",
+    "description": "One Plus, three billing terms. The longer the term, the cheaper each month: savings are counted against the monthly price.",
     "planLabel": "Subscription term",
     "plans": {
       "monthly": "Month",
       "quarterly": "Quarter",
       "yearly": "Year"
     },
-    "unavailable": "Pricing is not available yet",
-    "columns": {
-      "perMonth": "Per month",
-      "saving": "Saving"
+    "plan": {
+      "perMonth": "per month",
+      "total": "{price} for {months, plural, =1 {one month} other {# months}}",
+      "savingBadge": "−{percent}",
+      "savingAmount": "save {amount}",
+      "basePrice": "base price"
     },
-    "savingValue": "{amount} · −{percent}%",
+    "unavailable": "Pricing is not available yet",
     "failed": "Couldn't open the payment page. Please try again.",
     "promo": {
       "label": "Promo code",
@@ -115,8 +117,10 @@
       "notePlus": "Plus is already active — manage the term, card and auto-renew in your account.",
       "trial": "Try {days, plural, one {# day} other {# days}} free",
       "trialPending": "Starting…",
-      "closed": "Payments soon",
-      "closedNote": "Payments open soon. For now you can start the trial or redeem a promo code."
+      "closedNote": "Meanwhile, start the trial or redeem a promo code — and be the first to hear when payments open.",
+      "guestNote": "Sign in with Lesta ID — we never see your password. Once signed in, start a {days, plural, one {#-day} other {#-day}} trial with no card or redeem a promo code.",
+      "closedTitle": "Payments open soon",
+      "promo": "Redeem a promo code"
     },
     "recommended": "Best value",
     "notify": {
@@ -125,6 +129,10 @@
       "enabled": "We will let you know once checkout opens",
       "disabled": "Checkout alert turned off",
       "failed": "Could not save the setting"
+    },
+    "includes": {
+      "title": "What Plus includes",
+      "free": "Profiles, marks and the core stats stay free for everyone — with Plus or without."
     }
   },
   "faq": {

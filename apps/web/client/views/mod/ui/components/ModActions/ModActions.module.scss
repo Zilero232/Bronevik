@@ -1,7 +1,7 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include stack(var(--space-2));
+  @include stack(var(--space-3));
 }
 
 .buttons {
@@ -9,21 +9,60 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-3);
+
+  @include below(xs) {
+    > * {
+      flex: 1 1 100%;
+    }
+  }
 }
 
 .status {
-  @include stack(var(--space-2));
+  @include stack(var(--space-1));
 
-  min-height: calc(2lh + var(--space-2));
-  font-family: var(--font-mono);
+  min-height: calc(2lh + var(--space-1));
   font-size: var(--text-xs);
+
+  @include below(md) {
+    min-height: calc(4lh + var(--space-1));
+  }
 }
 
-.file {
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   margin: 0;
   color: var(--color-text-muted);
   font-family: var(--font-mono);
-  font-size: var(--text-xs);
+  gap: var(--space-1) var(--space-3);
+}
+
+.part {
+  & + &:before {
+    color: var(--color-text-dim);
+    content: '·';
+    margin-inline-end: var(--space-2);
+  }
+}
+
+.most {
+  display: inline-flex;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text);
+  gap: var(--space-1);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--color-text) 35%, transparent);
+  text-underline-offset: 3px;
+  vertical-align: baseline;
+
+  &:hover {
+    color: var(--color-accent);
+  }
 }
 
 .note {

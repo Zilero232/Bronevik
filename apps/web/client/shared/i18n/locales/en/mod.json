@@ -1,102 +1,385 @@
 {
   "meta": {
-    "title": "Three Marks mod — download",
-    "description": "The Mir Tankov modpack: MoE in battle, damage log, sixth sense lamp, replay manager and every battle on the site. Your own data only, fair play by design."
+    "title": "Three Marks modpack — download the manager",
+    "description": "A free Mir Tankov modpack: marks in battle, damage log, session stats, a replay manager and dozens more components. Your own data only, fair play by design, no ads."
   },
   "hero": {
     "home": "Home",
-    "crumb": "Mod",
-    "eyebrow": "Companion mod",
-    "title": "Three Marks mod",
-    "lead": "Your marks percentage in battle, a damage log, the sixth sense lamp, a replay manager and dozens more battle and hangar panels, with every battle result on the site. From your own data only.",
+    "crumb": "Modpack",
+    "eyebrow": "Modpack for Mir Tankov",
+    "title": "Three Marks modpack",
+    "lead": "Your marks percentage right in battle, a damage log, session stats in the hangar and a replay manager — {count} components that work only with your own data. One app installs and updates them.",
     "download": "Download the manager",
-    "manual": "Download the packages manually",
+    "inside": "What's inside",
+    "manual": "Packages by hand",
     "most": "Open on MOST",
-    "preparing": "The first release is on its way — downloads open as soon as the files are published.",
     "mostPending": "Coming to MOST",
-    "file": "{file} · version {version} · {size} · Windows 10 and 11 · finds the client and the mods folder itself",
-    "manualFile": "Manual: put {file} (version {version}, {size}) into mods/'<'client version'>'/"
+    "preparing": "The first release is on its way — the button works as soon as the files are on the server.",
+    "file": "Version {version} · {size} · Windows 10 and 11",
+    "game": "Client {game}",
+    "manualFile": "{file}, version {version}, {size} — into mods/'<'client version'>'/",
+    "figures": {
+      "components": "components",
+      "presets": "ready-made sets",
+      "price": "no subscription, no ads"
+    }
   },
-  "features": {
-    "title": "What the mod does",
+  "trust": {
+    "label": "Why you can trust the modpack",
     "items": {
-      "results": {
-        "title": "Battle results on the site",
-        "text": "After a battle the mod sends your results: damage, assist, spotting, kills and XP. Sessions and analytics update right away, without waiting for Lesta's stats update."
+      "fairPlay": {
+        "title": "Fair play",
+        "text": "Nothing about enemies beyond what the client shows: no enemy reloads, no aiming help."
+      },
+      "free": {
+        "title": "Free, no ads",
+        "text": "Every component is free. The modpack does not need a Plus subscription."
+      },
+      "lestaId": {
+        "title": "No passwords",
+        "text": "We never ask for your game password: you sign in to the site with Lesta ID, and the mod binds with a one-time code."
+      },
+      "control": {
+        "title": "Everything switches off",
+        "text": "Each component turns on separately, and the manager takes a backup before every update."
+      }
+    }
+  },
+  "showcase": {
+    "title": "What's inside",
+    "lead": "{count} components in five sections. The core, the companion and the settings window always come along; the rest is your pick.",
+    "legend": "“Default” means the component is in the “Recommended” set the manager offers first.",
+    "tabsLabel": "Modpack sections",
+    "default": "Default",
+    "context": {
+      "battle": "Battle",
+      "hangar": "Hangar",
+      "any": "Battle and hangar"
+    },
+    "groups": {
+      "battle": {
+        "title": "Battle",
+        "lead": "Battle interface panels: your damage, your hits and what the client already shows."
+      },
+      "hangar": {
+        "title": "Hangar",
+        "lead": "Hangar conveniences that save clicks between battles."
       },
       "marks": {
-        "title": "Marks progress",
-        "text": "Records the marks percentage and moving average damage of your tanks — the site builds thresholds, projections and history from it."
+        "title": "Marks and stats",
+        "lead": "Everything about marks and your form — in battle, in the hangar and on the site."
       },
-      "panel": {
-        "title": "In-battle marks panel",
-        "text": "Current percentage, the projection after this battle and the damage still needed for the next mark."
+      "replays": {
+        "title": "Replays",
+        "lead": "Your replays in the mod window and on the site."
       },
-      "session": {
-        "title": "Hangar session",
-        "text": "Battles, win rate, average damage and WN8 for the current play session."
+      "streamers": {
+        "title": "For streamers",
+        "lead": "Streamer mode, a clock and records. The manager has a ready-made “Streamer” set with the panels viewers like to see."
       }
+    },
+    "streamerPage": "Everything for streamers",
+    "components": {
+      "damage_log": {
+        "title": "Damage log",
+        "text": "Dealt, blocked and assisted damage with the shell type, plus a “last hit” pop-up."
+      },
+      "hit_log": {
+        "title": "Hit log",
+        "text": "Your hits: the target, the damage and the HP it has left."
+      },
+      "received_hits": {
+        "title": "Hits on you",
+        "text": "Who fired, which shell and how it ended: penetration, crit, no penetration or ricochet."
+      },
+      "team_hp": {
+        "title": "Team HP and score",
+        "text": "Total team HP and the score in place of the stock strip, optionally a bar per tank."
+      },
+      "sixth_sense": {
+        "title": "Sixth sense lamp",
+        "text": "A big icon and a sound when the skill fires. Replaces the stock lamp."
+      },
+      "reload_timer": {
+        "title": "Gun reload",
+        "text": "Your own gun's reload countdown with a bar, and the shells left in the clip."
+      },
+      "battle_loadout": {
+        "title": "Equipment in battle",
+        "text": "Equipment, directives and the field modification above the shell bar, with a tooltip on hover."
+      },
+      "gun_arc": {
+        "title": "Gun traverse",
+        "text": "How many degrees your gun still turns left and right. Only on vehicles with limited traverse."
+      },
+      "death_card": {
+        "title": "Death card",
+        "text": "Who finished you, with what and for how much, and which modules and crew were hit."
+      },
+      "bush_circle": {
+        "title": "15 m circle",
+        "text": "A circle on the ground: move further from the bush and your shot gives you away. On a key or always."
+      },
+      "arty_meter": {
+        "title": "Artillery meter",
+        "text": "How much artillery hit you: direct hits, splashes, stuns and damage, per battle and per day."
+      },
+      "platoon_points": {
+        "title": "Platoon points",
+        "text": "Points like in a platoon tournament: for damage, assist, kills and survival, by your own rules."
+      },
+      "crosshair": {
+        "title": "Crosshairs",
+        "text": "Presets of the stock reticle, the server reticle and 20 centre markers to pick from."
+      },
+      "camera": {
+        "title": "Zoom and camera",
+        "text": "Camera presets, sniper zoom and stabilisation — the game's own settings in one click."
+      },
+      "minimap": {
+        "title": "Minimap",
+        "text": "Size, opacity, vehicle labels and your view circles — only what the game's settings offer."
+      },
+      "hud_layouts": {
+        "title": "Layout per battle type",
+        "text": "Its own panels for random battles, Onslaught, Frontline and events. Switches by itself."
+      },
+      "chat_filter": {
+        "title": "Chat filter",
+        "text": "Timestamps on messages; hides repeats, flood, command spam and the words you pick."
+      },
+      "battle_sounds": {
+        "title": "Event sounds",
+        "text": "Your own sounds for fire, crits, crew stun, first blood and kills. Needs a sound mod with Wwise events."
+      },
+      "hangar_tweaks": {
+        "title": "Hangar tweaks",
+        "text": "A one- or two-row carousel and quick actions: demount equipment and the style, crew to barracks."
+      },
+      "hangar_info": {
+        "title": "Clock and server",
+        "text": "Time, server, ping and online in the hangar corner, crew XP to the next skill."
+      },
+      "hangar_cleaner": {
+        "title": "Clean hangar",
+        "text": "No promo teaser and no offer banners."
+      },
+      "notification_filter": {
+        "title": "Notification filter",
+        "text": "Hides ads, sales and auctions in the notification centre."
+      },
+      "auto_resupply": {
+        "title": "Auto-resupply",
+        "text": "Repairs, shells, consumables and directives with one button — for a tank or the whole hangar."
+      },
+      "battle_hits": {
+        "title": "Battle wounds",
+        "text": "Where you were hit: a tank diagram with the hits and a list of side, result and damage."
+      },
+      "personal_missions": {
+        "title": "Personal missions helper",
+        "text": "The conditions of your active missions, in the hangar and as a line in battle."
+      },
+      "platoon_helper": {
+        "title": "Platoon helper",
+        "text": "Who in the platoon pressed “Ready”, and your platoon battles this session."
+      },
+      "comp7_helper": {
+        "title": "Onslaught divisions",
+        "text": "Your rating, division, points to the next one and the Champion and Legend thresholds."
+      },
+      "event_trackers": {
+        "title": "Event trackers",
+        "text": "The Triathlon round and the Trading Caravan tokens while the event runs."
+      },
+      "tilt_guard": {
+        "title": "Tilt guard",
+        "text": "Suggests a break after a losing streak or a long session."
+      },
+      "marks_panel": {
+        "title": "Marks in battle",
+        "text": "The percentage at the start and the forecast after, damage to 65, 85 and 95 % and battles to the next mark."
+      },
+      "hangar_marks": {
+        "title": "Marks in the hangar",
+        "text": "For the selected tank: the percentage, damage per battle to each mark and a forecast at your pace."
+      },
+      "marks_history": {
+        "title": "Marks history",
+        "text": "The percentage after every battle, the trend and the date of each mark."
+      },
+      "hangar_ratings": {
+        "title": "My ratings",
+        "text": "WN8, EFF, Bronya Index and average damage from the site — per account, session and tank."
+      },
+      "session_stats": {
+        "title": "Session in the hangar",
+        "text": "Battles, win rate, average damage and WN8 for the session, with a strip of the last 10 battles."
+      },
+      "battle_results": {
+        "title": "Battle results",
+        "text": "A summary after every battle: damage, assist, economy after repairs, shots and marks."
+      },
+      "battle_efficiency": {
+        "title": "Battle efficiency",
+        "text": "This battle's WN8 and your damage against your own average on the tank."
+      },
+      "main_gun": {
+        "title": "High Caliber",
+        "text": "How much damage you still need for the medal, and when it is out of reach."
+      },
+      "session_goals": {
+        "title": "Goals from the site",
+        "text": "Goals from your account: progress in the hangar, a line in battle and a sound when one is done."
+      },
+      "replay_manager": {
+        "title": "Replay manager",
+        "text": "All your replays with map, tank and result: search, filters, playback from the hangar and upload to the site."
+      },
+      "replay_upload": {
+        "title": "Replay auto-upload",
+        "text": "Uploads the replays of your battles to the site. Off until you turn it on."
+      },
+      "streamer_mode": {
+        "title": "Streamer mode",
+        "text": "A key hides every mod panel for OBS scenes; the private mode hides the chat and your numbers."
+      },
+      "battle_clock": {
+        "title": "Clock",
+        "text": "The time of day in battle and in the hangar, optionally in place of the battle timer."
+      },
+      "personal_best": {
+        "title": "Personal best",
+        "text": "Your damage record on the tank during the battle, and a card with a sound when you beat it."
+      }
+    },
+    "base": {
+      "core": "Core",
+      "companion": "Companion",
+      "ui": "In-game window"
     }
   },
   "fairPlay": {
     "title": "Fair play",
-    "lead": "The mod follows the Lesta fair play policy: it reads only your own data and never helps in battle.",
-    "readsTitle": "What it reads",
-    "neverTitle": "What it never does",
+    "lead": "Lesta punishes mods that reveal enemies, help aiming or change vehicle stats. The modpack has none of that and never will: the manager says what each component reads.",
+    "readsTitle": "What the modpack reads",
     "reads": {
       "results": "The personal block of your battle results",
-      "dossier": "Your vehicle dossier: marks and moving average damage",
-      "feedback": "Your damage and assist — the same events the stock damage log shows",
-      "queue": "Your time in the queue",
-      "loadout": "Equipment, consumables and crew of your tank in the hangar"
+      "dossier": "Your tanks' dossier: marks and average damage",
+      "feedback": "Your damage and assist — the same events the stock log shows",
+      "queue": "Time in the queue",
+      "loadout": "Your tank's equipment, consumables and crew in the hangar"
     },
+    "neverTitle": "What the modpack never does",
     "never": {
-      "enemies": "Enemy positions or spotting beyond the stock client",
-      "reload": "Enemy reload timers",
-      "aim": "Aim, dispersion or lead markers",
-      "allies": "Ally spotting markers",
-      "others": "Other players’ data from battle results"
+      "enemies": "Shows no enemies or spotting beyond the client",
+      "reload": "Tracks no enemy reloads",
+      "aim": "Gives no aiming, dispersion or lead hints",
+      "allies": "Puts no ally spotting markers",
+      "stats": "Changes no vehicle stats and no object transparency",
+      "others": "Sends no other players' data from battle results"
+    },
+    "bans": {
+      "label": "accounts",
+      "text": "Lesta blocked for forbidden mods in a single month.",
+      "tiers": {
+        "week": "for 7 days — a first offence",
+        "month": "for 30 days — a second one",
+        "forever": "for good — a third one"
+      },
+      "source": "Lesta's report on tanki.su",
+      "rules": "Which mods are forbidden"
     }
   },
   "install": {
     "title": "How to install",
+    "lead": "Three steps. The manager does the rest.",
     "steps": {
       "download": {
         "title": "Download the manager",
-        "text": "Get the installer with the “Download the manager” button at the top of the page. It is not code-signed, so Windows may show a warning: “More info” → “Run anyway”."
+        "text": "An installer for Windows 10 and 11. It has no code-signing certificate yet, so Windows may warn you: click “More info” → “Run anyway”."
       },
-      "install": {
-        "title": "Install the modpack",
-        "text": "The manager finds your Mir Tankov client, offers a set of components and puts them into mods/'<'client version'>'/. After a game patch it moves the modpack into the new folder itself."
+      "pick": {
+        "title": "Pick a set",
+        "text": "The manager finds Mir Tankov by itself. Take a ready-made set or tick the components by hand."
       },
-      "launch": {
-        "title": "Start the game",
-        "text": "The mod window appears in the mod settings in the hangar."
+      "play": {
+        "title": "Install and play",
+        "text": "The manager takes a backup before installing. The Three Marks window opens from a button in the bottom-right corner of the hangar."
+      }
+    },
+    "presets": {
+      "recommended": "Recommended",
+      "minimal": "Minimal (FPS)",
+      "streamer": "Streamer",
+      "custom": "Custom"
+    },
+    "restart": "On the first start the game may restart once — that is how the OpenWG Gameface library hooks up the mod window."
+  },
+  "bind": {
+    "title": "Bind the mod to the site",
+    "text": "Unbound, the mod works in the game but sends nothing. Once bound, your battles, marks and sessions show up on the site, and your ratings and goals in the hangar. The code is single-use; bound computers are listed in your account.",
+    "signedIn": "Get a code",
+    "signIn": "Sign in with Lesta ID"
+  },
+  "manager": {
+    "open": "Open in the manager",
+    "hint": "Nothing opened? <link>Install the Three Marks manager</link> and click again."
+  },
+  "managerApp": {
+    "title": "A manager, not an installer",
+    "lead": "It stays with you after the install: it turns components on and off without reinstalling and keeps an eye on patches.",
+    "items": {
+      "sets": {
+        "title": "Sets and builds",
+        "text": "Three ready-made sets and up to 12 of your own. Share them as a code or a file."
       },
-      "bind": {
-        "title": "Bind your account",
-        "text": "Get a one-time code in your account and enter it in the mod window. Nothing is sent before binding."
+      "profiles": {
+        "title": "Settings profiles",
+        "text": "Your panel settings in a profile: save, switch, send to a friend as a code or a link."
+      },
+      "sync": {
+        "title": "Sync with the site",
+        "text": "Sets and profiles are kept on the site, so a new computer does not lose them. Syncs on a button."
+      },
+      "patches": {
+        "title": "Updates after a patch",
+        "text": "A patch is out — the manager moves the modpack to the new folder or installs a compatible version as soon as it is out."
+      },
+      "backups": {
+        "title": "Backups and rollback",
+        "text": "A snapshot before every update and a one-click rollback."
+      },
+      "conflicts": {
+        "title": "Conflict check",
+        "text": "Finds XVM, PMOD and other mods that duplicate your components and shows what overlaps."
+      },
+      "perf": {
+        "title": "FPS cost",
+        "text": "Every component shows how much it loads the game, with a “Light only” filter."
+      },
+      "report": {
+        "title": "Report a problem",
+        "text": "Collects the logs, hides anything personal and sends them to us. You see every file before sending."
       }
     }
   },
-  "bind": {
-    "title": "Device binding",
-    "text": "The code is single-use and expires in a few minutes. Bound computers are listed in your account, where you can unbind them.",
-    "signedIn": "Get a binding code",
-    "signIn": "Sign in to get a code"
-  },
   "switches": {
-    "title": "What the mod sends",
-    "lead": "Only your own account’s events, signed with the device key. Every feature can be switched off in the mod window.",
-    "on": "On by default",
+    "title": "What goes to the site",
+    "lead": "Only your own account's events, signed with the device key, and only after binding. Each item turns off in the mod window.",
+    "values": {
+      "on": "On",
+      "manual": "On a button",
+      "off": "Off"
+    },
     "items": {
       "battleResults": {
         "title": "Battle results",
-        "text": "Map, mode, outcome, your tank, damage, assist, spotting, kills, XP, credits, the mark after the battle and your platoon."
+        "text": "Map, mode, result, your tank, damage, assist, spotting, kills, XP, credits, the marks after the battle and your platoon."
       },
       "moeSnapshots": {
-        "title": "Hangar marks",
-        "text": "Percentage and moving average damage of the selected tank — only when they change."
+        "title": "Marks in the hangar",
+        "text": "The selected tank's percentage and average damage — only when they change."
       },
       "queueTimes": {
         "title": "Queue time",
@@ -104,72 +387,90 @@
       },
       "loadouts": {
         "title": "Tank loadout",
-        "text": "Equipment, consumables, directives, shells, field modifications and crew skills — for the recommended builds."
+        "text": "Equipment, consumables, directives, shells, field modification and crew skills — for the build stats."
       },
       "shots": {
         "title": "Your hits",
-        "text": "Damage and outcome of your shots at enemies, without positions or distance — for “Fair RNG”."
-      },
-      "moePanel": {
-        "title": "In-battle marks panel",
-        "text": "Shows the marks projection. Sends nothing."
-      },
-      "sessionPanel": {
-        "title": "Hangar session panel",
-        "text": "Shows session stats. Sends nothing."
+        "text": "Damage and result of your shots at enemies, without positions or distances — for “Honest RNG”."
       },
       "shareSettings": {
-        "title": "Settings sharing",
-        "text": "Graphics, camera, reticle and sound — only when you press “Send game settings to the site” yourself. Login, hardware and mods are never sent."
+        "title": "Game settings",
+        "text": "Graphics, camera, reticle and sound — only when you press “Send to the site” yourself. Login, hardware and mods never go."
+      },
+      "replays": {
+        "title": "Replays",
+        "text": "Your replays the game recorded. Only you see them until you turn publishing on."
       }
     },
     "tunables": {
       "flush": {
         "title": "Send interval",
-        "text": "How often the mod sends queued events from the hangar.",
+        "text": "How often the mod sends the queued events from the hangar.",
         "value": "{value} s"
       },
       "idle": {
         "title": "Session end",
-        "text": "Minutes without battles before a new session starts.",
+        "text": "Minutes without battles after which a new session starts.",
         "value": "{value} min"
       }
     }
+  },
+  "changelog": {
+    "title": "What's new",
+    "lead": "The latest modpack releases. The full history is in the manager: “Help” → “What's new”.",
+    "listLabel": "Modpack releases",
+    "version": "Version {version}",
+    "games": "client {games}",
+    "changed": "Changed",
+    "empty": "The change history appears with the first release.",
+    "errorTitle": "Could not load the change history"
   },
   "faq": {
     "title": "Questions",
     "replaysLink": "Upload a replay",
     "accountLink": "Your account",
     "items": {
-      "free": {
-        "question": "Is the mod paid?",
-        "answer": "No. The mod is free, and its data works without a Plus subscription."
-      },
       "ban": {
-        "question": "Can I get banned for it?",
-        "answer": "The mod gives no advantage in battle: it reads nothing about enemies and never touches the reticle. It follows the fair play policy and is being prepared for MOST."
+        "question": "Can the modpack get me banned?",
+        "answer": "Bans are for mods that reveal enemies, help aiming or change vehicle stats. The modpack has none of that: its components work with your own data and with what the client already shows. It is being prepared for MOST, Lesta's official mod portal."
+      },
+      "free": {
+        "question": "How much is it?",
+        "answer": "Nothing. Every component is free, there are no ads, and the modpack does not need a Plus subscription."
+      },
+      "patch": {
+        "question": "What happens after a patch?",
+        "answer": "The manager notices the new client version. If the modpack is compatible, it moves it to the new folder by itself. If a new version is needed, it installs it as soon as it is out, taking a backup first."
+      },
+      "conflicts": {
+        "question": "Can I run it with XVM, PMOD or another modpack?",
+        "answer": "Yes, but the same panels will show twice. The manager checks the mods folder and shows which mods overlap your components — turn off the extra ones on our side or theirs. It removes other mods' files only when you confirm, and after a backup."
+      },
+      "perf": {
+        "question": "Will it cost me FPS?",
+        "answer": "Most components react to events and barely load the game. The ones that work every frame are marked in the manager. For a weak PC there is the “Minimal (FPS)” set: only the marks in battle, the lamp and the clean hangar."
+      },
+      "remove": {
+        "question": "How do I remove the modpack?",
+        "answer": "In the manager: “Settings” → “Backups” → remove the modpack from the client, optionally rolling back to the last backup and deleting the settings. When you uninstall the manager itself, Windows asks whether to remove the modpack too. Other mods stay where they are."
       },
       "bind": {
-        "question": "How do I rebind the mod or switch computers?",
-        "answer": "Get a new code in your account and enter it in the mod. You can unbind the old device there too."
-      },
-      "switches": {
-        "question": "Can I switch off single features?",
-        "answer": "Yes. Results, marks, loadouts, hits, the panels and settings sharing each have their own switch in the mod window."
+        "question": "Why bind the mod to the site?",
+        "answer": "Unbound, the mod works in the game but sends nothing. Once bound, your battles, marks and sessions show up on the site, and your ratings and goals in the hangar. Get a new code in your account; old computers are unbound there too."
       },
       "replays": {
         "question": "Does the mod upload replays?",
-        "answer": "Only if you turn replay auto-upload on in the mod window. It is off by default, and uploaded replays stay visible to you only until you turn publishing on. You can also upload a replay by hand on the replays page."
+        "answer": "Only if you turn on auto-upload in the mod window — it is off by default, and only you see the uploaded replays until you turn publishing on. You can also upload a replay by hand."
       },
       "delete": {
         "question": "How do I delete my data?",
-        "answer": "Unbind the device and request an export or deletion in your account."
+        "answer": "Unbind the device and request an export or deletion of your data in your account."
       }
     }
   },
-  "manager": {
-    "open": "Open in the manager",
-    "hint": "Nothing opened? <link>Install the Three Marks manager</link> and click again."
+  "cta": {
+    "title": "Try it in your next battle",
+    "text": "The manager is free, components turn off one by one, and the modpack comes off as easily as it goes on."
   },
   "profile": {
     "meta": {

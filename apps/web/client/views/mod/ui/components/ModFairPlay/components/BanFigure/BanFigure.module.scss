@@ -1,0 +1,85 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include panel;
+  @include stack(var(--space-3));
+
+  position: relative;
+  padding: var(--space-4);
+  margin: 0;
+
+  @include edge-stripe(var(--color-danger));
+
+  @include from(2xl) {
+    grid-column: 1 / -1;
+  }
+
+  @include from(4xl) {
+    grid-column: auto;
+  }
+}
+
+.figure {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  margin: 0;
+  gap: var(--space-2);
+}
+
+.value {
+  @include numeric(var(--text-3xl));
+
+  color: var(--color-danger);
+}
+
+.label {
+  @include label;
+}
+
+.text {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-body);
+}
+
+.tiers {
+  @include stack(var(--space-1));
+  @include list-reset;
+
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.tier {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.count {
+  @include numeric;
+
+  min-width: 6ch;
+  color: var(--color-text);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  margin-top: auto;
+  font-size: var(--text-xs);
+  gap: var(--space-2) var(--space-4);
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text-muted);
+  gap: var(--space-1);
+
+  &:hover {
+    color: var(--color-accent);
+  }
+}

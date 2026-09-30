@@ -1,0 +1,15 @@
+{
+  "meta": {
+    "title": "All sections",
+    "description": "Every page of Three Marks in one place: players, tanks, marks, the game, the community and the project."
+  },
+  "head": {
+    "title": "All sections",
+    "description": "Every page of the project, grouped by topic. Start typing to filter."
+  },
+  "filter": {
+    "label": "Find a section",
+    "placeholder": "For example, marks or replays"
+  },
+  "empty": "No sections match “{query}”"
+}

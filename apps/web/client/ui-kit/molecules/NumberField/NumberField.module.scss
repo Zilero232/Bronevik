@@ -32,6 +32,10 @@
   font-weight: 600;
   outline: none;
   text-align: center;
+
+  &:focus-visible {
+    outline: none;
+  }
 }
 
 .suffix {

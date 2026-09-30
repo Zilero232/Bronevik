@@ -7,4 +7,5 @@ export type MapSamplesTableProps = {
   nameLabel: ReactNode;
   windowDays: number;
   minBattles: number;
+  isLoading?: boolean;
 };

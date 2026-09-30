@@ -12,6 +12,11 @@
   @include below(2xl) {
     min-height: 0;
   }
+
+  &[data-pending='true'] {
+    min-height: 240px;
+    aspect-ratio: 16 / 10;
+  }
 }
 
 .backdrop {

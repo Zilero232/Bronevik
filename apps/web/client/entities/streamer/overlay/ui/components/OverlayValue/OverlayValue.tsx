@@ -1,7 +1,7 @@
 'use client';
 
 import { clsx } from 'clsx';
-import { motion } from 'motion/react';
+import * as m from 'motion/react-m';
 import { useLocale } from 'next-intl';
 
 import { AnimatedNumber } from '@/ui-kit';
@@ -20,7 +20,7 @@ export const OverlayValue = ({ value, kind, animate, className }: OverlayValuePr
     <span className={clsx(s.root, className)}>
       {animate && value !== null ? (
         <>
-          <motion.span aria-hidden key={value} {...OVERLAY_FLASH} className={s.flash} />
+          <m.span aria-hidden key={value} {...OVERLAY_FLASH} className={s.flash} />
           <AnimatedNumber format={OVERLAY_VALUE.format[kind]} suffix={OVERLAY_VALUE.suffix[kind]} value={value} />
         </>
       ) : (

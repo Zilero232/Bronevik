@@ -1,13 +1,12 @@
 'use client';
 
-import { Package } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Suspense } from 'react';
 
 import { DataStatusBadge } from '@/entities/reference/service-health';
 import { LocaleSwitcher } from '@/features/app/switch-locale';
 import { ThemeToggle } from '@/features/app/switch-theme';
-import { ROUTES } from '@/shared/constants';
+import { SITE_NAV } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 
 import { DisplaySettings } from '../DisplaySettings';
@@ -16,19 +15,19 @@ import { GameStatusSlot } from '../GameStatusSlot';
 import s from './UtilityBar.module.scss';
 
 export const UtilityBar = () => {
-  const t = useTranslations('nav.utility');
+  const t = useTranslations('nav');
 
   return (
     <div className={s.root}>
       <div className={s.inner}>
-        <section aria-label={t('label')} className={s.status}>
+        <section aria-label={t('utility.label')} className={s.status}>
           <GameStatusSlot isServiceShown={false} />
           <DataStatusBadge className={s.health} />
         </section>
         <div className={s.settings}>
-          <Link className={s.link} href={ROUTES.mod}>
-            <Package aria-hidden size={14} />
-            {t('mod')}
+          <Link className={s.link} href={SITE_NAV.hub.href}>
+            <SITE_NAV.hub.icon aria-hidden size={14} />
+            {t('allSections')}
           </Link>
           <Suspense>
             <LocaleSwitcher />

@@ -1,0 +1,1 @@
+export { DataTableHeadSkeleton } from './DataTableHeadSkeleton';

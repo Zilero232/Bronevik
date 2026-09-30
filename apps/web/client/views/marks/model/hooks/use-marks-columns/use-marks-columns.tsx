@@ -32,7 +32,7 @@ export const useMarksColumns = (onSelect: (row: MoeRow) => void): TableColumn<Mo
       id: 'tank',
       header: t('tank'),
       cell: ({ row }) => <TankLinkCell vehicle={row.original.vehicle} />,
-      meta: { width: '34%' }
+      meta: { width: '34%', isSticky: true }
     }),
     column.accessor((row) => row.vehicle.tier, {
       id: 'tier',

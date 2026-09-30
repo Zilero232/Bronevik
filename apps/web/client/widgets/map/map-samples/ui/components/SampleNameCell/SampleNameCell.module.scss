@@ -1,0 +1,18 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  color: inherit;
+  font-weight: 600;
+
+  &[data-enough='false'] {
+    color: var(--color-text-muted);
+  }
+
+  &:hover {
+    color: var(--color-accent);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}

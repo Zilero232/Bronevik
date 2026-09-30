@@ -11,9 +11,18 @@ paths:
 ## Animation
 
 `motion` is already a dependency and is the way to animate. Presets shared by
-several components live in `shared/lib/motion`; one-off presets go in a sibling
-`<Component>.motion.ts`. Do not hand-roll a CSS `transition` for something
-motion is already driving.
+several components live in `shared/lib/motion` (`MOTION`, `MOTION_TRANSITION`,
+`MOTION_VARIANTS`); one-off presets go in a sibling `<Component>.motion.ts`. Do not
+hand-roll a CSS `transition` for something motion is already driving.
+
+The app sits in `LazyMotion strict` (features load in their own chunk), so render
+`m.div` / `m.li` with `import * as m from 'motion/react-m'`, never `motion.div` — strict
+mode throws on it.
+Animate `transform` and `opacity` only, and nothing on first paint: lists use
+`AnimatePresence initial={false}`, and a block that reveals on scroll uses `Reveal`
+(it hides only content that mounts below the fold). Page transitions are React
+`<ViewTransition>` in the `(site)` layout, triggered by the `page` transition type
+the locale `Link` adds; CSS for them lives in `app/globals.scss`.
 
 **Never put `backdrop-filter` under an opaque background.** It composites and
 blurs a layer nobody can see through, and a panel that also animates `scale`

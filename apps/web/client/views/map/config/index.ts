@@ -1,1 +1,1 @@
-export { MAP_TANKS, MAP_TEAMS } from './map.constants';
+export { MAP_TEAMS } from './map.constants';

@@ -27,6 +27,7 @@ import game from './game.json';
 import guides from './guides.json';
 import home from './home.json';
 import honestRng from './honestRng.json';
+import hub from './hub.json';
 import inbox from './inbox.json';
 import legal from './legal.json';
 import maps from './maps.json';
@@ -111,6 +112,7 @@ export const ru = {
   game,
   guides,
   home,
+  hub,
   inbox,
   maps,
   legal,

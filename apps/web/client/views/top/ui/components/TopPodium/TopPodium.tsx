@@ -3,8 +3,9 @@
 import { MasteryIcon } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
-import { Podium, PodiumCard } from '@/ui-kit';
+import { Podium, PodiumCard, PodiumSkeleton } from '@/ui-kit';
 
+import { TOP_BOARD } from '../../../config';
 import { useTopBoard } from '../../../model/hooks';
 import { EntrantCell, ValueCell } from '../TopTable/components';
 
@@ -12,7 +13,11 @@ import s from './TopPodium.module.scss';
 
 export const TopPodium = () => {
   const t = useTranslations('top');
-  const { filter, podium, isRefreshing } = useTopBoard();
+  const { filter, podium, isLoading, isRefreshing } = useTopBoard();
+
+  if (isLoading) {
+    return <PodiumSkeleton count={TOP_BOARD.podiumSize} {...TOP_BOARD.podiumSkeleton} />;
+  }
 
   if (podium.length === 0) {
     return null;

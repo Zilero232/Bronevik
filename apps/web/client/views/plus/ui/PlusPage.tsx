@@ -17,7 +17,7 @@ export const PlusPage = () => {
   const t = useTranslations('plus.header');
   const tBrand = useTranslations('brand');
   const format = useFormatter();
-  const { isPlus, isTrialOffered, trialDays, fromMonthlyRub } = usePlusPage();
+  const { isPlus, isTrialOffered, trialDays, fromMonthlyRub, isPricePending } = usePlusPage();
 
   return (
     <div className={s.root}>
@@ -37,13 +37,17 @@ export const PlusPage = () => {
           </div>
         }
         figures={
-          fromMonthlyRub !== null && (
-            <KeyFigure
-              label={t('priceFigure')}
-              size='xl'
-              value={t('priceValue', { price: format.number(fromMonthlyRub, PLUS_CHECKOUT.priceFormat) })}
-              variant='compact'
-            />
+          isPricePending ? (
+            <KeyFigure label={t('priceFigure')} size='xl' value={null} variant='compact' />
+          ) : (
+            fromMonthlyRub !== null && (
+              <KeyFigure
+                label={t('priceFigure')}
+                size='xl'
+                value={t('priceValue', { price: format.number(fromMonthlyRub, PLUS_CHECKOUT.priceFormat) })}
+                variant='compact'
+              />
+            )
           )
         }
         art={{ kind: 'emblem', glyph: <OtmetkiLogoIcon size={480} /> }}

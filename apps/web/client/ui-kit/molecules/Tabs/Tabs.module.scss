@@ -118,6 +118,16 @@
   &:focus-visible {
     @include focus-ring;
   }
+
+  @media (prefers-reduced-motion: no-preference) {
+    &[data-activation-direction='left'] {
+      animation: tab-panel-left var(--duration-base) var(--ease-out);
+    }
+
+    &[data-activation-direction='right'] {
+      animation: tab-panel-right var(--duration-base) var(--ease-out);
+    }
+  }
 }
 
 .sticky {
@@ -155,18 +165,6 @@
       background: none;
       box-shadow: none;
       color: var(--color-accent);
-    }
-  }
-
-  .content {
-    @media (prefers-reduced-motion: no-preference) {
-      &[data-activation-direction='left'] {
-        animation: tab-panel-left 160ms var(--ease-out);
-      }
-
-      &[data-activation-direction='right'] {
-        animation: tab-panel-right 160ms var(--ease-out);
-      }
     }
   }
 }

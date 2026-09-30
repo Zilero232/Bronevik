@@ -1,4 +1,4 @@
-import type { DataTableLayout, DataTableLayoutInput } from './data-table-layout.types';
+import type { DataTableLayout, DataTableLayoutInput, FallbackRowCountInput } from './data-table-layout.types';
 
 export const dataTableLayout = ({ hasCards, isHydrated, isCompact }: DataTableLayoutInput): DataTableLayout => {
   if (!hasCards) {
@@ -11,3 +11,6 @@ export const dataTableLayout = ({ hasCards, isHydrated, isCompact }: DataTableLa
 
   return { showTable: !isCompact, showCards: isCompact };
 };
+
+export const fallbackRowCount = ({ dataLength, isLoading, skeletonRows, virtualizeAfter }: FallbackRowCountInput) =>
+  isLoading || dataLength === 0 ? skeletonRows : Math.min(dataLength, virtualizeAfter);

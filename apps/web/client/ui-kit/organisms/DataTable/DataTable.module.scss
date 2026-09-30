@@ -148,13 +148,17 @@
 .row {
   @include class-tint;
 
+  --row-bg: transparent;
+
+  background-color: var(--row-bg);
+
   &[data-stripe='true'] {
-    background-color: color-mix(in srgb, var(--color-surface-sunken) 45%, transparent);
+    --row-bg: color-mix(in srgb, var(--color-surface-sunken) 45%, transparent);
   }
 
   @media (hover: hover) {
     &:hover {
-      background-color: var(--color-row-hover);
+      --row-bg: var(--color-row-hover);
     }
 
     &:hover .td:first-child {
@@ -175,12 +179,12 @@
     position: relative;
 
     &:focus-within {
-      background-color: var(--color-row-hover);
+      --row-bg: var(--color-row-hover);
     }
   }
 
   &[data-tint] {
-    background-color: color-mix(in srgb, var(--row-tint) 10%, transparent);
+    --row-bg: color-mix(in srgb, var(--row-tint) 10%, transparent);
   }
 
   &[data-tint] .td:first-child {
@@ -276,19 +280,18 @@
     position: sticky;
     z-index: 1;
     left: 0;
-    background-color: var(--color-surface);
+  }
+}
+
+.td[data-sticky='true'] {
+  @include below(3xl) {
+    background: linear-gradient(var(--row-bg), var(--row-bg)), var(--color-surface);
   }
 }
 
 .th[data-sticky='true'] {
   @include below(3xl) {
     background-color: var(--color-surface-raised);
-  }
-}
-
-.row:hover .td[data-sticky='true'] {
-  @media (hover: hover) {
-    background-color: var(--color-row-hover);
   }
 }
 

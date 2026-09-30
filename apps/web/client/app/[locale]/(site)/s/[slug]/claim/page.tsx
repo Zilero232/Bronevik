@@ -8,6 +8,7 @@ import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
+import { PageHeroFallback } from '@/ui-kit';
 import { StreamerClaimPage } from '@/views/streamer-claim';
 
 export const instant = false;
@@ -27,7 +28,7 @@ const ClaimRoute = async ({ params }: Pick<PageProps<'/[locale]/s/[slug]/claim'>
 };
 
 const Page = ({ params }: PageProps<'/[locale]/s/[slug]/claim'>) => (
-  <Suspense>
+  <Suspense fallback={<PageHeroFallback />}>
     <ClaimRoute params={params} />
   </Suspense>
 );

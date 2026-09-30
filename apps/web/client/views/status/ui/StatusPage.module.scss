@@ -17,6 +17,22 @@
   @include stack(0);
 }
 
+.verdictSkeleton {
+  height: 123px;
+
+  @include below(md) {
+    height: 183px;
+  }
+}
+
+.collectorSkeleton {
+  height: 588px;
+
+  @include below(md) {
+    height: 691px;
+  }
+}
+
 .subsection {
   margin-top: var(--space-5);
 }

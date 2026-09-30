@@ -7,13 +7,13 @@ import { CosmeticBadge } from '@/entities/player/cosmetics';
 import { clanLabel } from '@/entities/player/player';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { ClassIcon, NationLabel, RelativeTime } from '@/ui-kit';
+import { ClassIcon, NationLabel, RelativeTime, Skeleton } from '@/ui-kit';
 
 import type { HeaderIdentityProps } from './HeaderIdentity.types';
 
 import s from './HeaderIdentity.module.scss';
 
-export const HeaderIdentity = ({ summary, badge, kinds }: HeaderIdentityProps) => {
+export const HeaderIdentity = ({ summary, badge, kinds, isKindsLoading = false }: HeaderIdentityProps) => {
   const t = useTranslations('profile.header');
   const tGame = useTranslations('game');
   const format = useFormatter();
@@ -34,6 +34,11 @@ export const HeaderIdentity = ({ summary, badge, kinds }: HeaderIdentityProps) =
         )}
         {badge && <CosmeticBadge code={badge} />}
       </div>
+      {isKindsLoading && (
+        <div aria-hidden className={s.kinds}>
+          <Skeleton className={s.kindSkeleton} shape='block' />
+        </div>
+      )}
       {(kinds.nation || kinds.tankClass) && (
         <ul aria-label={t('favorites')} className={s.kinds}>
           {kinds.nation && (

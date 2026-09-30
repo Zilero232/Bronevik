@@ -1,6 +1,7 @@
 'use client';
 
-import { motion, useReducedMotion } from 'motion/react';
+import { useReducedMotion } from 'motion/react';
+import * as m from 'motion/react-m';
 import { useTranslations } from 'next-intl';
 
 import { SCANNER_SWEEP } from './ArmorScanner.motion';
@@ -14,7 +15,7 @@ export const ArmorScanner = () => {
   return (
     <div aria-busy className={s.root} role='status'>
       <span aria-hidden className={s.reticle} />
-      {!reducedMotion && <motion.span aria-hidden className={s.sweep} {...SCANNER_SWEEP} />}
+      {!reducedMotion && <m.span aria-hidden className={s.sweep} {...SCANNER_SWEEP} />}
       <span className={s.label}>{t('loading')}</span>
     </div>
   );

@@ -6,7 +6,7 @@ import { summarizeStats } from '../../../lib/stats-summary';
 import { useTankStats } from '../use-tank-stats';
 
 export const useTanksFigures = () => {
-  const { data, isPending } = useTankStats();
+  const { data, isPending, isError } = useTankStats();
   const summary = summarizeStats(data?.items ?? []);
 
   return {
@@ -14,6 +14,6 @@ export const useTanksFigures = () => {
     summary,
     heroTanks: summary.leaders.map((row) => vehicleIdentity(row.vehicle)),
     isPending,
-    hasFigures: isPending || summary.battles > 0
+    hasFigures: isPending || isError || summary.battles > 0
   };
 };

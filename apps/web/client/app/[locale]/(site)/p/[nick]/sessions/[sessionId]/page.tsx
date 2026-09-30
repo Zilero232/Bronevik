@@ -8,6 +8,7 @@ import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
+import { PageHeroFallback } from '@/ui-kit';
 import { PlayerSessionPage } from '@/views/player-session';
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/p/[nick]/sessions/[sessionId]'>): Promise<Metadata> => {
@@ -32,7 +33,7 @@ const SessionRoute = async ({ params }: Pick<PageProps<'/[locale]/p/[nick]/sessi
 };
 
 const Page = ({ params }: PageProps<'/[locale]/p/[nick]/sessions/[sessionId]'>) => (
-  <Suspense>
+  <Suspense fallback={<PageHeroFallback />}>
     <SessionRoute params={params} />
   </Suspense>
 );

@@ -1,0 +1,16 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include shell;
+  @include stack(var(--space-7));
+
+  padding-bottom: var(--space-8);
+}
+
+.search {
+  max-width: 520px;
+}
+
+.field {
+  width: 100%;
+}

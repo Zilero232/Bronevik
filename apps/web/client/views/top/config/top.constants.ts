@@ -29,5 +29,6 @@ export const TOP_PARAMS = {
 
 export const TOP_BOARD = {
   podiumSize: 3,
+  podiumSkeleton: { height: 194, compactHeight: 186 },
   anyOption: 'all'
 } as const;

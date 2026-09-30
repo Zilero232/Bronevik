@@ -370,12 +370,42 @@ $status-tones: (
   white-space: nowrap;
 }
 
-@mixin popup-motion($scale: 1) {
-  transition: opacity var(--duration-fast) ease;
+@mixin popup-motion($shift: 4px) {
+  transition:
+    opacity var(--duration-fast) ease,
+    translate var(--duration-base) var(--ease-out);
 
   &[data-starting-style],
   &[data-ending-style] {
     opacity: 0;
+  }
+
+  &[data-starting-style] {
+    &[data-side='bottom'] {
+      translate: 0 (-$shift);
+    }
+
+    &[data-side='top'] {
+      translate: 0 $shift;
+    }
+
+    &[data-side='left'],
+    &[data-side='inline-start'] {
+      translate: $shift 0;
+    }
+
+    &[data-side='right'],
+    &[data-side='inline-end'] {
+      translate: (-$shift) 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: opacity var(--duration-fast) ease;
+
+    &[data-starting-style] {
+      translate: none;
+    }
   }
 }
 

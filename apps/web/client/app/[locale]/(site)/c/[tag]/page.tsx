@@ -14,6 +14,7 @@ import { PrefetchBoundary } from '@/shared/seo/prefetch-boundary';
 import { RequestTime } from '@/shared/seo/request-time';
 import { requireRouteEntity } from '@/shared/seo/require-route-entity';
 import { RouteGuard } from '@/shared/seo/route-guard';
+import { PageHeroFallback } from '@/ui-kit';
 import { ClanPage } from '@/views/clan';
 import { clanPageState } from '@/views/clan/server';
 
@@ -53,7 +54,7 @@ const Page = ({ params }: PageProps<'/[locale]/c/[tag]'>) => {
           schema={async ({ name }) => clanJsonLd({ name, path: ROUTES.clans.detail(await tag), locale: resolveLocale(await rootParams.locale()) })}
         />
       </Suspense>
-      <Suspense>
+      <Suspense fallback={<PageHeroFallback />}>
         <ClanRoute params={params} />
       </Suspense>
       <Suspense>

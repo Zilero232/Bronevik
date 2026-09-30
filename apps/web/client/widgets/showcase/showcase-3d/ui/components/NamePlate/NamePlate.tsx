@@ -1,7 +1,8 @@
 'use client';
 
 import { TANK_CLASS_ICONS, toRoman } from '@otmetki/icons';
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence } from 'motion/react';
+import * as m from 'motion/react-m';
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
@@ -22,13 +23,13 @@ export const NamePlate = ({ tanks, index, onSelect }: NamePlateProps) => {
   return (
     <div className={s.root}>
       <AnimatePresence initial={false} mode='wait'>
-        <motion.div key={tank.slug} animate='visible' exit='exit' initial='hidden' variants={PLATE_MOTION}>
+        <m.div key={tank.slug} animate='visible' exit='exit' initial='hidden' variants={PLATE_MOTION}>
           <Link className={s.plate} href={ROUTES.tanks.detail(tank.slug)}>
             <span className={s.tier}>{toRoman(tank.tier)}</span>
             <ClassIcon aria-label={tGame(`classes.${tank.type}`)} size={16} variant={tank.isPremium ? 'premium' : 'regular'} />
             <span className={s.name}>{tank.name}</span>
           </Link>
-        </motion.div>
+        </m.div>
       </AnimatePresence>
       <div aria-label={t('rotation')} className={s.dots} role='group'>
         {tanks.map((item, position) => (

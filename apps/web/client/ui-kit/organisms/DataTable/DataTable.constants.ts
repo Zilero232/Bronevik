@@ -1,5 +1,5 @@
 export const DATA_TABLE = {
-  virtualizeAfter: 200,
+  virtualizeAfter: 100,
   rowHeight: { compact: 30, default: 36, media: 44 },
   overscan: 8,
   headerRowOffset: 2,

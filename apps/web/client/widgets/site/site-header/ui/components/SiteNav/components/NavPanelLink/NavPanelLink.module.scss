@@ -16,6 +16,11 @@
     .icon {
       border-color: var(--color-accent);
       color: var(--color-accent);
+      transform: translateY(-2px);
+
+      @include reduced-motion {
+        transform: none;
+      }
     }
   }
 
@@ -48,7 +53,12 @@
   color: var(--color-text-muted);
   transition:
     border-color var(--duration-fast) ease,
-    color var(--duration-fast) ease;
+    color var(--duration-fast) ease,
+    transform var(--duration-lift) var(--ease-out);
+
+  @include reduced-motion {
+    transition: none;
+  }
 }
 
 .text {

@@ -1,19 +1,19 @@
 'use client';
 
-import { motion } from 'motion/react';
+import { clsx } from 'clsx';
 
-import { useRevealOnce } from '@/shared/lib';
+import { useScrollReveal } from '@/shared/lib';
 
 import type { RevealProps } from './Reveal.types';
 
-import { REVEAL } from './Reveal.motion';
+import s from './Reveal.module.scss';
 
-export const Reveal = ({ children, className }: RevealProps) => {
-  const { ref, isRevealed } = useRevealOnce<HTMLDivElement>();
+export const Reveal = ({ children, as: Tag = 'div', order = 0, className }: RevealProps) => {
+  const ref = useScrollReveal<HTMLDivElement & HTMLLIElement>();
 
   return (
-    <motion.div ref={ref} animate={isRevealed ? 'shown' : 'hidden'} className={className} initial='hidden' variants={REVEAL}>
+    <Tag ref={ref} className={clsx(s.root, className)} style={{ '--reveal-order': order }}>
       {children}
-    </motion.div>
+    </Tag>
   );
 };

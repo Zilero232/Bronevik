@@ -4,7 +4,3 @@
   @include shell;
   @include stack(var(--space-5));
 }
-
-.skeleton {
-  border-radius: var(--radius-lg);
-}

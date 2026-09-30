@@ -1,6 +1,6 @@
 import type { ComponentType } from 'react';
 
-import type { SITE_FOOTER_ACTION_KEYS, SITE_FOOTER_GROUPS, SITE_NAV } from './site-nav';
+import type { SITE_FOOTER_ACTION_KEYS, SITE_LINKS, SITE_NAV_GROUPS, SITE_NAV_LINKS } from './site-nav';
 
 type SiteNavIconProps = {
   size?: number | string;
@@ -24,9 +24,10 @@ export type SiteNavGroup = {
   items: readonly SiteNavLink[];
 };
 
-export type SiteNavGroupEntry = (typeof SITE_NAV.groups)[number];
+export type SiteNavItem = (typeof SITE_LINKS)[keyof typeof SITE_LINKS];
 
-export type SiteNavItem =
-  (typeof SITE_FOOTER_GROUPS)[number]['items'][number] | SiteNavGroupEntry['items'][number] | typeof SITE_NAV.plus | typeof SITE_NAV.tools;
+export type SiteNavGroupEntry = (typeof SITE_NAV_GROUPS)[number];
 
-export type SiteFooterAction = Extract<(typeof SITE_FOOTER_GROUPS)[number]['items'][number], { key: (typeof SITE_FOOTER_ACTION_KEYS)[number] }>;
+export type SiteNavLinkEntry = (typeof SITE_NAV_LINKS)[number];
+
+export type SiteFooterAction = Extract<SiteNavItem, { key: (typeof SITE_FOOTER_ACTION_KEYS)[number] }>;

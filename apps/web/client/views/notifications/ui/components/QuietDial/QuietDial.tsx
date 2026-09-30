@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'motion/react';
+import * as m from 'motion/react-m';
 import { useTranslations } from 'next-intl';
 
 import type { QuietDialProps } from './QuietDial.types';
@@ -18,7 +18,7 @@ export const QuietDial = ({ range }: QuietDialProps) => {
       <svg aria-label={t('dialLabel', { start, end })} className={s.dial} role='img' viewBox={`0 0 ${dial.size} ${dial.size}`}>
         <circle className={s.face} cx={dial.center} cy={dial.center} r={dial.tickOuter + 4} />
         <circle className={s.track} cx={dial.center} cy={dial.center} r={dial.arcRadius} />
-        {span > 0 && <motion.path animate={{ d: arc }} className={s.arc} initial={false} />}
+        {span > 0 && <m.path animate={{ d: arc }} className={s.arc} initial={false} />}
         {ticks.map(({ hour, isMajor, isQuiet, from, to }) => (
           <line key={hour} className={s.tick} data-major={isMajor} data-quiet={isQuiet} x1={from.x} x2={to.x} y1={from.y} y2={to.y} />
         ))}

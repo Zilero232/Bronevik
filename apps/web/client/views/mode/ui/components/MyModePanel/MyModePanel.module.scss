@@ -12,6 +12,10 @@
   padding: 0 var(--space-4) var(--space-4);
 }
 
+.sessionSkeleton {
+  height: 32px;
+}
+
 .career {
   margin: var(--space-3) 0 0;
   color: var(--color-text-muted);

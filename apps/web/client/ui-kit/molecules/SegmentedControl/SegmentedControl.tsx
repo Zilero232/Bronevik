@@ -3,7 +3,7 @@
 import { Radio } from '@base-ui/react/radio';
 import { RadioGroup } from '@base-ui/react/radio-group';
 import { clsx } from 'clsx';
-import { motion } from 'motion/react';
+import * as m from 'motion/react-m';
 import { useId } from 'react';
 
 import type { SegmentedControlProps } from './SegmentedControl.types';
@@ -46,7 +46,7 @@ export const SegmentedControl = <T extends string>({
             )}
             <span className={s.label}>{option.label}</span>
             {variant === 'icons' && isActive && (
-              <motion.span aria-hidden className={s.indicator} layoutId={indicatorId} transition={SEGMENTED_CONTROL.slide} />
+              <m.span aria-hidden className={s.indicator} layoutId={indicatorId} transition={SEGMENTED_CONTROL.slide} />
             )}
           </Radio.Root>
         );

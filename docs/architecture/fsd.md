@@ -86,21 +86,24 @@ entities/
 widgets/
 ├── account/  # account-shell
 ├── armor/    # armor-viewer
+├── community/ # entry-panel, event-layout
+├── content/  # lead-feed
 ├── map/      # map-rotation, map-samples
+├── notifications/ # event-alert
 ├── player/   # session-detail
 ├── promo/    # promo-banners
 ├── showcase/ # showcase-3d
-├── site/     # data-notice, resource-missing, site-footer, site-header
+├── site/     # data-notice, resource-missing, site-footer, site-header, tab-bar
 ├── social/   # social-shell
 ├── streamer/ # streamers-hub
 └── tank/     # tank-best-battles, tank-math
 ```
 
-`views/` does not group by domain — the 96 route screens sit directly in it:
+`views/` does not group by domain — the 97 route screens sit directly in it:
 
 | Area | Views |
 |---|---|
-| site shell | `home`, `design`, `error`, `not-found`, `legal`, `status`, `ratings` |
+| site shell | `home`, `hub`, `design`, `error`, `not-found`, `legal`, `status`, `ratings` |
 | OG images | `entity-og`, `player-og` |
 | account | `login`, `telegram-login`, `telegram-link`, `me`, `billing`, `plus`, `notifications`, `watchlist`, `my-analytics`, `my-battle`, `progression`, `cosmetics` |
 | players | `players`, `player-profile`, `player-session`, `player-signature`, `player-wrapped`, `compare-players`, `top`, `best-battles`, `achievements` |
@@ -183,7 +186,7 @@ ui-kit/
 │                # DateTimeField, DeltaCell, Dialog, Drawer, EmptyState, ErrorState, FactGrid, FaqList, FilterField,
 │                # FilteredEmptyState, FormField, GameVersionBadge, IconFilter, KeyFigure, KeyFigures, Legend, MarksRing,
 │                # MediaCard, NumberCell, NumberField, Podium, PodiumCard, Popover, RangeField, RangeSlider, RetryButton,
-│                # SectionHeader, SegmentedControl, Select, ServiceStatus, Sparkline, StatList, StoryCard, Tabs,
+│                # SectionHeader, SegmentedControl, Select, ServiceStatus, SkeletonStack, Sparkline, StatList, StoryCard, Tabs,
 │                # TextCard, TierPicker, Timeline, ToggleChips, Tooltip
 ├── organisms/   # AppToaster, AreaChart, BarChart, BattleBackdrop, CalendarHeatmap, ChartKit, DataTable, FilterBar,
 │                # LineChart, PageHeader, PageHero, PageHeroFallback, PagedList, QueryState

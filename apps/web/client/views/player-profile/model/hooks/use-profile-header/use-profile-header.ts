@@ -19,7 +19,7 @@ export const useProfileHeader = () => {
   const tPeriods = useTranslations('periods');
   const { profile, period, setPeriod } = useProfileContext();
   const { data: cosmetics } = useProfileCosmetics(profile.summary.accountId);
-  const { data: tanks } = usePlayerTanks();
+  const { data: tanks, isPending: isTanksPending } = usePlayerTanks();
   const { data: seasons } = useQuery({
     queryKey: QUERY_KEYS.seasons(profile.summary.accountId),
     queryFn: () => getSeasonHistory(profile.summary.accountId)
@@ -35,6 +35,7 @@ export const useProfileHeader = () => {
     wn8Ring: ratingRing(stats.wn8.tier),
     art: heroArt({ clan: summary.clan, rows: tanks?.items ?? [] }),
     kinds: favoriteKinds(tanks?.items ?? []),
+    isKindsLoading: isTanksPending,
     hasPeriodData: current !== null,
     period,
     setPeriod,

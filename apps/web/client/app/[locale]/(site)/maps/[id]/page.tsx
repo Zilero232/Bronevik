@@ -13,6 +13,7 @@ import { PrefetchBoundary } from '@/shared/seo/prefetch-boundary';
 import { RequestTime } from '@/shared/seo/request-time';
 import { requireRouteEntity } from '@/shared/seo/require-route-entity';
 import { RouteGuard } from '@/shared/seo/route-guard';
+import { PageHeroFallback } from '@/ui-kit';
 import { MapPage } from '@/views/map';
 import { mapPageState } from '@/views/map/server';
 
@@ -45,7 +46,7 @@ const Page = ({ params }: PageProps<'/[locale]/maps/[id]'>) => (
     <Suspense>
       <RouteGuard entity={params.then(({ id }) => mapRouteEntity(decodeRouteParam(id)))} />
     </Suspense>
-    <Suspense>
+    <Suspense fallback={<PageHeroFallback />}>
       <MapRoute params={params} />
     </Suspense>
     <Suspense>

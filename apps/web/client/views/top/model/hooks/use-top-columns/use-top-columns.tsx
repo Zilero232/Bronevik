@@ -30,7 +30,8 @@ export const useTopColumns = ({ filter, tank, entries }: UseTopColumnsInput): Ta
     header: filter.scope === 'clans' ? t('columns.clan') : t('columns.player'),
     cell: ({ row: { original } }) => (
       <EntrantCell badge={original.accountId === null ? null : (cosmetics[original.accountId]?.badge ?? null)} entry={original} />
-    )
+    ),
+    meta: { isSticky: true }
   });
 
   const vehicle = tank

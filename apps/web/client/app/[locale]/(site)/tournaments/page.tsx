@@ -5,6 +5,7 @@ import { Suspense } from 'react';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
+import { PageHeroFallback } from '@/ui-kit';
 import { CompetitionList, CreateCompetitionDialog } from '@/views/competitions';
 import { TournamentsPage } from '@/views/tournaments';
 
@@ -16,7 +17,7 @@ export const generateMetadata = async () => {
 };
 
 const Page = () => (
-  <Suspense>
+  <Suspense fallback={<PageHeroFallback />}>
     <TournamentsPage points={<CompetitionList />} pointsAction={<CreateCompetitionDialog />} />
   </Suspense>
 );

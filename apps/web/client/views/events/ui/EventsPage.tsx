@@ -33,7 +33,7 @@ export const EventsPage = () => {
       <PageHero
         art={{ kind: 'emblem', glyph: <CalendarDays size={480} strokeWidth={1.25} /> }}
         breadcrumbs={[{ label: t('head.home'), href: ROUTES.home }, { label: t('head.title') }]}
-        figures={featured[0] && <KeyFigure label={t('head.nowFigure')} value={featured[0].event.title} variant='compact' />}
+        figures={(query.isPending || featured[0]) && <KeyFigure label={t('head.nowFigure')} value={featured[0]?.event.title} variant='compact' />}
         lead={t('head.description')}
         title={t('head.title')}
       />

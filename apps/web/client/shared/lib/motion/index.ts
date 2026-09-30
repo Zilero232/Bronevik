@@ -1,1 +1,1 @@
-export { EASE_OUT } from './motion';
+export { EASE_OUT, MOTION, MOTION_TRANSITION, MOTION_VARIANTS } from './motion';

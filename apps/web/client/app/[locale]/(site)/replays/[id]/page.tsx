@@ -9,6 +9,7 @@ import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
+import { PageHeroFallback } from '@/ui-kit';
 import { ReplayPage } from '@/views/replay';
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/replays/[id]'>): Promise<Metadata> => {
@@ -35,7 +36,7 @@ const ReplayRoute = async ({ params }: Pick<PageProps<'/[locale]/replays/[id]'>,
 };
 
 const Page = ({ params }: PageProps<'/[locale]/replays/[id]'>) => (
-  <Suspense>
+  <Suspense fallback={<PageHeroFallback />}>
     <ReplayRoute params={params} />
   </Suspense>
 );

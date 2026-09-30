@@ -23,7 +23,7 @@ export const useCatalogColumns = (): TableColumn<BuildsCatalogEntry>[] => {
       id: 'tank',
       header: t('tank'),
       cell: (info) => <TankCell vehicle={info.row.original.vehicle} />,
-      meta: { width: CATALOG_TABLE.tankWidth }
+      meta: { width: CATALOG_TABLE.tankWidth, isSticky: true }
     }),
     column.accessor('battles', {
       header: t('coverage'),

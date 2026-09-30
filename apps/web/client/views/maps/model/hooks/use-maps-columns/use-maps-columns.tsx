@@ -30,7 +30,8 @@ export const useMapsColumns = (): TableColumn<MapSummary>[] => {
     }),
     column.accessor('name', {
       header: t('columns.name'),
-      cell: ({ row: { original } }) => <MapNameCell name={original.name} slug={original.slug} />
+      cell: ({ row: { original } }) => <MapNameCell name={original.name} slug={original.slug} />,
+      meta: { isSticky: true }
     }),
     column.accessor((row) => row.camouflage ?? '', {
       id: 'camouflage',

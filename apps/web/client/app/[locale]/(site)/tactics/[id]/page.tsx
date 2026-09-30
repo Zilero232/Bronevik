@@ -8,6 +8,7 @@ import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
+import { PageHeroFallback } from '@/ui-kit';
 import { TacticBoardPage } from '@/views/tactic-board';
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/tactics/[id]'>): Promise<Metadata> => {
@@ -32,7 +33,7 @@ const TacticBoardRoute = async ({ params }: Pick<PageProps<'/[locale]/tactics/[i
 };
 
 const Page = ({ params }: PageProps<'/[locale]/tactics/[id]'>) => (
-  <Suspense>
+  <Suspense fallback={<PageHeroFallback />}>
     <TacticBoardRoute params={params} />
   </Suspense>
 );

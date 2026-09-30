@@ -8,6 +8,7 @@ import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
+import { PageHeroFallback } from '@/ui-kit';
 import { BlogPostEditorPage } from '@/views/blog-post-editor';
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/blog/editor/[id]'>): Promise<Metadata> => {
@@ -25,7 +26,7 @@ const BlogPostEditorRoute = async ({ params }: Pick<PageProps<'/[locale]/blog/ed
 };
 
 const Page = ({ params }: PageProps<'/[locale]/blog/editor/[id]'>) => (
-  <Suspense>
+  <Suspense fallback={<PageHeroFallback />}>
     <BlogPostEditorRoute params={params} />
   </Suspense>
 );

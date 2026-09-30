@@ -65,6 +65,7 @@ export {
   NumberField,
   Podium,
   PodiumCard,
+  PodiumSkeleton,
   Popover,
   RangeField,
   RangeSlider,

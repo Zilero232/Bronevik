@@ -9,6 +9,7 @@ import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
+import { PageHeroFallback } from '@/ui-kit';
 import { TournamentPage } from '@/views/tournament';
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/tournaments/[slug]'>): Promise<Metadata> => {
@@ -34,7 +35,7 @@ const TournamentRoute = async ({ params }: Pick<PageProps<'/[locale]/tournaments
 };
 
 const Page = ({ params }: PageProps<'/[locale]/tournaments/[slug]'>) => (
-  <Suspense>
+  <Suspense fallback={<PageHeroFallback />}>
     <TournamentRoute params={params} />
   </Suspense>
 );

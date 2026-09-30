@@ -24,6 +24,7 @@ export const DataTableContent = <T,>({
   density = 'default',
   rowHeight = DATA_TABLE.rowHeight[density],
   isLoading = false,
+  skeletonRows = DATA_TABLE.skeletonRows,
   emptyState,
   caption,
   summary,
@@ -73,7 +74,7 @@ export const DataTableContent = <T,>({
           <table aria-rowcount={isVirtual ? rows.length + 1 : undefined} className={s.table}>
             {caption && <caption className={s.caption}>{caption}</caption>}
             <DataTableHead table={table} />
-            {isLoading && <DataTableSkeleton columnCount={columnCount} />}
+            {isLoading && <DataTableSkeleton columnCount={columnCount} rowCount={skeletonRows} />}
             {!isLoading && isVirtual && (
               <DataTableVirtualRows
                 barMax={barMax}
@@ -102,7 +103,9 @@ export const DataTableContent = <T,>({
         </div>
       )}
       {hasCards && isEmpty && <div className={s.emptyPanel}>{emptyState}</div>}
-      {showCards && !isEmpty && renderCard && <DataTableCards isLoading={isLoading} renderCard={renderCard} rows={rows} />}
+      {showCards && !isEmpty && renderCard && (
+        <DataTableCards isLoading={isLoading} renderCard={renderCard} rows={rows} skeletonRows={skeletonRows} />
+      )}
       {footer && <div className={s.footer}>{footer}</div>}
     </div>
   );

@@ -51,10 +51,18 @@ export const ReplayBrowser = () => {
       {!isMine && <ReplayFilters />}
       <QueryState
         isCompact
+        skeleton={
+          <DataTable
+            isLoading
+            columns={columns}
+            data={[]}
+            density='media'
+            renderCard={(row) => <ReplayCard replay={row} vehicle={vehicleOf(row)} />}
+          />
+        }
         errorDescription={t('errorDescription')}
         errorTitle={t('errorTitle')}
         query={query}
-        skeleton={<DataTable isLoading columns={columns} data={[]} density='media' />}
       >
         {({ items }) => (
           <DataTable

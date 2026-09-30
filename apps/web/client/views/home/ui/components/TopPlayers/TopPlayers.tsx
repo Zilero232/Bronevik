@@ -4,7 +4,18 @@ import { useFormatter, useTranslations } from 'next-intl';
 import { useId } from 'react';
 
 import { ROUTES } from '@/shared/constants';
-import { Card, DataSourceNote, DataTable, EmptyState, Podium, PodiumCard, QueryState, SectionHeader, SegmentedControl, Skeleton } from '@/ui-kit';
+import {
+  Card,
+  DataSourceNote,
+  DataTable,
+  EmptyState,
+  Podium,
+  PodiumCard,
+  PodiumSkeleton,
+  QueryState,
+  SectionHeader,
+  SegmentedControl
+} from '@/ui-kit';
 
 import { HOME } from '../../../config';
 import { useTopPlayerColumns, useTopPlayers } from '../../../model/hooks';
@@ -32,13 +43,7 @@ export const TopPlayers = () => {
         isCompact
         skeleton={
           <>
-            <Podium aria-label={t('title')}>
-              {Array.from({ length: HOME.topPlayers.podium }, (_, index) => (
-                <li key={index}>
-                  <Skeleton className={s.skeleton} height={HOME.topPlayers.skeletonHeight} shape='block' />
-                </li>
-              ))}
-            </Podium>
+            <PodiumSkeleton count={HOME.topPlayers.podium} height={HOME.topPlayers.skeletonHeight} />
             <Card padding='none'>
               <DataTable isLoading columns={columns} data={[]} />
             </Card>

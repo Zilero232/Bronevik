@@ -120,3 +120,62 @@ select,
     transition-duration: 0.01ms !important;
   }
 }
+
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+
+::view-transition-group(site-header),
+::view-transition-group(site-tab-bar) {
+  z-index: 1;
+  animation: none;
+}
+
+::view-transition-old(site-header),
+::view-transition-old(site-tab-bar) {
+  display: none;
+}
+
+::view-transition-new(site-header),
+::view-transition-new(site-tab-bar) {
+  animation: none;
+}
+
+::view-transition-group(.page-swap) {
+  animation-duration: var(--duration-lift);
+  animation-timing-function: var(--ease-out);
+}
+
+::view-transition-old(.page-swap) {
+  animation: page-swap-out var(--duration-fast) ease-out both;
+}
+
+::view-transition-new(.page-swap) {
+  animation: page-swap-in var(--duration-lift) var(--ease-out) both;
+}
+
+@keyframes page-swap-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes page-swap-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

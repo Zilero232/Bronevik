@@ -6,4 +6,5 @@ export type HeaderIdentityProps = {
   summary: PlayerProfile['summary'];
   badge: string | null;
   kinds: FavoriteKinds;
+  isKindsLoading?: boolean;
 };

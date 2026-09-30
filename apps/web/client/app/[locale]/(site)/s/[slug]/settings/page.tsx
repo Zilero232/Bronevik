@@ -9,6 +9,7 @@ import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
+import { PageHeroFallback } from '@/ui-kit';
 import { StreamerSettingsPage } from '@/views/streamer-settings';
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/s/[slug]/settings'>): Promise<Metadata> => {
@@ -34,7 +35,7 @@ const StreamerSettingsRoute = async ({ params }: Pick<PageProps<'/[locale]/s/[sl
 };
 
 const Page = ({ params }: PageProps<'/[locale]/s/[slug]/settings'>) => (
-  <Suspense>
+  <Suspense fallback={<PageHeroFallback />}>
     <StreamerSettingsRoute params={params} />
   </Suspense>
 );

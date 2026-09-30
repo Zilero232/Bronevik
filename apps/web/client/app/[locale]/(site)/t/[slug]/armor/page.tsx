@@ -12,6 +12,7 @@ import { createPageMetadata, ROUTE_STATIC_PARAMS } from '@/shared/seo';
 import { RequestTime } from '@/shared/seo/request-time';
 import { requireRouteEntity } from '@/shared/seo/require-route-entity';
 import { RouteGuard } from '@/shared/seo/route-guard';
+import { PageHeroFallback } from '@/ui-kit';
 import { TankArmorPage } from '@/views/tank-armor';
 
 export const generateStaticParams = async () => (await topTankSlugs({ fallback: ROUTE_STATIC_PARAMS.fallback.tankArmor })).map((slug) => ({ slug }));
@@ -37,7 +38,7 @@ const Page = ({ params }: PageProps<'/[locale]/t/[slug]/armor'>) => (
     <Suspense>
       <RouteGuard entity={params.then(({ slug }) => tankRouteEntity(decodeRouteParam(slug)))} />
     </Suspense>
-    <Suspense>
+    <Suspense fallback={<PageHeroFallback />}>
       <TankArmorPage />
     </Suspense>
     <Suspense>

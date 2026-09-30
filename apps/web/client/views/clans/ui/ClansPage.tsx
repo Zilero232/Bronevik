@@ -13,7 +13,7 @@ import s from './ClansPage.module.scss';
 
 export const ClansPage = () => {
   const t = useTranslations('clans.head');
-  const { leaders } = useClanLeaders();
+  const { leaders, isLoading } = useClanLeaders();
 
   return (
     <div className={s.root}>
@@ -24,7 +24,7 @@ export const ClansPage = () => {
         lead={t('description')}
         title={t('title')}
       />
-      {leaders.length > 0 && <ClanLeaders leaders={leaders} />}
+      {(isLoading || leaders.length > 0) && <ClanLeaders isLoading={isLoading} leaders={leaders} />}
       <div className={s.content}>
         <ClanRating />
         <DataSourceNote />

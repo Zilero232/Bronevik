@@ -21,6 +21,7 @@ export type DataTableProps<T> = {
   density?: DataTableDensity;
   rowHeight?: number;
   isLoading?: boolean;
+  skeletonRows?: number;
   emptyState?: ReactNode;
   caption?: string;
   summary?: ReactNode;

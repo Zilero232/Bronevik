@@ -24,6 +24,10 @@
   background: none;
   outline: none;
 
+  &:focus-visible {
+    outline: none;
+  }
+
   &::placeholder {
     color: var(--color-text-dim);
   }

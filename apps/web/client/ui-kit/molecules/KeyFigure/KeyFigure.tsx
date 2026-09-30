@@ -35,7 +35,7 @@ export const KeyFigure = ({
       )}
       <span className={s.label}>{label}</span>
     </span>
-    <span className={s.value}>
+    <span className={s.value} data-flow={value === null || value === undefined || typeof value === 'number'}>
       {match(value)
         .with(P.nullish, () => '—')
         .with(P.number, (known) => <AnimatedNumber format={format} prefix={prefix} suffix={suffix} value={known} />)

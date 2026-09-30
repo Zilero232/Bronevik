@@ -8,6 +8,7 @@ import { env } from '@/shared/config';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
+import { PageHeroFallback } from '@/ui-kit';
 import { BlogPage, blogRssHref } from '@/views/blog';
 
 export const generateMetadata = async (): Promise<Metadata> => {
@@ -29,7 +30,7 @@ export const generateMetadata = async (): Promise<Metadata> => {
 };
 
 const Page = () => (
-  <Suspense>
+  <Suspense fallback={<PageHeroFallback />}>
     <BlogPage />
   </Suspense>
 );

@@ -2,7 +2,7 @@
 
 import { SerwistProvider } from '@serwist/turbopack/react';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { MotionConfig } from 'motion/react';
+import { LazyMotion, MotionConfig } from 'motion/react';
 import { NextIntlClientProvider } from 'next-intl';
 import { ThemeProvider } from 'next-themes';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
@@ -14,6 +14,7 @@ import { getQueryClient } from '@/shared/api';
 import { env } from '@/shared/config';
 import { ROUTES, STORAGE_KEYS } from '@/shared/constants';
 import { FORMATS, messages, TIME_ZONE } from '@/shared/i18n';
+import { loadMotionFeatures } from '@/shared/lib';
 import { AppToaster, TooltipProvider } from '@/ui-kit';
 
 import type { AppProvidersProps } from './AppProviders.types';
@@ -34,17 +35,19 @@ export const AppProviders = ({ children, locale }: AppProvidersProps) => (
           themes={['dark', 'light']}
         >
           <MotionConfig reducedMotion='user'>
-            <TooltipProvider>
-              <CommandPaletteProvider>
-                <SerwistProvider disable={env.NODE_ENV === 'development'} reloadOnOnline={false} swUrl={ROUTES.sw}>
-                  {children}
-                </SerwistProvider>
-                <CommandPalette />
-              </CommandPaletteProvider>
-            </TooltipProvider>
-            <RatingPatternsSync />
-            <RatingPaletteSync />
-            <AppToaster />
+            <LazyMotion strict features={loadMotionFeatures}>
+              <TooltipProvider>
+                <CommandPaletteProvider>
+                  <SerwistProvider disable={env.NODE_ENV === 'development'} reloadOnOnline={false} swUrl={ROUTES.sw}>
+                    {children}
+                  </SerwistProvider>
+                  <CommandPalette />
+                </CommandPaletteProvider>
+              </TooltipProvider>
+              <RatingPatternsSync />
+              <RatingPaletteSync />
+              <AppToaster />
+            </LazyMotion>
           </MotionConfig>
         </ThemeProvider>
       </NextIntlClientProvider>

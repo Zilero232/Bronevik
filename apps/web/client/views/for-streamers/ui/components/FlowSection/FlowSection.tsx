@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'motion/react';
+import * as m from 'motion/react-m';
 import { useTranslations } from 'next-intl';
 
 import { SectionHeader } from '@/ui-kit';
@@ -17,7 +17,7 @@ export const FlowSection = () => {
     <section className={s.root} id={LANDING_ANCHORS.flow}>
       <SectionHeader description={t('description')} title={t('title')} />
       <ol className={s.steps}>
-        <motion.span
+        <m.span
           aria-hidden
           className={s.tracer}
           initial='hidden'

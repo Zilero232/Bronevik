@@ -11,6 +11,14 @@
   gap: var(--space-3);
 }
 
+.status {
+  @include stack(var(--space-2));
+
+  min-height: calc(2lh + var(--space-2));
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
 .file {
   margin: 0;
   color: var(--color-text-muted);

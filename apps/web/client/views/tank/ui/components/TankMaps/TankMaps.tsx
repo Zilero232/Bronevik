@@ -3,7 +3,7 @@
 import { MapIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { EmptyState, QueryState, Skeleton } from '@/ui-kit';
+import { EmptyState, QueryState } from '@/ui-kit';
 import { MapSamplesTable } from '@/widgets/map/map-samples';
 
 import { TANK_PAGE, TANK_SECTIONS } from '../../../config';
@@ -23,14 +23,9 @@ export const TankMaps = () => {
           empty={
             <EmptyState description={t('emptyDescription')} icon={<MapIcon size={TANK_PAGE.emptyIcon} strokeWidth={1.5} />} title={t('emptyTitle')} />
           }
-          skeleton={
-            <div className={s.skeleton}>
-              <Skeleton width='45%' />
-              <Skeleton count={TANK_PAGE.skeletonRows + 1} height={TANK_PAGE.rowHeight} shape='block' width='100%' />
-            </div>
-          }
           isEmpty={({ rows }) => rows.length === 0}
           query={query}
+          skeleton={<MapSamplesTable isLoading minBattles={0} nameLabel={t('map')} rows={[]} windowDays={0} />}
         >
           {({ rows, windowDays, minBattles }) => <MapSamplesTable minBattles={minBattles} nameLabel={t('map')} rows={rows} windowDays={windowDays} />}
         </QueryState>

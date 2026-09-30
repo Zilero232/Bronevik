@@ -25,7 +25,7 @@ export const useRosterColumns = (): TableColumn<RosterRow>[] => {
     column.accessor('nickname', {
       header: t('columns.nickname'),
       cell: (info) => <PlayerNameCell nickname={info.getValue()} withAvatar={false} />,
-      meta: { width: '20%' }
+      meta: { width: '20%', isSticky: true }
     }),
     column.accessor((row) => clanRoleSchema.options.indexOf(row.role), {
       id: 'role',

@@ -8,6 +8,7 @@
   background-color: var(--color-surface);
   background-image: var(--surface-sheen);
   box-shadow: 0 1px 0 var(--shade-20);
+  view-transition-name: site-header;
 
   @include below(lg) {
     padding-top: var(--safe-area-top);

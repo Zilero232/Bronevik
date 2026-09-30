@@ -89,3 +89,23 @@ $emitted-keyframes: ();
     }
   }
 }
+
+@mixin scroll-reveal($shift: 12px, $step: 40ms) {
+  transition:
+    opacity var(--duration-reveal) var(--ease-out) calc(var(--reveal-order, 0) * #{$step}),
+    transform var(--duration-reveal) var(--ease-out) calc(var(--reveal-order, 0) * #{$step});
+
+  &[data-reveal='hidden'] {
+    opacity: 0;
+    transform: translateY($shift);
+  }
+
+  @include tokens.reduced-motion {
+    transition: none;
+
+    &[data-reveal='hidden'] {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}

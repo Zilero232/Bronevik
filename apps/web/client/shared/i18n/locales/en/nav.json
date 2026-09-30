@@ -5,7 +5,7 @@
   "groups": {
     "players": "Players",
     "clans": "Clans and platoons",
-    "vehicles": "Vehicles",
+    "vehicles": "Tanks",
     "game": "Game",
     "community": "Community",
     "project": "Project"
@@ -51,7 +51,8 @@
     "design": "Design system",
     "mod": "Download the mod",
     "ratings": "Rating methodology",
-    "status": "Data status"
+    "status": "Data status",
+    "hub": "All sections"
   },
   "hints": {
     "players": "Any player's stats by nickname",
@@ -94,7 +95,8 @@
     "design": "Interface components and tokens",
     "mod": "Modpack: marks, damage log and battle results",
     "ratings": "How WN8, EFF, Bronya Index and marks are computed",
-    "status": "Whether the data is updating right now"
+    "status": "Whether the data is updating right now",
+    "hub": "Every page of the project, searchable"
   },
   "featured": {
     "topTank": "Top tank of the week",
@@ -106,8 +108,7 @@
     "liveStreamersHint": "See who is streaming now"
   },
   "utility": {
-    "label": "Game status",
-    "mod": "Modpack"
+    "label": "Game status"
   },
   "account": {
     "signIn": "Sign in",
@@ -115,5 +116,17 @@
     "drawerSignIn": "Sign in",
     "drawerHint": "Sessions, goals and marks in your account",
     "profile": "My account"
+  },
+  "allSections": "All sections",
+  "tabBar": {
+    "label": "Quick sections",
+    "home": "Home",
+    "marks": "Marks",
+    "me": "Account",
+    "more": "More"
+  },
+  "short": {
+    "marks": "Marks",
+    "mod": "Modpack"
   }
 }

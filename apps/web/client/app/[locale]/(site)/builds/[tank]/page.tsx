@@ -13,6 +13,7 @@ import { PrefetchBoundary } from '@/shared/seo/prefetch-boundary';
 import { RequestTime } from '@/shared/seo/request-time';
 import { requireRouteEntity } from '@/shared/seo/require-route-entity';
 import { RouteGuard } from '@/shared/seo/route-guard';
+import { PageHeroFallback } from '@/ui-kit';
 import { BuildPage } from '@/views/build';
 import { buildPageState } from '@/views/build/server';
 
@@ -46,7 +47,7 @@ const Page = ({ params }: PageProps<'/[locale]/builds/[tank]'>) => (
     <Suspense>
       <RouteGuard entity={params.then(({ tank }) => tankRouteEntity(decodeRouteParam(tank)))} />
     </Suspense>
-    <Suspense>
+    <Suspense fallback={<PageHeroFallback />}>
       <BuildRoute params={params} />
     </Suspense>
     <Suspense>

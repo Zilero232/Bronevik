@@ -3,7 +3,3 @@
 .body {
   padding: var(--space-2) var(--space-4) var(--space-4);
 }
-
-.skeleton {
-  @include stack(var(--space-1));
-}

@@ -1,6 +1,7 @@
 'use client';
 
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence } from 'motion/react';
+import * as m from 'motion/react-m';
 
 import { InboxEntry } from '@/entities/notification/inbox';
 
@@ -20,15 +21,15 @@ export const InboxFeedDay = ({ day }: InboxFeedDayProps) => {
         <span className={s.label}>{label}</span>
         <span className={s.count}>{count}</span>
       </h3>
-      <motion.ul animate='visible' className={s.list} initial='hidden'>
+      <m.ul animate='visible' className={s.list} initial='hidden'>
         <AnimatePresence initial={false}>
           {day.items.map((item) => (
-            <motion.li layout key={item.id} {...INBOX_ENTRY_EXIT}>
+            <m.li layout key={item.id} {...INBOX_ENTRY_EXIT}>
               <InboxEntry item={item} onSelect={onSelect} />
-            </motion.li>
+            </m.li>
           ))}
         </AnimatePresence>
-      </motion.ul>
+      </m.ul>
     </section>
   );
 };

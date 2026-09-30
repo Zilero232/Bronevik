@@ -1,3 +1,3 @@
-export { useMapSamplesTable } from './use-map-samples-table';
+export { useMapSamplesColumns } from './use-map-samples-columns';
 
-export type { MapSampleRow } from './use-map-samples-table.types';
+export type { MapSampleRow, UseMapSamplesColumnsInput } from './use-map-samples-columns.types';

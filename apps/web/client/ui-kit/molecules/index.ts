@@ -33,6 +33,7 @@ export { NumberCell } from './NumberCell';
 export { NumberField } from './NumberField';
 export { Podium } from './Podium';
 export { PodiumCard } from './PodiumCard';
+export { PodiumSkeleton } from './PodiumSkeleton';
 export { Popover } from './Popover';
 export { RangeField } from './RangeField';
 export { RangeSlider } from './RangeSlider';

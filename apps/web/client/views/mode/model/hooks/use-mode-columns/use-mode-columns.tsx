@@ -36,7 +36,7 @@ export const useModeColumns = (): TableColumn<ModeTank>[] => {
       id: 'tank',
       header: t('tank'),
       cell: (info) => <TankCell vehicle={info.row.original.vehicle} />,
-      meta: { width: MODE_TABLE.tankWidth }
+      meta: { width: MODE_TABLE.tankWidth, isSticky: true }
     }),
     column.accessor('battles', {
       header: t('battles'),

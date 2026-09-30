@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { DataTable, FilteredEmptyState, QueryState } from '@/ui-kit';
 
+import { MAPS_TABLE } from '../../../config';
 import { useMapsCatalog, useMapsColumns } from '../../../model/hooks';
 
 export const MapsTable = () => {
@@ -16,7 +17,7 @@ export const MapsTable = () => {
       errorDescription={t('errorDescription')}
       errorTitle={t('errorTitle')}
       query={query}
-      skeleton={<DataTable isLoading columns={columns} data={[]} />}
+      skeleton={<DataTable isLoading columns={columns} data={[]} skeletonRows={MAPS_TABLE.skeletonRows} />}
     >
       {({ maps }) => (
         <DataTable

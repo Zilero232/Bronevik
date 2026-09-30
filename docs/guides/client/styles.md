@@ -20,7 +20,7 @@ the styles themselves stay in SCSS.
 | Conditional classes             | `clsx(s.root, s[tone], className)` or a `data-*` attribute styled in SCSS                 |
 | Primitive variants/sizes        | a `cva` map in `<Name>.variants.ts` (`Button.variants.ts`)                                |
 | Rating colour                   | `data-tone={ratingTone(...)}` + `@include tone` from `shared/styles/mixins` ([§12](styles.md))         |
-| Animation                       | `motion` + presets in `<Name>.motion.ts`, shared ones in `shared/lib/motion`              |
+| Animation                       | `m.*` from `motion/react-m` (inside `LazyMotion strict`) + presets in `<Name>.motion.ts`, shared ones (`MOTION`, `MOTION_TRANSITION`, `MOTION_VARIANTS`) in `shared/lib/motion`; scroll reveal via `Reveal` / `@include scroll-reveal` |
 | Media query                     | `@include below(md)` / `@include from(2xl)` from `shared/styles/mixins` — never raw pixels |
 
 Joining module classes with an optional `className` prop is done with **`clsx`** (`import { clsx } from 'clsx'`).

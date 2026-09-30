@@ -76,6 +76,10 @@
   color: var(--color-text);
   white-space: nowrap;
 
+  &[data-flow='true'] {
+    min-height: 1.5em;
+  }
+
   .root:is([data-tone='bad'], [data-tone='below'], [data-tone='average'], [data-tone='good'], [data-tone='great'], [data-tone='unicum']) & {
     color: var(--tone);
   }

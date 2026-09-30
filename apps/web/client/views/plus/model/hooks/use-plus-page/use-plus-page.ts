@@ -7,9 +7,9 @@ import { useReferralCapture } from '../use-referral-capture';
 
 export const usePlusPage = () => {
   const { trialAvailable, trialDays, isSignedIn, isPlus } = usePlus();
-  const { fromMonthlyRub } = usePlusOffers();
+  const { query, fromMonthlyRub } = usePlusOffers();
 
   useReferralCapture();
 
-  return { isPlus, isTrialOffered: !isPlus && (trialAvailable || !isSignedIn), trialDays, fromMonthlyRub };
+  return { isPlus, isTrialOffered: !isPlus && (trialAvailable || !isSignedIn), trialDays, fromMonthlyRub, isPricePending: query.isPending };
 };

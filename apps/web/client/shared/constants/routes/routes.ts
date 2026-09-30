@@ -61,6 +61,7 @@ export const ROUTES = {
     workspace: (tag: string) => `/c/${encodeURIComponent(tag)}/workspace`
   },
   tools: '/tools',
+  hub: '/hub',
   ratings: '/ratings',
   status: '/status',
   codes: '/codes',

@@ -5,6 +5,7 @@ import { Suspense } from 'react';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
+import { PageHeroFallback } from '@/ui-kit';
 import { HonestRngPage } from '@/views/honest-rng';
 
 export const generateMetadata = async () => {
@@ -15,7 +16,7 @@ export const generateMetadata = async () => {
 };
 
 const Page = () => (
-  <Suspense>
+  <Suspense fallback={<PageHeroFallback />}>
     <HonestRngPage />
   </Suspense>
 );

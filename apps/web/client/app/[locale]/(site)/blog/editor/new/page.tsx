@@ -6,6 +6,7 @@ import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
 import { RequestTime } from '@/shared/seo/request-time';
+import { PageHeroFallback } from '@/ui-kit';
 import { BlogPostEditorPage } from '@/views/blog-post-editor';
 
 export const generateMetadata = async () => {
@@ -17,7 +18,7 @@ export const generateMetadata = async () => {
 
 const Page = () => (
   <>
-    <Suspense>
+    <Suspense fallback={<PageHeroFallback />}>
       <BlogPostEditorPage />
     </Suspense>
     <Suspense>

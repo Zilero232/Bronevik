@@ -49,6 +49,7 @@ export const SITEMAP_STATIC_PATHS = [
   ROUTES.coaching.list,
   ROUTES.tournaments.list,
   ROUTES.tools,
+  ROUTES.hub,
   ROUTES.ratings,
   ROUTES.mod,
   ROUTES.plus,

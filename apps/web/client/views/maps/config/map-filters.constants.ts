@@ -18,7 +18,8 @@ export const MAP_FILTER_PARSERS = {
 } as const;
 
 export const MAPS_TABLE = {
-  pinWidth: 40
+  pinWidth: 40,
+  skeletonRows: 20
 } as const;
 
 export const MAPS_VIEW = {

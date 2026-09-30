@@ -8,6 +8,7 @@ import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
+import { PageHeroFallback } from '@/ui-kit';
 import { PlayerSignaturePage } from '@/views/player-signature';
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/p/[nick]/signature'>): Promise<Metadata> => {
@@ -33,7 +34,7 @@ const SignatureRoute = async ({ params }: Pick<PageProps<'/[locale]/p/[nick]/sig
 };
 
 const Page = ({ params }: PageProps<'/[locale]/p/[nick]/signature'>) => (
-  <Suspense>
+  <Suspense fallback={<PageHeroFallback />}>
     <SignatureRoute params={params} />
   </Suspense>
 );

@@ -31,11 +31,30 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   transform: translate(-50%, -50%);
-  transition: opacity var(--duration-fast) ease;
+  transition:
+    opacity var(--duration-base) ease,
+    translate var(--duration-base) var(--ease-out);
 
   &[data-starting-style],
   &[data-ending-style] {
     opacity: 0;
+  }
+
+  &[data-starting-style] {
+    translate: 0 var(--space-3);
+  }
+
+  &[data-ending-style] {
+    translate: 0 var(--space-2);
+  }
+
+  @include reduced-motion {
+    transition: opacity var(--duration-fast) ease;
+
+    &[data-starting-style],
+    &[data-ending-style] {
+      translate: none;
+    }
   }
 
   @include below(md) {

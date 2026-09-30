@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'motion/react';
+import * as m from 'motion/react-m';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 
@@ -20,9 +20,9 @@ export const MapFragment = () => {
     <Card className={s.root} data-status={status} variant='panel'>
       <div className={s.frame}>
         {image && (
-          <motion.div animate={{ scale: zoom }} className={s.zoom} initial={false} style={{ transformOrigin: origin }} transition={FRAGMENT_ZOOM}>
+          <m.div animate={{ scale: zoom }} className={s.zoom} initial={false} style={{ transformOrigin: origin }} transition={FRAGMENT_ZOOM}>
             <Image fill alt={isOver ? name : t('alt')} className={s.image} draggable={false} sizes={GUESS_MAP.imageSizes} src={image} />
-          </motion.div>
+          </m.div>
         )}
       </div>
       <div className={s.caption}>

@@ -10,6 +10,7 @@ import { resolveLocale } from '@/shared/i18n';
 import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
 import { articleJsonLd, breadcrumbJsonLd, JsonLd } from '@/shared/seo/json-ld';
+import { PageHeroFallback } from '@/ui-kit';
 import { BlogPostPage } from '@/views/blog-post';
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/blog/[slug]'>): Promise<Metadata> => {
@@ -74,7 +75,7 @@ const Page = ({ params }: PageProps<'/[locale]/blog/[slug]'>) => (
     <Suspense>
       <BlogArticleSchema params={params} />
     </Suspense>
-    <Suspense>
+    <Suspense fallback={<PageHeroFallback />}>
       <BlogPostRoute params={params} />
     </Suspense>
   </>

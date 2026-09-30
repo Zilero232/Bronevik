@@ -1,0 +1,9 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include scroll-reveal;
+
+  &:empty {
+    display: none;
+  }
+}

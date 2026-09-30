@@ -3,7 +3,7 @@
 import { NavigationMenu } from '@base-ui/react/navigation-menu';
 import { clsx } from 'clsx';
 import { ChevronDown } from 'lucide-react';
-import { motion } from 'motion/react';
+import * as m from 'motion/react-m';
 import { useTranslations } from 'next-intl';
 
 import { SITE_NAV } from '@/shared/constants';
@@ -20,7 +20,7 @@ import s from './SiteNav.module.scss';
 
 export const SiteNav = ({ className }: SiteNavProps) => {
   const t = useTranslations('nav');
-  const { href, groupKey, isToolsActive, value, indicatorKey, onValueChange, onHover, onLeave } = useSiteNav();
+  const { href, entryKey, value, indicatorKey, onValueChange, onHover, onLeave } = useSiteNav();
 
   return (
     <NavigationMenu.Root
@@ -32,32 +32,35 @@ export const SiteNav = ({ className }: SiteNavProps) => {
       onValueChange={onValueChange}
     >
       <NavigationMenu.List className={s.list} onPointerLeave={onLeave}>
-        {SITE_NAV.groups.map((group) => (
-          <NavigationMenu.Item key={group.key} value={group.key} onPointerEnter={() => onHover(group.key)}>
-            <NavigationMenu.Trigger className={s.trigger} data-active={groupKey === group.key}>
-              {t(`groups.${group.key}`)}
-              <NavigationMenu.Icon className={s.chevron}>
-                <ChevronDown aria-hidden size={14} />
-              </NavigationMenu.Icon>
-              {indicatorKey === group.key && <motion.span aria-hidden className={s.indicator} {...NAV_INDICATOR} />}
-            </NavigationMenu.Trigger>
-            <NavigationMenu.Content className={s.content}>
-              <NavPanel activeHref={href} group={group} />
-            </NavigationMenu.Content>
-          </NavigationMenu.Item>
-        ))}
-        <NavigationMenu.Item onPointerEnter={() => onHover(SITE_NAV.tools.key)}>
-          <NavigationMenu.Link
-            active={isToolsActive}
-            aria-current={isToolsActive ? 'page' : undefined}
-            className={s.trigger}
-            data-active={isToolsActive}
-            render={<Link href={SITE_NAV.tools.href} />}
-          >
-            {t(`items.${SITE_NAV.tools.key}`)}
-            {indicatorKey === SITE_NAV.tools.key && <motion.span aria-hidden className={s.indicator} {...NAV_INDICATOR} />}
-          </NavigationMenu.Link>
-        </NavigationMenu.Item>
+        {SITE_NAV.menu.map((entry) =>
+          'items' in entry ? (
+            <NavigationMenu.Item key={entry.key} value={entry.key} onPointerEnter={() => onHover(entry.key)}>
+              <NavigationMenu.Trigger className={s.trigger} data-active={entryKey === entry.key}>
+                {t(`groups.${entry.key}`)}
+                <NavigationMenu.Icon className={s.chevron}>
+                  <ChevronDown aria-hidden size={14} />
+                </NavigationMenu.Icon>
+                {indicatorKey === entry.key && <m.span aria-hidden className={s.indicator} {...NAV_INDICATOR} />}
+              </NavigationMenu.Trigger>
+              <NavigationMenu.Content className={s.content}>
+                <NavPanel activeHref={href} group={entry} />
+              </NavigationMenu.Content>
+            </NavigationMenu.Item>
+          ) : (
+            <NavigationMenu.Item key={entry.key} onPointerEnter={() => onHover(entry.key)}>
+              <NavigationMenu.Link
+                active={entryKey === entry.key}
+                aria-current={entryKey === entry.key ? 'page' : undefined}
+                className={s.trigger}
+                data-active={entryKey === entry.key}
+                render={<Link href={entry.href} />}
+              >
+                {t(`short.${entry.key}`)}
+                {indicatorKey === entry.key && <m.span aria-hidden className={s.indicator} {...NAV_INDICATOR} />}
+              </NavigationMenu.Link>
+            </NavigationMenu.Item>
+          )
+        )}
       </NavigationMenu.List>
       <NavigationMenu.Portal>
         <NavigationMenu.Backdrop className={s.backdrop} />

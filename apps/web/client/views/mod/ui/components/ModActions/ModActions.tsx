@@ -44,13 +44,15 @@ export const ModActions = () => {
           <Badge tone='steel'>{t('mostPending')}</Badge>
         )}
       </div>
-      {downloads.isPreparing && (
-        <p className={s.note} role='status'>
-          {t('preparing')}
-        </p>
-      )}
-      {downloads.manager && <p className={s.file}>{t('file', { file: distribution.managerFileName, ...downloads.manager })}</p>}
-      {downloads.modpack && <p className={s.file}>{t('manualFile', { file: distribution.packagesFileName, ...downloads.modpack })}</p>}
+      <div className={s.status}>
+        {downloads.isPreparing && (
+          <p className={s.note} role='status'>
+            {t('preparing')}
+          </p>
+        )}
+        {downloads.manager && <p className={s.file}>{t('file', { file: distribution.managerFileName, ...downloads.manager })}</p>}
+        {downloads.modpack && <p className={s.file}>{t('manualFile', { file: distribution.packagesFileName, ...downloads.modpack })}</p>}
+      </div>
     </div>
   );
 };

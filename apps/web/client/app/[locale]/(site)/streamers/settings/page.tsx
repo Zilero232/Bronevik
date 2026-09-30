@@ -5,6 +5,7 @@ import { Suspense } from 'react';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
+import { PageHeroFallback } from '@/ui-kit';
 import { StreamersSettingsPage } from '@/views/streamers-settings';
 
 export const generateMetadata = async () => {
@@ -22,7 +23,7 @@ export const generateMetadata = async () => {
 };
 
 const Page = () => (
-  <Suspense>
+  <Suspense fallback={<PageHeroFallback />}>
     <StreamersSettingsPage />
   </Suspense>
 );

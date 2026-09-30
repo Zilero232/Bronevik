@@ -1,0 +1,34 @@
+@use '@/shared/styles/mixins' as *;
+
+.item {
+  min-width: 0;
+
+  @include from(md) {
+    &[data-rank='1'] {
+      order: 2;
+    }
+
+    &[data-rank='2'] {
+      order: 1;
+    }
+
+    &[data-rank='3'] {
+      order: 3;
+    }
+  }
+}
+
+.block {
+  height: var(--podium-h);
+  border-radius: var(--radius-lg);
+
+  @include below(md) {
+    height: var(--podium-compact-h);
+  }
+
+  .item[data-rank='1'] & {
+    @include from(md) {
+      height: calc(var(--podium-h) + var(--space-4));
+    }
+  }
+}

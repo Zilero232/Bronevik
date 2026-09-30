@@ -8,18 +8,17 @@ import { HeroEmblem } from '../HeroEmblem';
 import s from './HeroStage.module.scss';
 
 export const HeroStage = () => {
-  const { rows, lead, hasShowcase } = useHeroTanks();
+  const { rows, lead, hasShowcase, isPending } = useHeroTanks();
 
   return (
-    <div className={s.root} data-nation={lead?.vehicle.nation} data-slot='showcase-3d'>
-      {hasShowcase ? (
+    <div className={s.root} data-nation={lead?.vehicle.nation} data-pending={isPending} data-slot='showcase-3d'>
+      {hasShowcase && (
         <>
           <span aria-hidden className={s.backdrop} />
           <TankShowcase3D className={s.showcase} tanks={rows.map((row) => row.vehicle)} />
         </>
-      ) : (
-        <HeroEmblem />
       )}
+      {!hasShowcase && !isPending && <HeroEmblem />}
     </div>
   );
 };

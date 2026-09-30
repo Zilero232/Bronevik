@@ -9,6 +9,8 @@ import { KeyFigure, PageHero, Skeleton } from '@/ui-kit';
 
 import type { MarksHeadProps } from './MarksHead.types';
 
+import { MOE_LIST } from '../../../config';
+
 import s from './MarksHead.module.scss';
 
 export const MarksHead = ({ total, updatedAt, isLoading, isEmpty }: MarksHeadProps) => {
@@ -31,7 +33,7 @@ export const MarksHead = ({ total, updatedAt, isLoading, isEmpty }: MarksHeadPro
       actions={<RatingsMethodLink section='marks' />}
       art={{ kind: 'emblem', glyph: <MarkOfExcellenceIcon marks={3} size={480} /> }}
       breadcrumbs={[{ label: t('home'), href: ROUTES.home }, { label: t('title') }]}
-      lead={updatedAt ? t('lead', { date: updated }) : t('leadPlain')}
+      lead={updatedAt || isLoading ? t('lead', { date: isLoading ? MOE_LIST.datePlaceholder : updated }) : t('leadPlain')}
       title={t('title')}
     />
   );

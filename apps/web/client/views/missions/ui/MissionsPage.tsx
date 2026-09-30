@@ -13,15 +13,23 @@ import s from './MissionsPage.module.scss';
 
 export const MissionsPage = () => {
   const t = useTranslations('missions.hub');
-  const { campaigns, operationsCount, progressOf } = useMissionsHub();
+  const { campaigns, operationsCount, hasFigure, progressOf } = useMissionsHub();
 
   return (
     <div className={s.root}>
       <PageHero
+        eyebrow={
+          campaigns.isPending ? (
+            <Badge tone='steel'>
+              <Skeleton width='6em' />
+            </Badge>
+          ) : (
+            campaigns.data?.gameVersion && <Badge tone='steel'>{t('gameVersion', { version: campaigns.data.gameVersion })}</Badge>
+          )
+        }
         art={{ kind: 'emblem', glyph: <CrosshairIcon size={480} /> }}
         breadcrumbs={[{ label: t('home'), href: ROUTES.home }, { label: t('title') }]}
-        eyebrow={campaigns.data?.gameVersion && <Badge tone='steel'>{t('gameVersion', { version: campaigns.data.gameVersion })}</Badge>}
-        figures={operationsCount !== null && <KeyFigure label={t('operationsFigure')} value={operationsCount} variant='compact' />}
+        figures={hasFigure && <KeyFigure label={t('operationsFigure')} value={operationsCount} variant='compact' />}
         lead={t('description')}
         title={t('title')}
       />

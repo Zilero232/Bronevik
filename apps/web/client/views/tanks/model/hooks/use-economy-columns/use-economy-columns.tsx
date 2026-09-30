@@ -26,7 +26,7 @@ export const useEconomyColumns = ({ view }: UseEconomyColumnsInput): TableColumn
       id: 'tank',
       header: t('tank'),
       cell: (info) => <TankCell vehicle={info.row.original.vehicle} />,
-      meta: { width: TANKS_TABLE.tankWidth }
+      meta: { width: TANKS_TABLE.tankWidth, isSticky: true }
     }),
     column.accessor((row) => row.vehicle.tier, {
       id: 'tier',

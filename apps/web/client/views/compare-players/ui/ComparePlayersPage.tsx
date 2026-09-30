@@ -2,9 +2,12 @@
 
 import type { RatingPeriod } from '@otmetki/schemas';
 
+import { AnimatePresence } from 'motion/react';
+import * as m from 'motion/react-m';
 import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 
+import { MOTION_VARIANTS } from '@/shared/lib';
 import { Card, CardHeader, DataSourceNote, EmptyState, PageHeader, QueryState, SegmentedControl } from '@/ui-kit';
 
 import { useComparePage } from '../model/hooks';
@@ -22,10 +25,18 @@ export const ComparePlayersPage = () => {
     <div className={s.root}>
       <PageHeader description={t('description')} title={t('title')}>
         <div className={s.slots}>
-          {ids.map((id, index) => (
-            <PlayerSlot key={id} accountId={id} index={index} onRemove={() => remove(id)} />
-          ))}
-          {canAdd && <AddSlot excludeIds={ids} index={ids.length} onAdd={add} />}
+          <AnimatePresence initial={false} mode='popLayout'>
+            {ids.map((id, index) => (
+              <m.div layout key={id} animate='shown' className={s.slot} exit='exit' initial='hidden' variants={MOTION_VARIANTS.listItem}>
+                <PlayerSlot accountId={id} index={index} onRemove={() => remove(id)} />
+              </m.div>
+            ))}
+            {canAdd && (
+              <m.div layout key='add' animate='shown' className={s.slot} exit='exit' initial='hidden' variants={MOTION_VARIANTS.listItem}>
+                <AddSlot excludeIds={ids} index={ids.length} onAdd={add} />
+              </m.div>
+            )}
+          </AnimatePresence>
         </div>
       </PageHeader>
       <Card aria-labelledby={titleId} padding='none'>

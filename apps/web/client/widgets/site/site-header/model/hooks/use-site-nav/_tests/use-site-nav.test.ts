@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { afterAll, afterEach, describe, expect, it, vi } from 'vitest';
 
-import { ROUTES, SITE_NAV } from '@/shared/constants';
+import { ROUTES, SITE_NAV_GROUPS } from '@/shared/constants';
 
 import { useSiteNav } from '../use-site-nav';
 
@@ -11,8 +11,8 @@ const location = vi.hoisted(() => ({ pathname: '/' }));
 
 vi.mock('@/shared/i18n/navigation', () => ({ usePathname: () => location.pathname, useRouter: vi.fn(), Link: vi.fn() }));
 
-const PLAYERS = SITE_NAV.groups.find(({ key }) => key === 'players')!;
-const VEHICLES = SITE_NAV.groups.find(({ key }) => key === 'vehicles')!;
+const PLAYERS = SITE_NAV_GROUPS.find(({ key }) => key === 'players')!;
+const VEHICLES = SITE_NAV_GROUPS.find(({ key }) => key === 'vehicles')!;
 
 const visit = (pathname: string) => {
   location.pathname = pathname;
@@ -32,18 +32,18 @@ describe('useSiteNav', () => {
 
     const { result } = renderHook(() => useSiteNav());
 
-    expect(result.current.groupKey).toBe(VEHICLES.key);
+    expect(result.current.entryKey).toBe(VEHICLES.key);
     expect(result.current.href).toBe(ROUTES.tanks.list);
     expect(result.current.indicatorKey).toBe(VEHICLES.key);
   });
 
-  it('points the indicator at the tools entry on a tools page', () => {
-    visit(SITE_NAV.tools.href);
+  it('points the indicator at a direct link on its page', () => {
+    visit(ROUTES.marks);
 
     const { result } = renderHook(() => useSiteNav());
 
-    expect(result.current.isToolsActive).toBe(true);
-    expect(result.current.indicatorKey).toBe(SITE_NAV.tools.key);
+    expect(result.current.entryKey).toBe('marks');
+    expect(result.current.indicatorKey).toBe('marks');
   });
 
   it('has no indicator on a page outside the navigation', () => {
@@ -51,7 +51,7 @@ describe('useSiteNav', () => {
 
     const { result } = renderHook(() => useSiteNav());
 
-    expect(result.current.groupKey).toBeNull();
+    expect(result.current.entryKey).toBeNull();
     expect(result.current.indicatorKey).toBeNull();
   });
 

@@ -9,6 +9,7 @@ import { Suspense } from 'react';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
+import { PageHeroFallback } from '@/ui-kit';
 import { ModePage } from '@/views/mode';
 
 export const generateStaticParams = () => PLAY_MODES.map((mode) => ({ mode }));
@@ -42,7 +43,7 @@ const Page = async ({ params }: PageProps<'/[locale]/modes/[mode]'>) => {
   }
 
   return (
-    <Suspense>
+    <Suspense fallback={<PageHeroFallback />}>
       <ModePage mode={parsed.data} />
     </Suspense>
   );

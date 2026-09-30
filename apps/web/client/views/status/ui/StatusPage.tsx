@@ -27,7 +27,7 @@ export const StatusPage = () => {
       />
       <div className={s.body}>
         {isPending ? (
-          <Skeleton height={STATUS_PAGE.skeletonHeight} shape='block' />
+          <Skeleton className={s.verdictSkeleton} shape='block' />
         ) : (
           <StatusVerdict checkedAt={checkedAt} isFetching={isFetching} status={summary.status} verdict={summary.verdict} onRefresh={onRefresh} />
         )}
@@ -35,10 +35,11 @@ export const StatusPage = () => {
           <SectionHeader as='h2' description={t('componentsLead')} title={t('componentsTitle')} />
           <ul className={s.grid}>
             {summary.components.map((component) => (
-              <StatusComponent key={component.key} component={component} />
+              <StatusComponent key={component.key} component={component} isPending={isPending} />
             ))}
           </ul>
         </section>
+        {isPending && <Skeleton className={s.collectorSkeleton} shape='block' />}
         {collector && (
           <section className={s.section}>
             <SectionHeader as='h2' description={t('collector.lead')} title={t('collector.title')} />

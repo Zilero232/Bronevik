@@ -16,12 +16,12 @@ export const useHeroTanks = () => {
     limit: HOME.strongTanks.limit
   };
 
-  const { data } = useQuery({
+  const { data, isPending } = useQuery({
     queryKey: QUERY_KEYS.tanks.stats(params),
     queryFn: ({ signal }) => listTankStats({ ...params, tiers: [...params.tiers], signal })
   });
 
   const rows = (data?.items ?? []).slice(0, HOME.hero.tanks);
 
-  return { rows, lead: rows.at(0), hasShowcase: rows.length > 0 };
+  return { rows, lead: rows.at(0), hasShowcase: rows.length > 0, isPending };
 };

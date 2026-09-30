@@ -8,13 +8,12 @@ import { RatingPatternsToggle } from '@/features/app/rating-patterns';
 import { LocaleSwitcher } from '@/features/app/switch-locale';
 import { ThemeToggle } from '@/features/app/switch-theme';
 import { CommandPaletteTrigger } from '@/features/search/command-palette';
-import { SITE_NAV } from '@/shared/constants';
+import { SITE_NAV, SITE_NAV_GROUPS, SITE_NAV_LINKS } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { Drawer } from '@/ui-kit';
 
 import type { MobileNavProps } from './MobileNav.types';
 
-import { MOBILE_NAV } from '../../../config';
 import { useSiteNav } from '../../../model/hooks';
 import { GameStatusSlot } from '../GameStatusSlot';
 import { DrawerAccount, DrawerAccountGroup, DrawerGroup } from './components';
@@ -24,7 +23,7 @@ import s from './MobileNav.module.scss';
 export const MobileNav = ({ open, onOpenChange }: MobileNavProps) => {
   const t = useTranslations('nav');
   const tSettings = useTranslations('settings');
-  const { href, groupKey } = useSiteNav();
+  const { href, entryKey } = useSiteNav();
 
   return (
     <Drawer open={open} title={t('label')} onOpenChange={onOpenChange}>
@@ -33,29 +32,21 @@ export const MobileNav = ({ open, onOpenChange }: MobileNavProps) => {
         <CommandPaletteTrigger className={s.search} onOpen={() => onOpenChange(false)} />
       </div>
       <nav aria-label={t('label')} className={s.nav}>
-        <Accordion.Root multiple className={s.groups} defaultValue={groupKey ? [groupKey] : []}>
-          {SITE_NAV.groups.map((group) => (
+        <Accordion.Root multiple className={s.groups} defaultValue={entryKey ? [entryKey] : []}>
+          {SITE_NAV_GROUPS.map((group) => (
             <DrawerGroup
               key={group.key}
               activeHref={href}
-              isActive={groupKey === group.key}
+              isActive={entryKey === group.key}
               label={t(`groups.${group.key}`)}
               links={group.items.map((item) => ({ ...item, label: t(`items.${item.key}`) }))}
               value={group.key}
               onNavigate={() => onOpenChange(false)}
             />
           ))}
-          <DrawerGroup
-            activeHref={href}
-            isActive={false}
-            label={t(`groups.${MOBILE_NAV.projectKey}`)}
-            links={MOBILE_NAV.projectItems.map((item) => ({ ...item, label: t(`items.${item.key}`) }))}
-            value={MOBILE_NAV.projectKey}
-            onNavigate={() => onOpenChange(false)}
-          />
           <DrawerAccountGroup onNavigate={() => onOpenChange(false)} />
         </Accordion.Root>
-        {[SITE_NAV.tools, SITE_NAV.plus].map((item) => (
+        {[...SITE_NAV_LINKS, SITE_NAV.hub, SITE_NAV.plus].map((item) => (
           <Link
             key={item.key}
             aria-current={href === item.href ? 'page' : undefined}

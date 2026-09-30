@@ -14,6 +14,7 @@ import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
 import { itemListJsonLd, JsonLd } from '@/shared/seo/json-ld';
 import { PrefetchBoundary } from '@/shared/seo/prefetch-boundary';
+import { PageHeroFallback } from '@/ui-kit';
 import { TankCollectionPage } from '@/views/vehicle-catalog';
 import { vehicleCatalogPageState } from '@/views/vehicle-catalog/server';
 
@@ -70,7 +71,7 @@ const Page = async ({ params }: PageProps<'/[locale]/t/collections/[slug]'>) => 
       <Suspense>
         <CollectionSchema slug={slug} />
       </Suspense>
-      <Suspense>
+      <Suspense fallback={<PageHeroFallback />}>
         <PrefetchBoundary state={vehicleCatalogPageState()}>
           <TankCollectionPage slug={slug} />
         </PrefetchBoundary>

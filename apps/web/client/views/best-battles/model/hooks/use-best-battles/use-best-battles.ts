@@ -21,7 +21,7 @@ export const useBestBattles = () => {
     staleTime: BEST_BATTLES_VIEW.staleMs
   });
 
-  const { data: facets } = useQuery({
+  const { data: facets, isPending: isFacetsPending } = useQuery({
     queryKey: QUERY_KEYS.bestBattles.facets(state.period),
     queryFn: ({ signal }) => getBestBattleFacets({ period: state.period, signal }),
     staleTime: BEST_BATTLES_VIEW.staleMs
@@ -35,6 +35,7 @@ export const useBestBattles = () => {
     battles,
     podium: battles.slice(0, BEST_BATTLES_VIEW.podiumSize),
     facets: facets && facets.battles > 0 ? facets : null,
+    isFacetsPending,
     isFiltered: hasBattleFilters(state),
     feed,
     loadMore: () => void fetchNextPage(),

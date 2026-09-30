@@ -15,5 +15,6 @@
   "loading": "Searching…",
   "empty": "No target found. Check the spelling.",
   "navigate": "select",
-  "source": "Data by Lesta Games"
+  "source": "Data by Lesta Games",
+  "tab": "Search"
 }

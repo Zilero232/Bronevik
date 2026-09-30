@@ -5,7 +5,9 @@ export const MOE_LIST = {
   historyStaleMs: minutesToMilliseconds(10),
   historyChartHeight: 200,
   rowHeight: 44,
-  pinWidth: 40
+  pinWidth: 40,
+  datePlaceholder: ' '.repeat(12),
+  skeletonRows: 20
 } as const;
 
 export const PLAYER_LOOKUP = {

@@ -32,7 +32,7 @@ describe('myModeStatus', () => {
   });
 
   it('waits for the session before deciding anything', () => {
-    expect(myModeStatus({ ...READY, isSignedIn: false, isSessionPending: true })).toBe('pending');
+    expect(myModeStatus({ ...READY, isSignedIn: false, isSessionPending: true })).toBe('session');
   });
 
   it('asks a signed-out visitor to log in', () => {

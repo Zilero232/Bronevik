@@ -19,9 +19,9 @@ export const HonestRngPage = () => {
     <div className={s.root}>
       <PageHero
         figures={
-          rng.server && (
+          rng.hasFigures && (
             <>
-              <KeyFigure label={t('head.shots')} value={rng.server.shots} variant='compact' />
+              <KeyFigure label={t('head.shots')} value={rng.server?.shots} variant='compact' />
               <KeyFigure
                 format={{ signDisplay: 'exceptZero', maximumFractionDigits: 2 }}
                 label={t('head.meanRoll')}
@@ -33,7 +33,7 @@ export const HonestRngPage = () => {
                 format={{ maximumFractionDigits: 1 }}
                 label={t('head.within')}
                 suffix='%'
-                value={rng.server.withinSpread}
+                value={rng.server?.withinSpread}
                 variant='compact'
               />
             </>

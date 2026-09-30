@@ -18,5 +18,6 @@ export const BEST_BATTLES_VIEW = {
   staleMs: 60_000,
   medalsInRow: 4,
   chipMedalSize: 20,
-  skeletonHeight: 480
+  skeletonHeight: 480,
+  podiumSkeleton: { height: 200, compactHeight: 200 }
 } as const;

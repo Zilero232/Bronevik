@@ -8,6 +8,7 @@ import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
 import { RequestTime } from '@/shared/seo/request-time';
+import { PageHeroFallback } from '@/ui-kit';
 import { MissionOperationPage } from '@/views/mission-operation';
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/missions/[campaign]/[operation]'>): Promise<Metadata> => {
@@ -27,7 +28,7 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/missions
 
 const Page = () => (
   <>
-    <Suspense>
+    <Suspense fallback={<PageHeroFallback />}>
       <MissionOperationPage />
     </Suspense>
     <Suspense>

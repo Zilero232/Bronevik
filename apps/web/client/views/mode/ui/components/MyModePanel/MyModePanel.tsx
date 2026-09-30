@@ -28,50 +28,54 @@ export const MyModePanel = ({ mode }: MyModePanelProps) => {
     <Card className={s.root} padding='none'>
       <CardHeader className={s.header} meta={t('period', { days })} title={t('title')} />
       <div className={s.body}>
-        {status === 'signedOut' ? (
-          <EmptyState
-            isCompact
-            action={
-              <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={loginHref}>
-                {t('loginAction')}
-              </Link>
-            }
-            description={t('signedOutText')}
-            icon={<LogIn size={16} />}
-            title={t('signedOutTitle')}
-          />
-        ) : (
-          <PlusGate feature='analytics'>
-            {match(status)
-              .with('pending', () => <Skeleton height={MY_MODE.skeletonHeight} shape='block' />)
-              .with('noAccount', () => (
-                <EmptyState
-                  isCompact
-                  action={
-                    <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.account.overview}>
-                      {t('linkAction')}
-                    </Link>
-                  }
-                  description={t('noAccountText')}
-                  icon={<Link2 size={16} />}
-                  title={t('noAccountTitle')}
-                />
-              ))
-              .with('error', () => <ErrorState isCompact isRetrying={isRetrying} onRetry={onRetry} />)
-              .with('empty', () => <EmptyState isCompact description={t('emptyText', { days })} title={t('emptyTitle')} />)
-              .with('ready', () => line && <MyModeLineView line={line} tanks={tanks} />)
-              .exhaustive()}
-            {career && (
-              <p className={s.career}>
-                {t('career', {
-                  battles: career.battles,
-                  winRate: career.winRate === null ? '—' : format.number(career.winRate, { maximumFractionDigits: 1 }),
-                  damage: career.avgDamage === null ? '—' : format.number(career.avgDamage, { maximumFractionDigits: 0 })
-                })}
-              </p>
-            )}
-          </PlusGate>
-        )}
+        {match(status)
+          .with('signedOut', () => (
+            <EmptyState
+              isCompact
+              action={
+                <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={loginHref}>
+                  {t('loginAction')}
+                </Link>
+              }
+              description={t('signedOutText')}
+              icon={<LogIn size={16} />}
+              title={t('signedOutTitle')}
+            />
+          ))
+          .with('session', () => <Skeleton className={s.sessionSkeleton} shape='block' />)
+          .otherwise(() => (
+            <PlusGate feature='analytics'>
+              {match(status)
+                .with('pending', () => <Skeleton height={MY_MODE.skeletonHeight} shape='block' />)
+                .with('noAccount', () => (
+                  <EmptyState
+                    isCompact
+                    action={
+                      <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.account.overview}>
+                        {t('linkAction')}
+                      </Link>
+                    }
+                    description={t('noAccountText')}
+                    icon={<Link2 size={16} />}
+                    title={t('noAccountTitle')}
+                  />
+                ))
+                .with('error', () => <ErrorState isCompact isRetrying={isRetrying} onRetry={onRetry} />)
+                .with('empty', () => <EmptyState isCompact description={t('emptyText', { days })} title={t('emptyTitle')} />)
+                .with('ready', () => line && <MyModeLineView line={line} tanks={tanks} />)
+                .with('signedOut', 'session', () => null)
+                .exhaustive()}
+              {career && (
+                <p className={s.career}>
+                  {t('career', {
+                    battles: career.battles,
+                    winRate: career.winRate === null ? '—' : format.number(career.winRate, { maximumFractionDigits: 1 }),
+                    damage: career.avgDamage === null ? '—' : format.number(career.avgDamage, { maximumFractionDigits: 0 })
+                  })}
+                </p>
+              )}
+            </PlusGate>
+          ))}
       </div>
     </Card>
   );

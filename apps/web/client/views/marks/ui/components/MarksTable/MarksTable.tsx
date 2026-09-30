@@ -26,6 +26,7 @@ export const MarksTable = ({ rows, isLoading, isStale, pinnedRowIds, onSelect }:
         isLoading={isLoading}
         pinnedRowIds={pinnedRowIds}
         rowHeight={MOE_LIST.rowHeight}
+        skeletonRows={MOE_LIST.skeletonRows}
         onRowClick={onSelect}
       />
     </div>

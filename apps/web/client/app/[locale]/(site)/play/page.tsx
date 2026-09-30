@@ -7,6 +7,7 @@ import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
 import { itemListJsonLd, JsonLd } from '@/shared/seo/json-ld';
+import { PageHeroFallback } from '@/ui-kit';
 import { PlayHubPage } from '@/views/play-hub';
 
 export const generateMetadata = async () => {
@@ -37,7 +38,7 @@ const Page = () => (
     <Suspense>
       <PlayHubSchema />
     </Suspense>
-    <Suspense>
+    <Suspense fallback={<PageHeroFallback />}>
       <PlayHubPage />
     </Suspense>
   </>

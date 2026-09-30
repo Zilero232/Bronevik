@@ -9,6 +9,7 @@ import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
+import { PageHeroFallback } from '@/ui-kit';
 import { GuidePage } from '@/views/guide';
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/guides/[slug]'>): Promise<Metadata> => {
@@ -35,7 +36,7 @@ const GuideRoute = async ({ params }: Pick<PageProps<'/[locale]/guides/[slug]'>,
 };
 
 const Page = ({ params }: PageProps<'/[locale]/guides/[slug]'>) => (
-  <Suspense>
+  <Suspense fallback={<PageHeroFallback />}>
     <GuideRoute params={params} />
   </Suspense>
 );

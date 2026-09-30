@@ -1,4 +1,4 @@
-import { Band } from '@/ui-kit';
+import { Band, Reveal } from '@/ui-kit';
 import { PromoBoard } from '@/widgets/promo/promo-banners';
 
 import {
@@ -25,19 +25,31 @@ export const HomePage = () => (
     </div>
     <PromoBoard />
     <ForYou />
-    <Band as='div' isDark={false} tone='raised' width='full'>
-      <StrongTanks />
-    </Band>
-    <GarageStrip />
-    <MarksMovement />
-    <ModpackPromo />
-    <Band as='div' isDark={false} texture='noise' tone='raised' width='full'>
-      <TopPlayers />
-    </Band>
-    <div className={s.pair}>
+    <Reveal>
+      <Band as='div' isDark={false} tone='raised' width='full'>
+        <StrongTanks />
+      </Band>
+    </Reveal>
+    <Reveal>
+      <GarageStrip />
+    </Reveal>
+    <Reveal>
+      <MarksMovement />
+    </Reveal>
+    <Reveal>
+      <ModpackPromo />
+    </Reveal>
+    <Reveal>
+      <Band as='div' isDark={false} texture='noise' tone='raised' width='full'>
+        <TopPlayers />
+      </Band>
+    </Reveal>
+    <Reveal className={s.pair}>
       <GameNews />
       <ClanActivity />
-    </div>
-    <CommunityBand />
+    </Reveal>
+    <Reveal>
+      <CommunityBand />
+    </Reveal>
   </div>
 );

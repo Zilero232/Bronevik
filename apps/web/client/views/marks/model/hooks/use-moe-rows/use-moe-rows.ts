@@ -30,7 +30,7 @@ export const useMoeRows = () => {
     pinnedIds: rowIds,
     isPinPending: isPending,
     total,
-    isUntracked: total === 0 && !filters.isActive && q.trim() === '',
+    isUntracked: feed !== undefined && total === 0 && !filters.isActive && q.trim() === '',
     updatedAt: latestUpdate(all),
     query
   };

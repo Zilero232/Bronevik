@@ -3,15 +3,16 @@
 import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 
-import { Band } from '@/ui-kit';
+import { Band, Skeleton } from '@/ui-kit';
 
 import type { ClanLeadersProps } from './ClanLeaders.types';
 
+import { CLAN_RATING } from '../../../config';
 import { ClanLeaderCard } from './components';
 
 import s from './ClanLeaders.module.scss';
 
-export const ClanLeaders = ({ leaders }: ClanLeadersProps) => {
+export const ClanLeaders = ({ leaders, isLoading = false }: ClanLeadersProps) => {
   const t = useTranslations('clans.leaders');
   const titleId = useId();
 
@@ -20,11 +21,17 @@ export const ClanLeaders = ({ leaders }: ClanLeadersProps) => {
       <h2 className={s.title} id={titleId}>
         {t('title')}
       </h2>
-      <ol className={s.list}>
-        {leaders.map((item, index) => (
-          <ClanLeaderCard key={item.clan.clanId} item={item} rank={index + 1} />
-        ))}
-      </ol>
+      {isLoading ? (
+        <div aria-busy className={s.list}>
+          <Skeleton className={s.placeholder} count={CLAN_RATING.leaders} shape='block' />
+        </div>
+      ) : (
+        <ol className={s.list}>
+          {leaders.map((item, index) => (
+            <ClanLeaderCard key={item.clan.clanId} item={item} rank={index + 1} />
+          ))}
+        </ol>
+      )}
     </Band>
   );
 };

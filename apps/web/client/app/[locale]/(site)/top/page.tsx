@@ -6,6 +6,7 @@ import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
 import { PrefetchBoundary } from '@/shared/seo/prefetch-boundary';
+import { PageHeroFallback } from '@/ui-kit';
 import { TopPage } from '@/views/top';
 import { topPageState } from '@/views/top/server';
 
@@ -17,7 +18,7 @@ export const generateMetadata = async () => {
 };
 
 const Page = ({ searchParams }: PageProps<'/[locale]/top'>) => (
-  <Suspense>
+  <Suspense fallback={<PageHeroFallback />}>
     <PrefetchBoundary state={searchParams.then(topPageState)}>
       <TopPage />
     </PrefetchBoundary>

@@ -10,8 +10,15 @@
 
 .figure {
   min-width: 0;
+  min-height: 153px;
 
   @include below(md) {
+    min-height: 0;
+
+    &:nth-child(-n + 2) {
+      min-height: 170px;
+    }
+
     &:nth-child(3) {
       grid-column: 1 / -1;
     }
@@ -40,7 +47,14 @@
 }
 
 .wide {
+  display: grid;
+  min-height: 153px;
+  align-content: center;
   grid-column: 1 / -1;
+
+  @include below(md) {
+    min-height: 312px;
+  }
 }
 
 .notice {

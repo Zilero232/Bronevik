@@ -1,15 +1,16 @@
+import { times } from 'remeda';
+
 import type { DataTableSkeletonProps } from './DataTableSkeleton.types';
 
 import { Skeleton } from '../../../../atoms';
-import { DATA_TABLE_SKELETON } from './DataTableSkeleton.constants';
 
 import s from '../../DataTable.module.scss';
 
-export const DataTableSkeleton = ({ columnCount }: DataTableSkeletonProps) => (
+export const DataTableSkeleton = ({ columnCount, rowCount }: DataTableSkeletonProps) => (
   <tbody aria-busy>
-    {DATA_TABLE_SKELETON.rows.map((row) => (
+    {times(rowCount, (row) => (
       <tr key={row} className={s.row}>
-        {Array.from({ length: columnCount }, (_, column) => (
+        {times(columnCount, (column) => (
           <td key={column} className={s.td}>
             <Skeleton width={`${50 + ((row * 7 + column * 13) % 45)}%`} />
           </td>

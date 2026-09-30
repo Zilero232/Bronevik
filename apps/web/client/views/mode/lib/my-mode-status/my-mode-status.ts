@@ -6,7 +6,7 @@ import { MY_MODE } from '../../config';
 
 export const myModeStatus = ({ isSignedIn, isSessionPending, isPending, error, line }: MyModeStatusInput): MyModeStatus => {
   if (isSessionPending) {
-    return 'pending';
+    return 'session';
   }
 
   if (!isSignedIn || isUnauthorizedError(error)) {

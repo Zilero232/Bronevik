@@ -4,8 +4,9 @@ import { Trophy } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
-import { Card, DataSourceNote, FilteredEmptyState, KeyFigure, PageHero, QueryState } from '@/ui-kit';
+import { Card, DataSourceNote, FilteredEmptyState, KeyFigure, PageHero, PodiumSkeleton, QueryState } from '@/ui-kit';
 
+import { BEST_BATTLES_VIEW } from '../config';
 import { useBestBattles } from '../model/hooks';
 import { BestBattlesFilters, BestBattlesPodium, BestBattlesTable } from './components';
 
@@ -19,11 +20,15 @@ export const BestBattlesPage = () => {
     <div className={s.root}>
       <PageHero
         figures={
-          view.facets && (
-            <>
-              <KeyFigure label={t(`hero.battles.${view.facets.period}`)} value={view.facets.battles} variant='compact' />
-              {view.facets.topDamage !== null && <KeyFigure label={t('hero.topDamage')} value={view.facets.topDamage} variant='compact' />}
-            </>
+          view.isFacetsPending ? (
+            <KeyFigure label={t('hero.topDamage')} value={null} variant='compact' />
+          ) : (
+            view.facets && (
+              <>
+                <KeyFigure label={t(`hero.battles.${view.facets.period}`)} value={view.facets.battles} variant='compact' />
+                {view.facets.topDamage !== null && <KeyFigure label={t('hero.topDamage')} value={view.facets.topDamage} variant='compact' />}
+              </>
+            )
           )
         }
         art={{ kind: 'emblem', glyph: <Trophy size={480} strokeWidth={1.25} /> }}
@@ -32,6 +37,7 @@ export const BestBattlesPage = () => {
         title={t('hero.title')}
       />
       <div className={s.content}>
+        {view.feed.isPending && <PodiumSkeleton count={BEST_BATTLES_VIEW.podiumSize} {...BEST_BATTLES_VIEW.podiumSkeleton} />}
         {view.podium.length > 0 && (
           <div className={s.board} data-refreshing={view.feed.isPlaceholderData}>
             <BestBattlesPodium battles={view.podium} metric={view.metric} />

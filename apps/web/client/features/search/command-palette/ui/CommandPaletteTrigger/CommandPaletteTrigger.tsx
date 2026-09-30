@@ -17,6 +17,15 @@ export const CommandPaletteTrigger = ({ variant = 'bar', className, onOpen }: Co
   const tCommon = useTranslations('common');
   const open = useCommandPaletteTrigger(onOpen);
 
+  if (variant === 'tab') {
+    return (
+      <button className={className} type='button' onClick={open}>
+        <Search aria-hidden size={20} />
+        <span>{t('tab')}</span>
+      </button>
+    );
+  }
+
   if (variant === 'icon') {
     return (
       <IconButton aria-label={t('open')} className={className} onClick={open}>

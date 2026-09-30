@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { ROUTES, SITE_FOOTER_GROUPS, SITE_NAV } from '@/shared/constants';
+import { ROUTES, SITE_FOOTER_COLUMNS, SITE_HUB_GROUPS, SITE_LINKS, SITE_NAV, SITE_NAV_GROUPS } from '@/shared/constants';
 
 import { activeNavHref, activeSiteNav, isNavHrefMatch } from '../nav-match';
 
@@ -24,43 +24,51 @@ describe('activeNavHref', () => {
 });
 
 describe('activeSiteNav', () => {
-  it('maps detail pages to their section and group', () => {
-    expect(activeSiteNav(ROUTES.tanks.detail('is-7'))).toEqual({ href: ROUTES.tanks.catalog, groupKey: 'vehicles' });
-    expect(activeSiteNav(ROUTES.tanks.list)).toEqual({ href: ROUTES.tanks.list, groupKey: 'vehicles' });
-    expect(activeSiteNav(ROUTES.players.profile('Nick'))).toEqual({ href: ROUTES.players.list, groupKey: 'players' });
-    expect(activeSiteNav(ROUTES.competitions.detail('spring'))).toEqual({ href: ROUTES.tournaments.list, groupKey: 'community' });
-    expect(activeSiteNav(ROUTES.play.guessTank)).toEqual({ href: ROUTES.play.hub, groupKey: 'community' });
+  it('maps detail pages to their section and menu entry', () => {
+    expect(activeSiteNav(ROUTES.tanks.detail('is-7'))).toEqual({ href: ROUTES.tanks.catalog, entryKey: 'vehicles' });
+    expect(activeSiteNav(ROUTES.tanks.list)).toEqual({ href: ROUTES.tanks.list, entryKey: 'vehicles' });
+    expect(activeSiteNav(ROUTES.players.profile('Nick'))).toEqual({ href: ROUTES.players.list, entryKey: 'players' });
+    expect(activeSiteNav(ROUTES.clans.detail('TAG'))).toEqual({ href: ROUTES.clans.list, entryKey: 'players' });
+    expect(activeSiteNav(ROUTES.competitions.detail('spring'))).toEqual({ href: ROUTES.tournaments.list, entryKey: 'community' });
+  });
+
+  it('marks a direct link as its own menu entry', () => {
+    expect(activeSiteNav(ROUTES.marks)).toEqual({ href: ROUTES.marks, entryKey: 'marks' });
+    expect(activeSiteNav(ROUTES.modProfile)).toEqual({ href: ROUTES.mod, entryKey: 'mod' });
   });
 
   it('maps streamer pages to the streamer directory', () => {
-    expect(activeSiteNav(ROUTES.streamers.profile('nick'))).toEqual({ href: ROUTES.streamers.list, groupKey: 'community' });
-    expect(activeSiteNav(ROUTES.streamers.settings.table)).toEqual({ href: ROUTES.streamers.list, groupKey: 'community' });
-    expect(activeSiteNav(ROUTES.streamers.forStreamers)).toEqual({ href: null, groupKey: null });
+    expect(activeSiteNav(ROUTES.streamers.profile('nick'))).toEqual({ href: ROUTES.streamers.list, entryKey: 'community' });
+    expect(activeSiteNav(ROUTES.streamers.settings.table)).toEqual({ href: ROUTES.streamers.list, entryKey: 'community' });
+    expect(activeSiteNav(ROUTES.streamers.forStreamers)).toEqual({ href: null, entryKey: null });
   });
 
   it('maps every social tab to the competitions hub', () => {
     [ROUTES.social.feed, ROUTES.social.leagues, ROUTES.social.challenges].forEach((pathname) =>
-      expect(activeSiteNav(pathname)).toEqual({ href: ROUTES.social.leagues, groupKey: 'community' })
+      expect(activeSiteNav(pathname)).toEqual({ href: ROUTES.social.leagues, entryKey: 'community' })
     );
   });
 
-  it('leaves account pages unmarked', () => {
-    expect(activeSiteNav(ROUTES.account.billing)).toEqual({ href: null, groupKey: null });
+  it('leaves account and hub-only pages without a menu entry', () => {
+    expect(activeSiteNav(ROUTES.account.billing)).toEqual({ href: null, entryKey: null });
+    expect(activeSiteNav(ROUTES.hub)).toEqual({ href: ROUTES.hub, entryKey: null });
+    expect(activeSiteNav(ROUTES.platoons)).toEqual({ href: null, entryKey: null });
   });
 });
 
 describe('SITE_NAV', () => {
-  const menuHrefs = [...SITE_NAV.groups.flatMap((group) => group.items.map((item) => item.href)), SITE_NAV.tools.href, SITE_NAV.plus.href];
+  const menuHrefs = SITE_NAV.menu.flatMap((entry) => ('items' in entry ? entry.items.map((item) => item.href) : [entry.href]));
+  const hubHrefs = SITE_HUB_GROUPS.flatMap((group) => group.items.map((item) => item.href));
 
   it('keeps at most six top-level entries', () => {
-    expect(SITE_NAV.groups.length + 1).toBeLessThanOrEqual(6);
+    expect(SITE_NAV.menu.length).toBeLessThanOrEqual(6);
   });
 
-  it('keeps every group at seven links or fewer', () => {
-    SITE_NAV.groups.forEach((group) => expect(group.items.length).toBeLessThanOrEqual(7));
+  it('keeps every dropdown at five links or fewer', () => {
+    SITE_NAV_GROUPS.forEach((group) => expect(group.items.length).toBeLessThanOrEqual(5));
   });
 
-  it('lists every route exactly once', () => {
+  it('lists every header route exactly once', () => {
     expect(new Set(menuHrefs).size).toBe(menuHrefs.length);
   });
 
@@ -70,11 +78,19 @@ describe('SITE_NAV', () => {
     );
   });
 
-  it('gives the footer only pages the header does not list, besides tools and plus', () => {
-    const footerOnly = SITE_FOOTER_GROUPS.flatMap((group) => group.items.map((item) => item.href)).filter(
-      (href) => href !== SITE_NAV.tools.href && href !== SITE_NAV.plus.href
-    );
+  it('puts every section on the hub exactly once', () => {
+    const sections = Object.values(SITE_LINKS)
+      .map(({ href }) => href)
+      .filter((href) => href !== ROUTES.hub);
 
-    footerOnly.forEach((href) => expect(menuHrefs).not.toContain(href));
+    expect(new Set(hubHrefs).size).toBe(hubHrefs.length);
+    expect([...hubHrefs].sort()).toEqual([...sections].sort());
+  });
+
+  it('keeps every header link reachable from the hub and the footer', () => {
+    const footerHrefs = SITE_FOOTER_COLUMNS.flatMap((group) => group.items.map((item) => item.href));
+
+    menuHrefs.forEach((href) => expect(hubHrefs).toContain(href));
+    expect(footerHrefs).toContain(ROUTES.hub);
   });
 });

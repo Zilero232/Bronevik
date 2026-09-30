@@ -74,6 +74,11 @@
   gap: var(--space-2);
 }
 
+.kindSkeleton {
+  width: 16em;
+  height: 26px;
+}
+
 .kind {
   display: inline-flex;
   height: 26px;

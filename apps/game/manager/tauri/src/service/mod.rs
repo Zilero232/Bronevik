@@ -1,8 +1,11 @@
 mod backups;
 mod check;
 mod maintenance;
+mod report;
 mod sets;
 pub mod setup;
+pub mod sync;
+mod whats_new;
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -13,6 +16,8 @@ use serde::Serialize;
 
 pub use check::CheckOutcome;
 pub use setup::{InstallPlan, InstallRequest, UninstallRequest};
+pub use sync::{AccountLink, SyncReport, SyncStatus};
+pub use whats_new::WhatsNew;
 
 use crate::catalog::{self, Catalog, LoadedCatalog};
 use crate::components::ClientContext;
@@ -24,7 +29,9 @@ use crate::install::owned_patterns_catalog;
 use crate::patch::{PatchReport, PatchStatus};
 use crate::paths::{normalized, same_path, Layout};
 use crate::releases::ReleasesClient;
-use crate::settings::ManagerSettings;
+use crate::report::ReportPreview;
+use crate::settings::{ManagerSettings, ManagerState};
+use crate::site::SiteClient;
 
 pub const BUSY_WAIT: Duration = Duration::from_secs(3);
 
@@ -38,7 +45,9 @@ pub struct ClientsView {
 pub struct Manager {
     pub layout: Layout,
     pub releases: ReleasesClient,
+    pub site: SiteClient,
     settings: Mutex<ManagerSettings>,
+    report_preview: Mutex<Option<ReportPreview>>,
     report: Mutex<PatchReport>,
     others: Mutex<HashMap<String, PatchStatus>>,
     res_maps: Mutex<HashMap<String, ResMapOutcome>>,
@@ -76,20 +85,46 @@ pub fn busy() -> AppError {
 }
 
 impl Manager {
-    pub fn new(layout: Layout, releases: ReleasesClient) -> Self {
+    pub fn new(layout: Layout, releases: ReleasesClient) -> AppResult<Self> {
         let settings = ManagerSettings::load(&layout.settings_file());
+        let site = SiteClient::new(releases.base_url())?;
 
-        Self {
+        Ok(Self {
             layout,
             releases,
+            site,
             settings: Mutex::new(settings),
+            report_preview: Mutex::new(None),
             report: Mutex::new(PatchReport::default()),
             others: Mutex::new(HashMap::new()),
             res_maps: Mutex::new(HashMap::new()),
             pending_link: Mutex::new(None),
             check_lock: tokio::sync::Mutex::new(()),
             write_lock: tokio::sync::Mutex::new(()),
+        })
+    }
+
+    pub fn state(&self) -> ManagerState {
+        ManagerState::load(&self.layout.manager_state_file())
+    }
+
+    pub fn change_state(&self, change: impl FnOnce(&mut ManagerState)) -> AppResult<ManagerState> {
+        let mut state = self.state();
+
+        change(&mut state);
+        state.save(&self.layout.manager_state_file())?;
+
+        Ok(state)
+    }
+
+    pub fn keep_report_preview(&self, preview: &ReportPreview) {
+        if let Ok(mut current) = self.report_preview.lock() {
+            *current = Some(preview.clone());
         }
+    }
+
+    pub fn report_preview(&self, id: &str) -> Option<ReportPreview> {
+        self.report_preview.lock().ok().and_then(|current| current.clone().filter(|preview| preview.id == id))
     }
 
     pub async fn write_guard(&self) -> AppResult<tokio::sync::MutexGuard<'_, ()>> {

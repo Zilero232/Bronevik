@@ -1,0 +1,10 @@
+{
+  "accounts": [
+    {
+      "accountId": 12345678,
+      "boundAt": 1790000000.0,
+      "deviceId": "dev_Q2xpZW50MTIz"
+    }
+  ],
+  "selected": 12345678
+}

@@ -1,6 +1,6 @@
 {
   "title": "Sets",
-  "description": "A set is which components are installed; a profile (the next tab) is how they are set up. Your own named component sets, like the “Сборки” tab of МОСТ. Applying one opens the install wizard with it. Sets live in %APPDATA%\\TriOtmetki and move by code or file; syncing through the site comes later.",
+  "description": "A set is which components are installed; a profile (the next tab) is how they are set up. Your own named component sets, like the “Сборки” tab of МОСТ. Applying one opens the install wizard with it. Sets live in %APPDATA%\\TriOtmetki and move by code or file; and sync through the site — see the card below.",
   "listTitle": "My sets",
   "count": "{count} of {max}",
   "components": "{count, plural, one {# component} other {# components}}",

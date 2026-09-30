@@ -13,7 +13,9 @@
     "profiles": "Profiles",
     "settings": "General",
     "backups": "Backups",
-    "about": "About"
+    "about": "About",
+    "help": "Questions",
+    "changelog": "What’s new"
   },
   "groups": {
     "modpack": "Modpack",

@@ -52,11 +52,13 @@ pub struct SetsFile {
     pub deleted: Vec<Tombstone>,
     #[serde(default)]
     pub synced_at: Option<f64>,
+    #[serde(default)]
+    pub revision: Option<u64>,
 }
 
 impl Default for SetsFile {
     fn default() -> Self {
-        Self { version: FILE_VERSION, sets: Vec::new(), deleted: Vec::new(), synced_at: None }
+        Self { version: FILE_VERSION, sets: Vec::new(), deleted: Vec::new(), synced_at: None, revision: None }
     }
 }
 

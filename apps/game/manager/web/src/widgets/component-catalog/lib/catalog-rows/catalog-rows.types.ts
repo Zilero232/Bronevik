@@ -16,12 +16,14 @@ export type CatalogRow = {
   video: string | null;
   audio: string | null;
   perf: Perf | null;
+  isNew: boolean;
 };
 
 export type BuildCatalogRowsInput = {
   catalog: Pick<Catalog, 'components' | 'dependencies'>;
   installation: Pick<Installation, 'components'> | null;
   locale: Locale;
+  fresh?: readonly string[];
 };
 
 export type WithDependenciesInput = {

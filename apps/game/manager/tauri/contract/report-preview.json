@@ -1,0 +1,24 @@
+{
+  "gameVersion": "1.45.0.0",
+  "id": "0123456789abcdef0123456789abcdef",
+  "items": [
+    {
+      "bytes": 32,
+      "name": "environment.txt",
+      "part": "environment",
+      "redactions": 0,
+      "text": "manager: 0.2.0\nmodpack: 0.2.0\n",
+      "truncated": false
+    },
+    {
+      "bytes": 40,
+      "name": "python.log",
+      "part": "python_log",
+      "redactions": 1,
+      "text": "…\nC:\\Users\\<user>\\Games\n",
+      "truncated": true
+    }
+  ],
+  "managerVersion": "0.2.0",
+  "modpackVersion": "0.2.0"
+}

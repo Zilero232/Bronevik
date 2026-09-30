@@ -1,0 +1,23 @@
+@use '@/shared/styles/mixins' as *;
+
+.lines {
+  @include stack(var(--space-2));
+  @include list-reset;
+
+  font-size: var(--text-sm);
+}
+
+.choices {
+  @include stack(var(--space-3));
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.choiceText {
+  @include muted-text;
+}

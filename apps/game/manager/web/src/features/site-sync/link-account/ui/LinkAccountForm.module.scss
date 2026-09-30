@@ -1,0 +1,21 @@
+@use '@/shared/styles/mixins' as *;
+
+.form {
+  @include stack(var(--space-4));
+}
+
+.row {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-3);
+
+  > :first-child {
+    flex: 1;
+  }
+}
+
+.hint {
+  @include muted-text;
+
+  margin: 0;
+}

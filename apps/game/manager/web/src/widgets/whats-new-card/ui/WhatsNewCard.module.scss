@@ -1,0 +1,10 @@
+@use '@/shared/styles/mixins' as *;
+
+.notes {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 0;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 6;
+  white-space: pre-line;
+}

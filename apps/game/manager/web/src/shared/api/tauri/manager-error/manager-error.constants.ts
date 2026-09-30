@@ -31,6 +31,13 @@ export const MANAGER_ERROR_CODES = [
   'set_missing',
   'set_code',
   'offline',
+  'not_linked',
+  'link_revoked',
+  'link_code',
+  'rate_limited',
+  'sync_unavailable',
+  'report_expired',
+  'site_offline',
   'contract',
   'unknown'
 ] as const;

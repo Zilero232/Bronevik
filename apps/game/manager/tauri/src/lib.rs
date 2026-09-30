@@ -1,9 +1,11 @@
 mod background;
 mod cache;
 mod catalog;
+mod changelog;
 mod commands;
 mod components;
 mod conflicts;
+mod credentials;
 mod deep_link;
 mod dependencies;
 mod detect;
@@ -11,6 +13,7 @@ mod durable;
 mod error;
 mod fsx;
 mod gameface;
+mod health;
 mod ini_file;
 mod install;
 mod logs;
@@ -20,11 +23,14 @@ mod previews;
 mod process;
 mod profiles;
 mod releases;
+mod report;
 mod service;
 mod sets;
 mod settings;
+mod site;
 mod snapshots;
 mod state;
+mod sync;
 
 #[cfg(test)]
 mod contract;
@@ -92,7 +98,7 @@ pub fn run() {
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(move |app| {
-            let manager = Manager::new(layout, ReleasesClient::new(api_url())?);
+            let manager = Manager::new(layout, ReleasesClient::new(api_url())?)?;
             let settings = manager.settings();
             let handle = app.handle().clone();
 
@@ -191,6 +197,17 @@ pub fn run() {
             commands::import_set_file,
             commands::scan_cache,
             commands::clear_cache,
+            commands::get_account_link,
+            commands::link_account,
+            commands::select_sync_account,
+            commands::get_sync_status,
+            commands::sync_now,
+            commands::get_whats_new,
+            commands::mark_release_seen,
+            commands::prepare_report,
+            commands::send_report,
+            commands::save_report,
+            commands::get_game_health,
         ])
         .run(tauri::generate_context!())
         .expect("error while running the Three Marks manager");

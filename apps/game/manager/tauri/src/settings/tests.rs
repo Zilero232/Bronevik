@@ -55,3 +55,17 @@ fn resolves_the_automatic_language_from_the_system() {
     assert_eq!(Language::Auto.resolve(None), Locale::Ru);
     assert_eq!(Language::En.resolve(Some("ru-RU")), Locale::En);
 }
+
+#[test]
+fn keeps_the_manager_state_apart_from_the_settings() {
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("manager").join("state.json");
+
+    assert_eq!(ManagerState::load(&path), ManagerState::default());
+
+    let state = ManagerState { sync_account_id: Some(42), seen_modpack_version: Some("0.2.0".into()) };
+
+    state.save(&path).unwrap();
+
+    assert_eq!(ManagerState::load(&path), state);
+}

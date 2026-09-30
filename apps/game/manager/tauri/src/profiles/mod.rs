@@ -200,6 +200,10 @@ impl ProfileStore {
         self.file(FILE_NAME).write(&file.to_value()?)
     }
 
+    pub fn replace(&self, file: &ProfilesFile) -> AppResult<()> {
+        self.persist(file)
+    }
+
     fn update<T>(&self, change: impl FnOnce(&mut ProfilesFile) -> AppResult<T>) -> AppResult<T> {
         let mut file = self.load()?;
         let result = change(&mut file)?;

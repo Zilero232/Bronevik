@@ -11,6 +11,7 @@
     "missing": "Not installed"
   },
   "required": "Required",
+  "new": "New",
   "fairPlay": "Fair play",
   "dependencies": "Needs: {list}",
   "libraries": "Third-party libraries: {list}. The manager downloads any that are missing when you switch it on",

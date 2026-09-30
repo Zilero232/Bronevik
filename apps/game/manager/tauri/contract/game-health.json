@@ -1,0 +1,12 @@
+{
+  "failures": [
+    {
+      "component": "hit_log",
+      "excerpt": "ImportError: No module named gambiter",
+      "kind": "dependency",
+      "source": "python_log"
+    }
+  ],
+  "logTime": "2026-09-30T21:47:05+03:00",
+  "stale": false
+}

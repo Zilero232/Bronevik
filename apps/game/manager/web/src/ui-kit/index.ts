@@ -1,4 +1,4 @@
-export { Badge, Button, buttonVariants, Checkbox, ExternalLink, IconButton, Select, Spinner, Switch, TextInput } from './atoms';
+export { Badge, Button, buttonVariants, Checkbox, ExternalLink, IconButton, Select, Spinner, Switch, TextArea, TextInput } from './atoms';
 export type {
   BadgeProps,
   BadgeTone,
@@ -10,6 +10,7 @@ export type {
   SelectProps,
   SpinnerProps,
   SwitchProps,
+  TextAreaProps,
   TextInputProps
 } from './atoms';
 export {

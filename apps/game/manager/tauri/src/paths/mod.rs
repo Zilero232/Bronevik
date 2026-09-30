@@ -55,6 +55,14 @@ impl Layout {
         self.roaming_root.join("manager").join("settings.json")
     }
 
+    pub fn manager_state_file(&self) -> PathBuf {
+        self.roaming_root.join("manager").join("state.json")
+    }
+
+    pub fn changelog_cache(&self) -> PathBuf {
+        self.manager_dir().join("changelog.json")
+    }
+
     pub fn durable_dir(&self) -> PathBuf {
         self.roaming_root.clone()
     }

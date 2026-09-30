@@ -44,5 +44,16 @@ export const COMMANDS = {
   exportSetsLibrary: 'export_sets_library',
   importSetFile: 'import_set_file',
   scanCache: 'scan_cache',
-  clearCache: 'clear_cache'
+  clearCache: 'clear_cache',
+  getAccountLink: 'get_account_link',
+  linkAccount: 'link_account',
+  selectSyncAccount: 'select_sync_account',
+  getSyncStatus: 'get_sync_status',
+  syncNow: 'sync_now',
+  getWhatsNew: 'get_whats_new',
+  markReleaseSeen: 'mark_release_seen',
+  prepareReport: 'prepare_report',
+  sendReport: 'send_report',
+  saveReport: 'save_report',
+  getGameHealth: 'get_game_health'
 } as const;

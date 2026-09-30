@@ -5,6 +5,7 @@ import { SaveSetForm } from '@/features/component-set/save-set';
 import { Card, HelpTip, PageHeader } from '@/ui-kit';
 import { SectionTabs } from '@/widgets/section-tabs';
 import { SetList } from '@/widgets/set-list';
+import { SiteSyncCard } from '@/widgets/site-sync-card';
 
 import { useSetsView } from '../model/hooks';
 
@@ -21,6 +22,7 @@ export const SetsView = () => {
         title={t('sets.title')}
       />
       <SetList />
+      <SiteSyncCard />
       <Card description={t('sets.saveDescription')} title={t('sets.saveTitle')}>
         <SaveSetForm components={enabled} disabled={!canSave} />
       </Card>

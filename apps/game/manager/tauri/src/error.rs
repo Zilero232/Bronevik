@@ -36,6 +36,13 @@ pub enum ErrorCode {
     SetMissing,
     SetCode,
     Offline,
+    NotLinked,
+    LinkRevoked,
+    LinkCode,
+    RateLimited,
+    SyncUnavailable,
+    ReportExpired,
+    SiteOffline,
 }
 
 pub const SHARING_VIOLATION: i32 = 32;

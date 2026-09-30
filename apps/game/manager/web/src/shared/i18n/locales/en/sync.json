@@ -1,0 +1,45 @@
+{
+  "title": "Sync through the site",
+  "description": "Your sets and profiles on every PC: the manager keeps them on triotmetki.ru under your account and brings them back on another computer.",
+  "account": "Account",
+  "accountOption": "Lesta account {id}",
+  "libraries": {
+    "sets": "Sets",
+    "profiles": "Profiles"
+  },
+  "syncedAt": "synced {date}",
+  "neverSynced": "never synced",
+  "pending": "{count, plural, one {# change} other {# changes}} not sent",
+  "syncNow": "Sync",
+  "done": "Everything is in sync",
+  "updated": "Synced: changes from the site applied",
+  "linkHint": "The same binding as the mod: get a code in your account on the site (the mod section) and enter it here. The manager never asks for your Lesta password.",
+  "linkSite": "Get a code on the site",
+  "code": "Binding code",
+  "codePlaceholder": "For example, ABCD-EFGH-23",
+  "link": "Link",
+  "linked": "The manager is linked to your site account",
+  "linkAnother": "Link another account",
+  "hideLink": "Hide",
+  "privacy": "Only set names and component lists and profile settings go to the site — never the binding code, the statistics upload or other privacy switches. You can delete the copy on the site from your account.",
+  "conflictTitle": "Changes here and on the site",
+  "conflictDescription": "Since the last sync your sets or profiles changed both on this PC and on another one. Choose what to keep.",
+  "conflictLine": "{library}: {local} changed here, {remote} on the site",
+  "resolutions": {
+    "merge": {
+      "label": "Merge",
+      "hint": "Each set and profile keeps its newer version; what was deleted on one side is deleted on the other"
+    },
+    "keep_local": {
+      "label": "Keep mine",
+      "hint": "The site gets exactly what is on this PC now"
+    },
+    "take_remote": {
+      "label": "Take the site copy",
+      "hint": "This PC gets what is on the site now; its own changes are lost"
+    }
+  },
+  "validation": {
+    "code": "Enter the code from the site: 10 letters and digits"
+  }
+}

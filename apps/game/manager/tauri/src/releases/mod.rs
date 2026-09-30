@@ -10,6 +10,7 @@ pub use signature::verify_release;
 pub use sources::{is_dependency_redirect, is_dependency_source};
 
 use crate::catalog::Localized;
+use crate::changelog::{Changelog, CHANGELOG_LIMIT, CHANGELOG_PATH};
 use crate::error::{AppError, AppResult, ErrorCode};
 
 pub const DEFAULT_API_URL: &str = "https://api.triotmetki.ru";
@@ -186,6 +187,10 @@ impl ReleasesClient {
         Ok(Self { base_url, http, dependency_http })
     }
 
+    pub fn base_url(&self) -> &str {
+        &self.base_url
+    }
+
     pub async fn latest(&self, game: &str) -> AppResult<LatestRelease> {
         let response = self
             .http
@@ -202,6 +207,19 @@ impl ReleasesClient {
         }
 
         Ok(latest)
+    }
+
+    pub async fn changelog(&self) -> AppResult<Changelog> {
+        let response = self
+            .http
+            .get(format!("{}{CHANGELOG_PATH}", self.base_url))
+            .query(&[("limit", CHANGELOG_LIMIT)])
+            .timeout(REQUEST_TIMEOUT)
+            .send()
+            .await?
+            .error_for_status()?;
+
+        Ok(response.json().await?)
     }
 
     pub async fn fetch(&self, url: &str, limits: FetchLimits) -> AppResult<Vec<u8>> {

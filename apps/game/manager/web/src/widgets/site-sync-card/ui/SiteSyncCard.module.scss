@@ -1,0 +1,46 @@
+@use '@/shared/styles/mixins' as *;
+
+.body {
+  @include stack(var(--space-4));
+}
+
+.account {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.label {
+  @include label;
+}
+
+.lines {
+  @include stack(var(--space-2));
+  @include list-reset;
+}
+
+.line {
+  display: flex;
+  align-items: center;
+  font-size: var(--text-sm);
+  gap: var(--space-3);
+}
+
+.lineLabel {
+  min-width: 96px;
+  font-weight: 500;
+}
+
+.meta {
+  color: var(--color-text-muted);
+}
+
+.privacy {
+  margin: 0;
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+}
+
+.toggle {
+  align-self: flex-start;
+}

@@ -14,5 +14,7 @@ export { Spinner } from './Spinner';
 export type { SpinnerProps } from './Spinner';
 export { Switch } from './Switch';
 export type { SwitchProps } from './Switch';
+export { TextArea } from './TextArea';
+export type { TextAreaProps } from './TextArea';
 export { TextInput } from './TextInput';
 export type { TextInputProps } from './TextInput';

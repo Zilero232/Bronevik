@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useLocale, useTranslations } from 'use-intl';
 
 import { previewSrc, useCatalog } from '@/entities/catalog';
+import { useWhatsNew } from '@/entities/changelog';
 import { useSelectedClient } from '@/entities/client';
 import { useInstallation } from '@/entities/installation';
 import { pickLocalized, useNavigation } from '@/shared/lib';
@@ -16,12 +17,13 @@ export const useComponentCatalog = () => {
   const { clientPath } = useSelectedClient();
   const catalogQuery = useCatalog();
   const { data: installation } = useInstallation(clientPath);
+  const { data: whatsNew } = useWhatsNew(clientPath);
   const [category, setCategory] = useState<string>(COMPONENT_CATALOG.allCategories);
   const [query, setQuery] = useState('');
   const [lightOnly, setLightOnly] = useState(false);
 
   const catalog = catalogQuery.data ?? null;
-  const rows = catalog ? buildCatalogRows({ catalog, installation: installation ?? null, locale }) : [];
+  const rows = catalog ? buildCatalogRows({ catalog, installation: installation ?? null, locale, fresh: whatsNew?.freshComponents }) : [];
   const visible = filterCatalogRows({ rows, category, query, lightOnly });
   const chips = [
     { value: COMPONENT_CATALOG.allCategories, label: t('allCategories'), count: rows.length },

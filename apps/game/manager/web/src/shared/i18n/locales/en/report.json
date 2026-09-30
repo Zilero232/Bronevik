@@ -1,0 +1,31 @@
+{
+  "open": "Report a problem",
+  "title": "Report a problem",
+  "description": "The manager collects the logs, removes personal data and shows everything that will be sent. Send the report to us or save the archive and attach it to a message.",
+  "collecting": "Collecting logs…",
+  "privacy": "The Windows user name and profile paths, account numbers, e-mail addresses, the device and binding secrets are removed from the text. Check it below and untick what you do not want to send. The report is kept on the server for 30 days and deleted automatically.",
+  "parts": {
+    "environment": "Versions and components",
+    "manager_log": "Manager log",
+    "python_log": "The game’s python.log",
+    "otmetki_log": "Modpack log otmetki.log"
+  },
+  "itemMeta": "{name} · {size} · {redactions, plural, =0 {no personal data found} one {# fragment hidden} other {# fragments hidden}}",
+  "show": "Show the text",
+  "showTail": "Show the text (the end of the log only)",
+  "message": "What happened",
+  "messagePlaceholder": "For example: after the update the marks panel is gone in battle",
+  "consent": "I agree to send what is ticked to the Three Marks server",
+  "consentHint": "Without consent you can only save the archive to your computer.",
+  "saveZip": "Save the archive",
+  "send": "Send",
+  "sent": "Report {id} sent",
+  "sentHint": "Mention this number if you write to us.",
+  "saved": "Archive saved",
+  "reveal": "Show in folder",
+  "zipFilter": "ZIP archive",
+  "validation": {
+    "message": "At most 2000 characters",
+    "consent": "Tick the consent to send the report"
+  }
+}

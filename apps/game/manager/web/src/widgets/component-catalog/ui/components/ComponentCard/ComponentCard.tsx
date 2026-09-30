@@ -1,4 +1,4 @@
-import { Gauge, Lock, PlayCircle } from 'lucide-react';
+import { Gauge, Lock, PlayCircle, Sparkles } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 
 import { ComponentPreview, FairPlayNote, PERF, PreviewAudio } from '@/entities/catalog';
@@ -21,6 +21,11 @@ export const ComponentCard = ({ clientPath, isInstalled, row }: ComponentCardPro
         <header className={s.header}>
           <h3 className={s.title}>{row.title}</h3>
           <Badge tone={COMPONENT_CATALOG.stateTones[row.state]}>{t(`state.${row.state}`)}</Badge>
+          {row.isNew && (
+            <Badge icon={<Sparkles aria-hidden />} tone='premium'>
+              {t('new')}
+            </Badge>
+          )}
           {row.required && (
             <Badge icon={<Lock aria-hidden />} tone='accent'>
               {t('required')}

@@ -13,7 +13,9 @@
     "profiles": "Профили",
     "settings": "Общие",
     "backups": "Бэкапы",
-    "about": "О программе"
+    "about": "О программе",
+    "help": "Вопросы",
+    "changelog": "Что нового"
   },
   "groups": {
     "modpack": "Модпак",

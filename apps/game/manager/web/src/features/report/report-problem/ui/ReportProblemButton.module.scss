@@ -1,0 +1,54 @@
+@use '@/shared/styles/mixins' as *;
+
+.form {
+  @include stack(var(--space-5));
+}
+
+.privacy {
+  @include muted-text;
+
+  margin: 0;
+}
+
+.items {
+  @include stack(var(--space-3));
+  @include list-reset;
+}
+
+.item {
+  @include stack(var(--space-2));
+  @include well;
+
+  padding: var(--space-3) var(--space-4);
+}
+
+.details {
+  font-size: var(--text-sm);
+
+  summary {
+    color: var(--color-text-muted);
+    cursor: pointer;
+  }
+}
+
+.text {
+  @include thin-scrollbar;
+  @include mono-path;
+
+  overflow: auto;
+  max-height: 220px;
+  margin: var(--space-2) 0 0;
+  white-space: pre-wrap;
+}
+
+.error {
+  margin: 0;
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-6);
+}

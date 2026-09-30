@@ -40,6 +40,13 @@ describe('buildCatalogRows', () => {
     expect(rows.every((row) => row.audio === null)).toBe(true);
   });
 
+  it('marks the components the installed release changed as new', () => {
+    const marked = buildCatalogRows({ catalog, installation, locale: 'ru', fresh: ['hit_log'] });
+
+    expect(marked.filter((row) => row.isNew).map((row) => row.id)).toEqual(['hit_log']);
+    expect(rows.some((row) => row.isNew)).toBe(false);
+  });
+
   it('treats a missing installation as nothing installed', () => {
     expect(buildCatalogRows({ catalog, installation: null, locale: 'ru' }).every((row) => row.state === 'missing')).toBe(true);
   });

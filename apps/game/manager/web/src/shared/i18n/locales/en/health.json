@@ -1,0 +1,15 @@
+{
+  "title": "{count, plural, one {# component failed to load} other {# components failed to load}}",
+  "description": "That is what the logs of the last game start say. Switch the component off or report it — we will fix it.",
+  "failed": "“{title}” failed to load",
+  "kinds": {
+    "outdated": "This build does not fit the client version. Press “Check now” on Home and update the modpack.",
+    "dependency": "A third-party library is missing. Open “Change set” and install the modpack again — the manager will download it.",
+    "install": "Modpack files are damaged or removed. Press “Restore set” in the mods folder check.",
+    "error": "An error in the component itself. Switch it off and send a report — the logs will be in it."
+  },
+  "sources": {
+    "python_log": "python.log",
+    "otmetki_log": "otmetki.log"
+  }
+}

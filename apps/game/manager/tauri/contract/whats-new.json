@@ -1,0 +1,37 @@
+{
+  "freshComponents": [
+    "hit_log",
+    "minimap"
+  ],
+  "installedVersion": "0.2.0",
+  "offline": false,
+  "releases": [
+    {
+      "changes": [
+        {
+          "id": "hit_log",
+          "notes": {
+            "en": "A faster hit log",
+            "ru": "Лог попаданий быстрее"
+          },
+          "version": "0.3.0"
+        },
+        {
+          "id": "minimap",
+          "notes": null,
+          "version": null
+        }
+      ],
+      "games": [
+        "1.46.*"
+      ],
+      "notes": {
+        "en": "A new settings window",
+        "ru": "Новое окно настроек"
+      },
+      "publishedAt": "2026-10-01T10:00:00.000Z",
+      "version": "0.2.0"
+    }
+  ],
+  "showCard": true
+}

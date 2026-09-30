@@ -1,0 +1,15 @@
+{
+  "title": "What’s new",
+  "description": "The modpack release history: what changed overall and in each component.",
+  "offline": "No connection to the server — showing the saved copy.",
+  "release": "Version {version}",
+  "releaseMeta": "{date} · clients {games}",
+  "installed": "Installed",
+  "changesTitle": "{count, plural, one {# component changed} other {# components changed}}",
+  "empty": "No releases yet",
+  "emptyHint": "The history appears with the first modpack release.",
+  "cardTitle": "The modpack was updated to {version}",
+  "cardDescription": "{count, plural, =0 {See what changed.} one {# component was updated — it is marked “New” in the catalogue.} other {# components were updated — they are marked “New” in the catalogue.}}",
+  "open": "What’s new",
+  "dismiss": "Got it"
+}

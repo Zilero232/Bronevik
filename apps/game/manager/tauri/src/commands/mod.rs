@@ -11,15 +11,18 @@ use crate::conflicts::ConflictReport;
 use crate::deep_link::DeepLink;
 use crate::error::{AppError, AppResult, ErrorCode};
 use crate::gameface::GamefaceStatus;
+use crate::health::HealthReport;
 use crate::install::read_component_profile;
 use crate::logs::{self, CollectInput};
 use crate::patch::PatchReport;
 use crate::profiles::ProfilesView;
 use crate::releases::api_url;
-use crate::service::{ClientsView, InstallPlan, InstallRequest, Manager, UninstallRequest};
+use crate::report::{ReportPart, ReportPreview, ReportReceipt};
+use crate::service::{AccountLink, ClientsView, InstallPlan, InstallRequest, Manager, SyncReport, SyncStatus, UninstallRequest, WhatsNew};
 use crate::sets::SetsView;
 use crate::settings::ManagerSettings;
 use crate::snapshots::Snapshot;
+use crate::sync::Resolution;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -319,4 +322,65 @@ pub async fn scan_cache(manager: State<'_, Manager>, client_path: Option<PathBuf
 #[tauri::command]
 pub async fn clear_cache(manager: State<'_, Manager>, client_path: Option<PathBuf>, ids: Vec<String>) -> AppResult<CacheResult> {
     manager.clear_cache(client_path.as_deref(), &ids).await
+}
+
+#[tauri::command]
+pub async fn get_account_link(manager: State<'_, Manager>) -> AppResult<AccountLink> {
+    Ok(manager.account_link())
+}
+
+#[tauri::command]
+pub async fn link_account(manager: State<'_, Manager>, code: String) -> AppResult<AccountLink> {
+    manager.link_account(&code).await
+}
+
+#[tauri::command]
+pub async fn select_sync_account(manager: State<'_, Manager>, account_id: u64) -> AppResult<AccountLink> {
+    manager.select_sync_account(account_id)
+}
+
+#[tauri::command]
+pub async fn get_sync_status(manager: State<'_, Manager>, client_path: Option<PathBuf>) -> AppResult<SyncStatus> {
+    Ok(manager.sync_status(client_path.as_deref()))
+}
+
+#[tauri::command]
+pub async fn sync_now(manager: State<'_, Manager>, client_path: Option<PathBuf>, resolution: Option<Resolution>) -> AppResult<SyncReport> {
+    manager.sync_now(client_path.as_deref(), resolution).await
+}
+
+#[tauri::command]
+pub async fn get_whats_new(manager: State<'_, Manager>, client_path: Option<PathBuf>) -> AppResult<WhatsNew> {
+    manager.whats_new(client_path.as_deref()).await
+}
+
+#[tauri::command]
+pub async fn mark_release_seen(manager: State<'_, Manager>, version: String) -> AppResult<()> {
+    manager.mark_release_seen(&version)
+}
+
+#[tauri::command]
+pub async fn prepare_report(manager: State<'_, Manager>, client_path: Option<PathBuf>) -> AppResult<ReportPreview> {
+    Ok(manager.prepare_report(client_path.as_deref()))
+}
+
+#[tauri::command]
+pub async fn send_report(manager: State<'_, Manager>, preview_id: String, parts: Vec<ReportPart>, message: String) -> AppResult<ReportReceipt> {
+    manager.send_report(&preview_id, &parts, &message).await
+}
+
+#[tauri::command]
+pub async fn save_report(
+    manager: State<'_, Manager>,
+    preview_id: String,
+    parts: Vec<ReportPart>,
+    message: String,
+    path: PathBuf,
+) -> AppResult<PathBuf> {
+    manager.save_report(&preview_id, &parts, &message, &path)
+}
+
+#[tauri::command]
+pub async fn get_game_health(manager: State<'_, Manager>, client_path: Option<PathBuf>) -> AppResult<HealthReport> {
+    manager.game_health(client_path.as_deref())
 }

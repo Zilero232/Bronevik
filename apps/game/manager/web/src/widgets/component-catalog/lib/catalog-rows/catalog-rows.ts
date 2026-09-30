@@ -23,7 +23,7 @@ const withDependencies = ({ components, id }: WithDependenciesInput): Set<string
   return result;
 };
 
-export const buildCatalogRows = ({ catalog, installation, locale }: BuildCatalogRowsInput): CatalogRow[] => {
+export const buildCatalogRows = ({ catalog, installation, locale, fresh = [] }: BuildCatalogRowsInput): CatalogRow[] => {
   const states = new Map(installation?.components.map((component) => [component.id, component.state]));
   const titles = new Map(catalog.components.map((component) => [component.id, pickLocalized({ text: component.title, locale })]));
   const librariesOf = (id: string) => {
@@ -47,7 +47,8 @@ export const buildCatalogRows = ({ catalog, installation, locale }: BuildCatalog
     image: component.preview.image,
     video: component.preview.video,
     audio: component.preview.audio,
-    perf: component.perf
+    perf: component.perf,
+    isNew: fresh.includes(component.id)
   }));
 };
 

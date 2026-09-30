@@ -11,5 +11,10 @@ export const QUERY_KEYS = {
   snapshots: (clientPath: string | null) => ['snapshots', clientPath],
   conflicts: (clientPath: string | null) => ['conflicts', clientPath],
   sets: ['sets'],
-  cachePlan: (clientPath: string | null) => ['cache-plan', clientPath]
+  cachePlan: (clientPath: string | null) => ['cache-plan', clientPath],
+  accountLink: ['account-link'],
+  syncStatus: (clientPath: string | null) => ['sync-status', clientPath],
+  whatsNew: (clientPath: string | null) => ['whats-new', clientPath],
+  reportPreview: (clientPath: string | null) => ['report-preview', clientPath],
+  gameHealth: (clientPath: string | null) => ['game-health', clientPath]
 } as const;

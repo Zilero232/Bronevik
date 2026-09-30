@@ -3,8 +3,10 @@ import { useTranslations } from 'use-intl';
 import { HelpTip, PageHeader, Spinner } from '@/ui-kit';
 import { ConflictReport } from '@/widgets/conflict-report';
 import { FirstRun } from '@/widgets/first-run';
+import { GameHealthCard } from '@/widgets/game-health-card';
 import { HomeSummary } from '@/widgets/home-summary';
 import { PatchStatus } from '@/widgets/patch-status';
+import { WhatsNewCard } from '@/widgets/whats-new-card';
 
 import { useHomeView } from '../model/hooks';
 
@@ -24,6 +26,8 @@ export const HomeView = () => {
       {!isLoading && isInstalled && (
         <>
           <HomeSummary />
+          <WhatsNewCard />
+          <GameHealthCard />
           <PatchStatus />
           <ConflictReport hideWhenClean />
         </>

@@ -23,7 +23,7 @@ const THEIR_GUIFLASH: &str = "gambiter.guiflash_0.6.5.mtmod";
 fn manager(root: &Path) -> Manager {
     let layout = Layout::new(root.join("Local"), root.join("Roaming"));
 
-    Manager::new(layout, ReleasesClient::new("http://127.0.0.1:9").unwrap())
+    Manager::new(layout, ReleasesClient::new("http://127.0.0.1:9").unwrap()).unwrap()
 }
 
 #[test]

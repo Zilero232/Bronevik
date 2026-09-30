@@ -5,6 +5,7 @@ import { SaveProfileForm } from '@/features/profile/save-profile';
 import { Card, HelpTip, PageHeader } from '@/ui-kit';
 import { ProfileList } from '@/widgets/profile-list';
 import { SectionTabs } from '@/widgets/section-tabs';
+import { SiteSyncCard } from '@/widgets/site-sync-card';
 
 import { useProfilesView } from '../model/hooks';
 
@@ -21,6 +22,7 @@ export const ProfilesView = () => {
         title={t('profiles.title')}
       />
       <ProfileList />
+      <SiteSyncCard />
       <Card title={t('profiles.saveTitle')}>
         <SaveProfileForm clientPath={clientPath} disabled={isDisabled} />
       </Card>

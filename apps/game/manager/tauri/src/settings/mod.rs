@@ -82,5 +82,22 @@ impl ManagerSettings {
     }
 }
 
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", default)]
+pub struct ManagerState {
+    pub sync_account_id: Option<u64>,
+    pub seen_modpack_version: Option<String>,
+}
+
+impl ManagerState {
+    pub fn load(path: &Path) -> Self {
+        fs::read_to_string(path).ok().and_then(|text| serde_json::from_str::<Self>(&text).ok()).unwrap_or_default()
+    }
+
+    pub fn save(&self, path: &Path) -> AppResult<()> {
+        write_atomic(path, serde_json::to_string_pretty(self)?.as_bytes())
+    }
+}
+
 #[cfg(test)]
 mod tests;

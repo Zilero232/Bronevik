@@ -7,23 +7,29 @@ use serde_json::Value;
 use crate::cache::{CacheLocation, CachePlan, CacheResult, CacheTarget};
 use crate::catalog::fixtures::catalog;
 use crate::catalog::{LoadedCatalog, Localized};
+use crate::changelog::{ChangelogRelease, ComponentChange};
 use crate::commands::AppInfo;
 use crate::components::{ComponentState, Installation, InstalledComponent};
 use crate::conflicts::{ConflictReport, DuplicatePackage, ForeignConflict, MissingComponent, OverridingFiles, ReplacedComponent};
+use crate::credentials::AccountBinding;
 use crate::deep_link::DeepLink;
 use crate::dependencies::{DependencyState, DependencyStatus};
 use crate::detect::client::{Branch, ClientProblem};
 use crate::detect::{ClientSource, GameClient, GameVersion};
 use crate::error::{AppError, ErrorCode};
 use crate::gameface::GamefaceStatus;
+use crate::health::{FailureKind, HealthReport, LoadFailure, LogSource};
 use crate::install::{ForeignEntry, ForeignLocation};
 use crate::patch::{PatchReport, PatchStatus};
 use crate::profiles::{ProfileSummary, ProfilesView, MAX_PROFILES};
+use crate::report::{ReportItem, ReportPart, ReportPreview, ReportReceipt};
 use crate::service::setup::{PackageSource, ReleaseSummary};
-use crate::service::{ClientsView, InstallPlan};
+use crate::service::sync::LocalSync;
+use crate::service::{AccountLink, ClientsView, InstallPlan, SyncReport, SyncStatus, WhatsNew};
 use crate::sets::{ComponentSet, SetsView, MAX_SETS};
 use crate::settings::ManagerSettings;
 use crate::snapshots::{Snapshot, SnapshotKind, SnapshotPart};
+use crate::sync::{LibrarySync, SyncOutcome};
 
 pub const UPDATE_ENV: &str = "OTMETKI_UPDATE_FIXTURES";
 pub const CLIENT_PATH: &str = r"D:\Игры\Мир танков";
@@ -284,6 +290,95 @@ fn samples() -> Vec<(&'static str, Value)> {
                 DeepLink::Install { preset: Some("minimal".into()) },
                 DeepLink::Install { preset: None },
             ]),
+        ),
+        (
+            "account-link",
+            value(&AccountLink {
+                accounts: vec![AccountBinding { account_id: 12_345_678, device_id: "dev_Q2xpZW50MTIz".into(), bound_at: Some(1_790_000_000.0) }],
+                selected: Some(12_345_678),
+            }),
+        ),
+        (
+            "sync-status",
+            value(&SyncStatus {
+                linked: true,
+                sets: LocalSync { synced_at: Some(1_790_000_000.5), pending: 2 },
+                profiles: Some(LocalSync { synced_at: None, pending: 1 }),
+            }),
+        ),
+        (
+            "sync-report",
+            value(&SyncReport {
+                sets: LibrarySync { outcome: SyncOutcome::Conflict, local: 3, remote: 4, local_changes: 1, remote_changes: 2 },
+                profiles: Some(LibrarySync { outcome: SyncOutcome::Pushed, local: 2, remote: 1, local_changes: 1, remote_changes: 0 }),
+            }),
+        ),
+        (
+            "whats-new",
+            value(&WhatsNew {
+                releases: vec![ChangelogRelease {
+                    version: "0.2.0".into(),
+                    published_at: "2026-10-01T10:00:00.000Z".into(),
+                    games: vec!["1.46.*".into()],
+                    notes: Some(Localized { ru: "Новое окно настроек".into(), en: "A new settings window".into() }),
+                    changes: vec![
+                        ComponentChange {
+                            id: "hit_log".into(),
+                            version: Some("0.3.0".into()),
+                            notes: Some(Localized { ru: "Лог попаданий быстрее".into(), en: "A faster hit log".into() }),
+                        },
+                        ComponentChange { id: "minimap".into(), version: None, notes: None },
+                    ],
+                }],
+                offline: false,
+                installed_version: Some("0.2.0".into()),
+                fresh_components: vec!["hit_log".into(), "minimap".into()],
+                show_card: true,
+            }),
+        ),
+        (
+            "report-preview",
+            value(&ReportPreview {
+                id: "0123456789abcdef0123456789abcdef".into(),
+                manager_version: "0.2.0".into(),
+                modpack_version: Some("0.2.0".into()),
+                game_version: Some("1.45.0.0".into()),
+                items: vec![
+                    ReportItem {
+                        part: ReportPart::Environment,
+                        name: "environment.txt".into(),
+                        bytes: 32,
+                        truncated: false,
+                        redactions: 0,
+                        text: "manager: 0.2.0\nmodpack: 0.2.0\n".into(),
+                    },
+                    ReportItem {
+                        part: ReportPart::PythonLog,
+                        name: "python.log".into(),
+                        bytes: 40,
+                        truncated: true,
+                        redactions: 1,
+                        text: "…\nC:\\Users\\<user>\\Games\n".into(),
+                    },
+                ],
+            }),
+        ),
+        (
+            "report-receipt",
+            value(&ReportReceipt { id: "3f2b1c4d-0000-4000-8000-000000000001".into(), expires_at: "2026-10-30T10:00:00.000Z".into() }),
+        ),
+        (
+            "game-health",
+            value(&HealthReport {
+                log_time: Some("2026-09-30T21:47:05+03:00".into()),
+                stale: false,
+                failures: vec![LoadFailure {
+                    component: "hit_log".into(),
+                    kind: FailureKind::Dependency,
+                    source: LogSource::PythonLog,
+                    excerpt: "ImportError: No module named gambiter".into(),
+                }],
+            }),
         ),
     ]
 }

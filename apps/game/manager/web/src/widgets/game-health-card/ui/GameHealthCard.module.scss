@@ -1,0 +1,30 @@
+@use '@/shared/styles/mixins' as *;
+
+.list {
+  @include list-reset;
+}
+
+.row {
+  @include divided-row(56px);
+}
+
+.text {
+  @include stack(var(--space-1));
+
+  min-width: 0;
+}
+
+.message {
+  font-weight: 500;
+}
+
+.hint {
+  @include muted-text;
+}
+
+.excerpt {
+  @include mono-path;
+
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+}

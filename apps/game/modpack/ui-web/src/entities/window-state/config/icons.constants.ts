@@ -31,7 +31,6 @@ export const COMPONENT_ICONS: Partial<Record<string, UiIconName>> = {
   minimap: 'map',
   crosshair: 'crosshair',
   camera: 'video',
-  battle_sounds: 'volume-2',
   chat_filter: 'message-square-off',
   streamer_mode: 'eye-off',
   hangar_cleaner: 'eraser',

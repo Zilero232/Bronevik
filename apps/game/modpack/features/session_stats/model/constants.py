@@ -94,7 +94,6 @@ ACHIEVED = 'achieved'
 MAX_GOALS = 20
 MAX_REMEMBERED = 100
 DONE_MARK = u'✓'
-GOAL_SOUND = 'otmetki_goal'
 
 # contract/ratings.schema.json: the account overview; its `session` repeats the card's own numbers and is not read.
 OVERVIEW_PATH = '/mod/me/overview'
@@ -130,3 +129,7 @@ WN8_SCALE = (
     (2900, 'super_unicum'),
 )
 WN8_BOUNDS = tuple(bound for bound, _ in WN8_SCALE)
+
+# More percent than a battle can move the MoE (core.moe MAX_BATTLE_CHANGE): a session change past this per battle is a
+# misread.
+MAX_BATTLE_DELTA = 10.0

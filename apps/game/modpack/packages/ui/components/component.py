@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ...core.vendor import attr
 from ..fields import SWITCH_KEY, TYPE_BOOL, describe_fields, field_type
-from .constants import PANEL_POSITION_KEYS
+from .constants import OPTIONAL_HOOKS, PANEL_POSITION_KEYS
 from .placement import placement_of
 
 
@@ -53,13 +53,29 @@ class Component(object):
             return None
         return {'key': self.switch, 'value': bool(switch_settings.get(self.switch))}
 
+    def _advanced_keys(self):
+        instance = self.instance
+        if instance is None or not hasattr(instance, 'ui_advanced'):
+            return frozenset()
+        return frozenset(instance.ui_advanced() or ())
+
     def _describe_fields(self, labels):
+        advanced = self._advanced_keys()
         fields = []
         for key in self.field_keys():
             settings = self.source_of(key).settings
             if settings is not None:
                 fields.extend(describe_fields(settings, [key], self.id, labels))
+        for field in fields:
+            if field['key'] in advanced:
+                field['advanced'] = True
         return fields
+
+    def _describe_optional(self):
+        instance = self.instance
+        if instance is None:
+            return {}
+        return {key: getattr(instance, hook)() for key, hook in OPTIONAL_HOOKS if hasattr(instance, hook)}
 
     def describe(self, labels):
         section, context = placement_of(self.id, self.group, self.panel)
@@ -81,8 +97,7 @@ class Component(object):
             described['actions'] = list(instance.ui_actions() or [])
         if instance is not None and hasattr(instance, 'ui_page'):
             described['page'] = instance.ui_page()
-        if instance is not None and hasattr(instance, 'ui_editor'):
-            described['editor'] = instance.ui_editor()
+        described.update(self._describe_optional())
         return described
 
 

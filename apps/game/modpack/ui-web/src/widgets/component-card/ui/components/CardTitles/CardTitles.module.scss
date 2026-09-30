@@ -16,15 +16,15 @@
 }
 
 .title {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
 }
 
 .hint {
-  margin-top: 3px;
+  margin-top: 4px;
   color: token(color-text-muted);
   font-size: 12px;
-  line-height: 1.35;
+  line-height: 1.4;
 
   @include ellipsis;
 }

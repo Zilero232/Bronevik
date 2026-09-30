@@ -23,6 +23,7 @@ from otmetki.features.session_stats.i18n import STRINGS as SESSION_STRINGS
 from otmetki.ui.bridge import SettingsBridge, site_link, site_url
 from otmetki.ui.components import COMPANION_ID, COMPANION_KEYS, FeatureInfo, load_features, root_package
 from otmetki.ui.components.component import Component
+from otmetki.ui.components.sources import SectionSource
 from otmetki.ui.fields import Labels
 from otmetki.ui.hud_edit import HudEditor
 from otmetki.ui.i18n import STRINGS
@@ -136,6 +137,22 @@ class EditorFeature(object):
 
     def ui_editor(self):
         return EDITOR
+
+
+THUMB = 'img://gui/maps/icons/otmetki/space.png'
+GALLERY = {'icon_set': {'bulb': 'img://gui/maps/icons/otmetki/bulb.png', 'custom': None}}
+
+
+class GalleryFeature(object):
+
+    def ui_thumb(self):
+        return THUMB
+
+    def ui_gallery(self):
+        return GALLERY
+
+    def ui_advanced(self):
+        return ('zoom',)
 
 
 def fake_features(page):
@@ -385,6 +402,35 @@ class BridgeStateTest(BridgeTestCase):
         described = component.describe(Labels(Catalog(), 'en'))
 
         assert described['editor'] == EDITOR
+
+    def test_a_card_without_the_picture_hooks_sends_no_thumb_or_gallery(self):
+        replays = card(self.bridge.state(), 'replay_manager')
+
+        assert 'thumb' not in replays
+        assert 'gallery' not in replays
+
+    def test_the_thumb_and_the_gallery_come_from_the_instance(self):
+        feature = GalleryFeature()
+        component = Component('sixth_sense', 'battle', SectionSource(self.context.component_config, 'minimap'),
+                              ('enabled', 'zoom'), instance=feature)
+
+        described = component.describe(Labels(Catalog(), 'en'))
+
+        assert described['thumb'] == THUMB
+        assert described['gallery'] == GALLERY
+
+    def test_fields_named_by_the_instance_are_advanced(self):
+        component = Component('minimap', 'battle', SectionSource(self.context.component_config, 'minimap'),
+                              ('enabled', 'zoom'), instance=GalleryFeature())
+
+        fields = component.describe(Labels(Catalog(), 'en'))['fields']
+
+        assert [(field['key'], field.get('advanced')) for field in fields] == [('enabled', None), ('zoom', True)]
+
+    def test_fields_carry_no_advanced_key_without_the_hook(self):
+        fields = card(self.bridge.state(), 'minimap')['fields']
+
+        assert all('advanced' not in field for field in fields)
 
     def test_cards_carry_their_page_and_context(self):
         state = self.bridge.state()

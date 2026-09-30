@@ -2,9 +2,15 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 # RU 1.45 client source: settings_constants.GAME.CAROUSEL_TYPE / DOUBLE_CAROUSEL_TYPE, stored as the index into
 # options.CarouselTypeSetting.CAROUSEL_TYPES ('single', 'double') and DoubleCarouselTypeSetting ('adaptive', 'small').
+# Three to five rows keep the game's two-row type (its tile size applies) and the mod sends the row count on top.
 CAROUSEL_TYPE = 'carouselType'
 DOUBLE_CAROUSEL_TYPE = 'doubleCarouselType'
-CAROUSEL_ROW_MODES = {'single': 0, 'double': 1}
+CAROUSEL_ROW_MODES = {'1': 0, '2': 1, '3': 1, '4': 1, '5': 1}
+EXTRA_ROWS = ('3', '4', '5')
+# The game's own row count once its two-row type is on (CarouselTypeSetting.getRowCount); a single row is left alone.
+MULTI_ROW_COUNT = 2
+# The row choices before three to five rows: 'single' / 'double' in older components.json files.
+LEGACY_CAROUSEL_ROWS = {'single': '1', 'double': '2'}
 CAROUSEL_TILE_MODES = {'adaptive': 0, 'small': 1}
 
 ACTION_DEMOUNT = 'demount_removable'

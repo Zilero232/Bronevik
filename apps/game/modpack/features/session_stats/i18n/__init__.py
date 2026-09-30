@@ -4,11 +4,10 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 STRINGS = {
     'ru': {
         'component_session_stats': u'Сессия',
-        'component_session_stats_hint': u'Бои, победы, средний урон и WN8 за сессию, полоска последних боёв, цели из «Моего кабинета» со звуком выполненной цели и строка аккаунта. Цели и аккаунт появляются после привязки мода.',
+        'component_session_stats_hint': u'Бои, победы, средний урон и WN8 за сессию, полоска последних боёв, цели из «Моего кабинета» и строка аккаунта. Цели и аккаунт появляются после привязки мода.',
         'session_stats_show_moe': u'Изменение отметки по танкам сессии',
         'session_stats_show_goals': u'Цели с сайта',
         'session_stats_max_goals': u'Сколько целей показывать',
-        'session_stats_goal_sound': u'Звук выполненной цели',
         'session_stats_show_account': u'Строка аккаунта',
         'session_stats_metric_wn8': u'WN8 аккаунта',
         'session_stats_metric_win_rate': u'Процент побед аккаунта',
@@ -55,11 +54,10 @@ STRINGS = {
     },
     'en': {
         'component_session_stats': u'Session',
-        'component_session_stats_hint': u'Battles, win rate, average damage and WN8 of the session, a strip of the last battles, your site goals with a sound when one is met, and the account line. Goals and the account show once the mod is bound.',
+        'component_session_stats_hint': u'Battles, win rate, average damage and WN8 of the session, a strip of the last battles, your site goals and the account line. Goals and the account show once the mod is bound.',
         'session_stats_show_moe': u'MoE change per tank of the session',
         'session_stats_show_goals': u'Goals from the site',
         'session_stats_max_goals': u'Goals to show',
-        'session_stats_goal_sound': u'Goal completion sound',
         'session_stats_show_account': u'Account line',
         'session_stats_metric_wn8': u'Account WN8',
         'session_stats_metric_win_rate': u'Account win rate',

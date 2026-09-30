@@ -157,12 +157,12 @@ class CatalogTest(unittest.TestCase):
             self.assertIn(entry.perf, ('low', 'medium', 'high'), entry.id)
             self.assertIn(entry.context, ('hangar', 'battle', 'any'), entry.id)
 
-    def test_components_with_sounds_have_an_audio_preview(self):
+    def test_no_component_ships_a_sound(self):
         catalog = load_catalog()
 
         with_audio = set(entry.id for entry in catalog.components if entry.preview.audio)
 
-        self.assertEqual(with_audio, {'sixth_sense', 'session_stats'})
+        self.assertEqual(with_audio, set())
 
     def test_catalog_owns_the_scripts_folder_and_lists_the_xvm_conflict(self):
         catalog = load_catalog()
@@ -243,7 +243,6 @@ class ManifestTest(unittest.TestCase):
         self.assertEqual(panel['perf'], 'low')
         self.assertEqual(panel['context'], 'any')
         self.assertEqual(panel['title'], {'ru': 'Отметки', 'en': 'Marks of Excellence'})
-        self.assertEqual(data['components'][3]['preview']['audio'], 'previews/sixth_sense.mp3')
 
     def test_json_keeps_the_conflicts_and_owned_paths(self):
         manifest, _ = build_manifest(self.packages, self.catalog)
@@ -356,13 +355,6 @@ class CliTest(unittest.TestCase):
         dependencies = [component['id'] for component in components if component.get('kind') == 'dependency']
 
         self.assertEqual(dependencies, ['openwg_gameface', 'guiflash', 'modslist'])
-
-    def test_audio_previews_are_copied_next_to_components_json(self):
-        sixth_sense = next(component for component in self.data['components'] if component['id'] == 'sixth_sense')
-
-        audio = os.path.join(self.folder, *sixth_sense['preview']['audio'].split('/'))
-
-        self.assertTrue(os.path.isfile(audio))
 
     def test_the_default_output_is_dist_catalog(self):
         self.assertTrue(self.cli.DEFAULT_OUT.endswith(os.path.join('dist', 'catalog')))

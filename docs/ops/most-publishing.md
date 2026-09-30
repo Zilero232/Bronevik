@@ -40,7 +40,7 @@ Our fair-play rules ([apps/game/modpack/CLAUDE.md](../../apps/game/modpack/CLAUD
 
 - `sixth_sense`: a text next to the vanilla lamp, with no timer for the enemy;
 - `minimap`, `camera`, `crosshair`: only the game's own options;
-- `chat_filter`, `battle_sounds`;
+- `chat_filter`;
 - `replay_upload`: network uploads.
 
 ## What the repo prepares: `most:bundle`
@@ -132,7 +132,7 @@ Warnings are:
 5. Mod features that need a Три отметки Плюс subscription on the site: allowed or not?
 6. Network access: is HTTPS to our API (after an explicit binding code) acceptable, and do you need the source code?
 7. Configs: МОСТ's config clean-up deletes `mods/configs/otmetki` (the binding). The mod now mirrors it into `%APPDATA%\TriOtmetki` and restores it; is a mod writing there acceptable, or can a mod's config folder be exempted instead?
-8. The grey features (commander camera, zoom beyond x8, a timer of the player's own full aim, no gun flash and shake, white wrecks and tracks, SafeShot): allowed or not, item by item. Sent as the letter below; each stays out of the modpack until a written answer.
+8. The grey features (commander camera, zoom beyond x8, a timer of the player's own full aim, no gun flash and shake, white wrecks and tracks, SafeShot, the armour readout under the reticle built on the client's own shot-result resolution): allowed or not, item by item. Sent as the letter below; each stays out of the modpack until a written answer.
 
 ### Letter to the curators about the grey features
 
@@ -148,6 +148,7 @@ None of these is in Lesta's ten forbidden categories ([8], [10]); some are in М
 > 4. **Без вспышки выстрела и тряски камеры** (как noGunFlash) — убрать эффект вспышки и тряски своего экрана при своём выстреле и попадании. Прозрачность объектов (пункт 5) не меняется.
 > 5. **Белые подбитые танки и гусеницы** — свои текстуры для уничтоженной техники и сбитых гусениц (наш арт, без символики Лесты).
 > 6. **SafeShot** — блокировка своего выстрела по союзнику и по уничтоженной технике. Спорно по пункту 10, если это считается изменением параметров техники.
+> 7. **Броня под прицелом** — числа штатного расчёта исхода выстрела, которым клиент сам красит маркер орудия (приведённая броня в точке прицеливания и пробитие своего снаряда), только для видимой техники противника под прицелом. Ничего сверх штатного расчёта: ни точек вне прицела, ни скрытых модулей. Спорно по статье поддержки об «анализе брони в бою».
 >
 > Ответ «да» или «нет» по каждому пункту нам достаточно. Если что-то разрешено с условиями (например, только по клавише или без изменения конфигов камеры), напишите, пожалуйста, какими.
 >

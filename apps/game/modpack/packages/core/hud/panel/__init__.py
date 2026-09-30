@@ -25,13 +25,11 @@ from .constants import (
     HINT_KEY,
     HINT_PREFIXES,
     LAYOUT_KEYS,
-    MAX_SOUND_EVENT,
     MOVED_ALIGNS,
     PANEL_CHOICES,
     PANEL_DEFAULTS,
     PANEL_LIMITS,
     PLACE_KEYS,
-    SOUND_EVENT,
 )
 
 __all__ = (
@@ -62,7 +60,6 @@ __all__ = (
     'pinned_values',
     'place_of',
     'retired_reset',
-    'sound_event',
 )
 
 
@@ -139,7 +136,7 @@ def max_length(limit):
 
 
 def matching(pattern, limit):
-    """A normalizer for restricted text (sound event names, image paths): None unless `pattern` matches."""
+    """A normalizer for restricted text (image paths): None unless `pattern` matches."""
     def normalize(value):
         return value if len(value) <= limit and pattern.match(value) else None
     return normalize
@@ -148,11 +145,6 @@ def matching(pattern, limit):
 def hex_color(value):
     """A normalizer for `#RRGGBB` colours (upper-cased)."""
     return value.upper() if HEX_COLOR.match(value) else None
-
-
-def sound_event(value):
-    """A normalizer for Wwise event names (`core/client/sound` plays them): letters, digits, underscores."""
-    return matching(SOUND_EVENT, MAX_SOUND_EVENT)(value)
 
 
 def alias_of(panel_id):

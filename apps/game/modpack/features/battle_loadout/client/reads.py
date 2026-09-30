@@ -4,7 +4,7 @@ import BigWorld
 
 from ....core.client.battle import arena, controls_own_vehicle, optional_devices, player, session_provider
 from ....core.log import log_exception
-from .constants import NO_VEHICLE, NOTHING_INSTALLED
+from .constants import NO_VEHICLE, NOTHING_INSTALLED, SOURCE_ARENA, SOURCE_SETUPS
 
 # RU 1.45 client source: the own vehicle's descriptor in the arena's vehicle list (ClientArena
 # vehicles[id]['vehicleType'], what OptionalDevicesController reads through
@@ -144,14 +144,22 @@ def _boosted(boosters, vehicle):
     return set(device.intCD for device in devices if _is_boosted(device, boosters))
 
 
-def _setups(descriptor):
-    vehicle = _gui_vehicle(descriptor)
-    if vehicle is None:
-        return set(), []
-
-    boosters = vehicle.battleBoosters.installed.getItems()
-    directives = [_booster(booster, vehicle) for booster in boosters]
+# Every directive slot of the setup, None where it is empty (vehicle_equipment EMPTY_ITEM), so the row keeps its cells.
+def _directives(vehicle):
+    installed = vehicle.battleBoosters.installed
+    boosters = installed.getItems()
+    directives = [_booster(booster, vehicle) if booster else None for booster in installed]
     return _boosted(boosters, vehicle), directives
+
+
+# The devices of the setup the player took into the battle, the way PrebattleSetupsController.__updateGuiVehicle syncs
+# its own vehicle (RU 1.45 gui/battle_control/controllers/prebattle_setups_ctrl.py): the descriptor gets the installed
+# sequence of the GUI vehicle's setup (optDevices.installed.getIntCDs(), 0 for an empty slot). The arena's descriptor
+# can lag behind a setup switch.
+def _setup_descriptor(vehicle):
+    descriptor = vehicle.descriptor
+    descriptor.installOptDevsSequence(vehicle.optDevices.installed.getIntCDs())
+    return descriptor
 
 
 # The descriptor's own device alone (its name and icon), for when the stock texts or the battle state cannot be read:
@@ -161,6 +169,8 @@ def _plain_device(device):
 
 
 def _read_device(device, slot, boosted):
+    if device is None:
+        return None
     try:
         return _device(device, slot, boosted)
     except Exception:
@@ -168,9 +178,8 @@ def _read_device(device, slot, boosted):
         return _plain_device(device)
 
 
-def _devices(descriptor, boosted):
-    installed = descriptor.iterOptDevsWithSlots()
-    return [_read_device(device, slot, boosted) for device, slot in installed if device is not None]
+def _slots(descriptor):
+    return [(device, slot) for device, slot in descriptor.iterOptDevsWithSlots()]
 
 
 def _own_descriptor():
@@ -180,26 +189,60 @@ def _own_descriptor():
 
 
 def _empty(reason):
-    return {'devices': [], 'directives': [], 'reason': reason}
+    return {'devices': [], 'directives': [], 'reason': reason, 'source': None, 'slots': []}
 
 
-# The GUI vehicle only adds the directives and the boosted marks: when the client cannot build it, the row still
-# shows the devices from the descriptor. `reason` says why nothing was read (None once something was).
+# The directive slots of the vehicle, empty, while its setups cannot be read: the descriptor's supply slots hold them
+# (RU 1.45 items/vehicles.py VehicleType supply slots, what vehicle_equipment's collectors size their layouts by).
+def _directive_slots(descriptor):
+    try:
+        from items import EQUIPMENT_TYPES, ITEM_TYPES
+
+        amount = descriptor.supplySlots.getAmountForType(ITEM_TYPES.equipment, EQUIPMENT_TYPES.battleBoosters)
+    except Exception:
+        log_exception('battle loadout: directive slots')
+        amount = 0
+    return set(), [None] * amount
+
+
+def _own_vehicle(descriptor):
+    try:
+        return _gui_vehicle(descriptor)
+    except Exception:
+        log_exception('battle loadout: own setups')
+        return None
+
+
+def _setup_slots(vehicle):
+    try:
+        return _slots(_setup_descriptor(vehicle)), _directives(vehicle)
+    except Exception:
+        log_exception('battle loadout: setup devices')
+        return None, (set(), [])
+
+
+# Read from the GUI vehicle of the own setups when the client can build it (the directives, the boosted marks and the
+# devices of the chosen setup), from the arena's descriptor otherwise. Every slot is kept, None where it is empty;
+# `slots` holds each device slot's intCD (0: empty) for the log, `reason` says why nothing was read (None once
+# something was).
 def own_loadout():
     descriptor = _own_descriptor()
     if descriptor is None:
         return _empty(NO_VEHICLE)
 
-    try:
-        boosted, directives = _setups(descriptor)
-    except Exception:
-        log_exception('battle loadout: own setups')
-        boosted, directives = set(), []
+    vehicle = _own_vehicle(descriptor)
+    slots, (boosted, directives) = _setup_slots(vehicle) if vehicle is not None else (None, (set(), []))
+    source = SOURCE_SETUPS if slots is not None else SOURCE_ARENA
+    if slots is None:
+        slots = _slots(descriptor)
+        boosted, directives = _directive_slots(descriptor)
 
-    try:
-        devices = _devices(descriptor, boosted)
-    except Exception:
-        log_exception('battle loadout: own devices')
-        devices = []
-    reason = None if devices or directives else NOTHING_INSTALLED
-    return {'devices': devices, 'directives': directives, 'reason': reason}
+    devices = [_read_device(device, slot, boosted) for device, slot in slots]
+    installed = [item for item in devices + directives if item is not None]
+    return {
+        'devices': devices,
+        'directives': directives,
+        'reason': None if installed else NOTHING_INSTALLED,
+        'source': source,
+        'slots': [device.compactDescr if device is not None else 0 for device, _ in slots],
+    }

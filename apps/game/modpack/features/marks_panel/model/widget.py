@@ -61,11 +61,15 @@ def _step(state, settings):
     return {'step': state['step'], 'need': state['step_need']}
 
 
+def _average_row(state, translate):
+    label = translate('marks_panel_average_short')
+    return {'label': label, 'ema': state['ema'], 'ema_projected': state['ema_projected']}
+
+
 def _average(state, settings, translate):
     if not settings.get('show_battle'):
         return None
-    label = translate('marks_panel_average_short')
-    return {'label': label, 'ema': state['ema'], 'ema_projected': state['ema_projected']}
+    return _average_row(state, translate)
 
 
 def _battles(state, settings, translate):
@@ -81,6 +85,20 @@ def _rows(state, settings, translate):
         'average': _average(state, settings, translate),
         'battles': _battles(state, settings, translate),
     }
+
+
+# Without the site's thresholds the percent cannot be projected, but the average the percent follows can: the row of the
+# damage average moving with the battle is the plate's live part then, and no thresholds row is drawn.
+def _curveless_rows(state, translate):
+    rows = dict(NO_ROWS)
+    rows['average'] = _average_row(state, translate)
+    return rows
+
+
+def _detail_rows(state, style, settings, translate):
+    if not state['has_curve']:
+        return _curveless_rows(state, translate)
+    return _rows(state, settings, translate) if style == 'extended' else NO_ROWS
 
 
 def _style(settings):
@@ -101,8 +119,8 @@ def marks_widget(state, settings, translate):
         'mark': mark_icon(state['marks']),
         'tone': percent_tone(state, settings.get('color_mode')),
         'goal': _goal(state, settings),
-        'note': None if state['has_curve'] else translate('marks_panel_no_thresholds'),
+        'note': None,
         'text': render(settings.get('template'), moe_macros(state)) if style == 'custom' else None,
     }
-    data.update(_rows(state, settings, translate) if style == 'extended' and state['has_curve'] else NO_ROWS)
+    data.update(_detail_rows(state, style, settings, translate))
     return widget(KIND, data)

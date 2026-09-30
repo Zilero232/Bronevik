@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.compat import as_int, is_int
+from ....core.moe import rating_change
 from ....core.format import COLOR_DOWN, COLOR_UP, font, format_number
 from ....core.templates import render
 from .constants import ASSIST_KEYS, COST_KEYS, RANDOM_BONUS_TYPE, RESULT_COLORS, STAT_FIELDS
@@ -50,17 +51,9 @@ def _difference(after, before):
     return None
 
 
-def _moe_delta(percent, rating_before):
-    if percent is None:
-        return None
-    if not is_int(rating_before) or rating_before <= 0:
-        return None
-    return round(percent - moe_percent(rating_before), 2)
-
-
-def _moe_deltas(summary, before):
+def _moe_deltas(summary, before, after):
     return {
-        'moe_delta': _moe_delta(summary['moe_percent'], before.get('damage_rating')),
+        'moe_delta': rating_change(before.get('damage_rating'), after.get('damage_rating')),
         'moving_avg_delta': _difference(summary['moving_avg'], before.get('moving_avg_damage')),
         'marks_delta': _difference(summary['marks_on_gun'], before.get('marks_on_gun')),
     }
@@ -71,7 +64,7 @@ def build_summary(event, moe_before=None, map_label=None):
     summary.update(_stat_fields(event.get('stats') or {}))
     summary.update(_moe_fields(event.get('moe') or {}))
 
-    summary.update(_moe_deltas(summary, moe_before or {}))
+    summary.update(_moe_deltas(summary, moe_before or {}, event.get('moe') or {}))
 
     return summary
 

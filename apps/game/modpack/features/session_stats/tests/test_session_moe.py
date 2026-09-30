@@ -67,6 +67,13 @@ class SessionMoeTest(unittest.TestCase):
 
         assert moe.rows(SESSION, 3) == []
 
+    def test_a_stored_wrong_scale_change_is_dropped(self):
+        stored = {'battles': 3, 'change': -65.78, 'order': 3, 'percent': 0.69, 'tank_id': 7940641}
+
+        moe = SessionMoe({'session_id': SESSION, 'tanks': {'7940641': stored}})
+
+        assert moe.rows(SESSION, 3) == []
+
 
 class SessionMoeCardTest(unittest.TestCase):
 

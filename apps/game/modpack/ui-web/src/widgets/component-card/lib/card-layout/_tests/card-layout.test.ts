@@ -41,13 +41,13 @@ describe(cardLayout, () => {
   it('shows the empty note for a card with nothing to set', () => {
     const layout = cardLayout({ component: component(), fields: undefined, isExpanded: true, forceOpen: false });
 
-    expect(layout).toEqual({ fields: [], expandable: false, open: false, showEmpty: true, chevron: 'chevron-down' });
+    expect(layout).toEqual({ fields: [], advanced: [], expandable: false, open: false, showEmpty: true, chevron: 'chevron-down' });
   });
 
   it('opens an expanded card with fields', () => {
     const layout = cardLayout({ component: component({ fields: [field] }), fields: undefined, isExpanded: true, forceOpen: false });
 
-    expect(layout).toEqual({ fields: [field], expandable: true, open: true, showEmpty: false, chevron: 'chevron-up' });
+    expect(layout).toEqual({ fields: [field], advanced: [], expandable: true, open: true, showEmpty: false, chevron: 'chevron-up' });
   });
 
   it('keeps a collapsed card closed', () => {
@@ -76,10 +76,19 @@ describe(cardLayout, () => {
     expect(layout.fields).toEqual([]);
   });
 
+  it('folds the advanced fields away from the everyday ones', () => {
+    const folder: UiField = { ...field, key: 'folder', advanced: true };
+
+    const layout = cardLayout({ component: component({ fields: [field, folder] }), fields: undefined, isExpanded: true, forceOpen: false });
+
+    expect(layout.fields).toEqual([field]);
+    expect(layout.advanced).toEqual([folder]);
+  });
+
   it('lets a HUD panel card expand for its preview while it still shows the empty note', () => {
     const layout = cardLayout({ component: component({ panel: true }), fields: undefined, isExpanded: true, forceOpen: false });
 
-    expect(layout).toEqual({ fields: [], expandable: true, open: true, showEmpty: true, chevron: 'chevron-up' });
+    expect(layout).toEqual({ fields: [], advanced: [], expandable: true, open: true, showEmpty: true, chevron: 'chevron-up' });
   });
 });
 

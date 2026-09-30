@@ -24,7 +24,6 @@ FEATURES = (
     'camera_tweaks',
     'crosshair_presets',
     'hangar_info',
-    'battle_sounds',
     'battle_chat_filter',
     'hangar_auto_resupply',
     'hangar_notification_filter',
@@ -69,7 +68,6 @@ OPT_IN_FEATURES = (
     'battle_platoon_points',
     'battle_hotkeys',
     'battle_bush_circle',
-    'battle_sounds',
     'battle_chat_filter',
     'streamer_mode',
     'hangar_tweaks',
@@ -92,7 +90,6 @@ DEFAULTS_REVISION = 3
 RETIRED_DEFAULTS = (
     (1, 'battle_loadout', False, True),
     (3, 'hangar_tweaks', True, False),
-    (3, 'battle_sounds', True, False),
     (3, 'battle_chat_filter', True, False),
     (3, 'hangar_auto_resupply', True, False),
     (3, 'hangar_notification_filter', True, False),
@@ -121,7 +118,6 @@ GUARDED_SWITCHES = (
     ('hangar_auto_resupply', 'auto_resupply'),
     ('hangar_notification_filter', 'notification_filter'),
     ('hangar_cleaner', 'hangar_cleaner'),
-    ('battle_sounds', 'battle_sounds'),
     ('battle_bush_circle', 'bush_circle'),
     ('streamer_mode', 'streamer_mode'),
 )
@@ -144,7 +140,6 @@ MERGED_SECTIONS = (
     (('damage_log', 'log_kinds', 'all'), ('damage_log', 'sections')),
     (('session_goals', 'show_hangar', True), ('session_stats', 'show_goals')),
     (('session_goals', 'max_goals', 3), ('session_stats', 'max_goals')),
-    (('session_goals', 'sound', True), ('session_stats', 'goal_sound')),
     (('hangar_ratings', 'show_account', True), ('session_stats', 'show_account')),
     (('hangar_ratings', 'metric_wn8', True), ('session_stats', 'metric_wn8')),
     (('hangar_ratings', 'metric_win_rate', True), ('session_stats', 'metric_win_rate')),
@@ -218,6 +213,7 @@ DROPPED_SECTIONS = (
     'battle_hits',
     'reload_timer',
     'marks_history',
+    'battle_sounds',
 )
 # The keys the player set in the settings window (config switches by name, component values as `<section>.<key>`),
 # space-separated: a later default change never moves them.
@@ -247,7 +243,6 @@ DEFAULTS = {
     'camera_tweaks': True,
     'crosshair_presets': True,
     'hangar_info': True,
-    'battle_sounds': False,
     'battle_chat_filter': False,
     'hangar_auto_resupply': False,
     'hangar_notification_filter': False,

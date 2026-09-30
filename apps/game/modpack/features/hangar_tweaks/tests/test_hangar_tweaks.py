@@ -8,10 +8,12 @@ from otmetki.features.hangar_tweaks.model import (
     REFUSE_BERTHS,
     REFUSE_LOCKED,
     REFUSE_NOTHING,
+    carousel_row_count,
     plan_crew_return,
     plan_crew_unload,
     plan_demount,
     plan_style_removal,
+    rows_override,
     scale_index,
     to_native,
     with_interface_scale,
@@ -37,12 +39,38 @@ class CarouselTest(unittest.TestCase):
         assert to_native(Settings(None, SCHEMA).to_dict()) == {}
 
     def test_rows_and_tiles_become_the_game_indexes(self):
-        values = Settings({'carousel_rows': 'double', 'carousel_tiles': 'small'}, SCHEMA).to_dict()
+        values = Settings({'carousel_rows': '2', 'carousel_tiles': 'small'}, SCHEMA).to_dict()
 
         assert to_native(values) == {'carouselType': 1, 'doubleCarouselType': 1}
 
-    def test_three_rows_is_not_an_option(self):
-        assert Settings({'carousel_rows': 'triple'}, SCHEMA).get('carousel_rows') == 'native'
+    def test_one_row_is_the_game_single_carousel(self):
+        assert to_native(Settings({'carousel_rows': '1'}, SCHEMA).to_dict()) == {'carouselType': 0}
+
+    def test_three_to_five_rows_ride_on_the_two_row_carousel(self):
+        for rows in ('3', '4', '5'):
+            assert to_native(Settings({'carousel_rows': rows}, SCHEMA).to_dict()) == {'carouselType': 1}
+
+    def test_the_old_row_choices_are_migrated(self):
+        assert Settings({'carousel_rows': 'single'}, SCHEMA).get('carousel_rows') == '1'
+        assert Settings({'carousel_rows': 'double'}, SCHEMA).get('carousel_rows') == '2'
+
+    def test_three_rows_are_allowed_and_six_are_not(self):
+        assert Settings({'carousel_rows': '3'}, SCHEMA).get('carousel_rows') == '3'
+        assert Settings({'carousel_rows': '6'}, SCHEMA).get('carousel_rows') == 'native'
+
+    def test_only_three_to_five_rows_override_the_game(self):
+        assert [rows_override(choice) for choice in ('native', '1', '2', '3', '4', '5')] == [
+            None, None, None, 3, 4, 5]
+
+    def test_the_mod_rows_replace_the_game_two_rows(self):
+        assert carousel_row_count('4', 2) == 4
+
+    def test_a_single_row_from_the_game_filter_stays(self):
+        assert carousel_row_count('4', 1) == 1
+
+    def test_the_game_rows_stay_without_an_override(self):
+        assert carousel_row_count('native', 2) == 2
+        assert carousel_row_count('5', None) is None
 
     def test_the_component_switch_is_hangar_tweaks(self):
         assert SETTINGS == ('hangar_tweaks',)

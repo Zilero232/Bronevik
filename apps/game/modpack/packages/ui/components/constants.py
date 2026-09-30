@@ -30,6 +30,10 @@ COMPANION_ACTIONS = (ACTION_SETTINGS_EXPORT, ACTION_SETTINGS_RESTORE)
 
 PANEL_POSITION_KEYS = ('x', 'y', 'align_x', 'align_y', 'drag', 'scale')
 
+# Card keys sent only when the feature instance has the hook: the full-window editor, the card's thumbnail
+# (img:// path or None) and the per-choice pictures ({field key: {choice value: img:// path or None}}).
+OPTIONAL_HOOKS = (('editor', 'ui_editor'), ('thumb', 'ui_thumb'), ('gallery', 'ui_gallery'))
+
 # The settings window's navigation: every component card sits on one section page. Profiles and the HUD editor are
 # pages of their own (the page's SECTION constants), not component sections.
 SECTION_BATTLE = 'battle'
@@ -68,7 +72,6 @@ PLACEMENT = {
     'minimap': (SECTION_BATTLE, CONTEXT_BATTLE),
     'crosshair': (SECTION_BATTLE, CONTEXT_BATTLE),
     'camera': (SECTION_BATTLE, CONTEXT_BATTLE),
-    'battle_sounds': (SECTION_BATTLE, CONTEXT_BATTLE),
     'chat_filter': (SECTION_STREAMER, CONTEXT_BATTLE),
     'streamer_mode': (SECTION_STREAMER, CONTEXT_ANY),
     'hangar_cleaner': (SECTION_STREAMER, CONTEXT_HANGAR),

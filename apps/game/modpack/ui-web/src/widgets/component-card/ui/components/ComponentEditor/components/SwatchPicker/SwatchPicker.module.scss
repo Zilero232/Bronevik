@@ -19,6 +19,8 @@
   background-color: transparent;
   cursor: pointer;
 
+  @include ease(border-color, box-shadow);
+
   &:hover {
     border-color: token(color-text-muted);
   }
@@ -26,6 +28,7 @@
 
 .swatchOn {
   border-color: token(color-accent);
+  box-shadow: token(win-accent-ring);
 
   &:hover {
     border-color: token(color-accent);

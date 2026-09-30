@@ -9,10 +9,14 @@ from otmetki.features.battle_loadout.i18n import STRINGS
 from otmetki.features.battle_loadout.model import (
     clean_device,
     clean_devices,
+    empty_slot,
     format_panel,
     icons_found,
+    installed,
     loadout_summary,
     overlay_of,
+    slot_items,
+    slots_line,
 )
 from otmetki.features.battle_loadout.model.preview import preview_text
 from otmetki.features.battle_loadout.settings import SCHEMA, SETTINGS
@@ -52,6 +56,8 @@ class DeviceTest(unittest.TestCase):
             'effect': u'+10 % к скорости',
             'icon': ARTEFACTS + 'turbocharger.png|otmetki:module',
             'overlay': None,
+            'kind': 'device',
+            'empty': False,
             'bonus': True,
             'boosted': False,
             'attention': False,
@@ -151,7 +157,21 @@ class FormatTest(unittest.TestCase):
     def test_the_row_is_the_client_icons_alone(self):
         text = format_panel(clean_devices([turbocharger(bonus=False)]), Settings({}, SCHEMA))
 
-        assert text == u'<img src="img://gui/maps/icons/artefact/turbocharger.png" width="40" height="40"/>'
+        assert text == u'<img src="img://gui/maps/icons/artefact/turbocharger.png" width="48" height="48"/>'
+
+    def test_an_own_icon_size_replaces_the_stock_one(self):
+        settings = Settings({'stock_size': False, 'icon_size': 40}, SCHEMA)
+
+        text = format_panel(clean_devices([turbocharger(bonus=False)]), settings)
+
+        assert 'width="40"' in text
+
+    def test_empty_slots_draw_nothing_in_the_text_row(self):
+        items = slot_items([turbocharger(bonus=False), None], [])
+
+        text = format_panel(items, Settings({}, SCHEMA))
+
+        assert text.count('<img') == 1
 
     def test_a_device_without_an_icon_keeps_a_mark_and_no_name(self):
         devices = clean_devices([turbocharger(icon=None, bonus=False)])
@@ -170,7 +190,7 @@ class FormatTest(unittest.TestCase):
         assert u'Турбонагнетатель' not in text
 
     def test_the_preview_follows_the_icon_size(self):
-        text = preview_text(Settings({'icon_size': 24}, SCHEMA), translator())
+        text = preview_text(Settings({'stock_size': False, 'icon_size': 24}, SCHEMA), translator())
 
         assert text.count('width="24"') == 5
 
@@ -194,19 +214,29 @@ class SettingsTest(unittest.TestCase):
     def test_an_older_default_place_is_retired(self):
         assert (-200, -66, 'center', 'bottom') in SCHEMA.retired
 
-    def test_icons_fill_the_44_px_slot_of_the_design(self):
+    def test_cells_as_large_as_the_stock_slots_by_default(self):
+        assert SCHEMA.defaults['stock_size'] is True
+
+    def test_the_own_icon_size_stays_as_an_option(self):
         assert SCHEMA.defaults['icon_size'] == 40
 
 
 class SummaryTest(unittest.TestCase):
 
     def test_a_read_counts_the_devices_the_directives_and_the_icons_the_client_has(self):
-        loadout = {'devices': [turbocharger(), ventilation()], 'directives': [directive()], 'reason': None}
-        devices = clean_devices(loadout['devices'] + loadout['directives'])
+        loadout = {
+            'devices': [turbocharger(), ventilation(), None],
+            'directives': [directive()],
+            'reason': None,
+            'source': 'setups',
+            'slots': [2305, 1017, 0],
+        }
+        items = slot_items(loadout['devices'], loadout['directives'])
 
-        summary = loadout_summary(loadout, devices, lambda path: 'rammer' not in path)
+        summary = loadout_summary(loadout, items, lambda path: 'rammer' not in path)
 
-        assert summary == 'battle_loadout: 2 devices, 1 directives, icons found 2'
+        slots = 'slots from setups: 1 2305, 2 1017, 3 empty'
+        assert summary == 'battle_loadout: 2 devices, 1 directives, icons found 2; ' + slots
 
     def test_an_empty_read_says_why(self):
         loadout = {'devices': [], 'directives': [], 'reason': 'no vehicle yet'}
@@ -219,6 +249,39 @@ class SummaryTest(unittest.TestCase):
         devices = clean_devices([turbocharger(icon=None)])
 
         assert icons_found(devices, lambda path: True) == 0
+
+
+class SlotTest(unittest.TestCase):
+
+    def test_every_device_slot_keeps_a_cell_when_one_is_empty(self):
+        items = slot_items([turbocharger(), None, ventilation()], [None])
+
+        assert [item['empty'] for item in items] == [False, True, False, True]
+
+    def test_the_third_device_is_kept(self):
+        items = slot_items([turbocharger(), ventilation(), turbocharger(icon='rammer')], [])
+
+        assert len(installed(items)) == 3
+
+    def test_an_empty_directive_slot_is_a_directive_cell(self):
+        items = slot_items([turbocharger()], [None])
+
+        assert items[1] == empty_slot('directive')
+
+    def test_a_directive_is_a_directive_cell(self):
+        items = slot_items([], [directive()])
+
+        assert items[0]['kind'] == 'directive'
+
+    def test_a_nameless_device_leaves_its_slot_empty(self):
+        items = slot_items([{'name': u' ', 'icon': 'rammer'}], [])
+
+        assert items[0]['empty'] is True
+
+    def test_the_log_names_each_slot(self):
+        line = slots_line('arena', [2305, 0])
+
+        assert line == 'slots from arena: 1 2305, 2 empty'
 
 
 if __name__ == '__main__':

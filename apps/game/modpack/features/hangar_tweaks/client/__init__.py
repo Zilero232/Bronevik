@@ -12,6 +12,7 @@ from ..model import (
     ACTION_KEYS,
     ACTION_RETURN,
     ACTION_STYLE,
+    carousel_row_count,
     plan_crew_return,
     plan_crew_unload,
     plan_demount,
@@ -21,6 +22,7 @@ from ..model import (
 )
 from ..model.scale import exact_scale, needs_scale
 from ..settings import SCHEMA, SWITCH
+from .carousel import CarouselRows
 from .processors import demount, remove_style, return_crew, unload_crew
 from .scale import apply_scale, current_scale, on_scale_changed, restore_scale
 from .vehicle import device_in, free_berths, summary
@@ -38,12 +40,21 @@ class HangarTweaks(NativeSettingsComponent):
     def __init__(self, app):
         NativeSettingsComponent.__init__(self, app, FEATURE_ID, SCHEMA, SWITCH, STRINGS, to_native)
         self.exact_on = False
+        self.carousel_rows = CarouselRows(self.row_count)
         app.bus.on('hangar', self.apply_exact_scale)
         on_scale_changed(self.apply_exact_scale)
 
     def settings_changed(self, changed):
         NativeSettingsComponent.settings_changed(self, changed)
         self.apply_exact_scale()
+        self.carousel_rows.resend()
+
+    # Three to five rows ride on the game's two-row carousel: a single row the player picked in the game's own
+    # carousel filter stays a single row.
+    def row_count(self, stock):
+        if not self.enabled_in_hangar():
+            return stock
+        return carousel_row_count(self.settings.get('carousel_rows'), stock)
 
     # The exact scale is put back after anything that set another one (the game's own option, a resolution change), in
     # the hangar only; switched off, the scale saved in the game's preferences returns.

@@ -19,8 +19,11 @@ from otmetki.core.moe import (
     next_level,
     next_whole_percent,
     project_moving_avg,
+    rating_change,
     rating_to_percent,
     required_battle_damage,
+    results_rating,
+    threshold_problem,
 )
 from otmetki.core.moe.constants import PACE_BATTLES, THRESHOLD_ERROR_TTL_S, THRESHOLD_TTL_S
 
@@ -86,6 +89,12 @@ class EmaTest(unittest.TestCase):
     def test_ema_factor_is_for_100_battles(self):
         self.assertAlmostEqual(EMA_K, 2.0 / 101)
 
+    def test_ema_factor_is_not_the_python_2_integer_division_zero(self):
+        assert EMA_K > 0.0198
+
+    def test_one_battle_moves_the_average_by_its_share_even_from_integers(self):
+        assert project_moving_avg(2751, 5663) > 2751
+
     def test_moving_average_moves_towards_the_battle_damage(self):
         self.assertAlmostEqual(project_moving_avg(2000, 4020), 2040)
 
@@ -103,6 +112,40 @@ class EmaTest(unittest.TestCase):
 
     def test_missing_rating_has_no_percent(self):
         assert rating_to_percent(None) is None
+
+
+class ThresholdProblemTest(unittest.TestCase):
+
+    def test_a_usable_curve_has_no_problem(self):
+        assert threshold_problem(200, API, ThresholdCurve.from_api(API)) is None
+
+    def test_the_sites_404_is_named_with_its_error(self):
+        data = {'error': 'No MoE thresholds for tank 7940641', 'code': 'NOT_FOUND'}
+
+        problem = threshold_problem(404, data, None)
+
+        assert problem == 'the site answered 404: No MoE thresholds for tank 7940641'
+
+    def test_a_network_failure_is_named(self):
+        assert threshold_problem(0, None, None) == 'no answer (network)'
+
+    def test_an_answer_without_thresholds_is_named(self):
+        assert threshold_problem(200, {'thresholds': {}}, None) == 'the answer has no usable thresholds'
+
+
+class ResultsRatingTest(unittest.TestCase):
+
+    def test_the_results_whole_percent_becomes_hundredths(self):
+        assert results_rating(67) == 6700
+
+    def test_no_results_rating_below_tier_five(self):
+        assert results_rating(0) is None
+
+    def test_a_battle_change_is_the_difference_in_percent(self):
+        assert rating_change(6647, 6689) == 0.42
+
+    def test_a_wrong_scale_change_is_no_change(self):
+        assert rating_change(6647, 67) is None
 
 
 class BattlesToReachTest(unittest.TestCase):

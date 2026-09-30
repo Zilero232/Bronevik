@@ -10,10 +10,18 @@ describe(choiceLayout, () => {
     expect(choiceLayout(['Alt', 'Ctrl', 'Shift'].map(choice))).toBe('segmented');
   });
 
+  it('keeps a row of number buttons with the game option in front segmented', () => {
+    expect(choiceLayout(['Как в игре', '1', '2', '3', '4', '5'].map(choice))).toBe('segmented');
+  });
+
   it('stacks more choices than the row holds into a list', () => {
-    const many = Array.from({ length: CHOICE_LAYOUT.maxSegments + 1 }, (_, index) => choice(String(index)));
+    const many = Array.from({ length: CHOICE_LAYOUT.maxCompactSegments + 1 }, (_, index) => choice(String(index)));
 
     expect(choiceLayout(many)).toBe('list');
+  });
+
+  it('stacks more than a few choices with long labels into a list', () => {
+    expect(choiceLayout(['Adaptive size', 'Small', 'Large', 'Tiny', 'Huge'].map(choice))).toBe('list');
   });
 
   it('stacks choices whose labels run longer than the row into a list', () => {

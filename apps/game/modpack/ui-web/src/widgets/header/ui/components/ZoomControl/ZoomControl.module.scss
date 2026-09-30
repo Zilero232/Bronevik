@@ -7,9 +7,9 @@
   flex-shrink: 0;
   align-items: center;
   padding: 0 2px;
-  border: 1px solid token(color-border-strong);
-  border-radius: token(radius-md);
   margin-right: 8px;
+
+  @include well;
 }
 
 .value {

@@ -4,7 +4,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin: 10px 0 6px;
+  margin: 0 0 16px;
 }
 
 .screen {
@@ -13,11 +13,12 @@
   flex: 1 1 auto;
   flex-direction: column;
   align-items: stretch;
-  padding: 8px 12px;
-  border: 1px solid token(color-border-strong);
-  border-radius: token(radius-md);
+  padding: 12px 16px;
+  border: 1px solid token(win-stage-line);
+  border-radius: token(radius-lg);
   background-color: token(color-bg-deep);
-  background-image: linear-gradient(135deg, rgb(61 74 42 / 45%) 0%, rgb(14 14 16 / 0%) 70%);
+  background-image: token(win-stage);
+  box-shadow: token(win-well-shadow);
 }
 
 .caption {
@@ -30,10 +31,10 @@
 }
 
 .sample {
-  height: 110px;
+  height: 140px;
 }
 
 .move {
   flex-shrink: 0;
-  margin-left: 12px;
+  margin-left: 16px;
 }

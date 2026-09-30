@@ -92,10 +92,6 @@ class DamageLog(object):
                 changed = True
         return changed
 
-    def is_empty(self):
-        has_rows = self.shots.entries or self.received.entries or self.assists
-        return not has_rows and not any(self.summary.values())
-
     def values(self):
         totals = self.totals
         summary = self.summary
@@ -134,13 +130,13 @@ def _is_shown_total(key, section, settings):
     return settings.get('style') != 'minimal' or key in MINIMAL_TOTALS
 
 
+# A total is shown once it is above zero; before anything counts, the first total the settings show stands at zero, so
+# the panel is on screen from the start in place of the stock damage log it hides (whose totals show from the start).
 def shown_totals(log, settings):
     values = log.values()
-    return [
-        (key, values[key])
-        for key, section in TOTALS
-        if values[key] > 0 and _is_shown_total(key, section, settings)
-    ]
+    shown = [(key, values[key]) for key, section in TOTALS if _is_shown_total(key, section, settings)]
+    counted = [(key, value) for key, value in shown if value > 0]
+    return counted or shown[:1]
 
 
 # The compact styles show the totals only; holding Alt shows the rows they leave out, as the stock log does in its

@@ -2,11 +2,12 @@
 
 .switch {
   display: flex;
+  height: 36px;
   flex-direction: row;
   flex-shrink: 0;
   align-items: center;
-  padding-left: 12px;
-  border-left: 1px solid token(color-border);
+  padding-left: 16px;
+  border-left: 1px solid token(win-divider);
 }
 
 .switchLabel {

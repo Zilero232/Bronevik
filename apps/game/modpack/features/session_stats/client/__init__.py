@@ -5,7 +5,6 @@ import time
 from ....core.client.component import FeatureComponent
 from ....core.client.game import vehicle_short_name
 from ....core.client.me import SignedRead, can_read, post_signed, signed_body, signed_read
-from ....core.client.sound import play_mp3
 from ....core.errors import ReasonError
 from ....core.hud import HangarLabel
 from ....core.log import log
@@ -29,7 +28,6 @@ from ..model.constants import (
     ACTION_RESET,
     ACTION_SHARE,
     ACTION_SITE,
-    GOAL_SOUND,
     GOALS_KEY,
     GOALS_PATH,
     GOALS_STATE_KEY,
@@ -170,8 +168,7 @@ class SessionStats(FeatureComponent):
             return
 
         settings = self.settings
-        wants_goals = settings.get('show_goals') or settings.get('goal_sound')
-        if wants_goals and self.site.wants(GOALS_KEY, now):
+        if settings.get('show_goals') and self.site.wants(GOALS_KEY, now):
             self._read(GOALS_KEY, GOALS_PATH, self._on_goals)
         if settings.get('show_account') and self.site.wants(OVERVIEW_KEY, now):
             self._read(OVERVIEW_KEY, OVERVIEW_PATH, self._on_overview)
@@ -204,8 +201,6 @@ class SessionStats(FeatureComponent):
         app.save_state()
         for goal in goals:
             app.ui.notify(goal_done_notice(goal, app.translate, vehicle_short_name(goal.get('tank_id'))))
-        if self.settings.get('goal_sound'):
-            play_mp3(GOAL_SOUND)
 
     def view(self):
         settings = self.settings

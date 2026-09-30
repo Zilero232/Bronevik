@@ -5,7 +5,7 @@ from ....core.native_settings import NATIVE
 SWITCH = 'hangar_tweaks'
 GROUP = 'hangar'
 
-CAROUSEL_ROWS = (NATIVE, 'single', 'double')
+CAROUSEL_ROWS = (NATIVE, '1', '2', '3', '4', '5')
 CAROUSEL_TILES = (NATIVE, 'adaptive', 'small')
 INTERFACE_SCALE_CHOICES = (NATIVE, 'auto', 'x1', 'x1_25', 'x1_5', 'x1_75', 'x2')
 

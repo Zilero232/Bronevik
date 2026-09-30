@@ -17,6 +17,7 @@ ROOT_PACKAGE = 'otmetki'
 RES_PREFIX = 'res/'
 # The components whose catalog preview is their HUD panel, and the backdrop it is drawn over.
 HUD_PREVIEWS = {
+    'aim_info': 'battle',
     'battle_hotkeys': 'battle',
     'battle_loadout': 'battle',
     'battle_progress': 'battle',

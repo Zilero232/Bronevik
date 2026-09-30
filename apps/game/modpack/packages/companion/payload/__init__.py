@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import uuid
 
 from ...core.compat import as_int, is_int, string_types, to_text
+from ...core.moe import results_rating
 from ..loadout import normalize_loadout
 from ..shots import MAX_SHOTS
 from ..version import SCHEMA_VERSION
@@ -72,10 +73,11 @@ def battle_outcome(winner_team, team):
     return 'win' if winner_team == team else 'loss'
 
 
+# The results' damageRating is a whole percent; the event carries it in the dossier's hundredths (core.moe.results).
 def extract_moe(vehicle):
-    rating = vehicle.get('damageRating')
+    rating = results_rating(vehicle.get('damageRating'))
     moving_avg = vehicle.get('movingAvgDamage')
-    if not is_int(rating) or not is_int(moving_avg) or rating <= 0:
+    if rating is None or not is_int(moving_avg):
         return None
     return {
         'marks_on_gun': as_int(vehicle.get('marksOnGun')),

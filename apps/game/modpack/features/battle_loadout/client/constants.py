@@ -12,3 +12,7 @@ PERIOD_EVENT = 'onPeriodChange'
 
 NO_VEHICLE = 'the own vehicle is not in the arena list yet'
 NOTHING_INSTALLED = 'the own vehicle has no equipment and no directives'
+
+# Where a read took the devices from: the GUI vehicle of the own setups, or the arena's descriptor.
+SOURCE_SETUPS = 'setups'
+SOURCE_ARENA = 'arena'

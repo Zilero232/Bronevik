@@ -66,3 +66,8 @@ HISTORY_KEYS = (
     'moe_delta',
     'marks_on_gun',
 )
+
+# The repair of the history entries 0.7.0 stored with the results' whole percent read as hundredths (page
+# restore_history): a percent up to this, and a change past MAX_BATTLE_DELTA percent, which no battle makes.
+WRONG_SCALE_PERCENT = 1.0
+MAX_BATTLE_DELTA = 10.0

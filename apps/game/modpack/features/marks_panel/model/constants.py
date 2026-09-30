@@ -80,6 +80,14 @@ SOURCE_BATTLE = 'battle'
 SOURCE_HANGAR = 'hangar'
 # The dossier values of an entry: a hangar snapshot equal to the last entry in all of them is not recorded again.
 READING_KEYS = ('rating', 'avg', 'marks')
+# A change of more than this many percent in one battle is a misread (core.moe MAX_BATTLE_CHANGE): no delta shows it.
+MAX_BATTLE_DELTA = 10.0
+# The repair of entries an older version stored with the battle results' whole percent (67 for 66.47 %): a battle
+# rating up to 100 among hundredths above it, within this many hundredths of them once scaled.
+RESULTS_PERCENT_MAX = 100
+WRONG_SCALE_SPAN = 1000
+LOG_REPAIRED = 'marks history: dropped %d battle entries stored as a whole percent'
+LOG_REJECTED = 'marks history: battle of tank %s not recorded, %s'
 # A battle's combined damage is the damage dealt plus the best of these assists (the MoE formula).
 ASSIST_STATS = ('damage_assisted_radio', 'damage_assisted_track', 'damage_assisted_stun')
 

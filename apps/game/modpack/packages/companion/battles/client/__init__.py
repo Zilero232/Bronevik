@@ -165,7 +165,7 @@ class BattleCapture(object):
         tank_id = probe['vehicle']['tank_id']
         name, tier = vehicle_info(tank_id)
         common = results.get('common') or {}
-        return build_battle_event(results, {
+        event = build_battle_event(results, {
             'vehicle_name': name,
             'vehicle_tier': tier,
             'map_name': map_name(common.get('arenaTypeID')),
@@ -174,6 +174,8 @@ class BattleCapture(object):
             'shots': self._take_shots(arena_id),
             'achievement_name': achievement_name,
         })
+        event['moe'] = self.app.marks.exact_moe(tank_id, event['moe'])
+        return event
 
     def _take_loadout(self, arena_id, tank_id):
         if not self.app.config.is_enabled('send_loadouts'):

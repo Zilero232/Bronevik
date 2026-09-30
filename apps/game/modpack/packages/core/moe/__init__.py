@@ -6,13 +6,14 @@
 - `targets`: `moe_state`, every value a marks view shows;
 - `macros`: `moe_macros` (the state as template text) and `moe_color` (the colour ramp);
 - `cache`: `ThresholdCache`, the curves per tank with their read time;
-- `mastery`: the mastery badges' XP per battle from the same answer.
+- `mastery`: the mastery badges' XP per battle from the same answer;
+- `results`: the battle results' damageRating (a whole percent) in the dossier's hundredths, and its checks.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from .cache import ThresholdCache
 from .constants import EMA_K, EMA_WINDOW, MARK_LEVELS, MASTERY_CLASSES, TARGET_LEVELS
-from .curve import ThresholdCurve, next_level
+from .curve import ThresholdCurve, next_level, threshold_problem
 from .macros import moe_color, moe_macros
 from .mastery import mastery_from_api, mastery_state
 from .ema import (
@@ -24,6 +25,7 @@ from .ema import (
     required_battle_damage,
 )
 from .pace import PaceBook, battle_combined
+from .results import exact_moe, implausible_change, is_post_battle_reading, is_rating, results_rating
 from .targets import moe_state, next_whole_percent
 
 __all__ = (
@@ -38,6 +40,10 @@ __all__ = (
     'battle_combined',
     'battles_to_reach',
     'combined_damage',
+    'exact_moe',
+    'implausible_change',
+    'is_post_battle_reading',
+    'is_rating',
     'mastery_from_api',
     'mastery_state',
     'moe_color',
@@ -48,5 +54,7 @@ __all__ = (
     'project_moving_avg',
     'rating_change',
     'rating_to_percent',
+    'threshold_problem',
     'required_battle_damage',
+    'results_rating',
 )

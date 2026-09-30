@@ -14,10 +14,6 @@ def lit_lamp(duration=10.0):
     return lamp
 
 
-def ticks(lamp, moments):
-    return [moment for moment in moments if lamp.tick_due(moment)]
-
-
 class LampDurationTest(unittest.TestCase):
 
     def test_base_own_spotting_time_without_the_radio(self):
@@ -60,46 +56,14 @@ class CountdownTest(unittest.TestCase):
 
         assert seconds_left == 5.5
 
-    def test_one_tick_per_whole_second_down_to_one(self):
-        lamp = lit_lamp(10.0)
-        moments = [100.0 + half / 2.0 for half in range(0, 24)]
-
-        ticked = ticks(lamp, moments)
-
-        assert ticked == [101.0, 102.0, 103.0, 104.0, 105.0, 106.0, 107.0, 108.0, 109.0]
-
-    def test_ticks_follow_the_shown_number_of_a_fractional_duration(self):
-        lamp = lit_lamp(8.5)
-        moments = [100.0 + half / 2.0 for half in range(0, 6)]
-
-        ticked = ticks(lamp, moments)
-
-        assert ticked == [100.5, 101.5, 102.5]
-
-    def test_the_same_second_ticks_once(self):
-        lamp = lit_lamp(10.0)
-        lamp.tick_due(101.0)
-
-        is_tick_due = lamp.tick_due(101.4)
-
-        assert not is_tick_due
-
-    def test_an_unlit_lamp_never_ticks(self):
-        lamp = SixthSense()
-
-        is_tick_due = lamp.tick_due(101.0)
-
-        assert not is_tick_due
-
     def test_a_new_detection_restarts_the_countdown(self):
         lamp = lit_lamp(10.0)
-        lamp.tick_due(105.0)
         lamp.vehicle_state(OBSERVED, False, 106.0)
         lamp.vehicle_state(OBSERVED, True, 200.0, 8.0)
 
-        ticked = ticks(lamp, [200.5, 201.0, 202.0])
+        seconds_left = lamp.seconds_left(202.0)
 
-        assert ticked == [201.0, 202.0]
+        assert seconds_left == 6.0
 
 
 class HideConditionsTest(unittest.TestCase):

@@ -225,9 +225,6 @@ class DamageLogPanel(BattlePanel):
     def render(self):
         if self.log is None:
             return
-        if self.log.is_empty():
-            self.hide()
-            return
 
         translate = self.app.translate
         extended = self.extended()

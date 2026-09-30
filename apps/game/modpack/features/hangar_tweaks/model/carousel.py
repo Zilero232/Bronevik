@@ -1,14 +1,17 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.compat import is_number
+from ....core.compat import is_int, is_number
 from ....core.native_settings import from_table, native_values
 from .constants import (
     CAROUSEL_ROW_MODES,
     CAROUSEL_TILE_MODES,
     CAROUSEL_TYPE,
     DOUBLE_CAROUSEL_TYPE,
+    EXTRA_ROWS,
     INTERFACE_SCALE,
     INTERFACE_SCALES,
+    LEGACY_CAROUSEL_ROWS,
+    MULTI_ROW_COUNT,
     SCALE_TOLERANCE,
 )
 
@@ -20,6 +23,21 @@ FIELDS = {
 
 def to_native(values):
     return native_values(values, FIELDS)
+
+
+def normalize_rows(value):
+    return LEGACY_CAROUSEL_ROWS.get(value, value)
+
+
+def rows_override(choice):
+    return int(choice) if choice in EXTRA_ROWS else None
+
+
+def carousel_row_count(choice, stock):
+    rows = rows_override(choice)
+    if rows is None or not is_int(stock) or stock < MULTI_ROW_COUNT:
+        return stock
+    return rows
 
 
 def scale_index(options, choice):

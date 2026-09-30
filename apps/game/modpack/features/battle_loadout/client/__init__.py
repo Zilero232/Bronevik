@@ -5,7 +5,7 @@ from ....core.client.hud.icons import client_file_exists
 from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.log import log, safe
 from ..i18n import STRINGS
-from ..model import clean_devices, format_panel, loadout_summary
+from ..model import format_panel, installed, loadout_summary, slot_items
 from ..model.constants import PREVIEW_SIZE
 from ..model.preview import preview_text, preview_widget
 from ..model.widget import equipment_widget
@@ -37,6 +37,7 @@ class BattleLoadoutPanel(BattlePanel):
         BattlePanel.__init__(self, app, PANEL_SPEC)
 
     def start(self, avatar):
+        self.devices = []
         for name in DEVICE_EVENTS:
             self.hooks.add(optional_devices, name, self._on_loadout)
         self.hooks.add(ammo, SETUP_EVENT, self._on_loadout)
@@ -55,22 +56,30 @@ class BattleLoadoutPanel(BattlePanel):
         if vehicle_id == getattr(player(), 'playerVehicleID', None):
             self._on_loadout()
 
+    # A read that finds nothing while the row already shows the own tank's slots (the arena entry or the setups being
+    # rebuilt) keeps the last row: the row never blinks or changes width for a transient read.
     def _on_loadout(self, *args):
         loadout = own_loadout()
-        self.devices = clean_devices(loadout['devices'] + loadout['directives'])
-        self.wait(loadout['reason'])
-        self._report(loadout)
-        self.render()
+        items = slot_items(loadout['devices'], loadout['directives'])
+        if installed(items) or not installed(self.devices):
+            self._update(items)
+        self.wait(None if installed(self.devices) else loadout['reason'])
+        self._report(loadout, items)
 
-    def _report(self, loadout):
-        summary = loadout_summary(loadout, self.devices, client_file_exists)
+    def _update(self, items):
+        if items != self.devices:
+            self.devices = items
+            self.render()
+
+    def _report(self, loadout, items):
+        summary = loadout_summary(loadout, items, client_file_exists)
         if summary != self.summary:
             self.summary = summary
             log(summary)
 
     @safe
     def render(self):
-        if not self.devices:
+        if not installed(self.devices):
             self.hide()
             return
 

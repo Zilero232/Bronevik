@@ -1,5 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import functools
 import io
 import sys
 import unittest
@@ -119,6 +120,26 @@ class LogExceptionTest(unittest.TestCase):
         handler()
 
         assert 'repeated 49 more times' in self.out.getvalue()
+
+
+def add(first, second):
+    return first + second
+
+
+class SafeTest(unittest.TestCase):
+
+    def test_a_partial_handler_can_be_guarded(self):
+        guarded = log.safe(functools.partial(add, 1))
+
+        assert guarded(2) == 3
+
+    def test_a_partial_has_no_name_to_copy(self):
+        names = log.wrapped_attributes(functools.partial(add, 1))
+
+        assert '__name__' not in names
+
+    def test_a_function_keeps_its_name(self):
+        assert log.safe(add).__name__ == 'add'
 
 
 class ShellTypesTest(unittest.TestCase):

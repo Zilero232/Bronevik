@@ -1,3 +1,4 @@
+@use 'sass:list';
 @use '@otmetki/design-tokens' as tokens;
 
 $font-family: warhelios, 'Arial Narrow', arial, sans-serif;
@@ -59,7 +60,72 @@ $font-family: warhelios, 'Arial Narrow', arial, sans-serif;
   border: 1px solid token(color-border-strong);
   border-radius: token(radius-md);
   background-color: token(color-surface-sunken);
+  background-image: token(win-well);
+  box-shadow: token(win-well-shadow);
   color: token(color-text);
   font-size: 13px;
   line-height: 30px;
+
+  @include ease(border-color, box-shadow);
+}
+
+// Short hover and press feedback: the listed properties ease over the base duration.
+@mixin ease($properties...) {
+  $list: ();
+
+  @each $property in $properties {
+    $list: list.append($list, $property token(duration-base) token(ease-out), $separator: comma);
+  }
+
+  transition: $list;
+}
+
+// A raised plate of the settings window: layered gradient, inner top highlight, soft drop shadow.
+@mixin raised($radius: radius-lg) {
+  border: 1px solid token(win-frame-line);
+  border-radius: token($radius);
+  background-color: token(color-surface);
+  background-image: token(win-card);
+  box-shadow: token(win-card-shadow);
+}
+
+// A sunken well for inputs and control groups.
+@mixin well {
+  border: 1px solid token(color-border);
+  border-radius: token(radius-md);
+  background-color: token(color-surface-sunken);
+  background-image: token(win-well);
+  box-shadow: token(win-well-shadow);
+}
+
+// A pressable control surface (buttons, segments, steppers).
+@mixin control {
+  border: 1px solid token(color-border-strong);
+  border-radius: token(radius-md);
+  background-color: token(color-surface-raised);
+  background-image: token(win-control);
+  box-shadow: token(win-control-shadow);
+  color: token(color-text);
+  cursor: pointer;
+
+  @include ease(background-color, border-color, color, box-shadow);
+
+  &:hover {
+    border-color: token(color-border-control);
+    background-image: token(win-control-hover);
+  }
+}
+
+// The selected or primary state: the orange gradient with its glow.
+@mixin accent-fill {
+  border-color: token(color-accent);
+  background-color: token(color-accent);
+  background-image: token(win-accent);
+  box-shadow: token(win-accent-shadow);
+  color: token(color-accent-contrast);
+
+  &:hover {
+    border-color: token(color-accent-hover);
+    background-image: token(win-accent-hover);
+  }
 }

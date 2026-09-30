@@ -96,8 +96,8 @@ class BuildSummaryTest(unittest.TestCase):
     def test_marks_change_against_the_hangar_values(self):
         summary = summary_after_marks()
 
-        assert summary['moe_percent'] == 87.12
-        assert summary['moe_delta'] == 1.12
+        assert summary['moe_percent'] == 87.00
+        assert summary['moe_delta'] == 1.0
         assert summary['moving_avg_delta'] == 60
         assert summary['marks_delta'] == 1
 
@@ -178,7 +178,7 @@ class FormatSummaryTest(unittest.TestCase):
             '<font color="#7CD35B">Три отметки: победа — T-34, Малиновка</font>',
             'Опыт 1 150, кредиты 48 000',
             'Урон 2 150, помощь 950, заблокировано 900, уничтожено 2, обнаружено 3',
-            'Отметка 87.12%, отметок 2 (<font color="#7CD35B">+1.12%</font>), '
+            'Отметка 87.00%, отметок 2 (<font color="#7CD35B">+1.00%</font>), '
             'средний урон <font color="#7CD35B">+60</font>',
         ]
 
@@ -188,7 +188,7 @@ class FormatSummaryTest(unittest.TestCase):
 
         text = format_summary(summary, settings, translator('en'))
 
-        assert text == 'Three Marks: victory — T-34, 02_malinovka\nMoE 87.12%, marks 2 (+1.12%), average damage +60'
+        assert text == 'Three Marks: victory — T-34, 02_malinovka\nMoE 87.00%, marks 2 (+1.00%), average damage +60'
 
     def test_marks_section_is_left_out_without_a_moe(self):
         settings = Settings({'colored': False, 'show_economy': False, 'show_combat': False}, SCHEMA)
@@ -204,7 +204,7 @@ class FormatSummaryTest(unittest.TestCase):
 
         text = format_summary(summary, settings, translator('en'))
 
-        assert text == 'victory: 2 150 (87.12% +1.12%)'
+        assert text == 'victory: 2 150 (87.00% +1.00%)'
 
     def test_strings_are_in_sync(self):
         assert sorted(STRINGS['ru']) == sorted(STRINGS['en'])
@@ -230,6 +230,26 @@ class HistoryTest(unittest.TestCase):
 
     def test_restore_of_something_else_is_empty(self):
         assert restore_history({'arena': '1'}) == []
+
+    def test_restore_scales_a_whole_percent_stored_as_hundredths(self):
+        stored = [{'arena': '1', 'marks_on_gun': 0, 'moe_percent': 0.64, 'moe_delta': -62.47}]
+
+        assert restore_history(stored)[0]['moe_percent'] == 64.0
+
+    def test_restore_drops_the_impossible_change(self):
+        stored = [{'arena': '1', 'marks_on_gun': 0, 'moe_percent': 0.64, 'moe_delta': -62.47}]
+
+        assert restore_history(stored)[0]['moe_delta'] is None
+
+    def test_restore_scales_a_percent_under_one_on_a_tank_with_a_mark(self):
+        stored = [{'arena': '1', 'marks_on_gun': 1, 'moe_percent': 0.8, 'moe_delta': None}]
+
+        assert restore_history(stored)[0]['moe_percent'] == 80.0
+
+    def test_restore_keeps_a_real_percent(self):
+        stored = [{'arena': '1', 'marks_on_gun': 1, 'moe_percent': 66.47, 'moe_delta': 0.42}]
+
+        assert restore_history(stored) == stored
 
     def test_history_size_is_limited(self):
         assert Settings({'history_size': 1000}, SCHEMA).get('history_size') == 100
@@ -286,7 +306,7 @@ class BuildPageTest(unittest.TestCase):
             'Ремонт / снаряды / снаряжение': '4 200 / 1 800 / 3 000',
             'Кредиты за вычетом расходов': '39 000',
             'Время жизни / длительность боя': '06:20 / 06:42',
-            'Отметка': '87.12% (+1.12%)',
+            'Отметка': '87.00% (+1.00%)',
         }
 
     def test_battle_row_without_a_moe_has_no_moe_detail_nor_badge(self):

@@ -10,7 +10,7 @@ const { items } = battleLoadoutSchema.parse(readWidgetFixture('battle_loadout'))
 
 const kinds = (entries: ReturnType<typeof loadoutEntries>) => entries.map((entry) => entry.kind);
 
-const devicesOnly = (): EquipmentItem[] => items.filter((item) => !item.overlay?.includes('battleBooster'));
+const devicesOnly = (): EquipmentItem[] => items.filter((item) => item.kind === 'device');
 
 describe(loadoutEntries, () => {
   it('parts the equipment from the directive with a divider', () => {
@@ -25,5 +25,11 @@ describe(loadoutEntries, () => {
 
   it('draws no divider without a directive', () => {
     expect(kinds(loadoutEntries(devicesOnly()))).not.toContain('divider');
+  });
+
+  it('keys a slot by its place, so a slot filled in battle keeps its cell', () => {
+    const keys = loadoutEntries(items).flatMap((entry) => (entry.kind === 'slot' ? [entry.key] : []));
+
+    expect(keys).toEqual(['device-0', 'device-1', 'device-2', 'device-3', 'directive-4']);
   });
 });

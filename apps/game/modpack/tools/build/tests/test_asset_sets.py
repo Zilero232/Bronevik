@@ -111,12 +111,6 @@ class AssetSetsTest(unittest.TestCase):
             self.assertIn(asset_set.license_target, paths)
             self.assertIn('%s/%s/%s' % (asset_sets.ICONS_ROOT, asset_set.feature, asset_sets.NOTICES_NAME), paths)
 
-    def test_sixth_sense_ships_its_sounds(self):
-        sixth = package_paths('sixth_sense')
-
-        self.assertIn('res/audioww/sixthSense.mp3', sixth)
-        self.assertIn('res/audioww/sixthSense_off.mp3', sixth)
-
     def test_a_feature_without_sets_ships_only_sources(self):
         assets = [path for path in package_paths('team_hp') if not path.endswith('.py')]
 

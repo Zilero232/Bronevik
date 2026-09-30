@@ -4,7 +4,7 @@ import type { ComponentCardProps } from './ComponentCard.types';
 
 import { Icon } from '../../../shared/ui/icon';
 import { useComponentCard } from '../model/hooks';
-import { CardBody, CardSwitch, CardTile, CardTitles } from './components';
+import { CardBody, CardSwitch, CardThumb, CardTile, CardTitles } from './components';
 
 import s from './ComponentCard.module.scss';
 
@@ -23,7 +23,12 @@ export const ComponentCard = ({ component, fields, forceOpen }: ComponentCardPro
         >
           <CardTile enabled={card.enabled} icon={card.icon} />
           <CardTitles card={card} component={component} />
-          {card.expandable && <Icon className={s.chevron} name={card.chevron} tone='text' />}
+          {!card.open && <CardThumb card={card} />}
+          {card.expandable && (
+            <span className={s.chevron}>
+              <Icon name={card.chevron} tone='text' />
+            </span>
+          )}
         </button>
         <CardSwitch card={card} component={component} />
       </div>

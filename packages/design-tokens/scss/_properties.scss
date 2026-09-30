@@ -9,6 +9,7 @@
 @use './scale';
 @use './surfaces';
 @use './textures';
+@use './window';
 
 @function merge-maps($maps...) {
   $merged: ();
@@ -30,7 +31,8 @@ $root: merge-maps(
   palette.$game,
   palette.$aliases,
   textures.$root,
-  hud.$root
+  hud.$root,
+  window.$root
 );
 $themes: (
   dark: merge-maps(colors.$dark, surfaces.$dark, map.get(ratings.$default, dark), textures.$dark, colors.$charts),

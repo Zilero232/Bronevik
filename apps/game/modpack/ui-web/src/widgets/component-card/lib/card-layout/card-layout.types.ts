@@ -10,6 +10,7 @@ export type CardLayoutInput = {
 
 export type CardLayout = {
   fields: UiField[];
+  advanced: UiField[];
   expandable: boolean;
   open: boolean;
   showEmpty: boolean;

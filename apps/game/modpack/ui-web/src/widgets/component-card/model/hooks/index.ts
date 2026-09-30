@@ -1,3 +1,4 @@
+export { useAdvancedFields } from './use-advanced-fields';
 export type { RunActionInput } from './use-card-actions';
 export { useComponentCard } from './use-component-card';
 export type { UseComponentCardInput } from './use-component-card';

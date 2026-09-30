@@ -166,7 +166,7 @@ class PanelTest(unittest.TestCase):
     def test_without_curve(self):
         text = strip_tags(format_panel(state(has_curve=False), PanelView(settings()), translator('ru')))
 
-        assert text == u'Отметка 81.50%: нет порогов'
+        assert text == u'Отметка 81.50% · среднее 2 500 → 2 492'
 
     def test_preview(self):
         text = strip_tags(preview_text(settings(), translator()))

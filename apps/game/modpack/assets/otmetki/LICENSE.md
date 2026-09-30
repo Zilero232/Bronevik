@@ -11,6 +11,3 @@ damage-log glyphs (`otmetki/damage_log`): the SVG sources and the PNG renditions
   traced, copied, recoloured or derived from.
 - Distributed only as part of the modpack (free and subscription editions). Not for redistribution on its
   own without written permission.
-
-The sixth-sense sound (`otmetki/sounds`) is also original work of Три отметки but is dedicated to the
-public domain under CC0 1.0: see `otmetki/sounds/LICENSE.txt`.

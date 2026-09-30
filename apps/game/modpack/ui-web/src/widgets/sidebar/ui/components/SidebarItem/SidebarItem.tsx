@@ -22,6 +22,7 @@ export const SidebarItem = ({ item, compact }: SidebarItemProps) => {
       onClick={item.open}
       {...tip}
     >
+      {item.active && <span aria-hidden='true' className={s.marker} />}
       <Icon name={item.icon} size={18} tone={item.active ? 'accent' : 'muted'} />
       {!compact && <span className={s.label}>{label}</span>}
       {!compact && item.count && <span className={s.count}>{item.count}</span>}

@@ -254,6 +254,7 @@ Until the Lesta application exists, production runs the normal stack on an empty
 
 - **The server** boots with `LESTA_APPLICATION_ID` empty. Every endpoint answers with empty data, and every page shows its designed empty state (what is missing and why), never an error or a spinner. `/auth/lesta/start` sends the visitor back with `lesta_not_connected` instead of opening Lesta ID.
 - **The worker** starts degraded: it logs `LESTA_APPLICATION_ID is empty: running degraded…`, loads no tracking or clan processors and registers no Lesta schedule. Aggregates, news, purge and the other key-less jobs still run. `/health` stays up and reports the worker's state.
+- **MoE thresholds** need no key either: they are estimated from the mod's battle reports (`moe-estimate`, on every worker boot and daily), so they appear once players report through the modpack — [moe-thresholds.md](moe-thresholds.md).
 - **The client** runs with `LESTA_NOTICE=true` in the VPS `.env` (§1): every site page shows the informational «Данные «Мира танков» пока не подключены» notice and the Lesta ID button is disabled with the same explanation. The site stays indexable.
 
 ### Каталог техники (optional, no key needed)

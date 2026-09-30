@@ -88,23 +88,6 @@
       "fair_play": "Shown when the client's own sixth-sense lamp lights, for the player's own vehicle."
     },
     {
-      "id": "otmetki_sixth_sense_sound",
-      "feature": "sixth_sense",
-      "title": "Sixth-sense chime",
-      "origin": "original",
-      "author": "Три отметки",
-      "copyright": "Три отметки, dedicated to the public domain",
-      "license": "CC0-1.0",
-      "license_file": "otmetki/sounds/LICENSE.txt",
-      "url": "https://triotmetki.ru",
-      "files": "otmetki/sounds",
-      "include": ["sixthSense.mp3", "sixthSense_off.mp3", "otmetki_tick.mp3"],
-      "target": "res/audioww",
-      "license_target": "res/gui/maps/icons/otmetki/sixth_sense/sound/LICENSE.txt",
-      "contents": "sixthSense.mp3 (lamp on), sixthSense_off.mp3 (lamp off) and otmetki_tick.mp3 (a second of the lamp countdown): synthesised by tools/assets/sound.py, MP3 44.1 kHz mono",
-      "fair_play": "The client's own custom detection sound slot (Settings > Sound > detection alert: user sound); the tick counts down the player's own lamp."
-    },
-    {
       "id": "otmetki_damage_log_icons",
       "feature": "damage_log",
       "title": "Damage-log kind glyphs",
@@ -120,23 +103,6 @@
       "target": "res/gui/maps/icons/otmetki/damage_log/icons",
       "contents": "6 damage-kind glyphs (damage, radio, track, stun, blocked, received) and 5 vehicle-class glyphs (class_light, class_medium, class_heavy, class_td, class_spg): SVG sources, RGBA PNG 32 px",
       "fair_play": "Decorates the player's own damage-log lines; the class glyph shows the vehicle class the player panels already show."
-    },
-    {
-      "id": "otmetki_goal_sound",
-      "feature": "session_stats",
-      "title": "Goal completion chime",
-      "origin": "original",
-      "author": "Три отметки",
-      "copyright": "Три отметки, dedicated to the public domain",
-      "license": "CC0-1.0",
-      "license_file": "otmetki/sounds/LICENSE.txt",
-      "url": "https://triotmetki.ru",
-      "files": "otmetki/sounds",
-      "include": ["otmetki_goal.mp3"],
-      "target": "res/audioww",
-      "license_target": "res/gui/maps/icons/otmetki/session_stats/sound/LICENSE.txt",
-      "contents": "otmetki_goal.mp3 (a goal from the site met): synthesised by tools/assets/sound.py, MP3 44.1 kHz mono",
-      "fair_play": "Played in the hangar when the site reports one of the player's own goals met."
     }
   ]
 }

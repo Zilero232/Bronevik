@@ -3,8 +3,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import time
 
 from ....core.client.game import vehicle_class_tag, vehicle_short_name
+from ....core.log import log
 from ....core.storage import account_file
-from ..model.constants import ACTION_CLEAR, HISTORY_FILE
+from ..model.constants import ACTION_CLEAR, HISTORY_FILE, LOG_REJECTED, LOG_REPAIRED
 from ..model.history import MarksHistory
 from ..model.page import build_page, page_actions
 
@@ -27,6 +28,9 @@ class HistoryBook(object):
     def _on_account(self, account_id):
         store = account_file(self.app.config_dir, HISTORY_FILE, account_id)
         self.history = MarksHistory(store, self.settings.get('max_entries'))
+        if self.history.repaired:
+            log(LOG_REPAIRED % self.history.repaired)
+            self.history.save()
 
     def settings_changed(self):
         if self.history is not None:
@@ -43,6 +47,8 @@ class HistoryBook(object):
         label = vehicle_short_name(tank_id)
         if self.history.record_battle(event, label, vehicle_class_tag(tank_id), before) is not None:
             self.history.save()
+        elif self.history.rejected:
+            log(LOG_REJECTED % (tank_id, self.history.rejected))
 
     def record_snapshot(self, snapshot):
         if not self.is_open():

@@ -14,13 +14,16 @@
 .cell {
   position: relative;
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  padding: 1px;
   border: 1px solid token(hud-slot-line);
   border-radius: token(hud-radius);
-  margin: 0 2px;
   background-color: token(hud-slot);
+}
+
+.empty {
+  opacity: 0.6;
 }
 
 .bonus {
@@ -42,7 +45,6 @@
 
 .divider {
   width: 1px;
-  height: 28px;
   flex-shrink: 0;
   margin: 0 2px;
   background-color: token(hud-divider);
@@ -50,8 +52,9 @@
 
 .overlay {
   position: absolute;
-  top: 1px;
-  left: 1px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .star {

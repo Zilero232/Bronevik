@@ -4,8 +4,9 @@ from ....core.compat import is_int, string_types, to_text
 from ....core.format import COLOR_WARN, font
 from ....core.hud.icons import artefact_icon, glyph, image, split
 from .constants import (ATTENTION_MARK, BONUS_MARK, BOOSTER_OVERLAY_PATH, BOOSTER_OVERLAYS, FLAGS, ICON_FALLBACK,
-                        MAX_EFFECT, MAX_ITEMS, MAX_MODERNIZED_LEVEL, MAX_NAME, MISSING_ICON_MARK, OVERLAY_DELUXE,
-                        OVERLAY_MODERNIZED, OVERLAY_PATH, OVERLAY_TROPHIES, SUMMARY, SUMMARY_EMPTY)
+                        KIND_DEVICE, KIND_DIRECTIVE, MAX_EFFECT, MAX_ITEMS, MAX_MODERNIZED_LEVEL, MAX_NAME,
+                        MISSING_ICON_MARK, OVERLAY_DELUXE, OVERLAY_MODERNIZED, OVERLAY_PATH, OVERLAY_TROPHIES,
+                        SLOT_EMPTY, SLOT_ENTRY, SLOTS, STOCK_ICON, SUMMARY, SUMMARY_EMPTY)
 
 # Fair play: the player's own tank only, the equipment and directives its setups carry (what the stock equipment
 # tooltips and ammunition panels read) and the device states the client reports for the own vehicle. The client tells
@@ -39,6 +40,10 @@ def overlay_of(raw):
     return _device_overlay(raw)
 
 
+def _kind(raw):
+    return KIND_DIRECTIVE if raw.get('booster') else KIND_DEVICE
+
+
 def clean_device(raw):
     if not isinstance(raw, dict):
         return None
@@ -52,6 +57,8 @@ def clean_device(raw):
         'effect': _text(raw.get('effect'), MAX_EFFECT) or u'',
         'icon': artefact_icon(raw.get('icon'), ICON_FALLBACK) or glyph(ICON_FALLBACK),
         'overlay': overlay_of(raw),
+        'kind': _kind(raw),
+        'empty': False,
     }
     device.update((flag, bool(raw.get(flag))) for flag in FLAGS)
     return device
@@ -60,6 +67,27 @@ def clean_device(raw):
 def clean_devices(raw):
     cleaned = (clean_device(item) for item in (raw or [])[:MAX_ITEMS])
     return [device for device in cleaned if device is not None]
+
+
+def empty_slot(kind):
+    slot = {'name': u'', 'effect': u'', 'icon': None, 'overlay': None, 'kind': kind, 'empty': True}
+    slot.update((flag, False) for flag in FLAGS)
+    return slot
+
+
+def _slot(raw, kind):
+    return clean_device(raw) or empty_slot(kind)
+
+
+# The row of a read: one cell per device slot and per directive slot, installed or not, so the row keeps its width
+# while the client fills or changes a slot.
+def slot_items(devices, directives):
+    slots = [(raw, KIND_DEVICE) for raw in devices or []] + [(raw, KIND_DIRECTIVE) for raw in directives or []]
+    return [_slot(raw, kind) for raw, kind in slots[:MAX_ITEMS]]
+
+
+def installed(items):
+    return [item for item in items if not item['empty']]
 
 
 def _mark(device):
@@ -75,17 +103,31 @@ def _icon_markup(device, size):
     return u'<img src="img://%s" width="%d" height="%d"/>' % (path, size, size)
 
 
+def icon_size(settings):
+    return STOCK_ICON if settings.get('stock_size') else settings.get('icon_size')
+
+
 def format_panel(devices, settings):
-    size = settings.get('icon_size')
-    return u' '.join(_icon_markup(device, size) + _mark(device) for device in devices)
+    size = icon_size(settings)
+    return u' '.join(_icon_markup(device, size) + _mark(device) for device in installed(devices))
 
 
 def icons_found(devices, exists):
-    paths = (split(device['icon'])[0] for device in devices)
+    paths = (split(device['icon'])[0] for device in installed(devices))
     return sum(1 for path in paths if path and exists(path))
+
+
+def _count(raw):
+    return len([item for item in raw or [] if item is not None])
+
+
+def slots_line(source, slots):
+    entries = [SLOT_ENTRY % (index + 1, cd or SLOT_EMPTY) for index, cd in enumerate(slots or [])]
+    return SLOTS % (source, u', '.join(entries))
 
 
 def loadout_summary(loadout, devices, exists):
     if loadout['reason']:
         return SUMMARY_EMPTY % loadout['reason']
-    return SUMMARY % (len(loadout['devices']), len(loadout['directives']), icons_found(devices, exists))
+    counts = (_count(loadout['devices']), _count(loadout['directives']), icons_found(devices, exists))
+    return SUMMARY % counts + u'; ' + slots_line(loadout.get('source'), loadout.get('slots'))

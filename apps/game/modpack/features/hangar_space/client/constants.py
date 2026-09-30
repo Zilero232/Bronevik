@@ -11,3 +11,6 @@ OVERRIDES_ATTR = '_spaceIdOverride'
 HANGAR_CONFIGS = ('gui.ClientHangarSpace', '_HANGAR_CFGS')
 DEFAULT_SCENE = ('constants', 'DEFAULT_HANGAR_SCENE')
 HANGAR_SPACE_SKELETON = ('skeletons.gui.shared.utils', 'IHangarSpace')
+# IHangarSpace.onSpaceCreate fires once a space finished loading; the switch controller itself waits for it
+# (onLobbyInited -> _delayedProcessChange) before it reloads a space.
+SPACE_CREATED = 'onSpaceCreate'

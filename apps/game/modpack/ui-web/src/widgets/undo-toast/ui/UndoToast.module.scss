@@ -6,15 +6,16 @@
   left: 50%;
   display: flex;
   width: 560px;
-  height: 44px;
+  height: 48px;
   flex-direction: row;
   align-items: center;
-  padding: 0 6px 0 14px;
+  padding: 0 8px 0 16px;
   border: 1px solid token(color-border-strong);
-  border-radius: token(radius-md);
+  border-radius: token(radius-lg);
   border-left: 3px solid token(color-success);
   margin-left: -280px;
   background-color: token(color-surface-overlay);
+  background-image: token(win-toast);
   box-shadow: token(shadow-popover);
 }
 

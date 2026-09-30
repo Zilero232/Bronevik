@@ -11,7 +11,6 @@ DEFAULTS = {
     'show_moe': True,
     'show_goals': True,
     'max_goals': 3,
-    'goal_sound': True,
     'show_account': True,
     'metric_wn8': True,
     'metric_win_rate': True,

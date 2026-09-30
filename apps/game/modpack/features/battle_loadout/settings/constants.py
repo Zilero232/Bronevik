@@ -12,6 +12,7 @@ DEFAULTS = {
     'align_x': 'center',
     'align_y': 'bottom',
     'pinned': True,
+    'stock_size': True,
     'icon_size': 40,
 }
 LIMITS = {'icon_size': (20, 48)}

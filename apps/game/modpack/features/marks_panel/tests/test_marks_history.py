@@ -176,6 +176,119 @@ class SummaryTest(unittest.TestCase):
         assert history.summary(1, 5) is None
 
 
+# The Firebird entries of a player's file written by 0.7.0, which stored the battle results' whole percent (64, 65,
+# 67) among the dossier's hundredths (6311, 6647).
+FIREBIRD = [
+    {'arena': None, 'avg': 2605, 'marks': 0, 'rating': 6311, 'source': 'hangar', 't': 1790685912},
+    {'arena': '29106557069013812', 'avg': 2668, 'marks': 0, 'rating': 64, 'source': 'battle', 't': 1790686301},
+    {'arena': '26019991706648842', 'avg': 2718, 'marks': 1, 'rating': 65, 'source': 'battle', 't': 1790689874},
+    {'arena': None, 'avg': 2751, 'marks': 1, 'rating': 6647, 'source': 'hangar', 't': 1790794178},
+    {'arena': '20247267898121129', 'avg': 2809, 'before': 6647, 'marks': 1, 'rating': 67, 'source': 'battle',
+     't': 1790795057},
+]
+
+
+def firebird_file():
+    vehicle = {'label': u'Firebird', 'tier': 10, 'entries': [dict(entry) for entry in FIREBIRD], 'reached': {}}
+    return MemoryFile({'version': 1, 'vehicles': {'7940641': vehicle}})
+
+
+class RepairTest(unittest.TestCase):
+
+    def test_the_battle_entries_stored_as_a_whole_percent_are_dropped(self):
+        history = MarksHistory(firebird_file())
+
+        ratings = [entry['rating'] for entry in history.vehicle(7940641)['entries']]
+
+        assert ratings == [6311, 6647]
+
+    def test_the_repair_counts_the_dropped_entries(self):
+        assert MarksHistory(firebird_file()).repaired == 3
+
+    def test_the_repaired_card_shows_the_dossier_percent(self):
+        summary = MarksHistory(firebird_file()).summary(7940641, 5)
+
+        assert summary['percent'] == 66.47
+
+    def test_the_repaired_card_has_no_wrong_battle_change(self):
+        summary = MarksHistory(firebird_file()).summary(7940641, 5)
+
+        assert summary['last_delta'] is None
+
+    def test_a_repaired_history_is_not_repaired_again(self):
+        store = firebird_file()
+        MarksHistory(store).save()
+
+        assert MarksHistory(store).repaired == 0
+
+    def test_a_brand_new_tank_under_one_percent_is_kept(self):
+        history = empty_history()
+        history.record_battle(battle(1, 80, marks=0, avg=300))
+        history.record_battle(battle(2, 95, marks=0, avg=320))
+        history.save()
+
+        assert MarksHistory(history.store).repaired == 0
+
+
+class GuardTest(unittest.TestCase):
+
+    def test_a_battle_moving_the_percent_by_more_than_ten_is_not_recorded(self):
+        history = empty_history()
+
+        entry = history.record_battle(battle(1, 67), before=6647)
+
+        assert entry is None
+
+    def test_the_rejected_battle_says_why(self):
+        history = empty_history()
+
+        history.record_battle(battle(1, 67), before=6647)
+
+        assert 'more than 10 %' in history.rejected
+
+    def test_a_rating_past_one_hundred_percent_is_not_recorded(self):
+        history = empty_history()
+
+        history.record_battle(battle(1, 10001))
+
+        assert 'outside' in history.rejected
+
+    def test_an_impossible_change_shows_no_delta(self):
+        history = empty_history()
+        history.record_battle(battle(1, 8400, occurred=T0))
+        history.vehicle(1)['entries'].append(dict(history.vehicle(1)['entries'][0], rating=5000, arena='2'))
+
+        assert history.summary(1, 5)['last_delta'] is None
+
+
+class CorrectionTest(unittest.TestCase):
+
+    def test_the_hangar_read_after_a_battle_corrects_the_rounded_rating(self):
+        history = empty_history()
+        history.record_battle(battle(1, 6700, marks=1, avg=2809), before=6647)
+        post_battle = dict(snapshot(), damage_rating=6689, moving_avg_damage=2809, marks_on_gun=1)
+
+        history.record_snapshot(post_battle, T0 + 60)
+
+        assert [entry['rating'] for entry in history.vehicle(1)['entries']] == [6689]
+
+    def test_the_corrected_battle_counts_its_exact_change(self):
+        history = empty_history()
+        history.record_battle(battle(1, 6700, marks=1, avg=2809), before=6647)
+        post_battle = dict(snapshot(), damage_rating=6689, moving_avg_damage=2809, marks_on_gun=1)
+        history.record_snapshot(post_battle, T0 + 60)
+
+        assert history.summary(1, 5)['last_delta'] == 0.42
+
+    def test_a_later_hangar_read_with_another_average_is_a_new_entry(self):
+        history = empty_history()
+        history.record_battle(battle(1, 6700, marks=1, avg=2809), before=6647)
+
+        history.record_snapshot(dict(snapshot(), damage_rating=6689, moving_avg_damage=2790, marks_on_gun=1), T0 + 60)
+
+        assert len(history.vehicle(1)['entries']) == 2
+
+
 class PageTest(unittest.TestCase):
 
     def test_page_row_of_a_vehicle(self):

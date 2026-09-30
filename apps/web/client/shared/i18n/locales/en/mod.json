@@ -90,7 +90,7 @@
       },
       "sixth_sense": {
         "title": "Sixth sense lamp",
-        "text": "A big icon and a sound when the skill fires. Replaces the stock lamp."
+        "text": "A big icon when the skill fires. Replaces the stock lamp."
       },
       "battle_loadout": {
         "title": "Equipment in battle",
@@ -106,7 +106,7 @@
       },
       "aim_info": {
         "title": "Aim and shells",
-        "text": "The distance to any target under the reticle; damage, penetration and module damage in the shell tooltip. Optionally a smaller aim circle."
+        "text": "Armour under the reticle: the target's effective armour and your shell's penetration in the stock marker colour. The distance to any target under the reticle; damage, penetration and module damage in the shell tooltip. Optionally a smaller aim circle."
       },
       "platoon_points": {
         "title": "Platoon points",
@@ -143,10 +143,6 @@
       "chat_filter": {
         "title": "Chat filter",
         "text": "Timestamps on messages; hides repeats, flood, command spam and the words you pick."
-      },
-      "battle_sounds": {
-        "title": "Event sounds",
-        "text": "Your own sounds for fire, crits, crew stun, first blood and kills. Needs a sound mod with Wwise events."
       },
       "hangar_tweaks": {
         "title": "Hangar tweaks",

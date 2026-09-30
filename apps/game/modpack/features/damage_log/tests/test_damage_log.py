@@ -154,28 +154,24 @@ class TotalsTest(unittest.TestCase):
 
         assert log.values()['dealt'] == 0
 
-    def test_a_new_log_is_empty(self):
-        assert DamageLog().is_empty()
-
-    def test_a_ricochet_alone_makes_the_log_not_empty(self):
-        log = DamageLog()
-
-        log.shots.add_result(TIGER, 'ricochet', 1.0)
-
-        assert not log.is_empty()
-
-    def test_a_summary_makes_the_log_not_empty(self):
+    def test_a_summary_counts_the_dealt_total(self):
         log = DamageLog()
 
         log.apply_summary(damage=100)
 
-        assert not log.is_empty()
+        assert log.values()['dealt'] == 100
 
     def test_zero_totals_are_hidden(self):
         log = DamageLog()
         log.add('damage', 390, target(TIGER, 'Tiger', 1.0))
 
         assert shown_totals(log, settings()) == [('dealt', 390)]
+
+    def test_an_empty_log_shows_the_dealt_total_at_zero(self):
+        assert shown_totals(DamageLog(), settings()) == [('dealt', 0)]
+
+    def test_an_empty_log_of_the_received_section_shows_its_first_total_at_zero(self):
+        assert shown_totals(DamageLog(), settings(sections='received')) == [('blocked', 0)]
 
     def test_the_dealt_section_hides_the_blocked_and_received_totals(self):
         keys = [key for key, _ in shown_totals(filled_log(), settings(sections='dealt'))]

@@ -6,13 +6,16 @@
   height: 40px;
   flex-direction: row;
   align-items: center;
-  padding: 0 12px 0 16px;
-  border: none;
-  border-left: 3px solid transparent;
+  padding: 0 10px 0 12px;
+  border: 1px solid transparent;
+  border-radius: token(radius-md);
+  margin: 0 8px 2px;
   background-color: transparent;
   color: token(color-text-muted);
   cursor: pointer;
   text-align: left;
+
+  @include ease(background-color, border-color, color);
 
   &:hover {
     background-color: token(color-surface-hover);
@@ -21,18 +24,31 @@
 }
 
 .itemOn {
-  border-left-color: token(color-accent);
-  background-color: token(color-accent-soft);
+  border-color: token(color-accent-soft);
+  background-color: token(color-surface);
+  background-image: token(win-accent-tint);
   color: token(color-text);
 
   &:hover {
-    background-color: token(color-accent-soft);
+    background-color: token(color-surface);
   }
+}
+
+.marker {
+  position: absolute;
+  top: 9px;
+  bottom: 9px;
+  left: -9px;
+  width: 3px;
+  border-radius: token(radius-full);
+  background-color: token(color-accent);
+  content: '';
 }
 
 .compact {
   justify-content: center;
   padding: 0;
+  margin: 0 6px 2px;
 }
 
 .label {
@@ -47,7 +63,11 @@
 
 .count {
   flex-shrink: 0;
+  padding: 0 6px;
+  border-radius: token(radius-full);
   margin-left: 8px;
+  background-color: token(color-surface-sunken);
   color: token(color-text-dim);
   font-size: 11px;
+  line-height: 18px;
 }

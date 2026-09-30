@@ -47,9 +47,15 @@ def log_exception(context):
     _emit(to_native('\n').join(lines))
 
 
+def wrapped_attributes(func):
+    """The `functools.WRAPPER_ASSIGNMENTS` that `func` has. Python 2's `update_wrapper` raises for a missing one, and a
+    `functools.partial` has no `__name__` or `__module__` there."""
+    return tuple(name for name in functools.WRAPPER_ASSIGNMENTS if hasattr(func, name))
+
+
 def safe(func):
     """Decorate a handler the client or a callback calls: an exception is logged, the call returns None."""
-    @functools.wraps(func)
+    @functools.wraps(func, assigned=wrapped_attributes(func))
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)

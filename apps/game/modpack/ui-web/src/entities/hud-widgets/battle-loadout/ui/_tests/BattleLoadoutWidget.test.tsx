@@ -92,7 +92,30 @@ const withoutIcon = () => {
   return { ...data, items: [{ ...first, icon: 'otmetki:module' }, ...rest] };
 };
 
+const withEmptySlot = () => {
+  const [first, ...rest] = data.items;
+
+  return { ...data, items: [{ ...first, empty: true, name: '', effect: '', icon: null, overlay: null, bonus: false }, ...rest] };
+};
+
 describe(BattleLoadoutWidget, () => {
+  it('draws every cell at the stock slot size in rem', () => {
+    const container = drawNew(false);
+    const cell = container.querySelector<HTMLElement>(`.${s.cell}`);
+
+    expect(cell?.style.width).toBe(`${String(data.cell)}rem`);
+    expect(cell?.style.height).toBe(`${String(data.cell)}rem`);
+  });
+
+  it('keeps a frame for an empty slot, so the row keeps its width', () => {
+    const container = drawNew(false, withEmptySlot());
+    const cells = container.querySelectorAll<HTMLElement>(`.${s.cell}`);
+
+    expect(cells).toHaveLength(data.items.length);
+    expect(cells[0]?.classList.contains(s.empty)).toBe(true);
+    expect(cells[0]?.querySelector('img')).toBeNull();
+  });
+
   it('draws the equipment and the directive as client icons with their overlays', () => {
     const container = drawNew(false);
 

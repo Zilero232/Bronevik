@@ -6,7 +6,7 @@ import { PROTOCOL } from './protocol.constants';
 const text = z.string();
 const optionalText = z.optional(z.nullable(z.string()));
 
-const fieldBase = { key: text, label: text, hint: z.nullable(z.string()) };
+const fieldBase = { key: text, label: text, hint: z.nullable(z.string()), advanced: z.optional(z.boolean()) };
 
 export const fieldSchema = z.discriminatedUnion('type', [
   z.object({ ...fieldBase, type: z.literal('bool'), value: z.boolean(), default: z.boolean() }),
@@ -79,10 +79,17 @@ export const rowSchema = z.object({
   details: z.optional(z.array(detailSchema)),
   figure: z.optional(z.nullable(figureSchema)),
   report: z.optional(z.nullable(marksReportSchema)),
+  image: optionalText,
   actions: z.array(actionSchema)
 });
 
-export const pageSchema = z.object({ kind: z.literal('list'), empty: text, rows: z.array(rowSchema) });
+export const pageSchema = z.object({
+  kind: z.literal('list'),
+  layout: z.optional(z.enum(PROTOCOL.pageLayouts)),
+  note: optionalText,
+  empty: text,
+  rows: z.array(rowSchema)
+});
 
 const replaysPageSchema = z.looseObject({ kind: z.literal('replays') });
 
@@ -104,7 +111,9 @@ export const componentSchema = z.object({
   panel: z.boolean(),
   actions: z.array(actionSchema),
   page: z.nullable(z.discriminatedUnion('kind', [pageSchema, replaysPageSchema])),
-  editor: z.optional(editorSchema)
+  editor: z.optional(editorSchema),
+  thumb: optionalText,
+  gallery: z.optional(z.record(text, z.record(text, z.nullable(z.string()))))
 });
 
 export const widgetSchema = z.object({ kind: z.string(), v: z.number(), data: z.unknown() });

@@ -30,6 +30,7 @@ Three Marks' design tokens, framework-agnostic: SCSS maps and a few mixins, one 
 | `scss/_surfaces.scss`   | Elevation, sheen, glow and panel tokens per theme                                                         |
 | `scss/_textures.scss`   | Rating patterns, SVG textures per theme and `@mixin texture($kind)`                                       |
 | `scss/_hud.scss`        | The in-game HUD's tones, plates and type steps (`hud-*` tokens, px) and `@mixin hud-type($step)`          |
+| `scss/_window.scss`     | The in-game settings window's layered surfaces, controls and preview stage (`win-*` tokens, dark only)    |
 | `scss/_ratings.scss`    | The default rating colours and the `xvm` / `wotlife` palettes                                             |
 | `scss/_properties.scss` | The merged `$root` / `$themes`, `token($name, $theme)` and the `*-properties` mixins                      |
 | `_index.scss`           | Public surface (`@use '@otmetki/design-tokens'`)                                                          |

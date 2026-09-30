@@ -147,12 +147,22 @@ class CustomTest(unittest.TestCase):
 
 class EmptyTest(unittest.TestCase):
 
-    def test_without_a_curve_shows_the_dossier_percent_and_a_note(self):
+    def test_without_a_curve_shows_the_dossier_percent(self):
         data = curveless_widget()
 
         assert data['has_curve'] is False
         assert data['percent'] == 50.0
-        assert data['note'] == u'нет порогов'
+
+    def test_without_a_curve_no_thresholds_note_is_drawn(self):
+        assert curveless_widget()['note'] is None
+
+    def test_without_a_curve_the_thresholds_row_is_hidden(self):
+        assert curveless_widget()['thresholds'] == []
+
+    def test_without_a_curve_the_average_moves_with_the_battle(self):
+        average = curveless_widget()['average']
+
+        assert (average['ema'], average['ema_projected']) == (2000, 1962)
 
     def test_without_a_curve_there_is_no_goal(self):
         assert curveless_widget()['goal'] is None

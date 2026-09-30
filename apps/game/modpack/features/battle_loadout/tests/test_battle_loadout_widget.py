@@ -23,10 +23,20 @@ def preview_data():
 
 class EquipmentWidgetTest(unittest.TestCase):
 
-    def test_icons_take_the_size_setting(self):
+    def test_icons_and_cells_take_the_stock_slot_size_by_default(self):
         data = preview_data()
 
-        assert data['size'] == 40
+        assert data['size'] == 48
+        assert data['cell'] == 52
+        assert data['gap'] == 5
+
+    def test_an_own_icon_size_keeps_the_stock_pitch_frame(self):
+        settings = Settings({'stock_size': False, 'icon_size': 30}, SCHEMA)
+
+        data = equipment_widget(clean_devices(PREVIEW_DEVICES), settings)['data']
+
+        assert data['size'] == 30
+        assert data['cell'] == 34
 
     def test_every_sample_item_is_drawn(self):
         items = preview_data()['items']
@@ -49,7 +59,7 @@ class EquipmentWidgetTest(unittest.TestCase):
         assert items[4]['overlay'] == 'img://gui/maps/icons/artefact/battleBooster_overlay.png'
 
     def test_the_row_carries_only_the_items_and_their_size(self):
-        assert sorted(preview_data()) == ['items', 'size']
+        assert sorted(preview_data()) == ['cell', 'gap', 'items', 'size']
 
     def test_fixture_for_the_page(self):
         widget = preview_widget(Settings({}, SCHEMA), translator())

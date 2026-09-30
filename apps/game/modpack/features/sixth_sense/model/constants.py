@@ -7,6 +7,10 @@ PREVIEW_SIZE = (160, 110)
 ICON_ROOT = 'gui/maps/icons/otmetki/sixth_sense/icons'
 ICON_RENDITIONS = (64, 128)
 DIM_SUFFIX = '_dim'
+# The settings window's picture of each icon set: the larger rendition, so a gallery tile stays sharp.
+GALLERY_ICON_SIZE = 128
+CUSTOM_SET = 'custom'
+IMAGE_SCHEME = 'img://'
 # The pulse swaps the icon and its dimmed frame every half second while the lamp is lit.
 PULSE_PERIOD_S = 0.5
 # How long the own vehicle stays visible after it leaves the enemy's line of sight: the ring drains over it when the
@@ -18,8 +22,6 @@ LAMP_DURATION_S = 10.0
 # in its specialisation slot (StaticOptionalDevice.updateVehicleDescrAttrs picks the slot's level); the time drops by
 # it.
 OWN_SPOTTING_ATTR = 'decreaseOwnSpottingTime'
-# The tick of the optional countdown sound (assets/assets.json: otmetki_sixth_sense_sound).
-TICK_SOUND = 'otmetki_tick'
 
 # Client vehicle states (gui/battle_control/battle_constants.VEHICLE_VIEW_STATE, RU 1.45) by name. The stock
 # SixthSenseIndicator resets its lamp on SWITCHING (a switch of the controlled vehicle, respawn included:
@@ -41,9 +43,3 @@ KIND = 'sixth_sense'
 # The timer line under the lamp: this much smaller than the text, never below the smallest readable size.
 TIMER_FONT_DECREASE = 6
 MIN_TIMER_FONT_SIZE = 8
-
-# Client setting of the detection sound (settings_constants.SOUND.DETECTION_ALERT_SOUND, RU 1.45): its value is
-# the index into DetectionAlertSound._WWISE_EVENTS = ('lightbulb', 'lightbulb_02', 'sixthSense'); 'sixthSense'
-# is the user sound, played from audioww/sixthSense.mp3.
-DETECTION_SOUND = 'bulbVoices'
-LAMP_SOUND_INDEX = {'lightbulb': 0, 'lightbulb_02': 1, 'otmetki': 2}

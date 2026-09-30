@@ -73,3 +73,16 @@ def next_level(current_percent, curve, levels):
         if level > current_percent and level <= curve.max_percent:
             return level
     return None
+
+
+def threshold_problem(status, data, curve):
+    """Why a GET /v1/moe/<tank_id> answer gave no usable curve (the site's error text, or the status), None when it
+    did. Thresholds are public: the read needs no binding, so a missing curve is the site's answer or the network."""
+    if curve is not None:
+        return None
+    error = data.get('error') if isinstance(data, dict) else None
+    if status == 200:
+        return 'the answer has no usable thresholds'
+    if error:
+        return 'the site answered %s: %s' % (status, error)
+    return 'the site answered %s' % (status,) if status else 'no answer (network)'

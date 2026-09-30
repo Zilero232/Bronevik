@@ -7,10 +7,10 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import time
 
 from ...codec import parse_json_body
-from ...log import safe
-from ...moe import PaceBook, ThresholdCache, ThresholdCurve, mastery_from_api
+from ...log import log, safe
+from ...moe import PaceBook, ThresholdCache, ThresholdCurve, mastery_from_api, threshold_problem
 from ...net.signing import DEVICE_HEADER
-from .constants import MOE_PATH, STATE_KEY
+from .constants import MOE_PATH, NO_THRESHOLDS, STATE_KEY
 
 _state = {'service': None}
 
@@ -60,8 +60,12 @@ class MoeService(object):
 
         @safe
         def done(status, body, response_headers):
-            data = parse_json_body(body) if status == 200 else None
-            self.cache.store(tank_id, ThresholdCurve.from_api(data), time.time())
+            data = parse_json_body(body)
+            curve = ThresholdCurve.from_api(data) if status == 200 else None
+            self.cache.store(tank_id, curve, time.time())
+            problem = threshold_problem(status, data, curve)
+            if problem is not None:
+                log(NO_THRESHOLDS % (tank_id, problem))
             if status == 200:
                 self.masteries[tank_id] = mastery_from_api(data)
             for callback in list(self.listeners):

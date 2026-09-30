@@ -13,7 +13,7 @@ from ..model.preview import preview_text, preview_widget
 from ..model.text import points_text
 from ..model.widget import points_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
-from .constants import KIND_BY_EVENT
+from .constants import KIND_BY_EVENT, NOT_IN_PLATOON
 
 try:
     from gui.battle_control.battle_constants import FEEDBACK_EVENT_ID, VEHICLE_VIEW_STATE
@@ -130,7 +130,9 @@ class PlatoonPointsPanel(BattlePanel):
         if self.platoon is None:
             return
         if not self.platoon.is_platoon() and not self.settings.get('show_solo'):
+            self.wait(NOT_IN_PLATOON)
             self.hide()
             return
+        self.wait(None)
         text = points_text(self.platoon, self.settings, self.app.translate)
         self.show(text, points_widget(self.platoon, self.settings, self.app.translate, self.extended()))

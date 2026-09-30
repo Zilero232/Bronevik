@@ -2,7 +2,15 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.compat import is_int, is_number
 from ....core.format import format_epoch, format_number, format_percent, format_timer
-from .constants import ACTION_CLEAR, COST_KEYS, HISTORY_KEYS, SESSION_ROW, SITE_BATTLES_PATH
+from .constants import (
+    ACTION_CLEAR,
+    COST_KEYS,
+    HISTORY_KEYS,
+    MAX_BATTLE_DELTA,
+    SESSION_ROW,
+    SITE_BATTLES_PATH,
+    WRONG_SCALE_PERCENT,
+)
 from .hits import hits_row, with_hits
 from .text import result_label, signed
 
@@ -11,10 +19,30 @@ def compact(summary):
     return dict((key, summary.get(key)) for key in HISTORY_KEYS)
 
 
+# 0.7.0 stored the battle results' whole percent as hundredths (0.64 for 64 %): a percent under 1 on a tank with a mark,
+# or with a change no battle makes, is that percent (rounded to a whole one) and its change is dropped.
+def _is_wrong_scale(entry):
+    percent = entry.get('moe_percent')
+    if not is_number(percent) or percent > WRONG_SCALE_PERCENT:
+        return False
+    delta = entry.get('moe_delta')
+    has_mark = is_int(entry.get('marks_on_gun')) and entry['marks_on_gun'] > 0
+    return has_mark or (is_number(delta) and abs(delta) > MAX_BATTLE_DELTA)
+
+
+def _repaired(entry):
+    if not _is_wrong_scale(entry):
+        return entry
+    fixed = dict(entry)
+    fixed['moe_percent'] = round(entry['moe_percent'] * 100, 2)
+    fixed['moe_delta'] = None
+    return fixed
+
+
 def restore_history(stored):
     if not isinstance(stored, list):
         return []
-    return [entry for entry in stored if isinstance(entry, dict)]
+    return [_repaired(entry) for entry in stored if isinstance(entry, dict)]
 
 
 def _idle_gap_between(later, earlier, idle_s):

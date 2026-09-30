@@ -34,7 +34,7 @@ QUEST_PROGRESS = (200, 107, 245)
 TIMER_WIDTH = 184
 BATTLE_CLOCK_WIDTH = 90
 BATTLE_PANELS = (
-    'battle_hotkeys', 'battle_loadout', 'battle_progress', 'damage_log', 'gun_arc', 'marks_panel',
+    'aim_info', 'battle_hotkeys', 'battle_loadout', 'battle_progress', 'damage_log', 'gun_arc', 'marks_panel',
     'platoon_points', 'sixth_sense',
 )
 

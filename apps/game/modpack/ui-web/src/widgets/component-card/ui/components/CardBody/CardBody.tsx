@@ -6,9 +6,10 @@ import { Button } from '../../../../../shared/ui/button';
 import { Confirm } from '../../../../../shared/ui/confirm';
 import { Empty } from '../../../../../shared/ui/empty';
 import { Icon } from '../../../../../shared/ui/icon';
+import { AdvancedFields } from '../AdvancedFields';
+import { CardPreview } from '../CardPreview';
 import { Field } from '../Field';
 import { ListPage } from '../ListPage';
-import { PanelPreview } from '../PanelPreview';
 
 import s from './CardBody.module.scss';
 
@@ -17,20 +18,25 @@ export const CardBody = ({ component, card }: CardBodyProps) => {
 
   return (
     <div className={s.body}>
-      {component.panel && <PanelPreview panel={card.preview} onMove={card.moveOnScreen} />}
+      <CardPreview card={card} />
       {card.showEmpty && <Empty>{t('noFields')}</Empty>}
       {card.fields.length > 0 && (
         <div className={s.fields}>
           {card.fields.map((field) => (
-            <Field key={field.key} field={field} onSet={card.setField} />
+            <Field key={field.key} field={field} gallery={card.gallery[field.key]} onSet={card.setField} />
           ))}
         </div>
       )}
-      {card.actionItems.length > 0 && <ActionBar items={card.actionItems} />}
+      {card.actionItems.length > 0 && (
+        <div className={s.actions}>
+          <ActionBar items={card.actionItems} />
+        </div>
+      )}
       {card.confirmText !== null && (
         <Confirm cancelLabel={t('cancel')} confirmLabel={t('confirm')} text={card.confirmText} onCancel={card.cancel} onConfirm={card.confirm} />
       )}
       {component.page?.kind === 'list' && <ListPage page={component.page} onRun={card.run} />}
+      {card.advanced.length > 0 && <AdvancedFields fields={card.advanced} initiallyOpen={card.showAdvanced} onSet={card.setField} />}
       {component.fields.length > 0 && (
         <div className={s.footer}>
           <Button disabled={card.changedCount === 0} size='small' variant='ghost' onClick={card.reset}>

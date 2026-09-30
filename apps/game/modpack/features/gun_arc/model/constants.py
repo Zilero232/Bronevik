@@ -35,3 +35,6 @@ PLACEMENTS = (PLACEMENT_RETICLE, PLACEMENT_FIXED)
 # SPG's top view); the settings key of the scale's offset under the reticle in each. Other views hide nothing and
 # leave the panel where it was.
 VIEW_OFFSETS = {1: 'arcade_offset', 2: 'sniper_offset', 3: 'strategic_offset'}
+
+# The HUD report's reason while the panel has nothing to draw: the gun turns with a full turret (no yaw limits).
+NO_LIMITS = 'the gun has no traverse limits (a full turret)'

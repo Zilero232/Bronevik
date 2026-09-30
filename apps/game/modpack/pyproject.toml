@@ -28,7 +28,6 @@ dependencies = [
   "otmetki-feature-camera",
   "otmetki-feature-crosshair",
   "otmetki-feature-hangar-info",
-  "otmetki-feature-battle-sounds",
   "otmetki-feature-chat-filter",
   "otmetki-feature-auto-resupply",
   "otmetki-feature-notification-filter",
@@ -97,7 +96,6 @@ otmetki-feature-minimap = { workspace = true }
 otmetki-feature-camera = { workspace = true }
 otmetki-feature-crosshair = { workspace = true }
 otmetki-feature-hangar-info = { workspace = true }
-otmetki-feature-battle-sounds = { workspace = true }
 otmetki-feature-chat-filter = { workspace = true }
 otmetki-feature-auto-resupply = { workspace = true }
 otmetki-feature-notification-filter = { workspace = true }

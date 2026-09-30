@@ -5,25 +5,22 @@ import time
 from ....core.client.battle import arena, call, controls_own_vehicle, player, vehicle_state
 from ....core.client.game import values_by_name
 from ....core.client.hud.panel import BattlePanel, PanelSpec
-from ....core.client.native import apply_changed
-from ....core.client.sound import play_mp3, play_sound
 from ....core.client.timer import Ticker
 from ....core.hud.stock import SIXTH_SENSE
-from ....core.log import safe
+from ....core.log import log, safe
 from ..i18n import STRINGS
-from ..model import SixthSense, format_sixth_sense, lamp_duration, to_native
+from ..model import SixthSense, format_sixth_sense, icon_gallery, lamp_duration
 from ..model.constants import (
     ENDING_PERIODS,
     OBSERVED,
     OWN_SPOTTING_ATTR,
     PREVIEW_SIZE,
-    TICK_SOUND,
     VEHICLE_STATES,
 )
 from ..model.preview import preview_text, preview_widget
 from ..model.widget import sixth_sense_widget
-from ..settings import PANEL_ID, SCHEMA, SWITCH
-from .constants import TICK_S
+from ..settings import ICON_SETS, PANEL_ID, SCHEMA, SWITCH
+from .constants import FIRST_LIGHT, NO_STATES, NOT_SPOTTED, TICK_S
 
 try:
     from constants import ARENA_PERIOD
@@ -58,16 +55,16 @@ class SixthSenseAlert(BattlePanel):
         self.states = values_by_name(VEHICLE_VIEW_STATE, VEHICLE_STATES)
         self.ending_periods = values_by_name(ARENA_PERIOD, [(name, True) for name in ENDING_PERIODS])
         self.lamp = None
+        self.has_lit = False
         self.ticker = Ticker(TICK_S, self._tick)
         BattlePanel.__init__(self, app, PANEL_SPEC)
 
-    def settings_changed(self, changed):
-        if 'lamp_sound' in (changed or ()) and self.enabled_in_hangar():
-            apply_changed(to_native(self.settings.to_dict()))
-
     def start(self, player):
         if not self.states:
+            self.wait(NO_STATES)
             return
+        self.wait(NOT_SPOTTED)
+        self.has_lit = False
         self.lamp = SixthSense()
         self.hooks.add(vehicle_state, 'onVehicleStateUpdated', self._on_vehicle_state)
         self.hooks.add(arena, 'onPeriodChange', self._on_period)
@@ -76,6 +73,9 @@ class SixthSenseAlert(BattlePanel):
     def stop(self):
         self.lamp = None
         self.ticker.stop()
+
+    def ui_gallery(self):
+        return icon_gallery(ICON_SETS)
 
     def stock_aliases(self):
         return (SIXTH_SENSE,) if self.settings.get('replace_stock') else ()
@@ -96,7 +96,9 @@ class SixthSenseAlert(BattlePanel):
             self.hide()
 
     def _light(self):
-        play_sound(self.settings.get('sound_event'))
+        if not self.has_lit:
+            self.has_lit = True
+            log(FIRST_LIGHT)
         self.render()
         self.ticker.start()
 
@@ -118,10 +120,6 @@ class SixthSenseAlert(BattlePanel):
         if lamp.expired(now, self.settings.get('hide_after_s')):
             self.hide()
             return False
-
-        is_tick_due = lamp.tick_due(now)
-        if is_tick_due and self.settings.get('tick_sound'):
-            play_mp3(TICK_SOUND)
 
         self.render()
         return True

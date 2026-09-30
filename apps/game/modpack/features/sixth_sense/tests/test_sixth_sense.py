@@ -10,8 +10,7 @@ import unittest
 import _support
 from otmetki.core.settings import Settings
 from otmetki.features.sixth_sense.i18n import STRINGS
-from otmetki.features.sixth_sense.model import SixthSense, format_sixth_sense, icon_path, to_native
-from otmetki.features.sixth_sense.model.constants import TICK_SOUND
+from otmetki.features.sixth_sense.model import SixthSense, format_sixth_sense, icon_gallery, icon_path
 from otmetki.features.sixth_sense.model.preview import preview_text
 from otmetki.features.sixth_sense.settings import SCHEMA
 from otmetki.features.sixth_sense.settings.constants import ICON_SETS
@@ -205,16 +204,6 @@ class SettingsTest(unittest.TestCase):
 
         assert settings.get('icon') == ''
 
-    def test_an_invalid_sound_event_is_dropped(self):
-        settings = settings_with(sound_event='bad event')
-
-        assert settings.get('sound_event') == ''
-
-    def test_a_valid_sound_event_is_kept(self):
-        settings = settings_with(sound_event='otmetki_lamp_01')
-
-        assert settings.get('sound_event') == 'otmetki_lamp_01'
-
     def test_an_invalid_color_falls_back_to_the_default(self):
         settings = settings_with(color='red')
 
@@ -224,29 +213,6 @@ class SettingsTest(unittest.TestCase):
         settings = settings_with(hide_after_s=600)
 
         assert settings.get('hide_after_s') == 60
-
-    def test_the_tick_sound_is_off_by_default(self):
-        settings = settings_with()
-
-        assert settings.get('tick_sound') is False
-
-
-class LampSoundTest(unittest.TestCase):
-
-    def test_the_game_keeps_its_own_sound_by_default(self):
-        native = to_native(settings_with().to_dict())
-
-        assert native == {}
-
-    def test_the_otmetki_chime_is_the_game_user_sound(self):
-        native = to_native(settings_with(lamp_sound='otmetki').to_dict())
-
-        assert native == {'bulbVoices': 2}
-
-    def test_the_first_game_lamp_is_its_first_sound(self):
-        native = to_native(settings_with(lamp_sound='lightbulb').to_dict())
-
-        assert native == {'bulbVoices': 0}
 
 
 class StringsTest(unittest.TestCase):
@@ -268,20 +234,19 @@ class ShippedAssetsTest(unittest.TestCase):
             path = icon_path(settings_with(icon_set=icon_set, icon_size=size), dimmed)
             assert path in shipped, path
 
-    def test_the_lamp_sound_ships(self):
+    def test_the_gallery_shows_a_shipped_icon_of_every_set(self):
         shipped = shipped_files()
+        pictures = icon_gallery(ICON_SETS)['icon_set']
 
-        assert 'audioww/sixthSense.mp3' in shipped
+        for icon_set in SHIPPED_ICON_SETS:
+            assert pictures[icon_set].startswith('img://'), icon_set
+            assert pictures[icon_set][len('img://'):] in shipped, icon_set
 
-    def test_the_lamp_off_sound_ships(self):
-        shipped = shipped_files()
+    def test_the_custom_set_has_no_gallery_picture(self):
+        assert icon_gallery(ICON_SETS)['icon_set']['custom'] is None
 
-        assert 'audioww/sixthSense_off.mp3' in shipped
-
-    def test_the_countdown_tick_ships(self):
-        shipped = shipped_files()
-
-        assert 'audioww/' + TICK_SOUND + '.mp3' in shipped
+    def test_the_gallery_shows_the_larger_rendition(self):
+        assert icon_gallery(('lamp',))['icon_set']['lamp'].endswith('/lamp_128.png')
 
 
 if __name__ == '__main__':

@@ -1,13 +1,17 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.compat import as_int, is_int, string_types, to_text
+from ....core.moe import implausible_change, is_post_battle_reading
 from .constants import (
     ASSIST_STATS,
     CLASS_TAGS,
     HISTORY_VERSION,
     ITEM_CODE,
+    MAX_BATTLE_DELTA,
     MAX_VEHICLES,
     READING_KEYS,
+    RESULTS_PERCENT_MAX,
+    WRONG_SCALE_SPAN,
     SOURCE_BATTLE,
     SOURCE_HANGAR,
 )
@@ -31,7 +35,8 @@ def rating_delta(before, after):
     last = percent(after.get('rating'))
     if first is None or last is None:
         return None
-    return round(last - first, 2)
+    delta = round(last - first, 2)
+    return delta if abs(delta) <= MAX_BATTLE_DELTA else None
 
 
 def _is_recordable(tank_id, dossier):
@@ -116,6 +121,35 @@ def _battle_deltas(entries, indexes):
     return [delta for delta in deltas if delta is not None]
 
 
+def _hundredths_near(entries, index):
+    before = entries[index].get('before')
+    if is_int(before) and before > RESULTS_PERCENT_MAX:
+        return before
+    neighbours = entries[index - 1::-1] if index else []
+    for item in list(neighbours) + entries[index + 1:]:
+        rating = item.get('rating')
+        if item.get('source') == SOURCE_HANGAR and is_int(rating) and rating > RESULTS_PERCENT_MAX:
+            return rating
+    return None
+
+
+# A battle entry an older version stored with the results' whole percent (67 for 66.47 %) among the dossier's
+# hundredths: its rating times 100 lies next to the hundredths around it.
+def _is_wrong_scale(entries, index):
+    entry = entries[index]
+    rating = entry.get('rating')
+    if entry.get('source') != SOURCE_BATTLE or not is_int(rating) or rating > RESULTS_PERCENT_MAX:
+        return False
+    near = _hundredths_near(entries, index)
+    return near is not None and abs(rating * 100 - near) <= WRONG_SCALE_SPAN
+
+
+def repair_entries(entries):
+    """The entries without the wrong-scale battle entries, and how many were dropped."""
+    kept = [entry for index, entry in enumerate(entries) if not _is_wrong_scale(entries, index)]
+    return kept, len(entries) - len(kept)
+
+
 class MarksHistory(object):
 
     def __init__(self, store, max_entries=100):
@@ -124,6 +158,17 @@ class MarksHistory(object):
         data = store.read({}) or {}
         vehicles = data.get('vehicles') if isinstance(data, dict) else None
         self.vehicles = dict((key, value) for key, value in (vehicles or {}).items() if isinstance(value, dict))
+        self.rejected = None
+        self.repaired = self._repair()
+
+    def _repair(self):
+        dropped = 0
+        for vehicle in self.vehicles.values():
+            entries, count = repair_entries(vehicle.get('entries') or [])
+            if count:
+                vehicle['entries'] = entries
+                dropped += count
+        return dropped
 
     def save(self):
         self.store.write({'version': HISTORY_VERSION, 'vehicles': self.vehicles})
@@ -169,16 +214,34 @@ class MarksHistory(object):
             return False
         return any(item.get('arena') == arena for item in self._entries(tank_id))
 
+    # A battle whose rating cannot be real is not recorded; `rejected` says why (the client logs it).
     def record_battle(self, event, label=None, kind=None, before=None):
         moe = event.get('moe') or {}
         info = event.get('vehicle') or {}
         tank_id = info.get('tank_id')
+        self.rejected = None
         if not _is_recordable(tank_id, moe) or self._has_arena(tank_id, event.get('arena_unique_id')):
+            return None
+        self.rejected = implausible_change(before, moe['damage_rating'])
+        if self.rejected is not None:
             return None
 
         entry = _battle_entry(event, moe, before)
         vehicle = self._vehicle_for(tank_id, label or vehicle_label(info.get('name')), info.get('tier'), kind)
         return self._record(vehicle, entry)
+
+    # The hangar's first dossier read after a battle has the rating the results rounded to a whole percent: it
+    # corrects the battle entry instead of adding one.
+    def _correct_battle(self, entries, entry):
+        last = entries[-1] if entries else None
+        if last is None or last.get('source') != SOURCE_BATTLE or last.get('marks') != entry['marks']:
+            return False
+        reading = {'moving_avg_damage': last.get('avg'), 'damage_rating': last.get('rating')}
+        snapshot = {'moving_avg_damage': entry['avg'], 'damage_rating': entry['rating']}
+        if last.get('rating') == entry['rating'] or not is_post_battle_reading(reading, snapshot):
+            return False
+        last['rating'] = entry['rating']
+        return True
 
     def record_snapshot(self, snapshot, now, label=None, kind=None):
         tank_id = snapshot.get('tank_id')
@@ -186,6 +249,8 @@ class MarksHistory(object):
             return None
         entry = _entry(now, snapshot, SOURCE_HANGAR)
         entries = self._entries(tank_id)
+        if self._correct_battle(entries, entry):
+            return entries[-1]
         if entries and _same_reading(entries[-1], entry):
             return None
 

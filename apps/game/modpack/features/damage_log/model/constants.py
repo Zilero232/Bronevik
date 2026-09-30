@@ -71,7 +71,7 @@ SECTIONS = {
 # Styles that show only the totals until Alt is held; `minimal` keeps only the dealt and received totals.
 COMPACT_STYLES = ('compact', 'minimal')
 MINIMAL_TOTALS = ('dealt', 'received')
-# The totals in their order with the section each belongs to; a total is shown once it is above zero.
+# The totals in their order with the section each belongs to (model shown_totals: which are shown).
 TOTALS = (
     ('dealt', 'dealt'),
     ('assist', 'dealt'),

@@ -32,6 +32,7 @@ export const PROTOCOL = {
   alignX: ['left', 'center', 'right'],
   alignY: ['top', 'center', 'bottom'],
   noticeKinds: ['info', 'error', 'code'],
+  pageLayouts: ['list', 'gallery'],
   figureTones: ['pen', 'crit', 'blocked', 'ricochet', 'nodamage'],
   autoLanguage: 'auto'
 } as const;

@@ -7,7 +7,7 @@ from ....core.client.timer import Ticker
 from ....core.log import safe
 from ..i18n import STRINGS
 from ..model import arc_state, format_panel, reticle_place, view_offset
-from ..model.constants import PLACEMENT_RETICLE, PREVIEW_SIZE, TICK_S
+from ..model.constants import NO_LIMITS, PLACEMENT_RETICLE, PREVIEW_SIZE, TICK_S
 from ..model.preview import preview_text, preview_widget
 from ..model.widget import panel_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
@@ -49,6 +49,7 @@ class GunArcPanel(BattlePanel):
     def start(self, battle_player):
         self.limits = yaw_limits(battle_player)
         self.shown = None
+        self.wait(None if self.limits else NO_LIMITS)
         if self.limits:
             self.ticker.start()
 

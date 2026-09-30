@@ -11,8 +11,7 @@
     "scripts/client/gui/mods/mod_otmetki",
     "gui/gameface/mods/triotmetki/",
     "gui/maps/icons/otmetki/",
-    "mods/configs/res_map/net.triotmetki.",
-    "audioww/otmetki_"
+    "mods/configs/res_map/net.triotmetki."
   ],
   "conflicts": [
     {
@@ -389,8 +388,8 @@
         "en": "Sixth sense lamp"
       },
       "description": {
-        "ru": "Крупная картинка и звук, когда срабатывает навык «Шестое чувство». Заменяет стандартную лампу.",
-        "en": "A big image and a sound when the Sixth Sense skill fires. Replaces the stock lamp."
+        "ru": "Крупная картинка, когда срабатывает навык «Шестое чувство». Заменяет стандартную лампу.",
+        "en": "A big image when the Sixth Sense skill fires. Replaces the stock lamp."
       },
       "fairPlay": {
         "ru": "Срабатывает только от навыка экипажа, без поиска ближайшего врага.",
@@ -398,8 +397,7 @@
       },
       "perf": "low",
       "preview": {
-        "image": "previews/sixth_sense.png",
-        "audio": "otmetki/sounds/sixthSense.mp3"
+        "image": "previews/sixth_sense.png"
       }
     },
     {
@@ -456,16 +454,16 @@
         "en": "Aim and shells"
       },
       "description": {
-        "ru": "Дистанция у прицела до любой техники под ним, а не только до той, у чьего маркера дистанция скрыта. Подсказка снаряда на панели боеприпасов: урон, пробитие, скорость и урон модулям. По желанию — круг сведения меньше стандартного (40–100 %), ближе к реальному разбросу; по умолчанию выключен.",
-        "en": "The reticle distance to any vehicle under it, not only to the ones whose markers hide the distance. A shell tooltip on the ammo panel: damage, penetration, speed and module damage. If you want, an aim circle smaller than the stock one (40–100 %), closer to the real dispersion; off by default."
+        "ru": "Броня под прицелом: приведённая и номинальная броня цели в точке прицеливания и пробитие вашего снаряда на этой дистанции — цветом штатного маркера (зелёный, жёлтый, красный), под прицелом в любом режиме камеры. Дистанция у прицела до любой техники под ним, а не только до той, у чьего маркера дистанция скрыта. Подсказка снаряда на панели боеприпасов: урон, пробитие, скорость и урон модулям. По желанию — круг сведения меньше стандартного (40–100 %), ближе к реальному разбросу; по умолчанию выключен.",
+        "en": "Armour under the reticle: the target's effective and nominal armour at the aim point and your shell's penetration at that distance, in the stock marker colour (green, yellow, red), under the reticle in every camera mode. The reticle distance to any vehicle under it, not only to the ones whose markers hide the distance. A shell tooltip on the ammo panel: damage, penetration, speed and module damage. If you want, an aim circle smaller than the stock one (40–100 %), closer to the real dispersion; off by default."
       },
       "fairPlay": {
-        "ru": "Дистанцию до цели под прицелом клиент и так показывает на маркерах; подсказки — параметры своих снарядов. Круг сведения только рисуется меньше: наведение, выстрел и разброс не меняются, в реплей пишется настоящий размер.",
-        "en": "The client already shows the distance to the target under the reticle on its markers; the tooltips are your own shells' parameters. The aim circle is only drawn smaller: the aim, the shot and the dispersion stay as they are, and the replay records the real size."
+        "ru": "Броня под прицелом — те же числа, которыми клиент сам красит маркер орудия (штатный расчёт исхода выстрела): только видимая техника противника под вашим прицелом, только точка прицеливания; ничего о технике вне прицела, скрытых модулях и перезарядке. Дистанцию до цели под прицелом клиент и так показывает на маркерах; подсказки — параметры своих снарядов. Круг сведения только рисуется меньше: наведение, выстрел и разброс не меняются, в реплей пишется настоящий размер.",
+        "en": "Armour under the reticle is the very numbers the client colours the gun marker with (its own shot-result resolution): only the visible enemy vehicle under your reticle, only at the aim point; nothing about vehicles elsewhere, hidden modules or reloads. The client already shows the distance to the target under the reticle on its markers; the tooltips are your own shells' parameters. The aim circle is only drawn smaller: the aim, the shot and the dispersion stay as they are, and the replay records the real size."
       },
-      "perf": "low",
+      "perf": "medium",
       "preview": {
-        "image": "previews/aim_info.svg"
+        "image": "previews/aim_info.png"
       }
     },
     {
@@ -711,27 +709,6 @@
       }
     },
     {
-      "id": "battle_sounds",
-      "category": "battle",
-      "context": "battle",
-      "title": {
-        "ru": "Звуки событий",
-        "en": "Event sounds"
-      },
-      "description": {
-        "ru": "Свой звук на пожар, криты модулей и боеукладки, контузию экипажа, первую кровь, свой фраг, уничтожение своего танка и повреждённый вами модуль врага. Нужен звуковой мод с событиями Wwise; без него можно включить «громче стандартные сигналы» — повтор звуков самой игры на пожар и крит.",
-        "en": "Your own sound for fire, module and ammo rack crits, injured crew, first blood, your frag, your tank's destruction and an enemy module you damaged. Needs a sound mod with Wwise events; without one, «louder stock alerts» plays the game's own fire and crit sounds once more."
-      },
-      "fairPlay": {
-        "ru": "Только события вашего танка, ваши собственные попадания и общая лента уничтожений.",
-        "en": "Only your own tank's events, your own hits and the public kill feed."
-      },
-      "perf": "low",
-      "preview": {
-        "image": "previews/battle_sounds.svg"
-      }
-    },
-    {
       "id": "session_stats",
       "category": "hangar",
       "context": "hangar",
@@ -741,8 +718,8 @@
         "en": "Session"
       },
       "description": {
-        "ru": "Бои, процент побед, средний урон и WN8 за сессию, полоска последних 10 боёв, точное изменение отметки по танкам сессии и сколько боёв ждут итогов. После привязки мода — цели из «Моего кабинета» с прогрессом и звуком выполненной цели и строка аккаунта (WN8, процент побед, средний урон). По желанию отчёт о сессии в свой Telegram или Discord через сайт (выключено по умолчанию).",
-        "en": "Battles, win rate, average damage and WN8 for the session, a strip of the last 10 battles, the exact MoE change per tank of the session and how many battles await results. Once the mod is bound, your goals from the site dashboard with progress and a sound when one is met, and the account line (WN8, win rate, average damage). Optionally the session report to your own Telegram or Discord through the site (off by default)."
+        "ru": "Бои, процент побед, средний урон и WN8 за сессию, полоска последних 10 боёв, точное изменение отметки по танкам сессии и сколько боёв ждут итогов. После привязки мода — цели из «Моего кабинета» с прогрессом и строка аккаунта (WN8, процент побед, средний урон). По желанию отчёт о сессии в свой Telegram или Discord через сайт (выключено по умолчанию).",
+        "en": "Battles, win rate, average damage and WN8 for the session, a strip of the last 10 battles, the exact MoE change per tank of the session and how many battles await results. Once the mod is bound, your goals from the site dashboard with progress, and the account line (WN8, win rate, average damage). Optionally the session report to your own Telegram or Discord through the site (off by default)."
       },
       "fairPlay": {
         "ru": "Только ваши бои, ваши цели и рейтинги вашего аккаунта.",
@@ -750,8 +727,7 @@
       },
       "perf": "low",
       "preview": {
-        "image": "previews/session_stats.svg",
-        "audio": "otmetki/sounds/otmetki_goal.mp3"
+        "image": "previews/session_stats.svg"
       }
     },
     {
@@ -786,8 +762,8 @@
         "en": "Hangar tweaks"
       },
       "description": {
-        "ru": "Карусель в один или два ряда, размер карточек и масштаб интерфейса из настроек игры; быстрые действия по кнопке: снять снимаемое оборудование, снять стиль, экипаж в казарму и вернуть прежний экипаж.",
-        "en": "A one- or two-row carousel, tile size and interface scale from the game settings; quick actions on a button: demount removable equipment, take the style off, crew to the barracks and return the previous crew."
+        "ru": "Карусель в 1–5 рядов (1–2 — настройка игры, 3–5 добавляет мод), размер карточек и масштаб интерфейса из настроек игры; быстрые действия по кнопке: снять снимаемое оборудование, снять стиль, экипаж в казарму и вернуть прежний экипаж.",
+        "en": "A carousel of 1–5 rows (1–2 the game's own setting, 3–5 added by the mod), tile size and interface scale from the game settings; quick actions on a button: demount removable equipment, take the style off, crew to the barracks and return the previous crew."
       },
       "fairPlay": {
         "ru": "Работает только в ангаре.",
@@ -1226,6 +1202,7 @@
         "team_hp",
         "sixth_sense",
         "gun_arc",
+        "aim_info",
         "platoon_points",
         "battle_hotkeys",
         "hud_layouts",
@@ -1277,6 +1254,7 @@
         "team_hp",
         "sixth_sense",
         "gun_arc",
+        "aim_info",
         "platoon_points",
         "battle_hotkeys",
         "hud_layouts",

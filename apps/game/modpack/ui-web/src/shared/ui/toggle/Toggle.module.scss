@@ -2,14 +2,18 @@
 
 .toggle {
   position: relative;
-  width: 38px;
-  height: 20px;
+  width: 40px;
+  height: 22px;
   flex: 0 0 auto;
   padding: 0;
   border: 1px solid token(color-border-control);
   border-radius: token(radius-full);
   background-color: token(color-surface-sunken);
+  background-image: token(win-well);
+  box-shadow: token(win-well-shadow);
   cursor: pointer;
+
+  @include ease(background-color, border-color, box-shadow);
 
   &:hover {
     border-color: token(color-text-muted);
@@ -19,6 +23,8 @@
 .toggleOn {
   border-color: token(color-accent);
   background-color: token(color-accent);
+  background-image: token(win-accent);
+  box-shadow: token(win-accent-shadow);
 
   &:hover {
     border-color: token(color-accent-hover);
@@ -29,13 +35,17 @@
   position: absolute;
   top: 2px;
   left: 2px;
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   border-radius: token(radius-full);
   background-color: token(color-text-muted);
+  box-shadow: token(win-knob-shadow);
+
+  @include ease(left, background-color);
 }
 
 .knobOn {
   left: 20px;
-  background-color: token(color-accent-contrast);
+  background-color: token(color-text);
+  background-image: token(win-knob);
 }

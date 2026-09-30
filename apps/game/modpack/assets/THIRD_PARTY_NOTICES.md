@@ -11,9 +11,7 @@ under licences that allow redistribution in a paid product; each licence text sh
 | Crosshair centre marks | Три отметки | LicenseRef-TriOtmetki-Artwork | crosshair | `res/gui/maps/icons/otmetki/crosshair/otmetki` |
 | Crosshair centre marks in six colours | Три отметки | LicenseRef-TriOtmetki-Artwork | crosshair | `res/gui/maps/icons/otmetki/crosshair/tinted` |
 | Sixth-sense icons | Три отметки | LicenseRef-TriOtmetki-Artwork | sixth_sense | `res/gui/maps/icons/otmetki/sixth_sense/icons` |
-| Sixth-sense chime | Три отметки | CC0-1.0 | sixth_sense | `res/audioww` |
 | Damage-log kind glyphs | Три отметки | LicenseRef-TriOtmetki-Artwork | damage_log | `res/gui/maps/icons/otmetki/damage_log/icons` |
-| Goal completion chime | Три отметки | CC0-1.0 | session_stats | `res/audioww` |
 
 ## Third-party assets
 
@@ -62,16 +60,6 @@ visual reference only (layout, sizes, readability, colour conventions); nothing 
 - Ships in: `res/gui/maps/icons/otmetki/sixth_sense/icons` (component `sixth_sense`)
 - Fair play: Shown when the client's own sixth-sense lamp lights, for the player's own vehicle.
 
-### Sixth-sense chime
-
-- Author: Три отметки
-- Copyright: Три отметки, dedicated to the public domain
-- Licence: CC0-1.0 (`assets/otmetki/sounds/LICENSE.txt`)
-- Source: https://triotmetki.ru
-- Contents: sixthSense.mp3 (lamp on), sixthSense_off.mp3 (lamp off) and otmetki_tick.mp3 (a second of the lamp countdown): synthesised by tools/assets/sound.py, MP3 44.1 kHz mono
-- Ships in: `res/audioww` (component `sixth_sense`)
-- Fair play: The client's own custom detection sound slot (Settings > Sound > detection alert: user sound); the tick counts down the player's own lamp.
-
 ### Damage-log kind glyphs
 
 - Author: Три отметки
@@ -81,16 +69,6 @@ visual reference only (layout, sizes, readability, colour conventions); nothing 
 - Contents: 6 damage-kind glyphs (damage, radio, track, stun, blocked, received) and 5 vehicle-class glyphs (class_light, class_medium, class_heavy, class_td, class_spg): SVG sources, RGBA PNG 32 px
 - Ships in: `res/gui/maps/icons/otmetki/damage_log/icons` (component `damage_log`)
 - Fair play: Decorates the player's own damage-log lines; the class glyph shows the vehicle class the player panels already show.
-
-### Goal completion chime
-
-- Author: Три отметки
-- Copyright: Три отметки, dedicated to the public domain
-- Licence: CC0-1.0 (`assets/otmetki/sounds/LICENSE.txt`)
-- Source: https://triotmetki.ru
-- Contents: otmetki_goal.mp3 (a goal from the site met): synthesised by tools/assets/sound.py, MP3 44.1 kHz mono
-- Ships in: `res/audioww` (component `session_stats`)
-- Fair play: Played in the hangar when the site reports one of the player's own goals met.
 
 ## Python libraries
 

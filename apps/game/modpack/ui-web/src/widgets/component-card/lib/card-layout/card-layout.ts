@@ -11,13 +11,16 @@ const chevronOf = ({ hasEditor, open }: ChevronInput): UiIconName => {
 
 export const cardLayout = ({ component, fields, isExpanded, forceOpen }: CardLayoutInput): CardLayout => {
   const shown = fields ?? component.fields;
+  const basic = shown.filter(({ advanced }) => !advanced);
+  const advanced = shown.filter(({ advanced: isAdvanced }) => isAdvanced === true);
   const hasListPage = component.page?.kind === 'list';
   const hasContent = shown.length > 0 || component.actions.length > 0 || hasListPage;
   const expandable = hasContent || component.panel;
   const open = expandable && (forceOpen || isExpanded);
 
   return {
-    fields: shown,
+    fields: basic,
+    advanced,
     expandable,
     open,
     showEmpty: !hasContent,

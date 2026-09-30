@@ -15,10 +15,11 @@
   min-height: 180px;
   flex: 1 1 auto;
   flex-direction: column;
-  border: 1px solid token(color-border-strong);
-  border-radius: token(radius-md);
+  border: 1px solid token(win-stage-line);
+  border-radius: token(radius-lg);
   background-color: token(color-bg-deep);
-  background-image: radial-gradient(circle at 50% 45%, rgb(92 104 70 / 55%) 0%, rgb(38 42 34 / 70%) 45%, rgb(10 10 12 / 100%) 100%);
+  background-image: token(win-stage);
+  box-shadow: token(win-well-shadow);
 }
 
 .caption {
@@ -59,10 +60,12 @@
   flex-direction: column;
   flex-shrink: 0;
   padding: 8px 12px;
-  border: 1px solid token(color-border);
-  border-radius: token(radius-md);
-  margin-top: 10px;
+  border: 1px solid token(win-frame-line);
+  border-radius: token(radius-lg);
+  margin-top: 12px;
   background-color: token(color-surface-sunken);
+  background-image: token(win-card);
+  box-shadow: token(win-card-shadow);
 }
 
 .hintLabel {

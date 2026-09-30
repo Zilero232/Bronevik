@@ -13,17 +13,24 @@
   background-color: token(color-accent-soft);
   color: token(color-accent);
   cursor: pointer;
+
+  @include ease(background-color, border-color);
+
+  &:hover {
+    background-color: token(color-surface);
+    background-image: token(win-accent-tint);
+  }
 }
 
 .success {
   border-color: token(color-success);
-  background-color: rgb(111 181 68 / 12%);
+  background-color: token(color-armor-soft);
   color: token(color-success);
 }
 
 .danger {
   border-color: token(color-danger);
-  background-color: rgb(241 112 91 / 12%);
+  background-color: token(color-battle-soft);
   color: token(color-danger);
 }
 

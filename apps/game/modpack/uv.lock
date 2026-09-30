@@ -18,7 +18,6 @@ members = [
     "otmetki-feature-battle-menu",
     "otmetki-feature-battle-progress",
     "otmetki-feature-battle-results",
-    "otmetki-feature-battle-sounds",
     "otmetki-feature-bush-circle",
     "otmetki-feature-camera",
     "otmetki-feature-chat-filter",
@@ -247,21 +246,6 @@ requires-dist = [
 name = "otmetki-feature-battle-results"
 version = "0.1.0"
 source = { virtual = "features/battle_results" }
-dependencies = [
-    { name = "otmetki-companion" },
-    { name = "otmetki-core" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "otmetki-companion", virtual = "packages/companion" },
-    { name = "otmetki-core", virtual = "packages/core" },
-]
-
-[[package]]
-name = "otmetki-feature-battle-sounds"
-version = "0.2.0"
-source = { virtual = "features/battle_sounds" }
 dependencies = [
     { name = "otmetki-companion" },
     { name = "otmetki-core" },
@@ -768,7 +752,6 @@ dependencies = [
     { name = "otmetki-feature-battle-menu" },
     { name = "otmetki-feature-battle-progress" },
     { name = "otmetki-feature-battle-results" },
-    { name = "otmetki-feature-battle-sounds" },
     { name = "otmetki-feature-bush-circle" },
     { name = "otmetki-feature-camera" },
     { name = "otmetki-feature-chat-filter" },
@@ -823,7 +806,6 @@ requires-dist = [
     { name = "otmetki-feature-battle-menu", virtual = "features/battle_menu" },
     { name = "otmetki-feature-battle-progress", virtual = "features/battle_progress" },
     { name = "otmetki-feature-battle-results", virtual = "features/battle_results" },
-    { name = "otmetki-feature-battle-sounds", virtual = "features/battle_sounds" },
     { name = "otmetki-feature-bush-circle", virtual = "features/bush_circle" },
     { name = "otmetki-feature-camera", virtual = "features/camera" },
     { name = "otmetki-feature-chat-filter", virtual = "features/chat_filter" },

@@ -3,7 +3,9 @@ import type { ListPageProps } from './ListPage.types';
 import { Empty } from '../../../../../shared/ui/empty';
 import { List } from '../../../../../shared/ui/list';
 import { useListPage } from '../../../model/hooks';
-import { ListPageRow } from './components';
+import { GalleryTile, ListPageRow, PageNote } from './components';
+
+import s from './ListPage.module.scss';
 
 export const ListPage = ({ page, onRun }: ListPageProps) => {
   const rows = useListPage({ rows: page.rows, onRun });
@@ -12,11 +14,27 @@ export const ListPage = ({ page, onRun }: ListPageProps) => {
     return <Empty>{page.empty}</Empty>;
   }
 
+  if (page.layout === 'gallery') {
+    return (
+      <div className={s.page}>
+        {page.note && <PageNote text={page.note} />}
+        <div className={s.gallery} role='list'>
+          {rows.map((item) => (
+            <GalleryTile key={item.row.id} item={item} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <List>
-      {rows.map((item) => (
-        <ListPageRow key={item.row.id} item={item} />
-      ))}
-    </List>
+    <div className={s.page}>
+      {page.note && <PageNote text={page.note} />}
+      <List>
+        {rows.map((item) => (
+          <ListPageRow key={item.row.id} item={item} />
+        ))}
+      </List>
+    </div>
   );
 };

@@ -8,6 +8,6 @@ import s from './CardTile.module.scss';
 
 export const CardTile = ({ icon, enabled }: CardTileProps) => (
   <span className={clsx(s.tile, enabled && s.tileOn)}>
-    <Icon name={icon} size={20} tone={enabled ? 'accent' : 'muted'} />
+    <Icon name={icon} size={22} tone={enabled ? 'accent' : 'muted'} />
   </span>
 );

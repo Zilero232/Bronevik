@@ -20,7 +20,7 @@ ACCOUNT = 12345678
 # The switches that are off by default and that the stories play: the opt-in panels and the components that override
 # client views or send client requests.
 BATTLE_OPT_INS = (
-    'battle_progress', 'battle_gun_arc', 'battle_platoon_points', 'battle_bush_circle', 'battle_sounds',
+    'battle_progress', 'battle_gun_arc', 'battle_platoon_points', 'battle_bush_circle',
     'battle_chat_filter', 'streamer_mode', 'hangar_tweaks', 'hangar_auto_resupply', 'hangar_notification_filter',
     'hangar_cleaner',
 )
@@ -29,7 +29,8 @@ ENTRY_MODULES = ('mod_otmetki',) + tuple('mod_otmetki_' + key for key in REGISTE
 STUBBED = (
     'gui', 'BigWorld', 'BattleReplay', 'CurrentVehicle', 'PlayerEvents', 'BattleFeedbackCommon', 'dossiers2',
     'constants', 'SoundGroups', 'messenger', 'notification', 'account_helpers', 'helpers', 'skeletons', 'frameworks',
-    'openwg_gameface', 'items', 'WWISE', 'vehicle_outfit', 'Keys', 'Avatar', 'Vehicle', 'Math', 'arena_bonus_type_caps',
+    'openwg_gameface', 'items', 'vehicle_outfit', 'Keys', 'Avatar', 'Vehicle', 'Math', 'arena_bonus_type_caps',
+    'AvatarInputHandler', 'aih_constants', 'helpers_common',
 )
 LOAD_ORDER_SEEDS = (0, 1, 2, 3)
 PLAYER_EVENTS = (
@@ -63,7 +64,6 @@ NOTIFICATION_TYPES = {
     'AUCTION_STAGE_START': 19,
     'TRADING_CARAVAN_REFILL': 19,
 }
-BATTLE_SOUNDS = {'fire': 'otmetki_fire', 'ammo_rack': 'otmetki_ammo', 'first_blood': 'otmetki_first_blood'}
 HUD_OFF = (
     'battle_damage_log', 'hangar_info', 'battle_team_hp', 'battle_sixth_sense',
     'hangar_battle_results', 'battle_progress',
@@ -72,13 +72,21 @@ BATTLE_PANELS = [
     'battle_clock', 'battle_progress', 'damage_log', 'sixth_sense', 'team_hp',
 ]
 DESCRIBED_PANELS = [
-    'battle_clock', 'battle_hotkeys', 'battle_loadout', 'battle_progress', 'crosshair', 'damage_log',
+    'aim_info', 'battle_clock', 'battle_hotkeys', 'battle_loadout', 'battle_progress', 'crosshair', 'damage_log',
     'gun_arc', 'hangar_marks', 'marks_panel', 'platoon_points', 'sixth_sense', 'team_hp',
 ]
 HUD_EDIT_PREVIEWS = [
-    'battle_clock', 'battle_loadout', 'battle_progress', 'damage_log', 'gun_arc', 'hangar_marks', 'marks_panel',
-    'platoon_points', 'sixth_sense',
+    'aim_info', 'battle_clock', 'battle_loadout', 'battle_progress', 'damage_log', 'gun_arc', 'hangar_marks',
+    'marks_panel', 'platoon_points', 'sixth_sense',
 ]
+# RU 1.45 aih_constants.SHOT_RESULT values.
+SHOT_RESULTS = {'UNDEFINED': 0, 'NOT_PIERCED': 1, 'LITTLE_PIERCED': 2, 'GREAT_PIERCED': 3}
+# The own shell's piercing power at 100 and 500 m, the target's plates the resolver stub walks (a spaced screen, then
+# the hull's front plate at 30 degrees) and where the reticle sits on a 1920x1080 screen.
+OWN_PIERCING = (218.4, 180.0)
+TARGET_PLATES = ((20.0, 0), (180.0, 1))
+HIT_ANGLE_COS = 0.866
+RETICLE_SCREEN = {'position': (960, 540), 'size': (1920, 1080), 'scale': 1.0}
 OWN_SHOT = {
     'damage': 390,
     'nominal': None,
@@ -434,17 +442,6 @@ class GuiFlash(object):
 
     def deleteComponent(self, alias):
         del self.test.components[alias]
-
-
-class Sound(object):
-
-    def __init__(self, test, name):
-        self.test = test
-        self.name = name
-
-    def play(self):
-        prepared = self.test.mp3[-1] if self.test.mp3 else None
-        self.test.sounds.append('mp3:%s:%s' % (self.name, prepared))
 
 
 class Device(object):
@@ -832,7 +829,6 @@ class Game(object):
         test = self
         self.components = {}
         self.sounds = []
-        self.mp3 = []
         self.component_updated = Event()
         package('gui.mods.gambiter')
         sys.modules['gui.mods.gambiter'].g_guiFlash = GuiFlash(self)
@@ -851,10 +847,9 @@ class Game(object):
         module('constants', ARENA_PERIOD=constants('ARENA_PERIOD', ARENA_PERIODS))
         sounds = instance('Sounds', {
             'playSound2D': lambda sounds, name: test.sounds.append(name),
-            'getSound2D': lambda sounds, name: Sound(test, name),
+            'getSound2D': lambda sounds, name: test.sounds.append(name),
         })
         module('SoundGroups', g_instance=sounds)
-        module('WWISE', WW_prepareMP3=lambda name: test.mp3.append(name))
 
     def install_hotkey_input(self, **keys):
         self.key_down = Event()
@@ -907,6 +902,53 @@ class Game(object):
         })
         sys.modules['BigWorld'].entity = lambda vehicle_id: own_vehicle if vehicle_id == OWN_VEHICLE else None
         return calls
+
+    def install_setup_vehicle_builder(self, setup_devices):
+        # RU 1.45 PrebattleSetupsController.__updateGuiVehicle: the GUI vehicle of the own setups installs its setup's
+        # device sequence (optDevices.installed.getIntCDs(), 0 for an empty slot) into its descriptor; the arena's
+        # descriptor may still hold another setup.
+        by_cd = dict((device.compactDescr, device) for device, _ in setup_devices if device is not None)
+        slots = [slot for _, slot in setup_devices]
+        installed = {'sequence': []}
+
+        def install(descriptor, sequence):
+            installed['sequence'] = list(sequence)
+
+        def iterate(descriptor):
+            return iter([(by_cd.get(cd), slot) for cd, slot in zip(installed['sequence'], slots)])
+
+        intcds = [device.compactDescr if device is not None else 0 for device, _ in setup_devices]
+        gui_vehicle = instance('GuiVehicle', {
+            'descriptor': instance('Descriptor', {'installOptDevsSequence': install, 'iterOptDevsWithSlots': iterate}),
+            'optDevices': instance('OptDevices', {'installed': instance('Installed', {
+                'getIntCDs': lambda layout: list(intcds),
+                'getItems': lambda layout: [],
+            })}),
+            'battleBoosters': instance('Boosters', {'installed': instance('BoosterSlots', {
+                '__iter__': lambda layout: iter([None]),
+                'getItems': lambda layout: [],
+            })}),
+        })
+
+        class VehicleBuilder(object):
+
+            def __getattr__(self, name):
+                return lambda *args: None
+
+            def getResult(self):
+                return gui_vehicle
+
+        module('gui.battle_control.gui_vehicle_builder', VehicleBuilder=VehicleBuilder)
+        own_vehicle = instance('OwnVehicle', {
+            'typeDescriptor': public_descriptor(1),
+            'setups': {'shellsSetups': [], 'eqsSetups': [], 'boostersSetups': [], 'devicesSetups': []},
+            'setupsIndexes': {},
+            'crewCompactDescrs': [],
+            'customRoleSlotTypeId': ROLE_SLOT,
+            'vehPostProgression': [],
+            'disabledSwitches': [],
+        })
+        sys.modules['BigWorld'].entity = lambda vehicle_id: own_vehicle if vehicle_id == OWN_VEHICLE else None
 
     def install_shot_and_bush_circle_stubs(self):
         test = self
@@ -1379,8 +1421,7 @@ class BattleHudTest(StoryTest):
         game.install_hud_stubs()
         app = game.open_hangar(is_bound=True)
         hud = game.hud_module()
-        hud.hud_layer(app).update_settings('sixth_sense', {'sound_event': 'otmetki_lamp'})
-        hud.component_config(app).get('battle_sounds').update(BATTLE_SOUNDS)
+        hud.hud_layer(app).update_settings('sixth_sense', {'hide_after_s': 30})
         app.marks.hangar_moe[1] = dict(HANGAR_MOE)
         results = _support.battle_results()
         session = game.enter_battle(results['arenaUniqueID'])
@@ -1402,7 +1443,7 @@ class BattleHudTest(StoryTest):
         game.events.onAccountShowGUI()
         game.events.onBattleResultsReceived(True, results)
         cls.battle_report = copy.deepcopy(game.battle_events(app)[-1])
-        cls.moe_messages = game.messages_with(u'87.12%')
+        cls.moe_messages = game.messages_with(u'87.00%')
         cls.messages = list(game.messages)
 
     @staticmethod
@@ -1456,8 +1497,8 @@ class BattleHudTest(StoryTest):
         self.assertIn('510', team_hp)
         self.assertIn('0 : 1', team_hp)
 
-    def test_battle_sounds_play_for_fire_the_ammo_rack_the_lamp_and_first_blood(self):
-        self.assertEqual(self.sounds, ['otmetki_fire', 'otmetki_ammo', 'otmetki_lamp', 'otmetki_first_blood'])
+    def test_the_mod_plays_no_sound_of_its_own_in_battle(self):
+        self.assertEqual(self.sounds, [])
 
     def test_the_lamp_goes_out_when_the_tank_is_no_longer_spotted(self):
         self.assertNotIn('sixth_sense', self.panels_unspotted)
@@ -1465,7 +1506,7 @@ class BattleHudTest(StoryTest):
     def test_a_dragged_panel_saves_its_place_beside_its_settings(self):
         self.assertEqual(self.saved['damage_log']['x'], 111)
         self.assertEqual(self.saved['damage_log']['y'], 222)
-        self.assertEqual(self.saved['sixth_sense']['sound_event'], 'otmetki_lamp')
+        self.assertEqual(self.saved['sixth_sense']['hide_after_s'], 30)
 
     def test_leaving_the_battle_removes_every_panel(self):
         self.assertEqual(self.panels_after_battle, {})
@@ -1475,7 +1516,7 @@ class BattleHudTest(StoryTest):
 
     def test_the_battle_message_shows_the_moe_progress_and_the_damage(self):
         self.assertTrue(self.moe_messages, self.messages)
-        self.assertIn('+1.12%', self.moe_messages[0])
+        self.assertIn('+1.00%', self.moe_messages[0])
         self.assertIn('2 150', self.moe_messages[0])
 
 
@@ -1928,6 +1969,30 @@ class LoadoutWithoutGuiVehicleTest(StoryTest):
         self.assertIn('img://gui/maps/icons/artefact/vents.png', self.loadout['text'])
 
 
+class LoadoutFromTheSetupsTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        game.install_avatar_and_device_stubs()
+        turbocharger = (Device('turbocharger', ['mobility']), device_slot('mobility'))
+        setup = list(game.own_devices[:2]) + [turbocharger]
+        game.install_setup_vehicle_builder(setup)
+        game.open_hangar()
+        game.enter_battle(1, tank_id=1)
+        cls.loadout = copy.deepcopy(game.hud_components().get('battle_loadout'))
+        cls.log = session_log()
+
+    def test_the_third_device_of_the_setup_shows_when_the_arena_descriptor_lacks_it(self):
+        self.assertIn('img://gui/maps/icons/artefact/turbocharger.png', self.loadout['text'])
+
+    def test_every_slot_read_is_logged_once(self):
+        self.assertIn('slots from setups: 1 rammer, 2 vents, 3 turbocharger', self.log)
+
+    def test_the_read_counts_the_three_devices(self):
+        self.assertIn('battle_loadout: 3 devices, 0 directives', self.log)
+
+
 def session_log():
     with open(os.path.join('mods', 'configs', 'otmetki', 'otmetki.log'), 'rb') as handle:
         return handle.read().decode('utf-8')
@@ -1986,6 +2051,18 @@ class LoadoutListedLateTest(StoryTest):
 
     def test_the_battle_report_names_the_shown_row(self):
         self.assertIn('battle_loadout shown', self.log)
+
+    def test_the_damage_log_is_on_screen_before_any_damage(self):
+        self.assertIn('damage_log shown', self.log)
+
+    def test_the_dark_lamp_says_why_in_the_report(self):
+        self.assertIn('sixth_sense waiting: the own vehicle has not been spotted yet', self.log)
+
+    def test_the_gun_arc_of_a_full_turret_says_why_in_the_report(self):
+        self.assertIn('gun_arc waiting: the gun has no traverse limits', self.log)
+
+    def test_the_hidden_platoon_panel_says_why_in_the_report(self):
+        self.assertIn('platoon_points waiting: not in a platoon', self.log)
 
 
 class HangarHelpersTest(StoryTest):
@@ -2200,7 +2277,7 @@ class SiteRecordsTest(StoryTest):
         achieved = dict(goals['goals'][0], current=3050.0, status='achieved')
         game.answer('goals', dict(goals, goals=[achieved]))
         cls.goal_messages = game.messages_with(u'цель выполнена')
-        cls.last_sound = game.sounds[-1]
+        cls.sounds_after_goal = list(game.sounds)
         cls.messages = list(game.messages)
 
     def test_site_records_fill_the_record_book(self):
@@ -2227,9 +2304,11 @@ class SiteRecordsTest(StoryTest):
         self.assertEqual(self.record_notices, [])
         self.assertEqual(self.stored['tanks']['1']['damage'], 7050)
 
-    def test_an_achieved_goal_is_announced_with_its_sound(self):
+    def test_an_achieved_goal_is_announced(self):
         self.assertTrue(self.goal_messages, self.messages)
-        self.assertEqual(self.last_sound, 'mp3:sixthSense:otmetki_goal.mp3')
+
+    def test_an_achieved_goal_plays_no_sound(self):
+        self.assertEqual(self.sounds_after_goal, [])
 
 
 class PlatoonTest(StoryTest):
@@ -3045,13 +3124,13 @@ class ExactMoeChangeTest(StoryTest):
         app.marks.hangar_moe[1] = dict(HANGAR_MOE)
         results = _support.battle_results()
         game.enter_battle(results['arenaUniqueID'], 1)
-        app.marks.hangar_moe[1] = dict(HANGAR_MOE, damage_rating=8712)
+        app.marks.hangar_moe[1] = dict(HANGAR_MOE, damage_rating=8712, moving_avg_damage=2610)
         game.back_to_hangar()
         game.events.onBattleResultsReceived(True, results)
         cls.messages = list(game.messages)
         cls.session_text = game.components['otmetki.session']['text']
 
-    def test_the_results_are_compared_with_the_dossier_read_before_the_battle(self):
+    def test_the_hangars_post_battle_read_gives_the_exact_rating_the_results_round(self):
         self.assertTrue([text for text in self.messages if u'+1.12%' in text], self.messages)
 
     def test_the_session_card_shows_the_tanks_exact_change(self):
@@ -3133,6 +3212,155 @@ class AccountExtrasTest(StoryTest):
     def test_an_onslaught_battle_is_kept_for_the_card(self):
         self.assertEqual(len(self.comp7_history), 1)
         self.assertIn('+', self.comp7_text)
+
+
+class Vector(object):
+    # RU 1.45 Math.Vector3: what the rotator's marker update hands the crosshair proxy as the hit point.
+
+    def __init__(self, x, y, z):
+        self.x, self.y, self.z = x, y, z
+
+    def __sub__(self, other):
+        return Vector(self.x - other.x, self.y - other.y, self.z - other.z)
+
+    @property
+    def length(self):
+        return (self.x ** 2 + self.y ** 2 + self.z ** 2) ** 0.5
+
+
+def plate(armor, damage_factor):
+    return instance('MaterialInfo', {
+        'armor': armor, 'kind': int(armor), 'useHitAngle': True, 'vehicleDamageFactor': damage_factor,
+        'collideOnceOnly': False, 'mayRicochet': True, 'checkCaliberForRichet': False,
+    })
+
+
+def plate_detail(index, values):
+    return instance('Detail', {
+        'dist': 0.1 * index, 'hitAngleCos': HIT_ANGLE_COS, 'matInfo': plate(*values), 'compName': index,
+    })
+
+
+class ShotResultResolver(object):
+    # RU 1.45 gun_marker_ctrl._CrosshairShotResults: the verdict and the steps it takes, on the stub's plates.
+    verdicts = []
+
+    @classmethod
+    def getShotResult(cls, hitPoint, collision, direction, excludeTeam=0, piercingMultiplier=1):
+        cls.verdicts.append((collision.entity, excludeTeam, piercingMultiplier))
+        return SHOT_RESULTS['LITTLE_PIERCED']
+
+    @classmethod
+    def _getAllCollisionDetails(cls, hitPoint, direction, entity):
+        return [plate_detail(index, values) for index, values in enumerate(TARGET_PLATES)]
+
+    @classmethod
+    def _computePiercingPowerAtDist(cls, ppDesc, dist, maxDist, piercingMultiplier):
+        p100, p500 = ppDesc
+        return (p100 if dist <= 100.0 else p500) * piercingMultiplier
+
+    @classmethod
+    def _computePenetrationArmor(cls, shell, hitAngleCos, matInfo):
+        return matInfo.armor / hitAngleCos
+
+    @classmethod
+    def _shouldRicochet(cls, shell, hitAngleCos, matInfo):
+        return False
+
+
+def crosshair_proxy():
+    proxy = instance('CrosshairDataProxy', {
+        'getViewID': lambda proxy: 1,
+        'getScaledPosition': lambda proxy: RETICLE_SCREEN['position'],
+        'getSize': lambda proxy: RETICLE_SCREEN['size'],
+        'getScaleFactor': lambda proxy: RETICLE_SCREEN['scale'],
+    })
+    proxy.onGunMarkerStateChanged = Event()
+    return proxy
+
+
+def install_aim_armor_stubs():
+    package('AvatarInputHandler')
+    module('AvatarInputHandler.gun_marker_ctrl', createShotResultResolver=lambda: ShotResultResolver)
+    module('aih_constants', SHOT_RESULT=constants('SHOT_RESULT', SHOT_RESULTS))
+    module('helpers_common', computeDistanceFactor=lambda shell, distance, name: 1.0)
+
+
+def own_shot():
+    shell = instance('Shell', {'kind': 'ARMOR_PIERCING'})
+    return instance('Shot', {'shell': shell, 'piercingPower': OWN_PIERCING, 'maxDistance': 720.0})
+
+
+def target(vehicle_class, team):
+    vehicle = vehicle_class(False)
+    vehicle.health = 900
+    vehicle.publicInfo = {'team': team}
+    return vehicle
+
+
+class AimArmorTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        app, vehicle_class = open_shots_hangar(game)
+        game.hud_module().hud_layer(app).update_settings('aim_info', {'armor_under_aim': True})
+        install_aim_armor_stubs()
+        ShotResultResolver.verdicts = []
+        session = BattleSession()
+        session.shared.crosshair = crosshair_proxy()
+        game.player = Player(ACCOUNT, 4243)
+        game.player.vehicleTypeDescriptor = instance('Descriptor', {'shot': own_shot()})
+        game.player.getOwnVehiclePosition = lambda: Vector(0.0, 0.0, 0.0)
+        game.join(session)
+        enemy = target(vehicle_class, 2)
+        ally = target(vehicle_class, 1)
+        cls.panels_before_aiming = sorted(game.hud_components())
+
+        cls.aim(session, enemy)
+        cls.readout = game.hud_text('aim_info')
+        props = game.hud_components()['aim_info']
+        cls.place = (props['x'], props['y'])
+        cls.aim(session, enemy)
+        cls.verdicts_in_one_tick = len(ShotResultResolver.verdicts)
+
+        game.clock[0] += 0.2
+        cls.aim(session, ally)
+        cls.panels_over_an_ally = sorted(game.hud_components())
+        game.clock[0] += 0.2
+        cls.aim(session, enemy)
+        game.clock[0] += 0.2
+        cls.aim(session, None)
+        cls.panels_without_a_target = sorted(game.hud_components())
+        cls.excluded_team = ShotResultResolver.verdicts[0][1]
+        game.back_to_hangar()
+
+    @staticmethod
+    def aim(session, vehicle):
+        collision = instance('Collision', {'entity': vehicle}) if vehicle is not None else None
+        session.shared.crosshair.onGunMarkerStateChanged(1, Vector(0.0, 0.0, 50.0), Vector(0.0, 0.0, 1.0), collision)
+
+    def test_nothing_shows_before_an_enemy_is_under_the_reticle(self):
+        self.assertNotIn('aim_info', self.panels_before_aiming)
+
+    def test_the_readout_writes_the_effective_and_nominal_armour_and_the_own_penetration(self):
+        self.assertIn(u'231', self.readout)
+        self.assertIn(u'ном. 180', self.readout)
+        self.assertIn(u'проб. 218', self.readout)
+
+    def test_the_readout_sits_under_the_reticle(self):
+        self.assertEqual(self.place, (0, 132))
+
+    def test_one_resolution_per_server_tick(self):
+        self.assertEqual(self.verdicts_in_one_tick, 1)
+
+    def test_the_own_team_is_excluded_as_the_stock_marker_does(self):
+        self.assertEqual(self.excluded_team, 1)
+
+    def test_an_ally_under_the_reticle_hides_the_readout(self):
+        self.assertNotIn('aim_info', self.panels_over_an_ally)
+
+    def test_no_target_hides_the_readout(self):
+        self.assertNotIn('aim_info', self.panels_without_a_target)
 
 
 if __name__ == '__main__':

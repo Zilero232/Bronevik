@@ -1,16 +1,15 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import math
-
 from ....core.format import font
 from .constants import (
-    DETECTION_SOUND,
+    CUSTOM_SET,
     DIM_SUFFIX,
     ENDED,
+    GALLERY_ICON_SIZE,
     ICON_RENDITIONS,
     ICON_ROOT,
+    IMAGE_SCHEME,
     LAMP_DURATION_S,
-    LAMP_SOUND_INDEX,
     MIN_TIMER_FONT_SIZE,
     OBSERVED,
     PULSE_PERIOD_S,
@@ -32,7 +31,6 @@ class SixthSense(object):
     def __init__(self):
         self.lit_at = None
         self.duration = LAMP_DURATION_S
-        self.shown_seconds = 0
         self.over = False
 
     @property
@@ -54,7 +52,6 @@ class SixthSense(object):
 
         self.lit_at = now
         self.duration = duration
-        self.shown_seconds = int(math.ceil(duration))
         return 'show'
 
     def vehicle_state(self, state, value, now, duration=LAMP_DURATION_S):
@@ -84,18 +81,6 @@ class SixthSense(object):
 
         return max(0.0, self.duration - (now - self.lit_at))
 
-    def tick_due(self, now):
-        seconds_left = self.seconds_left(now)
-        if seconds_left is None:
-            return False
-
-        shown_seconds = int(math.ceil(seconds_left))
-        if not 0 < shown_seconds < self.shown_seconds:
-            return False
-
-        self.shown_seconds = shown_seconds
-        return True
-
     def expired(self, now, hide_after_s):
         if not self.lit or hide_after_s <= 0:
             return False
@@ -121,15 +106,28 @@ def rendition(size):
     return ICON_RENDITIONS[-1]
 
 
+def set_icon_path(icon_set, size, dimmed=False):
+    suffix = DIM_SUFFIX if dimmed else ''
+    return '%s/%s%s_%d.png' % (ICON_ROOT, icon_set, suffix, rendition(size))
+
+
 # The client image path of the icon to show; '' when a custom icon is left empty (the text shows instead).
 def icon_path(settings, dimmed=False):
     icon_set = settings.get('icon_set')
-    if icon_set == 'custom':
+    if icon_set == CUSTOM_SET:
         return settings.get('icon')
 
-    shows_dim_frame = dimmed and settings.get('pulse')
-    suffix = DIM_SUFFIX if shows_dim_frame else ''
-    return '%s/%s%s_%d.png' % (ICON_ROOT, icon_set, suffix, rendition(settings.get('icon_size')))
+    return set_icon_path(icon_set, settings.get('icon_size'), dimmed and settings.get('pulse'))
+
+
+def gallery_picture(icon_set):
+    if icon_set == CUSTOM_SET:
+        return None
+    return IMAGE_SCHEME + set_icon_path(icon_set, GALLERY_ICON_SIZE)
+
+
+def icon_gallery(icon_sets):
+    return {'icon_set': dict((icon_set, gallery_picture(icon_set)) for icon_set in icon_sets)}
 
 
 def lamp_text(settings, has_icon, translate):
@@ -139,7 +137,7 @@ def lamp_text(settings, has_icon, translate):
     if has_icon:
         return ''
 
-    return translate('sixth_sense_text')
+    return translate('sixth_sense_default_text')
 
 
 def timer_line(state, settings, translate, now):
@@ -164,12 +162,3 @@ def format_sixth_sense(state, settings, translate, now):
     if timer:
         parts.append(timer)
     return '\n'.join(parts)
-
-
-# The game's detection-sound setting for the chosen lamp sound; nothing while the sound is left to the game.
-def to_native(values):
-    index = LAMP_SOUND_INDEX.get(values.get('lamp_sound'))
-    if index is None:
-        return {}
-
-    return {DETECTION_SOUND: index}

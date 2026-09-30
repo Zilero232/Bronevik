@@ -34,7 +34,6 @@ from .panel import (
     matching,
     max_length,
     panel_schema,
-    sound_event,
 )
 
 __all__ = (
@@ -57,5 +56,4 @@ __all__ = (
     'matching',
     'max_length',
     'panel_schema',
-    'sound_event',
 )

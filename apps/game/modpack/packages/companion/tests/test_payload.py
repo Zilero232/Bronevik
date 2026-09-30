@@ -80,7 +80,15 @@ class BattleEventTest(unittest.TestCase):
         self.assertEqual(self.event['result'], 'win')
 
     def test_moe_comes_from_the_own_vehicle(self):
-        self.assertEqual(self.event['moe'], {'marks_on_gun': 2, 'damage_rating': 8712, 'moving_avg_damage': 2610})
+        self.assertEqual(self.event['moe'], {'marks_on_gun': 2, 'damage_rating': 8700, 'moving_avg_damage': 2610})
+
+    def test_the_results_whole_percent_is_scaled_to_the_dossiers_hundredths(self):
+        results = _support.battle_results()
+        own_vehicle(results)['damageRating'] = 67
+
+        event = build_battle_event(results)
+
+        self.assertEqual(event['moe']['damage_rating'], 6700)
 
     def test_no_moe_for_low_tier(self):
         results = _support.battle_results()

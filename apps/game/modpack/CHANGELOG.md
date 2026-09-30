@@ -4,6 +4,16 @@ The modpack's release notes. Every package has its own entry, `## <id> <version>
 
 Add the new entry on top of the component's previous ones when you bump a `VERSION`.
 
+## Unreleased
+
+### ru
+
+- «Прицел и снаряды»: броня под прицелом — приведённая и номинальная броня цели в точке прицеливания и пробитие вашего снаряда на этой дистанции, цветом штатного маркера; только видимая техника противника под прицелом, числа те же, которыми клиент красит маркер. Под прицелом в любом режиме камеры или на своём месте панели.
+
+### en
+
+- «Aim and shells»: armour under the reticle — the target's effective and nominal armour at the aim point and your shell's penetration at that distance, in the stock marker colour; only a visible enemy vehicle under the reticle, the very numbers the client colours the marker with. Under the reticle in every camera mode or at the panel's own place.
+
 ## 0.2.0
 
 ### ru
@@ -15,8 +25,12 @@ Add the new entry on top of the component's previous ones when you bump a `VERSI
 - «Отметки» объединили отметку в бою, отметки в ангаре и историю отметок; «Сессия» — цели с сайта и строку аккаунта; «Итоги боёв» — «Боевые раны»; «Часы и сервер» — часы в бою.
 - Удалены компоненты, которые повторяли стандартный клиент: перезарядка (есть в прицеле игры), карточка уничтожения (панель после гибели), артометр, помощник взвода (окно взвода), антитилт (полоска боёв сессии), строка ЛБЗ в бою (панель задач игры), строки танка в «Часах и сервере» (подсказка танка и панель экипажа), всплывающее «Последнее попадание».
 - Единый вид панелей: одна плашка, пять размеров текста, одна палитра, без цветных полос и заголовков в бою.
-- По умолчанию выключены: «Удобный ангар», автопополнение, фильтры чата и уведомлений, чистый ангар, режим стримера, звуки событий, круг 15 м. Кто их уже настраивал или включал в окне мода, у того они остаются включёнными.
+- По умолчанию выключены: «Удобный ангар», автопополнение, фильтры чата и уведомлений, чистый ангар, режим стримера, круг 15 м. Кто их уже настраивал или включал в окне мода, у того они остаются включёнными.
 - На новой установке прицел, камера и мини-карта один раз получают рекомендуемые настройки; прежние сохраняются, кнопка «Вернуть как было» в карточке. У остальных ничего не меняется, в карточке есть «Рекомендуемые настройки».
+- «Отметки»: итоги боя дают процент целым числом, досье — в сотых; раньше мод читал 67 как 0,67 %, отсюда «0,67 %» и «−65,80 % за бой» в карточке. Теперь процент после боя берётся в верном масштабе, а точные сотые — из досье ангара после боя; изменение больше 10 % за бой не записывается, испорченные записи истории, «Итогов боёв» и «Сессии» исправляются сами. Без порогов с сайта панель в бою показывает, как меняется средний урон по ходу боя, вместо «нет порогов».
+- «Оборудование в бою»: оборудование читается из комплекта, с которым вы вышли в бой, как у стандартной панели; ячейки размером со слоты снарядов и расходников при любом масштабе интерфейса, пустые слоты держат место, ряд не прыгает.
+- «Журнал боя» виден с начала боя, как стандартный лог урона.
+- Убраны все собственные звуки мода: компонент «Звуки событий», звук и тиканье лампы «Шестого чувства», сигнал выполненной цели в «Сессии». Играют стандартные звуки игры.
 - Настройки объединённых компонентов переносятся сами: включённый переключатель, изменённые значения и места панелей; до переноса `components.json` сохраняется рядом как `components.json.r2.bak`.
 
 ### en
@@ -28,8 +42,12 @@ One component per job: the copies of one another and of the stock client are gon
 - «Marks of Excellence» merges the battle panel, the hangar marks and the marks history; «Session» takes the site goals and the account line; «Battle results» takes «Battle wounds»; «Clock and server» takes the battle clock.
 - Removed, because the stock client already shows them: the reload timer (the game's reticle), the death card (the post-mortem panel), the arty meter, the platoon helper (the platoon window), the tilt guard (the session results strip), the battle line of personal missions (the game's quest panel), the tank rows of «Clock and server» (the vehicle tooltip and the crew panel) and the «Last hit» pop-up.
 - One look for every panel: one plate, five text sizes, one palette, no colour rails and no titles in battle.
-- Off by default now: «Hangar tweaks», auto-resupply, the chat and notification filters, the clean hangar, streamer mode, event sounds and the 15 m circle. Whoever set them up or switched them in the mod window keeps them on.
+- Off by default now: «Hangar tweaks», auto-resupply, the chat and notification filters, the clean hangar, streamer mode and the 15 m circle. Whoever set them up or switched them in the mod window keeps them on.
 - A fresh install gives the crosshair, the camera and the minimap the recommended settings once; the previous ones are kept for «Restore my settings» on the card. Nothing changes for everyone else; the card offers «Recommended settings».
+- «Marks of Excellence»: the battle results give the percent as a whole number, the dossier in hundredths; the mod read 67 as 0.67 %, hence «0.67 %» and «−65.80 % per battle» on the card. The post-battle percent now has the right scale, with the exact hundredths from the hangar's dossier after the battle; a change past 10 % in one battle is not recorded, and the broken history, «Battle results» and «Session» entries repair themselves. Without the site's thresholds the battle panel shows the average moving with the battle instead of «no thresholds».
+- «Equipment in battle»: the devices come from the setup you took into the battle, as on the stock panel; the cells are as large as the shell and consumable slots at any interface scale, empty slots keep their place, and the row no longer jumps.
+- The «Battle log» is on screen from the start of the battle, like the stock damage log.
+- Every sound of the mod's own is gone: the «Event sounds» component, the sixth-sense lamp's sound and countdown tick, the goal chime of «Session». The game's own sounds play.
 - The settings of merged components move over by themselves: switches that were on, changed values and panel places; `components.json` is kept next to it as `components.json.r2.bak` before the move.
 
 ## 0.1.8
@@ -1973,28 +1991,6 @@ A new component: Event trackers (off by default).
 ### en
 
 - In the hangar: a notification after each own battle with the result, XP and credits, combat stats and the MoE change; the mod window lists the session's battles with details.
-
-## battle_sounds 0.2.0
-
-### ru
-
-- Новое событие «Вы повредили модуль врага»: звук, когда ваш выстрел критует модуль противника.
-- Настройка «Громче стандартные сигналы»: без звукового мода повторяет звуки самой игры на пожар и крит. Выключена по умолчанию.
-
-### en
-
-- A new event, «You damaged an enemy module»: a sound when your shot crits an enemy module.
-- «Louder stock alerts»: without a sound mod, plays the game's own fire and crit sounds once more. Off by default.
-
-## battle_sounds 0.1.0
-
-### ru
-
-- В бою: событие Wwise на выбор игрока для пожара, повреждения модуля, боеукладки, контузии экипажа, первой крови, собственного фрага и уничтожения своей машины. Звуковой банк не входит в пакет.
-
-### en
-
-- In battle: a Wwise event of the player's choice for fire, module damage, the ammo rack, injured crew, first blood, the own frag and the own vehicle's destruction. Ships no sound bank.
 
 ## chat_filter 0.1.0
 

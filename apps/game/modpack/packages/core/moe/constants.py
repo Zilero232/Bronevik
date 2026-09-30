@@ -8,6 +8,14 @@ MARK_LEVELS = (65.0, 85.0, 95.0)
 TARGET_LEVELS = (65.0, 85.0, 95.0, 100.0)
 MAX_PERCENT = 100.0
 
+# The dossier's damageRating is hundredths of a percent; the battle results' is a whole percent (results.py), so the
+# results' value is up to half a percent off the dossier's. One battle moves the EMA by 2/101 of the gap to the
+# battle's damage: more than 10 % in one battle is a misread, not a battle.
+RATING_SCALE = 100
+MAX_RATING = 100 * RATING_SCALE
+RESULTS_ROUNDING = RATING_SCALE // 2
+MAX_BATTLE_CHANGE = 10 * RATING_SCALE
+
 # The battles-to-mark forecast: at most this many battles, and the pace from at least PACE_MIN of the
 # last PACE_BATTLES own battles of the tank.
 MAX_FORECAST_BATTLES = 999

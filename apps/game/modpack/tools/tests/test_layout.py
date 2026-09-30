@@ -12,7 +12,7 @@ HANGAR_FEATURES = (
     'auto_resupply', 'camera', 'crosshair', 'hangar_cleaner', 'hangar_info', 'hangar_tweaks', 'minimap',
     'notification_filter', 'replay_manager',
 )
-BATTLE_EXTRAS = ('battle_sounds', 'chat_filter')
+BATTLE_EXTRAS = ('chat_filter',)
 EXPECTED_FEATURES = ('marks_panel', 'replay_upload', 'session_stats') + HUD_FEATURES + HANGAR_FEATURES + BATTLE_EXTRAS
 ALLOWED_FLAT_MODULES = ('__init__.py', 'version.py')
 

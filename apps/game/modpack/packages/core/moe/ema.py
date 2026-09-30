@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import math
 
 from ..compat import is_number
-from .constants import EMA_K, MAX_FORECAST_BATTLES
+from .constants import EMA_K, MAX_BATTLE_CHANGE, MAX_FORECAST_BATTLES
 
 
 def combined_damage(damage, radio, track, stun):
@@ -24,9 +24,11 @@ def rating_to_percent(damage_rating):
 
 # The exact change of one battle: the client keeps damageRating as the percent times 100, so two dossier reads
 # (before the battle, and the battle results' post-battle value) differ by whole hundredths. A rating of 0 is
-# a tank with no MoE record yet, which has nothing to compare.
+# a tank with no MoE record yet, which has nothing to compare; a change past MAX_BATTLE_CHANGE is a misread.
 def rating_change(rating_before, rating_after):
     if not (is_number(rating_before) and is_number(rating_after)) or rating_before <= 0 or rating_after <= 0:
+        return None
+    if abs(rating_after - rating_before) > MAX_BATTLE_CHANGE:
         return None
     return round((rating_after - rating_before) / 100.0, 2)
 

@@ -2209,7 +2209,7 @@
             }
           }
         },
-        "summary": "MoE thresholds in the shape the game mod reads; no API key needed",
+        "summary": "MoE thresholds in the shape the game mod reads; no API key needed. `is_enough` is false while the thresholds are unknown",
         "tags": ["v1-mod"]
       }
     },
@@ -2346,6 +2346,36 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/RecommendedBuildDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["builds"]
+      }
+    },
+    "/tanks/{id}/build-advice": {
+      "get": {
+        "operationId": "BuildsController_advice",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "maximum": 9007199254740991,
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BuildAdviceDto_Output"
                 }
               }
             }
@@ -25478,6 +25508,10 @@
             "exclusiveMinimum": 0,
             "maximum": 9007199254740991
           },
+          "is_enough": {
+            "type": "boolean",
+            "description": "Whether the 65/85/95 % thresholds are known; when false `thresholds` is empty and only `curve` carries data"
+          },
           "thresholds": {
             "type": "object",
             "propertyNames": {
@@ -25488,6 +25522,39 @@
               "type": "number",
               "minimum": 0
             }
+          },
+          "curve": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "percent": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100,
+                  "description": "Percent, 0–100"
+                },
+                "damage": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "Median moving-average combined damage of the players whose gun sat at this percent"
+                },
+                "players": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "battles": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": ["percent", "damage", "players", "battles"],
+              "additionalProperties": false
+            },
+            "description": "The percents the mod players reported enough over the last window, for interpolation"
           },
           "mastery": {
             "type": "object",
@@ -25513,13 +25580,27 @@
             "additionalProperties": false
           },
           "updated_at": {
-            "type": "string"
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "source": {
-            "type": "string"
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
-        "required": ["tank_id", "thresholds", "updated_at", "source"],
+        "required": ["tank_id", "is_enough", "thresholds", "curve", "updated_at", "source"],
         "additionalProperties": false
       },
       "UsageDto_Output": {
@@ -27952,6 +28033,54 @@
           }
         },
         "required": ["tankId", "usage", "loadout", "result"],
+        "additionalProperties": false
+      },
+      "BuildAdviceDto_Output": {
+        "type": "object",
+        "properties": {
+          "tankId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "isEnough": {
+            "type": "boolean",
+            "description": "False while the sample is below minSample; the lists are empty then"
+          },
+          "battles": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "equipment": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            },
+            "description": "Compact descriptors (the client intCD) of the recommended equipment"
+          },
+          "directives": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            },
+            "description": "Compact descriptors of the recommended directives (battle boosters)"
+          },
+          "consumables": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            },
+            "description": "Compact descriptors of the recommended consumables"
+          }
+        },
+        "required": ["tankId", "isEnough", "battles", "equipment", "directives", "consumables"],
         "additionalProperties": false
       },
       "BuildHistoryDto_Output": {

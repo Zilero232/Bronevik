@@ -3,27 +3,33 @@
 .card {
   display: flex;
   flex-direction: column;
-  border: 1px solid token(color-border);
-  border-radius: token(radius-md);
-  margin-bottom: 8px;
-  background-color: token(color-surface);
+  margin-bottom: 12px;
+
+  @include raised(radius-lg);
+  @include ease(border-color, box-shadow);
+
+  &:hover {
+    border-color: token(color-border-strong);
+    box-shadow: token(win-card-shadow-hover);
+  }
 }
 
 .open {
   border-color: token(color-border-strong);
-  background-color: token(color-surface-raised);
+  background-image: token(win-card-open);
+  box-shadow: token(win-card-shadow-hover);
 }
 
 .off {
-  background-color: token(color-surface-sunken);
+  background-image: token(win-card-off);
 }
 
 .head {
   display: flex;
-  min-height: 60px;
+  min-height: 72px;
   flex-direction: row;
   align-items: center;
-  padding: 0 14px 0 0;
+  padding: 0 16px 0 0;
 }
 
 .main {
@@ -32,7 +38,7 @@
   flex: 1 1 auto;
   flex-direction: row;
   align-items: center;
-  padding: 10px 12px;
+  padding: 12px 12px 12px 16px;
   border: none;
   background-color: transparent;
   color: token(color-text);
@@ -41,5 +47,15 @@
 }
 
 .chevron {
-  margin-left: 10px;
+  display: flex;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: token(radius-full);
+  margin-left: 12px;
+  background-color: token(color-surface-sunken);
+
+  @include ease(background-color);
 }

@@ -5,27 +5,25 @@
   width: 380px;
   max-width: 100%;
   flex-direction: column;
-  border: 1px solid token(color-border-strong);
-  border-radius: token(radius-md);
-  background-color: token(color-surface-sunken);
+  padding: 2px;
+
+  @include well;
 }
 
 .choice {
   display: flex;
-  min-height: 30px;
+  min-height: 32px;
   flex-direction: row;
   align-items: center;
-  padding: 5px 10px;
+  padding: 6px 10px;
   border: none;
-  border-bottom: 1px solid token(color-border);
+  border-radius: token(radius-sm);
   background-color: transparent;
   color: token(color-text-muted);
   cursor: pointer;
   text-align: left;
 
-  &:last-child {
-    border-bottom: none;
-  }
+  @include ease(background-color, color);
 
   &:hover {
     background-color: token(color-surface-hover);
@@ -34,7 +32,8 @@
 }
 
 .choiceOn {
-  background-color: token(color-accent-soft);
+  background-color: token(color-surface);
+  background-image: token(win-accent-tint);
   color: token(color-text);
 }
 
@@ -53,6 +52,7 @@
 .markOn {
   border-color: token(color-accent);
   background-color: token(color-accent);
+  box-shadow: token(win-accent-shadow);
 }
 
 .label {

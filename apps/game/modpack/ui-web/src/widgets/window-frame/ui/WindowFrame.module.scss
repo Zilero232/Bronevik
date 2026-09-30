@@ -3,10 +3,11 @@
 .frame {
   position: absolute;
   overflow: hidden;
-  border: 1px solid token(color-border-strong);
+  border: 1px solid token(win-frame-line);
   border-radius: token(radius-lg);
   border-top: 2px solid token(color-accent);
   background-color: token(color-bg);
+  background-image: token(win-frame);
   box-shadow: token(elev-3);
 }
 
@@ -45,7 +46,9 @@
   background-color: token(color-surface-raised);
   border-top-left-radius: token(radius-md);
   cursor: nwse-resize;
-  opacity: 0.8;
+  opacity: 0.6;
+
+  @include ease(opacity);
 
   &:hover {
     opacity: 1;

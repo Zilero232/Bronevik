@@ -26,7 +26,7 @@ def read(directory, name):
 class BackupDirTest(unittest.TestCase):
 
     def test_the_backup_sits_beside_the_preferences_file(self):
-        found = backup_dir(os.path.join('C:\\Users\\me\\AppData\\Roaming\\Lesta\\MirTankov', 'preferences.xml'))
+        found = backup_dir(os.path.join('Users', 'me', 'AppData', 'Roaming', 'Lesta', 'MirTankov', 'preferences.xml'))
 
         assert os.path.basename(found) == 'otmetki_backup'
         assert os.path.basename(os.path.dirname(found)) == 'MirTankov'

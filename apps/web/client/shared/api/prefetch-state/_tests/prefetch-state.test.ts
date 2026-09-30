@@ -3,6 +3,7 @@ import type { QueryClient } from '@tanstack/react-query';
 import { cacheLife } from 'next/cache';
 import { describe, expect, it, vi } from 'vitest';
 
+import { UNAVAILABLE_CACHE_LIFE } from '../../query-client';
 import { prefetchState } from '../prefetch-state';
 
 vi.mock('server-only', () => ({}));
@@ -25,7 +26,7 @@ describe('prefetchState', () => {
     const missing = { queryKey: ['clan', 'NONE'], queryFn: () => Promise.reject(new Error('not found')) };
 
     await expect(prefetchState((client) => [client.fetchQuery(clanQuery), client.fetchQuery(missing)])).resolves.toBeNull();
-    expect(cacheLife).toHaveBeenCalledWith('seconds');
+    expect(cacheLife).toHaveBeenCalledWith(UNAVAILABLE_CACHE_LIFE);
   });
 
   it('never retries a failed fetch on the server', async () => {

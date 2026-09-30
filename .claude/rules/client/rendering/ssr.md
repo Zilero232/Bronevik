@@ -52,3 +52,5 @@ Typecheck passes on code that throws during prerender, and only
 owner asks for one (see `shared/verification.md`); until then, follow the rules
 above and flag a change that could affect prerendering in the report, so the next
 build's prerender output gets a look.
+
+**Prerender and the clock.** A client-component prerender aborts at the first `Date.now()`/`Math.random()` it meets, which cuts a Suspense boundary and ends in hydration error #418. The server `getQueryClient()` is a `ServerRenderQueryClient` with `staleTime: 'static'`, so hydrated queries never read the clock; keep clock/random reads out of module scope and render paths on the server. A failed fetch inside `'use cache'` uses `UNAVAILABLE_CACHE_LIFE` (≥ 300 s expire, Next drops shorter entries between warming and the final prerender) and the uncached caller calls `connection()` to leave a dynamic hole.

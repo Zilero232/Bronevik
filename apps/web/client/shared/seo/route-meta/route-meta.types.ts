@@ -13,8 +13,12 @@ export type RouteEntity = {
   isFound: boolean;
 };
 
+export type RouteLookup = RouteEntity & {
+  isAvailable: boolean;
+};
+
 export type RouteLookupInput = Pick<RouteEntityInput, 'key'> & {
-  lookup: (key: string) => Promise<RouteEntity>;
+  lookup: (key: string) => Promise<RouteLookup>;
 };
 
 export type RouteSlugsInput = Pick<RouteStaticParamsInput, 'fallback'> & {

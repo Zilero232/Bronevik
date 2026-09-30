@@ -1,29 +1,42 @@
 import { cacheLife } from 'next/cache';
-import { describe, expect, it, vi } from 'vitest';
+import { connection } from 'next/server';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { UNAVAILABLE_CACHE_LIFE } from '@/shared/api/query-client';
 import { NotFoundError } from '@/shared/api/source';
 
 import { lookupRouteEntity, lookupRouteMeta, routeEntity, routeSlugs } from '../route-meta';
 
 vi.mock('next/cache', () => ({ cacheLife: vi.fn() }));
+vi.mock('next/server', () => ({ connection: vi.fn(() => Promise.resolve()) }));
 
 const fail = () => Promise.reject(new Error('down'));
 
 describe('lookupRouteEntity', () => {
   it('returns the loaded name', async () => {
-    await expect(lookupRouteEntity({ key: 'object-140', load: async () => 'Объект 140' })).resolves.toEqual({ name: 'Объект 140', isFound: true });
+    await expect(lookupRouteEntity({ key: 'object-140', load: async () => 'Объект 140' })).resolves.toEqual({
+      name: 'Объект 140',
+      isFound: true,
+      isAvailable: true
+    });
   });
 
   it('reports a missing entity', async () => {
     await expect(lookupRouteEntity({ key: 'nobody', load: () => Promise.reject(new NotFoundError('404')) })).resolves.toEqual({
       name: 'nobody',
-      isFound: false
+      isFound: false,
+      isAvailable: true
     });
   });
 
-  it('treats a transient failure as found and keeps it in the cache only for seconds', async () => {
-    await expect(lookupRouteEntity({ key: 'object-140', load: fail })).resolves.toEqual({ name: 'object-140', isFound: true });
-    expect(cacheLife).toHaveBeenCalledWith('seconds');
+  it('marks a transient failure as unavailable and keeps it in the cache only briefly', async () => {
+    await expect(lookupRouteEntity({ key: 'object-140', load: fail })).resolves.toEqual({ name: 'object-140', isFound: true, isAvailable: false });
+    expect(cacheLife).toHaveBeenCalledWith(UNAVAILABLE_CACHE_LIFE);
+  });
+
+  it('keeps a transient failure prerenderable, so a cache hit on another page never becomes an unexpected miss', () => {
+    expect(UNAVAILABLE_CACHE_LIFE.expire).toBeGreaterThanOrEqual(300);
+    expect(UNAVAILABLE_CACHE_LIFE.stale).toBeGreaterThanOrEqual(300);
   });
 });
 
@@ -48,15 +61,31 @@ describe('lookupRouteMeta', () => {
 });
 
 describe('routeEntity', () => {
-  it('passes the lookup result through', async () => {
-    await expect(routeEntity({ key: 'nobody', lookup: async (name) => ({ name, isFound: false }) })).resolves.toEqual({
+  beforeEach(() => {
+    vi.mocked(connection).mockClear();
+  });
+
+  it('passes the lookup result through and stays static', async () => {
+    await expect(routeEntity({ key: 'nobody', lookup: async (name) => ({ name, isFound: false, isAvailable: true }) })).resolves.toEqual({
       name: 'nobody',
       isFound: false
     });
+
+    expect(connection).not.toHaveBeenCalled();
   });
 
-  it('falls back to the key and stays indexable when the API is down', async () => {
+  it('renders the fallback at request time when the API was unavailable', async () => {
+    await expect(routeEntity({ key: 'object-140', lookup: async (name) => ({ name, isFound: true, isAvailable: false }) })).resolves.toEqual({
+      name: 'object-140',
+      isFound: true
+    });
+
+    expect(connection).toHaveBeenCalledOnce();
+  });
+
+  it('falls back to the key and stays indexable when the lookup throws', async () => {
     await expect(routeEntity({ key: 'стример', lookup: fail })).resolves.toEqual({ name: 'стример', isFound: true });
+    expect(connection).toHaveBeenCalledOnce();
   });
 });
 

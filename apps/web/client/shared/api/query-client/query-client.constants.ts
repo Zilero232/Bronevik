@@ -16,6 +16,10 @@ export const SERVER_QUERY_CLIENT_DEFAULTS = {
   queries: { ...QUERY_CLIENT_DEFAULTS.queries, retry: false }
 } as const satisfies DefaultOptions;
 
+export const SERVER_RENDER_STALE_TIME = 'static';
+
 export const PREFETCH_CACHE_LIFE = { stale: 300, revalidate: 120, expire: 300 } as const;
+
+export const UNAVAILABLE_CACHE_LIFE = { stale: 300, revalidate: 30, expire: 300 } as const;
 
 export const PREFETCHED_STALE_TIME = secondsToMilliseconds(PREFETCH_CACHE_LIFE.expire);

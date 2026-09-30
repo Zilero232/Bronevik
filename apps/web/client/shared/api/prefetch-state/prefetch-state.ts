@@ -3,7 +3,7 @@ import { cacheLife } from 'next/cache';
 
 import type { PrefetchQueries } from './prefetch-state.types';
 
-import { makeServerQueryClient } from '../query-client';
+import { makeServerQueryClient, UNAVAILABLE_CACHE_LIFE } from '../query-client';
 
 import 'server-only';
 
@@ -15,7 +15,7 @@ export const prefetchState = async (fetch: PrefetchQueries) => {
 
     return dehydrate(client);
   } catch {
-    cacheLife('seconds');
+    cacheLife(UNAVAILABLE_CACHE_LIFE);
 
     return null;
   }

@@ -1,6 +1,6 @@
 import type { Loadout, LoadoutRequest } from '@otmetki/schemas';
 
-import { sortBy } from 'remeda';
+import { sortBy, times } from 'remeda';
 
 import { serializeLoadout } from '@/entities/tank/build';
 
@@ -24,8 +24,7 @@ import type {
 
 import { LOADOUT_REQUEST, MODULE_ORDER, MODULE_SLOTS, SLOT_SIZES } from '../../config';
 
-export const slotsOf = ({ loadout, field }: SlotsOfInput): (number | null)[] =>
-  Array.from({ length: SLOT_SIZES[field] }, (_, index) => loadout[field][index] ?? null);
+export const slotsOf = ({ loadout, field }: SlotsOfInput): (number | null)[] => times(SLOT_SIZES[field], (index) => loadout[field][index] ?? null);
 
 export const setSlotItem = ({ loadout, field, slot, id }: SetSlotItemInput): Loadout => {
   const next = slotsOf({ loadout, field }).map((current, index) => {

@@ -2,6 +2,7 @@
 
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { range, times } from 'remeda';
 
 import { getHeatmap } from '@/entities/replay/replay';
 import { useReplayMapName } from '@/features/community/replay-meta';
@@ -32,7 +33,7 @@ export const useReplayHeatmap = () => {
       gridSize,
       samples,
       cells: heatCells({ cells, gridSize, levels: HEATMAP_VIEW.levels }),
-      gridLines: Array.from({ length: HEATMAP_VIEW.gridDivisions - 1 }, (_, index) => ((index + 1) * gridSize) / HEATMAP_VIEW.gridDivisions)
+      gridLines: times(HEATMAP_VIEW.gridDivisions - 1, (index) => ((index + 1) * gridSize) / HEATMAP_VIEW.gridDivisions)
     })
   });
 
@@ -42,7 +43,7 @@ export const useReplayHeatmap = () => {
     hasReplayMode: replay.battleType !== null,
     modeChoice,
     scope,
-    levels: Array.from({ length: HEATMAP_VIEW.levels }, (_, index) => index + 1),
+    levels: range(1, HEATMAP_VIEW.levels + 1),
     query,
     setModeChoice,
     setScope

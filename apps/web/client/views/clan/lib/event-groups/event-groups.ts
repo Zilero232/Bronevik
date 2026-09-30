@@ -1,6 +1,6 @@
 import type { ClanMemberEvent } from '@otmetki/schemas';
 
-import { entries, groupBy, map, pipe, sortBy } from 'remeda';
+import { entries, groupBy, map, pipe, sortBy, times } from 'remeda';
 
 import { dayKey, shiftDay, weekKey } from '@/shared/lib';
 
@@ -20,7 +20,7 @@ export const groupEventsByDay = (events: readonly ClanMemberEvent[]): EventDay[]
 export const weeklyMoves = ({ events, now, weeks }: WeeklyMovesInput): WeeklyMoves[] => {
   const today = dayKey({ date: now });
   const buckets = new Map<string, WeeklyMoves>(
-    Array.from({ length: weeks }, (_, index) => {
+    times(weeks, (index) => {
       const week = weekKey({ date: shiftDay({ day: today, amount: (index - weeks + 1) * CLAN_EVENTS.daysPerWeek }) });
 
       return [week, { week, joined: 0, left: 0 }];

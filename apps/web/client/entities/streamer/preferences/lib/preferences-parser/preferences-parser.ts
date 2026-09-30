@@ -1,5 +1,6 @@
 import { settingsValuesSchema } from '@otmetki/schemas';
 import { isIncludedIn, mergeDeep, round } from 'remeda';
+import { match } from 'ts-pattern';
 
 import type { AddValueInput, PreferencesField, PreferencesImport, ReadTagInput } from './preferences-parser.types';
 
@@ -35,23 +36,14 @@ const toValue = (field: PreferencesField, text: string): unknown => {
   const lower = text.toLowerCase();
   const number = toNumber(text);
 
-  switch (field.kind) {
-    case 'boolean': {
-      return isIncludedIn(lower, PREFERENCES_VALUES.truthy) ? true : isIncludedIn(lower, PREFERENCES_VALUES.falsy) ? false : null;
-    }
-
-    case 'integer': {
-      return number === null ? null : Math.round(number);
-    }
-
-    case 'decimal': {
-      return number === null ? null : round(number, PREFERENCES_VALUES.decimalDigits);
-    }
-
-    case 'index': {
-      return number !== null && Number.isInteger(number) ? (field.options[number] ?? null) : null;
-    }
-  }
+  return match(field)
+    .with({ kind: 'boolean' }, () =>
+      isIncludedIn(lower, PREFERENCES_VALUES.truthy) ? true : isIncludedIn(lower, PREFERENCES_VALUES.falsy) ? false : null
+    )
+    .with({ kind: 'integer' }, () => (number === null ? null : Math.round(number)))
+    .with({ kind: 'decimal' }, () => (number === null ? null : round(number, PREFERENCES_VALUES.decimalDigits)))
+    .with({ kind: 'index' }, ({ options }) => (number !== null && Number.isInteger(number) ? (options[number] ?? null) : null))
+    .exhaustive();
 };
 
 const nested = (path: string, value: unknown): Record<string, unknown> => {

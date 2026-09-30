@@ -1,3 +1,4 @@
+import { mapValues } from 'remeda';
 import { Color, DoubleSide, ShaderMaterial } from 'three';
 
 import type { ArmorShaderValues } from '@/entities/armor/armor-model';
@@ -14,10 +15,8 @@ export const createArmorMaterial = (values: ArmorShaderValues): ShaderMaterial =
     fragmentShader: ARMOR_SHADER.fragment,
     side: DoubleSide,
     uniforms: {
-      ...Object.fromEntries(Object.entries(values).map(([name, value]) => [name, { value }])),
-      ...Object.fromEntries(
-        Object.entries(ARMOR_COLOR_UNIFORMS).map(([name, face]) => [name, { value: new Color(ARMOR_PALETTE[face]).convertLinearToSRGB() }])
-      )
+      ...mapValues(values, (value) => ({ value })),
+      ...mapValues(ARMOR_COLOR_UNIFORMS, (face) => ({ value: new Color(ARMOR_PALETTE[face]).convertLinearToSRGB() }))
     }
   });
 

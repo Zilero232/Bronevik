@@ -3,6 +3,7 @@
 import type { PlaytimeCell } from '@otmetki/schemas';
 
 import { useFormatter, useTranslations } from 'next-intl';
+import { range, times } from 'remeda';
 
 import { PLAYTIME } from '../../../config';
 import { playtimeShift } from '../../../lib/playtime-shift';
@@ -12,11 +13,11 @@ export const usePlaytimeGrid = (cells: readonly PlaytimeCell[]) => {
   const format = useFormatter();
 
   const maxBattles = Math.max(1, ...cells.map(({ battles }) => battles));
-  const hours = Array.from({ length: PLAYTIME.hours }, (_, hour) => hour);
+  const hours = range(0, PLAYTIME.hours);
 
   return {
     hours: hours.map((hour) => ({ hour, label: hour % PLAYTIME.hourLabelStep === 0 ? hour : '' })),
-    rows: Array.from({ length: PLAYTIME.weekdays }, (_, weekday) => ({
+    rows: times(PLAYTIME.weekdays, (weekday) => ({
       weekday,
       cells: hours.map((hour) => {
         const cell = cells.find((item) => item.weekday === weekday && item.hour === hour);

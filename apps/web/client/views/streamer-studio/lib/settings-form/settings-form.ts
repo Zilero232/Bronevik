@@ -1,7 +1,8 @@
 import type { SettingsGroupKey, SettingsValues } from '@otmetki/schemas';
 
 import { settingsValuesSchema } from '@otmetki/schemas';
-import { isEmpty, mergeDeep } from 'remeda';
+import { isEmpty, isPlainObject, mergeDeep } from 'remeda';
+import { match } from 'ts-pattern';
 
 import type { SettingsField } from '@/entities/streamer/settings';
 
@@ -21,10 +22,8 @@ import { SETTINGS_FORM } from '../../config';
 
 const EDITABLE = new Set<string>(SETTINGS_FIELDS.map((field) => field.path));
 
-const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
-
 export const readPath = ({ source, path }: ReadPathInput): unknown =>
-  path.split('.').reduce<unknown>((node, key) => (isRecord(node) ? node[key] : undefined), source);
+  path.split('.').reduce<unknown>((node, key) => (isPlainObject(node) ? node[key] : undefined), source);
 
 const assignPath = ({ target, path, value }: AssignPathInput): void => {
   const keys = path.split('.');
@@ -32,7 +31,7 @@ const assignPath = ({ target, path, value }: AssignPathInput): void => {
   let node = target;
 
   for (const key of keys) {
-    const next = isRecord(node[key]) ? node[key] : {};
+    const next = isPlainObject(node[key]) ? node[key] : {};
 
     node[key] = next;
     node = next;
@@ -44,7 +43,7 @@ const assignPath = ({ target, path, value }: AssignPathInput): void => {
 };
 
 const compact = ({ value, prefix, drop }: CompactInput): unknown => {
-  if (!isRecord(value)) {
+  if (!isPlainObject(value)) {
     return value;
   }
 
@@ -52,59 +51,29 @@ const compact = ({ value, prefix, drop }: CompactInput): unknown => {
     const path = prefix === '' ? key : `${prefix}.${key}`;
     const next = drop.has(path) ? undefined : compact({ value: nested, prefix: path, drop });
 
-    return next === undefined || (isRecord(next) && isEmpty(next)) ? [] : [[key, next] as const];
+    return next === undefined || (isPlainObject(next) && isEmpty(next)) ? [] : [[key, next] as const];
   });
 
   return Object.fromEntries(entries);
 };
 
-export const toFormLeaf = ({ field, value }: LeafInput): SettingsFormLeaf => {
-  switch (field.kind) {
-    case 'text': {
-      return typeof value === 'string' ? value : '';
-    }
+export const toFormLeaf = ({ field, value }: LeafInput): SettingsFormLeaf =>
+  match(field.kind)
+    .with('text', () => (typeof value === 'string' ? value : ''))
+    .with('number', () => (typeof value === 'number' ? value : null))
+    .with('enum', () => (typeof value === 'string' ? value : SETTINGS_FORM.unset))
+    .with('boolean', () => (typeof value === 'boolean' ? String(value) : SETTINGS_FORM.unset))
+    .with('multi', () => (Array.isArray(value) ? value.map(String) : []))
+    .exhaustive();
 
-    case 'number': {
-      return typeof value === 'number' ? value : null;
-    }
-
-    case 'enum': {
-      return typeof value === 'string' ? value : SETTINGS_FORM.unset;
-    }
-
-    case 'boolean': {
-      return typeof value === 'boolean' ? String(value) : SETTINGS_FORM.unset;
-    }
-
-    case 'multi': {
-      return Array.isArray(value) ? value.map(String) : [];
-    }
-  }
-};
-
-const fromFormLeaf = ({ field, value }: LeafInput): unknown => {
-  switch (field.kind) {
-    case 'text': {
-      return typeof value === 'string' && value.trim() !== '' ? value.trim() : undefined;
-    }
-
-    case 'number': {
-      return typeof value === 'number' && Number.isFinite(value) ? value : undefined;
-    }
-
-    case 'enum': {
-      return typeof value === 'string' && value !== SETTINGS_FORM.unset ? value : undefined;
-    }
-
-    case 'boolean': {
-      return value === SETTINGS_FORM.unset || typeof value !== 'string' ? undefined : value === String(true);
-    }
-
-    case 'multi': {
-      return Array.isArray(value) && value.length > 0 ? value : undefined;
-    }
-  }
-};
+const fromFormLeaf = ({ field, value }: LeafInput): unknown =>
+  match(field.kind)
+    .with('text', () => (typeof value === 'string' && value.trim() !== '' ? value.trim() : undefined))
+    .with('number', () => (typeof value === 'number' && Number.isFinite(value) ? value : undefined))
+    .with('enum', () => (typeof value === 'string' && value !== SETTINGS_FORM.unset ? value : undefined))
+    .with('boolean', () => (value === SETTINGS_FORM.unset || typeof value !== 'string' ? undefined : value === String(true)))
+    .with('multi', () => (Array.isArray(value) && value.length > 0 ? value : undefined))
+    .exhaustive();
 
 export const toSettingsFormValues = (values: unknown): SettingsFormValues => {
   const form: SettingsFormValues = {};
@@ -133,7 +102,7 @@ export const cleanSettingsForm = (form: unknown): unknown => {
 export const mergeSettings = ({ base, edited }: MergeSettingsInput): SettingsValues => {
   const kept = compact({ value: base, prefix: '', drop: EDITABLE });
 
-  return settingsValuesSchema.parse(compact({ value: mergeDeep(isRecord(kept) ? kept : {}, edited), prefix: '', drop: new Set() }));
+  return settingsValuesSchema.parse(compact({ value: mergeDeep(isPlainObject(kept) ? kept : {}, edited), prefix: '', drop: new Set() }));
 };
 
 export const fieldsOfGroup = (group: SettingsGroupKey): SettingsField[] => SETTINGS_FIELDS.filter((field) => field.group === group);

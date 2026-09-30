@@ -51,11 +51,7 @@ export const tierSpans = ({ options, value }: TierSummaryInput): TierSpan[] => {
   const spans: TierSpan[] = [];
 
   tierRuns({ options, value }).forEach((run, tier) => {
-    if (run === 'single') {
-      spans.push({ from: tier, to: tier });
-    }
-
-    if (run === 'start') {
+    if (run === 'single' || run === 'start') {
       spans.push({ from: tier, to: tier });
     }
 

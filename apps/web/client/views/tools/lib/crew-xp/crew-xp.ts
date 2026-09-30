@@ -1,11 +1,11 @@
-import { sumBy } from 'remeda';
+import { range, sumBy, times } from 'remeda';
 
 import type { CrewPlan, CrewPlanInput, SkillLevelCostInput, XpToNextSkillInput } from './crew-xp.types';
 
 import { CREW_BONUSES, CREW_XP } from '../../config';
 import { battlesFor } from '../research-plan';
 
-const LEVELS = Array.from({ length: CREW_XP.maxLevel }, (_, index) => index + 1);
+const LEVELS = range(1, CREW_XP.maxLevel + 1);
 
 export const skillLevelCost = ({ level, skill }: SkillLevelCostInput): number =>
   Math.round(CREW_XP.levelBase * CREW_XP.levelGrowth ** (level / CREW_XP.maxLevel)) * 2 ** skill;
@@ -29,7 +29,7 @@ export const crewPlan = ({ skill, percent, xpPerBattle, bonuses, bookXp }: CrewP
     perBattle,
     xpLeft,
     battles: battlesFor({ left: xpLeft, perBattle }),
-    upcoming: Array.from({ length: CREW_XP.upcomingSkills }, (_, index) => {
+    upcoming: times(CREW_XP.upcomingSkills, (index) => {
       const next = skill + index + 1;
       const xp = skillTotalXp(next);
 

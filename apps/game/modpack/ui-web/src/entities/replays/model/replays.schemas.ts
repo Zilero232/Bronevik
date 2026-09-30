@@ -5,7 +5,7 @@ import { REPLAYS } from '../config';
 const count = z.nullable(z.number());
 const text = z.nullable(z.string());
 
-const replayItemSchema = z.object({
+export const replayItemSchema = z.object({
   id: z.string(),
   title: z.string(),
   size: z.number(),
@@ -47,12 +47,13 @@ const replayItemSchema = z.object({
   site: z.nullable(z.object({ state: z.enum(REPLAYS.siteStates), link: text }))
 });
 
-export const replaysPageSchema = z.object({
+export const replaysHeadSchema = z.object({
   kind: z.literal(REPLAYS.pageKind),
   status: z.enum(REPLAYS.statuses),
   progress: z.object({ done: z.number(), total: z.number() }),
   client: z.string(),
   folder: z.string(),
-  upload: z.catch(z.enum(REPLAYS.uploadStates), 'missing'),
-  items: z.array(replayItemSchema)
+  upload: z.catch(z.enum(REPLAYS.uploadStates), 'missing')
 });
+
+export const replaysPageSchema = z.extend(replaysHeadSchema, { items: z.array(replayItemSchema) });

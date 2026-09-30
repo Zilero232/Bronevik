@@ -594,6 +594,16 @@ A new component: Event trackers (off by default).
 
 - Your gun's reload countdown with a bar and the shells in the magazine; your own gun only. It counts by game time and keeps pace with the reticle.
 
+## core 0.6.1
+
+### ru
+
+- Боевые панели: все изменения за кадр уходят на страницу HUD одним обновлением, а неизменившееся не отправляется.
+
+### en
+
+- Battle panels: all the changes of a frame reach the HUD page as one update, and an unchanged state is not sent.
+
 ## core 0.6.0
 
 ### ru
@@ -779,6 +789,20 @@ A new component: Event trackers (off by default).
 - Binding to triotmetki.ru with a one-time code from the site; nothing is collected or sent before it.
 - After each own battle: the `personal` block of the battle results, MoE snapshots and distribution, queue times, the loadout and shots, sent in signed batches through an outbox that survives a restart and backs off on errors.
 - Per-feature data switches in `config.json`, the ModsSettingsAPI window as the fallback settings UI, and the streamer settings share (export, apply with a confirmation, restore).
+
+## ui 0.5.0
+
+### ru
+
+- Окно настроек больше не пересылает список реплеев с каждым изменением: страница «Реплеи» получает его отдельно, только пока открыта, и дальше лишь изменившиеся реплеи, так что окно и ангар не подтормаживают при сотнях реплеев.
+- Одно действие в окне отправляет новое состояние один раз, а неизменившееся не отправляется вовсе.
+- Страница HUD заново разбирает и перерисовывает только изменившиеся панели.
+
+### en
+
+- The settings window no longer resends the replay list with every change: the «Replays» page gets it separately, only while it is open, and afterwards only the replays that changed, so the window and the hangar no longer stutter with hundreds of replays.
+- One action in the window sends the new state once, and an unchanged state is not sent at all.
+- The HUD page parses and redraws only the panels that changed.
 
 ## ui 0.4.0
 
@@ -1221,6 +1245,16 @@ A new component: Event trackers (off by default).
 ### en
 
 - In battle: time stamps on chat lines and hiding of repeats, flood, quick-command spam and lines with blocked words. The player's own lines are never hidden.
+
+## replay_manager 0.3.2
+
+### ru
+
+- Список реплеев собирается заново только для изменившихся реплеев и обновляется во время чтения заголовков не чаще раза в 3 секунды, без перерисовки всего окна.
+
+### en
+
+- The replay list is rebuilt only for the replays that changed and refreshes at most every 3 seconds while headers are read, without redrawing the whole window.
 
 ## replay_manager 0.3.1
 

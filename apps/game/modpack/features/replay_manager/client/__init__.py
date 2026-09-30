@@ -9,7 +9,7 @@ from ....core.client.hud.icons import client_file_exists
 from ....core.client.me import can_read, post_signed, signed_body
 from ....core.client.replays import replay_dir
 from ....core.errors import ReasonError
-from ....core.events import EVENT_COMPONENT_SETTINGS, EVENT_REPLAY_UPLOAD_REQUEST, EVENT_REPLAY_UPLOADED
+from ....core.events import EVENT_REPLAY_UPLOAD_REQUEST, EVENT_REPLAY_UPLOADED
 from ....core.hud.icons import image
 from ....core.log import log
 from ....core.me import OK_STATUS
@@ -17,11 +17,11 @@ from ....core.storage import JsonFile
 from .. import FEATURE_ID
 from ..i18n import STRINGS
 from ..model import (ACTION_DELETE, ACTION_FAVOURITE, ACTION_FOLDER, ACTION_PLAY, ACTION_REFRESH, ACTION_RENAME, ACTION_UPLOAD, ERROR_EXISTS,
-                     ERROR_MISSING, ERROR_NO_ARENA, INDEX_FILE, LIBRARY_FILE, AnalysisWatch, AutoNamer, PageContext, ReplayActionError,
+                     ERROR_MISSING, ERROR_NO_ARENA, INDEX_FILE, LIBRARY_FILE, AnalysisWatch, AutoNamer, ItemCache, PageContext, ReplayActionError,
                      ReplayLibrary, UploadedIndex, analysis_notice, build_page, find_own, name_values, page_status, parse_statuses,
                      play_refusal, rename_target)
 from ..model.constants import (ANALYSIS_PATH, ANALYSIS_POLL_S, AUTO_NAME_CHECK_S, AUTO_NAME_INDEX_S, INDEX_WANTED_S, NOT_SERVED_STATUS,
-                               SCAN_EVERY_S, UPLOAD_MISSING, UPLOAD_READY)
+                               PAGE_KIND, SCAN_EVERY_S, UPLOAD_MISSING, UPLOAD_READY)
 from ..settings import SCHEMA, SWITCH
 from .playback import can_play, product_version, replay_busy, request_play
 from .vehicles import VehicleNames
@@ -49,6 +49,7 @@ class ReplayManager(FeatureComponent):
         self.scanned_at = 0.0
         self.wanted_at = 0.0
         self.vehicles = VehicleNames()
+        self.items = ItemCache()
         app.bus.on(EVENT_REPLAY_UPLOADED, self._on_uploaded)
         app.bus.on('battle_event', self._on_battle_event)
         app.bus.on('tick', self._on_tick)
@@ -90,7 +91,6 @@ class ReplayManager(FeatureComponent):
     def _index(self, now):
         if self.library.indexing() and now - self.wanted_at <= INDEX_WANTED_S and self.enabled_in_hangar():
             self.library.index(time.time)
-            self.app.bus.emit(EVENT_COMPONENT_SETTINGS, FEATURE_ID, [])
         if not self.library.indexing():
             self.library.save()
 
@@ -139,16 +139,23 @@ class ReplayManager(FeatureComponent):
         return []
 
     def ui_page(self):
+        return {'kind': PAGE_KIND} if self.enabled_in_hangar() else None
+
+    def ui_feed(self, poll=False):
+        """The replays page, sent apart from the settings state while the window shows it (`ui` feeds): the folder is
+        listed again on the player's own request only, a poll reads what the background indexing added."""
         if not self.enabled_in_hangar():
             return None
         now = time.time()
         self.wanted_at = now
-        self._scan(now)
+        if not poll:
+            self._scan(now)
         if self.library.indexing() and not self.library.entries:
             self.library.index(time.time)
         context = PageContext(self.index, product_version(), self.queued, self.analysis.parsed, self._upload_state(), self.vehicles, _client_image)
         account_id = self.app.account_id
-        return build_page(self._replays(), context, page_status(account_id, self.library), self.library.progress(), os.path.abspath(replay_dir()))
+        return build_page(self._replays(), context, page_status(account_id, self.library), self.library.progress(), os.path.abspath(replay_dir()),
+                          self.items)
 
     def ui_action(self, action, row=None, value=None):
         if not self.enabled_in_hangar():

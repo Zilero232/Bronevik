@@ -11,6 +11,7 @@ class WindowController(object):
         self.current_state = current_state
         self.window = None
         self.view = None
+        self.pushed = None
 
     @staticmethod
     def available():
@@ -43,24 +44,30 @@ class WindowController(object):
     @safe
     def close(self):
         window, self.window = self.window, None
-        self.view = None
+        self.view, self.pushed = None, None
         if window is not None:
             log('ui: settings window %s closed' % window.uniqueID)
             window.destroy()
 
     @safe
     def push(self, text):
-        if self.view is not None:
+        if self.view is not None and text != self.pushed:
+            self.pushed = text
             self.view.viewModel.set_state(text)
 
+    @safe
+    def push_feed(self, text):
+        if self.view is not None:
+            self.view.viewModel.set_feed(text)
+
     def on_loaded(self, view):
-        self.view = view
+        self.view, self.pushed = view, None
         log('ui: settings page loading')
         self.push(self.current_state())
 
     def on_destroyed(self, view):
         if self.view is view or self.view is None:
-            self.view = None
+            self.view, self.pushed = None, None
             self.window = None
 
     @safe

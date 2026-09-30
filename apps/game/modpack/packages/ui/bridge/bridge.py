@@ -4,10 +4,11 @@ from ...core.compat import string_types, to_text
 from ...core.hud import EVENT_RESET_LAYOUT
 from ...core.log import log
 from ..components import COMPANION_ACTIONS, COMPANION_ID, SECTIONS, build_catalog, find
+from ..feeds import Feed
 from ..fields import Labels
 from ..hud_edit import HudEditor, move_values
 from ..profiles import ProfileError, apply_snapshot, decode_profile, encode_profile, take_snapshot
-from ..protocol import ProtocolError, decode_message
+from ..protocol import QUIET_COMMANDS, ProtocolError, decode_message, encode_feed
 from ..window_layout import WindowLayout
 from .companion import CompanionActions
 from .constants import CONFIG_COMPONENT, EVENT_COMPONENT_SETTINGS, LANGUAGE_CHOICES, LANGUAGES, NOTICE_CODE, NOTICE_ERROR, NOTICE_INFO, TOOL_PAGES
@@ -23,6 +24,8 @@ class SettingsBridge(object):
         self.notice = None
         self.revision = 0
         self.focus = None
+        self.feeds = {}
+        self.watched = None
         self.handlers = {
             'ready': self._on_ready,
             'close': self._on_close,
@@ -43,6 +46,7 @@ class SettingsBridge(object):
             'hud_reset': self._on_hud_reset,
             'hud_reset_all': self._on_hud_reset_all,
             'window_layout': self._on_window_layout,
+            'feed': self._on_feed,
         }
 
     def labels(self):
@@ -87,16 +91,38 @@ class SettingsBridge(object):
         return WindowLayout(self.context.component_config)
 
     def handle(self, raw):
+        """Apply one page message; True when the settings state changed and goes to the window again."""
         self.notice = None
+        quiet = False
         try:
             message = decode_message(raw)
             self.handlers[message['type']](message)
+            quiet = message['type'] in QUIET_COMMANDS
         except ProtocolError as error:
             self._notice(NOTICE_ERROR, 'error_protocol', reason=error.reason)
         except ProfileError as error:
             self._notice(NOTICE_ERROR, 'error_profile_%s' % error.reason)
+        if quiet:
+            return False
         self.revision += 1
         return True
+
+    def feed_text(self, now, force=False):
+        """The next message of the feed the window watches (its page from the instance's `ui_feed(poll)`), or None when
+        none is watched, it is not due yet or nothing changed. A forced read follows the player's own message."""
+        if self.watched is None:
+            return None
+        component_id, instance = self.watched
+        feed = self.feeds[component_id]
+        if not feed.due(now, force):
+            return None
+        message = feed.message(instance.ui_feed(poll=not force and feed.synced), now)
+        return encode_feed(message) if message is not None else None
+
+    def stop_feed(self):
+        if self.watched is not None:
+            self.feeds[self.watched[0]].reset()
+        self.watched = None
 
     def _notice(self, kind, key, code=None, **params):
         self.notice = {'kind': kind, 'text': self.labels().text(key, **params), 'code': code}
@@ -220,6 +246,20 @@ class SettingsBridge(object):
     def _on_hud_reset(self, message):
         panel_id = message['panel']
         self._changed(panel_id, self.editor.reset(panel_id))
+
+    def _on_feed(self, message):
+        component_id = message['component']
+        if not message['active']:
+            if self.watched is not None and self.watched[0] == component_id:
+                self.stop_feed()
+            return
+        component = find(self.components(), component_id)
+        instance = component.instance if component is not None else None
+        if instance is None or not hasattr(instance, 'ui_feed'):
+            raise ProtocolError('unknown_feed')
+        self.stop_feed()
+        self.feeds.setdefault(component_id, Feed(component_id)).reset()
+        self.watched = (component_id, instance)
 
     def _on_window_layout(self, message):
         self.window_layout().update(message)

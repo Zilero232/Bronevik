@@ -1,9 +1,11 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-PROTOCOL_VERSION = 1
+# 2: the replays page left the settings state for the `feed` property (a snapshot, then only the changed items).
+PROTOCOL_VERSION = 2
 MAX_MESSAGE_CHARS = 64 * 1024
 
 STATE_PROPERTY = 'state'
+FEED_PROPERTY = 'feed'
 SEND_COMMAND = 'send'
 MESSAGE_ARG = 'message'
 
@@ -27,6 +29,7 @@ COMMANDS = (
     'hud_reset',
     'hud_reset_all',
     'window_layout',
+    'feed',
 )
 
 REQUIRED = {
@@ -46,6 +49,10 @@ REQUIRED = {
     'hud_move': ('panel', 'x', 'y'),
     'hud_reset': ('panel',),
     'window_layout': ('x', 'y', 'width', 'height', 'zoom'),
+    'feed': ('component', 'active'),
 }
+
+# Commands that change nothing in the settings state: the window gets no new state for them.
+QUIET_COMMANDS = ('feed',)
 
 RES_MAP_WINDOW = 'otmetki/ui/settings'

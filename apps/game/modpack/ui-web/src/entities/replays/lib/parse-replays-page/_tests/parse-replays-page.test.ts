@@ -21,6 +21,16 @@ describe(parseReplaysPage, () => {
     expect(page?.items.every((item) => item.type === 'other')).toBe(true);
   });
 
+  it('parses an item once and drops the page when one item does not parse', () => {
+    const raw = pageSample();
+    const first = parseReplaysPage(raw);
+    const again = parseReplaysPage({ ...raw, status: 'indexing' });
+
+    expect(again?.status).toBe('indexing');
+    expect(again?.items[0]).toBe(first?.items[0]);
+    expect(parseReplaysPage({ ...raw, items: [...raw.items, { id: 'broken' }] })).toBeNull();
+  });
+
   it('rejects another page kind', () => {
     expect(parseReplaysPage({ kind: 'list', empty: '', rows: [] })).toBeNull();
     expect(parseReplaysPage(null)).toBeNull();

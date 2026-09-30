@@ -68,7 +68,16 @@ class PageContext(object):
         self.image = image or (lambda path: None)
 
 
-def item_of(replay, context):
+def marks_of(replay, context):
+    """(favourite, site state) of a replay: what an item shows beside its file and header."""
+    header = replay.get('header') or {}
+    arena = header.get('arena_unique_id')
+    index = context.index
+    favourite = bool(index is not None and index.is_favourite(arena or replay['name']))
+    return favourite, site_state(header, index, context.queued, context.analysed)
+
+
+def item_of(replay, context, marks=None):
     header = replay.get('header') or {}
     stats = header.get('stats') or {}
     vehicle = header.get('vehicle')
@@ -76,7 +85,7 @@ def item_of(replay, context):
     described = context.describe_vehicle(stats.get('tank_id'), vehicle) or {}
     big_map, small_map = map_icons(header.get('map_name'))
     arena = header.get('arena_unique_id')
-    index = context.index
+    favourite, site = marks if marks is not None else marks_of(replay, context)
     item = {
         'id': replay['name'],
         'title': os.path.splitext(replay['name'])[0],
@@ -101,8 +110,8 @@ def item_of(replay, context):
         'mastery_image': context.image(mastery_icon(stats.get('mastery'))) if mastery_icon(stats.get('mastery')) else None,
         'version': header.get('client_version'),
         'playable': compatible(header.get('client_version'), context.client_version),
-        'favourite': bool(index is not None and index.is_favourite(arena or replay['name'])),
-        'site': site_state(header, index, context.queued, context.analysed),
+        'favourite': favourite,
+        'site': site,
     }
     for key in STAT_KEYS:
         item[key] = stats.get(key) if is_int(stats.get(key)) else None
@@ -115,7 +124,35 @@ def page_status(account_id, library):
     return STATUS_INDEXING if library.indexing() else STATUS_READY
 
 
-def build_page(replays, context, status, progress, folder):
+class ItemCache(object):
+    """The items already described, by file name: an item is built again only when its file, its header, its marks or
+    the client change, so a page of a thousand replays costs a lookup per replay."""
+
+    def __init__(self):
+        self.items = {}
+
+    def items_of(self, replays, context):
+        known, self.items = self.items, {}
+        items = []
+        for replay in replays:
+            marks = marks_of(replay, context)
+            key = (replay['size'], replay['mtime'], marks[0], _frozen(marks[1]), context.client_version)
+            header = replay.get('header')
+            cached = known.get(replay['name'])
+            if cached is not None and cached[0] is header and cached[1] == key:
+                item = cached[2]
+            else:
+                item = item_of(replay, context, marks)
+            self.items[replay['name']] = (header, key, item)
+            items.append(item)
+        return items
+
+
+def _frozen(site):
+    return (site['state'], site['link']) if site else None
+
+
+def build_page(replays, context, status, progress, folder, cache=None):
     done, total = progress
     return {
         'kind': PAGE_KIND,
@@ -124,5 +161,5 @@ def build_page(replays, context, status, progress, folder):
         'client': to_text(context.client_version or ''),
         'folder': to_text(folder or ''),
         'upload': context.upload,
-        'items': [item_of(replay, context) for replay in replays],
+        'items': cache.items_of(replays, context) if cache is not None else [item_of(replay, context) for replay in replays],
     }

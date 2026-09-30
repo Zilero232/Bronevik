@@ -23,7 +23,7 @@ import BigWorld
 
 from ....hud import HudBackend
 from ....hud.icons import resolve
-from ....hud.surface import HUD_MESSAGE_ARG, HUD_RES_MAP_ID, HUD_SEND_COMMAND, HUD_STATE_PROPERTY, SPACE_LOBBY, HudSurface
+from ....hud.surface import HUD_MESSAGE_ARG, HUD_RES_MAP_ID, HUD_SEND_COMMAND, HUD_STATE_PROPERTY, SPACE_LOBBY, FramePush, HudSurface
 from ....log import log, log_exception, safe
 from ...game import main_window
 from ..icons import client_file_exists
@@ -115,12 +115,17 @@ else:
     HudWindow = None
 
 
+def _next_frame(callback):
+    BigWorld.callback(0, safe(callback))
+
+
 class GamefaceBackend(HudBackend):
 
     name = 'gameface'
 
     def __init__(self):
         self.surface = HudSurface()
+        self.pusher = FramePush(_next_frame, self._view_state, self._set_view_state)
         self.window = None
         self.view = None
         self.broken = False
@@ -189,8 +194,16 @@ class GamefaceBackend(HudBackend):
         return self.surface.encode(space, space == SPACE_LOBBY or self.cursor, self.modifier.held)
 
     def push_state(self):
+        """Every label change of a frame (a 10 Hz reload timer next to the clock and the logs) becomes one push of the
+        whole state on the next frame, and an unchanged state is not pushed again."""
         if self.view is not None:
-            self.view.viewModel.set_state(self.state_text())
+            self.pusher.request()
+
+    def _view_state(self):
+        return self.state_text() if self.view is not None else None
+
+    def _set_view_state(self, text):
+        self.view.viewModel.set_state(text)
 
     @safe
     def sync(self):
@@ -256,7 +269,8 @@ class GamefaceBackend(HudBackend):
         log('HUD: Gameface page view loaded')
         view.viewModel.send += view._on_send
         self.view = view
-        view.viewModel.set_state(self.state_text())
+        self.pusher.forget()
+        self.pusher.flush()
 
     @safe
     def on_destroyed(self, view):
@@ -275,6 +289,7 @@ class GamefaceBackend(HudBackend):
         if command == 'ready':
             self.answered = True
             log('HUD: Gameface page ready (%d labels)' % len(self.surface.aliases(current_space())))
+            self.pusher.forget()
             self.push_state()
         elif command == 'pressed':
             for listener in list(self.press_listeners):

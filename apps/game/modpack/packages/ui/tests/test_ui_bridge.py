@@ -20,7 +20,7 @@ from otmetki.ui.bridge import SettingsBridge, site_link, site_url
 from otmetki.ui.components import COMPANION_ID, COMPANION_KEYS, FeatureInfo, load_features, root_package
 from otmetki.ui.i18n import STRINGS
 from otmetki.ui.profiles import ProfileStore
-from otmetki.ui.protocol import COMMANDS, encode_state
+from otmetki.ui.protocol import COMMANDS, PROTOCOL_VERSION, encode_state
 
 UI_WEB = os.path.join(_support.MODPACK_DIR, 'ui-web', 'src', 'shared', 'api', 'protocol')
 STATE_FIXTURE = os.path.join(UI_WEB, '_tests', 'fixtures', 'state.sample.json')
@@ -65,6 +65,14 @@ class ReplayPage(object):
 
     def __init__(self):
         self.actions = []
+        self.polls = []
+        self.feed_items = [{'id': '%04d.mtreplay' % index, 'title': u'Бой %d' % index, 'map_title': u'Прохоровка', 'damage': 2150,
+                            'map_image': 'img://gui/maps/icons/map/stats/05_prohorovka.png', 'favourite': False} for index in range(1000)]
+        self.feed_status = 'ready'
+
+    def ui_feed(self, poll=False):
+        self.polls.append(poll)
+        return {'kind': 'replays', 'status': self.feed_status, 'items': list(self.feed_items)}
 
     def ui_actions(self):
         return [{'id': 'refresh', 'label': 'Refresh', 'confirm': None}]
@@ -347,6 +355,58 @@ class BridgeMessageTest(unittest.TestCase):
         send(self.bridge, type='close')
         assert self.context.events == [('hud_edit', True), ('hud_edit', False)]
         assert self.context.editing == [True]
+
+
+class BridgeFeedTest(unittest.TestCase):
+
+    def setUp(self):
+        self.context = FakeContext()
+        self.bridge = SettingsBridge(self.context)
+
+    def watch(self):
+        revision = self.bridge.revision
+        assert send(self.bridge, type='feed', component='replay_manager', active=True) is False
+        assert self.bridge.revision == revision and self.bridge.notice is None
+
+    def test_nothing_is_sent_before_the_page_watches_a_feed(self):
+        assert self.bridge.feed_text(0.0, force=True) is None
+        assert self.context.page.polls == []
+
+    def test_a_watched_feed_sends_a_snapshot_then_throttled_deltas(self):
+        self.watch()
+        snapshot = json.loads(self.bridge.feed_text(100.0, force=True))
+        assert snapshot['v'] == PROTOCOL_VERSION and snapshot['feed'] == 'replay_manager' and snapshot['base'] is None
+        assert len(snapshot['items']) == 1000 and self.context.page.polls == [False]
+        assert self.bridge.feed_text(101.0) is None and self.context.page.polls == [False]
+        assert self.bridge.feed_text(103.0) is None and self.context.page.polls == [False, True]
+        self.context.page.feed_items[7] = dict(self.context.page.feed_items[7], favourite=True)
+        self.context.page.feed_status = 'indexing'
+        delta = json.loads(self.bridge.feed_text(104.0, force=True))
+        assert delta['base'] == snapshot['rev'] and [item['id'] for item in delta['set']] == ['0007.mtreplay']
+        assert delta['page'] == {'kind': 'replays', 'status': 'indexing'} and delta['del'] == []
+        assert self.context.page.polls[-1] is False
+
+    def test_the_settings_state_never_carries_the_feed(self):
+        self.watch()
+        feed = self.bridge.feed_text(0.0, force=True)
+        state = encode_state(self.bridge.state())
+        assert '0999.mtreplay' not in state and len(feed) > 10 * len(json.dumps(card(self.bridge.state(), 'replay_manager')))
+
+    def test_watching_again_or_stopping(self):
+        self.watch()
+        first = json.loads(self.bridge.feed_text(0.0, force=True))
+        self.watch()
+        again = json.loads(self.bridge.feed_text(1.0))
+        assert again['base'] is None and again['rev'] > first['rev']
+        send(self.bridge, type='feed', component='replay_manager', active=False)
+        assert self.bridge.watched is None and self.bridge.feed_text(10.0, force=True) is None
+        self.watch()
+        self.bridge.stop_feed()
+        assert self.bridge.feed_text(10.0, force=True) is None
+
+    def test_an_unknown_feed_is_a_notice(self):
+        assert send(self.bridge, type='feed', component='minimap', active=True) is True
+        assert self.bridge.notice['kind'] == 'error' and self.bridge.watched is None
 
 
 class BridgeProfilesTest(unittest.TestCase):

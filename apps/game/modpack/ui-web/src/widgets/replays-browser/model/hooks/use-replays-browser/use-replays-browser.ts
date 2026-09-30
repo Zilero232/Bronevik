@@ -20,7 +20,11 @@ const viewOf = ({ page, raw, enabled, shown }: ViewOfInput): BrowserView => {
     return 'off';
   }
 
-  if (raw === null || raw === undefined || page === null) {
+  if (raw === undefined) {
+    return 'indexing';
+  }
+
+  if (raw === null || page === null) {
     return 'invalid';
   }
 

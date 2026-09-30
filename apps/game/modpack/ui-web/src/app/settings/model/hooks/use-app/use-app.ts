@@ -3,9 +3,10 @@ import { useEffect } from 'preact/hooks';
 
 import type { StringKey } from '../../../../../shared/i18n';
 
-import { $invalid, $query, $state, $view, receiveState, WINDOW_VIEW } from '../../../../../entities/window-state';
+import { $invalid, $query, $state, $view, receiveFeed, receiveState, WINDOW_VIEW } from '../../../../../entities/window-state';
 import { gameface } from '../../../../../shared/api/gameface';
 import { send } from '../../../../../shared/api/protocol';
+import { onDistinct } from '../../../../../shared/lib/on-distinct';
 import { bindWheelScroll } from '../../../../../shared/lib/wheel-scroll';
 import { useWindowFrame } from '../../../../../widgets/window-frame';
 
@@ -20,7 +21,15 @@ export const useApp = () => {
 
   useEffect(() => {
     gameface.fitView();
-    gameface.onDataChanged(() => receiveState(gameface.state()));
+
+    const takeState = onDistinct(receiveState);
+    const takeFeed = onDistinct(receiveFeed);
+
+    gameface.onDataChanged(() => {
+      takeState(gameface.state());
+      takeFeed(gameface.feed());
+    });
+
     send({ type: 'ready' });
   }, []);
 

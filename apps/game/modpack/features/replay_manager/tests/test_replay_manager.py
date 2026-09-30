@@ -14,7 +14,7 @@ import _support
 from otmetki.core.replay_file import MAGIC, read_header
 from otmetki.core.storage import MemoryFile
 from otmetki.features.replay_manager.i18n import STRINGS
-from otmetki.features.replay_manager.model import (AnalysisWatch, AutoNamer, PageContext, ReplayActionError, ReplayLibrary, UploadedIndex,
+from otmetki.features.replay_manager.model import (AnalysisWatch, AutoNamer, ItemCache, PageContext, ReplayActionError, ReplayLibrary, UploadedIndex,
                                                    analysis_notice, battle_type, build_page, compatible, find_own, item_of, launch_request,
                                                    name_values, page_status, parse_statuses, pending_launch, play_refusal, rename_target,
                                                    render_name, stop_on_teardown, vehicle_label, vehicle_parts, version_key)
@@ -255,6 +255,25 @@ class PageTest(unittest.TestCase):
             with io.open(PAGE_FIXTURE, 'w', encoding='utf-8', newline='\n') as handle:
                 handle.write(text if isinstance(text, type(u'')) else text.decode('utf-8'))
         assert _support.load_json(PAGE_FIXTURE) == json.loads(json.dumps(page))
+        assert build_page(replays, context, 'ready', (2, 2), 'C:/Games/Tanki/replays', ItemCache()) == page
+
+    def test_items_are_built_again_only_when_they_change(self):
+        header = self.header()
+        described = []
+        context = self.context(describe_vehicle=lambda tank_id, vehicle: described.append(vehicle) or {})
+        replays = [self.replay('a.mtreplay', header), self.replay('b.mtreplay', dict(header, arena_unique_id='222'), mtime=1790000100.0)]
+        cache = ItemCache()
+        first = cache.items_of(replays, context)
+        again = cache.items_of(replays, context)
+        assert [a is b for a, b in zip(first, again)] == [True, True] and len(described) == 2
+        context.index.set_favourite('222', True)
+        renamed = [self.replay('c.mtreplay', header), replays[1]]
+        third = cache.items_of(renamed, context)
+        assert third[1] is not again[1] and third[1]['favourite'] is True and third[0]['id'] == 'c.mtreplay'
+        assert third[0] == dict(first[0], id='c.mtreplay', title='c') and len(described) == 4
+        reread = [dict(renamed[0], header=dict(header, damage=10)), renamed[1]]
+        fourth = cache.items_of(reread, context)
+        assert fourth[0]['damage'] == 10 and fourth[1] is third[1] and sorted(cache.items) == ['b.mtreplay', 'c.mtreplay']
 
 
 class PlayTest(unittest.TestCase):

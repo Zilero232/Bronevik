@@ -8,6 +8,7 @@ export type GamefaceBridge = {
   resizeView: (size: ClientSize) => boolean;
   fitView: () => boolean;
   state: () => string | null;
+  feed: () => string | null;
   send: (message: string) => boolean;
   onDataChanged: (callback: () => void) => void;
   openWindow: () => boolean;

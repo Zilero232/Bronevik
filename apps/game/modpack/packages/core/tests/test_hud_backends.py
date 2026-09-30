@@ -9,7 +9,7 @@ import unittest
 
 import _support
 from otmetki.core.hud import BackendChain, ComponentConfig, HudBackend, HudLayer, HudSurface, NullBackend, alias_of, panel_schema
-from otmetki.core.hud.surface import HUD_COMMANDS, HUD_PROTOCOL_VERSION, SPACE_BATTLE, SPACE_LOBBY, decode_hud_message
+from otmetki.core.hud.surface import HUD_COMMANDS, HUD_PROTOCOL_VERSION, SPACE_BATTLE, SPACE_LOBBY, FramePush, decode_hud_message
 from otmetki.core.storage import MemoryFile
 
 HUD_PROTOCOL_DIR = os.path.join(_support.MODPACK_DIR, 'ui-web', 'src', 'shared', 'api', 'hud-protocol')
@@ -125,6 +125,50 @@ class LayerTest(unittest.TestCase):
         assert self.backend.listeners[0](self.alias, {'scale': 1.5})
         assert self.store.read()['panel']['scale'] == 150
         assert self.layer.backend_name == 'fake'
+
+
+class FramePushTest(unittest.TestCase):
+
+    def setUp(self):
+        self.frames = []
+        self.sent = []
+        self.surface = HudSurface()
+        self.view = True
+        self.pusher = FramePush(self.frames.append, self.encode, self.sent.append)
+
+    def encode(self):
+        return self.surface.encode(SPACE_BATTLE, False) if self.view else None
+
+    def next_frame(self):
+        frames, self.frames[:] = list(self.frames), []
+        for flush in frames:
+            flush()
+
+    def test_changes_of_one_frame_become_one_push_of_the_latest_state(self):
+        self.surface.create('clock', {'text': '1'}, SPACE_BATTLE)
+        for text in ('2', '3', '4'):
+            self.surface.update('clock', {'text': text})
+            self.pusher.request()
+        assert len(self.frames) == 1 and self.sent == []
+        self.next_frame()
+        assert len(self.sent) == 1 and json.loads(self.sent[0])['panels'][0]['text'] == '4'
+
+    def test_an_unchanged_state_is_not_pushed_again_unless_the_page_is_new(self):
+        self.surface.create('clock', {'text': '1'}, SPACE_BATTLE)
+        self.pusher.request()
+        self.next_frame()
+        self.surface.update('clock', {'text': '1'})
+        self.pusher.request()
+        self.next_frame()
+        assert len(self.sent) == 1 and self.pusher.pushes == 1
+        self.pusher.forget()
+        assert self.pusher.flush() is True and len(self.sent) == 2
+
+    def test_no_page_no_push(self):
+        self.view = False
+        self.pusher.request()
+        self.next_frame()
+        assert self.sent == [] and not self.pusher.pending
 
 
 class SurfaceTest(unittest.TestCase):

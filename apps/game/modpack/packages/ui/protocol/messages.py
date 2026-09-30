@@ -37,3 +37,9 @@ def encode_state(state):
     payload = dict(state)
     payload['v'] = PROTOCOL_VERSION
     return canonical_json(payload)
+
+
+def encode_feed(message):
+    payload = dict(message)
+    payload['v'] = PROTOCOL_VERSION
+    return canonical_json(payload)

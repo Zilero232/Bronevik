@@ -1,9 +1,10 @@
-export { parseState, send } from './protocol';
+export { parseFeed, parseState, send } from './protocol';
 export { PROTOCOL } from './protocol.constants';
 export {
   actionSchema,
   componentSchema,
   detailSchema,
+  feedSchema,
   fieldSchema,
   figureSchema,
   marksReportSchema,
@@ -26,6 +27,8 @@ export type {
   UiComponent,
   UiContext,
   UiDetail,
+  UiFeed,
+  UiFeedItem,
   UiField,
   UiFigure,
   UiMarksReport,

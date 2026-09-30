@@ -1747,7 +1747,15 @@ class ClientSmokeTest(unittest.TestCase):
                ModDynAccessor=lambda key: (lambda: 'layout:' + key), gf_mod_inject=lambda model, key, styles=None, modules=None: None)
 
     def hud_page(self):
+        self.next_frame_pushes()
         return json.loads(self.windows[-1].content.getViewModel().strings[0][1])
+
+    def next_frame_pushes(self):
+        """Run the HUD page pushes the Gameface backend put off to the next frame (core.hud.surface.FramePush)."""
+        pushes = [callback for callback in self.callbacks if getattr(callback, '__name__', None) == 'flush']
+        self.callbacks[:] = [callback for callback in self.callbacks if callback not in pushes]
+        for push in pushes:
+            push()
 
     def moe_snapshot(self, app):
         snapshot = {'tank_id': 1, 'name': 'ussr:R04_T-34', 'tier': 5, 'damage_rating': 8150, 'moving_avg_damage': 2500, 'marks_on_gun': 1,

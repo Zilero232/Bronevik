@@ -150,6 +150,19 @@ export const stateSchema = z.object({
   focus: z.nullable(z.object({ section: z.enum(PROTOCOL.pages), seq: z.number() }))
 });
 
+const feedItemSchema = z.looseObject({ id: text });
+
+export const feedSchema = z.object({
+  v: z.literal(PROTOCOL.version),
+  feed: text,
+  rev: z.number(),
+  base: z.nullable(z.number()),
+  page: z.nullable(z.looseObject({})),
+  items: z.optional(z.array(feedItemSchema)),
+  set: z.optional(z.array(feedItemSchema)),
+  del: z.optional(z.array(text))
+});
+
 const settingValue = z.union([z.boolean(), z.number(), z.string()]);
 
 export const messageSchema = z.discriminatedUnion('type', [
@@ -186,5 +199,6 @@ export const messageSchema = z.discriminatedUnion('type', [
     height: z.number(),
     zoom: z.number(),
     placed: z.optional(z.boolean())
-  })
+  }),
+  z.object({ type: z.literal('feed'), component: text, active: z.boolean() })
 ]);

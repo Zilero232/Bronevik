@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-import { parseState } from '../protocol';
+import { parseFeed, parseState } from '../protocol';
 import { PROTOCOL } from '../protocol.constants';
 import { messageSchema } from '../protocol.schemas';
 
@@ -30,6 +30,25 @@ describe('parseState', () => {
     expect(parseState('not json')).toBeNull();
     expect(parseState('{"v": 2}')).toBeNull();
     expect(parseState(JSON.stringify({ ...JSON.parse(sample), v: 99 }))).toBeNull();
+  });
+});
+
+describe('parseFeed', () => {
+  it('reads a snapshot and a delta of the feed channel', () => {
+    const snapshot = parseFeed(
+      JSON.stringify({ v: 2, feed: 'replay_manager', rev: 1, base: null, page: { kind: 'replays' }, items: [{ id: 'a', x: 1 }] })
+    );
+
+    const delta = parseFeed(JSON.stringify({ v: 2, feed: 'replay_manager', rev: 2, base: 1, page: null, set: [], del: ['a'] }));
+
+    expect(snapshot?.items).toEqual([{ id: 'a', x: 1 }]);
+    expect(delta?.del).toEqual(['a']);
+  });
+
+  it('refuses another version, an item without an id and text that is not JSON', () => {
+    expect(parseFeed(JSON.stringify({ v: 1, feed: 'x', rev: 1, base: null, page: null }))).toBeNull();
+    expect(parseFeed(JSON.stringify({ v: 2, feed: 'x', rev: 1, base: null, page: null, items: [{ title: 'no id' }] }))).toBeNull();
+    expect(parseFeed('{')).toBeNull();
   });
 });
 

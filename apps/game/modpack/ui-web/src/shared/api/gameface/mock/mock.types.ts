@@ -1,9 +1,15 @@
 import type { ClientSize } from '../gameface.types';
 
+export type GamefaceMockPush = {
+  state?: string;
+  feed?: string;
+};
+
 export type GamefaceMockInput = {
   state: string;
+  feed?: string;
   clientSize: () => ClientSize;
-  onSend: (message: string) => string | null;
+  onSend: (message: string) => string | GamefaceMockPush | null;
 };
 
 export type GamefaceMock = {

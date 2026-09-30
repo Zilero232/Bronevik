@@ -1,5 +1,5 @@
 export const PROTOCOL = {
-  version: 1,
+  version: 2,
   commands: [
     'ready',
     'close',
@@ -19,7 +19,8 @@ export const PROTOCOL = {
     'hud_move',
     'hud_reset',
     'hud_reset_all',
-    'window_layout'
+    'window_layout',
+    'feed'
   ],
   groups: ['data', 'hangar', 'battle'],
   sections: ['battle', 'hangar', 'marks', 'replays', 'streamer', 'data', 'hud'],

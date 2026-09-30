@@ -26,6 +26,19 @@ describe(createGamefaceBridge, () => {
     expect(bridge.clientSize()).toEqual(SIZE);
   });
 
+  it('reads the feed property and hears a feed the mock pushes', async () => {
+    const mock = createGamefaceMock({ state: 'initial', feed: 'first', clientSize: () => SIZE, onSend: () => ({ feed: 'second' }) });
+    const bridge = createGamefaceBridge(mock.scope);
+    const feeds: (string | null)[] = [];
+
+    bridge.onDataChanged(() => feeds.push(bridge.feed()));
+    await Promise.resolve();
+    bridge.send('watch');
+
+    expect(feeds).toEqual(['first', 'second']);
+    expect(bridge.state()).toBe('initial');
+  });
+
   it('sends a message through the model command and hears the next state', async () => {
     const { mock, bridge } = mockBridge((message) => `after ${message}`);
     const states: (string | null)[] = [];

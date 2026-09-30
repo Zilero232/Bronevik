@@ -33,6 +33,7 @@ export const GAMEFACE = {
   },
   model: {
     state: 'state',
+    feed: 'feed',
     send: 'send',
     nested: 'model'
   },

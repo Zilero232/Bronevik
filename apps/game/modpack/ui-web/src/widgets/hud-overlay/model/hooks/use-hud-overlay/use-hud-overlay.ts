@@ -1,18 +1,22 @@
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 
-import type { HudState } from '../../../../../shared/api/hud-protocol';
+import type { HudPanel, HudState } from '../../../../../shared/api/hud-protocol';
 import type { Rect } from '../../../../../shared/lib/hud-geometry';
+import type { RichLine } from '../../../../../shared/lib/rich-text';
+import type { ResolvedWidget } from '../../../lib/widget-registry';
 import type { DragTarget } from '../use-panel-drag';
 import type { HudLabelModel, Overrides, Scales } from './use-hud-overlay.types';
 
 import { gameface } from '../../../../../shared/api/gameface';
 import { parseHudState, sendHud } from '../../../../../shared/api/hud-protocol';
 import { fontSafeLines } from '../../../../../shared/lib/font-safe';
+import { onDistinct } from '../../../../../shared/lib/on-distinct';
 import { parseRichText } from '../../../../../shared/lib/rich-text';
 import { HUD_OVERLAY } from '../../../config';
 import { placeRect, rectStyle } from '../../../lib/anchor';
 import { stackDocks } from '../../../lib/dock';
 import { inputAreaKey, inputAreaOf } from '../../../lib/input-area';
+import { clearedRecord, remember, sharePanels } from '../../../lib/share-panels';
 import { resolveWidget } from '../../../lib/widget-registry';
 import { useHudScreen } from '../use-hud-screen';
 import { usePanelDrag } from '../use-panel-drag';
@@ -37,22 +41,37 @@ export const useHudOverlay = () => {
   useEffect(() => {
     gameface.fitView();
 
-    gameface.onDataChanged(() => {
-      const next = parseHudState(gameface.state() ?? '');
+    const take = onDistinct((raw: string | null) => {
+      const next = parseHudState(raw ?? '');
 
       if (next) {
-        setState(next);
-        setOverrides({});
-        setScales({});
+        setState((previous) => sharePanels({ previous, next }));
+        setOverrides(clearedRecord);
+        setScales(clearedRecord);
       }
     });
+
+    gameface.onDataChanged(() => take(gameface.state()));
 
     sendHud({ type: 'ready' });
   }, []);
 
+  const linesCacheRef = useRef(new WeakMap<HudPanel, RichLine[]>());
+  const widgetsCacheRef = useRef(new WeakMap<HudPanel, ResolvedWidget | null>());
   const panels = useMemo(() => (state?.panels ?? []).filter((panel) => panel.visible), [state]);
-  const lines = useMemo(() => new Map(panels.map((panel) => [panel.id, fontSafeLines(parseRichText(panel.text))])), [panels]);
-  const widgets = useMemo(() => new Map(panels.map((panel) => [panel.id, resolveWidget(panel.widget)])), [panels]);
+  const lines = useMemo(
+    () =>
+      new Map(
+        panels.map((panel) => [panel.id, remember({ cache: linesCacheRef.current, panel, build: () => fontSafeLines(parseRichText(panel.text)) })])
+      ),
+    [panels]
+  );
+
+  const widgets = useMemo(
+    () => new Map(panels.map((panel) => [panel.id, remember({ cache: widgetsCacheRef.current, panel, build: () => resolveWidget(panel.widget) })])),
+    [panels]
+  );
+
   const { sizes, measureRef } = usePanelSizes({ lines, widgets });
 
   const clickable: Rect[] = [];

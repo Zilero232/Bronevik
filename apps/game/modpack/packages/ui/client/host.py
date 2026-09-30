@@ -55,10 +55,13 @@ class UiHost(object):
         self.mods_list = ModsListButton(self.open)
         self.hotkey = _hotkey(self.on_hotkey)
         self.on_screen_editing = False
+        self.holding = False
+        self.held = False
         bus = app.bus
         bus.on('battle_enter', self.on_battle_enter)
         bus.on('hangar', self.on_hangar)
         bus.on('component_settings', self._on_changed)
+        bus.on('tick', self._on_tick)
         bus.on(EVENT_SETTINGS_OPEN, self.open_at)
         if GamefaceSettingsView.available():
             add_settings_view(app, GamefaceSettingsView(app, self))
@@ -82,9 +85,18 @@ class UiHost(object):
         self.app.ui.set_modifier(self.app.config.get(MODIFIER_KEY))
 
     def push(self):
+        if self.holding:
+            self.held = True
+            return
         self.apply_modifier()
         if self.window.is_open:
             self.window.push(self.state_text())
+
+    def push_feed(self, force=False):
+        if self.window.is_open:
+            text = self.bridge.feed_text(time.time(), force)
+            if text is not None:
+                self.window.push_feed(text)
 
     @safe
     def open(self, *args):
@@ -94,6 +106,8 @@ class UiHost(object):
         if self.on_screen_editing:
             self.bridge.editor.set_editing(False)
             self.on_screen_editing = False
+        if not self.window.is_open:
+            self.bridge.stop_feed()
         if not self.window.open():
             self.app.ui.notify(self.app.translate('ui_gameface_missing'))
 
@@ -109,6 +123,7 @@ class UiHost(object):
     @safe
     def close(self):
         self.bridge.clear_focus()
+        self.bridge.stop_feed()
         self.window.close()
 
     @safe
@@ -121,8 +136,18 @@ class UiHost(object):
 
     @safe
     def on_message(self, raw):
-        if self.bridge.handle(raw):
+        self.holding, self.held = True, False
+        try:
+            changed = self.bridge.handle(raw)
+        finally:
+            self.holding = False
+        if changed or self.held:
             self.push()
+        self.push_feed(force=True)
+
+    @safe
+    def _on_tick(self, now):
+        self.push_feed()
 
     def on_hud_editing(self, active):
         self.on_screen_editing = active

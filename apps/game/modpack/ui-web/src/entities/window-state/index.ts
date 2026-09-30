@@ -4,6 +4,7 @@ export { changedFields, componentIcon, componentsOf, isChanged, isEnabled } from
 export type { ComponentValues, SearchHit, SectionSummary } from './lib/components';
 export { changeSetting, resetComponent, toggleSwitch, undoLast } from './model/actions';
 export type { ChangeSettingInput, SetSettingInput, SettingInput } from './model/actions';
+export { $feed, receiveFeed, unwatchFeed, watchFeed } from './model/feed';
 export { useT } from './model/hooks';
 
 export {

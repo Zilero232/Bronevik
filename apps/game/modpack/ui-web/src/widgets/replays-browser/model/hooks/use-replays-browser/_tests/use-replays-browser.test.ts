@@ -32,6 +32,7 @@ describe(useReplaysBrowser, () => {
   it('tells the states apart: off, unreadable, no account, empty, reading and nothing found', () => {
     expect(mount(PAGE, false).current().view).toBe('off');
     expect(mount(null).current().view).toBe('invalid');
+    expect(renderHook(() => useReplaysBrowser({ page: undefined, enabled: true, now: NOW })).current().view).toBe('indexing');
     expect(mount({ kind: 'list' }).current().view).toBe('invalid');
     expect(mount({ ...PAGE, status: 'no_account' }).current().view).toBe('no_account');
     expect(mount({ ...PAGE, items: [] }).current().view).toBe('empty');

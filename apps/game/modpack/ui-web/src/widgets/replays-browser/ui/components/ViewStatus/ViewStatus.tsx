@@ -13,7 +13,7 @@ export const ViewStatus = ({ browser }: ViewStatusProps) => {
     return (
       <BrowserStatus
         progress={progress.total > 0 ? (progress.done / progress.total) * REPLAYS_BROWSER.progressScale : 0}
-        text={`${t('indexing')} ${progress.done} / ${progress.total}`}
+        text={progress.total > 0 ? `${t('indexing')} ${progress.done} / ${progress.total}` : t('indexing')}
       />
     );
   }

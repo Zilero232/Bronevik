@@ -96,6 +96,11 @@ export const createGamefaceBridge = (scope: object): GamefaceBridge => {
 
       return typeof state === 'string' ? state : null;
     },
+    feed: () => {
+      const feed = read(GAMEFACE.globals.model)?.[GAMEFACE.model.feed];
+
+      return typeof feed === 'string' ? feed : null;
+    },
     send: (message) => {
       const model = read(GAMEFACE.globals.model);
 

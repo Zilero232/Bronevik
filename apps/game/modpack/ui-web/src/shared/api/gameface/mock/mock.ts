@@ -3,22 +3,34 @@ import type { GamefaceMock, GamefaceMockInput } from './mock.types';
 import { GAMEFACE } from '../gameface.constants';
 import { GAMEFACE_MOCK } from './mock.constants';
 
-export const createGamefaceMock = ({ state, clientSize, onSend }: GamefaceMockInput): GamefaceMock => {
+export const createGamefaceMock = ({ state, feed = '', clientSize, onSend }: GamefaceMockInput): GamefaceMock => {
   const listeners: ((data: unknown, indexes: unknown, callbackIds: number[]) => void)[] = [];
   const sent: string[] = [];
   const inputAreas: number[][] = [];
 
   const model: Record<string, unknown> = {
     [GAMEFACE.model.state]: state,
+    [GAMEFACE.model.feed]: feed,
     [GAMEFACE.model.send]: ({ message }: { message: string }) => {
       sent.push(message);
 
       const next = onSend(message);
 
-      if (next !== null) {
-        model[GAMEFACE.model.state] = next;
-        listeners.forEach((listener) => listener(model, [], [GAMEFACE_MOCK.callbackId]));
+      if (next === null) {
+        return;
       }
+
+      const push = typeof next === 'string' ? { state: next } : next;
+
+      if (push.state !== undefined) {
+        model[GAMEFACE.model.state] = push.state;
+      }
+
+      if (push.feed !== undefined) {
+        model[GAMEFACE.model.feed] = push.feed;
+      }
+
+      listeners.forEach((listener) => listener(model, [], [GAMEFACE_MOCK.callbackId]));
     }
   };
 

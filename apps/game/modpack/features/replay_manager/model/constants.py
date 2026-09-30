@@ -16,7 +16,7 @@ RESERVED_NAMES = ('con', 'prn', 'aux', 'nul') + tuple('com%d' % n for n in range
 # The folder is listed again at most this often while the window reads the page; headers are read in slices of the
 # main thread's time so a first look at a large folder never stalls the hangar.
 SCAN_EVERY_S = 3.0
-INDEX_BUDGET_S = 0.15
+INDEX_BUDGET_S = 0.04
 INDEX_WANTED_S = 5.0
 
 ACTION_REFRESH = 'refresh'

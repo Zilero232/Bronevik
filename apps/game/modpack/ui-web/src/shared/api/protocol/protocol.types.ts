@@ -4,6 +4,7 @@ import type {
   actionSchema,
   componentSchema,
   detailSchema,
+  feedSchema,
   fieldSchema,
   figureSchema,
   marksReportSchema,
@@ -20,6 +21,8 @@ import type {
 } from './protocol.schemas';
 
 export type UiState = z.infer<typeof stateSchema>;
+export type UiFeed = z.infer<typeof feedSchema>;
+export type UiFeedItem = NonNullable<UiFeed['items']>[number];
 export type UiStatus = z.infer<typeof statusSchema>;
 export type UiComponent = z.infer<typeof componentSchema>;
 export type UiField = z.infer<typeof fieldSchema>;

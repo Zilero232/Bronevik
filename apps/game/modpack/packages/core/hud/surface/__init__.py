@@ -21,9 +21,10 @@ from ...compat import is_number, string_types, to_text
 from .constants import (ALIGN_X, ALIGN_Y, HUD_COMMANDS, HUD_MAX_MESSAGE_CHARS, HUD_MESSAGE_ARG, HUD_PROTOCOL_VERSION, HUD_RES_MAP_ID,
                         HUD_SEND_COMMAND, HUD_STATE_PROPERTY, KIND_BUTTON, KIND_LABEL, KINDS, PANEL_KEYS, POSITION_LIMIT, SCALE_LIMITS,
                         SPACE_BATTLE, SPACE_LOBBY)
+from .push import FramePush
 
 __all__ = ('HUD_COMMANDS', 'HUD_MESSAGE_ARG', 'HUD_PROTOCOL_VERSION', 'HUD_RES_MAP_ID', 'HUD_SEND_COMMAND', 'HUD_STATE_PROPERTY',
-           'HudSurface', 'KIND_BUTTON', 'KIND_LABEL', 'SPACE_BATTLE', 'SPACE_LOBBY', 'decode_hud_message')
+           'FramePush', 'HudSurface', 'KIND_BUTTON', 'KIND_LABEL', 'SPACE_BATTLE', 'SPACE_LOBBY', 'decode_hud_message')
 
 
 def _position(value):

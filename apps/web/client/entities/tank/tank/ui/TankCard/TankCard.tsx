@@ -13,7 +13,7 @@ import { WinRateCell } from '../WinRateCell';
 
 import s from './TankCard.module.scss';
 
-export const TankCard = ({ row, className }: TankCardProps) => {
+export const TankCard = ({ row, action, className }: TankCardProps) => {
   const t = useTranslations('stats');
   const format = useFormatter();
 
@@ -21,25 +21,28 @@ export const TankCard = ({ row, className }: TankCardProps) => {
   const tank = vehicleIdentity(vehicle);
 
   return (
-    <Link className={clsx(s.root, className)} data-class={tank.type} href={ROUTES.tanks.detail(vehicle.slug)}>
-      <TankImage isDecorative className={s.render} size='big' tank={tank} />
-      <TankIdentity className={s.identity} tank={tank} withNation={false} />
-      <dl className={s.metrics}>
-        <div className={s.metric}>
-          <dt>{t('winRate')}</dt>
-          <dd>
-            <WinRateCell value={winRate} />
-          </dd>
-        </div>
-        <div className={s.metric}>
-          <dt>{t('avgDamage')}</dt>
-          <dd>{format.number(avgDamage, { maximumFractionDigits: 0 })}</dd>
-        </div>
-        <div className={s.metric}>
-          <dt>{t('battles')}</dt>
-          <dd>{format.number(battles, { notation: 'compact' })}</dd>
-        </div>
-      </dl>
-    </Link>
+    <div className={clsx(s.frame, className)} data-action={Boolean(action)}>
+      <Link className={s.root} data-class={tank.type} href={ROUTES.tanks.detail(vehicle.slug)}>
+        <TankImage isDecorative className={s.render} size='big' tank={tank} />
+        <TankIdentity className={s.identity} tank={tank} withNation={false} />
+        <dl className={s.metrics}>
+          <div className={s.metric}>
+            <dt>{t('winRate')}</dt>
+            <dd>
+              <WinRateCell value={winRate} />
+            </dd>
+          </div>
+          <div className={s.metric}>
+            <dt>{t('avgDamage')}</dt>
+            <dd>{format.number(avgDamage, { maximumFractionDigits: 0 })}</dd>
+          </div>
+          <div className={s.metric}>
+            <dt>{t('battles')}</dt>
+            <dd>{format.number(battles, { notation: 'compact' })}</dd>
+          </div>
+        </dl>
+      </Link>
+      {action && <div className={s.action}>{action}</div>}
+    </div>
   );
 };

@@ -1,4 +1,5 @@
 import { TankIdentity, TankImage, vehicleIdentity } from '@/entities/tank/tank';
+import { CompareToggle } from '@/features/compare/compare-selection';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 
@@ -23,6 +24,7 @@ export const VehicleTile = ({ vehicle }: VehicleTileProps) => {
         </span>
         <TankIdentity className={s.identity} tank={tank} />
       </Link>
+      <CompareToggle className={s.compare} entry={{ kind: 'tank', item: vehicle }} />
     </li>
   );
 };

@@ -32,7 +32,7 @@ export const useHonestRngPage = () => {
     setPeriod: (value: (typeof RNG_PERIODS)[number]) => void setPeriod(value),
     query,
     server,
-    hasFigures: query.isPending || server !== null,
+    hasFigures: query.isPending || query.isError || server !== null,
     meanRoll: rollPercent(server?.meanRoll),
     chart: {
       labels: bucketMidpoints(buckets).map((value) => format.number(value / HONEST_RNG_VIEW.percentScale, 'signedPercent')),

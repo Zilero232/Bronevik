@@ -24,7 +24,7 @@ export {
   Textarea,
   TierNumeral
 } from './atoms';
-export type { BadgeTone, ButtonProps, ButtonVariantProps, ProgressTone, TankImageSize } from './atoms';
+export type { BadgeTone, ButtonProps, ButtonVariantProps, ProgressTone, TankImageSize, TankImageSubject } from './atoms';
 export {
   ActionStrip,
   Breadcrumbs,

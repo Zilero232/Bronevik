@@ -1,5 +1,6 @@
 import type { RatingPeriod } from '@otmetki/schemas';
 
+import { COMPARE } from '@otmetki/schemas';
 import { parseAsArrayOf, parseAsInteger } from 'nuqs/server';
 
 import type { NumberFormatName } from '@/shared/i18n';
@@ -7,8 +8,8 @@ import type { NumberFormatName } from '@/shared/i18n';
 import type { CompareFormat, CompareMetric } from '../lib/compare-rows';
 
 export const COMPARE_LIMIT = {
-  min: 2,
-  max: 4
+  min: COMPARE.minItems,
+  max: COMPARE.maxPlayers
 } as const;
 
 export const COMPARE_PARAMS = {

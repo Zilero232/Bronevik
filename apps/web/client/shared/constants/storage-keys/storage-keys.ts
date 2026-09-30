@@ -5,5 +5,7 @@ export const STORAGE_KEYS = {
   bearerToken: 'otmetki-bearer-token',
   tanksColumns: 'otmetki-tanks-columns',
   pinnedTanks: 'otmetki-pinned-tanks',
-  pinnedMaps: 'otmetki-pinned-maps'
+  pinnedMaps: 'otmetki-pinned-maps',
+  compareSelection: 'otmetki-compare',
+  ownPlayer: 'otmetki-own-player'
 } as const;

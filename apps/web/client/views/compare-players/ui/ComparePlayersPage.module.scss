@@ -5,7 +5,7 @@
 }
 
 .slots {
-  @include grid-columns(4, $gap: var(--gap-panel), $below-3xl: 2, $below-md: 1);
+  @include grid-columns(3, $gap: var(--gap-panel), $below-3xl: 2, $below-md: 1);
 }
 
 .slot {

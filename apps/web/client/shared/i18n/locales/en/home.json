@@ -163,5 +163,65 @@
     "leagueRank": "My league: #{rank}",
     "challenges": "Weekly challenges",
     "challengesProgress": "Weekly challenges: {completed}/{total}"
+  },
+  "dashboard": {
+    "label": "My dashboard",
+    "ask": {
+      "title": "Your nickname?",
+      "lead": "Enter your nickname and the home page becomes your dashboard. No sign-in, no passwords.",
+      "points": {
+        "stats": "WN8, win rate and damage the moment you open the site",
+        "marks": "The marks you are closest to",
+        "session": "Your last session and how it went"
+      }
+    },
+    "title": "My dashboard",
+    "clan": "Clan {tag}",
+    "notTracked": "We are collecting your history — sessions and marks appear after the first battles",
+    "switch": "Switch nickname",
+    "forget": "Forget nickname",
+    "figures": {
+      "wn8": "WN8",
+      "winRate": "Win rate",
+      "avgDamage": "Avg damage",
+      "battles": "Battles",
+      "week": "last 7 days: {value}"
+    },
+    "marks": {
+      "title": "Marks",
+      "closest": "Closest",
+      "empty": "Mark percentages come from the mod — install the modpack and your closest marks show up here",
+      "all": "All marks",
+      "levels": {
+        "moe3": "Three marks",
+        "moe2": "Two marks",
+        "moe1": "One mark"
+      }
+    },
+    "session": {
+      "title": "Last session",
+      "live": "Live now",
+      "empty": "No sessions yet — play a battle and it shows up here",
+      "battles": "Battles",
+      "winRate": "Win rate",
+      "wn8": "WN8",
+      "avgDamage": "Damage",
+      "open": "Session breakdown"
+    },
+    "shortcuts": {
+      "title": "Shortcuts",
+      "profile": "Profile",
+      "tanks": "My tanks",
+      "sessions": "Sessions",
+      "marks": "Marks"
+    },
+    "missing": {
+      "title": "Player “{nickname}” not found",
+      "description": "The nickname may have changed. Enter the current one, or forget this one."
+    },
+    "error": {
+      "title": "Could not load your numbers",
+      "description": "The stats server did not answer. Your nickname is saved — try again."
+    }
   }
 }

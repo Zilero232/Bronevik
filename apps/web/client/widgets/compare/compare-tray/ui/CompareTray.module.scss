@@ -1,0 +1,139 @@
+@use '@/shared/styles/mixins' as *;
+
+.spacer {
+  height: calc(var(--control-h) + var(--space-4) * 3);
+
+  @include below(lg) {
+    height: calc(var(--control-h) + var(--space-3) * 2 + var(--safe-area-bottom));
+  }
+}
+
+.root {
+  @include popup-surface;
+
+  position: fixed;
+  z-index: var(--z-header);
+  bottom: var(--space-4);
+  display: flex;
+  width: fit-content;
+  max-width: min(100% - 32px, 1120px);
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  gap: var(--space-3);
+  inset-inline: 0;
+  margin-inline: auto;
+
+  @include below(lg) {
+    bottom: 0;
+    display: grid;
+    width: 100%;
+    max-width: none;
+    padding: var(--space-2) var(--space-3) calc(var(--space-2) + var(--safe-area-bottom));
+    border-width: 1px 0 0;
+    border-radius: 0;
+    gap: var(--space-2);
+    grid-template-areas:
+      'chips chips'
+      'head actions';
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+}
+
+@media (display-mode: standalone) {
+  @include below(lg) {
+    .root {
+      bottom: calc(var(--tab-bar-height) + var(--safe-area-bottom));
+      padding-bottom: var(--space-2);
+    }
+
+    .spacer {
+      height: calc(var(--control-h) + var(--space-3) * 2);
+    }
+  }
+}
+
+.head {
+  display: flex;
+  min-width: 0;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--space-2);
+
+  @include below(lg) {
+    grid-area: head;
+  }
+}
+
+.icon {
+  flex-shrink: 0;
+  color: var(--color-accent);
+}
+
+.count {
+  @include label;
+
+  margin: 0;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+.head > .expand {
+  display: none;
+
+  @include below(lg) {
+    display: inline-flex;
+    transition: transform var(--duration-fast) ease;
+
+    [data-expanded='true'] & {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.chips {
+  @include list-reset;
+  @include hide-scrollbar;
+
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  gap: var(--space-2);
+  overflow-x: auto;
+
+  @include below(lg) {
+    display: none;
+    max-height: 40vh;
+    flex-wrap: wrap;
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--color-border);
+    grid-area: chips;
+    overflow-y: auto;
+
+    [data-expanded='true'] > & {
+      display: flex;
+    }
+  }
+}
+
+.actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--space-2);
+
+  @include below(lg) {
+    grid-area: actions;
+  }
+}
+
+.note {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+
+  @include below(sm) {
+    max-width: 18ch;
+    white-space: normal;
+  }
+}

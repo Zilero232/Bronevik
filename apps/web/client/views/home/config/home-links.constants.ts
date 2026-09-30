@@ -53,6 +53,7 @@ export const HOME_ICON = {
   community: 220,
   communityArrow: 12,
   forYou: 16,
+  dashboard: 16,
   figure: 16,
   more: 14,
   modpack: 18,

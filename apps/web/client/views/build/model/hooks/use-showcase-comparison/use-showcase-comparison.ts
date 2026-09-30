@@ -7,7 +7,7 @@ import { useShowcaseSource } from '../use-showcase-source';
 
 export const useShowcaseComparison = () => {
   const { source, other } = useShowcaseSource();
-  const { data, isPending } = useRecommendedBuild(source);
+  const { data, isPending, isError } = useRecommendedBuild(source);
   const usage = data?.usage ?? null;
   const otherUsage = useRecommendedBuild(other).data?.usage ?? null;
 
@@ -20,5 +20,10 @@ export const useShowcaseComparison = () => {
     return { ...item, delta, verdict: delta === null ? null : deltaVerdict({ value: delta }) };
   });
 
-  return { items, other, isPending, isShown: isPending || (usage !== null && usage.battles > 0 && items.some(({ value }) => value !== null)) };
+  return {
+    items,
+    other,
+    isPending,
+    isShown: isPending || isError || (usage !== null && usage.battles > 0 && items.some(({ value }) => value !== null))
+  };
 };

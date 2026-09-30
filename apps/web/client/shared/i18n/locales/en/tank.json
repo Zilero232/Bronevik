@@ -45,11 +45,8 @@
   "source": "Data: Lesta Games API",
   "loading": "Loading the vehicle",
   "garage": {
-    "premium": "Premium",
-    "regular": "Tech tree",
     "actionsLabel": "Vehicle actions",
     "build": "Build constructor",
-    "compare": "Compare",
     "crumbTanks": "Tanks",
     "crumbTier": "Tier {tier}",
     "figures": {

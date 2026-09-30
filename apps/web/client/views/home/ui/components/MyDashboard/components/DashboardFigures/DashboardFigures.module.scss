@@ -1,0 +1,13 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include grid-columns(4, $gap: var(--gap-panel), $below-md: 2);
+
+  min-width: 0;
+  grid-area: figures;
+}
+
+.root > .figure {
+  min-width: 0;
+  height: 100%;
+}

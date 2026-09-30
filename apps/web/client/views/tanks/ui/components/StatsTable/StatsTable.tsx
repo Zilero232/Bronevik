@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 import { TankCard } from '@/entities/tank/tank';
+import { CompareToggle } from '@/features/compare/compare-selection';
 import { ROUTES } from '@/shared/constants';
 import { DataTable, FilteredEmptyState, QueryState } from '@/ui-kit';
 
@@ -32,7 +33,7 @@ export const StatsTable = () => {
           initialSorting={[{ id: 'battles', desc: true }]}
           isLoading={isPinPending}
           pinnedRowIds={pinnedIds}
-          renderCard={(row) => <TankCard row={row} />}
+          renderCard={(row) => <TankCard action={<CompareToggle entry={{ kind: 'tank', item: row.vehicle }} />} row={row} />}
           rowHeight={TANKS_VIEW.rowHeight}
           toolbar={<TableTools visible={visibleColumns} onExport={onExport} onVisibleChange={onColumnsChange} />}
         />

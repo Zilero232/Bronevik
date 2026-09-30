@@ -283,7 +283,8 @@
       "great": "Great",
       "unicum": "Unicum",
       "super_unicum": "Super unicum"
-    }
+    },
+    "favoritesFailed": "Favourite nation and class did not load"
   },
   "achievements": {
     "empty": "The player has no achievements",
@@ -304,7 +305,6 @@
   },
   "actions": {
     "label": "Profile actions",
-    "compare": "Compare",
     "share": "Share",
     "copied": "Profile link copied",
     "signature": "Signature",

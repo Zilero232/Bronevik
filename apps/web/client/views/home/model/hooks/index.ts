@@ -1,10 +1,13 @@
 export { useClanActivity } from './use-clan-activity';
 export { useClanActivityColumns } from './use-clan-activity-columns';
+export { useDashboardFigures } from './use-dashboard-figures';
+export { useDashboardSession } from './use-dashboard-session';
 export { useForYou } from './use-for-you';
 export { useGameNews } from './use-game-news';
 export { useHeroTanks } from './use-hero-tanks';
 export { useMarksMovement } from './use-marks-movement';
 export { useMarksMovementColumns } from './use-marks-movement-columns';
+export { useMyDashboard } from './use-my-dashboard';
 export { usePopularTanks } from './use-popular-tanks';
 export { useRecentSearches } from './use-recent-searches';
 export { useServerStatus } from './use-server-status';

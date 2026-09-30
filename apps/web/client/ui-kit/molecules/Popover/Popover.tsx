@@ -7,8 +7,18 @@ import type { PopoverProps } from './Popover.types';
 
 import s from './Popover.module.scss';
 
-export const Popover = ({ trigger, title, description, side = 'bottom', align = 'center', className, children }: PopoverProps) => (
-  <BasePopover.Root>
+export const Popover = ({
+  trigger,
+  title,
+  description,
+  side = 'bottom',
+  align = 'center',
+  className,
+  children,
+  open,
+  onOpenChange
+}: PopoverProps) => (
+  <BasePopover.Root open={open} onOpenChange={onOpenChange}>
     <BasePopover.Trigger render={trigger} />
     <BasePopover.Portal>
       <BasePopover.Positioner align={align} className={s.positioner} side={side} sideOffset={10}>

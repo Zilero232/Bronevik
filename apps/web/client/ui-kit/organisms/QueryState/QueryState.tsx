@@ -1,5 +1,9 @@
 'use client';
 
+import type { ReactNode } from 'react';
+
+import { useReservedHeight } from '@/shared/lib';
+
 import type { QueryStateProps } from './QueryState.types';
 
 import { Skeleton } from '../../atoms';
@@ -19,16 +23,27 @@ export const QueryState = <TData,>({
   errorDescription,
   errorState
 }: QueryStateProps<TData>) => {
+  const { reservedHeight, measureRef } = useReservedHeight();
+
+  const reserve = (node: ReactNode) =>
+    reservedHeight === null || node === null || node === undefined || node === false ? (
+      node
+    ) : (
+      <div className={s.reserved} style={{ minHeight: reservedHeight }}>
+        {node}
+      </div>
+    );
+
   if (data !== undefined) {
     if (isEmpty(data)) {
-      return empty;
+      return reserve(empty);
     }
 
     return typeof children === 'function' ? children(data) : children;
   }
 
   if (isError) {
-    return (
+    return reserve(
       errorState ?? (
         <ErrorState
           description={errorDescription}
@@ -42,7 +57,7 @@ export const QueryState = <TData,>({
   }
 
   return (
-    <div aria-busy className={s.busy}>
+    <div aria-busy ref={measureRef} className={s.busy}>
       {skeleton}
     </div>
   );

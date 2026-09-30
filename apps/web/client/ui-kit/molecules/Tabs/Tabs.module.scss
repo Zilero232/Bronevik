@@ -131,7 +131,7 @@
 }
 
 .sticky {
-  gap: var(--gap-panel);
+  gap: var(--space-5);
 
   &[data-panels='false'] {
     position: sticky;

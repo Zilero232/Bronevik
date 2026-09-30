@@ -9,6 +9,7 @@ import type { TableColumn } from '@/ui-kit';
 
 import { TankCell, TierCell, WinRateCell } from '@/entities/tank/tank';
 import { PinToggle } from '@/features/app/pin-rows';
+import { CompareToggle } from '@/features/compare/compare-selection';
 import { isPinnedCell, percentText } from '@/shared/lib';
 import { DeltaValue } from '@/ui-kit';
 
@@ -21,6 +22,7 @@ const column = createColumnHelper<TankServerStatsRow>();
 export const useTankColumns = ({ hidden }: UseTankColumnsInput): TableColumn<TankServerStatsRow>[] => {
   const t = useTranslations('tanks.table');
   const tPin = useTranslations('common.pin');
+  const tCompare = useTranslations('compareTray.toggle');
   const format = useFormatter();
 
   const decimal = (value: number) => format.number(value, { maximumFractionDigits: 2 });
@@ -31,6 +33,12 @@ export const useTankColumns = ({ hidden }: UseTankColumnsInput): TableColumn<Tan
       id: 'pin',
       header: tPin('column'),
       cell: ({ row, table }) => <PinToggle id={row.id} isOn={isPinnedCell({ row, table })} name={row.original.vehicle.name} scope='tanks' />,
+      meta: { width: TANKS_TABLE.pinWidth }
+    }),
+    column.display({
+      id: 'compare',
+      header: tCompare('column'),
+      cell: ({ row }) => <CompareToggle entry={{ kind: 'tank', item: row.original.vehicle }} />,
       meta: { width: TANKS_TABLE.pinWidth }
     }),
     column.accessor((row) => row.popularityRank ?? undefined, {

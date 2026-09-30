@@ -9,6 +9,23 @@ export const HOME = {
   clans: { sort: 'activeMembers', order: 'desc', limit: 8 },
   recent: { limit: 6 },
   forYou: { marksQuery: { tab: 'marks' } },
+  dashboard: {
+    anchor: 'my',
+    marks: 2,
+    tanksQuery: { tab: 'tanks' },
+    sessionsQuery: { tab: 'sessions' },
+    winRateFormat: { maximumFractionDigits: 2, minimumFractionDigits: 2 },
+    integerFormat: { maximumFractionDigits: 0 },
+    weekDigits: 1,
+    weekPeriod: '7d',
+    markRing: 40,
+    markLevels: [
+      { key: 'moe3', marks: 3 },
+      { key: 'moe2', marks: 2 },
+      { key: 'moe1', marks: 1 }
+    ],
+    skeleton: { marks: [20, 48, 48], session: [20, 64, 20] }
+  },
   league: { scope: 'division', metric: null, week: null },
   staleMs: 60_000
 } as const;

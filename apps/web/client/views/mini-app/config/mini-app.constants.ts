@@ -1,6 +1,5 @@
 export const MINI_APP = {
-  marksLimit: 3,
-  sessionsLimit: 1
+  marksLimit: 3
 } as const;
 
 export const MINI_APP_PLATFORMS = ['telegram', 'vk'] as const;

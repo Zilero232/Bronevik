@@ -11,6 +11,7 @@ import {
   HomeHero,
   MarksMovement,
   ModpackPromo,
+  MyDashboard,
   StrongTanks,
   TopPlayers
 } from './components';
@@ -23,6 +24,7 @@ export const HomePage = () => (
       <HomeHero />
       <HomeActions />
     </div>
+    <MyDashboard />
     <PromoBoard />
     <ForYou />
     <Reveal>

@@ -1,5 +1,21 @@
 @use '@/shared/styles/mixins' as *;
 
+.frame {
+  position: relative;
+  display: grid;
+  min-width: 0;
+
+  &[data-action='true'] .identity {
+    padding-right: calc(var(--control-h) + var(--space-3));
+  }
+}
+
+.action {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+}
+
 .root {
   @include panel;
   @include class-tint;

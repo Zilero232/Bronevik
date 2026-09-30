@@ -1,0 +1,26 @@
+{
+  "form": {
+    "label": "Your in-game nickname",
+    "placeholder": "For example, BERKUT83",
+    "submit": "Show my numbers",
+    "checking": "Looking up…",
+    "hint": "Kept only in this browser, no sign-in needed",
+    "errors": {
+      "invalid": "A nickname is 2 to 24 Latin letters, digits or “_”",
+      "notFound": "No such player on the RU server — check the nickname",
+      "server": "Could not check the nickname, try again"
+    }
+  },
+  "menu": {
+    "ask": "Your nickname?",
+    "description": "We keep the nickname in this browser and the home page shows your numbers.",
+    "title": "You are {nickname}",
+    "open": "My nickname: {nickname}",
+    "linksLabel": "My pages",
+    "dashboard": "My dashboard",
+    "profile": "My profile",
+    "switch": "Switch nickname",
+    "forget": "Forget nickname",
+    "note": "The nickname stays in this browser. Private data needs a Lesta ID sign-in."
+  }
+}

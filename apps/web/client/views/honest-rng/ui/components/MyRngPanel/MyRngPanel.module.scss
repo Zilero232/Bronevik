@@ -7,3 +7,19 @@
 .title {
   @include heading;
 }
+
+.stage {
+  display: grid;
+  min-height: 240px;
+  align-content: center;
+
+  &[data-status='ready'] {
+    @include stack(var(--space-4));
+
+    min-height: 0;
+  }
+}
+
+.skeleton {
+  height: 240px;
+}

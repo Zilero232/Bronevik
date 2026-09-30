@@ -1,0 +1,1 @@
+export { OwnPlayerMenu } from './OwnPlayerMenu';

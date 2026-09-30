@@ -1,10 +1,10 @@
 {
   "meta": {
     "title": "Compare players",
-    "description": "Compare up to four Mir Tankov players by WN8, Bronya Index, win rate and marks."
+    "description": "Compare up to six Mir Tankov players by WN8, Bronya Index, win rate and marks."
   },
   "title": "Compare players",
-  "description": "Compare two to four Mir Tankov players by WN8, Bronya Index, win rate and marks.",
+  "description": "Compare two to six Mir Tankov players by WN8, Bronya Index, win rate and marks.",
   "slot": "Slot {index} of {max}",
   "add": "Add a player by nickname",
   "emptyTitle": "Add at least two players",

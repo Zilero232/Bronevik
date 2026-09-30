@@ -13,7 +13,7 @@ import type { HeaderIdentityProps } from './HeaderIdentity.types';
 
 import s from './HeaderIdentity.module.scss';
 
-export const HeaderIdentity = ({ summary, badge, kinds, isKindsLoading = false }: HeaderIdentityProps) => {
+export const HeaderIdentity = ({ summary, badge, kinds, isKindsLoading = false, isKindsFailed = false }: HeaderIdentityProps) => {
   const t = useTranslations('profile.header');
   const tGame = useTranslations('game');
   const format = useFormatter();
@@ -39,6 +39,7 @@ export const HeaderIdentity = ({ summary, badge, kinds, isKindsLoading = false }
           <Skeleton className={s.kindSkeleton} shape='block' />
         </div>
       )}
+      {isKindsFailed && <p className={s.kindsFailed}>{t('favoritesFailed')}</p>}
       {(kinds.nation || kinds.tankClass) && (
         <ul aria-label={t('favorites')} className={s.kinds}>
           {kinds.nation && (

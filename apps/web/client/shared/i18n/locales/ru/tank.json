@@ -45,11 +45,8 @@
   "source": "Данные: API Леста Игры",
   "loading": "Загружаем данные машины",
   "garage": {
-    "premium": "Прем",
-    "regular": "Прокачиваемый",
     "actionsLabel": "Действия с машиной",
     "build": "Конструктор сборки",
-    "compare": "Сравнить",
     "crumbTanks": "Танки",
     "crumbTier": "{tier} уровень",
     "figures": {

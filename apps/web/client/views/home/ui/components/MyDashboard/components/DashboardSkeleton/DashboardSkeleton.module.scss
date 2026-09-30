@@ -1,0 +1,44 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: contents;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  grid-area: head;
+
+  > :first-child {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.name {
+  width: 180px;
+  height: 24px;
+}
+
+.figures {
+  @include grid-columns(4, $gap: var(--gap-panel), $below-md: 2);
+
+  grid-area: figures;
+}
+
+.block {
+  height: 100%;
+}
+
+.marks {
+  grid-area: marks;
+}
+
+.session {
+  grid-area: session;
+}
+
+.links {
+  grid-area: links;
+}

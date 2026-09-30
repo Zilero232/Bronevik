@@ -9,6 +9,7 @@ import type { TableColumn } from '@/ui-kit';
 
 import { useProfilesCosmetics } from '@/entities/player/cosmetics';
 import { TankCell } from '@/entities/tank/tank';
+import { CompareToggle } from '@/features/compare/compare-selection';
 
 import type { UseTopColumnsInput } from './use-top-columns.types';
 
@@ -18,6 +19,7 @@ const column = createColumnHelper<LeaderboardEntry>();
 
 export const useTopColumns = ({ filter, tank, entries }: UseTopColumnsInput): TableColumn<LeaderboardEntry>[] => {
   const t = useTranslations('top');
+  const tCompare = useTranslations('compareTray.toggle');
   const format = useFormatter();
   const cosmetics = useProfilesCosmetics(entries.flatMap((entry) => (entry.accountId === null ? [] : [entry.accountId])));
 
@@ -33,6 +35,21 @@ export const useTopColumns = ({ filter, tank, entries }: UseTopColumnsInput): Ta
     ),
     meta: { isSticky: true }
   });
+
+  const compare =
+    filter.scope === 'clans'
+      ? []
+      : [
+          column.display({
+            id: 'compare',
+            header: tCompare('column'),
+            cell: ({ row: { original } }) =>
+              original.accountId === null ? null : (
+                <CompareToggle entry={{ kind: 'player', item: { accountId: original.accountId, nickname: original.name } }} />
+              ),
+            meta: { width: 40 }
+          })
+        ];
 
   const vehicle = tank
     ? [
@@ -57,5 +74,5 @@ export const useTopColumns = ({ filter, tank, entries }: UseTopColumnsInput): Ta
     meta: { align: 'end', isNumeric: true, bar: { tone: 'accent' } }
   });
 
-  return [rank, entrant, ...vehicle, battles, value];
+  return [rank, entrant, ...vehicle, battles, value, ...compare];
 };

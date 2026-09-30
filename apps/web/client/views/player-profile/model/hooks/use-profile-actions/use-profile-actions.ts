@@ -15,6 +15,7 @@ export const useProfileActions = () => {
 
   return {
     accountId,
+    nickname,
     copied,
     share,
     signatureHref: ROUTES.players.signature(nickname),

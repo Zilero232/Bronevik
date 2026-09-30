@@ -19,7 +19,7 @@ export const useProfileHeader = () => {
   const tPeriods = useTranslations('periods');
   const { profile, period, setPeriod } = useProfileContext();
   const { data: cosmetics } = useProfileCosmetics(profile.summary.accountId);
-  const { data: tanks, isPending: isTanksPending } = usePlayerTanks();
+  const { data: tanks, isPending: isTanksPending, isError: isTanksError } = usePlayerTanks();
   const { data: seasons } = useQuery({
     queryKey: QUERY_KEYS.seasons(profile.summary.accountId),
     queryFn: () => getSeasonHistory(profile.summary.accountId)
@@ -36,6 +36,7 @@ export const useProfileHeader = () => {
     art: heroArt({ clan: summary.clan, rows: tanks?.items ?? [] }),
     kinds: favoriteKinds(tanks?.items ?? []),
     isKindsLoading: isTanksPending,
+    isKindsFailed: isTanksError && tanks === undefined,
     hasPeriodData: current !== null,
     period,
     setPeriod,

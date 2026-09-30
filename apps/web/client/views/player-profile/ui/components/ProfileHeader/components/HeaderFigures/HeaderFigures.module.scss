@@ -9,6 +9,13 @@
   border-radius: var(--radius-lg);
   background-color: color-mix(in srgb, var(--color-bg-deep) 60%, transparent);
   gap: var(--space-4) var(--space-6);
+
+  @include below(sm) {
+    width: 100%;
+    flex-wrap: nowrap;
+    padding: var(--space-3) var(--space-4);
+    gap: var(--space-4);
+  }
 }
 
 .ring {
@@ -64,6 +71,17 @@
   }
 
   @include below(sm) {
-    grid-template-columns: repeat(2, auto);
+    min-width: 0;
+    flex: 1;
+    gap: var(--space-1);
+    grid-template-columns: minmax(0, 1fr);
+
+    &:has(> :nth-child(4)) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .root & > * {
+      padding: var(--space-1) 0;
+    }
   }
 }

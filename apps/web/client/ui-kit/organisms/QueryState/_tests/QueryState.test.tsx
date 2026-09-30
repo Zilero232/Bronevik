@@ -10,6 +10,8 @@ import { QueryState } from '../QueryState';
 
 const QUERY: QueryStateSource<string[]> = { data: undefined, isError: false, refetch: vi.fn() };
 
+const SKELETON_HEIGHT = 320;
+
 const renderState = (props: Partial<QueryStateProps<string[]>>) =>
   render(
     <NextIntlClientProvider locale='ru' messages={messages.ru}>
@@ -75,5 +77,35 @@ describe('QueryState', () => {
     renderState({ query: { ...QUERY, isError: true }, errorState: <p>Gone</p> });
 
     expect(screen.getByText('Gone')).toBeInTheDocument();
+  });
+
+  it('keeps the skeleton footprint when loading ends in an error or an empty result', () => {
+    const measure = vi
+      .spyOn(HTMLElement.prototype, 'getBoundingClientRect')
+      .mockReturnValue({ top: 0, bottom: SKELETON_HEIGHT, height: SKELETON_HEIGHT, left: 0, right: 0, width: 0, x: 0, y: 0, toJSON: () => ({}) });
+
+    const view = renderState({});
+
+    view.rerender(
+      <NextIntlClientProvider locale='ru' messages={messages.ru}>
+        <QueryState empty={<p>Empty</p>} query={{ ...QUERY, isError: true }} skeleton={<p>Loading</p>}>
+          {(items) => <p>{items.join(', ')}</p>}
+        </QueryState>
+      </NextIntlClientProvider>
+    );
+
+    expect(screen.getByRole('alert').closest('[style]')).toHaveStyle({ minHeight: `${SKELETON_HEIGHT}px` });
+
+    view.rerender(
+      <NextIntlClientProvider locale='ru' messages={messages.ru}>
+        <QueryState empty={<p>Empty</p>} query={{ ...QUERY, data: [] }} skeleton={<p>Loading</p>}>
+          {(items) => <p>{items.join(', ')}</p>}
+        </QueryState>
+      </NextIntlClientProvider>
+    );
+
+    expect(screen.getByText('Empty').parentElement).toHaveStyle({ minHeight: `${SKELETON_HEIGHT}px` });
+
+    measure.mockRestore();
   });
 });

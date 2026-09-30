@@ -1,0 +1,1 @@
+export { TrayChip } from './TrayChip';

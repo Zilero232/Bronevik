@@ -1,0 +1,95 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include shell;
+
+  --dashboard-height: 392px;
+
+  scroll-margin-top: calc(var(--header-offset) + var(--space-4));
+
+  @include below(3xl) {
+    --dashboard-height: 520px;
+  }
+
+  @include below(lg) {
+    --dashboard-height: 840px;
+  }
+}
+
+.srTitle {
+  @include sr-only;
+}
+
+.frame {
+  @include panel;
+
+  position: relative;
+  overflow: hidden;
+  height: var(--dashboard-height);
+}
+
+.body {
+  display: grid;
+  height: 100%;
+  padding: var(--space-5);
+  gap: var(--space-3);
+  grid-template:
+    'head head head' 44px
+    'figures figures figures' 104px
+    'marks session links' minmax(0, 1fr) / minmax(0, 5fr) minmax(0, 4fr) minmax(0, 3fr);
+
+  @include below(3xl) {
+    grid-template:
+      'head head' 44px
+      'figures figures' 104px
+      'marks session' minmax(0, 1fr)
+      'links links' auto / minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  @include below(lg) {
+    padding: var(--space-4);
+    grid-template:
+      'head' 44px
+      'figures' auto
+      'marks' minmax(0, 1fr)
+      'session' auto
+      'links' auto / minmax(0, 1fr);
+  }
+}
+
+.ghost {
+  position: absolute;
+  inset: 0;
+  mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, transparent 20%, #000 90%);
+  opacity: 0.5;
+  pointer-events: none;
+
+  @include below(lg) {
+    mask-image: linear-gradient(180deg, transparent 45%, #000 80%);
+  }
+
+  span {
+    animation: none;
+  }
+}
+
+.ask {
+  position: absolute;
+  display: grid;
+  padding: var(--space-5);
+  inset: 0;
+  place-items: center;
+
+  @include below(lg) {
+    align-items: start;
+    padding: var(--space-3);
+  }
+}
+
+.notice {
+  @include stack(var(--space-4));
+
+  height: 100%;
+  justify-content: center;
+  padding: var(--space-5);
+}

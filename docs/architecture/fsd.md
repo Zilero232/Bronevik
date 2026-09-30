@@ -45,10 +45,11 @@ features/
 ├── app/           # pin-rows, rating-palette, rating-patterns, switch-locale, switch-theme
 ├── armor/         # armor-inspect
 ├── auth/          # lesta-link
+├── compare/       # compare-selection
 ├── community/     # api-error, comments, contact-player, form-dialog, guide-meta, markdown, markdown-editor, player-stats, replay-meta, report-content, stat-requirements, tactic-board-settings, tournament-status
 ├── mod/           # open-in-manager
 ├── notifications/ # inbox-bell, notification-settings
-├── player/        # toggle-favorite, watch-player
+├── player/        # own-nickname, toggle-favorite, watch-player
 ├── plus/          # plus-gate
 ├── search/        # command-palette, pick-entity
 ├── stats/         # select-period
@@ -72,7 +73,7 @@ entities/
 ├── mode/         # mode
 ├── notification/ # inbox
 ├── play/         # daily-puzzle
-├── player/       # analytics, cosmetics, leaderboard, marks, player, profile, recent-players, stats
+├── player/       # analytics, cosmetics, leaderboard, marks, own-player, player, profile, recent-players, stats
 ├── plus/         # subscription, usage
 ├── pulse/        # pulse
 ├── reference/    # game-status, service-health
@@ -87,6 +88,7 @@ widgets/
 ├── account/  # account-shell
 ├── armor/    # armor-viewer
 ├── community/ # entry-panel, event-layout
+├── compare/  # compare-tray
 ├── content/  # lead-feed
 ├── map/      # map-rotation, map-samples
 ├── notifications/ # event-alert

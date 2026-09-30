@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { act, renderHook, waitFor } from '@testing-library/react';
+import { act, render, renderHook, waitFor } from '@testing-library/react';
 import { createElement } from 'react';
 import { renderToString } from 'react-dom/server';
 import { afterAll, afterEach, describe, expect, it, vi } from 'vitest';
@@ -63,6 +63,32 @@ describe('useAuthSession', () => {
     const { result } = renderHook(() => useAuthSession(), { wrapper: wrap(createClient()) });
 
     await waitFor(() => expect(result.current.error).not.toBeNull());
+    expect(lookup).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not look the session up again for every reader that mounts after it failed', async () => {
+    const lookup = vi.spyOn(authApi, 'getAuthSession').mockRejectedValue(new Error('auth down'));
+
+    const Reader = () => {
+      useAuthSession();
+
+      return null;
+    };
+
+    const Gate = () => {
+      const { isPending } = useAuthSession();
+
+      return isPending ? 'waiting' : createElement(Reader);
+    };
+
+    render(createElement(QueryClientProvider, { client: createClient() }, createElement(Gate)));
+
+    await waitFor(() => expect(lookup).toHaveBeenCalled());
+
+    await new Promise((resolve) => {
+      setTimeout(resolve, 50);
+    });
+
     expect(lookup).toHaveBeenCalledTimes(1);
   });
 

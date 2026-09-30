@@ -1,0 +1,32 @@
+{
+  "label": "Compare",
+  "kindsLabel": "What to compare",
+  "kinds": {
+    "tank": "Tanks",
+    "player": "Players"
+  },
+  "count": {
+    "tank": "{count, plural, one {# tank} other {# tanks}}",
+    "player": "{count, plural, one {# player} other {# players}}"
+  },
+  "open": "Compare",
+  "needMore": "Add at least one more to compare",
+  "overflow": "The first {max} go to the comparison",
+  "listLabel": "Picked for comparison",
+  "remove": "Remove “{name}” from the comparison",
+  "clear": "Clear",
+  "clearLabel": "Clear the comparison",
+  "expand": "Show the picks",
+  "collapse": "Collapse",
+  "toggle": {
+    "add": "Add “{name}” to the comparison",
+    "remove": "Remove “{name}” from the comparison",
+    "full": {
+      "tank": "{limit} tanks are already picked — remove one to add another",
+      "player": "{limit} players are already picked — remove one to add another"
+    },
+    "button": "Add to compare",
+    "buttonOn": "In comparison",
+    "column": "Compare"
+  }
+}

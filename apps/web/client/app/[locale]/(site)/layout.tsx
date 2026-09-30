@@ -4,6 +4,7 @@ import { Suspense, ViewTransition } from 'react';
 import { LestaNoticeProvider } from '@/entities/app/lesta-notice';
 import { readLestaNotice } from '@/entities/app/lesta-notice/server';
 import { PAGE_TRANSITION } from '@/shared/i18n/navigation';
+import { CompareTray } from '@/widgets/compare/compare-tray';
 import { DataNotice } from '@/widgets/site/data-notice';
 import { SiteFooter } from '@/widgets/site/site-footer';
 import { SiteHeader } from '@/widgets/site/site-header';
@@ -30,6 +31,7 @@ const SiteLayout = async ({ children }: Pick<LayoutProps<'/[locale]'>, 'children
           </ViewTransition>
         </main>
         <SiteFooter />
+        <CompareTray />
         <Suspense fallback={null}>
           <SiteTabBar />
         </Suspense>

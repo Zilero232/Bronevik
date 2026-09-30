@@ -1,0 +1,79 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--space-3);
+  grid-area: head;
+}
+
+.identity {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.eyebrow {
+  @include label;
+
+  margin: 0;
+  color: var(--color-accent);
+}
+
+.line {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  margin: 0;
+  gap: var(--space-2);
+}
+
+.name {
+  @include heading(var(--text-xl));
+
+  overflow: hidden;
+  color: var(--color-text);
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @include hover {
+    color: var(--color-accent);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.clan {
+  color: var(--color-text-muted);
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-decoration: none;
+
+  @include hover {
+    color: var(--color-text);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.actionLabel {
+  @include below(sm) {
+    @include sr-only;
+  }
+}

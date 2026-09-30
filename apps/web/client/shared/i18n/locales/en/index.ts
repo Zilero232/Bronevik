@@ -15,6 +15,7 @@ import codes from './codes.json';
 import common from './common.json';
 import community from './community.json';
 import compare from './compare.json';
+import compareTray from './compareTray.json';
 import competitions from './competitions.json';
 import cosmetics from './cosmetics.json';
 import design from './design.json';
@@ -44,6 +45,7 @@ import notFound from './notFound.json';
 import notifications from './notifications.json';
 import og from './og.json';
 import overlay from './overlay.json';
+import ownPlayer from './ownPlayer.json';
 import periods from './periods.json';
 import platoons from './platoons.json';
 import play from './play.json';
@@ -101,6 +103,7 @@ export const en = {
   common,
   community,
   compare,
+  compareTray,
   competitions,
   cosmetics,
   design,
@@ -128,6 +131,7 @@ export const en = {
   notifications,
   og,
   overlay,
+  ownPlayer,
   periods,
   platoons,
   play,

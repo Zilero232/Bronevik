@@ -17,7 +17,8 @@ export const useAuthSession = (): AuthSessionQuery => {
     queryKey: QUERY_KEYS.auth.session,
     queryFn: getAuthSession,
     staleTime: AUTH_SESSION.staleMs,
-    retry: false
+    retry: false,
+    retryOnMount: false
   });
 
   return {

@@ -1,0 +1,49 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include well;
+  @include stack(var(--space-3));
+
+  min-width: 0;
+  padding: var(--space-4);
+  grid-area: links;
+}
+
+.title {
+  @include label;
+
+  margin: 0;
+  color: var(--color-text);
+}
+
+.list {
+  @include list-reset;
+
+  display: grid;
+  gap: var(--space-1) var(--space-2);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.link {
+  @include text-link;
+
+  display: flex;
+  min-height: var(--control-h-sm);
+  align-items: center;
+  font-size: var(--text-sm);
+  gap: var(--space-2);
+
+  :global(svg) {
+    flex-shrink: 0;
+    color: var(--color-text-dim);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.root > .compare {
+  align-self: flex-start;
+  margin-top: auto;
+}

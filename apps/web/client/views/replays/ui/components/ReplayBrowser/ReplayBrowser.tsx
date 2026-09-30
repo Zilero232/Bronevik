@@ -60,15 +60,14 @@ export const ReplayBrowser = () => {
             renderCard={(row) => <ReplayCard replay={row} vehicle={vehicleOf(row)} />}
           />
         }
+        empty={<FilteredEmptyState description={t(empty.description)} isFiltered={isFiltered} title={t(empty.title)} onReset={resetFilters} />}
         errorDescription={t('errorDescription')}
         errorTitle={t('errorTitle')}
+        isEmpty={({ items }) => items.length === 0}
         query={query}
       >
         {({ items }) => (
           <DataTable
-            emptyState={
-              <FilteredEmptyState description={t(empty.description)} isFiltered={isFiltered} title={t(empty.title)} onReset={resetFilters} />
-            }
             footer={
               pager.pages > 1 && (
                 <div className={s.pager}>

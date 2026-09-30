@@ -10,3 +10,14 @@
     padding-top: var(--space-5);
   }
 }
+
+.stage {
+  display: grid;
+  min-height: 560px;
+  align-content: start;
+  gap: var(--space-5);
+
+  @include below(md) {
+    min-height: 420px;
+  }
+}

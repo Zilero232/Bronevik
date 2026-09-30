@@ -7,4 +7,5 @@ export type HeaderIdentityProps = {
   badge: string | null;
   kinds: FavoriteKinds;
   isKindsLoading?: boolean;
+  isKindsFailed?: boolean;
 };

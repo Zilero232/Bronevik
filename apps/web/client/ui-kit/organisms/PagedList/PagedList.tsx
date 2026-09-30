@@ -2,6 +2,8 @@
 
 import { useTranslations } from 'next-intl';
 
+import { useReservedHeight } from '@/shared/lib';
+
 import type { PagedListProps } from './PagedList.types';
 
 import { Button, Skeleton } from '../../atoms';
@@ -26,11 +28,13 @@ export const PagedList = <TItem,>({
   className
 }: PagedListProps<TItem>) => {
   const t = useTranslations('common');
+  const { reservedStyle, measureRef } = useReservedHeight();
+
   const rootClassName = pagedListVariants({ layout, className });
 
   if (isError && items.length === 0) {
     return (
-      <section aria-label={label} className={rootClassName}>
+      <section aria-label={label} className={rootClassName} style={reservedStyle}>
         <ErrorState description={errorDescription} isCompact={layout === 'rows'} isRetrying={isRetrying} title={errorTitle} onRetry={retry} />
       </section>
     );
@@ -39,7 +43,7 @@ export const PagedList = <TItem,>({
   if (isPending) {
     return (
       <section aria-busy aria-label={label} className={rootClassName}>
-        <div className={s.skeletons}>
+        <div ref={measureRef} className={s.skeletons}>
           <Skeleton count={skeletonCount} height={skeletonHeight} />
         </div>
       </section>
@@ -48,7 +52,7 @@ export const PagedList = <TItem,>({
 
   if (items.length === 0) {
     return (
-      <section aria-label={label} className={rootClassName}>
+      <section aria-label={label} className={rootClassName} style={reservedStyle}>
         {empty}
       </section>
     );

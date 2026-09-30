@@ -7,5 +7,6 @@ export { HomeActions } from './HomeActions';
 export { HomeHero } from './HomeHero';
 export { MarksMovement } from './MarksMovement';
 export { ModpackPromo } from './ModpackPromo';
+export { MyDashboard } from './MyDashboard';
 export { StrongTanks } from './StrongTanks';
 export { TopPlayers } from './TopPlayers';

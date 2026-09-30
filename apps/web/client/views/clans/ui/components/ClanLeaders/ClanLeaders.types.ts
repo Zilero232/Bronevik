@@ -1,6 +1,7 @@
 import type { ClanListItem } from '@otmetki/schemas';
 
+import type { QueryStateSource } from '@/ui-kit';
+
 export type ClanLeadersProps = {
-  leaders: ClanListItem[];
-  isLoading?: boolean;
+  query: QueryStateSource<ClanListItem[]>;
 };

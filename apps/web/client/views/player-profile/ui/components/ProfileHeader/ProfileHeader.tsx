@@ -16,15 +16,30 @@ import s from './ProfileHeader.module.scss';
 export const ProfileHeader = () => {
   const t = useTranslations('profile.header');
   const tHero = useTranslations('profile.hero');
-  const { summary, stats, wn8Ring, art, kinds, isKindsLoading, hasPeriodData, period, setPeriod, periodOptions, badge, banner, frame, seasons } =
-    useProfileHeader();
+  const {
+    summary,
+    stats,
+    wn8Ring,
+    art,
+    kinds,
+    isKindsLoading,
+    isKindsFailed,
+    hasPeriodData,
+    period,
+    setPeriod,
+    periodOptions,
+    badge,
+    banner,
+    frame,
+    seasons
+  } = useProfileHeader();
 
   return (
     <PageHero
       actions={
         <div className={s.actions}>
           <CosmeticSurface banner={banner} className={s.identity} frame={frame}>
-            <HeaderIdentity badge={badge} isKindsLoading={isKindsLoading} kinds={kinds} summary={summary} />
+            <HeaderIdentity badge={badge} isKindsFailed={isKindsFailed} isKindsLoading={isKindsLoading} kinds={kinds} summary={summary} />
           </CosmeticSurface>
           <div className={s.controls}>
             <SegmentedControl<RatingPeriod> aria-label={t('period')} options={periodOptions} size='sm' value={period} onChange={setPeriod} />

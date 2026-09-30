@@ -1,11 +1,11 @@
 'use client';
 
-import { BarChart3, CalendarDays, Check, GitCompareArrows, PenLine, Share2 } from 'lucide-react';
+import { BarChart3, CalendarDays, Check, PenLine, Share2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { CompareToggle } from '@/features/compare/compare-selection';
 import { FavoriteButton } from '@/features/player/toggle-favorite';
 import { WatchButton } from '@/features/player/watch-player';
-import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { ActionStrip, Button, buttonVariants } from '@/ui-kit';
 
@@ -13,7 +13,7 @@ import { useProfileActions } from '../../../model/hooks';
 
 export const ProfileActionStrip = () => {
   const t = useTranslations('profile.actions');
-  const { accountId, copied, share, signatureHref, wrappedHref, analyticsHref } = useProfileActions();
+  const { accountId, nickname, copied, share, signatureHref, wrappedHref, analyticsHref } = useProfileActions();
 
   return (
     <ActionStrip
@@ -25,13 +25,7 @@ export const ProfileActionStrip = () => {
       }
       start={
         <>
-          <Link
-            className={buttonVariants({ variant: 'secondary', size: 'sm' })}
-            href={{ pathname: ROUTES.players.compare, query: { ids: String(accountId) } }}
-          >
-            <GitCompareArrows aria-hidden size={16} />
-            {t('compare')}
-          </Link>
+          <CompareToggle entry={{ kind: 'player', item: { accountId, nickname } }} variant='button' />
           <Button size='sm' variant='secondary' onClick={share}>
             {copied ? <Check aria-hidden size={16} /> : <Share2 aria-hidden size={16} />}
             {t('share')}

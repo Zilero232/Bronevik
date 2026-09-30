@@ -1,8 +1,16 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
+  position: relative;
   display: flex;
   min-width: 0;
+}
+
+.root > .compare {
+  position: absolute;
+  top: var(--space-1);
+  right: var(--space-1);
+  background-color: color-mix(in srgb, var(--color-bg) 70%, transparent);
 }
 
 .link {

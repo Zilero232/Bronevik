@@ -6,6 +6,7 @@ import { Suspense } from 'react';
 import { DataStatusBadge } from '@/entities/reference/service-health';
 import { LocaleSwitcher } from '@/features/app/switch-locale';
 import { ThemeToggle } from '@/features/app/switch-theme';
+import { OwnPlayerMenu } from '@/features/player/own-nickname';
 import { SITE_NAV } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 
@@ -25,6 +26,7 @@ export const UtilityBar = () => {
           <DataStatusBadge className={s.health} />
         </section>
         <div className={s.settings}>
+          <OwnPlayerMenu />
           <Link className={s.link} href={SITE_NAV.hub.href}>
             <SITE_NAV.hub.icon aria-hidden size={14} />
             {t('allSections')}

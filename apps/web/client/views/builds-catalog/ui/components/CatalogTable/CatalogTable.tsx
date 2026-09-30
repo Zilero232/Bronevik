@@ -15,10 +15,19 @@ export const CatalogTable = () => {
 
   return (
     <QueryState
+      skeleton={
+        <DataTable
+          isLoading
+          caption={t('caption', { count: 0 })}
+          columns={columns}
+          data={[]}
+          renderCard={(row) => <CatalogCard entry={row} />}
+          rowHeight={CATALOG_TABLE.rowHeight}
+        />
+      }
       errorDescription={t('errorDescription')}
       errorTitle={t('errorTitle')}
       query={query}
-      skeleton={<DataTable isLoading caption={t('caption', { count: 0 })} columns={columns} data={[]} rowHeight={CATALOG_TABLE.rowHeight} />}
     >
       {({ entries }) => (
         <DataTable

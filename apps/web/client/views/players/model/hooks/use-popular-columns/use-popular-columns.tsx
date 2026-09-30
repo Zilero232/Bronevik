@@ -9,12 +9,14 @@ import type { TableColumn } from '@/ui-kit';
 
 import { PlayerNameCell } from '@/entities/player/player';
 import { RatingValue } from '@/entities/player/stats';
+import { CompareToggle } from '@/features/compare/compare-selection';
 
 const column = createColumnHelper<PopularPlayer>();
 
 export const usePopularColumns = (): TableColumn<PopularPlayer>[] => {
   const t = useTranslations('players.columns');
   const tCommon = useTranslations('common');
+  const tCompare = useTranslations('compareTray.toggle');
   const format = useFormatter();
 
   return [
@@ -39,6 +41,12 @@ export const usePopularColumns = (): TableColumn<PopularPlayer>[] => {
       header: tCommon('ratings.wn8'),
       cell: (info) => <RatingValue rating={info.row.original.wn8} />,
       meta: { align: 'end', isNumeric: true }
+    }),
+    column.display({
+      id: 'compare',
+      header: tCompare('column'),
+      cell: ({ row: { original } }) => <CompareToggle entry={{ kind: 'player', item: original }} />,
+      meta: { width: 40 }
     })
   ];
 };

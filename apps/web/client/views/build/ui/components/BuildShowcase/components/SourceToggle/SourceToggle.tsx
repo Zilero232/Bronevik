@@ -43,17 +43,12 @@ export const SourceToggle = () => {
           </Fragment>
         ))}
       </div>
-      {!usage && isUsagePending && (
-        <p aria-hidden className={s.sample}>
-          <Skeleton width='16em' />
-        </p>
-      )}
-      {usage && (
-        <p className={s.sample}>
-          {hasSample ? t('sample', { battles: usage.battles, days: usage.windowDays }) : t('noSample', { days: usage.windowDays })}
-          {usage.gameVersion && ` · ${t('version', { version: usage.gameVersion })}`}
-        </p>
-      )}
+      <p aria-busy={!usage && isUsagePending} className={s.sample}>
+        {!usage && isUsagePending && <Skeleton width='16em' />}
+        {usage && hasSample && t('sample', { battles: usage.battles, days: usage.windowDays })}
+        {usage && !hasSample && t('noSample', { days: usage.windowDays })}
+        {usage?.gameVersion && ` · ${t('version', { version: usage.gameVersion })}`}
+      </p>
     </div>
   );
 };

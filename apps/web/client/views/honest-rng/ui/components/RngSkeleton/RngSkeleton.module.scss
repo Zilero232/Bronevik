@@ -1,0 +1,34 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-5));
+}
+
+.chart {
+  height: 322px;
+
+  @include below(md) {
+    height: 334px;
+  }
+}
+
+.pair {
+  @include grid-columns(2, $gap: var(--space-5), $below-xl: 1fr);
+}
+
+.tiers,
+.shells {
+  height: 413px;
+}
+
+.tiers {
+  @include below(xl) {
+    height: 380px;
+  }
+}
+
+.shells {
+  @include below(xl) {
+    height: 247px;
+  }
+}

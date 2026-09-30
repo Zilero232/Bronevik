@@ -4,10 +4,10 @@ import { Dices } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
-import { Band, DataSourceNote, EmptyState, KeyFigure, PageHero, QueryState, SegmentedControl, Skeleton, TierNumeral } from '@/ui-kit';
+import { Band, DataSourceNote, EmptyState, KeyFigure, PageHero, QueryState, SegmentedControl, TierNumeral } from '@/ui-kit';
 
 import { useHonestRngPage } from '../model/hooks';
-import { MyRngPanel, RngHistogram, RngScopeTable } from './components';
+import { MyRngPanel, RngHistogram, RngScopeTable, RngSkeleton } from './components';
 
 import s from './HonestRngPage.module.scss';
 
@@ -52,7 +52,7 @@ export const HonestRngPage = () => {
           errorTitle={t('error.title')}
           isEmpty={({ server }) => server === null || server.shots === 0}
           query={rng.query}
-          skeleton={<Skeleton height={320} shape='block' />}
+          skeleton={<RngSkeleton />}
         >
           <RngHistogram
             formatValue={rng.formatPercent}
